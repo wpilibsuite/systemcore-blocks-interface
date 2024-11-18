@@ -36,3 +36,28 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* Header styles */
+
+/* Tabs in header */
+.ant-tabs {
+  margin-bottom: 0;
+  color: white;
+}
+#blocklyDiv {
+  position: absolute;
+  width: 100%;
+  height: calc(100vh - 65.97px); /* Subtracting header height */
+  bottom: 0;
+}
+
+.blocklyMainBackground {
+  stroke: none;
+}
+
+.App {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
