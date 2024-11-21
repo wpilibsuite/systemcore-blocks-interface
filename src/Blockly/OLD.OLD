@@ -1,0 +1,1404 @@
+/**
+ * @license
+ *
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @fileoverview Blockly React Component.
+ * @author samelh@google.com (Sam El-Husseini)
+ */
+
+import React from 'react';
+import {useEffect, useRef} from 'react';
+import * as Blockly from 'blockly/core';
+import {javascriptGenerator} from 'blockly/javascript';
+import * as locale from 'blockly/msg/en';
+
+import './blocks_editor/blocks/module_wpilib.js';
+
+import './blocks_editor/editor/toolbox_util.js';  // From bloc/editor/blocks_util.js
+
+import './blocks_editor/editor/blocks_util.js';  // From bloc/editor/blocks_util.js
+
+import 'blockly/blocks';
+import DarkTheme from '@blockly/theme-dark';
+import './blocks_editor/blocks/module_hal.js';
+import './blocks_editor/blocks/class_hal.AddressableLEDData.js';
+import './blocks_editor/blocks/class_hal.CANStreamMessage.js';
+import './blocks_editor/blocks/class_hal.ControlWord.js';
+import './blocks_editor/blocks/class_hal.JoystickAxes.js';
+import './blocks_editor/blocks/class_hal.JoystickButtons.js';
+import './blocks_editor/blocks/class_hal.JoystickDescriptor.js';
+import './blocks_editor/blocks/class_hal.JoystickPOVs.js';
+import './blocks_editor/blocks/class_hal.MatchInfo.js';
+import './blocks_editor/blocks/class_hal.PowerDistributionFaults.js';
+import './blocks_editor/blocks/class_hal.PowerDistributionStickyFaults.js';
+import './blocks_editor/blocks/class_hal.PowerDistributionVersion.js';
+import './blocks_editor/blocks/class_hal.REVPHCompressorConfig.js';
+import './blocks_editor/blocks/class_hal.REVPHFaults.js';
+import './blocks_editor/blocks/class_hal.REVPHStickyFaults.js';
+import './blocks_editor/blocks/class_hal.REVPHVersion.js';
+import './blocks_editor/blocks/class_hal.SimBoolean.js';
+import './blocks_editor/blocks/class_hal.SimDevice.js';
+import './blocks_editor/blocks/class_hal.SimDouble.js';
+import './blocks_editor/blocks/class_hal.SimEnum.js';
+import './blocks_editor/blocks/class_hal.SimInt.js';
+import './blocks_editor/blocks/class_hal.SimLong.js';
+import './blocks_editor/blocks/class_hal.SimValue.js';
+import './blocks_editor/blocks/class_hal.Value.js';
+import './blocks_editor/blocks/module_hal.simulation.js';
+import './blocks_editor/blocks/class_hal.simulation.NotifierInfo.js';
+import './blocks_editor/blocks/class_hal.simulation.SimCB.js';
+import './blocks_editor/blocks/class_hal.simulation.SimValueCB.js';
+import './blocks_editor/blocks/class_wpilib.ADIS16448_IMU.js';
+import './blocks_editor/blocks/class_wpilib.ADIS16470_IMU.js';
+import './blocks_editor/blocks/class_wpilib.ADXL345_I2C.js';
+import './blocks_editor/blocks/class_wpilib.ADXL345_I2C.AllAxes.js';
+import './blocks_editor/blocks/class_wpilib.ADXL345_SPI.js';
+import './blocks_editor/blocks/class_wpilib.ADXL345_SPI.AllAxes.js';
+import './blocks_editor/blocks/class_wpilib.ADXL362.js';
+import './blocks_editor/blocks/class_wpilib.ADXL362.AllAxes.js';
+import './blocks_editor/blocks/class_wpilib.ADXRS450_Gyro.js';
+import './blocks_editor/blocks/class_wpilib.AddressableLED.js';
+import './blocks_editor/blocks/class_wpilib.AddressableLED.LEDData.js';
+import './blocks_editor/blocks/class_wpilib.AnalogAccelerometer.js';
+import './blocks_editor/blocks/class_wpilib.AnalogEncoder.js';
+import './blocks_editor/blocks/class_wpilib.AnalogGyro.js';
+import './blocks_editor/blocks/class_wpilib.AnalogInput.js';
+import './blocks_editor/blocks/class_wpilib.AnalogOutput.js';
+import './blocks_editor/blocks/class_wpilib.AnalogPotentiometer.js';
+import './blocks_editor/blocks/class_wpilib.AnalogTrigger.js';
+import './blocks_editor/blocks/class_wpilib.AnalogTriggerOutput.js';
+import './blocks_editor/blocks/class_wpilib.BuiltInAccelerometer.js';
+import './blocks_editor/blocks/class_wpilib.CAN.js';
+import './blocks_editor/blocks/class_wpilib.CANData.js';
+import './blocks_editor/blocks/class_wpilib.CANStatus.js';
+import './blocks_editor/blocks/class_wpilib.Color.js';
+import './blocks_editor/blocks/class_wpilib.Color8Bit.js';
+import './blocks_editor/blocks/class_wpilib.Compressor.js';
+import './blocks_editor/blocks/class_wpilib.Counter.js';
+import './blocks_editor/blocks/class_wpilib.DMC60.js';
+import './blocks_editor/blocks/class_wpilib.DSControlWord.js';
+import './blocks_editor/blocks/class_wpilib.DataLogManager.js';
+import './blocks_editor/blocks/class_wpilib.DigitalGlitchFilter.js';
+import './blocks_editor/blocks/class_wpilib.DigitalInput.js';
+import './blocks_editor/blocks/class_wpilib.DigitalOutput.js';
+import './blocks_editor/blocks/class_wpilib.DigitalSource.js';
+import './blocks_editor/blocks/class_wpilib.DoubleSolenoid.js';
+import './blocks_editor/blocks/class_wpilib.DriverStation.js';
+import './blocks_editor/blocks/class_wpilib.DutyCycle.js';
+import './blocks_editor/blocks/class_wpilib.DutyCycleEncoder.js';
+import './blocks_editor/blocks/class_wpilib.Encoder.js';
+import './blocks_editor/blocks/class_wpilib.Field2d.js';
+import './blocks_editor/blocks/class_wpilib.FieldObject2d.js';
+import './blocks_editor/blocks/class_wpilib.I2C.js';
+import './blocks_editor/blocks/class_wpilib.IterativeRobotBase.js';
+import './blocks_editor/blocks/class_wpilib.Jaguar.js';
+import './blocks_editor/blocks/class_wpilib.Joystick.js';
+import './blocks_editor/blocks/class_wpilib.LiveWindow.js';
+import './blocks_editor/blocks/class_wpilib.Mechanism2d.js';
+import './blocks_editor/blocks/class_wpilib.MechanismLigament2d.js';
+import './blocks_editor/blocks/class_wpilib.MechanismObject2d.js';
+import './blocks_editor/blocks/class_wpilib.MechanismRoot2d.js';
+import './blocks_editor/blocks/class_wpilib.MotorControllerGroup.js';
+import './blocks_editor/blocks/class_wpilib.MotorSafety.js';
+import './blocks_editor/blocks/class_wpilib.NidecBrushless.js';
+import './blocks_editor/blocks/class_wpilib.Notifier.js';
+import './blocks_editor/blocks/class_wpilib.PS4Controller.js';
+import './blocks_editor/blocks/class_wpilib.PS4Controller.Axis.js';
+import './blocks_editor/blocks/class_wpilib.PS4Controller.Button.js';
+import './blocks_editor/blocks/class_wpilib.PS5Controller.js';
+import './blocks_editor/blocks/class_wpilib.PS5Controller.Axis.js';
+import './blocks_editor/blocks/class_wpilib.PS5Controller.Button.js';
+import './blocks_editor/blocks/class_wpilib.PWM.js';
+import './blocks_editor/blocks/class_wpilib.PWMMotorController.js';
+import './blocks_editor/blocks/class_wpilib.PWMSparkFlex.js';
+import './blocks_editor/blocks/class_wpilib.PWMSparkMax.js';
+import './blocks_editor/blocks/class_wpilib.PWMTalonFX.js';
+import './blocks_editor/blocks/class_wpilib.PWMTalonSRX.js';
+import './blocks_editor/blocks/class_wpilib.PWMVenom.js';
+import './blocks_editor/blocks/class_wpilib.PWMVictorSPX.js';
+import './blocks_editor/blocks/class_wpilib.PneumaticHub.js';
+import './blocks_editor/blocks/class_wpilib.PneumaticHub.Faults.js';
+import './blocks_editor/blocks/class_wpilib.PneumaticHub.StickyFaults.js';
+import './blocks_editor/blocks/class_wpilib.PneumaticHub.Version.js';
+import './blocks_editor/blocks/class_wpilib.PneumaticsBase.js';
+import './blocks_editor/blocks/class_wpilib.PneumaticsControlModule.js';
+import './blocks_editor/blocks/class_wpilib.PowerDistribution.js';
+import './blocks_editor/blocks/class_wpilib.PowerDistribution.Faults.js';
+import './blocks_editor/blocks/class_wpilib.PowerDistribution.StickyFaults.js';
+import './blocks_editor/blocks/class_wpilib.PowerDistribution.Version.js';
+import './blocks_editor/blocks/class_wpilib.Preferences.js';
+import './blocks_editor/blocks/class_wpilib.Relay.js';
+import './blocks_editor/blocks/class_wpilib.RobotBase.js';
+import './blocks_editor/blocks/class_wpilib.RobotController.js';
+import './blocks_editor/blocks/class_wpilib.RobotState.js';
+import './blocks_editor/blocks/class_wpilib.SD540.js';
+import './blocks_editor/blocks/class_wpilib.SPI.js';
+import './blocks_editor/blocks/class_wpilib.SendableBuilderImpl.js';
+import './blocks_editor/blocks/class_wpilib.SendableChooser.js';
+import './blocks_editor/blocks/class_wpilib.SendableChooserBase.js';
+import './blocks_editor/blocks/class_wpilib.SensorUtil.js';
+import './blocks_editor/blocks/class_wpilib.SerialPort.js';
+import './blocks_editor/blocks/class_wpilib.Servo.js';
+import './blocks_editor/blocks/class_wpilib.SmartDashboard.js';
+import './blocks_editor/blocks/class_wpilib.Solenoid.js';
+import './blocks_editor/blocks/class_wpilib.Spark.js';
+import './blocks_editor/blocks/class_wpilib.StadiaController.js';
+import './blocks_editor/blocks/class_wpilib.StadiaController.Axis.js';
+import './blocks_editor/blocks/class_wpilib.StadiaController.Button.js';
+import './blocks_editor/blocks/class_wpilib.SynchronousInterrupt.js';
+import './blocks_editor/blocks/class_wpilib.Talon.js';
+import './blocks_editor/blocks/class_wpilib.TimedRobot.js';
+import './blocks_editor/blocks/class_wpilib.Timer.js';
+import './blocks_editor/blocks/class_wpilib.TimesliceRobot.js';
+import './blocks_editor/blocks/class_wpilib.Tracer.js';
+import './blocks_editor/blocks/class_wpilib.Ultrasonic.js';
+import './blocks_editor/blocks/class_wpilib.Victor.js';
+import './blocks_editor/blocks/class_wpilib.VictorSP.js';
+import './blocks_editor/blocks/class_wpilib.Watchdog.js';
+import './blocks_editor/blocks/class_wpilib.XboxController.js';
+import './blocks_editor/blocks/class_wpilib.XboxController.Axis.js';
+import './blocks_editor/blocks/class_wpilib.XboxController.Button.js';
+import './blocks_editor/blocks/module_wpilib.counter.js';
+import './blocks_editor/blocks/class_wpilib.counter.ExternalDirectionCounter.js';
+import './blocks_editor/blocks/class_wpilib.counter.Tachometer.js';
+import './blocks_editor/blocks/class_wpilib.counter.UpDownCounter.js';
+import './blocks_editor/blocks/class_wpilib.drive.DifferentialDrive.js';
+import './blocks_editor/blocks/class_wpilib.drive.DifferentialDrive.WheelSpeeds.js';
+import './blocks_editor/blocks/class_wpilib.drive.MecanumDrive.js';
+import './blocks_editor/blocks/class_wpilib.drive.MecanumDrive.WheelSpeeds.js';
+import './blocks_editor/blocks/class_wpilib.drive.RobotDriveBase.js';
+import './blocks_editor/blocks/class_wpilib.event.BooleanEvent.js';
+import './blocks_editor/blocks/class_wpilib.event.EventLoop.js';
+import './blocks_editor/blocks/class_wpilib.event.NetworkBooleanEvent.js';
+import './blocks_editor/blocks/class_wpilib.interfaces.Accelerometer.js';
+import './blocks_editor/blocks/class_wpilib.interfaces.CounterBase.js';
+import './blocks_editor/blocks/class_wpilib.interfaces.GenericHID.js';
+import './blocks_editor/blocks/class_wpilib.interfaces.Gyro.js';
+import './blocks_editor/blocks/class_wpilib.interfaces.MotorController.js';
+import './blocks_editor/blocks/module_wpilib.shuffleboard.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.ComplexWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.LayoutType.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.Shuffleboard.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.ShuffleboardComponentBase.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.ShuffleboardContainer.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.ShuffleboardLayout.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.ShuffleboardTab.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.ShuffleboardValue.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SimpleWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedBoolListValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedBoolValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedDoubleListValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedDoubleValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedFloatListValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedFloatValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedIntListValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedIntegerValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedRawValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedStringListValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.SuppliedStringValueWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard.WidgetType.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._ComplexComponent.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._ComplexWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._LayoutComponent.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SimpleComponent.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SimpleWidget.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_bool.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_double.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_float.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_integer.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_string.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_vector_bool.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_vector_double.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_vector_float.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_vector_int.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_vector_raw.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueComponent_vector_string.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_bool.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_double.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_float.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_integer.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_string.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_vector_bool.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_vector_double.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_vector_float.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_vector_int.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_vector_raw.js';
+import './blocks_editor/blocks/class_wpilib.shuffleboard._SuppliedValueWidget_vector_string.js';
+import './blocks_editor/blocks/module_wpilib.simulation.js';
+import './blocks_editor/blocks/class_wpilib.simulation.ADIS16448_IMUSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.ADIS16470_IMUSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.ADXL345Sim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.ADXL362Sim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.ADXRS450_GyroSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.AddressableLEDSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.AnalogEncoderSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.AnalogGyroSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.AnalogInputSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.AnalogOutputSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.AnalogTriggerSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.BatterySim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.BuiltInAccelerometerSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.CTREPCMSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.CallbackStore.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DCMotorSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DIOSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DifferentialDrivetrainSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DifferentialDrivetrainSim.KitbotMotor.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DifferentialDrivetrainSim.KitbotWheelSize.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DifferentialDrivetrainSim.State.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DigitalPWMSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DoubleSolenoidSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DriverStationSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DutyCycleEncoderSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.DutyCycleSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.ElevatorSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.EncoderSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.FlywheelSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.GenericHIDSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.JoystickSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.LinearSystemSim_1_1_1.js';
+import './blocks_editor/blocks/class_wpilib.simulation.LinearSystemSim_1_1_2.js';
+import './blocks_editor/blocks/class_wpilib.simulation.LinearSystemSim_2_1_1.js';
+import './blocks_editor/blocks/class_wpilib.simulation.LinearSystemSim_2_1_2.js';
+import './blocks_editor/blocks/class_wpilib.simulation.LinearSystemSim_2_2_1.js';
+import './blocks_editor/blocks/class_wpilib.simulation.LinearSystemSim_2_2_2.js';
+import './blocks_editor/blocks/class_wpilib.simulation.PS4ControllerSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.PS5ControllerSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.PWMSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.PneumaticsBaseSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.PowerDistributionSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.REVPHSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.RelaySim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.RoboRioSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.SPIAccelerometerSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.SimDeviceSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.SingleJointedArmSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.SolenoidSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.UltrasonicSim.js';
+import './blocks_editor/blocks/class_wpilib.simulation.XboxControllerSim.js';
+import './blocks_editor/blocks/class_wpilib.sysid.SysIdRoutineLog.js';
+import './blocks_editor/blocks/class_wpilib.sysid.SysIdRoutineLog.MotorLog.js';
+import './blocks_editor/blocks/module_wpimath.js';
+import './blocks_editor/blocks/class_wpimath.controller.ArmFeedforward.js';
+import './blocks_editor/blocks/class_wpimath.controller.BangBangController.js';
+import './blocks_editor/blocks/class_wpimath.controller.ControlAffinePlantInversionFeedforward_1_1.js';
+import './blocks_editor/blocks/class_wpimath.controller.ControlAffinePlantInversionFeedforward_2_1.js';
+import './blocks_editor/blocks/class_wpimath.controller.ControlAffinePlantInversionFeedforward_2_2.js';
+import './blocks_editor/blocks/class_wpimath.controller.DifferentialDriveAccelerationLimiter.js';
+import './blocks_editor/blocks/class_wpimath.controller.DifferentialDriveWheelVoltages.js';
+import './blocks_editor/blocks/class_wpimath.controller.ElevatorFeedforward.js';
+import './blocks_editor/blocks/class_wpimath.controller.HolonomicDriveController.js';
+import './blocks_editor/blocks/class_wpimath.controller.ImplicitModelFollower_1_1.js';
+import './blocks_editor/blocks/class_wpimath.controller.ImplicitModelFollower_2_1.js';
+import './blocks_editor/blocks/class_wpimath.controller.ImplicitModelFollower_2_2.js';
+import './blocks_editor/blocks/class_wpimath.controller.LTVDifferentialDriveController.js';
+import './blocks_editor/blocks/class_wpimath.controller.LTVUnicycleController.js';
+import './blocks_editor/blocks/class_wpimath.controller.LinearPlantInversionFeedforward_1_1.js';
+import './blocks_editor/blocks/class_wpimath.controller.LinearPlantInversionFeedforward_2_1.js';
+import './blocks_editor/blocks/class_wpimath.controller.LinearPlantInversionFeedforward_2_2.js';
+import './blocks_editor/blocks/class_wpimath.controller.LinearPlantInversionFeedforward_3_2.js';
+import './blocks_editor/blocks/class_wpimath.controller.LinearQuadraticRegulator_1_1.js';
+import './blocks_editor/blocks/class_wpimath.controller.LinearQuadraticRegulator_2_1.js';
+import './blocks_editor/blocks/class_wpimath.controller.LinearQuadraticRegulator_2_2.js';
+import './blocks_editor/blocks/class_wpimath.controller.LinearQuadraticRegulator_3_2.js';
+import './blocks_editor/blocks/class_wpimath.controller.PIDController.js';
+import './blocks_editor/blocks/class_wpimath.controller.ProfiledPIDController.js';
+import './blocks_editor/blocks/class_wpimath.controller.ProfiledPIDControllerRadians.js';
+import './blocks_editor/blocks/class_wpimath.controller.RamseteController.js';
+import './blocks_editor/blocks/class_wpimath.controller.SimpleMotorFeedforwardMeters.js';
+import './blocks_editor/blocks/class_wpimath.controller.SimpleMotorFeedforwardRadians.js';
+import './blocks_editor/blocks/class_wpimath.estimator.DifferentialDrivePoseEstimator.js';
+import './blocks_editor/blocks/class_wpimath.estimator.DifferentialDrivePoseEstimatorBase.js';
+import './blocks_editor/blocks/class_wpimath.estimator.ExtendedKalmanFilter_1_1_1.js';
+import './blocks_editor/blocks/class_wpimath.estimator.ExtendedKalmanFilter_2_1_1.js';
+import './blocks_editor/blocks/class_wpimath.estimator.ExtendedKalmanFilter_2_2_2.js';
+import './blocks_editor/blocks/class_wpimath.estimator.KalmanFilter_1_1_1.js';
+import './blocks_editor/blocks/class_wpimath.estimator.KalmanFilter_2_1_1.js';
+import './blocks_editor/blocks/class_wpimath.estimator.KalmanFilter_2_2_2.js';
+import './blocks_editor/blocks/class_wpimath.estimator.KalmanFilter_3_2_3.js';
+import './blocks_editor/blocks/class_wpimath.estimator.MecanumDrivePoseEstimator.js';
+import './blocks_editor/blocks/class_wpimath.estimator.MecanumDrivePoseEstimatorBase.js';
+import './blocks_editor/blocks/class_wpimath.estimator.SwerveDrive2PoseEstimator.js';
+import './blocks_editor/blocks/class_wpimath.estimator.SwerveDrive2PoseEstimatorBase.js';
+import './blocks_editor/blocks/class_wpimath.estimator.SwerveDrive3PoseEstimator.js';
+import './blocks_editor/blocks/class_wpimath.estimator.SwerveDrive3PoseEstimatorBase.js';
+import './blocks_editor/blocks/class_wpimath.estimator.SwerveDrive4PoseEstimator.js';
+import './blocks_editor/blocks/class_wpimath.estimator.SwerveDrive4PoseEstimatorBase.js';
+import './blocks_editor/blocks/class_wpimath.estimator.SwerveDrive6PoseEstimator.js';
+import './blocks_editor/blocks/class_wpimath.estimator.SwerveDrive6PoseEstimatorBase.js';
+import './blocks_editor/blocks/class_wpimath.filter.Debouncer.js';
+import './blocks_editor/blocks/class_wpimath.filter.LinearFilter.js';
+import './blocks_editor/blocks/class_wpimath.filter.MedianFilter.js';
+import './blocks_editor/blocks/class_wpimath.filter.SlewRateLimiter.js';
+import './blocks_editor/blocks/class_wpimath.geometry.CoordinateAxis.js';
+import './blocks_editor/blocks/class_wpimath.geometry.CoordinateSystem.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Pose2d.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Pose3d.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Quaternion.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Rotation2d.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Rotation3d.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Transform2d.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Transform3d.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Translation2d.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Translation3d.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Twist2d.js';
+import './blocks_editor/blocks/class_wpimath.geometry.Twist3d.js';
+import './blocks_editor/blocks/class_wpimath.interpolation.TimeInterpolatableFloatBuffer.js';
+import './blocks_editor/blocks/class_wpimath.interpolation.TimeInterpolatablePose2dBuffer.js';
+import './blocks_editor/blocks/class_wpimath.interpolation.TimeInterpolatablePose3dBuffer.js';
+import './blocks_editor/blocks/class_wpimath.interpolation.TimeInterpolatableRotation2dBuffer.js';
+import './blocks_editor/blocks/class_wpimath.interpolation.TimeInterpolatableRotation3dBuffer.js';
+import './blocks_editor/blocks/class_wpimath.interpolation.TimeInterpolatableTranslation2dBuffer.js';
+import './blocks_editor/blocks/class_wpimath.interpolation.TimeInterpolatableTranslation3dBuffer.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.ChassisSpeeds.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.DifferentialDriveKinematics.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.DifferentialDriveKinematicsBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.DifferentialDriveOdometry.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.DifferentialDriveOdometryBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.DifferentialDriveWheelPositions.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.DifferentialDriveWheelSpeeds.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.MecanumDriveKinematics.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.MecanumDriveKinematicsBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.MecanumDriveOdometry.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.MecanumDriveOdometryBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.MecanumDriveWheelPositions.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.MecanumDriveWheelSpeeds.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive2Kinematics.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive2KinematicsBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive2Odometry.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive2OdometryBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive2WheelPositions.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive3Kinematics.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive3KinematicsBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive3Odometry.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive3OdometryBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive3WheelPositions.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive4Kinematics.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive4KinematicsBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive4Odometry.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive4OdometryBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive4WheelPositions.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive6Kinematics.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive6KinematicsBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive6Odometry.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive6OdometryBase.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveDrive6WheelPositions.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveModulePosition.js';
+import './blocks_editor/blocks/class_wpimath.kinematics.SwerveModuleState.js';
+import './blocks_editor/blocks/class_wpimath.optimization.SimulatedAnnealing.js';
+import './blocks_editor/blocks/class_wpimath.path.TravelingSalesman.js';
+import './blocks_editor/blocks/class_wpimath.spline.CubicHermiteSpline.js';
+import './blocks_editor/blocks/class_wpimath.spline.QuinticHermiteSpline.js';
+import './blocks_editor/blocks/class_wpimath.spline.Spline3.js';
+import './blocks_editor/blocks/class_wpimath.spline.Spline3.ControlVector.js';
+import './blocks_editor/blocks/class_wpimath.spline.Spline5.js';
+import './blocks_editor/blocks/class_wpimath.spline.Spline5.ControlVector.js';
+import './blocks_editor/blocks/class_wpimath.spline.SplineHelper.js';
+import './blocks_editor/blocks/class_wpimath.spline.SplineParameterizer.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystemLoop_1_1_1.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystemLoop_2_1_1.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystemLoop_2_2_2.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystemLoop_3_2_3.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_1_1_1.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_1_1_2.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_1_1_3.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_2_1_1.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_2_1_2.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_2_1_3.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_2_2_1.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_2_2_2.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_2_2_3.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_3_2_1.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_3_2_2.js';
+import './blocks_editor/blocks/class_wpimath.system.LinearSystem_3_2_3.js';
+import './blocks_editor/blocks/class_wpimath.system.plant.DCMotor.js';
+import './blocks_editor/blocks/class_wpimath.system.plant.LinearSystemId.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.ExponentialProfileMeterVolts.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.ExponentialProfileMeterVolts.Constraints.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.ExponentialProfileMeterVolts.ProfileTiming.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.ExponentialProfileMeterVolts.State.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.Trajectory.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.Trajectory.State.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrajectoryConfig.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrajectoryGenerator.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrajectoryParameterizer.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrajectoryUtil.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrapezoidProfile.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrapezoidProfile.Constraints.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrapezoidProfile.State.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrapezoidProfileRadians.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrapezoidProfileRadians.Constraints.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.TrapezoidProfileRadians.State.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.CentripetalAccelerationConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.DifferentialDriveKinematicsConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.DifferentialDriveVoltageConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.EllipticalRegionConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.MaxVelocityConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.MecanumDriveKinematicsConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.RectangularRegionConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.SwerveDrive2KinematicsConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.SwerveDrive3KinematicsConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.SwerveDrive4KinematicsConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.SwerveDrive6KinematicsConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.TrajectoryConstraint.js';
+import './blocks_editor/blocks/class_wpimath.trajectory.constraint.TrajectoryConstraint.MinMax.js';
+import './blocks_editor/blocks/module_wpimath.units.js';
+
+Blockly.setLocale(locale);
+
+function BlocklyComponent(props) {
+  const blocklyDiv = useRef();
+  const toolbox = useRef();
+  let primaryWorkspace = useRef();
+  const getGenerated = () => {
+    return (
+        '  <category name="hal">' + getBlocksForCategory_hal() + '\n' +
+        '    <category name="AddressableLEDData">' + getBlocksForCategory_hal_AddressableLEDData() + '\n' +
+        '    </category>\n' +
+        '    <category name="CANStreamMessage">' + getBlocksForCategory_hal_CANStreamMessage() + '\n' +
+        '    </category>\n' +
+        '    <category name="ControlWord">' + getBlocksForCategory_hal_ControlWord() + '\n' +
+        '    </category>\n' +
+        '    <category name="JoystickAxes">' + getBlocksForCategory_hal_JoystickAxes() + '\n' +
+        '    </category>\n' +
+        '    <category name="JoystickButtons">' + getBlocksForCategory_hal_JoystickButtons() + '\n' +
+        '    </category>\n' +
+        '    <category name="JoystickDescriptor">' + getBlocksForCategory_hal_JoystickDescriptor() + '\n' +
+        '    </category>\n' +
+        '    <category name="JoystickPOVs">' + getBlocksForCategory_hal_JoystickPOVs() + '\n' +
+        '    </category>\n' +
+        '    <category name="MatchInfo">' + getBlocksForCategory_hal_MatchInfo() + '\n' +
+        '    </category>\n' +
+        '    <category name="PowerDistributionFaults">' + getBlocksForCategory_hal_PowerDistributionFaults() + '\n' +
+        '    </category>\n' +
+        '    <category name="PowerDistributionStickyFaults">' + getBlocksForCategory_hal_PowerDistributionStickyFaults() + '\n' +
+        '    </category>\n' +
+        '    <category name="PowerDistributionVersion">' + getBlocksForCategory_hal_PowerDistributionVersion() + '\n' +
+        '    </category>\n' +
+        '    <category name="REVPHCompressorConfig">' + getBlocksForCategory_hal_REVPHCompressorConfig() + '\n' +
+        '    </category>\n' +
+        '    <category name="REVPHFaults">' + getBlocksForCategory_hal_REVPHFaults() + '\n' +
+        '    </category>\n' +
+        '    <category name="REVPHStickyFaults">' + getBlocksForCategory_hal_REVPHStickyFaults() + '\n' +
+        '    </category>\n' +
+        '    <category name="REVPHVersion">' + getBlocksForCategory_hal_REVPHVersion() + '\n' +
+        '    </category>\n' +
+        '    <category name="SimBoolean">' + getBlocksForCategory_hal_SimBoolean() + '\n' +
+        '    </category>\n' +
+        '    <category name="SimDevice">' + getBlocksForCategory_hal_SimDevice() + '\n' +
+        '    </category>\n' +
+        '    <category name="SimDouble">' + getBlocksForCategory_hal_SimDouble() + '\n' +
+        '    </category>\n' +
+        '    <category name="SimEnum">' + getBlocksForCategory_hal_SimEnum() + '\n' +
+        '    </category>\n' +
+        '    <category name="SimInt">' + getBlocksForCategory_hal_SimInt() + '\n' +
+        '    </category>\n' +
+        '    <category name="SimLong">' + getBlocksForCategory_hal_SimLong() + '\n' +
+        '    </category>\n' +
+        '    <category name="SimValue">' + getBlocksForCategory_hal_SimValue() + '\n' +
+        '    </category>\n' +
+        '    <category name="Value">' + getBlocksForCategory_hal_Value() + '\n' +
+        '    </category>\n' +
+        '    <category name="simulation">' + getBlocksForCategory_hal_simulation() + '\n' +
+        '      <category name="NotifierInfo">' + getBlocksForCategory_hal_simulation_NotifierInfo() + '\n' +
+        '      </category>\n' +
+        '      <category name="SimCB">' + getBlocksForCategory_hal_simulation_SimCB() + '\n' +
+        '      </category>\n' +
+        '      <category name="SimValueCB">' + getBlocksForCategory_hal_simulation_SimValueCB() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '  </category>\n' +
+        '  <category name="wpilib">' + getBlocksForCategory_wpilib() + '\n' +
+        '    <category name="ADIS16448_IMU">' + getBlocksForCategory_wpilib_ADIS16448_IMU() + '\n' +
+        '    </category>\n' +
+        '    <category name="ADIS16470_IMU">' + getBlocksForCategory_wpilib_ADIS16470_IMU() + '\n' +
+        '    </category>\n' +
+        '    <category name="ADXL345_I2C">' + getBlocksForCategory_wpilib_ADXL345_I2C() + '\n' +
+        '      <category name="AllAxes">' + getBlocksForCategory_wpilib_ADXL345_I2C_AllAxes() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="ADXL345_SPI">' + getBlocksForCategory_wpilib_ADXL345_SPI() + '\n' +
+        '      <category name="AllAxes">' + getBlocksForCategory_wpilib_ADXL345_SPI_AllAxes() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="ADXL362">' + getBlocksForCategory_wpilib_ADXL362() + '\n' +
+        '      <category name="AllAxes">' + getBlocksForCategory_wpilib_ADXL362_AllAxes() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="ADXRS450_Gyro">' + getBlocksForCategory_wpilib_ADXRS450_Gyro() + '\n' +
+        '    </category>\n' +
+        '    <category name="AddressableLED">' + getBlocksForCategory_wpilib_AddressableLED() + '\n' +
+        '      <category name="LEDData">' + getBlocksForCategory_wpilib_AddressableLED_LEDData() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="AnalogAccelerometer">' + getBlocksForCategory_wpilib_AnalogAccelerometer() + '\n' +
+        '    </category>\n' +
+        '    <category name="AnalogEncoder">' + getBlocksForCategory_wpilib_AnalogEncoder() + '\n' +
+        '    </category>\n' +
+        '    <category name="AnalogGyro">' + getBlocksForCategory_wpilib_AnalogGyro() + '\n' +
+        '    </category>\n' +
+        '    <category name="AnalogInput">' + getBlocksForCategory_wpilib_AnalogInput() + '\n' +
+        '    </category>\n' +
+        '    <category name="AnalogOutput">' + getBlocksForCategory_wpilib_AnalogOutput() + '\n' +
+        '    </category>\n' +
+        '    <category name="AnalogPotentiometer">' + getBlocksForCategory_wpilib_AnalogPotentiometer() + '\n' +
+        '    </category>\n' +
+        '    <category name="AnalogTrigger">' + getBlocksForCategory_wpilib_AnalogTrigger() + '\n' +
+        '    </category>\n' +
+        '    <category name="AnalogTriggerOutput">' + getBlocksForCategory_wpilib_AnalogTriggerOutput() + '\n' +
+        '    </category>\n' +
+        '    <category name="BuiltInAccelerometer">' + getBlocksForCategory_wpilib_BuiltInAccelerometer() + '\n' +
+        '    </category>\n' +
+        '    <category name="CAN">' + getBlocksForCategory_wpilib_CAN() + '\n' +
+        '    </category>\n' +
+        '    <category name="CANData">' + getBlocksForCategory_wpilib_CANData() + '\n' +
+        '    </category>\n' +
+        '    <category name="CANStatus">' + getBlocksForCategory_wpilib_CANStatus() + '\n' +
+        '    </category>\n' +
+        '    <category name="Color">' + getBlocksForCategory_wpilib_Color() + '\n' +
+        '    </category>\n' +
+        '    <category name="Color8Bit">' + getBlocksForCategory_wpilib_Color8Bit() + '\n' +
+        '    </category>\n' +
+        '    <category name="Compressor">' + getBlocksForCategory_wpilib_Compressor() + '\n' +
+        '    </category>\n' +
+        '    <category name="Counter">' + getBlocksForCategory_wpilib_Counter() + '\n' +
+        '    </category>\n' +
+        '    <category name="DMC60">' + getBlocksForCategory_wpilib_DMC60() + '\n' +
+        '    </category>\n' +
+        '    <category name="DSControlWord">' + getBlocksForCategory_wpilib_DSControlWord() + '\n' +
+        '    </category>\n' +
+        '    <category name="DataLogManager">' + getBlocksForCategory_wpilib_DataLogManager() + '\n' +
+        '    </category>\n' +
+        '    <category name="DigitalGlitchFilter">' + getBlocksForCategory_wpilib_DigitalGlitchFilter() + '\n' +
+        '    </category>\n' +
+        '    <category name="DigitalInput">' + getBlocksForCategory_wpilib_DigitalInput() + '\n' +
+        '    </category>\n' +
+        '    <category name="DigitalOutput">' + getBlocksForCategory_wpilib_DigitalOutput() + '\n' +
+        '    </category>\n' +
+        '    <category name="DigitalSource">' + getBlocksForCategory_wpilib_DigitalSource() + '\n' +
+        '    </category>\n' +
+        '    <category name="DoubleSolenoid">' + getBlocksForCategory_wpilib_DoubleSolenoid() + '\n' +
+        '    </category>\n' +
+        '    <category name="DriverStation">' + getBlocksForCategory_wpilib_DriverStation() + '\n' +
+        '    </category>\n' +
+        '    <category name="DutyCycle">' + getBlocksForCategory_wpilib_DutyCycle() + '\n' +
+        '    </category>\n' +
+        '    <category name="DutyCycleEncoder">' + getBlocksForCategory_wpilib_DutyCycleEncoder() + '\n' +
+        '    </category>\n' +
+        '    <category name="Encoder">' + getBlocksForCategory_wpilib_Encoder() + '\n' +
+        '    </category>\n' +
+        '    <category name="Field2d">' + getBlocksForCategory_wpilib_Field2d() + '\n' +
+        '    </category>\n' +
+        '    <category name="FieldObject2d">' + getBlocksForCategory_wpilib_FieldObject2d() + '\n' +
+        '    </category>\n' +
+        '    <category name="I2C">' + getBlocksForCategory_wpilib_I2C() + '\n' +
+        '    </category>\n' +
+        '    <category name="IterativeRobotBase">' + getBlocksForCategory_wpilib_IterativeRobotBase() + '\n' +
+        '    </category>\n' +
+        '    <category name="Jaguar">' + getBlocksForCategory_wpilib_Jaguar() + '\n' +
+        '    </category>\n' +
+        '    <category name="Joystick">' + getBlocksForCategory_wpilib_Joystick() + '\n' +
+        '    </category>\n' +
+        '    <category name="LiveWindow">' + getBlocksForCategory_wpilib_LiveWindow() + '\n' +
+        '    </category>\n' +
+        '    <category name="Mechanism2d">' + getBlocksForCategory_wpilib_Mechanism2d() + '\n' +
+        '    </category>\n' +
+        '    <category name="MechanismLigament2d">' + getBlocksForCategory_wpilib_MechanismLigament2d() + '\n' +
+        '    </category>\n' +
+        '    <category name="MechanismObject2d">' + getBlocksForCategory_wpilib_MechanismObject2d() + '\n' +
+        '    </category>\n' +
+        '    <category name="MechanismRoot2d">' + getBlocksForCategory_wpilib_MechanismRoot2d() + '\n' +
+        '    </category>\n' +
+        '    <category name="MotorControllerGroup">' + getBlocksForCategory_wpilib_MotorControllerGroup() + '\n' +
+        '    </category>\n' +
+        '    <category name="MotorSafety">' + getBlocksForCategory_wpilib_MotorSafety() + '\n' +
+        '    </category>\n' +
+        '    <category name="NidecBrushless">' + getBlocksForCategory_wpilib_NidecBrushless() + '\n' +
+        '    </category>\n' +
+        '    <category name="Notifier">' + getBlocksForCategory_wpilib_Notifier() + '\n' +
+        '    </category>\n' +
+        '    <category name="PS4Controller">' + getBlocksForCategory_wpilib_PS4Controller() + '\n' +
+        '      <category name="Axis">' + getBlocksForCategory_wpilib_PS4Controller_Axis() + '\n' +
+        '      </category>\n' +
+        '      <category name="Button">' + getBlocksForCategory_wpilib_PS4Controller_Button() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="PS5Controller">' + getBlocksForCategory_wpilib_PS5Controller() + '\n' +
+        '      <category name="Axis">' + getBlocksForCategory_wpilib_PS5Controller_Axis() + '\n' +
+        '      </category>\n' +
+        '      <category name="Button">' + getBlocksForCategory_wpilib_PS5Controller_Button() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="PWM">' + getBlocksForCategory_wpilib_PWM() + '\n' +
+        '    </category>\n' +
+        '    <category name="PWMMotorController">' + getBlocksForCategory_wpilib_PWMMotorController() + '\n' +
+        '    </category>\n' +
+        '    <category name="PWMSparkFlex">' + getBlocksForCategory_wpilib_PWMSparkFlex() + '\n' +
+        '    </category>\n' +
+        '    <category name="PWMSparkMax">' + getBlocksForCategory_wpilib_PWMSparkMax() + '\n' +
+        '    </category>\n' +
+        '    <category name="PWMTalonFX">' + getBlocksForCategory_wpilib_PWMTalonFX() + '\n' +
+        '    </category>\n' +
+        '    <category name="PWMTalonSRX">' + getBlocksForCategory_wpilib_PWMTalonSRX() + '\n' +
+        '    </category>\n' +
+        '    <category name="PWMVenom">' + getBlocksForCategory_wpilib_PWMVenom() + '\n' +
+        '    </category>\n' +
+        '    <category name="PWMVictorSPX">' + getBlocksForCategory_wpilib_PWMVictorSPX() + '\n' +
+        '    </category>\n' +
+        '    <category name="PneumaticHub">' + getBlocksForCategory_wpilib_PneumaticHub() + '\n' +
+        '      <category name="Faults">' + getBlocksForCategory_wpilib_PneumaticHub_Faults() + '\n' +
+        '      </category>\n' +
+        '      <category name="StickyFaults">' + getBlocksForCategory_wpilib_PneumaticHub_StickyFaults() + '\n' +
+        '      </category>\n' +
+        '      <category name="Version">' + getBlocksForCategory_wpilib_PneumaticHub_Version() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="PneumaticsBase">' + getBlocksForCategory_wpilib_PneumaticsBase() + '\n' +
+        '    </category>\n' +
+        '    <category name="PneumaticsControlModule">' + getBlocksForCategory_wpilib_PneumaticsControlModule() + '\n' +
+        '    </category>\n' +
+        '    <category name="PowerDistribution">' + getBlocksForCategory_wpilib_PowerDistribution() + '\n' +
+        '      <category name="Faults">' + getBlocksForCategory_wpilib_PowerDistribution_Faults() + '\n' +
+        '      </category>\n' +
+        '      <category name="StickyFaults">' + getBlocksForCategory_wpilib_PowerDistribution_StickyFaults() + '\n' +
+        '      </category>\n' +
+        '      <category name="Version">' + getBlocksForCategory_wpilib_PowerDistribution_Version() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="Preferences">' + getBlocksForCategory_wpilib_Preferences() + '\n' +
+        '    </category>\n' +
+        '    <category name="Relay">' + getBlocksForCategory_wpilib_Relay() + '\n' +
+        '    </category>\n' +
+        '    <category name="RobotBase">' + getBlocksForCategory_wpilib_RobotBase() + '\n' +
+        '    </category>\n' +
+        '    <category name="RobotController">' + getBlocksForCategory_wpilib_RobotController() + '\n' +
+        '    </category>\n' +
+        '    <category name="RobotState">' + getBlocksForCategory_wpilib_RobotState() + '\n' +
+        '    </category>\n' +
+        '    <category name="SD540">' + getBlocksForCategory_wpilib_SD540() + '\n' +
+        '    </category>\n' +
+        '    <category name="SPI">' + getBlocksForCategory_wpilib_SPI() + '\n' +
+        '    </category>\n' +
+        '    <category name="SendableBuilderImpl">' + getBlocksForCategory_wpilib_SendableBuilderImpl() + '\n' +
+        '    </category>\n' +
+        '    <category name="SendableChooser">' + getBlocksForCategory_wpilib_SendableChooser() + '\n' +
+        '    </category>\n' +
+        '    <category name="SendableChooserBase">' + getBlocksForCategory_wpilib_SendableChooserBase() + '\n' +
+        '    </category>\n' +
+        '    <category name="SensorUtil">' + getBlocksForCategory_wpilib_SensorUtil() + '\n' +
+        '    </category>\n' +
+        '    <category name="SerialPort">' + getBlocksForCategory_wpilib_SerialPort() + '\n' +
+        '    </category>\n' +
+        '    <category name="Servo">' + getBlocksForCategory_wpilib_Servo() + '\n' +
+        '    </category>\n' +
+        '    <category name="SmartDashboard">' + getBlocksForCategory_wpilib_SmartDashboard() + '\n' +
+        '    </category>\n' +
+        '    <category name="Solenoid">' + getBlocksForCategory_wpilib_Solenoid() + '\n' +
+        '    </category>\n' +
+        '    <category name="Spark">' + getBlocksForCategory_wpilib_Spark() + '\n' +
+        '    </category>\n' +
+        '    <category name="StadiaController">' + getBlocksForCategory_wpilib_StadiaController() + '\n' +
+        '      <category name="Axis">' + getBlocksForCategory_wpilib_StadiaController_Axis() + '\n' +
+        '      </category>\n' +
+        '      <category name="Button">' + getBlocksForCategory_wpilib_StadiaController_Button() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="SynchronousInterrupt">' + getBlocksForCategory_wpilib_SynchronousInterrupt() + '\n' +
+        '    </category>\n' +
+        '    <category name="Talon">' + getBlocksForCategory_wpilib_Talon() + '\n' +
+        '    </category>\n' +
+        '    <category name="TimedRobot">' + getBlocksForCategory_wpilib_TimedRobot() + '\n' +
+        '    </category>\n' +
+        '    <category name="Timer">' + getBlocksForCategory_wpilib_Timer() + '\n' +
+        '    </category>\n' +
+        '    <category name="TimesliceRobot">' + getBlocksForCategory_wpilib_TimesliceRobot() + '\n' +
+        '    </category>\n' +
+        '    <category name="Tracer">' + getBlocksForCategory_wpilib_Tracer() + '\n' +
+        '    </category>\n' +
+        '    <category name="Ultrasonic">' + getBlocksForCategory_wpilib_Ultrasonic() + '\n' +
+        '    </category>\n' +
+        '    <category name="Victor">' + getBlocksForCategory_wpilib_Victor() + '\n' +
+        '    </category>\n' +
+        '    <category name="VictorSP">' + getBlocksForCategory_wpilib_VictorSP() + '\n' +
+        '    </category>\n' +
+        '    <category name="Watchdog">' + getBlocksForCategory_wpilib_Watchdog() + '\n' +
+        '    </category>\n' +
+        '    <category name="XboxController">' + getBlocksForCategory_wpilib_XboxController() + '\n' +
+        '      <category name="Axis">' + getBlocksForCategory_wpilib_XboxController_Axis() + '\n' +
+        '      </category>\n' +
+        '      <category name="Button">' + getBlocksForCategory_wpilib_XboxController_Button() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="counter">' + getBlocksForCategory_wpilib_counter() + '\n' +
+        '      <category name="ExternalDirectionCounter">' + getBlocksForCategory_wpilib_counter_ExternalDirectionCounter() + '\n' +
+        '      </category>\n' +
+        '      <category name="Tachometer">' + getBlocksForCategory_wpilib_counter_Tachometer() + '\n' +
+        '      </category>\n' +
+        '      <category name="UpDownCounter">' + getBlocksForCategory_wpilib_counter_UpDownCounter() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="drive">' + '\n' +
+        '      <category name="DifferentialDrive">' + getBlocksForCategory_wpilib_drive_DifferentialDrive() + '\n' +
+        '        <category name="WheelSpeeds">' + getBlocksForCategory_wpilib_drive_DifferentialDrive_WheelSpeeds() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '      <category name="MecanumDrive">' + getBlocksForCategory_wpilib_drive_MecanumDrive() + '\n' +
+        '        <category name="WheelSpeeds">' + getBlocksForCategory_wpilib_drive_MecanumDrive_WheelSpeeds() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '      <category name="RobotDriveBase">' + getBlocksForCategory_wpilib_drive_RobotDriveBase() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="event">' + '\n' +
+        '      <category name="BooleanEvent">' + getBlocksForCategory_wpilib_event_BooleanEvent() + '\n' +
+        '      </category>\n' +
+        '      <category name="EventLoop">' + getBlocksForCategory_wpilib_event_EventLoop() + '\n' +
+        '      </category>\n' +
+        '      <category name="NetworkBooleanEvent">' + getBlocksForCategory_wpilib_event_NetworkBooleanEvent() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="interfaces">' + '\n' +
+        '      <category name="Accelerometer">' + getBlocksForCategory_wpilib_interfaces_Accelerometer() + '\n' +
+        '      </category>\n' +
+        '      <category name="CounterBase">' + getBlocksForCategory_wpilib_interfaces_CounterBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="GenericHID">' + getBlocksForCategory_wpilib_interfaces_GenericHID() + '\n' +
+        '      </category>\n' +
+        '      <category name="Gyro">' + getBlocksForCategory_wpilib_interfaces_Gyro() + '\n' +
+        '      </category>\n' +
+        '      <category name="MotorController">' + getBlocksForCategory_wpilib_interfaces_MotorController() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="shuffleboard">' + getBlocksForCategory_wpilib_shuffleboard() + '\n' +
+        '      <category name="ComplexWidget">' + getBlocksForCategory_wpilib_shuffleboard_ComplexWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="LayoutType">' + getBlocksForCategory_wpilib_shuffleboard_LayoutType() + '\n' +
+        '      </category>\n' +
+        '      <category name="Shuffleboard">' + getBlocksForCategory_wpilib_shuffleboard_Shuffleboard() + '\n' +
+        '      </category>\n' +
+        '      <category name="ShuffleboardComponentBase">' + getBlocksForCategory_wpilib_shuffleboard_ShuffleboardComponentBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="ShuffleboardContainer">' + getBlocksForCategory_wpilib_shuffleboard_ShuffleboardContainer() + '\n' +
+        '      </category>\n' +
+        '      <category name="ShuffleboardLayout">' + getBlocksForCategory_wpilib_shuffleboard_ShuffleboardLayout() + '\n' +
+        '      </category>\n' +
+        '      <category name="ShuffleboardTab">' + getBlocksForCategory_wpilib_shuffleboard_ShuffleboardTab() + '\n' +
+        '      </category>\n' +
+        '      <category name="ShuffleboardValue">' + getBlocksForCategory_wpilib_shuffleboard_ShuffleboardValue() + '\n' +
+        '      </category>\n' +
+        '      <category name="SimpleWidget">' + getBlocksForCategory_wpilib_shuffleboard_SimpleWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedBoolListValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedBoolListValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedBoolValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedBoolValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedDoubleListValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedDoubleListValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedDoubleValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedDoubleValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedFloatListValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedFloatListValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedFloatValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedFloatValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedIntListValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedIntListValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedIntegerValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedIntegerValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedRawValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedRawValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedStringListValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedStringListValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="SuppliedStringValueWidget">' + getBlocksForCategory_wpilib_shuffleboard_SuppliedStringValueWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="WidgetType">' + getBlocksForCategory_wpilib_shuffleboard_WidgetType() + '\n' +
+        '      </category>\n' +
+        '      <category name="_ComplexComponent">' + getBlocksForCategory_wpilib_shuffleboard__ComplexComponent() + '\n' +
+        '      </category>\n' +
+        '      <category name="_ComplexWidget">' + getBlocksForCategory_wpilib_shuffleboard__ComplexWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="_LayoutComponent">' + getBlocksForCategory_wpilib_shuffleboard__LayoutComponent() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SimpleComponent">' + getBlocksForCategory_wpilib_shuffleboard__SimpleComponent() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SimpleWidget">' + getBlocksForCategory_wpilib_shuffleboard__SimpleWidget() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_bool">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_bool() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_double">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_double() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_float">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_float() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_integer">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_integer() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_string">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_string() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_vector_bool">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_vector_bool() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_vector_double">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_vector_double() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_vector_float">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_vector_float() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_vector_int">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_vector_int() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_vector_raw">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_vector_raw() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueComponent_vector_string">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueComponent_vector_string() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_bool">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_bool() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_double">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_double() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_float">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_float() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_integer">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_integer() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_string">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_string() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_vector_bool">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_vector_bool() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_vector_double">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_vector_double() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_vector_float">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_vector_float() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_vector_int">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_vector_int() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_vector_raw">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_vector_raw() + '\n' +
+        '      </category>\n' +
+        '      <category name="_SuppliedValueWidget_vector_string">' + getBlocksForCategory_wpilib_shuffleboard__SuppliedValueWidget_vector_string() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="simulation">' + getBlocksForCategory_wpilib_simulation() + '\n' +
+        '      <category name="ADIS16448_IMUSim">' + getBlocksForCategory_wpilib_simulation_ADIS16448_IMUSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="ADIS16470_IMUSim">' + getBlocksForCategory_wpilib_simulation_ADIS16470_IMUSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="ADXL345Sim">' + getBlocksForCategory_wpilib_simulation_ADXL345Sim() + '\n' +
+        '      </category>\n' +
+        '      <category name="ADXL362Sim">' + getBlocksForCategory_wpilib_simulation_ADXL362Sim() + '\n' +
+        '      </category>\n' +
+        '      <category name="ADXRS450_GyroSim">' + getBlocksForCategory_wpilib_simulation_ADXRS450_GyroSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="AddressableLEDSim">' + getBlocksForCategory_wpilib_simulation_AddressableLEDSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="AnalogEncoderSim">' + getBlocksForCategory_wpilib_simulation_AnalogEncoderSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="AnalogGyroSim">' + getBlocksForCategory_wpilib_simulation_AnalogGyroSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="AnalogInputSim">' + getBlocksForCategory_wpilib_simulation_AnalogInputSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="AnalogOutputSim">' + getBlocksForCategory_wpilib_simulation_AnalogOutputSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="AnalogTriggerSim">' + getBlocksForCategory_wpilib_simulation_AnalogTriggerSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="BatterySim">' + getBlocksForCategory_wpilib_simulation_BatterySim() + '\n' +
+        '      </category>\n' +
+        '      <category name="BuiltInAccelerometerSim">' + getBlocksForCategory_wpilib_simulation_BuiltInAccelerometerSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="CTREPCMSim">' + getBlocksForCategory_wpilib_simulation_CTREPCMSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="CallbackStore">' + getBlocksForCategory_wpilib_simulation_CallbackStore() + '\n' +
+        '      </category>\n' +
+        '      <category name="DCMotorSim">' + getBlocksForCategory_wpilib_simulation_DCMotorSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="DIOSim">' + getBlocksForCategory_wpilib_simulation_DIOSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDrivetrainSim">' + getBlocksForCategory_wpilib_simulation_DifferentialDrivetrainSim() + '\n' +
+        '        <category name="KitbotGearing">' + getBlocksForCategory_wpilib_simulation_DifferentialDrivetrainSim_KitbotGearing() + '\n' +
+        '        </category>\n' +
+        '        <category name="KitbotMotor">' + getBlocksForCategory_wpilib_simulation_DifferentialDrivetrainSim_KitbotMotor() + '\n' +
+        '        </category>\n' +
+        '        <category name="KitbotWheelSize">' + getBlocksForCategory_wpilib_simulation_DifferentialDrivetrainSim_KitbotWheelSize() + '\n' +
+        '        </category>\n' +
+        '        <category name="State">' + getBlocksForCategory_wpilib_simulation_DifferentialDrivetrainSim_State() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '      <category name="DigitalPWMSim">' + getBlocksForCategory_wpilib_simulation_DigitalPWMSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="DoubleSolenoidSim">' + getBlocksForCategory_wpilib_simulation_DoubleSolenoidSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="DriverStationSim">' + getBlocksForCategory_wpilib_simulation_DriverStationSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="DutyCycleEncoderSim">' + getBlocksForCategory_wpilib_simulation_DutyCycleEncoderSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="DutyCycleSim">' + getBlocksForCategory_wpilib_simulation_DutyCycleSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="ElevatorSim">' + getBlocksForCategory_wpilib_simulation_ElevatorSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="EncoderSim">' + getBlocksForCategory_wpilib_simulation_EncoderSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="FlywheelSim">' + getBlocksForCategory_wpilib_simulation_FlywheelSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="GenericHIDSim">' + getBlocksForCategory_wpilib_simulation_GenericHIDSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="JoystickSim">' + getBlocksForCategory_wpilib_simulation_JoystickSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystemSim_1_1_1">' + getBlocksForCategory_wpilib_simulation_LinearSystemSim_1_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystemSim_1_1_2">' + getBlocksForCategory_wpilib_simulation_LinearSystemSim_1_1_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystemSim_2_1_1">' + getBlocksForCategory_wpilib_simulation_LinearSystemSim_2_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystemSim_2_1_2">' + getBlocksForCategory_wpilib_simulation_LinearSystemSim_2_1_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystemSim_2_2_1">' + getBlocksForCategory_wpilib_simulation_LinearSystemSim_2_2_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystemSim_2_2_2">' + getBlocksForCategory_wpilib_simulation_LinearSystemSim_2_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="PS4ControllerSim">' + getBlocksForCategory_wpilib_simulation_PS4ControllerSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="PS5ControllerSim">' + getBlocksForCategory_wpilib_simulation_PS5ControllerSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="PWMSim">' + getBlocksForCategory_wpilib_simulation_PWMSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="PneumaticsBaseSim">' + getBlocksForCategory_wpilib_simulation_PneumaticsBaseSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="PowerDistributionSim">' + getBlocksForCategory_wpilib_simulation_PowerDistributionSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="REVPHSim">' + getBlocksForCategory_wpilib_simulation_REVPHSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="RelaySim">' + getBlocksForCategory_wpilib_simulation_RelaySim() + '\n' +
+        '      </category>\n' +
+        '      <category name="RoboRioSim">' + getBlocksForCategory_wpilib_simulation_RoboRioSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="SPIAccelerometerSim">' + getBlocksForCategory_wpilib_simulation_SPIAccelerometerSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="SimDeviceSim">' + getBlocksForCategory_wpilib_simulation_SimDeviceSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="SingleJointedArmSim">' + getBlocksForCategory_wpilib_simulation_SingleJointedArmSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="SolenoidSim">' + getBlocksForCategory_wpilib_simulation_SolenoidSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="UltrasonicSim">' + getBlocksForCategory_wpilib_simulation_UltrasonicSim() + '\n' +
+        '      </category>\n' +
+        '      <category name="XboxControllerSim">' + getBlocksForCategory_wpilib_simulation_XboxControllerSim() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="sysid">' + '\n' +
+        '      <category name="SysIdRoutineLog">' + getBlocksForCategory_wpilib_sysid_SysIdRoutineLog() + '\n' +
+        '        <category name="MotorLog">' + getBlocksForCategory_wpilib_sysid_SysIdRoutineLog_MotorLog() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '  </category>\n' +
+        '  <category name="wpimath">' + getBlocksForCategory_wpimath() + '\n' +
+        '    <category name="controller">' + '\n' +
+        '      <category name="ArmFeedforward">' + getBlocksForCategory_wpimath_controller_ArmFeedforward() + '\n' +
+        '      </category>\n' +
+        '      <category name="BangBangController">' + getBlocksForCategory_wpimath_controller_BangBangController() + '\n' +
+        '      </category>\n' +
+        '      <category name="ControlAffinePlantInversionFeedforward_1_1">' + getBlocksForCategory_wpimath_controller_ControlAffinePlantInversionFeedforward_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="ControlAffinePlantInversionFeedforward_2_1">' + getBlocksForCategory_wpimath_controller_ControlAffinePlantInversionFeedforward_2_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="ControlAffinePlantInversionFeedforward_2_2">' + getBlocksForCategory_wpimath_controller_ControlAffinePlantInversionFeedforward_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDriveAccelerationLimiter">' + getBlocksForCategory_wpimath_controller_DifferentialDriveAccelerationLimiter() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDriveWheelVoltages">' + getBlocksForCategory_wpimath_controller_DifferentialDriveWheelVoltages() + '\n' +
+        '      </category>\n' +
+        '      <category name="ElevatorFeedforward">' + getBlocksForCategory_wpimath_controller_ElevatorFeedforward() + '\n' +
+        '      </category>\n' +
+        '      <category name="HolonomicDriveController">' + getBlocksForCategory_wpimath_controller_HolonomicDriveController() + '\n' +
+        '      </category>\n' +
+        '      <category name="ImplicitModelFollower_1_1">' + getBlocksForCategory_wpimath_controller_ImplicitModelFollower_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="ImplicitModelFollower_2_1">' + getBlocksForCategory_wpimath_controller_ImplicitModelFollower_2_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="ImplicitModelFollower_2_2">' + getBlocksForCategory_wpimath_controller_ImplicitModelFollower_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LTVDifferentialDriveController">' + getBlocksForCategory_wpimath_controller_LTVDifferentialDriveController() + '\n' +
+        '      </category>\n' +
+        '      <category name="LTVUnicycleController">' + getBlocksForCategory_wpimath_controller_LTVUnicycleController() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearPlantInversionFeedforward_1_1">' + getBlocksForCategory_wpimath_controller_LinearPlantInversionFeedforward_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearPlantInversionFeedforward_2_1">' + getBlocksForCategory_wpimath_controller_LinearPlantInversionFeedforward_2_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearPlantInversionFeedforward_2_2">' + getBlocksForCategory_wpimath_controller_LinearPlantInversionFeedforward_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearPlantInversionFeedforward_3_2">' + getBlocksForCategory_wpimath_controller_LinearPlantInversionFeedforward_3_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearQuadraticRegulator_1_1">' + getBlocksForCategory_wpimath_controller_LinearQuadraticRegulator_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearQuadraticRegulator_2_1">' + getBlocksForCategory_wpimath_controller_LinearQuadraticRegulator_2_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearQuadraticRegulator_2_2">' + getBlocksForCategory_wpimath_controller_LinearQuadraticRegulator_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearQuadraticRegulator_3_2">' + getBlocksForCategory_wpimath_controller_LinearQuadraticRegulator_3_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="PIDController">' + getBlocksForCategory_wpimath_controller_PIDController() + '\n' +
+        '      </category>\n' +
+        '      <category name="ProfiledPIDController">' + getBlocksForCategory_wpimath_controller_ProfiledPIDController() + '\n' +
+        '      </category>\n' +
+        '      <category name="ProfiledPIDControllerRadians">' + getBlocksForCategory_wpimath_controller_ProfiledPIDControllerRadians() + '\n' +
+        '      </category>\n' +
+        '      <category name="RamseteController">' + getBlocksForCategory_wpimath_controller_RamseteController() + '\n' +
+        '      </category>\n' +
+        '      <category name="SimpleMotorFeedforwardMeters">' + getBlocksForCategory_wpimath_controller_SimpleMotorFeedforwardMeters() + '\n' +
+        '      </category>\n' +
+        '      <category name="SimpleMotorFeedforwardRadians">' + getBlocksForCategory_wpimath_controller_SimpleMotorFeedforwardRadians() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="estimator">' + '\n' +
+        '      <category name="DifferentialDrivePoseEstimator">' + getBlocksForCategory_wpimath_estimator_DifferentialDrivePoseEstimator() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDrivePoseEstimatorBase">' + getBlocksForCategory_wpimath_estimator_DifferentialDrivePoseEstimatorBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="ExtendedKalmanFilter_1_1_1">' + getBlocksForCategory_wpimath_estimator_ExtendedKalmanFilter_1_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="ExtendedKalmanFilter_2_1_1">' + getBlocksForCategory_wpimath_estimator_ExtendedKalmanFilter_2_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="ExtendedKalmanFilter_2_2_2">' + getBlocksForCategory_wpimath_estimator_ExtendedKalmanFilter_2_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="KalmanFilter_1_1_1">' + getBlocksForCategory_wpimath_estimator_KalmanFilter_1_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="KalmanFilter_2_1_1">' + getBlocksForCategory_wpimath_estimator_KalmanFilter_2_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="KalmanFilter_2_2_2">' + getBlocksForCategory_wpimath_estimator_KalmanFilter_2_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="KalmanFilter_3_2_3">' + getBlocksForCategory_wpimath_estimator_KalmanFilter_3_2_3() + '\n' +
+        '      </category>\n' +
+        '      <category name="MecanumDrivePoseEstimator">' + getBlocksForCategory_wpimath_estimator_MecanumDrivePoseEstimator() + '\n' +
+        '      </category>\n' +
+        '      <category name="MecanumDrivePoseEstimatorBase">' + getBlocksForCategory_wpimath_estimator_MecanumDrivePoseEstimatorBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive2PoseEstimator">' + getBlocksForCategory_wpimath_estimator_SwerveDrive2PoseEstimator() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive2PoseEstimatorBase">' + getBlocksForCategory_wpimath_estimator_SwerveDrive2PoseEstimatorBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive3PoseEstimator">' + getBlocksForCategory_wpimath_estimator_SwerveDrive3PoseEstimator() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive3PoseEstimatorBase">' + getBlocksForCategory_wpimath_estimator_SwerveDrive3PoseEstimatorBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive4PoseEstimator">' + getBlocksForCategory_wpimath_estimator_SwerveDrive4PoseEstimator() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive4PoseEstimatorBase">' + getBlocksForCategory_wpimath_estimator_SwerveDrive4PoseEstimatorBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive6PoseEstimator">' + getBlocksForCategory_wpimath_estimator_SwerveDrive6PoseEstimator() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive6PoseEstimatorBase">' + getBlocksForCategory_wpimath_estimator_SwerveDrive6PoseEstimatorBase() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="filter">' + '\n' +
+        '      <category name="Debouncer">' + getBlocksForCategory_wpimath_filter_Debouncer() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearFilter">' + getBlocksForCategory_wpimath_filter_LinearFilter() + '\n' +
+        '      </category>\n' +
+        '      <category name="MedianFilter">' + getBlocksForCategory_wpimath_filter_MedianFilter() + '\n' +
+        '      </category>\n' +
+        '      <category name="SlewRateLimiter">' + getBlocksForCategory_wpimath_filter_SlewRateLimiter() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="geometry">' + '\n' +
+        '      <category name="CoordinateAxis">' + getBlocksForCategory_wpimath_geometry_CoordinateAxis() + '\n' +
+        '      </category>\n' +
+        '      <category name="CoordinateSystem">' + getBlocksForCategory_wpimath_geometry_CoordinateSystem() + '\n' +
+        '      </category>\n' +
+        '      <category name="Pose2d">' + getBlocksForCategory_wpimath_geometry_Pose2d() + '\n' +
+        '      </category>\n' +
+        '      <category name="Pose3d">' + getBlocksForCategory_wpimath_geometry_Pose3d() + '\n' +
+        '      </category>\n' +
+        '      <category name="Quaternion">' + getBlocksForCategory_wpimath_geometry_Quaternion() + '\n' +
+        '      </category>\n' +
+        '      <category name="Rotation2d">' + getBlocksForCategory_wpimath_geometry_Rotation2d() + '\n' +
+        '      </category>\n' +
+        '      <category name="Rotation3d">' + getBlocksForCategory_wpimath_geometry_Rotation3d() + '\n' +
+        '      </category>\n' +
+        '      <category name="Transform2d">' + getBlocksForCategory_wpimath_geometry_Transform2d() + '\n' +
+        '      </category>\n' +
+        '      <category name="Transform3d">' + getBlocksForCategory_wpimath_geometry_Transform3d() + '\n' +
+        '      </category>\n' +
+        '      <category name="Translation2d">' + getBlocksForCategory_wpimath_geometry_Translation2d() + '\n' +
+        '      </category>\n' +
+        '      <category name="Translation3d">' + getBlocksForCategory_wpimath_geometry_Translation3d() + '\n' +
+        '      </category>\n' +
+        '      <category name="Twist2d">' + getBlocksForCategory_wpimath_geometry_Twist2d() + '\n' +
+        '      </category>\n' +
+        '      <category name="Twist3d">' + getBlocksForCategory_wpimath_geometry_Twist3d() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="interpolation">' + '\n' +
+        '      <category name="TimeInterpolatableFloatBuffer">' + getBlocksForCategory_wpimath_interpolation_TimeInterpolatableFloatBuffer() + '\n' +
+        '      </category>\n' +
+        '      <category name="TimeInterpolatablePose2dBuffer">' + getBlocksForCategory_wpimath_interpolation_TimeInterpolatablePose2dBuffer() + '\n' +
+        '      </category>\n' +
+        '      <category name="TimeInterpolatablePose3dBuffer">' + getBlocksForCategory_wpimath_interpolation_TimeInterpolatablePose3dBuffer() + '\n' +
+        '      </category>\n' +
+        '      <category name="TimeInterpolatableRotation2dBuffer">' + getBlocksForCategory_wpimath_interpolation_TimeInterpolatableRotation2dBuffer() + '\n' +
+        '      </category>\n' +
+        '      <category name="TimeInterpolatableRotation3dBuffer">' + getBlocksForCategory_wpimath_interpolation_TimeInterpolatableRotation3dBuffer() + '\n' +
+        '      </category>\n' +
+        '      <category name="TimeInterpolatableTranslation2dBuffer">' + getBlocksForCategory_wpimath_interpolation_TimeInterpolatableTranslation2dBuffer() + '\n' +
+        '      </category>\n' +
+        '      <category name="TimeInterpolatableTranslation3dBuffer">' + getBlocksForCategory_wpimath_interpolation_TimeInterpolatableTranslation3dBuffer() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="kinematics">' + '\n' +
+        '      <category name="ChassisSpeeds">' + getBlocksForCategory_wpimath_kinematics_ChassisSpeeds() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDriveKinematics">' + getBlocksForCategory_wpimath_kinematics_DifferentialDriveKinematics() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDriveKinematicsBase">' + getBlocksForCategory_wpimath_kinematics_DifferentialDriveKinematicsBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDriveOdometry">' + getBlocksForCategory_wpimath_kinematics_DifferentialDriveOdometry() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDriveOdometryBase">' + getBlocksForCategory_wpimath_kinematics_DifferentialDriveOdometryBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDriveWheelPositions">' + getBlocksForCategory_wpimath_kinematics_DifferentialDriveWheelPositions() + '\n' +
+        '      </category>\n' +
+        '      <category name="DifferentialDriveWheelSpeeds">' + getBlocksForCategory_wpimath_kinematics_DifferentialDriveWheelSpeeds() + '\n' +
+        '      </category>\n' +
+        '      <category name="MecanumDriveKinematics">' + getBlocksForCategory_wpimath_kinematics_MecanumDriveKinematics() + '\n' +
+        '      </category>\n' +
+        '      <category name="MecanumDriveKinematicsBase">' + getBlocksForCategory_wpimath_kinematics_MecanumDriveKinematicsBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="MecanumDriveOdometry">' + getBlocksForCategory_wpimath_kinematics_MecanumDriveOdometry() + '\n' +
+        '      </category>\n' +
+        '      <category name="MecanumDriveOdometryBase">' + getBlocksForCategory_wpimath_kinematics_MecanumDriveOdometryBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="MecanumDriveWheelPositions">' + getBlocksForCategory_wpimath_kinematics_MecanumDriveWheelPositions() + '\n' +
+        '      </category>\n' +
+        '      <category name="MecanumDriveWheelSpeeds">' + getBlocksForCategory_wpimath_kinematics_MecanumDriveWheelSpeeds() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive2Kinematics">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive2Kinematics() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive2KinematicsBase">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive2KinematicsBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive2Odometry">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive2Odometry() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive2OdometryBase">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive2OdometryBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive2WheelPositions">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive2WheelPositions() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive3Kinematics">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive3Kinematics() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive3KinematicsBase">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive3KinematicsBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive3Odometry">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive3Odometry() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive3OdometryBase">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive3OdometryBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive3WheelPositions">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive3WheelPositions() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive4Kinematics">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive4Kinematics() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive4KinematicsBase">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive4KinematicsBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive4Odometry">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive4Odometry() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive4OdometryBase">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive4OdometryBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive4WheelPositions">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive4WheelPositions() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive6Kinematics">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive6Kinematics() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive6KinematicsBase">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive6KinematicsBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive6Odometry">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive6Odometry() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive6OdometryBase">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive6OdometryBase() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveDrive6WheelPositions">' + getBlocksForCategory_wpimath_kinematics_SwerveDrive6WheelPositions() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveModulePosition">' + getBlocksForCategory_wpimath_kinematics_SwerveModulePosition() + '\n' +
+        '      </category>\n' +
+        '      <category name="SwerveModuleState">' + getBlocksForCategory_wpimath_kinematics_SwerveModuleState() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="optimization">' + '\n' +
+        '      <category name="SimulatedAnnealing">' + getBlocksForCategory_wpimath_optimization_SimulatedAnnealing() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="path">' + '\n' +
+        '      <category name="TravelingSalesman">' + getBlocksForCategory_wpimath_path_TravelingSalesman() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="spline">' + '\n' +
+        '      <category name="CubicHermiteSpline">' + getBlocksForCategory_wpimath_spline_CubicHermiteSpline() + '\n' +
+        '      </category>\n' +
+        '      <category name="QuinticHermiteSpline">' + getBlocksForCategory_wpimath_spline_QuinticHermiteSpline() + '\n' +
+        '      </category>\n' +
+        '      <category name="Spline3">' + getBlocksForCategory_wpimath_spline_Spline3() + '\n' +
+        '        <category name="ControlVector">' + getBlocksForCategory_wpimath_spline_Spline3_ControlVector() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '      <category name="Spline5">' + getBlocksForCategory_wpimath_spline_Spline5() + '\n' +
+        '        <category name="ControlVector">' + getBlocksForCategory_wpimath_spline_Spline5_ControlVector() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '      <category name="SplineHelper">' + getBlocksForCategory_wpimath_spline_SplineHelper() + '\n' +
+        '      </category>\n' +
+        '      <category name="SplineParameterizer">' + getBlocksForCategory_wpimath_spline_SplineParameterizer() + '\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="system">' + '\n' +
+        '      <category name="LinearSystemLoop_1_1_1">' + getBlocksForCategory_wpimath_system_LinearSystemLoop_1_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystemLoop_2_1_1">' + getBlocksForCategory_wpimath_system_LinearSystemLoop_2_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystemLoop_2_2_2">' + getBlocksForCategory_wpimath_system_LinearSystemLoop_2_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystemLoop_3_2_3">' + getBlocksForCategory_wpimath_system_LinearSystemLoop_3_2_3() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_1_1_1">' + getBlocksForCategory_wpimath_system_LinearSystem_1_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_1_1_2">' + getBlocksForCategory_wpimath_system_LinearSystem_1_1_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_1_1_3">' + getBlocksForCategory_wpimath_system_LinearSystem_1_1_3() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_2_1_1">' + getBlocksForCategory_wpimath_system_LinearSystem_2_1_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_2_1_2">' + getBlocksForCategory_wpimath_system_LinearSystem_2_1_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_2_1_3">' + getBlocksForCategory_wpimath_system_LinearSystem_2_1_3() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_2_2_1">' + getBlocksForCategory_wpimath_system_LinearSystem_2_2_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_2_2_2">' + getBlocksForCategory_wpimath_system_LinearSystem_2_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_2_2_3">' + getBlocksForCategory_wpimath_system_LinearSystem_2_2_3() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_3_2_1">' + getBlocksForCategory_wpimath_system_LinearSystem_3_2_1() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_3_2_2">' + getBlocksForCategory_wpimath_system_LinearSystem_3_2_2() + '\n' +
+        '      </category>\n' +
+        '      <category name="LinearSystem_3_2_3">' + getBlocksForCategory_wpimath_system_LinearSystem_3_2_3() + '\n' +
+        '      </category>\n' +
+        '      <category name="plant">' + '\n' +
+        '        <category name="DCMotor">' + getBlocksForCategory_wpimath_system_plant_DCMotor() + '\n' +
+        '        </category>\n' +
+        '        <category name="LinearSystemId">' + getBlocksForCategory_wpimath_system_plant_LinearSystemId() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="trajectory">' + '\n' +
+        '      <category name="ExponentialProfileMeterVolts">' + getBlocksForCategory_wpimath_trajectory_ExponentialProfileMeterVolts() + '\n' +
+        '        <category name="Constraints">' + getBlocksForCategory_wpimath_trajectory_ExponentialProfileMeterVolts_Constraints() + '\n' +
+        '        </category>\n' +
+        '        <category name="ProfileTiming">' + getBlocksForCategory_wpimath_trajectory_ExponentialProfileMeterVolts_ProfileTiming() + '\n' +
+        '        </category>\n' +
+        '        <category name="State">' + getBlocksForCategory_wpimath_trajectory_ExponentialProfileMeterVolts_State() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '      <category name="Trajectory">' + getBlocksForCategory_wpimath_trajectory_Trajectory() + '\n' +
+        '        <category name="State">' + getBlocksForCategory_wpimath_trajectory_Trajectory_State() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '      <category name="TrajectoryConfig">' + getBlocksForCategory_wpimath_trajectory_TrajectoryConfig() + '\n' +
+        '      </category>\n' +
+        '      <category name="TrajectoryGenerator">' + getBlocksForCategory_wpimath_trajectory_TrajectoryGenerator() + '\n' +
+        '      </category>\n' +
+        '      <category name="TrajectoryParameterizer">' + getBlocksForCategory_wpimath_trajectory_TrajectoryParameterizer() + '\n' +
+        '      </category>\n' +
+        '      <category name="TrajectoryUtil">' + getBlocksForCategory_wpimath_trajectory_TrajectoryUtil() + '\n' +
+        '      </category>\n' +
+        '      <category name="TrapezoidProfile">' + getBlocksForCategory_wpimath_trajectory_TrapezoidProfile() + '\n' +
+        '        <category name="Constraints">' + getBlocksForCategory_wpimath_trajectory_TrapezoidProfile_Constraints() + '\n' +
+        '        </category>\n' +
+        '        <category name="State">' + getBlocksForCategory_wpimath_trajectory_TrapezoidProfile_State() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '      <category name="TrapezoidProfileRadians">' + getBlocksForCategory_wpimath_trajectory_TrapezoidProfileRadians() + '\n' +
+        '        <category name="Constraints">' + getBlocksForCategory_wpimath_trajectory_TrapezoidProfileRadians_Constraints() + '\n' +
+        '        </category>\n' +
+        '        <category name="State">' + getBlocksForCategory_wpimath_trajectory_TrapezoidProfileRadians_State() + '\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '      <category name="constraint">' + '\n' +
+        '        <category name="CentripetalAccelerationConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_CentripetalAccelerationConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="DifferentialDriveKinematicsConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_DifferentialDriveKinematicsConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="DifferentialDriveVoltageConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_DifferentialDriveVoltageConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="EllipticalRegionConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_EllipticalRegionConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="MaxVelocityConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_MaxVelocityConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="MecanumDriveKinematicsConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_MecanumDriveKinematicsConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="RectangularRegionConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_RectangularRegionConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="SwerveDrive2KinematicsConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_SwerveDrive2KinematicsConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="SwerveDrive3KinematicsConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_SwerveDrive3KinematicsConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="SwerveDrive4KinematicsConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_SwerveDrive4KinematicsConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="SwerveDrive6KinematicsConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_SwerveDrive6KinematicsConstraint() + '\n' +
+        '        </category>\n' +
+        '        <category name="TrajectoryConstraint">' + getBlocksForCategory_wpimath_trajectory_constraint_TrajectoryConstraint() + '\n' +
+        '          <category name="MinMax">' + getBlocksForCategory_wpimath_trajectory_constraint_TrajectoryConstraint_MinMax() + '\n' +
+        '          </category>\n' +
+        '        </category>\n' +
+        '      </category>\n' +
+        '    </category>\n' +
+        '    <category name="units">' + getBlocksForCategory_wpimath_units() + '\n' +
+        '    </category>\n' +
+        '  </category>\n' 
+    );
+  }
+  const getToolbox = () => {
+    return `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+  ${getGenerated()}
+        <category name="Logic" colour="%{BKY_LOGIC_HUE}">
+           <block type="controls_if"></block>
+           <block type="logic_compare"></block>
+           <block type="logic_operation"></block>
+           <block type="logic_negate"></block>
+           <block type="logic_boolean"></block>
+         </category>
+         <category name="Variables" custom="VARIABLE" colour="%{BKY_VARIABLES_HUE}">
+         </category>
+      </xml>`;
+  };
+  
+  const generateCode = () => {
+    var code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
+    console.log(code);
+  };
+
+  useEffect(() => {
+    const {initialXml, children, ...rest} = props;
+    primaryWorkspace.current = Blockly.inject(blocklyDiv.current, {
+        theme: DarkTheme,
+        toolbox: getToolbox(),
+        ...rest,
+    });
+
+    if (initialXml) {
+      Blockly.Xml.domToWorkspace(
+        Blockly.utils.xml.textToDom(initialXml),
+        primaryWorkspace.current,
+      );
+    }
+  }, [primaryWorkspace, toolbox, blocklyDiv, props]);
+
+  return (
+    <React.Fragment>
+     {/*} <button onClick={generateCode}>Convert</button>*/}
+      <div ref={blocklyDiv} id="blocklyDiv" />
+      <div style={{display: 'none'}} ref={toolbox}>
+        {props.children}
+      </div>
+    </React.Fragment>
+  );
+}
+
+export default BlocklyComponent;

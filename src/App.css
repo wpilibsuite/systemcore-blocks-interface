@@ -45,8 +45,8 @@
   margin-bottom: 0;
   color: white;
 }
-#blocklyDiv {
-  position: absolute;
+.blockly-div {
+  position: relative;
   width: 100%;
   height: calc(100vh - 65.97px); /* Subtracting header height */
   bottom: 0;
@@ -60,4 +60,110 @@
   position: relative;
   height: 100vh;
   overflow: hidden;
+}
+/* App.css */
+
+.code-viewer {
+  width: 30%;
+  background-color: #1e1e1e;
+  padding: 10px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-viewer-header {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.code-viewer-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.syntax-highlighter {
+  background-color: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.blocklyToolboxDiv {
+  text-align: left !important;
+}
+
+.blocklyToolboxCategory {
+  text-align: left !important;
+}
+
+.blocklyTreeLabel {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  
+}
+.blocklyTreeSeparator{
+  border:solid #e5e5e5 .5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+.blocklyTreeIcon{
+  margin-right:1px;
+  color: white;
+
+}
+.blocklyTreeRow {
+  padding-left: 4px !important;
+  padding-top: 4px;
+
+}
+/* Modern sleek scrollbar for Blockly toolbox */
+.blocklyToolboxDiv {
+  /* Enable smooth scrolling behavior */
+  scroll-behavior: smooth !important;
+  
+  /* Hide default scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+  }
+  
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: transparent !important;
+    margin: 3px !important;
+  }
+  
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 3px !important;
+    transition: background 0.2s ease !important;
+  }
+  
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  /* Handle on active */
+  &::-webkit-scrollbar-thumb:active {
+    background: rgba(255, 255, 255, 0.4) !important;
+  }
+  
+  /* For Firefox */
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent !important;
+  
+  /* Hide scrollbar when not in use */
+  &:not(:hover)::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+/* Ensure smooth scrolling for the entire toolbox content */
+.blocklyToolboxContents {
+  scroll-behavior: smooth !important;
 }

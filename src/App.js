@@ -1,196 +1,260 @@
-import './App.css';
-import BlocklyComponent, { Block, Value, Field, Shadow } from './Blockly';
-import './blocks/customblocks';
-import './generator/generator';
-import { useState,useRef } from 'react';
-import { Tabs, Button, Space,ConfigProvider,Checkbox } from 'antd';
+import React, { useState, useRef } from 'react';
+import { Button, Space, ConfigProvider, Modal, Select } from 'antd';
 import { 
   DownloadOutlined, 
   UploadOutlined, 
   SaveOutlined, 
   ExportOutlined,
-  HomeOutlined,
-  CodeOutlined
+  CopyOutlined,
+  FileOutlined 
 } from '@ant-design/icons';
-let llDropShadow =
-{
-  filter: "drop-shadow(0px 0px 5px #000)",
-  zIndex:100,
-  height:"50px"
-};
-function App() {
-  const [showCode, setShowCode] = useState(false);
-  const [generatedCode, setGeneratedCode] = useState('');
-  const primaryWorkspace = useRef();
-  const handleExport = () => {
-    // Add export logic here
-    console.log("Export clicked");
-  };
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import BlocklyComponent from './Blockly';
 
-  const handleSave = () => {
-    // Add save logic here
-    console.log("Save clicked");
-  };
+const ProjectSelector = ({ isOpen, onClose }) => {
+  const [selectedProject, setSelectedProject] = useState('FTCRobot');
+  const [selectedComponent, setSelectedComponent] = useState('Autonomous 0');
 
-  const handleDownload = () => {
-    // Add download logic here
-    console.log("Download clicked");
-  };
+  const fakeProjects = [
+    { label: 'FTCRobot', value: 'FTCRobot' },
+    { label: 'ClassroomA', value: 'ClassroomA' },
+    { label: 'HomeProject', value: 'HomeProject' }
+  ];
 
-  const handleUpload = () => {
-    // Add upload logic here
-    console.log("Upload clicked");
-  };
-  const generateCode = () => {
-    if (primaryWorkspace?.current) {
-      // Replace with Python generator when ready
-    //  const code = Blockly.JavaScript.workspaceToCode(primaryWorkspace.current);
-     // setGeneratedCode(code);
-    }
-  };
-
-  // Update code when checkbox changes
-  const handleCodeToggle = (checked) => {
-    setShowCode(checked);
-    if (checked) {
-      generateCode();
-    }
-  };
-  const items = [
-    {
-      key: 'blocks',
-      label: (
-        <span>
-          <HomeOutlined /> Blocks Home
-        </span>
-      ),
-    },
-    {
-      key: 'code',
-      label: (
-        <span>
-          <CodeOutlined /> Code View
-        </span>
-      ),
-    },
+  const fakeComponents = [
+    { label: 'Autonomous 0', value: 'Autonomous 0' },
+    { label: 'Autonomous 1', value: 'Autonomous 1' },
+    { label: 'TeleOp Main', value: 'TeleOp Main' },
+    { label: 'Test Component', value: 'Test Component' }
   ];
 
   return (
+    <Modal 
+      title="Select Project and Component" 
+      open={isOpen} 
+      
+      onCancel={onClose}
+      footer={[
+        <Button key="cancel" onClick={onClose}>
+          Cancel
+        </Button>,
+        <Button key="select" onClick={onClose}>
+          Select
+        </Button>
+      ]}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div>
+          <div style={{ marginBottom: '8px' }}>Project</div>
+          <Select
+            style={{ width: '100%' }}
+            value={selectedProject}
+            onChange={(value) => setSelectedProject(value)}
+            options={fakeProjects}
+          />
+        </div>
+        <div>
+          <div style={{ marginBottom: '8px' }}>Component</div>
+          <Select
+            style={{ width: '100%' }}
+            value={selectedComponent}
+            onChange={(value) => setSelectedComponent(value)}
+            options={fakeComponents}
+          />
+        </div>
+      </div>
+    </Modal>
+  );
+};
+let llDropShadow = {
+  filter: 'drop-shadow(0px 0px 5px #000)',
+  zIndex: 100,
+  height: '30px',
+};
+
+const App = () => {
+  const [showCode, setShowCode] = useState(false);
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
+  const primaryWorkspace = useRef();
+
+  const handleExport = () => {
+    console.log('Export clicked');
+  };
+
+  const handleSave = () => {
+    console.log('Save clicked');
+  };
+
+  const handleDownload = () => {
+    console.log('Download clicked');
+  };
+
+  const handleUpload = () => {
+    console.log('Upload clicked');
+  };
+
+  const toggleCodeWindow = () => {
+    setShowCode(!showCode);
+  };
+
+  const copyCodeToClipboard = () => {
+    navigator.clipboard.writeText(generatedCode).then(
+      () => {
+        console.log('Code copied to clipboard');
+      },
+      (err) => {
+        console.error('Could not copy code: ', err);
+      }
+    );
+  };
+
+  return (
     <ConfigProvider
-    theme={{
+      theme={{
         token: {
-            colorPrimary: '#66bf0d',
-            colorBgBase: '#66bf0d',
-            colorText: 'rgba(255, 255, 255, 0.85)',
-            colorBorder: '#000',
-            colorBgLayout: '#222',
-            colorBgSpotlight: '#111',
-            colorBgMask: '#111',
-            colorBgElevated: '#111',
-            colorBgContainer: '#191919',
-            colorBorderSecondary: '#000',
+          colorPrimary: '#66bf0d',
+          colorBgBase: '#66bf0d',
+          colorText: 'rgba(255, 255, 255, 0.85)',
+          colorBorder: '#000',
+          colorBgLayout: '#222',
+          colorBgSpotlight: '#111',
+          colorBgMask: '#111',
+          colorBgElevated: '#111',
+          colorBgContainer: '#191919',
+          colorBorderSecondary: '#000',
         },
         components: {
-            Radio: {
-                colorPrimary: '#00b96b',
-            },
-            Checkbox: {
-                colorPrimary: '#ff4d4f',
-            },
-            Layout: {
-                headerBg: '#333',
-                triggerBg: 'transparent',
-                siderBg: '#444',
-            },
-            Menu: {
-                colorBgContainer: 'fff',
-            },
-            Table: {},
+          Radio: {
+            colorPrimary: '#00b96b',
+          },
+          Checkbox: {
+            colorPrimary: '#ff4d4f',
+          },
+          Layout: {
+            headerBg: '#333',
+            triggerBg: 'transparent',
+            siderBg: '#444',
+          },
+          Select:{
+            optionSelectedBg:'#555',
+            optionActiveBg:'#444'
+          },
+          Menu: {
+            colorBgContainer: '#fff',
+          },
         },
-    }}
->
-    <div className="App" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      
-      <header style={{ background: '#333', padding: '8px 16px',  ...llDropShadow }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Tabs
-            items={items}
-            defaultActiveKey="blocks"
-            style={{ marginBottom: 0 }}
-          />
-          <Space>
-          <Checkbox 
-                checked={showCode} 
-                onChange={(e) => handleCodeToggle(e.target.checked)}
+      }}
+    >
+      <div
+        className="App"
+        style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}
+      >
+        <header style={{ background: '#333', padding: '8px 16px', filter: 'drop-shadow(0px 0px 5px #000)', zIndex: 100 }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <span style={{ color: 'white', fontWeight: 500 }}>Blocks</span>
+              <span style={{ color: 'white' }}>|</span>
+              <Button 
+                
+                icon={<FileOutlined />}
+                onClick={() => setIsFileMenuOpen(true)}
                 style={{ color: 'white' }}
               >
-                Show Code
-              </Checkbox>
-            <Button 
-              icon={<UploadOutlined />}
-              onClick={handleUpload}
-            >
-              Upload
-            </Button>
-            <Button 
-              icon={<DownloadOutlined />}
-              onClick={handleDownload}
-            >
-              Download
-            </Button>
-            <Button 
-              icon={<SaveOutlined />}
-              onClick={handleSave}
-            >
-              Save
-            </Button>
-            <Button 
-              icon={<ExportOutlined />}
-              onClick={handleExport}
-            >
-              Export As...
-            </Button>
-          </Space>
-        </div>
-      </header>
+                FTCRobot - Autonomous 0
+              </Button>
+            </div>
+            <Space>
+              <Button onClick={toggleCodeWindow}  style={{ color: 'white' }}>
+                {showCode ? 'Hide Python Code' : 'Show Python Code'}
+              </Button>
+              <Button icon={<UploadOutlined />} onClick={handleUpload}  style={{ color: 'white' }}>
+                Upload
+              </Button>
+              <Button icon={<DownloadOutlined />} onClick={handleDownload}  style={{ color: 'white' }}>
+                Download
+              </Button>
+              <Button icon={<SaveOutlined />} onClick={handleSave}  style={{ color: 'white' }}>
+                Save
+              </Button>
+              <Button icon={<ExportOutlined />} onClick={handleExport}  style={{ color: 'white' }}>
+                Export As...
+              </Button>
+            </Space>
+          </div>
+        </header>
 
-        <BlocklyComponent
-          readOnly={false}
-          trashcan={true}
-          move={{
-            scrollbars: true,
-            drag: true,
-            wheel: true,
-          }}
-          initialXml={``}
-        >
-          <Block type="test_react_field" />
-          <Block type="controls_ifelse" />
-          <Block type="logic_compare" />
-          <Block type="logic_operation" />
-          <Block type="controls_repeat_ext">
-            <Value name="TIMES">
-              <Shadow type="math_number">
-                <Field name="NUM">10</Field>
-              </Shadow>
-            </Value>
-          </Block>
-          <Block type="logic_operation" />
-          <Block type="logic_negate" />
-          <Block type="logic_boolean" />
-          <Block type="logic_null" disabled="true" />
-          <Block type="logic_ternary" />
-          <Block type="text_charAt">
-            <Value name="VALUE">
-              <Block type="variables_get">
-                <Field name="VAR">text</Field>
-              </Block>
-            </Value>
-          </Block>
-        </BlocklyComponent>
-    </div>
+        <div style={{ flexGrow: 1, display: 'flex', height: '0' }}>
+          <BlocklyComponent
+            ref={primaryWorkspace}
+            onWorkspaceChange={(code) => setGeneratedCode(code)}
+            style={{ flexGrow: 1 }}
+          />
+          {showCode && (
+            <div
+              className="code-viewer"
+              style={{
+                width: '30%',
+                backgroundColor: '#1e1e1e',
+                padding: '17px',
+                color: '#fff',
+                display: 'flex',
+                flexDirection: 'column',
+                borderLeft: '2px rgb(20,20,20) solid'
+              }}
+            >
+              <div
+                style={{
+                  marginBottom: '10px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <h3 style={{ color: '#fff', margin: 0 }}>Code</h3>
+                <Button
+                  icon={<CopyOutlined />}
+                  onClick={copyCodeToClipboard}
+                  size="small"
+                  
+                  style={{ color: 'white' }}
+                >
+                  Copy Code
+                </Button>
+              </div>
+              <div
+                style={{
+                  flexGrow: 1,
+                  overflowY: 'auto',
+                }}
+              >
+                <SyntaxHighlighter
+                  language="python"
+                  style={dracula}
+                  customStyle={{
+                    backgroundColor: '#333',
+                  }}
+                >
+                  {generatedCode}
+                </SyntaxHighlighter>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <ProjectSelector 
+          isOpen={isFileMenuOpen} 
+          onClose={() => setIsFileMenuOpen(false)} 
+        />
+      </div>
     </ConfigProvider>
   );
-}
+};
 
 export default App;
