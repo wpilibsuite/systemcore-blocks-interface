@@ -3,54 +3,26 @@ import * as Blockly from 'blockly/core';
 import { pythonGenerator } from 'blockly/python';
 import * as locale from 'blockly/msg/en';
 import DarkTheme from '@blockly/theme-dark';
-import { registerBlockDefinitions } from '../blocks/customblocks';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
-// Import your generated toolbox
-import toolboxJson from './toolboxb.json';
-import toolboxJson2 from './toolboxwpilib.json';
-function cleanToolboxNames(toolbox) {
-  return {
-    ...toolbox,
-    contents: toolbox.contents.map(item => {
-      if (item.name) {
-        return {
-          ...item,
-          name: item.name
-            .replace('wpilib._wpilib.', '')
-            .replace('wpilib.drive._drive.', '')
-        };
-      }
-      return item;
-    })
-  };
-}
-function combineToolboxes(toolbox1, toolbox2) {
-  const cleanedToolbox2 = cleanToolboxNames(toolbox2);
-  return {
-    id: "toolbox-categories",
-    style: "display: none",
-    contents: [
-      ...toolbox1.contents,
-      { kind: "SEP" },
-      ...cleanedToolbox2.contents
-    ]
-  };
-}
+
+import * as toolbox from '../editor/toolbox.js';
+
+import '../blocks/misc';   // Defines a few miscellaneous blocks like a comment block.
+import '../blocks/python'; // Defines blocks for accessing code in python (like wpilib, etc).
+
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
   const workspaceRef = useRef();
 
   // Initialize Blockly
   useEffect(() => {
-    registerBlockDefinitions(combineToolboxes(toolboxJson,toolboxJson2));
-
     // Configure Blockly workspace
     const workspaceConfig = {
       theme: DarkTheme,
       horizontalLayout: false, // Forces vertical layout for the workspace
 
-      toolbox: combineToolboxes(toolboxJson,toolboxJson2),
+      toolbox: toolbox.getToolboxJSON(),
       grid: {
         spacing: 20,
         length: 3,
@@ -66,7 +38,7 @@ function BlocklyComponent(props) {
         scaleSpeed: 1.2
       },
       scrollbars: true,
-      trashcan: true,
+      trashcan: false,
       move: {
         scrollbars: true,
         drag: true,
@@ -82,16 +54,6 @@ function BlocklyComponent(props) {
     const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
     workspaceRef.current = workspace;
 
-    // Load initial workspace content if provided
-    if (props.initialXml) {
-      try {
-        const xml = Blockly.Xml.textToDom(props.initialXml);
-        Blockly.Xml.domToWorkspace(xml, workspace);
-      } catch (e) {
-        console.error('Error loading initial workspace:', e);
-      }
-    }
-
     // Add change listener
     const onWorkspaceChange = (e) => {
       if (props.onWorkspaceChange) {
@@ -102,8 +64,9 @@ function BlocklyComponent(props) {
     workspace.addChangeListener(onWorkspaceChange);
 
     // Configure Python generator
-    //pythonGenerator.STATEMENT_PREFIX = 'self.highlight_block(%1);\n';
-    pythonGenerator.addReservedWords('code', 'block', 'output');
+    // TODO(lizlooney): Figure out if we have to should reserved words for
+    // wpilib module names.
+    // pythonGenerator.addReservedWords(???);
 
     // Cleanup on unmount
     return () => {
@@ -111,7 +74,7 @@ function BlocklyComponent(props) {
         workspaceRef.current.dispose();
       }
     };
-  }, [props.initialXml, props.workspaceConfiguration]);
+  }, [props.workspaceConfiguration]);
 
   // Handle workspace resize
   useEffect(() => {
@@ -133,6 +96,7 @@ function BlocklyComponent(props) {
   const getWorkspace = () => workspaceRef.current;
 
   const generateCode = () => {
+    console.log("HeyLiz - generateCode");
     if (workspaceRef.current) {
       return pythonGenerator.workspaceToCode(workspaceRef.current);
     }
@@ -140,6 +104,7 @@ function BlocklyComponent(props) {
   };
 
   const saveWorkspace = () => {
+    // TODO(lizlooney): replace this.
     if (workspaceRef.current) {
       const xml = Blockly.Xml.workspaceToDom(workspaceRef.current);
       return Blockly.Xml.domToText(xml);
@@ -148,6 +113,7 @@ function BlocklyComponent(props) {
   };
 
   const loadWorkspace = (xmlText) => {
+    // TODO(lizlooney): replace this.
     if (workspaceRef.current) {
       try {
         const xml = Blockly.Xml.textToDom(xmlText);
@@ -159,6 +125,7 @@ function BlocklyComponent(props) {
   };
 
   const clear = () => {
+    // TODO(lizlooney): replace or remove this.
     if (workspaceRef.current) {
       workspaceRef.current.clear();
     }
