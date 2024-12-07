@@ -1,0 +1,30 @@
+// This file was generated. Do not edit!
+
+import * as python from "../python.js"
+
+// Blocks for class wpilib.Timer
+
+function getToolboxCategory(subcategories) {
+  const category = {
+    kind: "category",
+    name: "Timer",
+    contents: [
+      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTimer"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Create a new timer object.\n\nCreate a new timer object and reset the time to zero. The timer is\ninitially not running and must be started.", "returnType": "wpilib._wpilib.Timer", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.Timer"}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Check if the period specified has passed and if it has, advance the start\ntime by that period. This is useful to decide if it's time to do periodic\nwork without drifting later by the time it took to get around to checking.\n\n:param period: The period to check for.\n\n:returns: True if the period has passed.", "returnType": "bool", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}, {"name": "period", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "advanceIfElapsed"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Get the current time from the timer. If the clock is running it is derived\nfrom the current system clock the start time stored in the timer class. If\nthe clock is not running, then return the time when it was last stopped.\n\n:returns: Current time value for this timer in seconds", "returnType": "wpimath.units.seconds", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "get"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
+      {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Return the FPGA system clock time in seconds.\n\nReturn the time from the FPGA hardware clock in seconds since the FPGA\nstarted. Rolls over after 71 minutes.\n\n:returns: Robot running time in seconds.", "returnType": "wpimath.units.seconds", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "getFPGATimestamp"}},
+      {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Return the approximate match time.\n\nThe FMS does not send an official match time to the robots, but does send\nan approximate match time. The value will count down the time remaining in\nthe current period (auto or teleop).\n\nWarning: This is not an official time (so it cannot be used to dispute ref\ncalls or guarantee that a function will trigger before the match ends).\n\nThe Practice Match function of the DS approximates the behavior seen on the\nfield.\n\n:returns: Time remaining in current match period (auto or teleop)", "returnType": "wpimath.units.seconds", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "getMatchTime"}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Check if the period specified has passed.\n\n:param period: The period to check.\n\n:returns: True if the period has passed.", "returnType": "bool", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}, {"name": "period", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "hasElapsed"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Reset the timer by setting the time to 0.\n\nMake the timer startTime the current time so new requests will be relative\nto now.", "returnType": "None", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Restart the timer by stopping the timer, if it is not already stopped,\nresetting the accumulated time, then starting the timer again. If you\nwant an event to periodically reoccur at some time interval from the\nstart time, consider using AdvanceIfElapsed() instead.", "returnType": "None", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "restart"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Start the timer running.\n\nJust set the running flag to true indicating that all time requests should\nbe relative to the system clock. Note that this method is a no-op if the\ntimer is already running.", "returnType": "None", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "start"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Stop the timer.\n\nThis computes the time as of now and clears the running flag, causing all\nsubsequent time requests to be read from the accumulated time rather than\nlooking at the system clock.", "returnType": "None", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "stop"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
+    ],
+  };
+  if (subcategories) {
+    category.contents.push(...subcategories);
+  }
+  return category;
+}
+
+export {getToolboxCategory}

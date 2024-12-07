@@ -1,0 +1,35 @@
+// This file was generated. Do not edit!
+
+import * as python from "../python.js"
+
+// Blocks for class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing
+
+python.PythonVariableGetterNames["class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float"] = ["k10p71", "k12p75", "k5p95", "k7p31", "k8p45"];
+python.PythonVariableSetterNames["class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float"] = ["k10p71", "k12p75", "k5p95", "k7p31", "k8p45"];
+
+
+function getToolboxCategory(subcategories) {
+  const category = {
+    kind: "category",
+    name: "KitbotGearing",
+    contents: [
+      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k10p71"}},
+      {"kind": "block", "type": "set_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k10p71"}},
+      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k12p75"}},
+      {"kind": "block", "type": "set_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k12p75"}},
+      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k5p95"}},
+      {"kind": "block", "type": "set_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k5p95"}},
+      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k7p31"}},
+      {"kind": "block", "type": "set_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k7p31"}},
+      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k8p45"}},
+      {"kind": "block", "type": "set_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float", "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "VAR": "k8p45"}},
+      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myKitbotGearing"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "wpilib.simulation._simulation.DifferentialDrivetrainSim.KitbotGearing", "args": [], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing"}}}}},
+    ],
+  };
+  if (subcategories) {
+    category.contents.push(...subcategories);
+  }
+  return category;
+}
+
+export {getToolboxCategory}

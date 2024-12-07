@@ -1,0 +1,25 @@
+// This file was generated. Do not edit!
+
+import * as python from "../python.js"
+
+// Blocks for class wpilib.DigitalSource
+
+function getToolboxCategory(subcategories) {
+  const category = {
+    kind: "category",
+    name: "DigitalSource",
+    contents: [
+      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDigitalSource"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "wpilib._wpilib.DigitalSource", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.DigitalSource"}}}}},
+      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogTriggerType"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "wpilib._wpilib.AnalogTriggerType", "args": [{"name": "digitalSource", "type": "wpilib._wpilib.DigitalSource"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DigitalSource", "FUNC": "getAnalogTriggerTypeForRouting"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "int", "args": [{"name": "digitalSource", "type": "wpilib._wpilib.DigitalSource"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DigitalSource", "FUNC": "getChannel"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "int", "args": [{"name": "digitalSource", "type": "wpilib._wpilib.DigitalSource"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DigitalSource", "FUNC": "getPortHandleForRouting"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "bool", "args": [{"name": "digitalSource", "type": "wpilib._wpilib.DigitalSource"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DigitalSource", "FUNC": "isAnalogTrigger"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}}},
+    ],
+  };
+  if (subcategories) {
+    category.contents.push(...subcategories);
+  }
+  return category;
+}
+
+export {getToolboxCategory}

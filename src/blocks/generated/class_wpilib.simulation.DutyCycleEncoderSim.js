@@ -1,0 +1,31 @@
+// This file was generated. Do not edit!
+
+import * as python from "../python.js"
+
+// Blocks for class wpilib.simulation.DutyCycleEncoderSim
+
+function getToolboxCategory(subcategories) {
+  const category = {
+    kind: "category",
+    name: "DutyCycleEncoderSim",
+    contents: [
+      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Constructs from a DutyCycleEncoder object.\n\n:param encoder: DutyCycleEncoder to simulate", "returnType": "wpilib.simulation._simulation.DutyCycleEncoderSim", "args": [{"name": "encoder", "type": "wpilib._wpilib.DutyCycleEncoder"}], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoder"}}}}}}}}},
+      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Constructs from a digital input channel.\n\n:param channel: digital input channel", "returnType": "wpilib.simulation._simulation.DutyCycleEncoderSim", "args": [{"name": "channel", "type": "int"}], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim"}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Get the position in turns.\n\n:returns: The position.", "returnType": "float", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "get"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Get the absolute position.\n\n:returns: The absolute position", "returnType": "float", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "getAbsolutePosition"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "float", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "getDistance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Get the distance per rotation for this encoder.\n\n:returns: The scale factor that will be used to convert rotation to useful\n          units.", "returnType": "float", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "getDistancePerRotation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Get if the encoder is connected.\n\n:returns: true if the encoder is connected.", "returnType": "bool", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "isConnected"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the position in turns.\n\n:param turns: The position.", "returnType": "None", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}, {"name": "turns", "type": "wpimath.units.turns"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "set"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the absolute position.\n\n:param position: The absolute position", "returnType": "None", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}, {"name": "position", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "setAbsolutePosition"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set if the encoder is connected.\n\n:param isConnected: Whether or not the sensor is connected.", "returnType": "None", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}, {"name": "isConnected", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "setConnected"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
+      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the distance.\n\n:param distance: The distance.", "returnType": "None", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}, {"name": "distance", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "setDistance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
+    ],
+  };
+  if (subcategories) {
+    category.contents.push(...subcategories);
+  }
+  return category;
+}
+
+export {getToolboxCategory}
