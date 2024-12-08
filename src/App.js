@@ -1,66 +1,49 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button, Space, ConfigProvider, Modal, Select } from 'antd';
-import { 
-  DownloadOutlined, 
-  UploadOutlined, 
-  SaveOutlined, 
-  ExportOutlined,
+import {
   CopyOutlined,
-  FileOutlined 
+  DownloadOutlined,
+  FileOutlined,
+  UploadOutlined,
+  SaveOutlined,
 } from '@ant-design/icons';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import BlocklyComponent from './Blockly';
 
-const ProjectSelector = ({ isOpen, onClose }) => {
-  const [selectedProject, setSelectedProject] = useState('FTCRobot');
-  const [selectedComponent, setSelectedComponent] = useState('Autonomous 0');
+const WorkspaceSelector = ({ isOpen, onSelect, onClose }) => {
+  const [selectedWorkspaceName, setSelectedWorkspaceName] = useState('FTCRobot');
 
-  const fakeProjects = [
+  const fakeWorkspaces = [
     { label: 'FTCRobot', value: 'FTCRobot' },
-    { label: 'ClassroomA', value: 'ClassroomA' },
-    { label: 'HomeProject', value: 'HomeProject' }
-  ];
-
-  const fakeComponents = [
-    { label: 'Autonomous 0', value: 'Autonomous 0' },
-    { label: 'Autonomous 1', value: 'Autonomous 1' },
-    { label: 'TeleOp Main', value: 'TeleOp Main' },
-    { label: 'Test Component', value: 'Test Component' }
+    { label: 'ClassroomRobot', value: 'ClassroomRobot' },
+    { label: 'HomeRobot', value: 'HomeRobot' }
   ];
 
   return (
-    <Modal 
-      title="Select Project and Component" 
-      open={isOpen} 
-      
+    <Modal
+      title="Select Workspace"
+      open={isOpen}
       onCancel={onClose}
       footer={[
         <Button key="cancel" onClick={onClose}>
           Cancel
         </Button>,
-        <Button key="select" onClick={onClose}>
+        <Button key="select" onClick={() => {
+                  onSelect(selectedWorkspaceName);
+                }}>
           Select
         </Button>
       ]}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <div>
-          <div style={{ marginBottom: '8px' }}>Project</div>
+          <div style={{ marginBottom: '8px' }}>Workspace</div>
           <Select
             style={{ width: '100%' }}
-            value={selectedProject}
-            onChange={(value) => setSelectedProject(value)}
-            options={fakeProjects}
-          />
-        </div>
-        <div>
-          <div style={{ marginBottom: '8px' }}>Component</div>
-          <Select
-            style={{ width: '100%' }}
-            value={selectedComponent}
-            onChange={(value) => setSelectedComponent(value)}
-            options={fakeComponents}
+            value={selectedWorkspaceName}
+            onChange={(value) => setSelectedWorkspaceName(value)}
+            options={fakeWorkspaces}
           />
         </div>
       </div>
@@ -74,17 +57,24 @@ let llDropShadow = {
 };
 
 const App = () => {
-  const [showCode, setShowCode] = useState(false);
-  const [generatedCode, setGeneratedCode] = useState('');
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
-  const primaryWorkspace = useRef();
+  const [workspaceName, setWorkspaceName] = useState('');
+  const [showCode, setShowCode] = useState(true);
+  const [generatedCode, setGeneratedCode] = useState('');
+  const blocklyComponent = useRef();
 
-  const handleExport = () => {
-    console.log('Export clicked');
-  };
+  useEffect(() => {
+    setWorkspaceName('FTCRobot');
+  }, []);
+
+  useEffect(() => {
+    if (workspaceName) {
+      blocklyComponent.current.loadBlocks("workspace", workspaceName);
+    }
+  }, [workspaceName]);
 
   const handleSave = () => {
-    console.log('Save clicked');
+    blocklyComponent.current.saveBlocks("workspace", workspaceName);
   };
 
   const handleDownload = () => {
@@ -162,13 +152,15 @@ const App = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <span style={{ color: 'white', fontWeight: 500 }}>Blocks</span>
               <span style={{ color: 'white' }}>|</span>
-              <Button 
-                
+              <Button
                 icon={<FileOutlined />}
-                onClick={() => setIsFileMenuOpen(true)}
+                onClick={() => {
+                  // TODO(lizlooney): Check whether the blocks need to be saved!
+                  setIsFileMenuOpen(true);
+                }}
                 style={{ color: 'white' }}
               >
-                FTCRobot - Autonomous 0
+                {workspaceName}
               </Button>
             </div>
             <Space>
@@ -184,17 +176,17 @@ const App = () => {
               <Button icon={<SaveOutlined />} onClick={handleSave}  style={{ color: 'white' }}>
                 Save
               </Button>
-              <Button icon={<ExportOutlined />} onClick={handleExport}  style={{ color: 'white' }}>
-                Export As...
-              </Button>
             </Space>
           </div>
         </header>
 
         <div style={{ flexGrow: 1, display: 'flex', height: '0' }}>
           <BlocklyComponent
-            ref={primaryWorkspace}
-            onWorkspaceChange={(code) => setGeneratedCode(code)}
+            ref={blocklyComponent}
+            onWorkspaceChange={(code) => {
+              setGeneratedCode(code);
+            }}
+            type="workspace"
             style={{ flexGrow: 1 }}
           />
           {showCode && (
@@ -217,15 +209,14 @@ const App = () => {
                   justifyContent: 'space-between',
                 }}
               >
-                <h3 style={{ color: '#fff', margin: 0 }}>Code</h3>
+                <h3 style={{ color: '#fff', margin: 0 }}>Python Code</h3>
                 <Button
                   icon={<CopyOutlined />}
                   onClick={copyCodeToClipboard}
                   size="small"
-                  
                   style={{ color: 'white' }}
                 >
-                  Copy Code
+                  Copy
                 </Button>
               </div>
               <div
@@ -248,9 +239,13 @@ const App = () => {
           )}
         </div>
 
-        <ProjectSelector 
-          isOpen={isFileMenuOpen} 
-          onClose={() => setIsFileMenuOpen(false)} 
+        <WorkspaceSelector
+          isOpen={isFileMenuOpen}
+          onSelect={(w, o) => {
+            setIsFileMenuOpen(false);
+            setWorkspaceName(w);
+          }}
+          onClose={() => setIsFileMenuOpen(false)}
         />
       </div>
     </ConfigProvider>
