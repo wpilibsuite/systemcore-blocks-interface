@@ -1,19 +1,21 @@
 import React, { useEffect, useRef } from 'react';
 import * as Blockly from 'blockly/core';
-import { pythonGenerator } from 'blockly/python';
 import * as locale from 'blockly/msg/en';
 import DarkTheme from '@blockly/theme-dark';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
-
-import * as toolbox from '../editor/toolbox.js';
-
 import '../blocks/misc';   // Defines a few miscellaneous blocks like a comment block.
 import '../blocks/python'; // Defines blocks for accessing code in python (like wpilib, etc).
+
+import { extendedPythonGenerator } from '../editor/extended_python_generator.js';
+import * as toolbox from '../editor/toolbox.js';
+//import { testAllBlocksInToolbox } from '../editor/toolbox_tests.js';
+import * as editor from '../editor/editor.js';
 
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
   const workspaceRef = useRef();
+  const extendedPythonGeneratorRef = useRef();
 
   // Initialize Blockly
   useEffect(() => {
@@ -44,7 +46,7 @@ function BlocklyComponent(props) {
         drag: true,
         wheel: true
       },
-      ...props.workspaceConfiguration
+      oneBasedIndex: false,
     };
 
     // Set Blockly locale
@@ -54,19 +56,22 @@ function BlocklyComponent(props) {
     const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
     workspaceRef.current = workspace;
 
+    // Create extended python generator
+    extendedPythonGeneratorRef.current = extendedPythonGenerator;
+    // TODO(lizlooney): Figure out if we have to should reserved words for
+    // wpilib module names.
+    // extendedPythonGenerator.addReservedWords(???);
+
+    //testAllBlocksInToolbox(workspace);
+
     // Add change listener
     const onWorkspaceChange = (e) => {
       if (props.onWorkspaceChange) {
-        const code = pythonGenerator.workspaceToCode(workspace);
+        const code = extendedPythonGenerator.workspaceToCode(workspace);
         props.onWorkspaceChange(code);
       }
     };
     workspace.addChangeListener(onWorkspaceChange);
-
-    // Configure Python generator
-    // TODO(lizlooney): Figure out if we have to should reserved words for
-    // wpilib module names.
-    // pythonGenerator.addReservedWords(???);
 
     // Cleanup on unmount
     return () => {
@@ -74,7 +79,7 @@ function BlocklyComponent(props) {
         workspaceRef.current.dispose();
       }
     };
-  }, [props.workspaceConfiguration]);
+  }, []);
 
   // Handle workspace resize
   useEffect(() => {
@@ -93,51 +98,37 @@ function BlocklyComponent(props) {
   }, [blocklyDiv]);
 
   // Public methods exposed through ref
-  const getWorkspace = () => workspaceRef.current;
+  const getBlocklyWorkspace = () => workspaceRef.current;
 
   const generateCode = () => {
-    console.log("HeyLiz - generateCode");
-    if (workspaceRef.current) {
-      return pythonGenerator.workspaceToCode(workspaceRef.current);
+    if (workspaceRef.current && extendedPythonGeneratorRef.current) {
+      return extendedPythonGeneratorRef.current.workspaceToCode(workspaceRef.current);
     }
     return '';
   };
 
-  const saveWorkspace = () => {
-    // TODO(lizlooney): replace this.
+  const saveBlocks = (typeOfModule, name) => {
     if (workspaceRef.current) {
-      const xml = Blockly.Xml.workspaceToDom(workspaceRef.current);
-      return Blockly.Xml.domToText(xml);
-    }
-    return '';
-  };
-
-  const loadWorkspace = (xmlText) => {
-    // TODO(lizlooney): replace this.
-    if (workspaceRef.current) {
-      try {
-        const xml = Blockly.Xml.textToDom(xmlText);
-        Blockly.Xml.domToWorkspace(xml, workspaceRef.current);
-      } catch (e) {
-        console.error('Error loading workspace:', e);
+      if (typeOfModule == "workspace") {
+        editor.saveWorkspaceBlocks(workspaceRef.current, name);
       }
     }
   };
 
-  const clear = () => {
-    // TODO(lizlooney): replace or remove this.
+  const loadBlocks = (typeOfModule, name) => {
     if (workspaceRef.current) {
-      workspaceRef.current.clear();
+      if (typeOfModule == "workspace") {
+        editor.loadWorkspaceBlocks(workspaceRef.current, name);
+      }
     }
   };
 
   // Expose methods through ref
   React.useImperativeHandle(props.innerRef, () => ({
-    getWorkspace,
+    getBlocklyWorkspace,
     generateCode,
-    saveWorkspace,
-    loadWorkspace,
-    clear
+    saveBlocks,
+    loadBlocks,
   }));
 
   return (
