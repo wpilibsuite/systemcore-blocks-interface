@@ -65,10 +65,19 @@ function BlocklyComponent(props) {
     //testAllBlocksInToolbox(workspace);
 
     // Add change listener
-    const onWorkspaceChange = (e) => {
-      if (props.onWorkspaceChange) {
+    const onWorkspaceChange = (event) => {
+      if (event.isUiEvent) {
+        // UI events are things like scrolling, zooming, etc.
+        // No need to regenerate python code after one of these.
+        return;
+      }
+      if (workspace.isDragging()) {
+        // Don't regenerate python code mid-drag.
+        return;
+      }
+      if (props.onGeneratedCodeChanged) {
         const code = extendedPythonGenerator.workspaceToCode(workspace);
-        props.onWorkspaceChange(code);
+        props.onGeneratedCodeChanged(code);
       }
     };
     workspace.addChangeListener(onWorkspaceChange);

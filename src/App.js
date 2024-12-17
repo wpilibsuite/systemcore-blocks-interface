@@ -183,7 +183,7 @@ const App = () => {
         <div style={{ flexGrow: 1, display: 'flex', height: '0' }}>
           <BlocklyComponent
             ref={blocklyComponent}
-            onWorkspaceChange={(code) => {
+            onGeneratedCodeChanged={(code) => {
               setGeneratedCode(code);
             }}
             type="workspace"
