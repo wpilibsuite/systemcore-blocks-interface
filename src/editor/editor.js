@@ -25,6 +25,30 @@ import { extendedPythonGenerator } from './extended_python_generator.js';
 import * as storage from './client_side_storage.js'
 import * as commonStorage from './common_storage.js'
 
+function onChangeBeforeFinishedLoading(event) {
+  if (event.type == Blockly.Events.FINISHED_LOADING) {
+    const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
+    if (blocklyWorkspace) {
+      // Remove the before-finish-loading listener.
+      blocklyWorkspace.removeChangeListener(onChangeBeforeFinishedLoading);
+      // Add the after-finish-loading listener.
+      blocklyWorkspace.addChangeListener(onChangeAfterFinishedLoading);
+    }
+  }
+}
+
+function onChangeAfterFinishedLoading(event) {
+  if (event.isUiEvent) {
+    // UI events are things like scrolling, zooming, etc.
+    return;
+  }
+  const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
+  if (blocklyWorkspace && blocklyWorkspace.isDragging()) {
+    return;
+  }
+  // TODO(lizlooney): what do we need to do here?
+}
+
 function loadWorkspaceBlocks(blocklyWorkspace, workspaceName) {
   storage.fetchWorkspaceFileContent(
     workspaceName,
@@ -33,7 +57,12 @@ function loadWorkspaceBlocks(blocklyWorkspace, workspaceName) {
         alert(errorMessage);
         return;
       }
+      // Remove all of the listeners we may have added.
+      blocklyWorkspace.removeChangeListener(onChangeAfterFinishedLoading);
+      blocklyWorkspace.removeChangeListener(onChangeBeforeFinishedLoading);
       blocklyWorkspace.clear();
+      // Add the before-finish-loading listener.
+      blocklyWorkspace.addChangeListener(onChangeBeforeFinishedLoading);
       const blocksContent = commonStorage.extractBlocksContent(workspaceFileContent);
       if (blocksContent) {
         Blockly.serialization.workspaces.load(JSON.parse(blocksContent), blocklyWorkspace);
