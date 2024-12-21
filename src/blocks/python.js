@@ -37,13 +37,13 @@ const COLOR_ENUM = 180;            // cyan
 
 // Functions used in python block definitions.
 
-function getAllowedTypes(type) {
+function getAllowedTypesForSetCheck(type) {
   // For the given python type, returns an array of compatible input types.
 
   // Type Aliases
   const alias = wpilibUtils.getAlias(type);
   if (alias) {
-    return [type].concat(getAllowedTypes(alias));
+    return [type].concat(getAllowedTypesForSetCheck(alias));
   }
 
   // Builtin python types.
@@ -182,7 +182,7 @@ const GET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
     // Add input socket for self, if necessary.
     if (this.firstAttributes_.selfLabel && this.firstAttributes_.selfType) {
       this.appendValueInput('SELF')
-          .setCheck(getAllowedTypes(this.firstAttributes_.selfType))
+          .setCheck(getAllowedTypesForSetCheck(this.firstAttributes_.selfType))
           .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(this.firstAttributes_.selfLabel);
     }
@@ -397,12 +397,12 @@ const SET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
     }
     input.appendField('to');
     if (this.firstAttributes_.varType) {
-      input.setCheck(getAllowedTypes(this.firstAttributes_.varType));
+      input.setCheck(getAllowedTypesForSetCheck(this.firstAttributes_.varType));
     }
     // Add input socket for self, if necessary.
     if (this.firstAttributes_.selfLabel && this.firstAttributes_.selfType) {
       this.appendValueInput('SELF')
-          .setCheck(getAllowedTypes(this.firstAttributes_.selfType))
+          .setCheck(getAllowedTypesForSetCheck(this.firstAttributes_.selfType))
           .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(this.firstAttributes_.selfLabel);
     }
@@ -628,7 +628,7 @@ const CALL_PYTHON_FUNCTION_MUTATOR_MIXIN = {
           .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(this.firstAttributes_.args[i].name);
       if (this.firstAttributes_.args[i].type) {
-        input.setCheck(getAllowedTypes(this.firstAttributes_.args[i].type));
+        input.setCheck(getAllowedTypesForSetCheck(this.firstAttributes_.args[i].type));
       }
     }
   }

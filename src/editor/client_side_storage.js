@@ -26,16 +26,25 @@ import * as commonStorage from './common_storage.js'
 let db = false;
 
 function openDatabase(callback) {
-  const openRequest = window.indexedDB.open('systemcore-blocks-interface', 1);
+  const openRequest = window.indexedDB.open('systemcore-blocks-interface', 2);
   openRequest.onerror = function(event) {
     callback(false, 'openRequest error');
   };
   openRequest.onupgradeneeded = function(event) {
     const db1 = event.target.result;
 
-    // Create the object store for files.
-    db1.createObjectStore('files', { keyPath: 'FileName' })
-        .createIndex("name", "name", { unique: true });
+    var stores = db1.objectStoreNames;
+
+    if (!stores.contains("files")) {
+      // Create the object store for files.
+      db1.createObjectStore('files', { keyPath: 'FileName' })
+          .createIndex("name", "name", { unique: true });
+    }
+
+    if (!stores.contains("entries")) {
+      // Create an object store for key/value entries.
+      db1.createObjectStore('entries', { keyPath: 'Key' });
+    }
   };
   openRequest.onsuccess = function(event) {
     db = event.target.result;
@@ -43,7 +52,82 @@ function openDatabase(callback) {
   };
 }
 
-function listWorkspaces(callback) {
+export function saveEntry(entryKey, entryValue, callback) {
+  if (!db) {
+    openDatabase(function(success, errorReason) {
+      if (success) {
+        saveEntry(entryKey, entryValue, callback);
+      } else {
+        if (callback) {
+          callback(false, 'Save entry failed. (' + errorReason + ')');
+        }
+      }
+    });
+    return;
+  }
+  const transaction = db.transaction(['entries'], 'readwrite');
+  transaction.oncomplete = function(event) {
+    if (callback) {
+      callback(true, '');
+    }
+  };
+  const entriesObjectStore = transaction.objectStore('entries');
+  const getRequest = entriesObjectStore.get(entryKey);
+  getRequest.onerror = function(event) {
+    console.log('IndexedDB get request failed:');
+    console.log(getRequest.error);
+    if (callback) {
+      callback(false, 'Save entry failed');
+    }
+  };
+  getRequest.onsuccess = function(event) {
+    let value;
+    if (event.target.result === undefined) {
+      value = Object.create(null);
+      value['Key'] = entryKey;
+    } else {
+      value = event.target.result;
+    }
+    value['Value'] = entryValue;
+    const putRequest = entriesObjectStore.put(value);
+    putRequest.onerror = function(event) {
+      console.log('IndexedDB put request failed:');
+      console.log(putRequest.error);
+      if (callback) {
+        callback(false, 'Save entry failed');
+      }
+    };
+  };
+}
+
+export function fetchEntry(entryKey, callback) {
+  if (!db) {
+    openDatabase(function(success, errorReason) {
+      if (success) {
+        fetchEntry(entryKey, callback);
+      } else {
+        callback(null, 'Fetch entry failed. (' + errorReason + ')');
+      }
+    });
+    return;
+  }
+  const getRequest = db.transaction(['entries'], 'readonly')
+      .objectStore('entries').get(entryKey);
+  getRequest.onerror = function(event) {
+    callback(null, 'Fetch entry failed. (getRequest error)');
+  };
+  getRequest.onsuccess = function(event) {
+    if (event.target.result === undefined) {
+      // Entry does not exist.
+      callback(null, 'Entry does not exist');
+      return;
+    }
+    const value = event.target.result;
+    callback(value['Value'], '');
+  };
+}
+
+export function listWorkspaces(callback) {
   if (!db) {
     openDatabase(function(success, errorReason) {
       if (success) {
@@ -76,7 +160,7 @@ function listWorkspaces(callback) {
   };
 }
 
-function fetchWorkspaceFileContent(workspaceName, callback) {
+export function fetchWorkspaceFileContent(workspaceName, callback) {
   if (!db) {
     openDatabase(function(success, errorReason) {
       if (success) {
@@ -103,7 +187,7 @@ function fetchWorkspaceFileContent(workspaceName, callback) {
   };
 }
 
-function newWorkspace(workspaceName, callback) {
+export function newWorkspace(workspaceName, callback) {
   if (!db) {
     openDatabase(function(success, errorReason) {
       if (success) {
@@ -126,7 +210,7 @@ function newWorkspace(workspaceName, callback) {
   );
 }
 
-function saveWorkspace(workspaceName, workspaceFileContent, callback) {
+export function saveWorkspace(workspaceName, workspaceFileContent, callback) {
   if (!db) {
     openDatabase(function(success, errorReason) {
       if (success) {
@@ -169,7 +253,7 @@ function saveWorkspace(workspaceName, workspaceFileContent, callback) {
   };
 }
 
-function renameWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
+export function renameWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
   if (!db) {
     openDatabase(function(success, errorReason) {
       if (success) {
@@ -213,7 +297,7 @@ function renameWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
   };
 }
 
-function copyWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
+export function copyWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
   if (!db) {
     openDatabase(function(success, errorReason) {
       if (success) {
@@ -251,18 +335,17 @@ function copyWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
   };
 }
 
-function deleteWorkspaces(starDelimitedWorkspaceNames, callback) {
+export function deleteWorkspaces(workspaceNames, callback) {
   if (!db) {
     openDatabase(function(success, errorReason) {
       if (success) {
-        deleteWorkspaces(starDelimitedWorkspaceNames, callback);
+        deleteWorkspaces(workspaceNames, callback);
       } else {
         callback(false, 'Delete workspaces failed. (' + errorReason + ')');
       }
     });
     return;
   }
-  const workspaceNames = starDelimitedWorkspaceNames.split('*');
   const errorReasons = [];
   let successCount = 0;
 
@@ -284,7 +367,7 @@ function deleteWorkspaces(starDelimitedWorkspaceNames, callback) {
   }
 }
 
-function deleteOneWorkspace(workspaceName, callback) {
+export function deleteOneWorkspace(workspaceName, callback) {
   const workspaceFileName = workspaceName + '.py';
   const deleteRequest = db.transaction(['files'], 'readwrite')
       .objectStore('files')
@@ -295,16 +378,4 @@ function deleteOneWorkspace(workspaceName, callback) {
   deleteRequest.onsuccess = function(event) {
     callback(true, '');
   };
-}
-
-export {
-  openDatabase,
-  listWorkspaces,
-  fetchWorkspaceFileContent,
-  newWorkspace,
-  saveWorkspace,
-  renameWorkspace,
-  copyWorkspace,
-  deleteWorkspaces,
-  deleteOneWorkspace
 }

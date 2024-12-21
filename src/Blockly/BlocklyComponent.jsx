@@ -11,6 +11,7 @@ import { extendedPythonGenerator } from '../editor/extended_python_generator.js'
 import * as toolbox from '../editor/toolbox.js';
 //import { testAllBlocksInToolbox } from '../editor/toolbox_tests.js';
 import * as editor from '../editor/editor.js';
+import * as storage from '../editor/client_side_storage.js'
 
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
@@ -107,6 +108,21 @@ function BlocklyComponent(props) {
   }, [blocklyDiv]);
 
   // Public methods exposed through ref
+
+  const getCurrentWorkspaceName = (callback) => {
+    storage.fetchEntry('currentWorkspaceName', (name, error) => {
+      callback(name);
+    });
+  };
+
+  const listWorkspaces = (callback) => {
+    storage.listWorkspaces(callback);
+  };
+
+  const newWorkspace = (name, callback) => {
+    storage.newWorkspace(name, callback);
+  };
+
   const getBlocklyWorkspace = () => workspaceRef.current;
 
   const generateCode = () => {
@@ -127,6 +143,7 @@ function BlocklyComponent(props) {
   const loadBlocks = (typeOfModule, name) => {
     if (workspaceRef.current) {
       if (typeOfModule == "workspace") {
+        storage.saveEntry('currentWorkspaceName', name);
         editor.loadWorkspaceBlocks(workspaceRef.current, name);
       }
     }
@@ -134,6 +151,9 @@ function BlocklyComponent(props) {
 
   // Expose methods through ref
   React.useImperativeHandle(props.innerRef, () => ({
+    getCurrentWorkspaceName,
+    listWorkspaces,
+    newWorkspace,
     getBlocklyWorkspace,
     generateCode,
     saveBlocks,

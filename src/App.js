@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Space, ConfigProvider, Modal, Select } from 'antd';
+import { Button, ConfigProvider, Input, Modal, Select, Space } from 'antd';
 import {
   CopyOutlined,
   DownloadOutlined,
@@ -11,27 +11,106 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import BlocklyComponent from './Blockly';
 
-const WorkspaceSelector = ({ isOpen, onSelect, onClose }) => {
-  const [selectedWorkspaceName, setSelectedWorkspaceName] = useState('FTCRobot');
 
-  const fakeWorkspaces = [
-    { label: 'FTCRobot', value: 'FTCRobot' },
-    { label: 'ClassroomRobot', value: 'ClassroomRobot' },
-    { label: 'HomeRobot', value: 'HomeRobot' }
-  ];
+/**
+ * Returns true if the given name is a valid python module name.
+ */
+const isValidPythonModuleName = (name) => {
+  if (name) {
+    return /^[a-z_][a-z0-9_]*$/.test(name);
+  }
+  return false;
+};
+
+const NewWorkspace = ({ workspaces, isOpen, onOk, onClose }) => {
+  const [workspaceNames, setWorkspaceNames] = useState([]);
+  const [value, setValue] = useState('');
+
+  return (
+    <Modal
+      title="New Workspace"
+      open={isOpen}
+      afterOpenChange={(open) => {
+        if (open) {
+          const workspaceNames = [];
+          for (let i = 0; i < workspaces.length; i++) {
+            workspaceNames.push(workspaces[i].name);
+          }
+          setWorkspaceNames(workspaceNames);
+        }
+      }}
+      onCancel={onClose}
+      footer={[
+        <Button
+          key="cancel"
+          onClick={onClose}
+        >
+          Cancel
+        </Button>,
+        <Button
+          key="ok"
+          onClick={() => {
+            if (!isValidPythonModuleName(value)) {
+              alert(value + " is not a valid python module name");
+              return;
+            }
+            if (workspaceNames.includes(value)) {
+              alert("There is already a workspace named " +  value);
+              return;
+            }
+            onOk(value);
+          }}
+        >
+          OK
+        </Button>
+      ]}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div>
+          <div style={{ marginBottom: '8px' }}>Workspace Name</div>
+          <Input
+            style={{ width: '100%' }}
+            value={value}
+            onChange={(e) => setValue(e.target.value.toLowerCase())}
+          />
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+const WorkspaceSelector = ({ workspaces, workspaceName, isOpen, onSelect, onClose }) => {
+  const [workspaceItems, setWorkspaceItems] = useState([]);
+  const [selectedWorkspaceName, setSelectedWorkspaceName] = useState('');
 
   return (
     <Modal
       title="Select Workspace"
       open={isOpen}
+      afterOpenChange={(open) => {
+        if (open) {
+          const workspaceItems = [];
+          for (let i = 0; i < workspaces.length; i++) {
+            workspaceItems.push({ label: workspaces[i].name, value: workspaces[i].name });
+          }
+          setWorkspaceItems(workspaceItems);
+          setSelectedWorkspaceName(workspaceName)
+        }
+      }}
       onCancel={onClose}
       footer={[
-        <Button key="cancel" onClick={onClose}>
+        <Button
+          key="cancel"
+          onClick={onClose}
+        >
           Cancel
         </Button>,
-        <Button key="select" onClick={() => {
-                  onSelect(selectedWorkspaceName);
-                }}>
+        <Button
+          key="select"
+          onClick={() => {
+            onSelect(selectedWorkspaceName);
+          }}
+        >
           Select
         </Button>
       ]}
@@ -43,7 +122,7 @@ const WorkspaceSelector = ({ isOpen, onSelect, onClose }) => {
             style={{ width: '100%' }}
             value={selectedWorkspaceName}
             onChange={(value) => setSelectedWorkspaceName(value)}
-            options={fakeWorkspaces}
+            options={workspaceItems}
           />
         </div>
       </div>
@@ -57,14 +136,21 @@ let llDropShadow = {
 };
 
 const App = () => {
-  const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
+  const [isNewWorkspaceOpen, setIsNewWorkspaceOpen] = useState(false);
+  const [isWorkspaceSelectorOpen, setIsWorkspaceSelectorOpen] = useState(false);
+  const [workspaces, setWorkspaces] = useState([]);
   const [workspaceName, setWorkspaceName] = useState('');
   const [showCode, setShowCode] = useState(true);
   const [generatedCode, setGeneratedCode] = useState('');
   const blocklyComponent = useRef();
 
   useEffect(() => {
-    setWorkspaceName('FTCRobot');
+    blocklyComponent.current.getCurrentWorkspaceName((currentWorkspaceName) => {
+      if (currentWorkspaceName) {
+        setWorkspaceName(currentWorkspaceName);
+      }
+    });
+    listWorkspaces();
   }, []);
 
   useEffect(() => {
@@ -73,8 +159,20 @@ const App = () => {
     }
   }, [workspaceName]);
 
+  const listWorkspaces = () => {
+    blocklyComponent.current.listWorkspaces((array, error) => {
+      if (array) {
+        setWorkspaces(array)
+      } else if (error) {
+        console.log(error);
+      }
+    });
+  };
+
   const handleSave = () => {
-    blocklyComponent.current.saveBlocks("workspace", workspaceName);
+    if (workspaceName) {
+      blocklyComponent.current.saveBlocks("workspace", workspaceName);
+    }
   };
 
   const handleDownload = () => {
@@ -153,10 +251,21 @@ const App = () => {
               <span style={{ color: 'white', fontWeight: 500 }}>Blocks</span>
               <span style={{ color: 'white' }}>|</span>
               <Button
+                onClick={() => {
+                  // TODO(lizlooney): Check whether the blocks need to be saved before we open a new file.
+                  setIsNewWorkspaceOpen(true);
+                }}
+                style={{ color: 'white' }}
+              >
+                New Worksapce
+              </Button>
+              <Button
                 icon={<FileOutlined />}
                 onClick={() => {
-                  // TODO(lizlooney): Check whether the blocks need to be saved!
-                  setIsFileMenuOpen(true);
+                  // TODO(lizlooney): Check whether the blocks need to be saved before we open a new file.
+                  if (workspaces.length) {
+                    setIsWorkspaceSelectorOpen(true);
+                  }
                 }}
                 style={{ color: 'white' }}
               >
@@ -239,13 +348,31 @@ const App = () => {
           )}
         </div>
 
+        <NewWorkspace
+          isOpen={isNewWorkspaceOpen}
+          workspaces={workspaces}
+          onOk={(w) => {
+            setIsNewWorkspaceOpen(false);
+            blocklyComponent.current.newWorkspace(w, (success, error) => {
+              if (success) {
+                listWorkspaces();
+                setWorkspaceName(w);
+              } else if (error) {
+                console.log(error);
+              }
+            });
+          }}
+          onClose={() => setIsNewWorkspaceOpen(false)}
+        />
         <WorkspaceSelector
-          isOpen={isFileMenuOpen}
-          onSelect={(w, o) => {
-            setIsFileMenuOpen(false);
+          isOpen={isWorkspaceSelectorOpen}
+          workspaces={workspaces}
+          workspaceName={workspaceName}
+          onSelect={(w, o) => { // HeyLiz - try removing the o parameter here.
+            setIsWorkspaceSelectorOpen(false);
             setWorkspaceName(w);
           }}
-          onClose={() => setIsFileMenuOpen(false)}
+          onClose={() => setIsWorkspaceSelectorOpen(false)}
         />
       </div>
     </ConfigProvider>
