@@ -887,6 +887,6 @@ function getToolboxJSON() {
       },
     ]),
   };
-};
+}
 
 export {getToolboxJSON};
