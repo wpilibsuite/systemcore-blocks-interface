@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.interpolation.TimeInterpolatableFloatBuffer
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "TimeInterpolatableFloatBuffer",
@@ -22,5 +22,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -7,7 +7,7 @@ import * as python from "../python.js"
 python.PythonVariableGetterNames["class wpilib.shuffleboard.Shuffleboard str"] = ["kBaseTableName"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Shuffleboard",
@@ -32,5 +32,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

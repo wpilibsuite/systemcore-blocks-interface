@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.interpolation.TimeInterpolatableRotation3dBuffer
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "TimeInterpolatableRotation3dBuffer",
@@ -22,5 +22,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

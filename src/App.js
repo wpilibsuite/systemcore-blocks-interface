@@ -10,19 +10,14 @@ import {
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import BlocklyComponent from './Blockly';
+import * as commonStorage from './storage/common_storage.js';
 
+// TODO(lizlooney) - Make the UI for the list of Workspaces.
+// When a workspace is selected, the bottom shows the list of opmodes in that workspace.
+// The user can open the workspace or an opmode and then it opens the blockly editor.
+// If an opmode is opened, the exported blocks from the workspace are shown in the toolbox.
 
-/**
- * Returns true if the given name is a valid python module name.
- */
-const isValidPythonModuleName = (name) => {
-  if (name) {
-    return /^[a-z_][a-z0-9_]*$/.test(name);
-  }
-  return false;
-};
-
-const NewWorkspace = ({ workspaces, isOpen, onOk, onClose }) => {
+const NewWorkspace = ({ workspaces, isOpen, onOk, onCancel }) => {
   const [workspaceNames, setWorkspaceNames] = useState([]);
   const [value, setValue] = useState('');
 
@@ -39,23 +34,23 @@ const NewWorkspace = ({ workspaces, isOpen, onOk, onClose }) => {
           setWorkspaceNames(workspaceNames);
         }
       }}
-      onCancel={onClose}
+      onCancel={onCancel}
       footer={[
         <Button
           key="cancel"
-          onClick={onClose}
+          onClick={onCancel}
         >
           Cancel
         </Button>,
         <Button
           key="ok"
           onClick={() => {
-            if (!isValidPythonModuleName(value)) {
-              alert(value + " is not a valid python module name");
+            if (!commonStorage.isValidPythonModuleName(value)) {
+              alert(value + ' is not a valid python module name');
               return;
             }
             if (workspaceNames.includes(value)) {
-              alert("There is already a workspace named " +  value);
+              alert('There is already a workspace named ' +  value);
               return;
             }
             onOk(value);
@@ -79,7 +74,7 @@ const NewWorkspace = ({ workspaces, isOpen, onOk, onClose }) => {
   );
 };
 
-const WorkspaceSelector = ({ workspaces, workspaceName, isOpen, onSelect, onClose }) => {
+const WorkspaceSelector = ({ workspaces, workspaceName, isOpen, onSelectWorkspace, onCancel }) => {
   const [workspaceItems, setWorkspaceItems] = useState([]);
   const [selectedWorkspaceName, setSelectedWorkspaceName] = useState('');
 
@@ -97,18 +92,18 @@ const WorkspaceSelector = ({ workspaces, workspaceName, isOpen, onSelect, onClos
           setSelectedWorkspaceName(workspaceName)
         }
       }}
-      onCancel={onClose}
+      onCancel={onCancel}
       footer={[
         <Button
           key="cancel"
-          onClick={onClose}
+          onClick={onCancel}
         >
           Cancel
         </Button>,
         <Button
           key="select"
           onClick={() => {
-            onSelect(selectedWorkspaceName);
+            onSelectWorkspace(selectedWorkspaceName);
           }}
         >
           Select
@@ -139,25 +134,40 @@ const App = () => {
   const [isNewWorkspaceOpen, setIsNewWorkspaceOpen] = useState(false);
   const [isWorkspaceSelectorOpen, setIsWorkspaceSelectorOpen] = useState(false);
   const [workspaces, setWorkspaces] = useState([]);
+  const [moduleType, setModuleType] = useState('');
+  const [moduleFilePath, setModuleFilePath] = useState('');
   const [workspaceName, setWorkspaceName] = useState('');
+  const [moduleName, setModuleName] = useState('');
   const [showCode, setShowCode] = useState(true);
   const [generatedCode, setGeneratedCode] = useState('');
   const blocklyComponent = useRef();
 
   useEffect(() => {
-    blocklyComponent.current.getCurrentWorkspaceName((currentWorkspaceName) => {
-      if (currentWorkspaceName) {
-        setWorkspaceName(currentWorkspaceName);
+    blocklyComponent.current.getCurrentModuleType((currentModuleType) => {
+      if (currentModuleType) {
+        setModuleType(currentModuleType);
+      }
+    });
+    blocklyComponent.current.getCurrentModuleFilePath((currentModuleFilePath) => {
+      if (currentModuleFilePath) {
+        setModuleFilePath(currentModuleFilePath);
       }
     });
     listWorkspaces();
   }, []);
 
   useEffect(() => {
-    if (workspaceName) {
-      blocklyComponent.current.loadBlocks("workspace", workspaceName);
+    if (moduleFilePath) {
+      setWorkspaceName(commonStorage.getWorkspaceName(moduleFilePath));
+      setModuleName(commonStorage.getModuleName(moduleFilePath));
     }
-  }, [workspaceName]);
+  }, [moduleFilePath]);
+
+  useEffect(() => {
+    if (moduleType && moduleFilePath) {
+      blocklyComponent.current.loadBlocks(moduleType, moduleFilePath);
+    }
+  }, [moduleType, moduleFilePath]);
 
   const listWorkspaces = () => {
     blocklyComponent.current.listWorkspaces((array, error) => {
@@ -170,8 +180,8 @@ const App = () => {
   };
 
   const handleSave = () => {
-    if (workspaceName) {
-      blocklyComponent.current.saveBlocks("workspace", workspaceName);
+    if (moduleType && moduleFilePath) {
+      blocklyComponent.current.saveBlocks(moduleType, moduleFilePath);
     }
   };
 
@@ -269,21 +279,21 @@ const App = () => {
                 }}
                 style={{ color: 'white' }}
               >
-                {workspaceName}
+                {workspaceName}/{moduleName}
+              </Button>
+              <Button icon={<SaveOutlined />} onClick={handleSave}  style={{ color: 'white' }}>
+                Save
               </Button>
             </div>
             <Space>
-              <Button onClick={toggleCodeWindow}  style={{ color: 'white' }}>
-                {showCode ? 'Hide Python Code' : 'Show Python Code'}
-              </Button>
               <Button icon={<UploadOutlined />} onClick={handleUpload}  style={{ color: 'white' }}>
                 Upload
               </Button>
               <Button icon={<DownloadOutlined />} onClick={handleDownload}  style={{ color: 'white' }}>
                 Download
               </Button>
-              <Button icon={<SaveOutlined />} onClick={handleSave}  style={{ color: 'white' }}>
-                Save
+              <Button onClick={toggleCodeWindow}  style={{ color: 'white' }}>
+                {showCode ? 'Hide Python Code' : 'Show Python Code'}
               </Button>
             </Space>
           </div>
@@ -356,23 +366,29 @@ const App = () => {
             blocklyComponent.current.newWorkspace(w, (success, error) => {
               if (success) {
                 listWorkspaces();
-                setWorkspaceName(w);
+                setModuleType('');
+                setModuleFilePath('');
+                setModuleType(commonStorage.MODULE_TYPE_WORKSPACE);
+                setModuleFilePath(commonStorage.makeModuleFilePath(w, w));
               } else if (error) {
                 console.log(error);
               }
             });
           }}
-          onClose={() => setIsNewWorkspaceOpen(false)}
+          onCancel={() => setIsNewWorkspaceOpen(false)}
         />
         <WorkspaceSelector
           isOpen={isWorkspaceSelectorOpen}
           workspaces={workspaces}
           workspaceName={workspaceName}
-          onSelect={(w, o) => { // HeyLiz - try removing the o parameter here.
+          onSelectWorkspace={(w) => {
             setIsWorkspaceSelectorOpen(false);
-            setWorkspaceName(w);
+            setModuleType('');
+            setModuleFilePath('');
+            setModuleType(commonStorage.MODULE_TYPE_WORKSPACE);
+            setModuleFilePath(commonStorage.makeModuleFilePath(w, w));
           }}
-          onClose={() => setIsWorkspaceSelectorOpen(false)}
+          onCancel={() => setIsWorkspaceSelectorOpen(false)}
         />
       </div>
     </ConfigProvider>

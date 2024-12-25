@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.shuffleboard.ShuffleboardLayout
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ShuffleboardLayout",
@@ -71,5 +71,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

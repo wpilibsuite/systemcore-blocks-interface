@@ -12,7 +12,7 @@ python.PythonVariableGetterNames["instance wpimath.trajectory.ExponentialProfile
 python.PythonVariableGetterTooltips["instance wpimath.trajectory.ExponentialProfileMeterVolts.Constraints wpimath.units.volts"] = ["Maximum unsigned input voltage."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Constraints",
@@ -30,5 +30,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

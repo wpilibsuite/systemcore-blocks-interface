@@ -7,7 +7,7 @@ import * as python from "../python.js"
 python.PythonVariableGetterNames["class wpilib.PS4Controller.Axis int"] = ["kL2", "kLeftX", "kLeftY", "kR2", "kRightX", "kRightY"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Axis",
@@ -26,5 +26,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

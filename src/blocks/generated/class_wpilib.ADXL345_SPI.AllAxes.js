@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpilib.ADXL345_SPI.AllAxes float"] = 
 python.PythonVariableSetterTooltips["instance wpilib.ADXL345_SPI.AllAxes float"] = ["Acceleration along the X axis in g-forces.", "Acceleration along the Y axis in g-forces.", "Acceleration along the Z axis in g-forces."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "AllAxes",
@@ -29,5 +29,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

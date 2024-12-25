@@ -12,7 +12,7 @@ python.PythonVariableSetterNames["instance hal.SimLong int"] = ["value"];
 python.PythonVariableSetterTooltips["instance hal.SimLong int"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SimLong",
@@ -31,5 +31,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

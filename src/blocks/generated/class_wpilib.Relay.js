@@ -10,7 +10,7 @@ python.PythonEnumValues["wpilib.Relay.Value"] = ["kForward", "kOff", "kOn", "kRe
 python.PythonEnumTooltips["wpilib.Relay.Value"] = "The state to drive a Relay to.\n\nMembers:\n\n  kOff : Off.\n\n  kOn : On.\n\n  kForward : Forward.\n\n  kReverse : Reverse.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Relay",
@@ -44,5 +44,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

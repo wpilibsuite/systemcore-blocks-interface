@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpilib.AddressableLED.LEDData int"] =
 python.PythonVariableSetterTooltips["instance wpilib.AddressableLED.LEDData int"] = ["///< blue value", "///< green value", "///< red value"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "LEDData",
@@ -34,5 +34,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

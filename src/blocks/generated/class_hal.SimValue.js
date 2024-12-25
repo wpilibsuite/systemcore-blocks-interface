@@ -10,7 +10,7 @@ python.PythonVariableGetterNames["instance hal.SimValue object"] = ["value"];
 python.PythonVariableGetterTooltips["instance hal.SimValue object"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SimValue",
@@ -25,5 +25,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

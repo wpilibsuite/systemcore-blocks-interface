@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.PWMTalonSRX
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "PWMTalonSRX",
@@ -37,5 +37,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

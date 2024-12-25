@@ -12,7 +12,7 @@ python.PythonVariableSetterNames["instance hal.CANStreamMessage int"] = ["dataSi
 python.PythonVariableSetterTooltips["instance hal.CANStreamMessage int"] = ["", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "CANStreamMessage",
@@ -32,5 +32,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -8,7 +8,7 @@ python.PythonVariableGetterNames["class wpilib.simulation.DifferentialDrivetrain
 python.PythonVariableSetterNames["class wpilib.simulation.DifferentialDrivetrainSim.KitbotMotor wpimath.system.plant.DCMotor"] = ["DualCIMPerSide", "DualFalcon500PerSide", "DualMiniCIMPerSide", "DualNEOPerSide", "SingleCIMPerSide", "SingleFalcon500PerSide", "SingleMiniCIMPerSide", "SingleNEOPerSide"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "KitbotMotor",
@@ -37,5 +37,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

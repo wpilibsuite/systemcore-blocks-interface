@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.spline.SplineParameterizer
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SplineParameterizer",
@@ -18,5 +18,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

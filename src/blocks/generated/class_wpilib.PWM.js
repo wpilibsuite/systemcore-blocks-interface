@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.PWM.PeriodMultiplier"] = ["kPeriodMultiplier_1X"
 python.PythonEnumTooltips["wpilib.PWM.PeriodMultiplier"] = "Represents the amount to multiply the minimum servo-pulse pwm period by.\n\nMembers:\n\n  kPeriodMultiplier_1X : Don't skip pulses. PWM pulses occur every 5.05 ms\n\n  kPeriodMultiplier_2X : Skip every other pulse. PWM pulses occur every 10.10 ms\n\n  kPeriodMultiplier_4X : Skip three out of four pulses. PWM pulses occur every 20.20 ms";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "PWM",
@@ -39,5 +39,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -10,7 +10,7 @@ python.PythonEnumValues["wpilib.ADXL345_SPI.Range"] = ["kRange_16G", "kRange_2G"
 python.PythonEnumTooltips["wpilib.ADXL345_SPI.Range"] = "Accelerometer range.\n\nMembers:\n\n  kRange_2G : 2 Gs max.\n\n  kRange_4G : 4 Gs max.\n\n  kRange_8G : 8 Gs max.\n\n  kRange_16G : 16 Gs max.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ADXL345_SPI",
@@ -38,5 +38,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -22,8 +22,8 @@
 import * as Blockly from 'blockly/core';
 
 import { extendedPythonGenerator } from './extended_python_generator.js';
-import * as storage from './client_side_storage.js'
-import * as commonStorage from './common_storage.js'
+import * as storage from '../storage/client_side_storage.js'
+import * as commonStorage from '../storage/common_storage.js'
 
 function onChangeBeforeFinishedLoading(event) {
   if (event.type == Blockly.Events.FINISHED_LOADING) {
@@ -31,10 +31,24 @@ function onChangeBeforeFinishedLoading(event) {
     if (blocklyWorkspace) {
       // Remove the before-finish-loading listener.
       blocklyWorkspace.removeChangeListener(onChangeBeforeFinishedLoading);
+
       // Add the after-finish-loading listener.
       blocklyWorkspace.addChangeListener(onChangeAfterFinishedLoading);
     }
   }
+  // TODO(lizlooney): Look at blocks where block.firstAttributes_?.exportedVariable == true:
+  // Look at block.firstAttributes_.importModule and get the exported blocks for that module.
+  // Check whether block.firstAttributes_.actualVariableName matches any exportedBlock's
+  // extraState.actualVariableName. If there is no match, put a warning on the block.
+
+  // TODO(lizlooney): Look at blocks where block.firstAttributes_?.exportedFunction == true:
+  // Look at block.firstAttributes_.importModule and get the exported blocks for that module.
+  // Check whether block.firstAttributes_.actualFunctionName matches any exportedBlock's
+  // extraState.actualFunctionName. If there is no match, put a warning on the block.
+  // If there is a match, check whether
+  // block.firstAttributes.args.length == exportedBlock.extraState.args.length and
+  // block.firstAttributes.args[i].name == exportedBlock.extraState.args[i].name for all args.
+  // If there is any differences, put a warning on the block.
 }
 
 function onChangeAfterFinishedLoading(event) {
@@ -46,13 +60,13 @@ function onChangeAfterFinishedLoading(event) {
   if (blocklyWorkspace && blocklyWorkspace.isDragging()) {
     return;
   }
-  // TODO(lizlooney): what do we need to do here?
+  // TODO(lizlooney): do we need to do anything here?
 }
 
-function loadWorkspaceBlocks(blocklyWorkspace, workspaceName) {
-  storage.fetchWorkspaceFileContent(
-    workspaceName,
-    function(workspaceFileContent, errorMessage) {
+export function loadModuleBlocks(blocklyWorkspace, moduleFilePath) {
+  storage.fetchModuleFileContent(
+    moduleFilePath,
+    function(moduleFileContent, errorMessage) {
       if (errorMessage) {
         alert(errorMessage);
         return;
@@ -63,7 +77,7 @@ function loadWorkspaceBlocks(blocklyWorkspace, workspaceName) {
       blocklyWorkspace.clear();
       // Add the before-finish-loading listener.
       blocklyWorkspace.addChangeListener(onChangeBeforeFinishedLoading);
-      const blocksContent = commonStorage.extractBlocksContent(workspaceFileContent);
+      const blocksContent = commonStorage.extractBlocksContent(moduleFileContent);
       if (blocksContent) {
         Blockly.serialization.workspaces.load(JSON.parse(blocksContent), blocklyWorkspace);
       }
@@ -71,13 +85,14 @@ function loadWorkspaceBlocks(blocklyWorkspace, workspaceName) {
   );
 }
 
-function saveWorkspaceBlocks(blocklyWorkspace, workspaceName) {
-  const [pythonCode, blocksForExports] = generatePythonCodeAndBlocksForExports(blocklyWorkspace);
-  const blocksContent = getCurrentBlocksContent(blocklyWorkspace);
-  const workspaceFileContent = commonStorage.makeFileContent(pythonCode, blocksForExports, blocksContent);
+export function saveModuleBlocks(blocklyWorkspace, moduleType, moduleFilePath) {
+  const pythonCode = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
+  const blocksForExports = JSON.stringify(extendedPythonGenerator.getBlocksForExports(blocklyWorkspace));
+  const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(blocklyWorkspace));
+  const moduleFileContent = commonStorage.makeFileContent(pythonCode, blocksForExports, blocksContent);
 
-  storage.saveWorkspace(
-    workspaceName, workspaceFileContent,
+  storage.saveModule(
+    moduleType, moduleFilePath, moduleFileContent,
     function(success, errorMessage) {
       if (errorMessage) {
         alert(errorMessage);
@@ -86,119 +101,4 @@ function saveWorkspaceBlocks(blocklyWorkspace, workspaceName) {
       // TODO(lizlooney): Indicate that the file was saved successfully.
     }
   );
-}
-
-function generatePythonCodeAndBlocksForExports(blocklyWorkspace) {
-  const pythonCode = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
-
-  const blocksForExports = [];
-
-  // The exported blocks produced here have the extraState.importModule and fields.MODULE values set
-  // to %module_name%. This will need to be replaced with the actual module name (which is the
-  // workspace name) before they are added to the toolbox.
-  const moduleName = '%module_name%';
-
-  // All functions are exported.
-  const allProcedures = Blockly.Procedures.allProcedures(blocklyWorkspace);
-  const procedureTuples = allProcedures[0].concat(allProcedures[1]);
-  for (let i = 0; i < procedureTuples.length; i++) {
-    const procedureTuple = procedureTuples[i];
-    const functionName = procedureTuple[0];
-    const blockDefinition = Blockly.Procedures.getDefinition(functionName, blocklyWorkspace);
-    if (!blockDefinition.isEnabled()) {
-      continue;
-    }
-    const actualFunctionName = extendedPythonGenerator.getActualProcedureName(functionName);
-    const hasReturnValue = procedureTuple[2];
-    const callFunctionBlock = {
-      'kind': 'block',
-      'type': 'call_python_module_function',
-      'extraState': {
-        'returnType': hasReturnValue ? '' : 'None',
-        'args': [],
-        'importModule': moduleName,
-        'actualFunctionName': actualFunctionName,
-      },
-      'fields': {
-        'MODULE': moduleName,
-        'FUNC': functionName,
-      },
-    };
-    const parameterNames = procedureTuple[1];
-    for (let iParam = 0; iParam < parameterNames.length; iParam++) {
-      callFunctionBlock['extraState']['args'].push({
-        'name': parameterNames[iParam],
-        'type': '',
-      })
-    }
-    blocksForExports.push(callFunctionBlock);
-  }
-
-  // Only variables that are used outside of functions are exported. (I'm not sure if this is the
-  // right choice, since all variables in blockly are global variables.)
-  const allVariables = blocklyWorkspace.getAllVariables();
-  for (let i = 0; i < allVariables.length; i++) {
-    const variableModel = allVariables[i];
-
-    let exported = false;
-    const variableUsesById = blocklyWorkspace.getVariableUsesById(variableModel.getId())
-    if (variableUsesById.length == 0) {
-      continue;
-    }
-    for (let iBlock = 0; iBlock < variableUsesById.length; iBlock++) {
-      const block = variableUsesById[iBlock];
-      if (block.type == 'variables_get' ||
-          block.type == 'variables_set' ||
-          block.type == 'math_change' ||
-          block.type == 'text_append') {
-        const rootBlock = block.getRootBlock();
-        if (rootBlock.type != 'procedures_defnoreturn' &&
-            rootBlock.type != 'procedures_defreturn') {
-          exported = true;
-        }
-      }
-    }
-    if (exported) {
-      const variableName = variableModel.name;
-      const actualVariableName = extendedPythonGenerator.getActualVariableName(variableName);
-
-      const getPythonModuleVariableBlock = {
-        'kind': 'block',
-        'type': 'get_python_module_variable',
-        'extraState': {
-          'importModule': moduleName,
-          'actualVariableName': actualVariableName,
-        },
-        'fields': {
-          'MODULE': moduleName,
-          'VAR': variableName,
-        },
-      };
-      blocksForExports.push(getPythonModuleVariableBlock);
-      const setPythonModuleVariableBlock = {
-        'kind': 'block',
-        'type': 'set_python_module_variable',
-        'extraState': {
-          'importModule': moduleName,
-          'actualVariableName': actualVariableName,
-        },
-        'fields': {
-          'MODULE': moduleName,
-          'VAR': variableName,
-        },
-      };
-      blocksForExports.push(setPythonModuleVariableBlock);
-    }
-  }
-
-  return JSON.stringify(blocksForExports);
-}
-
-function getCurrentBlocksContent(blocklyWorkspace) {
-  return JSON.stringify(Blockly.serialization.workspaces.save(blocklyWorkspace));
-}
-
-export {
-  loadWorkspaceBlocks,
-  saveWorkspaceBlocks
 }

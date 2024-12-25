@@ -7,7 +7,7 @@ import * as python from "../python.js"
 python.PythonVariableGetterNames["class wpilib.StadiaController.Button int"] = ["kA", "kB", "kEllipses", "kFrame", "kGoogle", "kHamburger", "kLeftBumper", "kLeftStick", "kLeftTrigger", "kRightBumper", "kRightStick", "kRightTrigger", "kStadia", "kX", "kY"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Button",
@@ -35,5 +35,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

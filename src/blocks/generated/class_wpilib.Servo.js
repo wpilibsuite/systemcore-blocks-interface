@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.Servo
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Servo",
@@ -39,5 +39,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

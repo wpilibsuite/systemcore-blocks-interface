@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.PneumaticsControlModule
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "PneumaticsControlModule",
@@ -53,5 +53,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

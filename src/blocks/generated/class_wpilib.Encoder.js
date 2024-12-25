@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.Encoder.IndexingType"] = ["kResetOnFallingEdge",
 python.PythonEnumTooltips["wpilib.Encoder.IndexingType"] = "Encoder indexing types.\n\nMembers:\n\n  kResetWhileHigh : Reset while the signal is high.\n\n  kResetWhileLow : Reset while the signal is low.\n\n  kResetOnFallingEdge : Reset on falling edge of the signal.\n\n  kResetOnRisingEdge : Reset on rising edge of the signal.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Encoder",
@@ -47,5 +47,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

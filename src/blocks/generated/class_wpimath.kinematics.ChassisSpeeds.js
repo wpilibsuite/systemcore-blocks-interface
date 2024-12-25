@@ -22,7 +22,7 @@ python.PythonVariableSetterNames["instance wpimath.kinematics.ChassisSpeeds wpim
 python.PythonVariableSetterTooltips["instance wpimath.kinematics.ChassisSpeeds wpimath.units.feet_per_second"] = ["", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ChassisSpeeds",
@@ -54,5 +54,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

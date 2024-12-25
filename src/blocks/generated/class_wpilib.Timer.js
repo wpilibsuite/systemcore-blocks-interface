@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.Timer
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Timer",
@@ -26,5 +26,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

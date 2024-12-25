@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpilib.PneumaticHub.Version int"] = [
 python.PythonVariableSetterTooltips["instance wpilib.PneumaticHub.Version int"] = ["", "", "", "", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Version",
@@ -35,5 +35,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

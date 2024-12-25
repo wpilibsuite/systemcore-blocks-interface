@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.trajectory.constraint.TrajectoryConstraint
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "TrajectoryConstraint",
@@ -19,5 +19,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

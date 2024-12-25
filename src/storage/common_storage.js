@@ -21,10 +21,81 @@
 
 // Functions related to files, regardless of where the files are stored.
 
+export const MODULE_TYPE_WORKSPACE = 'workspace';
+export const MODULE_TYPE_OPMODE = 'opmode';
+
+/**
+ * Returns true if the given name is a valid python module name.
+ */
+export function isValidPythonModuleName(name) {
+  if (name) {
+    return /^[a-z_][a-z0-9_]*$/.test(name);
+  }
+  return false;
+}
+
+/**
+ * Returns the module file path for the given workspace and module names.
+ */
+export function makeModuleFilePath(workspaceName, moduleName) {
+  return workspaceName + '/' + moduleName + '.py';
+}
+
+/**
+ * Returns the workspace name for given module file path.
+ */
+export function getWorkspaceName(moduleFilePath) {
+  const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
+  const result = regex.exec(moduleFilePath)
+  if (!result) {
+    throw 'Unable to extract the workspace name.';
+  }
+  return result[1];
+}
+
+/**
+ * Returns the module name for given module file path.
+ */
+export function getModuleName(moduleFilePath) {
+  const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
+  const result = regex.exec(moduleFilePath)
+  if (!result) {
+    throw 'Unable to extract the module name.';
+  }
+  return result[2];
+}
+
+/**
+ * Returns the download file name for the given module file path.
+ */
+export function makeDownloadFileName(moduleFilePath) {
+  return getWorkspaceName(moduleFilePath) + '-' + getModuleName(moduleFilePath) + '.wpilib_blocks';
+}
+
+export function makeUploadWorkspaceName(uploadFileName) {
+  // Check if the name is <workspace name>-<workspace name>.
+  const regex = new RegExp('^([a-z_][a-z0-9_]*)-([a-z_][a-z0-9_]*).wpilib_blocks$');
+  const result = regex.exec(uploadFileName);
+  if (!result || result[1] != result[2]) {
+    throw uploadFileName + ' is not a valid file name for uploading as a workspace';
+  }
+  return result[2];
+}
+
+/**
+ * Returns the file content for a new module.
+ */
+export function newModuleFileContent() {
+  const pythonCode = '\n';
+  const blocksForExports = '[]';
+  const blocksContent = '{}';
+  return makeFileContent(pythonCode, blocksForExports, blocksContent);
+}
+
 /**
  * Make the file content from the given python code and blocks content.
  */
-function makeFileContent(pythonCode, blocksForExports, blocksContent) {
+export function makeFileContent(pythonCode, blocksForExports, blocksContent) {
   let delimiter = 'BlocksContent';
   while (blocksContent.includes(delimiter) || blocksForExports.includes(delimiter)) {
     delimiter += '.';
@@ -44,7 +115,7 @@ function makeFileContent(pythonCode, blocksForExports, blocksContent) {
 /**
  * Extract the blocks content from the given file content.
  */
-function extractBlocksContent(fileContent) {
+export function extractBlocksContent(fileContent) {
   // The last line is """.
   const lastChars = '\n"""\n';
   if (!fileContent.endsWith(lastChars) || fileContent.length <= lastChars.length) {
@@ -72,7 +143,7 @@ function extractBlocksContent(fileContent) {
 /**
  * Extract the blocksForExports from the given file content.
  */
-function extractBlocksForExports(fileContent) {
+export function extractBlocksForExports(fileContent) {
   // The last line is """.
   const lastChars = '\n"""\n';
   if (!fileContent.endsWith(lastChars) || fileContent.length <= lastChars.length) {
@@ -100,10 +171,4 @@ function extractBlocksForExports(fileContent) {
   // The blocksForExports content is between the two delimiters.
   const iStartOfBlocksForExports = iStartOfPreviousDelimiter + delimiter.length + 1;
   return fileContent.substring(iStartOfBlocksForExports, iEndOfBlocksForExports);
-}
-
-export {
-  makeFileContent,
-  extractBlocksContent,
-  extractBlocksForExports,
 }

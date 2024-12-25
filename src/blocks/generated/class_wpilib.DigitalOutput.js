@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.DigitalOutput
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DigitalOutput",
@@ -32,5 +32,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

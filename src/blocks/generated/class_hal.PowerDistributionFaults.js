@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance hal.PowerDistributionFaults int"] = [
 python.PythonVariableSetterTooltips["instance hal.PowerDistributionFaults int"] = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "PowerDistributionFaults",
@@ -77,5 +77,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

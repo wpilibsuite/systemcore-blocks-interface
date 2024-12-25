@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpilib.PneumaticHub.Faults int"] = ["
 python.PythonVariableSetterTooltips["instance wpilib.PneumaticHub.Faults int"] = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Faults",
@@ -68,5 +68,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance hal.REVPHFaults int"] = ["brownout", 
 python.PythonVariableSetterTooltips["instance hal.REVPHFaults int"] = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "REVPHFaults",
@@ -67,5 +67,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

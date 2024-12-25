@@ -12,7 +12,7 @@ python.PythonVariableGetterNames["instance wpimath.controller.ArmFeedforward wpi
 python.PythonVariableGetterTooltips["instance wpimath.controller.ArmFeedforward wpimath.units.volt_seconds_per_radian"] = ["The velocity gain, in volt seconds per radian."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ArmFeedforward",
@@ -34,5 +34,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

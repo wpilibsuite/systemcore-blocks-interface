@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpimath.kinematics.SwerveDrive2WheelP
 python.PythonVariableSetterTooltips["instance wpimath.kinematics.SwerveDrive2WheelPositions Tuple[wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition]"] = ["The distances driven by the wheels."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SwerveDrive2WheelPositions",
@@ -26,5 +26,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.counter.Tachometer
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Tachometer",
@@ -30,5 +30,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

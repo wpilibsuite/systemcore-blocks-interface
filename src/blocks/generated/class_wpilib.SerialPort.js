@@ -16,7 +16,7 @@ python.PythonEnumValues["wpilib.SerialPort.WriteBufferMode"] = ["kFlushOnAccess"
 python.PythonEnumTooltips["wpilib.SerialPort.WriteBufferMode"] = "Represents which type of buffer mode to use when writing to a serial port.\n\nMembers:\n\n  kFlushOnAccess : Flush the buffer on each access.\n\n  kFlushWhenFull : Flush the buffer when it is full.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SerialPort",
@@ -61,5 +61,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

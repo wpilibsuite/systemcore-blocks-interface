@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.shuffleboard._SuppliedValueWidget_float
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "_SuppliedValueWidget_float",
@@ -30,5 +30,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

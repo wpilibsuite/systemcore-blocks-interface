@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpimath.spline.Spline5.ControlVector 
 python.PythonVariableSetterTooltips["instance wpimath.spline.Spline5.ControlVector Tuple[float, float, float]"] = ["The x components of the control vector.", "The y components of the control vector."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ControlVector",
@@ -27,5 +27,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

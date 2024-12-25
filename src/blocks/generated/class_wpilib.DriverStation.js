@@ -11,7 +11,7 @@ python.PythonEnumValues["wpilib.DriverStation.MatchType"] = ["kElimination", "kN
 python.PythonEnumTooltips["wpilib.DriverStation.MatchType"] = "The type of robot match that the robot is part of.\n\nMembers:\n\n  kNone : None.\n\n  kPractice : Practice.\n\n  kQualification : Qualification.\n\n  kElimination : Elimination.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DriverStation",
@@ -72,5 +72,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

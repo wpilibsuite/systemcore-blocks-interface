@@ -8,7 +8,7 @@ python.PythonEnumValues["hal.simulation.AnalogTriggerMode"] = ["HALSIM_AnalogTri
 python.PythonEnumTooltips["hal.simulation.AnalogTriggerMode"] = "Members:\n\n  HALSIM_AnalogTriggerUnassigned\n\n  HALSIM_AnalogTriggerFiltered\n\n  HALSIM_AnalogTriggerDutyCycle\n\n  HALSIM_AnalogTriggerAveraged";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "simulation",
@@ -452,5 +452,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

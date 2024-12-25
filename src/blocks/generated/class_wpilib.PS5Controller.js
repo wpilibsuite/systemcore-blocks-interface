@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.PS5Controller
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "PS5Controller",
@@ -109,5 +109,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

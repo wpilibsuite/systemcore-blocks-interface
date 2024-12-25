@@ -20,7 +20,7 @@ python.PythonVariableGetterNames["instance wpimath.system.plant.DCMotor wpimath.
 python.PythonVariableGetterTooltips["instance wpimath.system.plant.DCMotor wpimath.units.newton_meters"] = ["Torque when stalled."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DCMotor",
@@ -62,5 +62,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -12,7 +12,7 @@ python.PythonVariableGetterNames["instance hal.JoystickDescriptor memoryview"] =
 python.PythonVariableGetterTooltips["instance hal.JoystickDescriptor memoryview"] = ["", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "JoystickDescriptor",
@@ -37,5 +37,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

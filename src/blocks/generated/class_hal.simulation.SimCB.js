@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class hal.simulation.SimCB
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SimCB",
@@ -17,5 +17,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

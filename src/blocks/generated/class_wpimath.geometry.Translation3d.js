@@ -10,7 +10,7 @@ python.PythonVariableGetterNames["instance wpimath.geometry.Translation3d wpimat
 python.PythonVariableGetterTooltips["instance wpimath.geometry.Translation3d wpimath.units.feet"] = ["", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Translation3d",
@@ -43,5 +43,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

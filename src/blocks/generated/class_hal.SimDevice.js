@@ -10,7 +10,7 @@ python.PythonEnumValues["hal.SimDevice.Direction"] = ["kBidir", "kInput", "kOutp
 python.PythonEnumTooltips["hal.SimDevice.Direction"] = "Direction of a simulated value (from the perspective of user code).\n\nMembers:\n\n  kInput\n\n  kOutput\n\n  kBidir";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SimDevice",
@@ -36,5 +36,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

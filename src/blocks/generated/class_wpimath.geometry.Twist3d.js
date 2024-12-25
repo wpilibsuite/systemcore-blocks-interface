@@ -22,7 +22,7 @@ python.PythonVariableSetterNames["instance wpimath.geometry.Twist3d wpimath.unit
 python.PythonVariableSetterTooltips["instance wpimath.geometry.Twist3d wpimath.units.degrees"] = ["", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Twist3d",
@@ -60,5 +60,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

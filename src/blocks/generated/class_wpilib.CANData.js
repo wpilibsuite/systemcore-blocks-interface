@@ -12,7 +12,7 @@ python.PythonVariableSetterNames["instance wpilib.CANData int"] = ["length", "ti
 python.PythonVariableSetterTooltips["instance wpilib.CANData int"] = ["Length of packet in bytes.", "CAN frame timestamp in milliseconds."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "CANData",
@@ -30,5 +30,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

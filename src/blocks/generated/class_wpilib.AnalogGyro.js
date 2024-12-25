@@ -8,7 +8,7 @@ python.PythonVariableGetterNames["class wpilib.AnalogGyro int"] = ["kAverageBits
 python.PythonVariableGetterNames["class wpilib.AnalogGyro float"] = ["kCalibrationSampleTime", "kDefaultVoltsPerDegreePerSecond", "kSamplesPerSecond"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "AnalogGyro",
@@ -41,5 +41,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

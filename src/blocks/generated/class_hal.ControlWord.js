@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance hal.ControlWord int"] = ["autonomous"
 python.PythonVariableSetterTooltips["instance hal.ControlWord int"] = ["", "", "", "", "", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ControlWord",
@@ -37,5 +37,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

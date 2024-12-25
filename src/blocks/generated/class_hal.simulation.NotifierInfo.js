@@ -12,7 +12,7 @@ python.PythonVariableGetterNames["instance hal.simulation.NotifierInfo memoryvie
 python.PythonVariableGetterTooltips["instance hal.simulation.NotifierInfo memoryview"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "NotifierInfo",
@@ -32,5 +32,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

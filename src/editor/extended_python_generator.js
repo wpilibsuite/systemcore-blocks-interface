@@ -29,33 +29,109 @@ class ExtendedPythonGenerator extends PythonGenerator {
   constructor() {
     super('Python');
   }
-  init(workspace) {
-    super.init(workspace);
+  getBlocksForExports(workspace) {
+    const blocksForExports = [];
 
-    this.exportedProcedureMap = {};
+    // The exported blocks produced here have the extraState.importModule and fields.MODULE values
+    // set to %module_name%. These will need to be replaced with the actual module name before they
+    // are added to the toolbox.
+    const moduleNamePlaceholder = '%module_name%';
+
+    // All functions are exported.
     const allProcedures = Blockly.Procedures.allProcedures(workspace);
     const procedureTuples = allProcedures[0].concat(allProcedures[1]);
     for (let i = 0; i < procedureTuples.length; i++) {
-    const procedureTuple = procedureTuples[i];
-      const procedureName = procedureTuple[0];
-      this.exportedProcedureMap[procedureName] = super.getProcedureName(procedureName);
+      const procedureTuple = procedureTuples[i];
+      const functionName = procedureTuple[0];
+      const blockDefinition = Blockly.Procedures.getDefinition(functionName, workspace);
+      if (!blockDefinition.isEnabled()) {
+        continue;
+      }
+      const actualFunctionName = super.getProcedureName(functionName);
+      const hasReturnValue = procedureTuple[2];
+      const callFunctionBlock = {
+        'kind': 'block',
+        'type': 'call_python_module_function',
+        'extraState': {
+          'returnType': hasReturnValue ? '' : 'None',
+          'args': [],
+          'importModule': moduleNamePlaceholder,
+          'actualFunctionName': actualFunctionName,
+          'exportedFunction': true,
+        },
+        'fields': {
+          'MODULE': moduleNamePlaceholder,
+          'FUNC': functionName,
+        },
+      };
+      const parameterNames = procedureTuple[1];
+      for (let iParam = 0; iParam < parameterNames.length; iParam++) {
+        callFunctionBlock['extraState']['args'].push({
+          'name': parameterNames[iParam],
+          'type': '',
+        })
+      }
+      blocksForExports.push(callFunctionBlock);
     }
 
-    this.exportedVariableMap = {};
-    const variables = Blockly.Variables.allUsedVarModels(workspace);
-    for (let i = 0; i < variables.length; i++) {
-      const variableName = variables[i].name;
-      this.exportedVariableMap[variableName] = super.getVariableName(variables[i].getId());
+    const allVariables = workspace.getAllVariables();
+    for (let i = 0; i < allVariables.length; i++) {
+      const variableModel = allVariables[i];
+
+      // Only variables that are used outside of functions are exported. (I'm not sure if this is
+      // the right choice, since all variables in blockly are global variables.)
+      let exported = false;
+      const variableUsesById = workspace.getVariableUsesById(variableModel.getId())
+      if (variableUsesById.length == 0) {
+        continue;
+      }
+      for (let iBlock = 0; iBlock < variableUsesById.length; iBlock++) {
+        const block = variableUsesById[iBlock];
+        if (block.type == 'variables_get' ||
+            block.type == 'variables_set' ||
+            block.type == 'math_change' ||
+            block.type == 'text_append') {
+          const rootBlock = block.getRootBlock();
+          if (rootBlock.type != 'procedures_defnoreturn' &&
+              rootBlock.type != 'procedures_defreturn') {
+            exported = true;
+          }
+        }
+      }
+      if (exported) {
+        const variableName = variableModel.name;
+        const actualVariableName = super.getVariableName(variableModel.getId());
+        const getPythonModuleVariableBlock = {
+          'kind': 'block',
+          'type': 'get_python_module_variable',
+          'extraState': {
+            'importModule': moduleNamePlaceholder,
+            'actualVariableName': actualVariableName,
+            'exportedVariable': true,
+          },
+          'fields': {
+            'MODULE': moduleNamePlaceholder,
+            'VAR': variableName,
+          },
+        };
+        blocksForExports.push(getPythonModuleVariableBlock);
+        const setPythonModuleVariableBlock = {
+          'kind': 'block',
+          'type': 'set_python_module_variable',
+          'extraState': {
+            'importModule': moduleNamePlaceholder,
+            'actualVariableName': actualVariableName,
+            'exportedVariable': true,
+          },
+          'fields': {
+            'MODULE': moduleNamePlaceholder,
+            'VAR': variableName,
+          },
+        };
+        blocksForExports.push(setPythonModuleVariableBlock);
+      }
     }
-  }
-  finish(code) {
-    return super.finish(code);
-  }
-  getActualProcedureName(name) {
-    return this.exportedProcedureMap[name];
-  }
-  getActualVariableName(name) {
-    return this.exportedVariableMap[name];
+    return blocksForExports;
   }
 }
 

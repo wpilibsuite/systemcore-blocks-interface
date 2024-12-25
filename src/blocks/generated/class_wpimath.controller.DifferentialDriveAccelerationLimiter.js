@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.controller.DifferentialDriveAccelerationLimiter
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DifferentialDriveAccelerationLimiter",
@@ -19,5 +19,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

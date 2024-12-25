@@ -12,7 +12,7 @@ python.PythonEnumValues["wpilib.shuffleboard.ShuffleboardEventImportance"] = ["k
 python.PythonEnumTooltips["wpilib.shuffleboard.ShuffleboardEventImportance"] = "Members:\n\n  kTrivial\n\n  kLow\n\n  kNormal\n\n  kHigh\n\n  kCritical";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "shuffleboard",
@@ -57,5 +57,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

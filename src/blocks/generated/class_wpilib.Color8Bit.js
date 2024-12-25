@@ -8,7 +8,7 @@ python.PythonVariableGetterNames["instance wpilib.Color8Bit int"] = ["blue", "gr
 python.PythonVariableGetterTooltips["instance wpilib.Color8Bit int"] = ["Blue component (0-255).", "Green component (0-255).", "Red component (0-255)."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Color8Bit",
@@ -30,5 +30,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

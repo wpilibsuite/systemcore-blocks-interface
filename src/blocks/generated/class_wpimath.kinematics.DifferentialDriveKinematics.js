@@ -8,7 +8,7 @@ python.PythonVariableGetterNames["instance wpimath.kinematics.DifferentialDriveK
 python.PythonVariableGetterTooltips["instance wpimath.kinematics.DifferentialDriveKinematics wpimath.units.meters"] = ["Differential drive trackwidth."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DifferentialDriveKinematics",
@@ -26,5 +26,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

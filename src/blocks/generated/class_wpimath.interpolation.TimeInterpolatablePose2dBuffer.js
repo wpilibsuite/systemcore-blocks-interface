@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.interpolation.TimeInterpolatablePose2dBuffer
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "TimeInterpolatablePose2dBuffer",
@@ -22,5 +22,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

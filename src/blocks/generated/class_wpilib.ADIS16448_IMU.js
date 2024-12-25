@@ -10,7 +10,7 @@ python.PythonEnumValues["wpilib.ADIS16448_IMU.IMUAxis"] = ["kX", "kY", "kZ"];
 python.PythonEnumTooltips["wpilib.ADIS16448_IMU.IMUAxis"] = "IMU axes.\n\nMembers:\n\n  kX : The IMU's X axis.\n\n  kY : The IMU's Y axis.\n\n  kZ : The IMU's Z axis.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ADIS16448_IMU",
@@ -68,5 +68,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

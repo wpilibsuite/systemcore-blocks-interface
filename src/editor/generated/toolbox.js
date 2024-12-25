@@ -400,17 +400,17 @@ import * as wpimath_trajectory_ExponentialProfileMeterVolts_Constraints from '..
 import * as wpimath_trajectory_ExponentialProfileMeterVolts_ProfileTiming from '../../blocks/generated/class_wpimath.trajectory.ExponentialProfileMeterVolts.ProfileTiming.js';
 import * as wpimath_trajectory_ExponentialProfileMeterVolts_State from '../../blocks/generated/class_wpimath.trajectory.ExponentialProfileMeterVolts.State.js';
 import * as wpimath_trajectory_Trajectory from '../../blocks/generated/class_wpimath.trajectory.Trajectory.js';
+import * as wpimath_trajectory_Trajectory_State from '../../blocks/generated/class_wpimath.trajectory.Trajectory.State.js';
 import * as wpimath_trajectory_TrajectoryConfig from '../../blocks/generated/class_wpimath.trajectory.TrajectoryConfig.js';
 import * as wpimath_trajectory_TrajectoryGenerator from '../../blocks/generated/class_wpimath.trajectory.TrajectoryGenerator.js';
 import * as wpimath_trajectory_TrajectoryParameterizer from '../../blocks/generated/class_wpimath.trajectory.TrajectoryParameterizer.js';
 import * as wpimath_trajectory_TrajectoryUtil from '../../blocks/generated/class_wpimath.trajectory.TrajectoryUtil.js';
-import * as wpimath_trajectory_Trajectory_State from '../../blocks/generated/class_wpimath.trajectory.Trajectory.State.js';
 import * as wpimath_trajectory_TrapezoidProfile from '../../blocks/generated/class_wpimath.trajectory.TrapezoidProfile.js';
+import * as wpimath_trajectory_TrapezoidProfile_Constraints from '../../blocks/generated/class_wpimath.trajectory.TrapezoidProfile.Constraints.js';
+import * as wpimath_trajectory_TrapezoidProfile_State from '../../blocks/generated/class_wpimath.trajectory.TrapezoidProfile.State.js';
 import * as wpimath_trajectory_TrapezoidProfileRadians from '../../blocks/generated/class_wpimath.trajectory.TrapezoidProfileRadians.js';
 import * as wpimath_trajectory_TrapezoidProfileRadians_Constraints from '../../blocks/generated/class_wpimath.trajectory.TrapezoidProfileRadians.Constraints.js';
 import * as wpimath_trajectory_TrapezoidProfileRadians_State from '../../blocks/generated/class_wpimath.trajectory.TrapezoidProfileRadians.State.js';
-import * as wpimath_trajectory_TrapezoidProfile_Constraints from '../../blocks/generated/class_wpimath.trajectory.TrapezoidProfile.Constraints.js';
-import * as wpimath_trajectory_TrapezoidProfile_State from '../../blocks/generated/class_wpimath.trajectory.TrapezoidProfile.State.js';
 import * as wpimath_trajectory_constraint_CentripetalAccelerationConstraint from '../../blocks/generated/class_wpimath.trajectory.constraint.CentripetalAccelerationConstraint.js';
 import * as wpimath_trajectory_constraint_DifferentialDriveKinematicsConstraint from '../../blocks/generated/class_wpimath.trajectory.constraint.DifferentialDriveKinematicsConstraint.js';
 import * as wpimath_trajectory_constraint_DifferentialDriveVoltageConstraint from '../../blocks/generated/class_wpimath.trajectory.constraint.DifferentialDriveVoltageConstraint.js';
@@ -426,7 +426,7 @@ import * as wpimath_trajectory_constraint_TrajectoryConstraint from '../../block
 import * as wpimath_trajectory_constraint_TrajectoryConstraint_MinMax from '../../blocks/generated/class_wpimath.trajectory.constraint.TrajectoryConstraint.MinMax.js';
 import * as wpimath_units from '../../blocks/generated/module_wpimath.units.js';
 
-function getToolboxCategories() {
+export function getToolboxCategories() {
   return [
     hal.getToolboxCategory([
       hal_AddressableLEDData.getToolboxCategory([]),
@@ -917,5 +917,3 @@ function getToolboxCategories() {
     ]),
   ];
 }
-
-export {getToolboxCategories}

@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance hal.PowerDistributionVersion int"] = 
 python.PythonVariableSetterTooltips["instance hal.PowerDistributionVersion int"] = ["Firmware fix version number.", "Firmware major version number.", "Firmware minor version number.", "Hardware major version number.", "Hardware minor version number.", "Unique ID."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "PowerDistributionVersion",
@@ -35,5 +35,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -10,7 +10,7 @@ python.PythonEnumValues["wpilib.SPI.Port"] = ["kMXP", "kOnboardCS0", "kOnboardCS
 python.PythonEnumTooltips["wpilib.SPI.Port"] = "SPI port.\n\nMembers:\n\n  kOnboardCS0 : Onboard SPI bus port CS0.\n\n  kOnboardCS1 : Onboard SPI bus port CS1.\n\n  kOnboardCS2 : Onboard SPI bus port CS2.\n\n  kOnboardCS3 : Onboard SPI bus port CS3.\n\n  kMXP : MXP (roboRIO MXP) SPI bus port.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SPI",
@@ -63,5 +63,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

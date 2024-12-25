@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.interfaces.Accelerometer.Range"] = ["kRange_16G"
 python.PythonEnumTooltips["wpilib.interfaces.Accelerometer.Range"] = "Accelerometer range.\n\nMembers:\n\n  kRange_2G : 2 Gs max.\n\n  kRange_4G : 4 Gs max.\n\n  kRange_8G : 8 Gs max.\n\n  kRange_16G : 16 Gs max.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Accelerometer",
@@ -29,5 +29,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

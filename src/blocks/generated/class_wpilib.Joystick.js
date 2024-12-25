@@ -11,7 +11,7 @@ python.PythonEnumValues["wpilib.Joystick.ButtonType"] = ["kTopButton", "kTrigger
 python.PythonEnumTooltips["wpilib.Joystick.ButtonType"] = "Represents a digital button on a joystick.\n\nMembers:\n\n  kTriggerButton : kTrigger.\n\n  kTopButton : kTop.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Joystick",
@@ -92,5 +92,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

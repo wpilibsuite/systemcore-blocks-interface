@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.sysid.SysIdRoutineLog
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SysIdRoutineLog",
@@ -20,5 +20,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.DutyCycleEncoder
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DutyCycleEncoder",
@@ -34,5 +34,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -12,7 +12,7 @@ python.PythonVariableGetterNames["instance wpimath.controller.SimpleMotorFeedfor
 python.PythonVariableGetterTooltips["instance wpimath.controller.SimpleMotorFeedforwardRadians wpimath.units.volt_seconds_per_radian"] = ["The velocity gain."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SimpleMotorFeedforwardRadians",
@@ -34,5 +34,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

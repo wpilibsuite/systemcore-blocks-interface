@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance hal.REVPHVersion int"] = ["firmwareFi
 python.PythonVariableSetterTooltips["instance hal.REVPHVersion int"] = ["", "", "", "", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "REVPHVersion",
@@ -35,5 +35,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpimath.kinematics.MecanumDriveWheelP
 python.PythonVariableSetterTooltips["instance wpimath.kinematics.MecanumDriveWheelPositions wpimath.units.meters"] = ["Distance driven by the front-left wheel.", "Distance driven by the front-right wheel.", "Distance driven by the rear-left wheel.", "Distance driven by the rear-right wheel."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "MecanumDriveWheelPositions",
@@ -32,5 +32,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

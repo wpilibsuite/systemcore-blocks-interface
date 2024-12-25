@@ -12,7 +12,7 @@ python.PythonVariableGetterNames["instance wpimath.controller.ElevatorFeedforwar
 python.PythonVariableGetterTooltips["instance wpimath.controller.ElevatorFeedforward wpimath.units.volt_seconds_per_meter"] = ["The velocity gain."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ElevatorFeedforward",
@@ -35,5 +35,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -12,7 +12,7 @@ python.PythonVariableSetterNames["instance hal.JoystickAxes int"] = ["count"];
 python.PythonVariableSetterTooltips["instance hal.JoystickAxes int"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "JoystickAxes",
@@ -29,5 +29,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

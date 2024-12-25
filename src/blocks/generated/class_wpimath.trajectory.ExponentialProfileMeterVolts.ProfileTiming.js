@@ -8,7 +8,7 @@ python.PythonVariableGetterNames["instance wpimath.trajectory.ExponentialProfile
 python.PythonVariableGetterTooltips["instance wpimath.trajectory.ExponentialProfileMeterVolts.ProfileTiming wpimath.units.seconds"] = ["Profile inflection time.", "Total profile time."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ProfileTiming",
@@ -24,5 +24,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

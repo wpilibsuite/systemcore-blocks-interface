@@ -18,7 +18,7 @@ python.PythonVariableSetterNames["instance wpimath.kinematics.SwerveModulePositi
 python.PythonVariableSetterTooltips["instance wpimath.kinematics.SwerveModulePosition wpimath.units.feet"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SwerveModulePosition",
@@ -38,5 +38,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

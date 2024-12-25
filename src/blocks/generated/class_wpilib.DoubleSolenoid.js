@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.DoubleSolenoid.Value"] = ["kForward", "kOff", "k
 python.PythonEnumTooltips["wpilib.DoubleSolenoid.Value"] = "Possible values for a DoubleSolenoid.\n\nMembers:\n\n  kOff : Off position.\n\n  kForward : Forward position.\n\n  kReverse : Reverse position.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DoubleSolenoid",
@@ -33,5 +33,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}
