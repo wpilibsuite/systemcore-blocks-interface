@@ -24,6 +24,8 @@
 export const MODULE_TYPE_WORKSPACE = 'workspace';
 export const MODULE_TYPE_OPMODE = 'opmode';
 
+export const MODULE_NAME_PLACEHOLDER = '%module_name%';
+
 /**
  * Returns true if the given name is a valid python module name.
  */
@@ -87,17 +89,17 @@ export function makeUploadWorkspaceName(uploadFileName) {
  */
 export function newModuleFileContent() {
   const pythonCode = '\n';
-  const blocksForExports = '[]';
+  const exportedBlocks = '[]';
   const blocksContent = '{}';
-  return makeFileContent(pythonCode, blocksForExports, blocksContent);
+  return makeFileContent(pythonCode, exportedBlocks, blocksContent);
 }
 
 /**
  * Make the file content from the given python code and blocks content.
  */
-export function makeFileContent(pythonCode, blocksForExports, blocksContent) {
+export function makeFileContent(pythonCode, exportedBlocks, blocksContent) {
   let delimiter = 'BlocksContent';
-  while (blocksContent.includes(delimiter) || blocksForExports.includes(delimiter)) {
+  while (blocksContent.includes(delimiter) || exportedBlocks.includes(delimiter)) {
     delimiter += '.';
   }
   return (
@@ -105,7 +107,7 @@ export function makeFileContent(pythonCode, blocksForExports, blocksContent) {
       pythonCode + '\n\n\n' +
       '"""\n' +
       delimiter + '\n' +
-      blocksForExports + '\n' +
+      exportedBlocks + '\n' +
       delimiter + '\n' +
       blocksContent + '\n' +
       delimiter + '\n' +
@@ -141,34 +143,45 @@ export function extractBlocksContent(fileContent) {
 }
 
 /**
- * Extract the blocksForExports from the given file content.
+ * Extract the exportedBlocks from the given file content.
  */
-export function extractBlocksForExports(fileContent) {
+export function extractExportedBlocks(moduleName, fileContent) {
   // The last line is """.
   const lastChars = '\n"""\n';
   if (!fileContent.endsWith(lastChars) || fileContent.length <= lastChars.length) {
-    throw new Error('Unable to extract the blocksForExports.');
+    throw new Error('Unable to extract the exportedBlocks.');
   }
   // The line before that is the delimiter.
   const iEndOfDelimiter = fileContent.length - lastChars.length;
   const iPreviousNewLine = fileContent.lastIndexOf('\n', iEndOfDelimiter - 1);
   if (iPreviousNewLine === -1) {
-    throw new Error('Unable to extract the blocksForExports.');
+    throw new Error('Unable to extract the exportedBlocks.');
   }
   const iStartOfDelimiter = iPreviousNewLine + 1;
   const delimiter = fileContent.substring(iStartOfDelimiter, iEndOfDelimiter);
   // Now, find the previous delimiter.
   let iStartOfPreviousDelimiter = fileContent.lastIndexOf(delimiter, iPreviousNewLine - 1);
   if (iStartOfPreviousDelimiter === -1) {
-    throw new Error('Unable to extract the blocksForExports.');
+    throw new Error('Unable to extract the exportedBlocks.');
   }
-  const iEndOfBlocksForExports = iStartOfPreviousDelimiter - 1;
+  const iEndOfExportedBlocks = iStartOfPreviousDelimiter - 1;
   // Now, find the previous delimiter before that.
   iStartOfPreviousDelimiter = fileContent.lastIndexOf(delimiter, iStartOfPreviousDelimiter - 1);
   if (iStartOfPreviousDelimiter === -1) {
-    throw new Error('Unable to extract the blocksForExports.');
+    throw new Error('Unable to extract the exportedBlocks.');
   }
-  // The blocksForExports content is between the two delimiters.
-  const iStartOfBlocksForExports = iStartOfPreviousDelimiter + delimiter.length + 1;
-  return fileContent.substring(iStartOfBlocksForExports, iEndOfBlocksForExports);
+  // The exportedBlocks content is between the two delimiters.
+  const iStartOfExportedBlocks = iStartOfPreviousDelimiter + delimiter.length + 1;
+  const exportedBlocksContent = fileContent.substring(iStartOfExportedBlocks, iEndOfExportedBlocks);
+  const exportedBlocks = JSON.parse(exportedBlocksContent);
+  for (let i = 0; i < exportedBlocks.length; i++) {
+    const block = exportedBlocks[i];
+    if (block.extraState?.importModule === MODULE_NAME_PLACEHOLDER) {
+      block.extraState.importModule = moduleName;
+    }
+    if (block.fields?.MODULE === MODULE_NAME_PLACEHOLDER) {
+      block.fields.MODULE = moduleName;
+    }
+  }
+  return exportedBlocks;
 }

@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python.js"
+import * as python from "../python.js";
 
 // Blocks for class wpimath.geometry.Transform3d
 

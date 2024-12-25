@@ -11,8 +11,8 @@ import { extendedPythonGenerator } from '../editor/extended_python_generator.js'
 import * as toolbox from '../editor/toolbox.js';
 //import { testAllBlocksInToolbox } from '../editor/toolbox_tests.js';
 import * as editor from '../editor/editor.js';
-import * as storage from '../storage/client_side_storage.js'
-import * as commonStorage from '../storage/common_storage.js'
+import * as storage from '../storage/client_side_storage.js';
+import * as commonStorage from '../storage/common_storage.js';
 
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
