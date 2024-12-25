@@ -1,7 +1,5 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python.js"
-
 // Blocks for class wpimath.estimator.KalmanFilter_1_1_1
 
 export function getToolboxCategory(subcategories) {

@@ -26,7 +26,7 @@ import * as storage from '../storage/client_side_storage.js'
 import * as commonStorage from '../storage/common_storage.js'
 
 function onChangeBeforeFinishedLoading(event) {
-  if (event.type == Blockly.Events.FINISHED_LOADING) {
+  if (event.type === Blockly.Events.FINISHED_LOADING) {
     const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
     if (blocklyWorkspace) {
       // Remove the before-finish-loading listener.
@@ -36,18 +36,18 @@ function onChangeBeforeFinishedLoading(event) {
       blocklyWorkspace.addChangeListener(onChangeAfterFinishedLoading);
     }
   }
-  // TODO(lizlooney): Look at blocks where block.firstAttributes_?.exportedVariable == true:
+  // TODO(lizlooney): Look at blocks where block.firstAttributes_?.exportedVariable === true:
   // Look at block.firstAttributes_.importModule and get the exported blocks for that module.
   // Check whether block.firstAttributes_.actualVariableName matches any exportedBlock's
   // extraState.actualVariableName. If there is no match, put a warning on the block.
 
-  // TODO(lizlooney): Look at blocks where block.firstAttributes_?.exportedFunction == true:
+  // TODO(lizlooney): Look at blocks where block.firstAttributes_?.exportedFunction === true:
   // Look at block.firstAttributes_.importModule and get the exported blocks for that module.
   // Check whether block.firstAttributes_.actualFunctionName matches any exportedBlock's
   // extraState.actualFunctionName. If there is no match, put a warning on the block.
   // If there is a match, check whether
-  // block.firstAttributes.args.length == exportedBlock.extraState.args.length and
-  // block.firstAttributes.args[i].name == exportedBlock.extraState.args[i].name for all args.
+  // block.firstAttributes.args.length === exportedBlock.extraState.args.length and
+  // block.firstAttributes.args[i].name === exportedBlock.extraState.args[i].name for all args.
   // If there is any differences, put a warning on the block.
 }
 

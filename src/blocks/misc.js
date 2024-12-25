@@ -67,7 +67,7 @@ Blockly.Blocks["misc_minmax"] = {
     this.setTooltip(function() {
       const key = thisBlock.getFieldValue("FUNC");
       for (let i = 0; i < TOOLTIPS.length; i++) {
-        if (TOOLTIPS[i][0] == key) {
+        if (TOOLTIPS[i][0] === key) {
           return TOOLTIPS[i][1];
         }
       }
@@ -131,7 +131,7 @@ const MISC_SETANDGETVARIABLE_MIXIN = {
    * @this Blockly.Block
    */
   customContextMenu: function(options) {
-    if (!this.isInFlyout && this.type == "misc_setAndGetVariable") {
+    if (!this.isInFlyout && this.type === "misc_setAndGetVariable") {
       const name = this.getField("VAR").getText();
       const typeToText = {
         "variables_get": Blockly.Msg["VARIABLES_SET_CREATE_GET"].replace("%1", name),
