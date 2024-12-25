@@ -1,7 +1,5 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python.js"
-
 // Blocks for class wpimath.spline.Spline3
 
 export function getToolboxCategory(subcategories) {

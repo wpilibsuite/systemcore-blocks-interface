@@ -62,13 +62,13 @@ function getAllowedTypesForSetCheck(type) {
 
 function getCheckForBuiltInType(type) {
   // If type is a built-in python type, return the blockly check for it.
-  if (type == 'bool') {
+  if (type === 'bool') {
     return 'Boolean';
   }
-  if (type == 'str') {
+  if (type === 'str') {
     return 'String';
   }
-  if (type == 'float' || type == 'int') {
+  if (type === 'float' || type === 'int') {
     return 'Number';
   }
   if (type.startsWith('tuple[') && type.endsWith(']')) {
@@ -86,7 +86,7 @@ function getCheckForBuiltInType(type) {
 
 function getOutputCheck(type) {
   // For the given python type, returns the output type.
-  if (type == 'None') {
+  if (type === 'None') {
     return '';
   }
 
@@ -222,7 +222,7 @@ Blockly.Blocks['get_python_module_variable'] = {
       if (varTooltips) {
         const varNames = PythonVariableGetterNames[thisBlock.firstAttributes_.key];
         for (let i = 0; i < varNames.length; i++) {
-          if (varNames[i] == varName) {
+          if (varNames[i] === varName) {
             const varTooltip = varTooltips[i];
             if (varTooltip) {
               tooltip += '\n\n' + varTooltip;
@@ -267,7 +267,7 @@ Blockly.Blocks['get_python_class_variable'] = {
       if (varTooltips) {
         const varNames = PythonVariableGetterNames[thisBlock.firstAttributes_.key];
         for (let i = 0; i < varNames.length; i++) {
-          if (varNames[i] == varName) {
+          if (varNames[i] === varName) {
             const varTooltip = varTooltips[i];
             if (varTooltip) {
               tooltip += '\n\n' + varTooltip;
@@ -312,7 +312,7 @@ Blockly.Blocks['get_python_instance_variable'] = {
       if (varTooltips) {
         const varNames = PythonVariableGetterNames[thisBlock.firstAttributes_.key];
         for (let i = 0; i < varNames.length; i++) {
-          if (varNames[i] == varName) {
+          if (varNames[i] === varName) {
             const varTooltip = varTooltips[i];
             if (varTooltip) {
               tooltip += '\n\n' + varTooltip;
@@ -441,7 +441,7 @@ Blockly.Blocks['set_python_module_variable'] = {
       if (varTooltips) {
         const varNames = PythonVariableSetterNames[thisBlock.firstAttributes_.key];
         for (let i = 0; i < varNames.length; i++) {
-          if (varNames[i] == varName) {
+          if (varNames[i] === varName) {
             const varTooltip = varTooltips[i];
             if (varTooltip) {
               tooltip += '\n\n' + varTooltip;
@@ -487,7 +487,7 @@ Blockly.Blocks['set_python_class_variable'] = {
       if (varTooltips) {
         const varNames = PythonVariableSetterNames[thisBlock.firstAttributes_.key];
         for (let i = 0; i < varNames.length; i++) {
-          if (varNames[i] == varName) {
+          if (varNames[i] === varName) {
             const varTooltip = varTooltips[i];
             if (varTooltip) {
               tooltip += '\n\n' + varTooltip;
@@ -533,7 +533,7 @@ Blockly.Blocks['set_python_instance_variable'] = {
       if (varTooltips) {
         const varNames = PythonVariableSetterNames[thisBlock.firstAttributes_.key];
         for (let i = 0; i < varNames.length; i++) {
-          if (varNames[i] == varName) {
+          if (varNames[i] === varName) {
             const varTooltip = varTooltips[i];
             if (varTooltip) {
               tooltip += '\n\n' + varTooltip;
@@ -622,7 +622,7 @@ const CALL_PYTHON_FUNCTION_MUTATOR_MIXIN = {
     this.updateBlock_();
   },
   updateBlock_: function() {
-    if (this.firstAttributes_.returnType != 'None') {
+    if (this.firstAttributes_.returnType !== 'None') {
       // Set the output plug.
       this.setPreviousStatement(false, null);
       this.setNextStatement(false, null);
@@ -678,7 +678,7 @@ Blockly.Blocks['call_python_module_function'] = {
 
 function generateCodeForArguments(block, generator, startIndex) {
   let code = '';
-  if (block.firstAttributes_.args.length - startIndex == 1) {
+  if (block.firstAttributes_.args.length - startIndex === 1) {
     code += generator.valueToCode(block, 'ARG' + startIndex, generator.ORDER_NONE) || 'None';
   }
   else {

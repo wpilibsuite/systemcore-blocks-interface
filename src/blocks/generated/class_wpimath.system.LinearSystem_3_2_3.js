@@ -1,7 +1,5 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python.js"
-
 // Blocks for class wpimath.system.LinearSystem_3_2_3
 
 export function getToolboxCategory(subcategories) {

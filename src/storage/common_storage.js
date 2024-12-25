@@ -48,7 +48,7 @@ export function getWorkspaceName(moduleFilePath) {
   const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
   const result = regex.exec(moduleFilePath)
   if (!result) {
-    throw 'Unable to extract the workspace name.';
+    throw new Error('Unable to extract the workspace name.');
   }
   return result[1];
 }
@@ -60,7 +60,7 @@ export function getModuleName(moduleFilePath) {
   const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
   const result = regex.exec(moduleFilePath)
   if (!result) {
-    throw 'Unable to extract the module name.';
+    throw new Error('Unable to extract the module name.');
   }
   return result[2];
 }
@@ -76,8 +76,8 @@ export function makeUploadWorkspaceName(uploadFileName) {
   // Check if the name is <workspace name>-<workspace name>.
   const regex = new RegExp('^([a-z_][a-z0-9_]*)-([a-z_][a-z0-9_]*).wpilib_blocks$');
   const result = regex.exec(uploadFileName);
-  if (!result || result[1] != result[2]) {
-    throw uploadFileName + ' is not a valid file name for uploading as a workspace';
+  if (!result || result[1] !== result[2]) {
+    throw new Error(uploadFileName + ' is not a valid file name for uploading as a workspace');
   }
   return result[2];
 }
@@ -119,21 +119,21 @@ export function extractBlocksContent(fileContent) {
   // The last line is """.
   const lastChars = '\n"""\n';
   if (!fileContent.endsWith(lastChars) || fileContent.length <= lastChars.length) {
-    throw 'Unable to extract the blocks content.';
+    throw new Error('Unable to extract the blocks content.');
   }
   // The line before that is the delimiter.
   const iEndOfDelimiter = fileContent.length - lastChars.length;
   const iPreviousNewLine = fileContent.lastIndexOf('\n', iEndOfDelimiter - 1);
-  if (iPreviousNewLine == -1) {
-    throw 'Unable to extract the blocks content.';
+  if (iPreviousNewLine === -1) {
+    throw new Error('Unable to extract the blocks content.');
   }
   const iEndOfBlocksContent = iPreviousNewLine;
   const iStartOfDelimiter = iPreviousNewLine + 1;
   const delimiter = fileContent.substring(iStartOfDelimiter, iEndOfDelimiter);
   // Now, find the previous delimiter.
   const iStartOfPreviousDelimiter = fileContent.lastIndexOf(delimiter, iPreviousNewLine - 1);
-  if (iStartOfPreviousDelimiter == -1) {
-    throw 'Unable to extract the blocks content.';
+  if (iStartOfPreviousDelimiter === -1) {
+    throw new Error('Unable to extract the blocks content.');
   }
   // The blocks content is between the two delimiters.
   const iStartOfBlocksContent = iStartOfPreviousDelimiter + delimiter.length + 1;
@@ -147,26 +147,26 @@ export function extractBlocksForExports(fileContent) {
   // The last line is """.
   const lastChars = '\n"""\n';
   if (!fileContent.endsWith(lastChars) || fileContent.length <= lastChars.length) {
-    throw 'Unable to extract the blocksForExports.';
+    throw new Error('Unable to extract the blocksForExports.');
   }
   // The line before that is the delimiter.
   const iEndOfDelimiter = fileContent.length - lastChars.length;
   const iPreviousNewLine = fileContent.lastIndexOf('\n', iEndOfDelimiter - 1);
-  if (iPreviousNewLine == -1) {
-    throw 'Unable to extract the blocksForExports.';
+  if (iPreviousNewLine === -1) {
+    throw new Error('Unable to extract the blocksForExports.');
   }
   const iStartOfDelimiter = iPreviousNewLine + 1;
   const delimiter = fileContent.substring(iStartOfDelimiter, iEndOfDelimiter);
   // Now, find the previous delimiter.
   let iStartOfPreviousDelimiter = fileContent.lastIndexOf(delimiter, iPreviousNewLine - 1);
-  if (iStartOfPreviousDelimiter == -1) {
-    throw 'Unable to extract the blocksForExports.';
+  if (iStartOfPreviousDelimiter === -1) {
+    throw new Error('Unable to extract the blocksForExports.');
   }
   const iEndOfBlocksForExports = iStartOfPreviousDelimiter - 1;
   // Now, find the previous delimiter before that.
   iStartOfPreviousDelimiter = fileContent.lastIndexOf(delimiter, iStartOfPreviousDelimiter - 1);
-  if (iStartOfPreviousDelimiter == -1) {
-    throw 'Unable to extract the blocksForExports.';
+  if (iStartOfPreviousDelimiter === -1) {
+    throw new Error('Unable to extract the blocksForExports.');
   }
   // The blocksForExports content is between the two delimiters.
   const iStartOfBlocksForExports = iStartOfPreviousDelimiter + delimiter.length + 1;

@@ -82,18 +82,18 @@ class ExtendedPythonGenerator extends PythonGenerator {
       // the right choice, since all variables in blockly are global variables.)
       let exported = false;
       const variableUsesById = workspace.getVariableUsesById(variableModel.getId())
-      if (variableUsesById.length == 0) {
+      if (variableUsesById.length === 0) {
         continue;
       }
       for (let iBlock = 0; iBlock < variableUsesById.length; iBlock++) {
         const block = variableUsesById[iBlock];
-        if (block.type == 'variables_get' ||
-            block.type == 'variables_set' ||
-            block.type == 'math_change' ||
-            block.type == 'text_append') {
+        if (block.type === 'variables_get' ||
+            block.type === 'variables_set' ||
+            block.type === 'math_change' ||
+            block.type === 'text_append') {
           const rootBlock = block.getRootBlock();
-          if (rootBlock.type != 'procedures_defnoreturn' &&
-              rootBlock.type != 'procedures_defreturn') {
+          if (rootBlock.type !== 'procedures_defnoreturn' &&
+              rootBlock.type !== 'procedures_defreturn') {
             exported = true;
           }
         }
@@ -138,7 +138,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
 function createExtendedPythonGenerator() {
   const extendedPythonGenerator = new ExtendedPythonGenerator();
 
-  extendedPythonGenerator.forBlock = new Object();
+  extendedPythonGenerator.forBlock = {};
   for (const property in pythonGenerator.forBlock) {
     extendedPythonGenerator.forBlock[property] = pythonGenerator.forBlock[property];
   }

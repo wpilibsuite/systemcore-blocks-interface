@@ -1,7 +1,5 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python.js"
-
 // Blocks for class wpilib.shuffleboard._SuppliedValueComponent_vector_raw
 
 export function getToolboxCategory(subcategories) {

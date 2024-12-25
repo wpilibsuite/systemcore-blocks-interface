@@ -156,7 +156,7 @@ export function listWorkspaces(callback) {
     if (cursor) {
       const value = cursor.value;
       const filePath = value['filePath']
-      if (value['type'] == commonStorage.MODULE_TYPE_WORKSPACE) {
+      if (value['type'] === commonStorage.MODULE_TYPE_WORKSPACE) {
         workspaces.push({
           name: commonStorage.getModuleName(filePath),
           dateModifiedMillis: value['dateModifiedMillis']
@@ -348,23 +348,23 @@ export function deleteWorkspaces(workspaceNames, callback) {
     return;
   }
   const errorReasons = [];
-  let successCount = 0;
-
-  for (let i = 0; i < workspaceNames.length; i++) {
-    deleteOneWorkspace(workspaceNames[i], function(success, errorReason) {
-      if (success) {
-        successCount++;
+  const successes = [];
+  const callback1 = function(success, errorReason) {
+    if (success) {
+      successes.push(true);
+    } else {
+      errorReasons.push(errorReason);
+    }
+    if (successes.length + errorReasons.length === workspaceNames.length) {
+      if (errorReasons.length === 0) {
+        callback(true, '');
       } else {
-        errorReasons.push(errorReason);
+        callback(false, 'Delete workspaces failed. (' + errorReasons.join(', ') + ')');
       }
-      if (successCount + errorReasons.length == workspaceNames.length) {
-        if (errorReasons.length == 0) {
-          callback(true, '');
-        } else {
-          callback(false, 'Delete workspaces failed. (' + errorReasons.join(', ') + ')');
-        }
-      }
-    });
+    }
+  };
+  for (let i = 0; i < workspaceNames.length; i++) {
+    deleteOneWorkspace(workspaceNames[i], callback1);
   }
 }
 
