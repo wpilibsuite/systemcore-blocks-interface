@@ -22,8 +22,8 @@
 import * as Blockly from 'blockly/core';
 import { pythonGenerator } from 'blockly/python';
 
-import * as pythonUtils from './generated/python_utils.js'
-import * as wpilibUtils from './generated/wpilib_utils.js'
+import * as pythonUtils from './generated/python_utils.js';
+import * as wpilibUtils from './generated/wpilib_utils.js';
 import { createNonEditableField, createFieldDropdownForVariable } from './blocks_utils.js';
 
 

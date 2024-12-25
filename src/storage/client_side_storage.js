@@ -19,7 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import * as commonStorage from './common_storage.js'
+import * as commonStorage from './common_storage.js';
 
 // Functions for saving blocks files to client side storage.
 

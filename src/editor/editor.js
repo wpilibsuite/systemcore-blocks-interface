@@ -22,8 +22,9 @@
 import * as Blockly from 'blockly/core';
 
 import { extendedPythonGenerator } from './extended_python_generator.js';
-import * as storage from '../storage/client_side_storage.js'
-import * as commonStorage from '../storage/common_storage.js'
+import * as toolbox from './toolbox.js';
+import * as storage from '../storage/client_side_storage.js';
+import * as commonStorage from '../storage/common_storage.js';
 
 function onChangeBeforeFinishedLoading(event) {
   if (event.type === Blockly.Events.FINISHED_LOADING) {
@@ -81,15 +82,40 @@ export function loadModuleBlocks(blocklyWorkspace, moduleFilePath) {
       if (blocksContent) {
         Blockly.serialization.workspaces.load(JSON.parse(blocksContent), blocklyWorkspace);
       }
+
+      updateToolbox(blocklyWorkspace, moduleFilePath );
     }
   );
 }
 
+function updateToolbox(blocklyWorkspace, moduleFilePath) {
+  const workspaceName = commonStorage.getWorkspaceName(moduleFilePath);
+  const workspaceFilePath = commonStorage.makeModuleFilePath(workspaceName, workspaceName);
+  if (moduleFilePath === workspaceFilePath) {
+    // If we are editing the workspace blocks, we don't add any additional blocks to the toolbox.
+    blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON());
+    return;
+  }
+  // If we are editing an opmode, we add the exported blocks from the workspace.
+  storage.fetchModuleFileContent(
+    workspaceFilePath,
+    function(workspaceFileContent, errorMessage) {
+      if (errorMessage) {
+        alert(errorMessage);
+        blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON());
+        return;
+      }
+      const exportedBlocks = commonStorage.extractExportedBlocks(
+        workspaceName, workspaceFileContent);
+      blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON(exportedBlocks));
+    });
+}
+
 export function saveModuleBlocks(blocklyWorkspace, moduleType, moduleFilePath) {
   const pythonCode = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
-  const blocksForExports = JSON.stringify(extendedPythonGenerator.getBlocksForExports(blocklyWorkspace));
+  const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(blocklyWorkspace));
   const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(blocklyWorkspace));
-  const moduleFileContent = commonStorage.makeFileContent(pythonCode, blocksForExports, blocksContent);
+  const moduleFileContent = commonStorage.makeFileContent(pythonCode, exportedBlocks, blocksContent);
 
   storage.saveModule(
     moduleType, moduleFilePath, moduleFileContent,

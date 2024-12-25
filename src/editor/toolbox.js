@@ -21,10 +21,25 @@
 
 import * as generatedToolbox from './generated/toolbox.js';
 
-function getToolboxJSON() {
-  return {
-    kind: 'categoryToolbox',
-    contents: generatedToolbox.getToolboxCategories().concat([
+export function getToolboxJSON(opt_exportedBlocksFromWorkspace) {
+  const contents = generatedToolbox.getToolboxCategories();
+  if (opt_exportedBlocksFromWorkspace) {
+    contents.push.apply(
+      contents,
+      [
+        {
+          kind: 'sep',
+        },
+        {
+          kind: 'category',
+          name: 'Workspace',
+          contents: opt_exportedBlocksFromWorkspace,
+        }
+      ]);
+  }
+  contents.push.apply(
+    contents,
+    [
       {
         kind: 'sep',
       },
@@ -885,8 +900,10 @@ function getToolboxJSON() {
         categorystyle: 'procedure_category',
         custom: 'PROCEDURE',
       },
-    ]),
+    ]);
+
+  return {
+    kind: 'categoryToolbox',
+    contents: contents
   };
 }
-
-export {getToolboxJSON};

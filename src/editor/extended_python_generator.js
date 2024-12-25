@@ -21,21 +21,26 @@
 
 import * as Blockly from 'blockly/core';
 import { PythonGenerator, pythonGenerator } from 'blockly/python';
+import * as commonStorage from '../storage/common_storage.js';
 
 // Extends the python generator to collect some information about functions and
-// variables that have been defined.
+// variables that have been defined so they can be used in other modules.
 
 class ExtendedPythonGenerator extends PythonGenerator {
   constructor() {
     super('Python');
+    this.mapWorkspaceIdToExportedBlocks = {};
   }
-  getBlocksForExports(workspace) {
-    const blocksForExports = [];
+  init(workspace) {
+    super.init(workspace);
 
     // The exported blocks produced here have the extraState.importModule and fields.MODULE values
-    // set to %module_name%. These will need to be replaced with the actual module name before they
-    // are added to the toolbox.
-    const moduleNamePlaceholder = '%module_name%';
+    // set to the MODULE_NAME_PLACEHOLDER. This is so blocks files can be renamed and copied without
+    // having to change the contents of the files.
+    // The placeholders will be replaced with the actual module name before they are added to the
+    // toolbox.
+
+    const exportedBlocks = [];
 
     // All functions are exported.
     const allProcedures = Blockly.Procedures.allProcedures(workspace);
@@ -55,12 +60,12 @@ class ExtendedPythonGenerator extends PythonGenerator {
         'extraState': {
           'returnType': hasReturnValue ? '' : 'None',
           'args': [],
-          'importModule': moduleNamePlaceholder,
+          'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
           'actualFunctionName': actualFunctionName,
           'exportedFunction': true,
         },
         'fields': {
-          'MODULE': moduleNamePlaceholder,
+          'MODULE': commonStorage.MODULE_NAME_PLACEHOLDER,
           'FUNC': functionName,
         },
       };
@@ -71,7 +76,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
           'type': '',
         })
       }
-      blocksForExports.push(callFunctionBlock);
+      exportedBlocks.push(callFunctionBlock);
     }
 
     const allVariables = workspace.getAllVariables();
@@ -105,33 +110,36 @@ class ExtendedPythonGenerator extends PythonGenerator {
           'kind': 'block',
           'type': 'get_python_module_variable',
           'extraState': {
-            'importModule': moduleNamePlaceholder,
+            'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
             'actualVariableName': actualVariableName,
             'exportedVariable': true,
           },
           'fields': {
-            'MODULE': moduleNamePlaceholder,
+            'MODULE': commonStorage.MODULE_NAME_PLACEHOLDER,
             'VAR': variableName,
           },
         };
-        blocksForExports.push(getPythonModuleVariableBlock);
+        exportedBlocks.push(getPythonModuleVariableBlock);
         const setPythonModuleVariableBlock = {
           'kind': 'block',
           'type': 'set_python_module_variable',
           'extraState': {
-            'importModule': moduleNamePlaceholder,
+            'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
             'actualVariableName': actualVariableName,
             'exportedVariable': true,
           },
           'fields': {
-            'MODULE': moduleNamePlaceholder,
+            'MODULE': commonStorage.MODULE_NAME_PLACEHOLDER,
             'VAR': variableName,
           },
         };
-        blocksForExports.push(setPythonModuleVariableBlock);
+        exportedBlocks.push(setPythonModuleVariableBlock);
       }
     }
-    return blocksForExports;
+    this.mapWorkspaceIdToExportedBlocks[workspace.id] = exportedBlocks;
+  }
+  getExportedBlocks(workspace) {
+    return this.mapWorkspaceIdToExportedBlocks[workspace.id];
   }
 }
 
