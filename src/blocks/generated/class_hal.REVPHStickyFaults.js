@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance hal.REVPHStickyFaults int"] = ["brown
 python.PythonVariableSetterTooltips["instance hal.REVPHStickyFaults int"] = ["", "", "", "", "", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "REVPHStickyFaults",
@@ -37,5 +37,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

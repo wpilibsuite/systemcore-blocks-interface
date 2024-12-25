@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpilib.drive.DifferentialDrive.WheelS
 python.PythonVariableSetterTooltips["instance wpilib.drive.DifferentialDrive.WheelSpeeds float"] = ["Left wheel speed.", "Right wheel speed."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "WheelSpeeds",
@@ -27,5 +27,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

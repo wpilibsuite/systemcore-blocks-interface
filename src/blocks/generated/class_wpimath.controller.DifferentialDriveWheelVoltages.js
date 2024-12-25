@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpimath.controller.DifferentialDriveW
 python.PythonVariableSetterTooltips["instance wpimath.controller.DifferentialDriveWheelVoltages wpimath.units.volts"] = ["Left wheel voltage.", "Right wheel voltage."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DifferentialDriveWheelVoltages",
@@ -27,5 +27,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

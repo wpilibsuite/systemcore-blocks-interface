@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.trajectory.TrajectoryParameterizer
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "TrajectoryParameterizer",
@@ -18,5 +18,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -21,14 +21,14 @@
 
 import * as Blockly from 'blockly/core';
 
-function createNonEditableField(label) {
+export function createNonEditableField(label) {
   const field = new Blockly.FieldTextInput(label);
   field.CURSOR = '';
   field.showEditor_ = function(opt_quietInput) {};
   return field;
 }
 
-function createFieldDropdownForVariable(varNames) {
+export function createFieldDropdownForVariable(varNames) {
   // If there is only one choice, don't create a dropdown.
   if (varNames.length == 1) {
     return createNonEditableField(varNames[0]);
@@ -38,9 +38,4 @@ function createFieldDropdownForVariable(varNames) {
     varNameChoices.push([varNames[i], varNames[i]]);
   }
   return new Blockly.FieldDropdown(varNameChoices)
-}
-
-export {
-  createNonEditableField,
-  createFieldDropdownForVariable
 }

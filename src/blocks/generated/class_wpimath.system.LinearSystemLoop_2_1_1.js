@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.system.LinearSystemLoop_2_1_1
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "LinearSystemLoop_2_1_1",
@@ -34,5 +34,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

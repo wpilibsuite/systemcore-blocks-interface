@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.simulation.ADIS16448_IMUSim
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ADIS16448_IMUSim",
@@ -26,5 +26,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

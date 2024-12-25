@@ -10,7 +10,7 @@ python.PythonVariableGetterNames["instance wpimath.trajectory.TrapezoidProfile.C
 python.PythonVariableGetterTooltips["instance wpimath.trajectory.TrapezoidProfile.Constraints wpimath.units.units_per_second"] = ["Maximum velocity."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Constraints",
@@ -25,5 +25,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

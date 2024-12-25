@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpimath.trajectory.constraint.Traject
 python.PythonVariableSetterTooltips["instance wpimath.trajectory.constraint.TrajectoryConstraint.MinMax wpimath.units.meters_per_second_squared"] = ["The maximum acceleration.", "The minimum acceleration."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "MinMax",
@@ -27,5 +27,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -10,7 +10,7 @@ python.PythonVariableGetterNames["instance wpimath.trajectory.TrapezoidProfileRa
 python.PythonVariableGetterTooltips["instance wpimath.trajectory.TrapezoidProfileRadians.State wpimath.units.radians_per_second"] = ["The velocity at this state."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "State",
@@ -25,5 +25,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

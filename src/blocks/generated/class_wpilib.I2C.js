@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.I2C.Port"] = ["kMXP", "kOnboard"];
 python.PythonEnumTooltips["wpilib.I2C.Port"] = "I2C connection ports.\n\nMembers:\n\n  kOnboard : Onboard I2C port.\n\n  kMXP : MXP (roboRIO MXP) I2C port.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "I2C",
@@ -32,5 +32,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

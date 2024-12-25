@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.optimization.SimulatedAnnealing
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SimulatedAnnealing",
@@ -18,5 +18,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

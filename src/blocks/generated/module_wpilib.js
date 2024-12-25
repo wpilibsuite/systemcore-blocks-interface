@@ -16,7 +16,7 @@ python.PythonEnumValues["wpilib.RuntimeType"] = ["kRoboRIO", "kRoboRIO2", "kSimu
 python.PythonEnumTooltips["wpilib.RuntimeType"] = "Runtime type.\n\nMembers:\n\n  kRoboRIO : roboRIO 1.0.\n\n  kRoboRIO2 : roboRIO 2.0.\n\n  kSimulation : Simulation runtime.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "wpilib",
@@ -52,5 +52,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

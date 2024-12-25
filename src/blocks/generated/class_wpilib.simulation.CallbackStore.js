@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.simulation.CallbackStore
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "CallbackStore",
@@ -17,5 +17,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

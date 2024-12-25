@@ -9,7 +9,7 @@ python.PythonEnumValues["wpilib.PowerDistribution.ModuleType"] = ["kCTRE", "kRev
 python.PythonEnumTooltips["wpilib.PowerDistribution.ModuleType"] = "Power distribution module type.\n\nMembers:\n\n  kCTRE : CTRE (Cross The Road Electronics) CTRE Power Distribution Panel (PDP).\n\n  kRev : REV Power Distribution Hub (PDH).";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "PowerDistribution",
@@ -42,5 +42,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

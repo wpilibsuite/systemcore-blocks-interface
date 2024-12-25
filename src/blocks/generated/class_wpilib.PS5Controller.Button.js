@@ -7,7 +7,7 @@ import * as python from "../python.js"
 python.PythonVariableGetterNames["class wpilib.PS5Controller.Button int"] = ["kCircle", "kCreate", "kCross", "kL1", "kL2", "kL3", "kOptions", "kPS", "kR1", "kR2", "kR3", "kSquare", "kTouchpad", "kTriangle"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Button",
@@ -34,5 +34,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

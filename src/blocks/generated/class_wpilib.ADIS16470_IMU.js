@@ -10,7 +10,7 @@ python.PythonEnumValues["wpilib.ADIS16470_IMU.IMUAxis"] = ["kPitch", "kRoll", "k
 python.PythonEnumTooltips["wpilib.ADIS16470_IMU.IMUAxis"] = "IMU axes.\n\nkX, kY, and kZ refer to the IMU's X, Y, and Z axes respectively. kYaw,\nkPitch, and kRoll are configured by the user to refer to an X, Y, or Z\naxis.\n\nMembers:\n\n  kX : The IMU's X axis.\n\n  kY : The IMU's Y axis.\n\n  kZ : The IMU's Z axis.\n\n  kYaw : The user-configured yaw axis.\n\n  kPitch : The user-configured pitch axis.\n\n  kRoll : The user-configured roll axis.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ADIS16470_IMU",
@@ -66,5 +66,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

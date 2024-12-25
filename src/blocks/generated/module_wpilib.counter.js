@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.counter.EdgeConfiguration"] = ["kBoth", "kFallin
 python.PythonEnumTooltips["wpilib.counter.EdgeConfiguration"] = "Edge configuration.\n\nMembers:\n\n  kNone : No edge configuration (neither rising nor falling).\n\n  kRisingEdge : Rising edge configuration.\n\n  kFallingEdge : Falling edge configuration.\n\n  kBoth : Both rising and falling edges configuration.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "counter",
@@ -24,5 +24,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

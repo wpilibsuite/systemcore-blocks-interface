@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.SynchronousInterrupt.WaitResult"] = ["kBoth", "k
 python.PythonEnumTooltips["wpilib.SynchronousInterrupt.WaitResult"] = "Event trigger combinations for a synchronous interrupt.\n\nMembers:\n\n  kTimeout : Timeout event.\n\n  kRisingEdge : Rising edge event.\n\n  kFallingEdge : Falling edge event.\n\n  kBoth : Both rising and falling edge events.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SynchronousInterrupt",
@@ -32,5 +32,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

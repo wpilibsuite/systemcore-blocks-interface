@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.simulation.AnalogGyroSim
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "AnalogGyroSim",
@@ -28,5 +28,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

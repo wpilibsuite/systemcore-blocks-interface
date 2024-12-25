@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.NidecBrushless
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "NidecBrushless",
@@ -36,5 +36,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.controller.LTVDifferentialDriveController
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "LTVDifferentialDriveController",
@@ -21,5 +21,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.Counter.Mode"] = ["kExternalDirection", "kPulseL
 python.PythonEnumTooltips["wpilib.Counter.Mode"] = "Members:\n\n  kTwoPulse\n\n  kSemiperiod\n\n  kPulseLength\n\n  kExternalDirection";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Counter",
@@ -58,5 +58,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

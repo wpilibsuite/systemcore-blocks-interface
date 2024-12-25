@@ -8,7 +8,7 @@ python.PythonVariableGetterNames["class wpilib.CAN hal.CANDeviceType"] = ["kTeam
 python.PythonVariableGetterNames["class wpilib.CAN hal.CANManufacturer"] = ["kTeamManufacturer"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "CAN",
@@ -35,5 +35,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -7,7 +7,7 @@ import * as python from "../python.js"
 python.PythonVariableGetterNames["class wpilib.simulation.DifferentialDrivetrainSim.State int"] = ["kHeading", "kLeftPosition", "kLeftVelocity", "kRightPosition", "kRightVelocity", "kX", "kY"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "State",
@@ -27,5 +27,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -14,7 +14,7 @@ python.PythonVariableSetterNames["instance hal.REVPHCompressorConfig float"] = [
 python.PythonVariableSetterTooltips["instance hal.REVPHCompressorConfig float"] = ["", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "REVPHCompressorConfig",
@@ -35,5 +35,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

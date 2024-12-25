@@ -8,7 +8,7 @@ python.PythonVariableGetterNames["module wpimath.units float"] = ["kInchesPerFoo
 python.PythonVariableGetterNames["module wpimath.units int"] = ["kMillisecondsPerSecond", "kSecondsPerMinute"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "units",
@@ -25,5 +25,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -7,7 +7,7 @@ import * as python from "../python.js"
 python.PythonVariableGetterNames["class wpilib.TimesliceRobot float"] = ["kDefaultPeriod"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "TimesliceRobot",
@@ -57,5 +57,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

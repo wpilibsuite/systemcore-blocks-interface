@@ -2,7 +2,7 @@
 
 // Blocks constants and utilities for wpilib.
 
-function getAlias(type) {
+export function getAlias(type) {
   if (type == "wpimath.units.abvolts") {
     return "float";
   }
@@ -907,7 +907,7 @@ function getAlias(type) {
 }
 
 // For the given python type, returns an array of compatible input types.
-function getAllowedTypes(type) {
+export function getAllowedTypes(type) {
   // Subclasses
   if (type == "hal.AddressableLEDData") {
     return ['hal.AddressableLEDData', 'wpilib.AddressableLED.LEDData'];
@@ -1238,9 +1238,4 @@ function getAllowedTypes(type) {
   }
 
   return "";
-}
-
-export {
-  getAlias,
-  getAllowedTypes,
 }

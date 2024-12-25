@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.estimator.SwerveDrive4PoseEstimatorBase
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SwerveDrive4PoseEstimatorBase",
@@ -24,5 +24,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

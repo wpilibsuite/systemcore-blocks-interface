@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.MotorControllerGroup
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "MotorControllerGroup",
@@ -25,5 +25,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance hal.AddressableLEDData int"] = ["b", 
 python.PythonVariableSetterTooltips["instance hal.AddressableLEDData int"] = ["///< blue value", "///< green value", "///< red value"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "AddressableLEDData",
@@ -29,5 +29,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

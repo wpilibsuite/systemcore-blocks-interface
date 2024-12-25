@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.simulation.LinearSystemSim_2_2_2
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "LinearSystemSim_2_2_2",
@@ -24,5 +24,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -16,7 +16,7 @@ python.PythonVariableSetterNames["instance hal.MatchInfo hal._wpiHal.MatchType"]
 python.PythonVariableSetterTooltips["instance hal.MatchInfo hal._wpiHal.MatchType"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "MatchInfo",
@@ -39,5 +39,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

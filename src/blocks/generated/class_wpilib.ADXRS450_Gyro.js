@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.ADXRS450_Gyro
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ADXRS450_Gyro",
@@ -26,5 +26,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

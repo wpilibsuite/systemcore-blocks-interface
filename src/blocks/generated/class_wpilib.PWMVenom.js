@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.PWMVenom
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "PWMVenom",
@@ -37,5 +37,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

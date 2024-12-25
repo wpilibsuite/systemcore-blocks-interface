@@ -14,7 +14,7 @@ python.PythonVariableSetterNames["instance wpilib.CANStatus float"] = ["percentB
 python.PythonVariableSetterTooltips["instance wpilib.CANStatus float"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "CANStatus",
@@ -37,5 +37,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

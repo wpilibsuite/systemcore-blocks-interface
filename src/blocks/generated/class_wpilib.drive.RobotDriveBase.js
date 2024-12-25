@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.drive.RobotDriveBase.MotorType"] = ["kBack", "kF
 python.PythonEnumTooltips["wpilib.drive.RobotDriveBase.MotorType"] = "The location of a motor on the robot for the purpose of driving.\n\nMembers:\n\n  kFrontLeft : Front-left motor.\n\n  kFrontRight : Front-right motor.\n\n  kRearLeft : Rear-left motor.\n\n  kRearRight : Rear-right motor.\n\n  kLeft : Left motor.\n\n  kRight : Right motor.\n\n  kBack : Back motor.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "RobotDriveBase",
@@ -41,5 +41,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

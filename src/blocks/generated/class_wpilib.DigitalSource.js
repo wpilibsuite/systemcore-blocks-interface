@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.DigitalSource
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DigitalSource",
@@ -21,5 +21,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

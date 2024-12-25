@@ -11,7 +11,8 @@ import { extendedPythonGenerator } from '../editor/extended_python_generator.js'
 import * as toolbox from '../editor/toolbox.js';
 //import { testAllBlocksInToolbox } from '../editor/toolbox_tests.js';
 import * as editor from '../editor/editor.js';
-import * as storage from '../editor/client_side_storage.js'
+import * as storage from '../storage/client_side_storage.js'
+import * as commonStorage from '../storage/common_storage.js'
 
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
@@ -59,8 +60,7 @@ function BlocklyComponent(props) {
 
     // Create extended python generator
     extendedPythonGeneratorRef.current = extendedPythonGenerator;
-    // TODO(lizlooney): Figure out if we have to should reserved words for
-    // wpilib module names.
+    // TODO(lizlooney): Figure out if we have to add reserved words for wpilib module names.
     // extendedPythonGenerator.addReservedWords(???);
 
     //testAllBlocksInToolbox(workspace);
@@ -109,9 +109,15 @@ function BlocklyComponent(props) {
 
   // Public methods exposed through ref
 
-  const getCurrentWorkspaceName = (callback) => {
-    storage.fetchEntry('currentWorkspaceName', (name, error) => {
-      callback(name);
+  const getCurrentModuleType = (callback) => {
+    storage.fetchEntry('currentModuleType', (moduleType, error) => {
+      callback(moduleType);
+    });
+  };
+
+  const getCurrentModuleFilePath = (callback) => {
+    storage.fetchEntry('currentModuleFilePath', (moduleFilePath, error) => {
+      callback(moduleFilePath);
     });
   };
 
@@ -119,8 +125,12 @@ function BlocklyComponent(props) {
     storage.listWorkspaces(callback);
   };
 
-  const newWorkspace = (name, callback) => {
-    storage.newWorkspace(name, callback);
+  const newWorkspace = (workspaceName, callback) => {
+    const workspaceFileContent = commonStorage.newModuleFileContent();
+    const workspaceFilePath = commonStorage.makeModuleFilePath(workspaceName, workspaceName);
+    storage.saveModule(
+        commonStorage.MODULE_TYPE_WORKSPACE, workspaceFilePath, workspaceFileContent,
+        callback);
   };
 
   const getBlocklyWorkspace = () => workspaceRef.current;
@@ -132,26 +142,24 @@ function BlocklyComponent(props) {
     return '';
   };
 
-  const saveBlocks = (typeOfModule, name) => {
+  const saveBlocks = (moduleType, moduleFilePath) => {
     if (workspaceRef.current) {
-      if (typeOfModule == "workspace") {
-        editor.saveWorkspaceBlocks(workspaceRef.current, name);
-      }
+      editor.saveModuleBlocks(workspaceRef.current, moduleType, moduleFilePath);
     }
   };
 
-  const loadBlocks = (typeOfModule, name) => {
+  const loadBlocks = (moduleType, moduleFilePath) => {
     if (workspaceRef.current) {
-      if (typeOfModule == "workspace") {
-        storage.saveEntry('currentWorkspaceName', name);
-        editor.loadWorkspaceBlocks(workspaceRef.current, name);
-      }
+      storage.saveEntry('currentModuleType', moduleType);
+      storage.saveEntry('currentModuleFilePath', moduleFilePath);
+      editor.loadModuleBlocks(workspaceRef.current, moduleFilePath);
     }
   };
 
   // Expose methods through ref
   React.useImperativeHandle(props.innerRef, () => ({
-    getCurrentWorkspaceName,
+    getCurrentModuleType,
+    getCurrentModuleFilePath,
     listWorkspaces,
     newWorkspace,
     getBlocklyWorkspace,

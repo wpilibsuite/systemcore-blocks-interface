@@ -14,7 +14,7 @@ python.PythonVariableSetterNames["instance wpimath.kinematics.DifferentialDriveW
 python.PythonVariableSetterTooltips["instance wpimath.kinematics.DifferentialDriveWheelSpeeds wpimath.units.feet_per_second"] = ["", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DifferentialDriveWheelSpeeds",
@@ -37,5 +37,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

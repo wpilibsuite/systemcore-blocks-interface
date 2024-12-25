@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.kinematics.MecanumDriveKinematicsBase
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "MecanumDriveKinematicsBase",
@@ -20,5 +20,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

@@ -10,7 +10,7 @@ python.PythonVariableGetterNames["instance wpimath.geometry.Transform2d wpimath.
 python.PythonVariableGetterTooltips["instance wpimath.geometry.Transform2d wpimath.units.feet"] = ["", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Transform2d",
@@ -37,5 +37,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

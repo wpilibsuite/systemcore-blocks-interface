@@ -8,7 +8,7 @@ python.PythonEnumValues["wpilib.interfaces.CounterBase.EncodingType"] = ["k1X", 
 python.PythonEnumTooltips["wpilib.interfaces.CounterBase.EncodingType"] = "Members:\n\n  k1X\n\n  k2X\n\n  k4X";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "CounterBase",
@@ -30,5 +30,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

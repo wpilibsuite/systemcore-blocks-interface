@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance wpimath.kinematics.DifferentialDriveW
 python.PythonVariableSetterTooltips["instance wpimath.kinematics.DifferentialDriveWheelPositions wpimath.units.meters"] = ["Distance driven by the left side.", "Distance driven by the right side."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "DifferentialDriveWheelPositions",
@@ -28,5 +28,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

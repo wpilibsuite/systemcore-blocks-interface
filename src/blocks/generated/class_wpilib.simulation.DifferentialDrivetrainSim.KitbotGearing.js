@@ -8,7 +8,7 @@ python.PythonVariableGetterNames["class wpilib.simulation.DifferentialDrivetrain
 python.PythonVariableSetterNames["class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing float"] = ["k10p71", "k12p75", "k5p95", "k7p31", "k8p45"];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "KitbotGearing",
@@ -31,5 +31,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

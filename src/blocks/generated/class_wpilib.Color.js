@@ -9,7 +9,7 @@ python.PythonVariableGetterNames["instance wpilib.Color float"] = ["blue", "gree
 python.PythonVariableGetterTooltips["instance wpilib.Color float"] = ["Blue component (0-1).", "Green component (0-1).", "Red component (0-1)."];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Color",
@@ -173,5 +173,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

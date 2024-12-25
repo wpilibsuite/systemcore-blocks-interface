@@ -8,7 +8,7 @@ python.PythonEnumValues["wpimath.filter.Debouncer.DebounceType"] = ["kBoth", "kF
 python.PythonEnumTooltips["wpimath.filter.Debouncer.DebounceType"] = "Type of debouncing to perform.\n\nMembers:\n\n  kRising : Rising edge.\n\n  kFalling : Falling edge.\n\n  kBoth : Both rising and falling edges.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Debouncer",
@@ -25,5 +25,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

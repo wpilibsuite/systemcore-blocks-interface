@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.Preferences
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Preferences",
@@ -38,5 +38,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

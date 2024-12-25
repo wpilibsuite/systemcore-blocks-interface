@@ -12,7 +12,7 @@ python.PythonVariableSetterNames["instance hal.SimEnum int"] = ["value"];
 python.PythonVariableSetterTooltips["instance hal.SimEnum int"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SimEnum",
@@ -30,5 +30,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

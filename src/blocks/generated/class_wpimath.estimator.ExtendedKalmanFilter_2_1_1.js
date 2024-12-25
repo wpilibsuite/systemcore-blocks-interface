@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpimath.estimator.ExtendedKalmanFilter_2_1_1
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "ExtendedKalmanFilter_2_1_1",
@@ -29,5 +29,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

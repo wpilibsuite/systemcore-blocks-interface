@@ -10,7 +10,7 @@ python.PythonVariableSetterNames["instance hal.JoystickButtons int"] = ["buttons
 python.PythonVariableSetterTooltips["instance hal.JoystickButtons int"] = ["", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "JoystickButtons",
@@ -27,5 +27,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

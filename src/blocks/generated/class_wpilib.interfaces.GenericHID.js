@@ -10,7 +10,7 @@ python.PythonEnumValues["wpilib.interfaces.GenericHID.RumbleType"] = ["kBothRumb
 python.PythonEnumTooltips["wpilib.interfaces.GenericHID.RumbleType"] = "Represents a rumble output on the Joystick.\n\nMembers:\n\n  kLeftRumble : Left rumble motor.\n\n  kRightRumble : Right rumble motor.\n\n  kBothRumble : Both left and right rumble motors.";
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "GenericHID",
@@ -73,5 +73,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

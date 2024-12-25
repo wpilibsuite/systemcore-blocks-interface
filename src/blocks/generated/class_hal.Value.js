@@ -10,7 +10,7 @@ python.PythonVariableGetterNames["instance hal.Value object"] = ["value"];
 python.PythonVariableGetterTooltips["instance hal.Value object"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Value",
@@ -24,5 +24,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

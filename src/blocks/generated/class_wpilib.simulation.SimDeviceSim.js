@@ -4,7 +4,7 @@ import * as python from "../python.js"
 
 // Blocks for class wpilib.simulation.SimDeviceSim
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "SimDeviceSim",
@@ -31,5 +31,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

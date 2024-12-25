@@ -10,7 +10,7 @@ python.PythonVariableGetterNames["instance wpimath.geometry.Rotation3d wpimath.u
 python.PythonVariableGetterTooltips["instance wpimath.geometry.Rotation3d wpimath.units.degrees"] = ["", "", "", ""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "Rotation3d",
@@ -45,5 +45,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

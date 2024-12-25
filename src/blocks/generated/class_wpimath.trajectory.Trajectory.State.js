@@ -30,7 +30,7 @@ python.PythonVariableGetterNames["instance wpimath.trajectory.Trajectory.State w
 python.PythonVariableGetterTooltips["instance wpimath.trajectory.Trajectory.State wpimath.units.feet_per_second"] = [""];
 
 
-function getToolboxCategory(subcategories) {
+export function getToolboxCategory(subcategories) {
   const category = {
     kind: "category",
     name: "State",
@@ -56,5 +56,3 @@ function getToolboxCategory(subcategories) {
   }
   return category;
 }
-
-export {getToolboxCategory}

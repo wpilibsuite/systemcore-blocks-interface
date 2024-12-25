@@ -124,6 +124,7 @@ function getOutputCheck(type) {
 // importModule - specified if an import statement is needed for the generated python code.
 // actualVariableName - specified if the actual variable name is different than the name in the
 //     FIELD_VARIABLE_NAME field.
+// exportedVariable - true if this blocks refers to an exported variable
 
 const GET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
   saveExtraState: function() {
@@ -147,6 +148,7 @@ const GET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
     if (this.firstAttributes_.actualVariableName) {
       extraState['actualVariableName'] = this.firstAttributes_.actualVariableName;
     }
+    extraState['exportedVariable'] = this.firstAttributes_.exportedVariable;
     return extraState;
   },
   loadExtraState: function(extraState) {
@@ -157,8 +159,12 @@ const GET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
     this.firstAttributes_.key = extraState['key'] ? extraState['key'] : '';
     this.firstAttributes_.selfLabel = extraState['selfLabel'] ? extraState['selfLabel'] : '';
     this.firstAttributes_.selfType = extraState['selfType'] ? extraState['selfType'] : '';
-    this.firstAttributes_.importModule = extraState['importModule'] ? extraState['importModule'] : '';
-    this.firstAttributes_.actualVariableName = extraState['actualVariableName'] ? extraState['actualVariableName'] : '';
+    this.firstAttributes_.importModule = extraState['importModule']
+        ? extraState['importModule'] : '';
+    this.firstAttributes_.actualVariableName = extraState['actualVariableName']
+        ? extraState['actualVariableName'] : '';
+    this.firstAttributes_.exportedVariable = extraState['exportedVariable']
+        ? extraState['exportedVariable'] : false;
     this.updateBlock_();
   },
   updateBlock_: function() {
@@ -192,10 +198,10 @@ const GET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
 Blockly.Extensions.registerMutator('get_python_variable', GET_PYTHON_VARIABLE_MUTATOR_MIXIN);
 
 
-const PythonVariableGetterNames = Object.create(null);
-const PythonVariableGetterTooltips = Object.create(null);
-const PythonVariableSetterNames = Object.create(null);
-const PythonVariableSetterTooltips = Object.create(null);
+export const PythonVariableGetterNames = Object.create(null);
+export const PythonVariableGetterTooltips = Object.create(null);
+export const PythonVariableSetterNames = Object.create(null);
+export const PythonVariableSetterTooltips = Object.create(null);
 
 
 Blockly.Blocks['get_python_module_variable'] = {
@@ -345,6 +351,7 @@ pythonGenerator.forBlock['get_python_instance_variable'] = function(block, gener
 // importModule - specified if an import statement is needed for the generated python code.
 // actualVariableName - specified if the actual variable name is different than the name in the
 //     FIELD_VARIABLE_NAME field
+// exportedVariable - true if this blocks refers to an exported variable
 
 const SET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
   saveExtraState: function() {
@@ -368,6 +375,7 @@ const SET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
     if (this.firstAttributes_.actualVariableName) {
       extraState['actualVariableName'] = this.firstAttributes_.actualVariableName;
     }
+    extraState['exportedVariable'] = this.firstAttributes_.exportedVariable;
     return extraState;
   },
   loadExtraState: function(extraState) {
@@ -378,8 +386,12 @@ const SET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
     this.firstAttributes_.key = extraState['key'] ? extraState['key'] : '';
     this.firstAttributes_.selfLabel = extraState['selfLabel'] ? extraState['selfLabel'] : '';
     this.firstAttributes_.selfType = extraState['selfType'] ? extraState['selfType'] : '';
-    this.firstAttributes_.importModule = extraState['importModule'] ? extraState['importModule'] : '';
-    this.firstAttributes_.actualVariableName = extraState['actualVariableName'] ? extraState['actualVariableName'] : '';
+    this.firstAttributes_.importModule = extraState['importModule']
+        ? extraState['importModule'] : '';
+    this.firstAttributes_.actualVariableName = extraState['actualVariableName']
+        ? extraState['actualVariableName'] : '';
+    this.firstAttributes_.exportedVariable = extraState['exportedVariable']
+        ? extraState['exportedVariable'] : false;
     this.updateBlock_();
   },
   updateBlock_: function() {
@@ -560,6 +572,7 @@ pythonGenerator.forBlock['set_python_instance_variable'] = function(block, gener
 // importModule - specified if an import statement is needed for the generated python code.
 // actualFunctionName - specified if the actual function name is different than the name in the
 //     FIELD_FUNCTION_NAME field.
+// exportedFunction - true if this blocks refers to an exported function
 
 const CALL_PYTHON_FUNCTION_MUTATOR_MIXIN = {
   saveExtraState: function() {
@@ -584,6 +597,7 @@ const CALL_PYTHON_FUNCTION_MUTATOR_MIXIN = {
     if (this.firstAttributes_.actualFunctionName) {
       extraState['actualFunctionName'] = this.firstAttributes_.actualFunctionName;
     }
+    extraState['exportedFunction'] = this.firstAttributes_.exportedFunction;
     return extraState;
   },
   loadExtraState: function(extraState) {
@@ -603,6 +617,8 @@ const CALL_PYTHON_FUNCTION_MUTATOR_MIXIN = {
         ? extraState['importModule'] : '';
     this.firstAttributes_.actualFunctionName = extraState['actualFunctionName']
         ? extraState['actualFunctionName'] : '';
+    this.firstAttributes_.exportedFunction = extraState['exportedFunction']
+        ? extraState['exportedFunction'] : false;
     this.updateBlock_();
   },
   updateBlock_: function() {
@@ -857,8 +873,8 @@ const GET_PYTHON_ENUM_VALUE_MUTATOR_MIXIN = {
 Blockly.Extensions.registerMutator('get_python_enum_value', GET_PYTHON_ENUM_VALUE_MUTATOR_MIXIN);
 
 
-const PythonEnumValues = Object.create(null);
-const PythonEnumTooltips = Object.create(null);
+export const PythonEnumValues = Object.create(null);
+export const PythonEnumTooltips = Object.create(null);
 
 Blockly.Blocks['get_python_enum_value'] = {
   init: function() {
@@ -892,12 +908,3 @@ pythonGenerator.forBlock['get_python_enum_value'] = function(block, generator) {
   const code = enumClassName + '.' + enumValue;
   return [code, generator.ORDER_MEMBER];
 };
-
-export {
-  PythonVariableGetterNames,
-  PythonVariableGetterTooltips,
-  PythonVariableSetterNames,
-  PythonVariableSetterTooltips,
-  PythonEnumValues,
-  PythonEnumTooltips
-}
