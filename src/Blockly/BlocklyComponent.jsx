@@ -121,18 +121,6 @@ function BlocklyComponent(props) {
     });
   };
 
-  const listWorkspaces = (callback) => {
-    storage.listWorkspaces(callback);
-  };
-
-  const newWorkspace = (workspaceName, callback) => {
-    const workspaceFileContent = commonStorage.newModuleFileContent();
-    const workspaceFilePath = commonStorage.makeModuleFilePath(workspaceName, workspaceName);
-    storage.saveModule(
-        commonStorage.MODULE_TYPE_WORKSPACE, workspaceFilePath, workspaceFileContent,
-        callback);
-  };
-
   const getBlocklyWorkspace = () => workspaceRef.current;
 
   const generateCode = () => {
@@ -160,8 +148,6 @@ function BlocklyComponent(props) {
   React.useImperativeHandle(props.innerRef, () => ({
     getCurrentModuleType,
     getCurrentModuleFilePath,
-    listWorkspaces,
-    newWorkspace,
     getBlocklyWorkspace,
     generateCode,
     saveBlocks,

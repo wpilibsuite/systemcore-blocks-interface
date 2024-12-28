@@ -1,15 +1,20 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, ConfigProvider, Input, Modal, Select, Space } from 'antd';
+import { Button, ConfigProvider, Divider, Flex, Input, Modal, Space, Table, Typography, theme } from 'antd';
 import {
+  CloseOutlined,
   CopyOutlined,
+  DeleteOutlined,
   DownloadOutlined,
   FileOutlined,
-  UploadOutlined,
+  FileAddOutlined,
+  FolderAddOutlined,
   SaveOutlined,
+  UploadOutlined,
 } from '@ant-design/icons';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import BlocklyComponent from './Blockly';
+import * as storage from './storage/client_side_storage.js';
 import * as commonStorage from './storage/common_storage.js';
 
 // TODO(lizlooney) - Make the UI for the list of Workspaces.
@@ -17,7 +22,7 @@ import * as commonStorage from './storage/common_storage.js';
 // The user can open the workspace or an opmode and then it opens the blockly editor.
 // If an opmode is opened, the exported blocks from the workspace are shown in the toolbox.
 
-const NewWorkspace = ({ workspaces, isOpen, onOk, onCancel }) => {
+const NewWorkspaceModal = ({ workspaces, isOpen, onOk, onCancel }) => {
   const [workspaceNames, setWorkspaceNames] = useState([]);
   const [value, setValue] = useState('');
 
@@ -74,66 +79,7 @@ const NewWorkspace = ({ workspaces, isOpen, onOk, onCancel }) => {
   );
 };
 
-const WorkspaceSelector = ({ workspaces, workspaceName, isOpen, onSelectWorkspace, onCancel }) => {
-  const [workspaceItems, setWorkspaceItems] = useState([]);
-  const [selectedWorkspaceName, setSelectedWorkspaceName] = useState('');
-
-  return (
-    <Modal
-      title="Select Workspace"
-      open={isOpen}
-      afterOpenChange={(open) => {
-        if (open) {
-          const workspaceItems = [];
-          for (let i = 0; i < workspaces.length; i++) {
-            workspaceItems.push({ label: workspaces[i].name, value: workspaces[i].name });
-          }
-          setWorkspaceItems(workspaceItems);
-          setSelectedWorkspaceName(workspaceName)
-        }
-      }}
-      onCancel={onCancel}
-      footer={[
-        <Button
-          key="cancel"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>,
-        <Button
-          key="select"
-          onClick={() => {
-            onSelectWorkspace(selectedWorkspaceName);
-          }}
-        >
-          Select
-        </Button>
-      ]}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div>
-          <div style={{ marginBottom: '8px' }}>Workspace</div>
-          <Select
-            style={{ width: '100%' }}
-            value={selectedWorkspaceName}
-            onChange={(value) => setSelectedWorkspaceName(value)}
-            options={workspaceItems}
-          />
-        </div>
-      </div>
-    </Modal>
-  );
-};
-let llDropShadow = {
-  filter: 'drop-shadow(0px 0px 5px #000)',
-  zIndex: 100,
-  height: '30px',
-};
-
-const App = () => {
-  const [isNewWorkspaceOpen, setIsNewWorkspaceOpen] = useState(false);
-  const [isWorkspaceSelectorOpen, setIsWorkspaceSelectorOpen] = useState(false);
-  const [workspaces, setWorkspaces] = useState([]);
+const BlocksEditorModal = ({ moduleTypeArg, moduleFilePathArg, isOpen, onBack }) => {
   const [moduleType, setModuleType] = useState('');
   const [moduleFilePath, setModuleFilePath] = useState('');
   const [workspaceName, setWorkspaceName] = useState('');
@@ -141,20 +87,6 @@ const App = () => {
   const [showCode, setShowCode] = useState(true);
   const [generatedCode, setGeneratedCode] = useState('');
   const blocklyComponent = useRef();
-
-  useEffect(() => {
-    blocklyComponent.current.getCurrentModuleType((currentModuleType) => {
-      if (currentModuleType) {
-        setModuleType(currentModuleType);
-      }
-    });
-    blocklyComponent.current.getCurrentModuleFilePath((currentModuleFilePath) => {
-      if (currentModuleFilePath) {
-        setModuleFilePath(currentModuleFilePath);
-      }
-    });
-    listWorkspaces();
-  }, []);
 
   useEffect(() => {
     if (moduleFilePath) {
@@ -169,16 +101,6 @@ const App = () => {
     }
   }, [moduleType, moduleFilePath]);
 
-  const listWorkspaces = () => {
-    blocklyComponent.current.listWorkspaces((array, error) => {
-      if (array) {
-        setWorkspaces(array)
-      } else if (error) {
-        console.log(error);
-      }
-    });
-  };
-
   const handleSave = () => {
     if (moduleType && moduleFilePath) {
       blocklyComponent.current.saveBlocks(moduleType, moduleFilePath);
@@ -187,10 +109,6 @@ const App = () => {
 
   const handleDownload = () => {
     console.log('Download clicked');
-  };
-
-  const handleUpload = () => {
-    console.log('Upload clicked');
   };
 
   const toggleCodeWindow = () => {
@@ -209,47 +127,33 @@ const App = () => {
   };
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#66bf0d',
-          colorBgBase: '#66bf0d',
-          colorText: 'rgba(255, 255, 255, 0.85)',
-          colorBorder: '#000',
-          colorBgLayout: '#222',
-          colorBgSpotlight: '#111',
-          colorBgMask: '#111',
-          colorBgElevated: '#111',
-          colorBgContainer: '#191919',
-          colorBorderSecondary: '#000',
-        },
-        components: {
-          Radio: {
-            colorPrimary: '#00b96b',
-          },
-          Checkbox: {
-            colorPrimary: '#ff4d4f',
-          },
-          Layout: {
-            headerBg: '#333',
-            triggerBg: 'transparent',
-            siderBg: '#444',
-          },
-          Select:{
-            optionSelectedBg:'#555',
-            optionActiveBg:'#444'
-          },
-          Menu: {
-            colorBgContainer: '#fff',
-          },
-        },
+    <Modal
+      title="Blocks Editor"
+      open={isOpen}
+      afterOpenChange={(open) => {
+        if (open) {
+          setModuleType(moduleTypeArg);
+          setModuleFilePath(moduleFilePathArg);
+        }
       }}
+      onCancel={onBack}
+      width="4000"
     >
       <div
-        className="App"
-        style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}
+        style={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
       >
-        <header style={{ background: '#333', padding: '8px 16px', filter: 'drop-shadow(0px 0px 5px #000)', zIndex: 100 }}>
+        <header
+          style={{
+            background: '#333',
+            padding: '8px 16px',
+            filter: 'drop-shadow(0px 0px 5px #000)',
+            zIndex: 100
+          }}
+        >
           <div
             style={{
               display: 'flex',
@@ -259,40 +163,36 @@ const App = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <span style={{ color: 'white', fontWeight: 500 }}>Blocks</span>
-              <span style={{ color: 'white' }}>|</span>
               <Button
+                icon={<CloseOutlined />}
                 onClick={() => {
-                  // TODO(lizlooney): Check whether the blocks need to be saved before we open a new file.
-                  setIsNewWorkspaceOpen(true);
+                  // TODO(lizlooney): Check whether the blocks should be saved before going back.
+                  onBack();
                 }}
                 style={{ color: 'white' }}
               >
-                New Worksapce
               </Button>
-              <Button
-                icon={<FileOutlined />}
-                onClick={() => {
-                  // TODO(lizlooney): Check whether the blocks need to be saved before we open a new file.
-                  if (workspaces.length) {
-                    setIsWorkspaceSelectorOpen(true);
-                  }
-                }}
-                style={{ color: 'white' }}
-              >
                 {workspaceName}/{moduleName}
-              </Button>
-              <Button icon={<SaveOutlined />} onClick={handleSave}  style={{ color: 'white' }}>
+              <Button
+                icon={<SaveOutlined />}
+                onClick={handleSave}
+                style={{ color: 'white' }}
+              >
                 Save
               </Button>
             </div>
             <Space>
-              <Button icon={<UploadOutlined />} onClick={handleUpload}  style={{ color: 'white' }}>
-                Upload
-              </Button>
-              <Button icon={<DownloadOutlined />} onClick={handleDownload}  style={{ color: 'white' }}>
+              <Button
+                icon={<DownloadOutlined />}
+                onClick={handleDownload}
+                style={{ color: 'white' }}
+              >
                 Download
               </Button>
-              <Button onClick={toggleCodeWindow}  style={{ color: 'white' }}>
+              <Button
+                onClick={toggleCodeWindow}
+                style={{ color: 'white' }}
+              >
                 {showCode ? 'Hide Python Code' : 'Show Python Code'}
               </Button>
             </Space>
@@ -357,40 +257,249 @@ const App = () => {
             </div>
           )}
         </div>
-
-        <NewWorkspace
-          isOpen={isNewWorkspaceOpen}
-          workspaces={workspaces}
-          onOk={(w) => {
-            setIsNewWorkspaceOpen(false);
-            blocklyComponent.current.newWorkspace(w, (success, error) => {
-              if (success) {
-                listWorkspaces();
-                setModuleType('');
-                setModuleFilePath('');
-                setModuleType(commonStorage.MODULE_TYPE_WORKSPACE);
-                setModuleFilePath(commonStorage.makeModuleFilePath(w, w));
-              } else if (error) {
-                console.log(error);
-              }
-            });
-          }}
-          onCancel={() => setIsNewWorkspaceOpen(false)}
-        />
-        <WorkspaceSelector
-          isOpen={isWorkspaceSelectorOpen}
-          workspaces={workspaces}
-          workspaceName={workspaceName}
-          onSelectWorkspace={(w) => {
-            setIsWorkspaceSelectorOpen(false);
-            setModuleType('');
-            setModuleFilePath('');
-            setModuleType(commonStorage.MODULE_TYPE_WORKSPACE);
-            setModuleFilePath(commonStorage.makeModuleFilePath(w, w));
-          }}
-          onCancel={() => setIsWorkspaceSelectorOpen(false)}
-        />
       </div>
+    </Modal>
+  );
+};
+
+const App = () => {
+  const [isNewWorkspaceModalOpen, setIsNewWorkspaceModalOpen] = useState(false);
+  const [workspaces, setWorkspaces] = useState([]);
+  const [workspacesDataSource, setWorkspacesDataSource] = useState([]);
+  const workspacesColumns = [
+    {
+      title: 'Workspace Name',
+      dataIndex: 'workspaceName',
+      sorter: (a, b) => {return a.workspaceName.localeCompare(b.workspaceName)},
+      render: (text, record) => (
+        <Button
+          type="text"
+          size="small"
+          style={{
+            
+          }}
+          onClick={()=> onWorkspaceNameClicked(text, record)}
+        >
+          {text}
+        </Button>
+      ),
+    },
+    {
+      title: 'Date Modified',
+      dataIndex: 'dateModified',
+      defaultSortOrder: 'descend',
+      sorter: (a, b) => a.dateModifiedMillis - b.dateModifiedMillis,
+    },
+  ];
+  const [workspacesSelectedRowKeys, setWorkspacesSelectedRowKeys] = useState([]);
+  const [blocksEditorModuleType, setBlocksEditorModuleType] = useState('');
+  const [blocksEditorModuleFilePath, setBlocksEditorModuleFilePath] = useState('');
+  const [isBlocksEditorModalOpen, setIsBlocksEditorModalOpen] = useState(false);
+
+  useEffect(() => {
+    listWorkspaces();
+  }, []);
+
+  useEffect(() => {
+    const array = [];
+    for (let i = 0; i < workspaces.length; i++) {
+      array.push({
+        key: String(i),
+        workspaceName: workspaces[i].name,
+        dateModifiedMillis: workspaces[i].dateModifiedMillis,
+        dateModified: new Date(workspaces[i].dateModifiedMillis).toLocaleString(),
+      });
+    }
+    setWorkspacesDataSource(array);
+  }, [workspaces]);
+
+  const listWorkspaces = () => {
+    storage.listWorkspaces((array, error) => {
+      if (array) {
+        setWorkspaces(array)
+      } else if (error) {
+        console.log(error);
+      }
+    });
+  };
+
+  const newWorkspace = (workspaceName, callback) => {
+    const workspaceFileContent = commonStorage.newModuleFileContent();
+    const workspaceFilePath = commonStorage.makeModuleFilePath(workspaceName, workspaceName);
+    storage.saveModule(
+        commonStorage.MODULE_TYPE_WORKSPACE, workspaceFilePath, workspaceFileContent,
+        callback);
+  };
+
+  const handleUpload = () => {
+    console.log('Upload Workspace clicked');
+  };
+
+  const handleDownloadSelectedWorkspaces = () => {
+    console.log('Download clicked - selected row keys are ' + workspacesSelectedRowKeys);
+  };
+
+  const handleEditSelectedWorkspace = () => {
+    console.log('Edit Selected Workspace clicked - selected row keys are ' + workspacesSelectedRowKeys);
+    const index = parseInt(workspacesSelectedRowKeys[0]);
+    const workspaceName = workspaces[index].name;
+    console.log('workspaceName is ' + workspaceName);
+    setBlocksEditorModuleType(commonStorage.MODULE_TYPE_WORKSPACE);
+    setBlocksEditorModuleFilePath(commonStorage.makeModuleFilePath(workspaceName, workspaceName));
+    setIsBlocksEditorModalOpen(true);
+  };
+
+  const handleRenameSelectedWorkspace = () => {
+    console.log('Rename Selected Workspace clicked - selected row keys are ' + workspacesSelectedRowKeys);
+  };
+
+  const handleCopySelectedWorkspace = () => {
+    console.log('Copy Selected Workspace clicked - selected row keys are ' + workspacesSelectedRowKeys);
+  };
+
+  const handleDeleteSelectedWorkspaces = () => {
+    console.log('Delete Selected Workspaces clicked - selected row keys are ' + workspacesSelectedRowKeys);
+  };
+
+  const onSelectChange = (newSelectedRowKeys) => {
+    setWorkspacesSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const onWorkspaceNameClicked = (text, record) => {
+    console.log('Workspace name clicked - text is ' + text + ', record is...');
+    console.log(record);
+  };
+
+  return (
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+      }}
+    >
+      <Flex
+        vertical
+        style={{
+          background: '#333',
+          height: '100vh'
+        }}
+      >
+        <Typography.Paragraph
+          strong={true}
+          underline={true}
+          style={{
+            color: 'cyan',
+          }}
+        >
+          WPILib Blocks
+        </Typography.Paragraph>
+        <Divider
+          orientation="left"
+          orientationMargin="2px"
+          style={{
+            color: 'cyan',
+          }}
+        >
+          My Workspaces
+        </Divider>
+        <Flex gap="small">
+          <Button
+            icon={<FolderAddOutlined />} 
+            onClick={() => {
+              // TODO(lizlooney): Check whether the blocks need to be saved before we open a new file.
+              setIsNewWorkspaceModalOpen(true);
+            }}
+            style={{ color: 'white' }}
+          >
+            New Worksapce
+          </Button>
+          <Button
+            icon={<UploadOutlined />}
+            onClick={handleUpload}
+            style={{ color: 'white' }}
+          >
+            Upload
+          </Button>
+          <Button
+            icon={<DownloadOutlined />}
+            disabled={workspacesSelectedRowKeys.length === 0}
+            onClick={handleDownloadSelectedWorkspaces}
+            style={{ color: 'white' }}
+          >
+            Download
+          </Button>
+        </Flex>
+        <Flex>
+          <Table
+            size="small"
+            rowSelection={{
+              type: "radio",
+              workspacesSelectedRowKeys,
+              onChange: onSelectChange,
+            }}
+            showSorterTooltip={false}
+            columns={workspacesColumns}
+            dataSource={workspacesDataSource}
+            pagination={{ hideOnSinglePage: true }}
+          />
+        </Flex>
+        <Flex gap="small">
+          <Button
+            disabled={workspacesSelectedRowKeys.length !== 1}
+            onClick={handleEditSelectedWorkspace}
+            style={{ color: 'white' }}
+          >
+            Edit
+          </Button>
+          <Button
+            disabled={workspacesSelectedRowKeys.length !== 1}
+            onClick={handleRenameSelectedWorkspace}
+            style={{ color: 'white' }}
+          >
+            Rename
+          </Button>
+          <Button
+            icon={<CopyOutlined />}
+            disabled={workspacesSelectedRowKeys.length !== 1}
+            onClick={handleCopySelectedWorkspace}
+            style={{ color: 'white' }}
+          >
+            Copy
+          </Button>
+          <Button
+            icon={<DeleteOutlined />}
+            disabled={workspacesSelectedRowKeys.length === 0}
+            onClick={handleDeleteSelectedWorkspaces}
+            style={{ color: 'white' }}
+          >
+            Delete
+          </Button>
+        </Flex>
+      </Flex>
+
+      <NewWorkspaceModal
+        workspaces={workspaces}
+        isOpen={isNewWorkspaceModalOpen}
+        onOk={(w) => {
+          setIsNewWorkspaceModalOpen(false);
+          newWorkspace(w, (success, error) => {
+            if (success) {
+              listWorkspaces();
+            } else if (error) {
+              console.log(error);
+            }
+          });
+        }}
+        onCancel={() => setIsNewWorkspaceModalOpen(false)}
+      />
+      <BlocksEditorModal
+        moduleTypeArg={blocksEditorModuleType}
+        moduleFilePathArg={blocksEditorModuleFilePath}
+        isOpen={isBlocksEditorModalOpen}
+        onBack={() => {
+          setIsBlocksEditorModalOpen(false);
+          listWorkspaces();
+        }}
+      />
     </ConfigProvider>
   );
 };
