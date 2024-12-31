@@ -21,9 +21,9 @@
 
 import * as generatedToolbox from './generated/toolbox.js';
 
-export function getToolboxJSON(opt_exportedBlocksFromWorkspace) {
+export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace) {
   const contents = generatedToolbox.getToolboxCategories();
-  if (opt_exportedBlocksFromWorkspace) {
+  if (opt_includeExportedBlocksFromWorkspace) {
     contents.push.apply(
       contents,
       [
@@ -33,7 +33,7 @@ export function getToolboxJSON(opt_exportedBlocksFromWorkspace) {
         {
           kind: 'category',
           name: 'Workspace',
-          contents: opt_exportedBlocksFromWorkspace,
+          contents: opt_includeExportedBlocksFromWorkspace,
         }
       ]);
   }

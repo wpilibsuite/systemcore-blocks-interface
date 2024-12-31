@@ -64,10 +64,10 @@ function onChangeAfterFinishedLoading(event) {
   // TODO(lizlooney): do we need to do anything here?
 }
 
-export function loadModuleBlocks(blocklyWorkspace, moduleFilePath) {
-  storage.fetchModuleFileContent(
-    moduleFilePath,
-    function(moduleFileContent, errorMessage) {
+export function loadModuleBlocks(blocklyWorkspace, modulePath) {
+  storage.fetchModuleContent(
+    modulePath,
+    function(moduleContent, errorMessage) {
       if (errorMessage) {
         alert(errorMessage);
         return;
@@ -78,53 +78,53 @@ export function loadModuleBlocks(blocklyWorkspace, moduleFilePath) {
       blocklyWorkspace.clear();
       // Add the before-finish-loading listener.
       blocklyWorkspace.addChangeListener(onChangeBeforeFinishedLoading);
-      const blocksContent = commonStorage.extractBlocksContent(moduleFileContent);
+      const blocksContent = commonStorage.extractBlocksContent(moduleContent);
       if (blocksContent) {
         Blockly.serialization.workspaces.load(JSON.parse(blocksContent), blocklyWorkspace);
       }
 
-      updateToolbox(blocklyWorkspace, moduleFilePath );
+      updateToolbox(blocklyWorkspace, modulePath );
     }
   );
 }
 
-function updateToolbox(blocklyWorkspace, moduleFilePath) {
-  const workspaceName = commonStorage.getWorkspaceName(moduleFilePath);
-  const workspaceFilePath = commonStorage.makeModuleFilePath(workspaceName, workspaceName);
-  if (moduleFilePath === workspaceFilePath) {
-    // If we are editing the workspace blocks, we don't add any additional blocks to the toolbox.
+function updateToolbox(blocklyWorkspace, modulePath) {
+  const workspaceName = commonStorage.getWorkspaceName(modulePath);
+  const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
+  if (modulePath === workspacePath) {
+    // If we are editing a Workspace, we don't add any additional blocks to the toolbox.
     blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON());
     return;
   }
-  // If we are editing an opmode, we add the exported blocks from the workspace.
-  storage.fetchModuleFileContent(
-    workspaceFilePath,
-    function(workspaceFileContent, errorMessage) {
+  // Otherwise, we add the exported blocks from the Workspace.
+  storage.fetchModuleContent(
+    workspacePath,
+    function(workspaceContent, errorMessage) {
       if (errorMessage) {
         alert(errorMessage);
         blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON());
         return;
       }
       const exportedBlocks = commonStorage.extractExportedBlocks(
-        workspaceName, workspaceFileContent);
+        workspaceName, workspaceContent);
       blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON(exportedBlocks));
     });
 }
 
-export function saveModuleBlocks(blocklyWorkspace, moduleType, moduleFilePath) {
+export function saveModule(blocklyWorkspace, modulePath) {
   const pythonCode = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
   const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(blocklyWorkspace));
   const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(blocklyWorkspace));
-  const moduleFileContent = commonStorage.makeFileContent(pythonCode, exportedBlocks, blocksContent);
+  const moduleContent = commonStorage.makeModuleContent(pythonCode, exportedBlocks, blocksContent);
 
   storage.saveModule(
-    moduleType, moduleFilePath, moduleFileContent,
+    modulePath, moduleContent,
     function(success, errorMessage) {
       if (errorMessage) {
         alert(errorMessage);
         return;
       }
-      // TODO(lizlooney): Indicate that the file was saved successfully.
+      // TODO(lizlooney): Indicate that the module was saved successfully.
     }
   );
 }

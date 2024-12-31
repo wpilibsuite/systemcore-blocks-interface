@@ -34,8 +34,8 @@ export function createFieldDropdownForVariable(varNames) {
     return createNonEditableField(varNames[0]);
   }
   const varNameChoices = [];
-  for (let i = 0; i < varNames.length; i++) {
-    varNameChoices.push([varNames[i], varNames[i]]);
+  for (const varName of varNames) {
+    varNameChoices.push([varName, varName]);
   }
   return new Blockly.FieldDropdown(varNameChoices)
 }

@@ -131,40 +131,40 @@ const GET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
     const extraState = {
     };
     if (this.firstAttributes_.varType) {
-      extraState['varType'] = this.firstAttributes_.varType;
+      extraState.varType = this.firstAttributes_.varType;
     }
     if (this.firstAttributes_.key) {
-      extraState['key'] = this.firstAttributes_.key;
+      extraState.key = this.firstAttributes_.key;
     }
     if (this.firstAttributes_.selfLabel) {
-      extraState['selfLabel'] = this.firstAttributes_.selfLabel;
+      extraState.selfLabel = this.firstAttributes_.selfLabel;
     }
     if (this.firstAttributes_.selfType) {
-      extraState['selfType'] = this.firstAttributes_.selfType;
+      extraState.selfType = this.firstAttributes_.selfType;
     }
     if (this.firstAttributes_.importModule) {
-      extraState['importModule'] = this.firstAttributes_.importModule;
+      extraState.importModule = this.firstAttributes_.importModule;
     }
     if (this.firstAttributes_.actualVariableName) {
-      extraState['actualVariableName'] = this.firstAttributes_.actualVariableName;
+      extraState.actualVariableName = this.firstAttributes_.actualVariableName;
     }
-    extraState['exportedVariable'] = this.firstAttributes_.exportedVariable;
+    extraState.exportedVariable = this.firstAttributes_.exportedVariable;
     return extraState;
   },
   loadExtraState: function(extraState) {
     if (!this.firstAttributes_) {
       this.firstAttributes_ = Object.create(null);
     }
-    this.firstAttributes_.varType = extraState['varType'] ? extraState['varType'] : '';
-    this.firstAttributes_.key = extraState['key'] ? extraState['key'] : '';
-    this.firstAttributes_.selfLabel = extraState['selfLabel'] ? extraState['selfLabel'] : '';
-    this.firstAttributes_.selfType = extraState['selfType'] ? extraState['selfType'] : '';
-    this.firstAttributes_.importModule = extraState['importModule']
-        ? extraState['importModule'] : '';
-    this.firstAttributes_.actualVariableName = extraState['actualVariableName']
-        ? extraState['actualVariableName'] : '';
-    this.firstAttributes_.exportedVariable = extraState['exportedVariable']
-        ? extraState['exportedVariable'] : false;
+    this.firstAttributes_.varType = extraState.varType ? extraState.varType : '';
+    this.firstAttributes_.key = extraState.key ? extraState.key : '';
+    this.firstAttributes_.selfLabel = extraState.selfLabel ? extraState.selfLabel : '';
+    this.firstAttributes_.selfType = extraState.selfType ? extraState.selfType : '';
+    this.firstAttributes_.importModule = extraState.importModule
+        ? extraState.importModule : '';
+    this.firstAttributes_.actualVariableName = extraState.actualVariableName
+        ? extraState.actualVariableName : '';
+    this.firstAttributes_.exportedVariable = extraState.exportedVariable
+        ? extraState.exportedVariable : false;
     this.updateBlock_();
   },
   updateBlock_: function() {
@@ -358,40 +358,40 @@ const SET_PYTHON_VARIABLE_MUTATOR_MIXIN = {
     const extraState = {
     };
     if (this.firstAttributes_.varType) {
-      extraState['varType'] = this.firstAttributes_.varType;
+      extraState.varType = this.firstAttributes_.varType;
     }
     if (this.firstAttributes_.key) {
-      extraState['key'] = this.firstAttributes_.key;
+      extraState.key = this.firstAttributes_.key;
     }
     if (this.firstAttributes_.selfLabel) {
-      extraState['selfLabel'] = this.firstAttributes_.selfLabel;
+      extraState.selfLabel = this.firstAttributes_.selfLabel;
     }
     if (this.firstAttributes_.selfType) {
-      extraState['selfType'] = this.firstAttributes_.selfType;
+      extraState.selfType = this.firstAttributes_.selfType;
     }
     if (this.firstAttributes_.importModule) {
-      extraState['importModule'] = this.firstAttributes_.importModule;
+      extraState.importModule = this.firstAttributes_.importModule;
     }
     if (this.firstAttributes_.actualVariableName) {
-      extraState['actualVariableName'] = this.firstAttributes_.actualVariableName;
+      extraState.actualVariableName = this.firstAttributes_.actualVariableName;
     }
-    extraState['exportedVariable'] = this.firstAttributes_.exportedVariable;
+    extraState.exportedVariable = this.firstAttributes_.exportedVariable;
     return extraState;
   },
   loadExtraState: function(extraState) {
     if (!this.firstAttributes_) {
       this.firstAttributes_ = Object.create(null);
     }
-    this.firstAttributes_.varType = extraState['varType'] ? extraState['varType'] : '';
-    this.firstAttributes_.key = extraState['key'] ? extraState['key'] : '';
-    this.firstAttributes_.selfLabel = extraState['selfLabel'] ? extraState['selfLabel'] : '';
-    this.firstAttributes_.selfType = extraState['selfType'] ? extraState['selfType'] : '';
-    this.firstAttributes_.importModule = extraState['importModule']
-        ? extraState['importModule'] : '';
-    this.firstAttributes_.actualVariableName = extraState['actualVariableName']
-        ? extraState['actualVariableName'] : '';
-    this.firstAttributes_.exportedVariable = extraState['exportedVariable']
-        ? extraState['exportedVariable'] : false;
+    this.firstAttributes_.varType = extraState.varType ? extraState.varType : '';
+    this.firstAttributes_.key = extraState.key ? extraState.key : '';
+    this.firstAttributes_.selfLabel = extraState.selfLabel ? extraState.selfLabel : '';
+    this.firstAttributes_.selfType = extraState.selfType ? extraState.selfType : '';
+    this.firstAttributes_.importModule = extraState.importModule
+        ? extraState.importModule : '';
+    this.firstAttributes_.actualVariableName = extraState.actualVariableName
+        ? extraState.actualVariableName : '';
+    this.firstAttributes_.exportedVariable = extraState.exportedVariable
+        ? extraState.exportedVariable : false;
     this.updateBlock_();
   },
   updateBlock_: function() {
@@ -580,45 +580,45 @@ const CALL_PYTHON_FUNCTION_MUTATOR_MIXIN = {
       'args': [],
     };
     if (this.firstAttributes_.returnType) {
-      extraState['returnType'] = this.firstAttributes_.returnType;
+      extraState.returnType = this.firstAttributes_.returnType;
     }
     if (this.firstAttributes_.tooltip) {
-      extraState['tooltip'] = this.firstAttributes_.tooltip;
+      extraState.tooltip = this.firstAttributes_.tooltip;
     }
-    for (let i = 0; i < this.firstAttributes_.args.length; i++) {
-      extraState['args'].push({
-        'name': this.firstAttributes_.args[i].name,
-        'type': this.firstAttributes_.args[i].type,
+    for (const arg of this.firstAttributes_.args) {
+      extraState.args.push({
+        'name': arg.name,
+        'type': arg.type,
       });
     }
     if (this.firstAttributes_.importModule) {
-      extraState['importModule'] = this.firstAttributes_.importModule;
+      extraState.importModule = this.firstAttributes_.importModule;
     }
     if (this.firstAttributes_.actualFunctionName) {
-      extraState['actualFunctionName'] = this.firstAttributes_.actualFunctionName;
+      extraState.actualFunctionName = this.firstAttributes_.actualFunctionName;
     }
-    extraState['exportedFunction'] = this.firstAttributes_.exportedFunction;
+    extraState.exportedFunction = this.firstAttributes_.exportedFunction;
     return extraState;
   },
   loadExtraState: function(extraState) {
     if (!this.firstAttributes_) {
       this.firstAttributes_ = Object.create(null);
     }
-    this.firstAttributes_.returnType = extraState['returnType'] ? extraState['returnType'] : '';
-    this.firstAttributes_.tooltip = extraState['tooltip'] ? extraState['tooltip'] : '';
+    this.firstAttributes_.returnType = extraState.returnType ? extraState.returnType : '';
+    this.firstAttributes_.tooltip = extraState.tooltip ? extraState.tooltip : '';
     this.firstAttributes_.args = [];
-    for (let i = 0; i < extraState['args'].length; i++) {
+    for (const arg of extraState.args) {
       this.firstAttributes_.args.push({
-        'name': extraState['args'][i].name,
-        'type': extraState['args'][i].type,
+        'name': arg.name,
+        'type': arg.type,
       });
     }
-    this.firstAttributes_.importModule = extraState['importModule']
-        ? extraState['importModule'] : '';
-    this.firstAttributes_.actualFunctionName = extraState['actualFunctionName']
-        ? extraState['actualFunctionName'] : '';
-    this.firstAttributes_.exportedFunction = extraState['exportedFunction']
-        ? extraState['exportedFunction'] : false;
+    this.firstAttributes_.importModule = extraState.importModule
+        ? extraState.importModule : '';
+    this.firstAttributes_.actualFunctionName = extraState.actualFunctionName
+        ? extraState.actualFunctionName : '';
+    this.firstAttributes_.exportedFunction = extraState.exportedFunction
+        ? extraState.exportedFunction : false;
     this.updateBlock_();
   },
   updateBlock_: function() {
@@ -837,7 +837,7 @@ const GET_PYTHON_ENUM_VALUE_MUTATOR_MIXIN = {
       'enumType': this.firstAttributes_.enumType,
     };
     if (this.firstAttributes_.importModule) {
-      extraState['importModule'] = this.firstAttributes_.importModule;
+      extraState.importModule = this.firstAttributes_.importModule;
     }
     return extraState;
   },
@@ -845,8 +845,8 @@ const GET_PYTHON_ENUM_VALUE_MUTATOR_MIXIN = {
     if (!this.firstAttributes_) {
       this.firstAttributes_ = Object.create(null);
     }
-    this.firstAttributes_.enumType = extraState['enumType'];
-    this.firstAttributes_.importModule = extraState['importModule'] ? extraState['importModule'] : '';
+    this.firstAttributes_.enumType = extraState.enumType;
+    this.firstAttributes_.importModule = extraState.importModule ? extraState.importModule : '';
     this.updateBlock_();
   },
   updateBlock_: function() {
@@ -862,8 +862,8 @@ const GET_PYTHON_ENUM_VALUE_MUTATOR_MIXIN = {
     // Create the drop-down with the enum values.
     const enumValues = PythonEnumValues[this.firstAttributes_.enumType];
     const enumValueChoices = [];
-    for (let i = 0; i < enumValues.length; i++) {
-      enumValueChoices.push([enumValues[i], enumValues[i]]);
+    for (const enumValue of enumValues) {
+      enumValueChoices.push([enumValue, enumValue]);
     }
     this.getInput('ENUM')
         .appendField(new Blockly.FieldDropdown(enumValueChoices), pythonUtils.FIELD_ENUM_VALUE);

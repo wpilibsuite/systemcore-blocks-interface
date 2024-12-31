@@ -29,7 +29,7 @@ let jsonBlocksForTest = [];
 let blocklyWorkspaceForTest = null;
 let indexForTest = 0
 
-function testAllBlocksInToolbox(workspace) {
+export function testAllBlocksInToolbox(workspace) {
   alert('Press OK to run tests on all blocks from the toolbox.');
   jsonBlocksForTest = [];
   collectBlocks(workspace.toolbox_.toolboxDef_.contents);
@@ -43,14 +43,14 @@ function testAllBlocksInToolbox(workspace) {
 }
 
 function collectBlocks(contents) {
-  for (let i = 0; i < contents.length; i++) {
-    switch (contents[i].kind) {
+  for (const item of contents) {
+    switch (item.kind) {
       case "block":
-        jsonBlocksForTest.push(contents[i]);
+        jsonBlocksForTest.push(item);
         break;
       case "category":
-        if (contents[i].contents) {
-          collectBlocks(contents[i].contents);
+        if (item.contents) {
+          collectBlocks(item.contents);
         }
         break;
     }
@@ -104,5 +104,3 @@ function testBlockPython(block) {
     }
   }
 }
-
-export {testAllBlocksInToolbox}

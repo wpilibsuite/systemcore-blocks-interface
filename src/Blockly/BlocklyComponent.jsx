@@ -10,7 +10,6 @@ import '../blocks/python'; // Defines blocks for accessing code in python (like 
 import { extendedPythonGenerator } from '../editor/extended_python_generator.js';
 import * as toolbox from '../editor/toolbox.js';
 //import { testAllBlocksInToolbox } from '../editor/toolbox_tests.js';
-import * as editor from '../editor/editor.js';
 import * as storage from '../storage/client_side_storage.js';
 import * as commonStorage from '../storage/common_storage.js';
 
@@ -109,63 +108,11 @@ function BlocklyComponent(props) {
 
   // Public methods exposed through ref
 
-  const getCurrentModuleType = (callback) => {
-    storage.fetchEntry('currentModuleType', (moduleType, error) => {
-      callback(moduleType);
-    });
-  };
-
-  const getCurrentModuleFilePath = (callback) => {
-    storage.fetchEntry('currentModuleFilePath', (moduleFilePath, error) => {
-      callback(moduleFilePath);
-    });
-  };
-
-  const listWorkspaces = (callback) => {
-    storage.listWorkspaces(callback);
-  };
-
-  const newWorkspace = (workspaceName, callback) => {
-    const workspaceFileContent = commonStorage.newModuleFileContent();
-    const workspaceFilePath = commonStorage.makeModuleFilePath(workspaceName, workspaceName);
-    storage.saveModule(
-        commonStorage.MODULE_TYPE_WORKSPACE, workspaceFilePath, workspaceFileContent,
-        callback);
-  };
-
   const getBlocklyWorkspace = () => workspaceRef.current;
-
-  const generateCode = () => {
-    if (workspaceRef.current && extendedPythonGeneratorRef.current) {
-      return extendedPythonGeneratorRef.current.workspaceToCode(workspaceRef.current);
-    }
-    return '';
-  };
-
-  const saveBlocks = (moduleType, moduleFilePath) => {
-    if (workspaceRef.current) {
-      editor.saveModuleBlocks(workspaceRef.current, moduleType, moduleFilePath);
-    }
-  };
-
-  const loadBlocks = (moduleType, moduleFilePath) => {
-    if (workspaceRef.current) {
-      storage.saveEntry('currentModuleType', moduleType);
-      storage.saveEntry('currentModuleFilePath', moduleFilePath);
-      editor.loadModuleBlocks(workspaceRef.current, moduleFilePath);
-    }
-  };
 
   // Expose methods through ref
   React.useImperativeHandle(props.innerRef, () => ({
-    getCurrentModuleType,
-    getCurrentModuleFilePath,
-    listWorkspaces,
-    newWorkspace,
     getBlocklyWorkspace,
-    generateCode,
-    saveBlocks,
-    loadBlocks,
   }));
 
   return (
@@ -179,7 +126,6 @@ function BlocklyComponent(props) {
     >
       <div
         ref={blocklyDiv}
-        className="blockly-div"
         style={{
           width: '100%',
           height: '100%',
