@@ -35,8 +35,8 @@ class ExtendedPythonGenerator extends PythonGenerator {
     super.init(workspace);
 
     // The exported blocks produced here have the extraState.importModule and fields.MODULE values
-    // set to the MODULE_NAME_PLACEHOLDER. This is so blocks files can be renamed and copied without
-    // having to change the contents of the files.
+    // set to the MODULE_NAME_PLACEHOLDER. This is so blocks modules can be renamed and copied
+    // without having to change the contents of the modules.
     // The placeholders will be replaced with the actual module name before they are added to the
     // toolbox.
 
@@ -45,8 +45,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
     // All functions are exported.
     const allProcedures = Blockly.Procedures.allProcedures(workspace);
     const procedureTuples = allProcedures[0].concat(allProcedures[1]);
-    for (let i = 0; i < procedureTuples.length; i++) {
-      const procedureTuple = procedureTuples[i];
+    for (const procedureTuple of procedureTuples) {
       const functionName = procedureTuple[0];
       const blockDefinition = Blockly.Procedures.getDefinition(functionName, workspace);
       if (!blockDefinition.isEnabled()) {
@@ -70,9 +69,9 @@ class ExtendedPythonGenerator extends PythonGenerator {
         },
       };
       const parameterNames = procedureTuple[1];
-      for (let iParam = 0; iParam < parameterNames.length; iParam++) {
-        callFunctionBlock['extraState']['args'].push({
-          'name': parameterNames[iParam],
+      for (const parameterName of parameterNames) {
+        callFunctionBlock.extraState.args.push({
+          'name': parameterName,
           'type': '',
         })
       }
@@ -80,9 +79,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
     }
 
     const allVariables = workspace.getAllVariables();
-    for (let i = 0; i < allVariables.length; i++) {
-      const variableModel = allVariables[i];
-
+    for (const variableModel of allVariables) {
       // Only variables that are used outside of functions are exported. (I'm not sure if this is
       // the right choice, since all variables in blockly are global variables.)
       let exported = false;
@@ -90,8 +87,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
       if (variableUsesById.length === 0) {
         continue;
       }
-      for (let iBlock = 0; iBlock < variableUsesById.length; iBlock++) {
-        const block = variableUsesById[iBlock];
+      for (const block of variableUsesById) {
         if (block.type === 'variables_get' ||
             block.type === 'variables_set' ||
             block.type === 'math_change' ||

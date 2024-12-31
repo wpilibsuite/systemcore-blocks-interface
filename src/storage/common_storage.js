@@ -19,7 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-// Functions related to files, regardless of where the files are stored.
+// Functions related to modules, regardless of where the modules are stored.
 
 export const MODULE_TYPE_WORKSPACE = 'workspace';
 export const MODULE_TYPE_OPMODE = 'opmode';
@@ -37,18 +37,18 @@ export function isValidPythonModuleName(name) {
 }
 
 /**
- * Returns the module file path for the given workspace and module names.
+ * Returns the module path for the given workspace and module names.
  */
-export function makeModuleFilePath(workspaceName, moduleName) {
+export function makeModulePath(workspaceName, moduleName) {
   return workspaceName + '/' + moduleName + '.py';
 }
 
 /**
- * Returns the workspace name for given module file path.
+ * Returns the workspace name for given module path.
  */
-export function getWorkspaceName(moduleFilePath) {
+export function getWorkspaceName(modulePath) {
   const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
-  const result = regex.exec(moduleFilePath)
+  const result = regex.exec(modulePath)
   if (!result) {
     throw new Error('Unable to extract the workspace name.');
   }
@@ -56,11 +56,11 @@ export function getWorkspaceName(moduleFilePath) {
 }
 
 /**
- * Returns the module name for given module file path.
+ * Returns the module name for given module path.
  */
-export function getModuleName(moduleFilePath) {
+export function getModuleName(modulePath) {
   const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
-  const result = regex.exec(moduleFilePath)
+  const result = regex.exec(modulePath)
   if (!result) {
     throw new Error('Unable to extract the module name.');
   }
@@ -68,10 +68,10 @@ export function getModuleName(moduleFilePath) {
 }
 
 /**
- * Returns the download file name for the given module file path.
+ * Returns the download file name for the given module path.
  */
-export function makeDownloadFileName(moduleFilePath) {
-  return getWorkspaceName(moduleFilePath) + '-' + getModuleName(moduleFilePath) + '.wpilib_blocks';
+export function makeDownloadFileName(modulePath) {
+  return getWorkspaceName(modulePath) + '-' + getModuleName(modulePath) + '.wpilib_blocks';
 }
 
 export function makeUploadWorkspaceName(uploadFileName) {
@@ -85,19 +85,19 @@ export function makeUploadWorkspaceName(uploadFileName) {
 }
 
 /**
- * Returns the file content for a new module.
+ * Returns the module content for a new module.
  */
-export function newModuleFileContent() {
+export function newModuleContent() {
   const pythonCode = '\n';
   const exportedBlocks = '[]';
   const blocksContent = '{}';
-  return makeFileContent(pythonCode, exportedBlocks, blocksContent);
+  return makeModuleContent(pythonCode, exportedBlocks, blocksContent);
 }
 
 /**
- * Make the file content from the given python code and blocks content.
+ * Make the module content from the given python code and blocks content.
  */
-export function makeFileContent(pythonCode, exportedBlocks, blocksContent) {
+export function makeModuleContent(pythonCode, exportedBlocks, blocksContent) {
   let delimiter = 'BlocksContent';
   while (blocksContent.includes(delimiter) || exportedBlocks.includes(delimiter)) {
     delimiter += '.';
@@ -115,64 +115,64 @@ export function makeFileContent(pythonCode, exportedBlocks, blocksContent) {
 }
 
 /**
- * Extract the blocks content from the given file content.
+ * Extract the blocks content from the given module content.
  */
-export function extractBlocksContent(fileContent) {
+export function extractBlocksContent(moduleContent) {
   // The last line is """.
   const lastChars = '\n"""\n';
-  if (!fileContent.endsWith(lastChars) || fileContent.length <= lastChars.length) {
+  if (!moduleContent.endsWith(lastChars) || moduleContent.length <= lastChars.length) {
     throw new Error('Unable to extract the blocks content.');
   }
   // The line before that is the delimiter.
-  const iEndOfDelimiter = fileContent.length - lastChars.length;
-  const iPreviousNewLine = fileContent.lastIndexOf('\n', iEndOfDelimiter - 1);
+  const iEndOfDelimiter = moduleContent.length - lastChars.length;
+  const iPreviousNewLine = moduleContent.lastIndexOf('\n', iEndOfDelimiter - 1);
   if (iPreviousNewLine === -1) {
     throw new Error('Unable to extract the blocks content.');
   }
   const iEndOfBlocksContent = iPreviousNewLine;
   const iStartOfDelimiter = iPreviousNewLine + 1;
-  const delimiter = fileContent.substring(iStartOfDelimiter, iEndOfDelimiter);
+  const delimiter = moduleContent.substring(iStartOfDelimiter, iEndOfDelimiter);
   // Now, find the previous delimiter.
-  const iStartOfPreviousDelimiter = fileContent.lastIndexOf(delimiter, iPreviousNewLine - 1);
+  const iStartOfPreviousDelimiter = moduleContent.lastIndexOf(delimiter, iPreviousNewLine - 1);
   if (iStartOfPreviousDelimiter === -1) {
     throw new Error('Unable to extract the blocks content.');
   }
   // The blocks content is between the two delimiters.
   const iStartOfBlocksContent = iStartOfPreviousDelimiter + delimiter.length + 1;
-  return fileContent.substring(iStartOfBlocksContent, iEndOfBlocksContent);
+  return moduleContent.substring(iStartOfBlocksContent, iEndOfBlocksContent);
 }
 
 /**
- * Extract the exportedBlocks from the given file content.
+ * Extract the exportedBlocks from the given module content.
  */
-export function extractExportedBlocks(moduleName, fileContent) {
+export function extractExportedBlocks(moduleName, moduleContent) {
   // The last line is """.
   const lastChars = '\n"""\n';
-  if (!fileContent.endsWith(lastChars) || fileContent.length <= lastChars.length) {
+  if (!moduleContent.endsWith(lastChars) || moduleContent.length <= lastChars.length) {
     throw new Error('Unable to extract the exportedBlocks.');
   }
   // The line before that is the delimiter.
-  const iEndOfDelimiter = fileContent.length - lastChars.length;
-  const iPreviousNewLine = fileContent.lastIndexOf('\n', iEndOfDelimiter - 1);
+  const iEndOfDelimiter = moduleContent.length - lastChars.length;
+  const iPreviousNewLine = moduleContent.lastIndexOf('\n', iEndOfDelimiter - 1);
   if (iPreviousNewLine === -1) {
     throw new Error('Unable to extract the exportedBlocks.');
   }
   const iStartOfDelimiter = iPreviousNewLine + 1;
-  const delimiter = fileContent.substring(iStartOfDelimiter, iEndOfDelimiter);
+  const delimiter = moduleContent.substring(iStartOfDelimiter, iEndOfDelimiter);
   // Now, find the previous delimiter.
-  let iStartOfPreviousDelimiter = fileContent.lastIndexOf(delimiter, iPreviousNewLine - 1);
+  let iStartOfPreviousDelimiter = moduleContent.lastIndexOf(delimiter, iPreviousNewLine - 1);
   if (iStartOfPreviousDelimiter === -1) {
     throw new Error('Unable to extract the exportedBlocks.');
   }
   const iEndOfExportedBlocks = iStartOfPreviousDelimiter - 1;
   // Now, find the previous delimiter before that.
-  iStartOfPreviousDelimiter = fileContent.lastIndexOf(delimiter, iStartOfPreviousDelimiter - 1);
+  iStartOfPreviousDelimiter = moduleContent.lastIndexOf(delimiter, iStartOfPreviousDelimiter - 1);
   if (iStartOfPreviousDelimiter === -1) {
     throw new Error('Unable to extract the exportedBlocks.');
   }
   // The exportedBlocks content is between the two delimiters.
   const iStartOfExportedBlocks = iStartOfPreviousDelimiter + delimiter.length + 1;
-  const exportedBlocksContent = fileContent.substring(iStartOfExportedBlocks, iEndOfExportedBlocks);
+  const exportedBlocksContent = moduleContent.substring(iStartOfExportedBlocks, iEndOfExportedBlocks);
   const exportedBlocks = JSON.parse(exportedBlocksContent);
   for (let i = 0; i < exportedBlocks.length; i++) {
     const block = exportedBlocks[i];
