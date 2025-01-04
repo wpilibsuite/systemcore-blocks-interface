@@ -30,7 +30,7 @@ export function createNonEditableField(label) {
 
 export function createFieldDropdownForVariable(varNames) {
   // If there is only one choice, don't create a dropdown.
-  if (varNames.length == 1) {
+  if (varNames.length === 1) {
     return createNonEditableField(varNames[0]);
   }
   const varNameChoices = [];

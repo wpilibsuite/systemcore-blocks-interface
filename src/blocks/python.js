@@ -831,6 +831,10 @@ pythonGenerator.forBlock['call_python_instance_method'] = function(block, genera
 // Optional extra state fields:
 // importModule - specified if an import statement is needed for the generated python code.
 
+
+export const PythonEnumValues = Object.create(null);
+export const PythonEnumTooltips = Object.create(null);
+
 const GET_PYTHON_ENUM_VALUE_MUTATOR_MIXIN = {
   saveExtraState: function() {
     const extraState = {
@@ -872,10 +876,6 @@ const GET_PYTHON_ENUM_VALUE_MUTATOR_MIXIN = {
 
 Blockly.Extensions.registerMutator('get_python_enum_value', GET_PYTHON_ENUM_VALUE_MUTATOR_MIXIN);
 
-
-export const PythonEnumValues = Object.create(null);
-export const PythonEnumTooltips = Object.create(null);
-
 Blockly.Blocks['get_python_enum_value'] = {
   init: function() {
     this.appendDummyInput('ENUM')
@@ -890,7 +890,13 @@ Blockly.Blocks['get_python_enum_value'] = {
       let tooltip = 'Gets the enum value ' + enumClassName + '.' + enumValue + '.';
       const enumTooltip = PythonEnumTooltips[enumClassName]
       if (enumTooltip) {
-        tooltip += '\n\n' + enumTooltip;
+        if (typeof enumTooltip === 'string') {
+          tooltip += '\n\n' + enumTooltip;
+        } else if (typeof enumTooltip === "object") {
+          if (enumValue in enumTooltip) {
+            tooltip += '\n\n' + enumTooltip[enumValue];
+          }
+        }
       }
       return tooltip;
     });

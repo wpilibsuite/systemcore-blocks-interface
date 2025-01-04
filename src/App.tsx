@@ -1,9 +1,15 @@
+// Import our block definitions before anything else. Otherwise the
+// extendedPythonGenerator doesn't copy them from the blockly python
+// generator.
+// TODO(lizlooney): fix that.
+import './blocks/python'; // Defines blocks for accessing code in python (like wpilib, etc).
+import './blocks/misc';   // Defines a few miscellaneous blocks like a comment block.
+
 import React, { useEffect, useState, useRef } from 'react';
+
 import { Button, ConfigProvider, Flex, Input, Modal, Space, Splitter, Tooltip, Tree, Typography, theme } from 'antd';
 import {
-  CloseOutlined,
   CopyOutlined,
-  DeleteOutlined,
   DownloadOutlined,
   FileAddOutlined,
   FileOutlined,
@@ -12,12 +18,19 @@ import {
   SaveOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
+
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 import BlocklyComponent from './Blockly';
+
+//import { testAllBlocksInToolbox } from '../editor/toolbox_tests.js';
 import * as editor from './editor/editor.js';
 import * as storage from './storage/client_side_storage.js';
 import * as commonStorage from './storage/common_storage.js';
+
+import * as toolbox from './editor/toolbox.js';
+import { extendedPythonGenerator } from './editor/extended_python_generator.js';
 
 
 const NewWorkspaceModal = ({ workspaceNamesArg, isOpen, onOk, onCancel }) => {
@@ -148,11 +161,11 @@ const App = () => {
   const [currentWorkspaceName, setCurrentWorkspaceName] = useState('');
   const [opModeNames, setOpModeNames] = useState([]); // Names of opmodes in the current workspace.
   const [generatedCode, setGeneratedCode] = useState('');
-  const headerArea = useRef();
-  const blocklyComponent = useRef();
+  const blocklyComponent = useRef(null);
 
   useEffect(() => {
     listModules();
+    initializeBlockly();
   }, []);
 
   const listModules = () => {
@@ -189,6 +202,31 @@ const App = () => {
     setWorkspaceNames(workspaceNames);
     setTreeData(treeData);
   }, [modules]);
+
+  const initializeBlockly = () => {
+    if (blocklyComponent.current) {
+      const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
+      if (blocklyWorkspace) {
+        // Show generated python code.
+        blocklyWorkspace.addChangeListener((event) => {
+          if (event.isUiEvent) {
+            // UI events are things like scrolling, zooming, etc.
+            // No need to regenerate python code after one of these.
+            return;
+          }
+          if (blocklyWorkspace.isDragging()) {
+            // Don't regenerate python code mid-drag.
+            return;
+          }
+          const code = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
+          setGeneratedCode(code);
+        });
+        // Set the toolbox.
+        blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON());
+        //testAllBlocksInToolbox(workspace);
+      }
+    }
+  };
 
   const handleNewWorkspaceOk = (workspaceName, callback) => {
     const workspaceContent = commonStorage.newModuleContent();
@@ -286,10 +324,7 @@ const App = () => {
           height: '100vh',
         }}
       >
-        <Flex
-          ref={headerArea}
-          vertical
-        >
+        <Flex vertical>
           <Typography.Paragraph
             strong={true}
             underline={true}
@@ -351,7 +386,7 @@ const App = () => {
               </Button>
             </Tooltip>
           </Space>
-        </Flex> // headerArea
+        </Flex>
         <Splitter
           style={{
             height: '100vh',
@@ -371,9 +406,6 @@ const App = () => {
           <Splitter.Panel min='2%' defaultSize='50%'>
             <BlocklyComponent
               ref={blocklyComponent}
-                    onGeneratedCodeChanged={(code) => {
-                      setGeneratedCode(code);
-                    }}
             />
           </Splitter.Panel>
           <Splitter.Panel min='2%'>

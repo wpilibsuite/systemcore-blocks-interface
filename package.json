@@ -8,6 +8,8 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
     "antd": "^5.22.1",
     "blockly": "^11.1.1",
     "lucide-react": "^0.460.0",
