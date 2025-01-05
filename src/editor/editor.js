@@ -22,7 +22,7 @@
 import * as Blockly from 'blockly/core';
 
 import { extendedPythonGenerator } from './extended_python_generator.js';
-import * as toolbox from './toolbox.js';
+import * as toolbox from './toolbox';
 import * as storage from '../storage/client_side_storage.js';
 import * as commonStorage from '../storage/common_storage.js';
 
@@ -93,7 +93,7 @@ function updateToolbox(blocklyWorkspace, modulePath) {
   const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
   if (modulePath === workspacePath) {
     // If we are editing a Workspace, we don't add any additional blocks to the toolbox.
-    blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON());
+    blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON([]));
     return;
   }
   // Otherwise, we add the exported blocks from the Workspace.
@@ -102,7 +102,7 @@ function updateToolbox(blocklyWorkspace, modulePath) {
     function(workspaceContent, errorMessage) {
       if (errorMessage) {
         alert(errorMessage);
-        blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON());
+        blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON([]));
         return;
       }
       const exportedBlocks = commonStorage.extractExportedBlocks(

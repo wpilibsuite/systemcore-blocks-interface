@@ -29,7 +29,8 @@ import * as editor from './editor/editor.js';
 import * as storage from './storage/client_side_storage.js';
 import * as commonStorage from './storage/common_storage.js';
 
-import * as toolbox from './editor/toolbox.js';
+import * as blocksInitialize from './blocks/generated/initialize';
+import * as toolbox from './editor/toolbox';
 import { extendedPythonGenerator } from './editor/extended_python_generator.js';
 
 
@@ -41,7 +42,7 @@ const NewWorkspaceModal = ({ workspaceNamesArg, isOpen, onOk, onCancel }) => {
     <Modal
       title="New Workspace"
       open={isOpen}
-      afterOpenChange={(open) => {
+      afterOpenChange={(open: boolean) => {
         setValue('');
         if (open) {
           setWorkspaceNames(workspaceNamesArg);
@@ -98,7 +99,7 @@ const NewOpModeModal = ({ workspaceNameArg, opModeNamesArg, isOpen, onOk, onCanc
     <Modal
       title="New OpMode"
       open={isOpen}
-      afterOpenChange={(open) => {
+      afterOpenChange={(open: boolean) => {
         setValue('');
         if (open) {
           setWorkspaceName(workspaceNameArg);
@@ -159,7 +160,6 @@ const App = () => {
   const [treeData, setTreeData] = useState([])
   const [currentModulePath, setCurrentModulePath] = useState('');
   const [currentWorkspaceName, setCurrentWorkspaceName] = useState('');
-  const [opModeNames, setOpModeNames] = useState([]); // Names of opmodes in the current workspace.
   const [generatedCode, setGeneratedCode] = useState('');
   const blocklyComponent = useRef(null);
 
@@ -204,6 +204,7 @@ const App = () => {
   }, [modules]);
 
   const initializeBlockly = () => {
+    blocksInitialize.initialize();
     if (blocklyComponent.current) {
       const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
       if (blocklyWorkspace) {
@@ -222,13 +223,13 @@ const App = () => {
           setGeneratedCode(code);
         });
         // Set the toolbox.
-        blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON());
+        blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON([]));
         //testAllBlocksInToolbox(workspace);
       }
     }
   };
 
-  const handleNewWorkspaceOk = (workspaceName, callback) => {
+  const handleNewWorkspaceOk = (workspaceName: string, callback) => {
     const workspaceContent = commonStorage.newModuleContent();
     const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
     storage.createModule(
@@ -236,7 +237,20 @@ const App = () => {
         callback);
   };
 
-  const handleNewOpModeOk = (workspaceName, opModeName, callback) => {
+  const collectOpModeNames = (): string[] => {
+    const opModeNames = [];
+    for (const workspace of modules) {
+      if (workspace.workspaceName === currentWorkspaceName) {
+        for (const opMode of workspace.opModes) {
+          opModeNames.push(opMode.moduleName);
+        }
+        break;
+      }
+    }
+    return opModeNames;
+  };
+
+  const handleNewOpModeOk = (workspaceName: string, opModeName: string, callback) => {
     const opModeContent = commonStorage.newModuleContent();
     const opModePath = commonStorage.makeModulePath(workspaceName, opModeName);
     storage.createModule(
@@ -274,16 +288,6 @@ const App = () => {
   useEffect(() => {
     if (currentModulePath) {
       setCurrentWorkspaceName(commonStorage.getWorkspaceName(currentModulePath));
-      const opModeNames = [];
-      for (const workspace of modules) {
-        if (workspace.workspaceName === currentWorkspaceName) {
-          for (const opMode of workspace.opModes) {
-            opModeNames.push(opMode.moduleName);
-          }
-          break;
-        }
-      }
-      setOpModeNames(opModeNames);
 
       storage.saveEntry('currentModulePath', currentModulePath);
       editor.loadModuleBlocks(blocklyComponent.current.getBlocklyWorkspace(), currentModulePath);
@@ -461,7 +465,7 @@ const App = () => {
       />
       <NewOpModeModal
         workspaceNameArg={currentWorkspaceName}
-        opModeNamesArg={opModeNames}
+        opModeNamesArg={collectOpModeNames()}
         isOpen={isNewOpModeModalOpen}
         onOk={(w, o) => {
           setIsNewOpModeModalOpen(false);

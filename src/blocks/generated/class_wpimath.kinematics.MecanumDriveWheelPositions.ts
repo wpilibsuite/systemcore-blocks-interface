@@ -1,0 +1,34 @@
+// This file was generated. Do not edit!
+
+import * as python from "../python";
+import {Category} from "../../toolbox/items";
+
+// Blocks for class wpimath.kinematics.MecanumDriveWheelPositions
+
+export function initialize() {
+  python.initializeInstanceVariableGetter("wpimath.kinematics.MecanumDriveWheelPositions", "wpimath.units.meters", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Distance driven by the front-left wheel.", "Distance driven by the front-right wheel.", "Distance driven by the rear-left wheel.", "Distance driven by the rear-right wheel."]);
+  python.initializeInstanceVariableSetter("wpimath.kinematics.MecanumDriveWheelPositions", "wpimath.units.meters", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Distance driven by the front-left wheel.", "Distance driven by the front-right wheel.", "Distance driven by the rear-left wheel.", "Distance driven by the rear-right wheel."]);
+}
+
+export function getToolboxCategory(subcategories: any): Category {
+  const category = {
+    kind: "category",
+    name: "MecanumDriveWheelPositions",
+    contents: [
+      {"kind": "block", "type": "get_python_instance_variable", "extraState": {"varType": "wpimath.units.meters", "key": "instance wpimath.kinematics.MecanumDriveWheelPositions wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "frontLeft"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
+      {"kind": "block", "type": "set_python_instance_variable", "extraState": {"varType": "wpimath.units.meters", "key": "instance wpimath.kinematics.MecanumDriveWheelPositions wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "frontLeft"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
+      {"kind": "block", "type": "get_python_instance_variable", "extraState": {"varType": "wpimath.units.meters", "key": "instance wpimath.kinematics.MecanumDriveWheelPositions wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "frontRight"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
+      {"kind": "block", "type": "set_python_instance_variable", "extraState": {"varType": "wpimath.units.meters", "key": "instance wpimath.kinematics.MecanumDriveWheelPositions wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "frontRight"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
+      {"kind": "block", "type": "get_python_instance_variable", "extraState": {"varType": "wpimath.units.meters", "key": "instance wpimath.kinematics.MecanumDriveWheelPositions wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "rearLeft"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
+      {"kind": "block", "type": "set_python_instance_variable", "extraState": {"varType": "wpimath.units.meters", "key": "instance wpimath.kinematics.MecanumDriveWheelPositions wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "rearLeft"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
+      {"kind": "block", "type": "get_python_instance_variable", "extraState": {"varType": "wpimath.units.meters", "key": "instance wpimath.kinematics.MecanumDriveWheelPositions wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "rearRight"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
+      {"kind": "block", "type": "set_python_instance_variable", "extraState": {"varType": "wpimath.units.meters", "key": "instance wpimath.kinematics.MecanumDriveWheelPositions wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "rearRight"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
+      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions", "args": [], "importModule": "wpimath.kinematics"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions"}}}}},
+      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions", "args": [{"name": "mecanumDriveWheelPositions", "type": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions"}, {"name": "endValue", "type": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions"}, {"name": "t", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "FUNC": "interpolate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}}}}},
+    ],
+  };
+  if (subcategories) {
+    category.contents.push(...subcategories);
+  }
+  return category;
+}
