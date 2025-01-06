@@ -63,16 +63,17 @@ function BlocklyComponent(props) {
 
   // Handle workspace resize
   useEffect(() => {
-    if (blocklyDiv.current) {
+    const div = blocklyDiv.current;
+    if (div) {
       const resizeObserver = new ResizeObserver(() => {
         if (workspaceRef.current) {
           Blockly.svgResize(workspaceRef.current);
         }
       });
-      resizeObserver.observe(blocklyDiv.current);
+      resizeObserver.observe(div);
 
       return () => {
-        resizeObserver.unobserve(blocklyDiv.current);
+        resizeObserver.unobserve(div);
       };
     }
   }, [blocklyDiv]);

@@ -24,7 +24,7 @@ import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import BlocklyComponent from './Blockly';
 
-//import { testAllBlocksInToolbox } from '../editor/toolbox_tests.js';
+//import { testAllBlocksInToolbox } from './editor/toolbox_tests';
 import * as editor from './editor/editor.js';
 import * as storage from './storage/client_side_storage.js';
 import * as commonStorage from './storage/common_storage.js';
@@ -34,9 +34,9 @@ import * as toolbox from './editor/toolbox';
 import { extendedPythonGenerator } from './editor/extended_python_generator.js';
 
 
-const NewWorkspaceModal = ({ workspaceNamesArg, isOpen, onOk, onCancel }) => {
-  const [workspaceNames, setWorkspaceNames] = useState([]);
+const NewWorkspaceModal = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
   const [value, setValue] = useState('');
+  const [workspaceNames, setWorkspaceNames] = useState([]);
 
   return (
     <Modal
@@ -45,7 +45,7 @@ const NewWorkspaceModal = ({ workspaceNamesArg, isOpen, onOk, onCancel }) => {
       afterOpenChange={(open: boolean) => {
         setValue('');
         if (open) {
-          setWorkspaceNames(workspaceNamesArg);
+          setWorkspaceNames(getWorkspaceNames());
         }
       }}
       onCancel={onCancel}
@@ -90,10 +90,10 @@ const NewWorkspaceModal = ({ workspaceNamesArg, isOpen, onOk, onCancel }) => {
   );
 };
 
-const NewOpModeModal = ({ workspaceNameArg, opModeNamesArg, isOpen, onOk, onCancel }) => {
+const NewOpModeModal = ({ isOpen, getCurrentWorkspaceName, getOpModeNames, onOk, onCancel }) => {
+  const [value, setValue] = useState('');
   const [workspaceName, setWorkspaceName] = useState('');
   const [opModeNames, setOpModeNames] = useState([]);
-  const [value, setValue] = useState('');
 
   return (
     <Modal
@@ -102,8 +102,9 @@ const NewOpModeModal = ({ workspaceNameArg, opModeNamesArg, isOpen, onOk, onCanc
       afterOpenChange={(open: boolean) => {
         setValue('');
         if (open) {
-          setWorkspaceName(workspaceNameArg);
-          setOpModeNames(opModeNamesArg);
+          const currentWorkspaceName = getCurrentWorkspaceName();
+          setWorkspaceName(currentWorkspaceName);
+          setOpModeNames(getOpModeNames(currentWorkspaceName));
         }
       }}
       onCancel={onCancel}
@@ -153,19 +154,26 @@ const NewOpModeModal = ({ workspaceNameArg, opModeNamesArg, isOpen, onOk, onCanc
 };
 
 const App = () => {
+  const isFirstRender = useRef(true);
+  const treeComponent = useRef(null);
+  const blocklyComponent = useRef(null);
+  const [modules, setModules] = useState([]);
+  const [treeData, setTreeData] = useState([])
+  const [treeExpandedKeys, setTreeExpandedKeys] = React.useState([])
+  const [pathToExpand, setPathToExpand] = React.useState('');
+  const [treeSelectedPath, setTreeSelectedPath] = useState('');
+  const [currentModulePath, setCurrentModulePath] = useState('');
+  const [generatedCode, setGeneratedCode] = useState('');
   const [isNewWorkspaceModalOpen, setIsNewWorkspaceModalOpen] = useState(false);
   const [isNewOpModeModalOpen, setIsNewOpModeModalOpen] = useState(false);
-  const [modules, setModules] = useState([]);
-  const [workspaceNames, setWorkspaceNames] = useState([]);
-  const [treeData, setTreeData] = useState([])
-  const [currentModulePath, setCurrentModulePath] = useState('');
-  const [currentWorkspaceName, setCurrentWorkspaceName] = useState('');
-  const [generatedCode, setGeneratedCode] = useState('');
-  const blocklyComponent = useRef(null);
 
+  // When the app is loaded, fetch the list of modules from storage and initialize blockly.
   useEffect(() => {
-    listModules();
-    initializeBlockly();
+    if (isFirstRender.current) {
+      listModules();
+      initializeBlockly();
+      isFirstRender.current = false;
+    }
   }, []);
 
   const listModules = () => {
@@ -177,31 +185,6 @@ const App = () => {
       }
     });
   };
-
-  useEffect(() => {
-    const workspaceNames = []
-    const treeData = [];
-    for (const workspace of modules) {
-      workspaceNames.push(workspace.workspaceName);
-      const parent = {
-        title: workspace.workspaceName,
-        key: workspace.modulePath,
-        icon: <FolderOutlined />,
-        children: [],
-      };
-      for (const opMode of workspace.opModes) {
-        const child = {
-          title: opMode.moduleName,
-          key: opMode.modulePath,
-          icon: <FileOutlined />,
-        };
-        parent.children.push(child);
-      }
-      treeData.push(parent);
-    }
-    setWorkspaceNames(workspaceNames);
-    setTreeData(treeData);
-  }, [modules]);
 
   const initializeBlockly = () => {
     blocksInitialize.initialize();
@@ -222,12 +205,49 @@ const App = () => {
           const code = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
           setGeneratedCode(code);
         });
+
         // Set the toolbox.
-        blocklyWorkspace.updateToolbox(toolbox.getToolboxJSON([]));
-        //testAllBlocksInToolbox(workspace);
+        const toolboxJSON = toolbox.getToolboxJSON([]);
+        //testAllBlocksInToolbox(toolboxJSON.contents);
+        blocklyWorkspace.updateToolbox(toolboxJSON);
       }
     }
   };
+
+  // When the list of modules has been fetched, fill the tree.
+  useEffect(() => {
+    const treeData = [];
+    modules.forEach((workspace) => {
+      const parent = {
+        title: workspace.workspaceName,
+        key: workspace.modulePath,
+        icon: <FolderOutlined />,
+        children: [],
+      };
+      workspace.opModes.forEach((opMode) => {
+        const child = {
+          title: opMode.moduleName,
+          key: opMode.modulePath,
+          icon: <FileOutlined />,
+        };
+        parent.children.push(child);
+      });
+      treeData.push(parent);
+    });
+    setTreeData(treeData);
+
+    if (!currentModulePath) {
+      storage.fetchEntry('currentModulePath', (modulePath, error) => {
+        if (modulePath) {
+          if (!currentModulePath) {
+            setCurrentModulePath(modulePath);
+          }
+        } else if (error) {
+          console.log(error);
+        }
+      });
+    }
+  }, [modules, currentModulePath]);
 
   const handleNewWorkspaceOk = (workspaceName: string, callback) => {
     const workspaceContent = commonStorage.newModuleContent();
@@ -237,10 +257,22 @@ const App = () => {
         callback);
   };
 
-  const collectOpModeNames = (): string[] => {
+  const getWorkspaceNames = (): string[] => {
+    const workspaceNames = [];
+    modules.forEach((workspace) => {
+      workspaceNames.push(workspace.workspaceName);
+    });
+    return workspaceNames;
+  };
+
+  const getCurrentWorkspaceName = (): string => {
+    return commonStorage.getWorkspaceName(currentModulePath);
+  };
+
+  const getOpModeNames = (workspaceName): string[] => {
     const opModeNames = [];
     for (const workspace of modules) {
-      if (workspace.workspaceName === currentWorkspaceName) {
+      if (workspace.workspaceName === workspaceName) {
         for (const opMode of workspace.opModes) {
           opModeNames.push(opMode.moduleName);
         }
@@ -279,20 +311,35 @@ const App = () => {
     if (selectedKeys.length === 1) {
       // TODO(lizlooney): Before loading different module, check whether the
       // blocks need to be saved.
-      setCurrentModulePath('');
       const modulePath = selectedKeys[0];
       setCurrentModulePath(modulePath);
     }
   };
 
+  // When a module path has become the current module path (either by fetching
+  // the most recent module path (soon after the app is loaded) or by the user
+  // selecting it in the tree, set the current workspace, expend the
+  // workspace node in the tree.
   useEffect(() => {
     if (currentModulePath) {
-      setCurrentWorkspaceName(commonStorage.getWorkspaceName(currentModulePath));
+      setTreeSelectedPath(currentModulePath);
+      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
+      const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
+
+      setPathToExpand(workspacePath);
 
       storage.saveEntry('currentModulePath', currentModulePath);
       editor.loadModuleBlocks(blocklyComponent.current.getBlocklyWorkspace(), currentModulePath);
     }
   }, [currentModulePath]);
+
+  useEffect(() => {
+    if (pathToExpand) {
+      const expandedKeys = [...treeExpandedKeys];
+      expandedKeys.push(pathToExpand);
+      setTreeExpandedKeys(expandedKeys);
+    }
+  }, [pathToExpand, treeExpandedKeys]);
 
   const copyCodeToClipboard = () => {
     navigator.clipboard.writeText(generatedCode).then(
@@ -354,6 +401,7 @@ const App = () => {
             <Tooltip title="New OpMode">
               <Button
                 icon={<FileAddOutlined />} 
+                disabled={!currentModulePath}
                 onClick={() => {
                   // TODO(lizlooney): Before showing the New OpMode modal,
                   // check whether the blocks need to be saved.
@@ -398,12 +446,13 @@ const App = () => {
         >
           <Splitter.Panel min='2%' defaultSize='15%'>
             <Tree
-              showIcon
-              blockNode
-              autoExpandParent
-              defaultExpandAll
-              defaultExpandParent
+              ref={treeComponent}
+              showIcon={true}
+              blockNode={true}
               treeData={treeData}
+              expandedKeys={treeExpandedKeys}
+              onExpand={setTreeExpandedKeys}
+              selectedKeys={[treeSelectedPath]}
               onSelect={handleModuleSelected}
             />
           </Splitter.Panel>
@@ -449,8 +498,8 @@ const App = () => {
       </Flex>
 
       <NewWorkspaceModal
-        workspaceNamesArg={workspaceNames}
         isOpen={isNewWorkspaceModalOpen}
+        getWorkspaceNames={getWorkspaceNames}
         onOk={(w) => {
           setIsNewWorkspaceModalOpen(false);
           handleNewWorkspaceOk(w, (success, error) => {
@@ -464,9 +513,9 @@ const App = () => {
         onCancel={() => setIsNewWorkspaceModalOpen(false)}
       />
       <NewOpModeModal
-        workspaceNameArg={currentWorkspaceName}
-        opModeNamesArg={collectOpModeNames()}
         isOpen={isNewOpModeModalOpen}
+        getCurrentWorkspaceName={getCurrentWorkspaceName}
+        getOpModeNames={getOpModeNames}
         onOk={(w, o) => {
           setIsNewOpModeModalOpen(false);
           handleNewOpModeOk(w, o, (success, error) => {

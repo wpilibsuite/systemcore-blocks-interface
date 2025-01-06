@@ -20,8 +20,9 @@
  */
 
 import * as generatedToolbox from './generated/toolbox';
+import * as ToolboxItems from "../toolbox/items";
 
-export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace) {
+export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: ToolboxItems.Item[]) {
   const contents = generatedToolbox.getToolboxCategories();
   if (opt_includeExportedBlocksFromWorkspace) {
     contents.push.apply(

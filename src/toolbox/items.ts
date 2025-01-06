@@ -17,7 +17,7 @@
 
 // author lizlooney@google.com (Liz Looney)
 
-class Item {
+export class Item {
   kind: string;
 
   constructor(kind: string) {
@@ -54,7 +54,7 @@ export class Category extends Item  {
   /** The blocks for this category. */
   contents: Item[];
 
-  constructor(name: string, contents: Block[]) {
+  constructor(name: string, contents: Item[]) {
     super('category');
     this.name = name;
     this.contents = contents;

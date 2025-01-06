@@ -8,8 +8,12 @@
     "module": "ES2015",
     "moduleResolution": "node",
     "target": "ES2015",
-    "strict": false,
     "jsx": "react",
     "allowJs": true,
+    //"strict": true,
+    //"noImplicitAny": true,
+    "plugins": [
+      { "name": "typescript-strict-plugin" }
+    ]
   }
 }

@@ -21,43 +21,56 @@
 
 import * as Blockly from 'blockly/core';
 import { pythonGenerator } from 'blockly/python';
+import * as ToolboxItems from "../toolbox/items";
 
 
 // Tests
 
-let jsonBlocksForTest = [];
-let blocklyWorkspaceForTest = null;
+let blocklyWorkspaceForTest: Blockly.Workspace = null;
 let indexForTest = 0
+let jsonBlocksForTest: ToolboxItems.Block[] = [];
 
-export function testAllBlocksInToolbox(workspace) {
-  alert('Press OK to run tests on all blocks from the toolbox.');
-  jsonBlocksForTest = [];
-  collectBlocks(workspace.toolbox_.toolboxDef_.contents);
-  console.log('Collected  ' + jsonBlocksForTest.length + ' blocks');
-
+export function testAllBlocksInToolbox(contents: ToolboxItems.Item[]) {
+  if (blocklyWorkspaceForTest !== null) {
+    // Tests are already running.
+    return;
+  }
   blocklyWorkspaceForTest = new Blockly.Workspace();
   blocklyWorkspaceForTest.MAX_UNDO = 0
   indexForTest = 0;
 
+  alert('Press OK to run tests on all blocks from the toolbox.');
+
+  jsonBlocksForTest = [];
+  collectBlocks(contents);
+  console.log('Collected  ' + jsonBlocksForTest.length + ' blocks');
+
   setTimeout(testCallback, 0);
 }
 
-function collectBlocks(contents) {
+function collectBlocks(contents: ToolboxItems.Item[]): void {
   for (const item of contents) {
     switch (item.kind) {
+      default:
+        console.log("Error - item.kind is " + item.kind + ". It must be block, category, or sep.");
+        break;
       case "block":
-        jsonBlocksForTest.push(item);
+        const block = item as ToolboxItems.Block;
+        jsonBlocksForTest.push(block);
         break;
       case "category":
-        if (item.contents) {
-          collectBlocks(item.contents);
+        const category = item as ToolboxItems.Category;
+        if (category.contents) {
+          collectBlocks(category.contents);
         }
+        break;
+      case "sep":
         break;
     }
   }
 }
 
-const testCallback = function() {
+function testCallback(): void {
   console.log((new Date()).toLocaleTimeString() + " - " + indexForTest);
   for (let i = 0; i < 1000; i++) {
     if (indexForTest >= jsonBlocksForTest.length) {
@@ -79,12 +92,12 @@ const testCallback = function() {
   }
 };
 
-function testBlock(jsonBlock) {
+function testBlock(jsonBlock: ToolboxItems.Block) {
   const block = Blockly.serialization.blocks.append(jsonBlock, blocklyWorkspaceForTest);
   testBlockPython(block);
 }
 
-function testBlockPython(block) {
+function testBlockPython(block: Blockly.Block) {
   pythonGenerator.init(blocklyWorkspaceForTest);
   let code = null;
   try {
