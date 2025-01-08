@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.drive.RobotDriveBase
 
 export function initialize() {
-  python.initializeEnum("wpilib.drive.RobotDriveBase.MotorType", ["kBack", "kFrontLeft", "kFrontRight", "kLeft", "kRearLeft", "kRearRight", "kRight"], "The location of a motor on the robot for the purpose of driving.\n\nMembers:\n\n  kFrontLeft : Front-left motor.\n\n  kFrontRight : Front-right motor.\n\n  kRearLeft : Rear-left motor.\n\n  kRearRight : Rear-right motor.\n\n  kLeft : Left motor.\n\n  kRight : Right motor.\n\n  kBack : Back motor.");
+  pythonEnum.initializeEnum("wpilib.drive.RobotDriveBase.MotorType", ["kBack", "kFrontLeft", "kFrontRight", "kLeft", "kRearLeft", "kRearRight", "kRight"], "The location of a motor on the robot for the purpose of driving.\n\nMembers:\n\n  kFrontLeft : Front-left motor.\n\n  kFrontRight : Front-right motor.\n\n  kRearLeft : Rear-left motor.\n\n  kRearRight : Rear-right motor.\n\n  kLeft : Left motor.\n\n  kRight : Right motor.\n\n  kBack : Back motor.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

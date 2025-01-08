@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.SynchronousInterrupt
 
 export function initialize() {
-  python.initializeEnum("wpilib.SynchronousInterrupt.WaitResult", ["kBoth", "kFallingEdge", "kRisingEdge", "kTimeout"], "Event trigger combinations for a synchronous interrupt.\n\nMembers:\n\n  kTimeout : Timeout event.\n\n  kRisingEdge : Rising edge event.\n\n  kFallingEdge : Falling edge event.\n\n  kBoth : Both rising and falling edge events.");
+  pythonEnum.initializeEnum("wpilib.SynchronousInterrupt.WaitResult", ["kBoth", "kFallingEdge", "kRisingEdge", "kTimeout"], "Event trigger combinations for a synchronous interrupt.\n\nMembers:\n\n  kTimeout : Timeout event.\n\n  kRisingEdge : Rising edge event.\n\n  kFallingEdge : Falling edge event.\n\n  kBoth : Both rising and falling edge events.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

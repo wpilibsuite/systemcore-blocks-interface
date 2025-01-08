@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.SPI
 
 export function initialize() {
-  python.initializeEnum("wpilib.SPI.Mode", ["kMode0", "kMode1", "kMode2", "kMode3"], "SPI mode.\n\nMembers:\n\n  kMode0 : Clock idle low, data sampled on rising edge.\n\n  kMode1 : Clock idle low, data sampled on falling edge.\n\n  kMode2 : Clock idle high, data sampled on falling edge.\n\n  kMode3 : Clock idle high, data sampled on rising edge.");
-  python.initializeEnum("wpilib.SPI.Port", ["kMXP", "kOnboardCS0", "kOnboardCS1", "kOnboardCS2", "kOnboardCS3"], "SPI port.\n\nMembers:\n\n  kOnboardCS0 : Onboard SPI bus port CS0.\n\n  kOnboardCS1 : Onboard SPI bus port CS1.\n\n  kOnboardCS2 : Onboard SPI bus port CS2.\n\n  kOnboardCS3 : Onboard SPI bus port CS3.\n\n  kMXP : MXP (roboRIO MXP) SPI bus port.");
+  pythonEnum.initializeEnum("wpilib.SPI.Mode", ["kMode0", "kMode1", "kMode2", "kMode3"], "SPI mode.\n\nMembers:\n\n  kMode0 : Clock idle low, data sampled on rising edge.\n\n  kMode1 : Clock idle low, data sampled on falling edge.\n\n  kMode2 : Clock idle high, data sampled on falling edge.\n\n  kMode3 : Clock idle high, data sampled on rising edge.");
+  pythonEnum.initializeEnum("wpilib.SPI.Port", ["kMXP", "kOnboardCS0", "kOnboardCS1", "kOnboardCS2", "kOnboardCS3"], "SPI port.\n\nMembers:\n\n  kOnboardCS0 : Onboard SPI bus port CS0.\n\n  kOnboardCS1 : Onboard SPI bus port CS1.\n\n  kOnboardCS2 : Onboard SPI bus port CS2.\n\n  kOnboardCS3 : Onboard SPI bus port CS3.\n\n  kMXP : MXP (roboRIO MXP) SPI bus port.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

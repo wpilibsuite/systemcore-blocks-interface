@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Translation2d
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.geometry.Translation2d", "wpimath.units.meters", ["x", "y"], ["", ""]);
-  python.initializeInstanceVariableGetter("wpimath.geometry.Translation2d", "wpimath.units.feet", ["x_feet", "y_feet"], ["", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Translation2d", "wpimath.units.meters", ["x", "y"], ["", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Translation2d", "wpimath.units.feet", ["x_feet", "y_feet"], ["", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

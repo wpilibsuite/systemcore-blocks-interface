@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.DoubleSolenoid
 
 export function initialize() {
-  python.initializeEnum("wpilib.DoubleSolenoid.Value", ["kForward", "kOff", "kReverse"], "Possible values for a DoubleSolenoid.\n\nMembers:\n\n  kOff : Off position.\n\n  kForward : Forward position.\n\n  kReverse : Reverse position.");
+  pythonEnum.initializeEnum("wpilib.DoubleSolenoid.Value", ["kForward", "kOff", "kReverse"], "Possible values for a DoubleSolenoid.\n\nMembers:\n\n  kOff : Off position.\n\n  kForward : Forward position.\n\n  kReverse : Reverse position.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

@@ -1,17 +1,17 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.SwerveModuleState
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModuleState", "wpimath.geometry._geometry.Rotation2d", ["angle"], ["Angle of the module."]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModuleState", "wpimath.geometry._geometry.Rotation2d", ["angle"], ["Angle of the module."]);
-  python.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModuleState", "wpimath.units.meters_per_second", ["speed"], ["Speed of the wheel of the module."]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModuleState", "wpimath.units.meters_per_second", ["speed"], ["Speed of the wheel of the module."]);
-  python.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModuleState", "wpimath.units.feet_per_second", ["speed_fps"], [""]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModuleState", "wpimath.units.feet_per_second", ["speed_fps"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModuleState", "wpimath.geometry._geometry.Rotation2d", ["angle"], ["Angle of the module."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModuleState", "wpimath.geometry._geometry.Rotation2d", ["angle"], ["Angle of the module."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModuleState", "wpimath.units.meters_per_second", ["speed"], ["Speed of the wheel of the module."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModuleState", "wpimath.units.meters_per_second", ["speed"], ["Speed of the wheel of the module."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModuleState", "wpimath.units.feet_per_second", ["speed_fps"], [""]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModuleState", "wpimath.units.feet_per_second", ["speed_fps"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

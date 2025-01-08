@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.controller.ArmFeedforward
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.controller.ArmFeedforward", "wpimath.units.volt_seconds_squared_per_radian", ["kA"], ["The acceleration gain, in volt seconds\u00b2 per radian."]);
-  python.initializeInstanceVariableGetter("wpimath.controller.ArmFeedforward", "wpimath.units.volts", ["kG", "kS"], ["The gravity gain, in volts.", "The static gain, in volts."]);
-  python.initializeInstanceVariableGetter("wpimath.controller.ArmFeedforward", "wpimath.units.volt_seconds_per_radian", ["kV"], ["The velocity gain, in volt seconds per radian."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.ArmFeedforward", "wpimath.units.volt_seconds_squared_per_radian", ["kA"], ["The acceleration gain, in volt seconds\u00b2 per radian."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.ArmFeedforward", "wpimath.units.volts", ["kG", "kS"], ["The gravity gain, in volts.", "The static gain, in volts."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.ArmFeedforward", "wpimath.units.volt_seconds_per_radian", ["kV"], ["The velocity gain, in volt seconds per radian."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

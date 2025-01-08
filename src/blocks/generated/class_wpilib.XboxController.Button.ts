@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.XboxController.Button
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.XboxController.Button", "int", ["kA", "kB", "kBack", "kLeftBumper", "kLeftStick", "kRightBumper", "kRightStick", "kStart", "kX", "kY"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.XboxController.Button", "int", ["kA", "kB", "kBack", "kLeftBumper", "kLeftStick", "kRightBumper", "kRightStick", "kStart", "kX", "kY"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

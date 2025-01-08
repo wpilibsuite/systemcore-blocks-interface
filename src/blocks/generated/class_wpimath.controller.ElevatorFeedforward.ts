@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.controller.ElevatorFeedforward
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.controller.ElevatorFeedforward", "wpimath.units.volt_seconds_squared_per_meter", ["kA"], ["The acceleration gain."]);
-  python.initializeInstanceVariableGetter("wpimath.controller.ElevatorFeedforward", "wpimath.units.volts", ["kG", "kS"], ["The gravity gain.", "The static gain."]);
-  python.initializeInstanceVariableGetter("wpimath.controller.ElevatorFeedforward", "wpimath.units.volt_seconds_per_meter", ["kV"], ["The velocity gain."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.ElevatorFeedforward", "wpimath.units.volt_seconds_squared_per_meter", ["kA"], ["The acceleration gain."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.ElevatorFeedforward", "wpimath.units.volts", ["kG", "kS"], ["The gravity gain.", "The static gain."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.ElevatorFeedforward", "wpimath.units.volt_seconds_per_meter", ["kV"], ["The velocity gain."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

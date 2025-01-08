@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.interfaces.CounterBase
 
 export function initialize() {
-  python.initializeEnum("wpilib.interfaces.CounterBase.EncodingType", ["k1X", "k2X", "k4X"], "Members:\n\n  k1X\n\n  k2X\n\n  k4X");
+  pythonEnum.initializeEnum("wpilib.interfaces.CounterBase.EncodingType", ["k1X", "k2X", "k4X"], "Members:\n\n  k1X\n\n  k2X\n\n  k4X");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

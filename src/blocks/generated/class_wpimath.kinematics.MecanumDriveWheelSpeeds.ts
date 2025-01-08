@@ -1,15 +1,15 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.MecanumDriveWheelSpeeds
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.kinematics.MecanumDriveWheelSpeeds", "wpimath.units.meters_per_second", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Speed of the front-left wheel.", "Speed of the front-right wheel.", "Speed of the rear-left wheel.", "Speed of the rear-right wheel."]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.MecanumDriveWheelSpeeds", "wpimath.units.meters_per_second", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Speed of the front-left wheel.", "Speed of the front-right wheel.", "Speed of the rear-left wheel.", "Speed of the rear-right wheel."]);
-  python.initializeInstanceVariableGetter("wpimath.kinematics.MecanumDriveWheelSpeeds", "wpimath.units.feet_per_second", ["frontLeft_fps", "frontRight_fps", "rearLeft_fps", "rearRight_fps"], ["", "", "", ""]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.MecanumDriveWheelSpeeds", "wpimath.units.feet_per_second", ["frontLeft_fps", "frontRight_fps", "rearLeft_fps", "rearRight_fps"], ["", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.MecanumDriveWheelSpeeds", "wpimath.units.meters_per_second", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Speed of the front-left wheel.", "Speed of the front-right wheel.", "Speed of the rear-left wheel.", "Speed of the rear-right wheel."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.MecanumDriveWheelSpeeds", "wpimath.units.meters_per_second", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Speed of the front-left wheel.", "Speed of the front-right wheel.", "Speed of the rear-left wheel.", "Speed of the rear-right wheel."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.MecanumDriveWheelSpeeds", "wpimath.units.feet_per_second", ["frontLeft_fps", "frontRight_fps", "rearLeft_fps", "rearRight_fps"], ["", "", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.MecanumDriveWheelSpeeds", "wpimath.units.feet_per_second", ["frontLeft_fps", "frontRight_fps", "rearLeft_fps", "rearRight_fps"], ["", "", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

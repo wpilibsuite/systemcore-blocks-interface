@@ -1,15 +1,15 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.REVPHCompressorConfig
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.REVPHCompressorConfig", "int", ["forceDisable", "useDigital"], ["", ""]);
-  python.initializeInstanceVariableSetter("hal.REVPHCompressorConfig", "int", ["forceDisable", "useDigital"], ["", ""]);
-  python.initializeInstanceVariableGetter("hal.REVPHCompressorConfig", "float", ["maxAnalogVoltage", "minAnalogVoltage"], ["", ""]);
-  python.initializeInstanceVariableSetter("hal.REVPHCompressorConfig", "float", ["maxAnalogVoltage", "minAnalogVoltage"], ["", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.REVPHCompressorConfig", "int", ["forceDisable", "useDigital"], ["", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.REVPHCompressorConfig", "int", ["forceDisable", "useDigital"], ["", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.REVPHCompressorConfig", "float", ["maxAnalogVoltage", "minAnalogVoltage"], ["", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.REVPHCompressorConfig", "float", ["maxAnalogVoltage", "minAnalogVoltage"], ["", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

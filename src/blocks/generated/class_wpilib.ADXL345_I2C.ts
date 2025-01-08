@@ -1,14 +1,15 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.ADXL345_I2C
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.ADXL345_I2C", "int", ["kAddress"], []);
-  python.initializeEnum("wpilib.ADXL345_I2C.Axes", ["kAxis_X", "kAxis_Y", "kAxis_Z"], "Accelerometer axes.\n\nMembers:\n\n  kAxis_X : X axis.\n\n  kAxis_Y : Y axis.\n\n  kAxis_Z : Z axis.");
-  python.initializeEnum("wpilib.ADXL345_I2C.Range", ["kRange_16G", "kRange_2G", "kRange_4G", "kRange_8G"], "Accelerometer range.\n\nMembers:\n\n  kRange_2G : 2 Gs max.\n\n  kRange_4G : 4 Gs max.\n\n  kRange_8G : 8 Gs max.\n\n  kRange_16G : 16 Gs max.");
+  pythonVariable.initializeClassVariableGetter("wpilib.ADXL345_I2C", "int", ["kAddress"], []);
+  pythonEnum.initializeEnum("wpilib.ADXL345_I2C.Axes", ["kAxis_X", "kAxis_Y", "kAxis_Z"], "Accelerometer axes.\n\nMembers:\n\n  kAxis_X : X axis.\n\n  kAxis_Y : Y axis.\n\n  kAxis_Z : Z axis.");
+  pythonEnum.initializeEnum("wpilib.ADXL345_I2C.Range", ["kRange_16G", "kRange_2G", "kRange_4G", "kRange_8G"], "Accelerometer range.\n\nMembers:\n\n  kRange_2G : 2 Gs max.\n\n  kRange_4G : 4 Gs max.\n\n  kRange_8G : 8 Gs max.\n\n  kRange_16G : 16 Gs max.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

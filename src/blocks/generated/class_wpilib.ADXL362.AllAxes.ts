@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.ADXL362.AllAxes
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpilib.ADXL362.AllAxes", "float", ["XAxis", "YAxis", "ZAxis"], ["Acceleration along the X axis in g-forces.", "Acceleration along the Y axis in g-forces.", "Acceleration along the Z axis in g-forces."]);
-  python.initializeInstanceVariableSetter("wpilib.ADXL362.AllAxes", "float", ["XAxis", "YAxis", "ZAxis"], ["Acceleration along the X axis in g-forces.", "Acceleration along the Y axis in g-forces.", "Acceleration along the Z axis in g-forces."]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.ADXL362.AllAxes", "float", ["XAxis", "YAxis", "ZAxis"], ["Acceleration along the X axis in g-forces.", "Acceleration along the Y axis in g-forces.", "Acceleration along the Z axis in g-forces."]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.ADXL362.AllAxes", "float", ["XAxis", "YAxis", "ZAxis"], ["Acceleration along the X axis in g-forces.", "Acceleration along the Y axis in g-forces.", "Acceleration along the Z axis in g-forces."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

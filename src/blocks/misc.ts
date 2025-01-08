@@ -23,7 +23,10 @@
 
 import * as Blockly from 'blockly/core';
 import { pythonGenerator } from 'blockly/python';
+import { Order } from 'blockly/python';
+import { ContextMenuOption, LegacyContextMenuOption } from 'blockly/core/contextmenu_registry';
 
+import { createFieldDropdown } from './blocks_utils';
 
 const miscColor = 240;        // blue
 
@@ -44,13 +47,13 @@ pythonGenerator.forBlock["misc_comment"] = function(block, generator) {
 
 Blockly.Blocks["misc_minmax"] = {
   init: function() {
-    const FUNC_CHOICES = [
-        ["max", "max"],
-        ["min", "min"],
+    const FUNC_NAMES = [
+        "max",
+        "min",
     ];
     this.setOutput(true, "Number");
     this.appendDummyInput()
-        .appendField(new Blockly.FieldDropdown(FUNC_CHOICES), "FUNC");
+        .appendField(createFieldDropdown(FUNC_NAMES), "FUNC");
     this.appendValueInput("A").setCheck("Number")
         .appendField("a")
         .setAlign(Blockly.inputs.Align.RIGHT);
@@ -58,14 +61,12 @@ Blockly.Blocks["misc_minmax"] = {
         .appendField("b")
         .setAlign(Blockly.inputs.Align.RIGHT);
     this.setColour(Blockly.Msg.MATH_HUE);
-    // Assign "this" to a variable for use in the tooltip closure below.
-    const thisBlock = this;
     const TOOLTIPS = [
         ["max", "Returns the greater of two numerical values."],
         ["min", "Returns the smaller of two numerical values."],
         ];
-    this.setTooltip(function() {
-      const key = thisBlock.getFieldValue("FUNC");
+    this.setTooltip(() => {
+      const key = this.getFieldValue("FUNC");
       for (const tooltip of TOOLTIPS) {
         if (tooltip[0] === key) {
           return tooltip[1];
@@ -79,11 +80,11 @@ Blockly.Blocks["misc_minmax"] = {
 pythonGenerator.forBlock["misc_minmax"] = function(block, generator) {
   const func = block.getFieldValue("FUNC")
   const a = generator.valueToCode(
-      block, "A", generator.ORDER_NONE);
+      block, "A", Order.NONE);
   const b = generator.valueToCode(
-      block, "B", generator.ORDER_NONE);
+      block, "B", Order.NONE);
   const code = "Math." + func + "(" + a + ", " + b + ")";
-  return [code, generator.ORDER_FUNCTION_CALL];
+  return [code, Order.FUNCTION_CALL];
 };
 
 Blockly.Blocks["misc_addItemToList"] = {
@@ -104,68 +105,10 @@ Blockly.Blocks["misc_addItemToList"] = {
 
 pythonGenerator.forBlock["misc_addItemToList"] = function(block, generator) {
   const item = generator.valueToCode(
-      block, "ITEM", generator.ORDER_NONE);
+      block, "ITEM", Order.NONE);
   const list = generator.valueToCode(
-      block, "LIST", generator.ORDER_MEMBER);
+      block, "LIST", Order.MEMBER);
   return list + ".append(" + item + ")\n";
-};
-
-Blockly.Blocks["misc_setAndGetVariable"] = {
-  init: function() {
-    this.setOutput(true, null);
-    this.appendValueInput("VALUE")
-        .setCheck(null)
-        .appendField("set")
-        .appendField(new Blockly.FieldVariable("%{BKY_VARIABLES_DEFAULT_NAME}"), "VAR")
-        .appendField("to");
-    this.setColour(330);
-    this.setTooltip("Sets this variable to be equal to the input and then returns the value of the variable.");
-    Blockly.Extensions.apply("misc_setandgetvariable", this, false);
-  }
-};
-
-const MISC_SETANDGETVARIABLE_MIXIN = {
-  /**
-   * Add menu options to create getter/setter blocks.
-   * @param {!Array} options List of menu options to add to.
-   * @this Blockly.Block
-   */
-  customContextMenu: function(options) {
-    if (!this.isInFlyout && this.type === "misc_setAndGetVariable") {
-      const name = this.getField("VAR").getText();
-      const typeToText = {
-        "variables_get": Blockly.Msg["VARIABLES_SET_CREATE_GET"].replace("%1", name),
-        "variables_set": Blockly.Msg["VARIABLES_GET_CREATE_SET"].replace("%1", name)
-      };
-      for (const type in typeToText) {
-        const option = {enabled: this.workspace.remainingCapacity() > 0};
-        option.text = typeToText[type];
-        const block = {
-          'kind': 'block',
-          'type': type,
-          'fields': {
-            'VAR': {
-              'name': name,
-            },
-          },
-        };
-        option.callback = Blockly.ContextMenu.callbackFactory(this, block);
-        options.push(option);
-      }
-    }
-  }
-};
-
-Blockly.Extensions.registerMixin("misc_setandgetvariable",
-   MISC_SETANDGETVARIABLE_MIXIN);
-
-
-pythonGenerator.forBlock["misc_setAndGetVariable"] = function(block, generator) {
-  // Variable setter.
-  const argument0 = generator.valueToCode(block, "VALUE", generator.ORDER_NONE) || "0";
-  const varName = generator.getVariableName(block.getFieldValue("VAR"));
-  const code = "(" + varName + " = " + argument0 + ")";
-  return [code, generator.ORDER_ATOMIC];
 };
 
 Blockly.Blocks["misc_evaluateButIgnoreResult"] = {
@@ -183,6 +126,6 @@ Blockly.Blocks["misc_evaluateButIgnoreResult"] = {
 
 pythonGenerator.forBlock["misc_evaluateButIgnoreResult"] = function(block, generator) {
   const value = generator.valueToCode(
-      block, "VALUE", generator.ORDER_NONE);
+      block, "VALUE", Order.NONE);
   return value + "\n";
 };

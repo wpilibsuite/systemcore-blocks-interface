@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.JoystickDescriptor
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.JoystickDescriptor", "int", ["axisCount", "buttonCount", "isXbox", "povCount", "type"], ["", "", "", "", ""]);
-  python.initializeInstanceVariableSetter("hal.JoystickDescriptor", "int", ["axisCount", "buttonCount", "isXbox", "povCount", "type"], ["", "", "", "", ""]);
-  python.initializeInstanceVariableGetter("hal.JoystickDescriptor", "memoryview", ["axisTypes", "name"], ["", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.JoystickDescriptor", "int", ["axisCount", "buttonCount", "isXbox", "povCount", "type"], ["", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.JoystickDescriptor", "int", ["axisCount", "buttonCount", "isXbox", "povCount", "type"], ["", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.JoystickDescriptor", "memoryview", ["axisTypes", "name"], ["", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

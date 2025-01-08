@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.StadiaController.Button
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.StadiaController.Button", "int", ["kA", "kB", "kEllipses", "kFrame", "kGoogle", "kHamburger", "kLeftBumper", "kLeftStick", "kLeftTrigger", "kRightBumper", "kRightStick", "kRightTrigger", "kStadia", "kX", "kY"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.StadiaController.Button", "int", ["kA", "kB", "kEllipses", "kFrame", "kGoogle", "kHamburger", "kLeftBumper", "kLeftStick", "kLeftTrigger", "kRightBumper", "kRightStick", "kRightTrigger", "kStadia", "kX", "kY"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

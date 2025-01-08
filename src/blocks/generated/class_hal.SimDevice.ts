@@ -1,13 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class hal.SimDevice
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.SimDevice", "str", ["name"], [""]);
-  python.initializeEnum("hal.SimDevice.Direction", ["kBidir", "kInput", "kOutput"], "Direction of a simulated value (from the perspective of user code).\n\nMembers:\n\n  kInput\n\n  kOutput\n\n  kBidir");
+  pythonVariable.initializeInstanceVariableGetter("hal.SimDevice", "str", ["name"], [""]);
+  pythonEnum.initializeEnum("hal.SimDevice.Direction", ["kBidir", "kInput", "kOutput"], "Direction of a simulated value (from the perspective of user code).\n\nMembers:\n\n  kInput\n\n  kOutput\n\n  kBidir");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

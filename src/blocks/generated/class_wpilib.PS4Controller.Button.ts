@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.PS4Controller.Button
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.PS4Controller.Button", "int", ["kCircle", "kCross", "kL1", "kL2", "kL3", "kOptions", "kPS", "kR1", "kR2", "kR3", "kShare", "kSquare", "kTouchpad", "kTriangle"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.PS4Controller.Button", "int", ["kCircle", "kCross", "kL1", "kL2", "kL3", "kOptions", "kPS", "kR1", "kR2", "kR3", "kShare", "kSquare", "kTouchpad", "kTriangle"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

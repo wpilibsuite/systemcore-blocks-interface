@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.simulation.DifferentialDrivetrainSim.State
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.simulation.DifferentialDrivetrainSim.State", "int", ["kHeading", "kLeftPosition", "kLeftVelocity", "kRightPosition", "kRightVelocity", "kX", "kY"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.simulation.DifferentialDrivetrainSim.State", "int", ["kHeading", "kLeftPosition", "kLeftVelocity", "kRightPosition", "kRightVelocity", "kX", "kY"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

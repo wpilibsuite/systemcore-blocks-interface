@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.SwerveDrive2WheelPositions
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.kinematics.SwerveDrive2WheelPositions", "Tuple[wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition]", ["positions"], ["The distances driven by the wheels."]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.SwerveDrive2WheelPositions", "Tuple[wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition]", ["positions"], ["The distances driven by the wheels."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.SwerveDrive2WheelPositions", "Tuple[wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition]", ["positions"], ["The distances driven by the wheels."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.SwerveDrive2WheelPositions", "Tuple[wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition]", ["positions"], ["The distances driven by the wheels."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

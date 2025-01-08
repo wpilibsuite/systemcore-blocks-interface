@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.I2C
 
 export function initialize() {
-  python.initializeEnum("wpilib.I2C.Port", ["kMXP", "kOnboard"], "I2C connection ports.\n\nMembers:\n\n  kOnboard : Onboard I2C port.\n\n  kMXP : MXP (roboRIO MXP) I2C port.");
+  pythonEnum.initializeEnum("wpilib.I2C.Port", ["kMXP", "kOnboard"], "I2C connection ports.\n\nMembers:\n\n  kOnboard : Onboard I2C port.\n\n  kMXP : MXP (roboRIO MXP) I2C port.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

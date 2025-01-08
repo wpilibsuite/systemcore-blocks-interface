@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.PneumaticHub.StickyFaults
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpilib.PneumaticHub.StickyFaults", "int", ["Brownout", "CanBusOff", "CanWarning", "CompressorOpen", "CompressorOverCurrent", "HasReset", "SolenoidOverCurrent"], ["", "", "", "", "", "", ""]);
-  python.initializeInstanceVariableSetter("wpilib.PneumaticHub.StickyFaults", "int", ["Brownout", "CanBusOff", "CanWarning", "CompressorOpen", "CompressorOverCurrent", "HasReset", "SolenoidOverCurrent"], ["", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.PneumaticHub.StickyFaults", "int", ["Brownout", "CanBusOff", "CanWarning", "CompressorOpen", "CompressorOverCurrent", "HasReset", "SolenoidOverCurrent"], ["", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.PneumaticHub.StickyFaults", "int", ["Brownout", "CanBusOff", "CanWarning", "CompressorOpen", "CompressorOverCurrent", "HasReset", "SolenoidOverCurrent"], ["", "", "", "", "", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

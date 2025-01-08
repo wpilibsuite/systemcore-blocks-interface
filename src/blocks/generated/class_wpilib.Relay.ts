@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.Relay
 
 export function initialize() {
-  python.initializeEnum("wpilib.Relay.Direction", ["kBothDirections", "kForwardOnly", "kReverseOnly"], "The Direction(s) that a relay is configured to operate in.\n\nMembers:\n\n  kBothDirections : Both directions are valid.\n\n  kForwardOnly : Only forward is valid.\n\n  kReverseOnly : Only reverse is valid.");
-  python.initializeEnum("wpilib.Relay.Value", ["kForward", "kOff", "kOn", "kReverse"], "The state to drive a Relay to.\n\nMembers:\n\n  kOff : Off.\n\n  kOn : On.\n\n  kForward : Forward.\n\n  kReverse : Reverse.");
+  pythonEnum.initializeEnum("wpilib.Relay.Direction", ["kBothDirections", "kForwardOnly", "kReverseOnly"], "The Direction(s) that a relay is configured to operate in.\n\nMembers:\n\n  kBothDirections : Both directions are valid.\n\n  kForwardOnly : Only forward is valid.\n\n  kReverseOnly : Only reverse is valid.");
+  pythonEnum.initializeEnum("wpilib.Relay.Value", ["kForward", "kOff", "kOn", "kReverse"], "The state to drive a Relay to.\n\nMembers:\n\n  kOff : Off.\n\n  kOn : On.\n\n  kForward : Forward.\n\n  kReverse : Reverse.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

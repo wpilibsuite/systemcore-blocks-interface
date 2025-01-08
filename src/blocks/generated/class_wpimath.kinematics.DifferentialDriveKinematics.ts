@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.DifferentialDriveKinematics
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.kinematics.DifferentialDriveKinematics", "wpimath.units.meters", ["trackWidth"], ["Differential drive trackwidth."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.DifferentialDriveKinematics", "wpimath.units.meters", ["trackWidth"], ["Differential drive trackwidth."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

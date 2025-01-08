@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.trajectory.TrapezoidProfile.Constraints
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.trajectory.TrapezoidProfile.Constraints", "wpimath.units.units_per_second_squared", ["maxAcceleration"], ["Maximum acceleration."]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.TrapezoidProfile.Constraints", "wpimath.units.units_per_second", ["maxVelocity"], ["Maximum velocity."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.TrapezoidProfile.Constraints", "wpimath.units.units_per_second_squared", ["maxAcceleration"], ["Maximum acceleration."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.TrapezoidProfile.Constraints", "wpimath.units.units_per_second", ["maxVelocity"], ["Maximum velocity."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

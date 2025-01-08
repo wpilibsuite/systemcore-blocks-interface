@@ -1,19 +1,19 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.ChassisSpeeds
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.radians_per_second", ["omega"], ["Represents the angular velocity of the robot frame. (CCW is +)"]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.radians_per_second", ["omega"], ["Represents the angular velocity of the robot frame. (CCW is +)"]);
-  python.initializeInstanceVariableGetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.degrees_per_second", ["omega_dps"], [""]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.degrees_per_second", ["omega_dps"], [""]);
-  python.initializeInstanceVariableGetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.meters_per_second", ["vx", "vy"], ["Velocity along the x-axis. (Fwd is +)", "Velocity along the y-axis. (Left is +)"]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.meters_per_second", ["vx", "vy"], ["Velocity along the x-axis. (Fwd is +)", "Velocity along the y-axis. (Left is +)"]);
-  python.initializeInstanceVariableGetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.feet_per_second", ["vx_fps", "vy_fps"], ["", ""]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.feet_per_second", ["vx_fps", "vy_fps"], ["", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.radians_per_second", ["omega"], ["Represents the angular velocity of the robot frame. (CCW is +)"]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.radians_per_second", ["omega"], ["Represents the angular velocity of the robot frame. (CCW is +)"]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.degrees_per_second", ["omega_dps"], [""]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.degrees_per_second", ["omega_dps"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.meters_per_second", ["vx", "vy"], ["Velocity along the x-axis. (Fwd is +)", "Velocity along the y-axis. (Left is +)"]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.meters_per_second", ["vx", "vy"], ["Velocity along the x-axis. (Fwd is +)", "Velocity along the y-axis. (Left is +)"]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.feet_per_second", ["vx_fps", "vy_fps"], ["", ""]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.feet_per_second", ["vx_fps", "vy_fps"], ["", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

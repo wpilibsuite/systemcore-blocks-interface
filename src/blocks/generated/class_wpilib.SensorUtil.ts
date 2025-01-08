@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.SensorUtil
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.SensorUtil", "int", ["kAnalogInputs", "kAnalogOutputs", "kDigitalChannels", "kPwmChannels", "kRelayChannels"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.SensorUtil", "int", ["kAnalogInputs", "kAnalogOutputs", "kDigitalChannels", "kPwmChannels", "kRelayChannels"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

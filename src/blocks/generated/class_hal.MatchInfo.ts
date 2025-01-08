@@ -1,16 +1,16 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.MatchInfo
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.MatchInfo", "memoryview", ["eventName", "gameSpecificMessage"], ["", ""]);
-  python.initializeInstanceVariableGetter("hal.MatchInfo", "int", ["gameSpecificMessageSize", "matchNumber", "replayNumber"], ["", "", ""]);
-  python.initializeInstanceVariableSetter("hal.MatchInfo", "int", ["gameSpecificMessageSize", "matchNumber", "replayNumber"], ["", "", ""]);
-  python.initializeInstanceVariableGetter("hal.MatchInfo", "hal._wpiHal.MatchType", ["matchType"], [""]);
-  python.initializeInstanceVariableSetter("hal.MatchInfo", "hal._wpiHal.MatchType", ["matchType"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.MatchInfo", "memoryview", ["eventName", "gameSpecificMessage"], ["", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.MatchInfo", "int", ["gameSpecificMessageSize", "matchNumber", "replayNumber"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.MatchInfo", "int", ["gameSpecificMessageSize", "matchNumber", "replayNumber"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.MatchInfo", "hal._wpiHal.MatchType", ["matchType"], [""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.MatchInfo", "hal._wpiHal.MatchType", ["matchType"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.Color8Bit
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpilib.Color8Bit", "int", ["blue", "green", "red"], ["Blue component (0-255).", "Green component (0-255).", "Red component (0-255)."]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.Color8Bit", "int", ["blue", "green", "red"], ["Blue component (0-255).", "Green component (0-255).", "Red component (0-255)."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

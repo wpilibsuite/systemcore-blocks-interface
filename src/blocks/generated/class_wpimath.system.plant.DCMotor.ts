@@ -1,18 +1,18 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.system.plant.DCMotor
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.volt_seconds", ["Kt"], ["Motor torque constant."]);
-  python.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.radians_per_second_per_volt", ["Kv"], ["Motor velocity constant."]);
-  python.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.ohms", ["R"], ["Motor internal resistance."]);
-  python.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.amperes", ["freeCurrent", "stallCurrent"], ["Current draw under no load.", "Current draw when stalled."]);
-  python.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.radians_per_second", ["freeSpeed"], ["Angular velocity under no load."]);
-  python.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.volts", ["nominalVoltage"], ["Voltage at which the motor constants were measured."]);
-  python.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.newton_meters", ["stallTorque"], ["Torque when stalled."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.volt_seconds", ["Kt"], ["Motor torque constant."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.radians_per_second_per_volt", ["Kv"], ["Motor velocity constant."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.ohms", ["R"], ["Motor internal resistance."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.amperes", ["freeCurrent", "stallCurrent"], ["Current draw under no load.", "Current draw when stalled."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.radians_per_second", ["freeSpeed"], ["Angular velocity under no load."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.volts", ["nominalVoltage"], ["Voltage at which the motor constants were measured."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.newton_meters", ["stallTorque"], ["Torque when stalled."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

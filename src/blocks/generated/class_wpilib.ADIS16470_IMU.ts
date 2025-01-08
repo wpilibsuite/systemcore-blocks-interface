@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.ADIS16470_IMU
 
 export function initialize() {
-  python.initializeEnum("wpilib.ADIS16470_IMU.CalibrationTime", ["_128ms", "_16s", "_1s", "_256ms", "_2s", "_32ms", "_32s", "_4s", "_512ms", "_64ms", "_64s", "_8s"], "ADIS16470 calibration times.\n\nMembers:\n\n  _32ms : 32 ms calibration time.\n\n  _64ms : 64 ms calibration time.\n\n  _128ms : 128 ms calibration time.\n\n  _256ms : 256 ms calibration time.\n\n  _512ms : 512 ms calibration time.\n\n  _1s : 1 s calibration time.\n\n  _2s : 2 s calibration time.\n\n  _4s : 4 s calibration time.\n\n  _8s : 8 s calibration time.\n\n  _16s : 16 s calibration time.\n\n  _32s : 32 s calibration time.\n\n  _64s : 64 s calibration time.");
-  python.initializeEnum("wpilib.ADIS16470_IMU.IMUAxis", ["kPitch", "kRoll", "kX", "kY", "kYaw", "kZ"], "IMU axes.\n\nkX, kY, and kZ refer to the IMU's X, Y, and Z axes respectively. kYaw,\nkPitch, and kRoll are configured by the user to refer to an X, Y, or Z\naxis.\n\nMembers:\n\n  kX : The IMU's X axis.\n\n  kY : The IMU's Y axis.\n\n  kZ : The IMU's Z axis.\n\n  kYaw : The user-configured yaw axis.\n\n  kPitch : The user-configured pitch axis.\n\n  kRoll : The user-configured roll axis.");
+  pythonEnum.initializeEnum("wpilib.ADIS16470_IMU.CalibrationTime", ["_128ms", "_16s", "_1s", "_256ms", "_2s", "_32ms", "_32s", "_4s", "_512ms", "_64ms", "_64s", "_8s"], "ADIS16470 calibration times.\n\nMembers:\n\n  _32ms : 32 ms calibration time.\n\n  _64ms : 64 ms calibration time.\n\n  _128ms : 128 ms calibration time.\n\n  _256ms : 256 ms calibration time.\n\n  _512ms : 512 ms calibration time.\n\n  _1s : 1 s calibration time.\n\n  _2s : 2 s calibration time.\n\n  _4s : 4 s calibration time.\n\n  _8s : 8 s calibration time.\n\n  _16s : 16 s calibration time.\n\n  _32s : 32 s calibration time.\n\n  _64s : 64 s calibration time.");
+  pythonEnum.initializeEnum("wpilib.ADIS16470_IMU.IMUAxis", ["kPitch", "kRoll", "kX", "kY", "kYaw", "kZ"], "IMU axes.\n\nkX, kY, and kZ refer to the IMU's X, Y, and Z axes respectively. kYaw,\nkPitch, and kRoll are configured by the user to refer to an X, Y, or Z\naxis.\n\nMembers:\n\n  kX : The IMU's X axis.\n\n  kY : The IMU's Y axis.\n\n  kZ : The IMU's Z axis.\n\n  kYaw : The user-configured yaw axis.\n\n  kPitch : The user-configured pitch axis.\n\n  kRoll : The user-configured roll axis.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

@@ -20,10 +20,10 @@
  */
 
 import * as generatedToolbox from './generated/toolbox';
-import * as ToolboxItems from "../toolbox/items";
+import * as toolboxItems from "../toolbox/items";
 
-export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: ToolboxItems.Item[]) {
-  const contents = generatedToolbox.getToolboxCategories();
+export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: toolboxItems.Item[]) {
+  const contents: toolboxItems.Item[] = generatedToolbox.getToolboxCategories();
   if (opt_includeExportedBlocksFromWorkspace) {
     contents.push.apply(
       contents,
@@ -58,15 +58,6 @@ export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: ToolboxIt
           {
             kind: 'block',
             type: 'misc_evaluateButIgnoreResult',
-          },
-          {
-            kind: 'block',
-            type: 'misc_setAndGetVariable',
-            fields: {
-              VAR: {
-                name: 'myVariable',
-              },
-            },
           },
         ],
       },

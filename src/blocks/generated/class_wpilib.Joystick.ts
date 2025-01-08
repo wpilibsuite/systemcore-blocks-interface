@@ -1,14 +1,15 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.Joystick
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.Joystick", "int", ["kDefaultThrottleChannel", "kDefaultTwistChannel", "kDefaultXChannel", "kDefaultYChannel", "kDefaultZChannel"], []);
-  python.initializeEnum("wpilib.Joystick.AxisType", ["kThrottleAxis", "kTwistAxis", "kXAxis", "kYAxis", "kZAxis"], "Represents an analog axis on a joystick.\n\nMembers:\n\n  kXAxis : X axis.\n\n  kYAxis : Y axis.\n\n  kZAxis : Z axis.\n\n  kTwistAxis : Twist axis.\n\n  kThrottleAxis : Throttle axis.");
-  python.initializeEnum("wpilib.Joystick.ButtonType", ["kTopButton", "kTriggerButton"], "Represents a digital button on a joystick.\n\nMembers:\n\n  kTriggerButton : kTrigger.\n\n  kTopButton : kTop.");
+  pythonVariable.initializeClassVariableGetter("wpilib.Joystick", "int", ["kDefaultThrottleChannel", "kDefaultTwistChannel", "kDefaultXChannel", "kDefaultYChannel", "kDefaultZChannel"], []);
+  pythonEnum.initializeEnum("wpilib.Joystick.AxisType", ["kThrottleAxis", "kTwistAxis", "kXAxis", "kYAxis", "kZAxis"], "Represents an analog axis on a joystick.\n\nMembers:\n\n  kXAxis : X axis.\n\n  kYAxis : Y axis.\n\n  kZAxis : Z axis.\n\n  kTwistAxis : Twist axis.\n\n  kThrottleAxis : Throttle axis.");
+  pythonEnum.initializeEnum("wpilib.Joystick.ButtonType", ["kTopButton", "kTriggerButton"], "Represents a digital button on a joystick.\n\nMembers:\n\n  kTriggerButton : kTrigger.\n\n  kTopButton : kTop.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

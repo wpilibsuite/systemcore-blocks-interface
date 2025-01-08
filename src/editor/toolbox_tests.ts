@@ -21,99 +21,110 @@
 
 import * as Blockly from 'blockly/core';
 import { pythonGenerator } from 'blockly/python';
-import * as ToolboxItems from "../toolbox/items";
+import * as toolboxItems from '../toolbox/items';
 
 
 // Tests
 
-let blocklyWorkspaceForTest: Blockly.Workspace = null;
-let indexForTest = 0
-let jsonBlocksForTest: ToolboxItems.Block[] = [];
-
-export function testAllBlocksInToolbox(contents: ToolboxItems.Item[]) {
-  if (blocklyWorkspaceForTest !== null) {
-    // Tests are already running.
-    return;
-  }
-  blocklyWorkspaceForTest = new Blockly.Workspace();
-  blocklyWorkspaceForTest.MAX_UNDO = 0
-  indexForTest = 0;
-
+export function testAllBlocksInToolbox(contents: toolboxItems.Item[]) {
   alert('Press OK to run tests on all blocks from the toolbox.');
-
-  jsonBlocksForTest = [];
-  collectBlocks(contents);
-  console.log('Collected  ' + jsonBlocksForTest.length + ' blocks');
-
-  setTimeout(testCallback, 0);
+  const toolboxTestData = new ToolboxTestData(contents, () => {
+    alert('Completed tests on all blocks in the toolbox. See console for any errors.');
+  });
+  toolboxTestData.runTests();
 }
 
-function collectBlocks(contents: ToolboxItems.Item[]): void {
-  for (const item of contents) {
-    switch (item.kind) {
-      default:
-        console.log("Error - item.kind is " + item.kind + ". It must be block, category, or sep.");
-        break;
-      case "block":
-        const block = item as ToolboxItems.Block;
-        jsonBlocksForTest.push(block);
-        break;
-      case "category":
-        const category = item as ToolboxItems.Category;
-        if (category.contents) {
-          collectBlocks(category.contents);
-        }
-        break;
-      case "sep":
-        break;
+class ToolboxTestData {
+  onFinish: () => void;
+  blocklyWorkspace: Blockly.Workspace;
+  jsonBlocks: toolboxItems.Block[];
+  index: number;
+
+  constructor(contents: toolboxItems.Item[], onFinish: () => void) {
+    this.onFinish = onFinish;
+    this.blocklyWorkspace = new Blockly.Workspace();
+    this.blocklyWorkspace.MAX_UNDO = 0;
+    this.jsonBlocks = [];
+    this.collectBlocks(contents);
+    this.index = 0;
+  }
+
+  private collectBlocks(contents: toolboxItems.Item[]): void {
+    for (const item of contents) {
+      switch (item.kind) {
+        default:
+          console.log('Error - item.kind is ' + item.kind + '. It must be block, category, or sep.');
+          break;
+        case 'block':
+          const block = item as toolboxItems.Block;
+          this.jsonBlocks.push(block);
+          break;
+        case 'category':
+          const category = item as toolboxItems.Category;
+          if (category.contents) {
+            this.collectBlocks(category.contents);
+          }
+          break;
+        case 'sep':
+          break;
+      }
     }
   }
-}
 
-function testCallback(): void {
-  console.log((new Date()).toLocaleTimeString() + " - " + indexForTest);
-  for (let i = 0; i < 1000; i++) {
-    if (indexForTest >= jsonBlocksForTest.length) {
-      break;
+  runTests(): void {
+    console.log(this.jsonBlocks.length + ' blocks will be tested.');
+    setTimeout(this.testCallback.bind(this), 0);
+  }
+
+  private testCallback(): void {
+    console.log(
+        (new Date()).toLocaleTimeString() + ' - testing blocks ' +
+        this.index + ' - ' + Math.min(this.index + 999, this.jsonBlocks.length - 1) + '.');
+    for (let i = 0; i < 1000; i++) {
+      if (this.index >= this.jsonBlocks.length) {
+        break;
+      }
+      this.testBlock(this.jsonBlocks[this.index]);
+      this.index++;
     }
-    testBlock(jsonBlocksForTest[indexForTest]);
-    indexForTest++;
-  }
-  blocklyWorkspaceForTest.clear();
+    this.blocklyWorkspace.clear();
 
-  if (indexForTest < jsonBlocksForTest.length) {
-    setTimeout(testCallback, 0);
-  } else {
-    console.log((new Date()).toLocaleTimeString() + " - " + indexForTest);
-    jsonBlocksForTest = [];
-    blocklyWorkspaceForTest = null;
-    indexForTest = 0
-    alert('Completed tests on all blocks in the toolbox.');
-  }
-};
-
-function testBlock(jsonBlock: ToolboxItems.Block) {
-  const block = Blockly.serialization.blocks.append(jsonBlock, blocklyWorkspaceForTest);
-  testBlockPython(block);
-}
-
-function testBlockPython(block: Blockly.Block) {
-  pythonGenerator.init(blocklyWorkspaceForTest);
-  let code = null;
-  try {
-    code = pythonGenerator.blockToCode(block);
-  } catch (e) {
-    console.log("Error - " + e + " - Unable to test block..."); console.log(block);
-  }
-  if (block.outputConnection) {
-    if (!Array.isArray(code)) {
-      console.log("Error - pythonGenerator.forBlock['" + block.type + "'] " +
-                  "is generating a " + (typeof code) + ", but should generate an array");
+    if (this.index < this.jsonBlocks.length) {
+      setTimeout(this.testCallback.bind(this), 0);
+    } else {
+      if (this.onFinish) {
+        this.onFinish();
+      }
     }
-  } else {
-    if (typeof code != "string") {
-      console.log("Error - pythonGenerator.forBlock['" + block.type + "'] " +
-                  "is generating a " + (typeof code) + ", but should generate an string");
+  }
+
+  private testBlock(jsonBlock: toolboxItems.Block) {
+    const block = Blockly.serialization.blocks.append(jsonBlock, this.blocklyWorkspace);
+    this.testBlockPython(block);
+  }
+
+  private testBlockPython(block: Blockly.Block) {
+    pythonGenerator.init(this.blocklyWorkspace);
+    let code = null;
+    try {
+      code = pythonGenerator.blockToCode(block);
+    } catch (e) {
+      console.log('Error - ' + e + ' - Unable to test block...'); console.log(block);
+    }
+    if (block.outputConnection) {
+      if (!Array.isArray(code)) {
+        console.log(
+            'Error - pythonGenerator.forBlock["' + block.type + '"] ' +
+            'generated a ' + (typeof code) +
+            ', but it should generate an array because the block has an output connection.');
+      }
+    } else {
+      if (typeof code != 'string') {
+        console.log(
+            'Error - pythonGenerator.forBlock["' + block.type + '"] ' +
+            'generated a ' + (typeof code) +
+            ', but should generate a string because the block does not have an output connection.');
+      }
     }
   }
 }

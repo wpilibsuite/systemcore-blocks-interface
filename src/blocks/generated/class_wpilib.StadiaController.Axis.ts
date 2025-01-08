@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.StadiaController.Axis
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.StadiaController.Axis", "int", ["kLeftX", "kLeftY", "kRightX", "kRightY"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.StadiaController.Axis", "int", ["kLeftX", "kLeftY", "kRightX", "kRightY"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

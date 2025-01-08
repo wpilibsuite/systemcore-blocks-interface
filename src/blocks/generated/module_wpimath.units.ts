@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for module wpimath.units
 
 export function initialize() {
-  python.initializeModuleVariableGetter("wpimath.units", "float", ["kInchesPerFoot", "kKilogramsPerLb", "kMetersPerInch"], []);
-  python.initializeModuleVariableGetter("wpimath.units", "int", ["kMillisecondsPerSecond", "kSecondsPerMinute"], []);
+  pythonVariable.initializeModuleVariableGetter("wpimath.units", "float", ["kInchesPerFoot", "kKilogramsPerLb", "kMetersPerInch"], []);
+  pythonVariable.initializeModuleVariableGetter("wpimath.units", "int", ["kMillisecondsPerSecond", "kSecondsPerMinute"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

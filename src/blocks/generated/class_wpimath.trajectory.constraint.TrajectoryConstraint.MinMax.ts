@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.trajectory.constraint.TrajectoryConstraint.MinMax
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.trajectory.constraint.TrajectoryConstraint.MinMax", "wpimath.units.meters_per_second_squared", ["maxAcceleration", "minAcceleration"], ["The maximum acceleration.", "The minimum acceleration."]);
-  python.initializeInstanceVariableSetter("wpimath.trajectory.constraint.TrajectoryConstraint.MinMax", "wpimath.units.meters_per_second_squared", ["maxAcceleration", "minAcceleration"], ["The maximum acceleration.", "The minimum acceleration."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.constraint.TrajectoryConstraint.MinMax", "wpimath.units.meters_per_second_squared", ["maxAcceleration", "minAcceleration"], ["The maximum acceleration.", "The minimum acceleration."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.trajectory.constraint.TrajectoryConstraint.MinMax", "wpimath.units.meters_per_second_squared", ["maxAcceleration", "minAcceleration"], ["The maximum acceleration.", "The minimum acceleration."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

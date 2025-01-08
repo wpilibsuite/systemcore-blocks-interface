@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.PneumaticHub.Faults
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpilib.PneumaticHub.Faults", "int", ["Brownout", "CanWarning", "Channel0Fault", "Channel10Fault", "Channel11Fault", "Channel12Fault", "Channel13Fault", "Channel14Fault", "Channel15Fault", "Channel1Fault", "Channel2Fault", "Channel3Fault", "Channel4Fault", "Channel5Fault", "Channel6Fault", "Channel7Fault", "Channel8Fault", "Channel9Fault", "CompressorOpen", "CompressorOverCurrent", "HardwareFault", "SolenoidOverCurrent"], ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
-  python.initializeInstanceVariableSetter("wpilib.PneumaticHub.Faults", "int", ["Brownout", "CanWarning", "Channel0Fault", "Channel10Fault", "Channel11Fault", "Channel12Fault", "Channel13Fault", "Channel14Fault", "Channel15Fault", "Channel1Fault", "Channel2Fault", "Channel3Fault", "Channel4Fault", "Channel5Fault", "Channel6Fault", "Channel7Fault", "Channel8Fault", "Channel9Fault", "CompressorOpen", "CompressorOverCurrent", "HardwareFault", "SolenoidOverCurrent"], ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.PneumaticHub.Faults", "int", ["Brownout", "CanWarning", "Channel0Fault", "Channel10Fault", "Channel11Fault", "Channel12Fault", "Channel13Fault", "Channel14Fault", "Channel15Fault", "Channel1Fault", "Channel2Fault", "Channel3Fault", "Channel4Fault", "Channel5Fault", "Channel6Fault", "Channel7Fault", "Channel8Fault", "Channel9Fault", "CompressorOpen", "CompressorOverCurrent", "HardwareFault", "SolenoidOverCurrent"], ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.PneumaticHub.Faults", "int", ["Brownout", "CanWarning", "Channel0Fault", "Channel10Fault", "Channel11Fault", "Channel12Fault", "Channel13Fault", "Channel14Fault", "Channel15Fault", "Channel1Fault", "Channel2Fault", "Channel3Fault", "Channel4Fault", "Channel5Fault", "Channel6Fault", "Channel7Fault", "Channel8Fault", "Channel9Fault", "CompressorOpen", "CompressorOverCurrent", "HardwareFault", "SolenoidOverCurrent"], ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

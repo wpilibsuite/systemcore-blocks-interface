@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.CANData
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpilib.CANData", "memoryview", ["data"], ["Contents of the CAN packet."]);
-  python.initializeInstanceVariableGetter("wpilib.CANData", "int", ["length", "timestamp"], ["Length of packet in bytes.", "CAN frame timestamp in milliseconds."]);
-  python.initializeInstanceVariableSetter("wpilib.CANData", "int", ["length", "timestamp"], ["Length of packet in bytes.", "CAN frame timestamp in milliseconds."]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.CANData", "memoryview", ["data"], ["Contents of the CAN packet."]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.CANData", "int", ["length", "timestamp"], ["Length of packet in bytes.", "CAN frame timestamp in milliseconds."]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.CANData", "int", ["length", "timestamp"], ["Length of packet in bytes.", "CAN frame timestamp in milliseconds."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

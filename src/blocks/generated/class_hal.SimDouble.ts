@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.SimDouble
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.SimDouble", "hal._wpiHal.Type", ["type"], [""]);
-  python.initializeInstanceVariableGetter("hal.SimDouble", "float", ["value"], [""]);
-  python.initializeInstanceVariableSetter("hal.SimDouble", "float", ["value"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.SimDouble", "hal._wpiHal.Type", ["type"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.SimDouble", "float", ["value"], [""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.SimDouble", "float", ["value"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

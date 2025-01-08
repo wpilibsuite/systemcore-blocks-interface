@@ -1,14 +1,15 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.DriverStation
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.DriverStation", "int", ["kJoystickPorts"], []);
-  python.initializeEnum("wpilib.DriverStation.Alliance", ["kBlue", "kRed"], "The robot alliance that the robot is a part of.\n\nMembers:\n\n  kRed : Red alliance.\n\n  kBlue : Blue alliance.");
-  python.initializeEnum("wpilib.DriverStation.MatchType", ["kElimination", "kNone", "kPractice", "kQualification"], "The type of robot match that the robot is part of.\n\nMembers:\n\n  kNone : None.\n\n  kPractice : Practice.\n\n  kQualification : Qualification.\n\n  kElimination : Elimination.");
+  pythonVariable.initializeClassVariableGetter("wpilib.DriverStation", "int", ["kJoystickPorts"], []);
+  pythonEnum.initializeEnum("wpilib.DriverStation.Alliance", ["kBlue", "kRed"], "The robot alliance that the robot is a part of.\n\nMembers:\n\n  kRed : Red alliance.\n\n  kBlue : Blue alliance.");
+  pythonEnum.initializeEnum("wpilib.DriverStation.MatchType", ["kElimination", "kNone", "kPractice", "kQualification"], "The type of robot match that the robot is part of.\n\nMembers:\n\n  kNone : None.\n\n  kPractice : Practice.\n\n  kQualification : Qualification.\n\n  kElimination : Elimination.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

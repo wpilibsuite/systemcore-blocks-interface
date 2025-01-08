@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.trajectory.TrapezoidProfileRadians.State
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.trajectory.TrapezoidProfileRadians.State", "wpimath.units.radians", ["position"], ["The position at this state."]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.TrapezoidProfileRadians.State", "wpimath.units.radians_per_second", ["velocity"], ["The velocity at this state."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.TrapezoidProfileRadians.State", "wpimath.units.radians", ["position"], ["The position at this state."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.TrapezoidProfileRadians.State", "wpimath.units.radians_per_second", ["velocity"], ["The velocity at this state."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

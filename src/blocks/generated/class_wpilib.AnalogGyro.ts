@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.AnalogGyro
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.AnalogGyro", "int", ["kAverageBits", "kOversampleBits"], []);
-  python.initializeClassVariableGetter("wpilib.AnalogGyro", "float", ["kCalibrationSampleTime", "kDefaultVoltsPerDegreePerSecond", "kSamplesPerSecond"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.AnalogGyro", "int", ["kAverageBits", "kOversampleBits"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.AnalogGyro", "float", ["kCalibrationSampleTime", "kDefaultVoltsPerDegreePerSecond", "kSamplesPerSecond"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

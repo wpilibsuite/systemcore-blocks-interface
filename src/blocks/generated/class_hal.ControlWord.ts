@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.ControlWord
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.ControlWord", "int", ["autonomous", "control_reserved", "dsAttached", "eStop", "enabled", "fmsAttached", "test"], ["", "", "", "", "", "", ""]);
-  python.initializeInstanceVariableSetter("hal.ControlWord", "int", ["autonomous", "control_reserved", "dsAttached", "eStop", "enabled", "fmsAttached", "test"], ["", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.ControlWord", "int", ["autonomous", "control_reserved", "dsAttached", "eStop", "enabled", "fmsAttached", "test"], ["", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.ControlWord", "int", ["autonomous", "control_reserved", "dsAttached", "eStop", "enabled", "fmsAttached", "test"], ["", "", "", "", "", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

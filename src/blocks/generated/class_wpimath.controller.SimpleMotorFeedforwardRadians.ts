@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.controller.SimpleMotorFeedforwardRadians
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.controller.SimpleMotorFeedforwardRadians", "wpimath.units.volt_seconds_squared_per_radian", ["kA"], ["The acceleration gain."]);
-  python.initializeInstanceVariableGetter("wpimath.controller.SimpleMotorFeedforwardRadians", "wpimath.units.volts", ["kS"], ["The static gain."]);
-  python.initializeInstanceVariableGetter("wpimath.controller.SimpleMotorFeedforwardRadians", "wpimath.units.volt_seconds_per_radian", ["kV"], ["The velocity gain."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.SimpleMotorFeedforwardRadians", "wpimath.units.volt_seconds_squared_per_radian", ["kA"], ["The acceleration gain."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.SimpleMotorFeedforwardRadians", "wpimath.units.volts", ["kS"], ["The static gain."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.SimpleMotorFeedforwardRadians", "wpimath.units.volt_seconds_per_radian", ["kV"], ["The velocity gain."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

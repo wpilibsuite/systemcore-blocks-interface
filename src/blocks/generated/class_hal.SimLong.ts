@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.SimLong
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.SimLong", "hal._wpiHal.Type", ["type"], [""]);
-  python.initializeInstanceVariableGetter("hal.SimLong", "int", ["value"], [""]);
-  python.initializeInstanceVariableSetter("hal.SimLong", "int", ["value"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.SimLong", "hal._wpiHal.Type", ["type"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.SimLong", "int", ["value"], [""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.SimLong", "int", ["value"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.trajectory.ExponentialProfileMeterVolts.ProfileTiming
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.trajectory.ExponentialProfileMeterVolts.ProfileTiming", "wpimath.units.seconds", ["inflectionTime", "totalTime"], ["Profile inflection time.", "Total profile time."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.ExponentialProfileMeterVolts.ProfileTiming", "wpimath.units.seconds", ["inflectionTime", "totalTime"], ["Profile inflection time.", "Total profile time."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

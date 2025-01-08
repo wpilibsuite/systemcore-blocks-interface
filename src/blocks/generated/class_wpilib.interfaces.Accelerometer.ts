@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.interfaces.Accelerometer
 
 export function initialize() {
-  python.initializeEnum("wpilib.interfaces.Accelerometer.Range", ["kRange_16G", "kRange_2G", "kRange_4G", "kRange_8G"], "Accelerometer range.\n\nMembers:\n\n  kRange_2G : 2 Gs max.\n\n  kRange_4G : 4 Gs max.\n\n  kRange_8G : 8 Gs max.\n\n  kRange_16G : 16 Gs max.");
+  pythonEnum.initializeEnum("wpilib.interfaces.Accelerometer.Range", ["kRange_16G", "kRange_2G", "kRange_4G", "kRange_8G"], "Accelerometer range.\n\nMembers:\n\n  kRange_2G : 2 Gs max.\n\n  kRange_4G : 4 Gs max.\n\n  kRange_8G : 8 Gs max.\n\n  kRange_16G : 16 Gs max.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

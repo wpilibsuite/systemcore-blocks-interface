@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.REVPHStickyFaults
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.REVPHStickyFaults", "int", ["brownout", "canBusOff", "canWarning", "compressorOpen", "compressorOverCurrent", "hasReset", "solenoidOverCurrent"], ["", "", "", "", "", "", ""]);
-  python.initializeInstanceVariableSetter("hal.REVPHStickyFaults", "int", ["brownout", "canBusOff", "canWarning", "compressorOpen", "compressorOverCurrent", "hasReset", "solenoidOverCurrent"], ["", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.REVPHStickyFaults", "int", ["brownout", "canBusOff", "canWarning", "compressorOpen", "compressorOverCurrent", "hasReset", "solenoidOverCurrent"], ["", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.REVPHStickyFaults", "int", ["brownout", "canBusOff", "canWarning", "compressorOpen", "compressorOverCurrent", "hasReset", "solenoidOverCurrent"], ["", "", "", "", "", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

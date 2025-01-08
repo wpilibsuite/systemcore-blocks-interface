@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.drive.MecanumDrive.WheelSpeeds
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpilib.drive.MecanumDrive.WheelSpeeds", "float", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Front-left wheel speed.", "Front-right wheel speed.", "Rear-left wheel speed.", "Rear-right wheel speed."]);
-  python.initializeInstanceVariableSetter("wpilib.drive.MecanumDrive.WheelSpeeds", "float", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Front-left wheel speed.", "Front-right wheel speed.", "Rear-left wheel speed.", "Rear-right wheel speed."]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.drive.MecanumDrive.WheelSpeeds", "float", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Front-left wheel speed.", "Front-right wheel speed.", "Rear-left wheel speed.", "Rear-right wheel speed."]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.drive.MecanumDrive.WheelSpeeds", "float", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Front-left wheel speed.", "Front-right wheel speed.", "Rear-left wheel speed.", "Rear-right wheel speed."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

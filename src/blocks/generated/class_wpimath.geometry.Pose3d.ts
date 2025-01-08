@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Pose3d
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.geometry.Pose3d", "wpimath.units.meters", ["x", "y", "z"], ["", "", ""]);
-  python.initializeInstanceVariableGetter("wpimath.geometry.Pose3d", "wpimath.units.feet", ["x_feet", "y_feet", "z_feet"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Pose3d", "wpimath.units.meters", ["x", "y", "z"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Pose3d", "wpimath.units.feet", ["x_feet", "y_feet", "z_feet"], ["", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

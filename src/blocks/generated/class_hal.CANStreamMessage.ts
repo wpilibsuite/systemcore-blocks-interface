@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.CANStreamMessage
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.CANStreamMessage", "memoryview", ["data"], [""]);
-  python.initializeInstanceVariableGetter("hal.CANStreamMessage", "int", ["dataSize", "messageID", "timeStamp"], ["", "", ""]);
-  python.initializeInstanceVariableSetter("hal.CANStreamMessage", "int", ["dataSize", "messageID", "timeStamp"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.CANStreamMessage", "memoryview", ["data"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.CANStreamMessage", "int", ["dataSize", "messageID", "timeStamp"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.CANStreamMessage", "int", ["dataSize", "messageID", "timeStamp"], ["", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

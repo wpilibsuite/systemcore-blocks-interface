@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for module wpilib.counter
 
 export function initialize() {
-  python.initializeEnum("wpilib.counter.EdgeConfiguration", ["kBoth", "kFallingEdge", "kNone", "kRisingEdge"], "Edge configuration.\n\nMembers:\n\n  kNone : No edge configuration (neither rising nor falling).\n\n  kRisingEdge : Rising edge configuration.\n\n  kFallingEdge : Falling edge configuration.\n\n  kBoth : Both rising and falling edges configuration.");
+  pythonEnum.initializeEnum("wpilib.counter.EdgeConfiguration", ["kBoth", "kFallingEdge", "kNone", "kRisingEdge"], "Edge configuration.\n\nMembers:\n\n  kNone : No edge configuration (neither rising nor falling).\n\n  kRisingEdge : Rising edge configuration.\n\n  kFallingEdge : Falling edge configuration.\n\n  kBoth : Both rising and falling edges configuration.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

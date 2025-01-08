@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "float", ["k10p71", "k12p75", "k5p95", "k7p31", "k8p45"], []);
-  python.initializeClassVariableSetter("wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "float", ["k10p71", "k12p75", "k5p95", "k7p31", "k8p45"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "float", ["k10p71", "k12p75", "k5p95", "k7p31", "k8p45"], []);
+  pythonVariable.initializeClassVariableSetter("wpilib.simulation.DifferentialDrivetrainSim.KitbotGearing", "float", ["k10p71", "k12p75", "k5p95", "k7p31", "k8p45"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

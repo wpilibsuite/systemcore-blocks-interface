@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.controller.DifferentialDriveWheelVoltages
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.controller.DifferentialDriveWheelVoltages", "wpimath.units.volts", ["left", "right"], ["Left wheel voltage.", "Right wheel voltage."]);
-  python.initializeInstanceVariableSetter("wpimath.controller.DifferentialDriveWheelVoltages", "wpimath.units.volts", ["left", "right"], ["Left wheel voltage.", "Right wheel voltage."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.controller.DifferentialDriveWheelVoltages", "wpimath.units.volts", ["left", "right"], ["Left wheel voltage.", "Right wheel voltage."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.controller.DifferentialDriveWheelVoltages", "wpimath.units.volts", ["left", "right"], ["Left wheel voltage.", "Right wheel voltage."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

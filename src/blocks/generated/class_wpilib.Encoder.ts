@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.Encoder
 
 export function initialize() {
-  python.initializeEnum("wpilib.Encoder.IndexingType", ["kResetOnFallingEdge", "kResetOnRisingEdge", "kResetWhileHigh", "kResetWhileLow"], "Encoder indexing types.\n\nMembers:\n\n  kResetWhileHigh : Reset while the signal is high.\n\n  kResetWhileLow : Reset while the signal is low.\n\n  kResetOnFallingEdge : Reset on falling edge of the signal.\n\n  kResetOnRisingEdge : Reset on rising edge of the signal.");
+  pythonEnum.initializeEnum("wpilib.Encoder.IndexingType", ["kResetOnFallingEdge", "kResetOnRisingEdge", "kResetWhileHigh", "kResetWhileLow"], "Encoder indexing types.\n\nMembers:\n\n  kResetWhileHigh : Reset while the signal is high.\n\n  kResetWhileLow : Reset while the signal is low.\n\n  kResetOnFallingEdge : Reset on falling edge of the signal.\n\n  kResetOnRisingEdge : Reset on rising edge of the signal.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.Counter
 
 export function initialize() {
-  python.initializeEnum("wpilib.Counter.Mode", ["kExternalDirection", "kPulseLength", "kSemiperiod", "kTwoPulse"], "Members:\n\n  kTwoPulse\n\n  kSemiperiod\n\n  kPulseLength\n\n  kExternalDirection");
+  pythonEnum.initializeEnum("wpilib.Counter.Mode", ["kExternalDirection", "kPulseLength", "kSemiperiod", "kTwoPulse"], "Members:\n\n  kTwoPulse\n\n  kSemiperiod\n\n  kPulseLength\n\n  kExternalDirection");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

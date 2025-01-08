@@ -21,21 +21,26 @@
 
 import * as Blockly from 'blockly/core';
 
-export function createNonEditableField(label) {
-  const field = new Blockly.FieldTextInput(label);
-  field.CURSOR = '';
-  field.showEditor_ = function(opt_quietInput) {};
-  return field;
+class FieldNonEditableText extends Blockly.FieldTextInput {
+  constructor(value: string) {
+    super(value);
+    this.CURSOR = '';
+    this.showEditor_ = function(opt_quietInput) {};
+  }
 }
 
-export function createFieldDropdownForVariable(varNames) {
-  // If there is only one choice, don't create a dropdown.
-  if (varNames.length === 1) {
-    return createNonEditableField(varNames[0]);
+export function createNonEditableField(label: string): Blockly.Field {
+  return new FieldNonEditableText(label);
+}
+
+export function createFieldDropdown(items: string[]): Blockly.Field {
+  // If there is only one item, don't create a dropdown.
+  if (items.length === 1) {
+    return new FieldNonEditableText(items[0]);
   }
-  const varNameChoices = [];
-  for (const varName of varNames) {
-    varNameChoices.push([varName, varName]);
+  const options: Blockly.MenuOption[] = [];
+  for (const item of items) {
+    options.push([item, item]);
   }
-  return new Blockly.FieldDropdown(varNameChoices)
+  return new Blockly.FieldDropdown(options);
 }

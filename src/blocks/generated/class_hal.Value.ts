@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.Value
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.Value", "hal._wpiHal.Type", ["type"], [""]);
-  python.initializeInstanceVariableGetter("hal.Value", "object", ["value"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.Value", "hal._wpiHal.Type", ["type"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.Value", "object", ["value"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

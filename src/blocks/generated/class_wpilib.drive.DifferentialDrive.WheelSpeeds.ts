@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.drive.DifferentialDrive.WheelSpeeds
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpilib.drive.DifferentialDrive.WheelSpeeds", "float", ["left", "right"], ["Left wheel speed.", "Right wheel speed."]);
-  python.initializeInstanceVariableSetter("wpilib.drive.DifferentialDrive.WheelSpeeds", "float", ["left", "right"], ["Left wheel speed.", "Right wheel speed."]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.drive.DifferentialDrive.WheelSpeeds", "float", ["left", "right"], ["Left wheel speed.", "Right wheel speed."]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.drive.DifferentialDrive.WheelSpeeds", "float", ["left", "right"], ["Left wheel speed.", "Right wheel speed."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

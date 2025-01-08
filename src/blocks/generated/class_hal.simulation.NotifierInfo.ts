@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.simulation.NotifierInfo
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.simulation.NotifierInfo", "int", ["handle", "timeout", "waitTimeValid"], ["", "", ""]);
-  python.initializeInstanceVariableSetter("hal.simulation.NotifierInfo", "int", ["handle", "timeout", "waitTimeValid"], ["", "", ""]);
-  python.initializeInstanceVariableGetter("hal.simulation.NotifierInfo", "memoryview", ["name"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.simulation.NotifierInfo", "int", ["handle", "timeout", "waitTimeValid"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.simulation.NotifierInfo", "int", ["handle", "timeout", "waitTimeValid"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.simulation.NotifierInfo", "memoryview", ["name"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

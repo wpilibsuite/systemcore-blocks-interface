@@ -1,17 +1,17 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.SwerveModulePosition
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModulePosition", "wpimath.geometry._geometry.Rotation2d", ["angle"], ["Angle of the module."]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModulePosition", "wpimath.geometry._geometry.Rotation2d", ["angle"], ["Angle of the module."]);
-  python.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModulePosition", "wpimath.units.meters", ["distance"], ["Distance the wheel of a module has traveled"]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModulePosition", "wpimath.units.meters", ["distance"], ["Distance the wheel of a module has traveled"]);
-  python.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModulePosition", "wpimath.units.feet", ["distance_ft"], [""]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModulePosition", "wpimath.units.feet", ["distance_ft"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModulePosition", "wpimath.geometry._geometry.Rotation2d", ["angle"], ["Angle of the module."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModulePosition", "wpimath.geometry._geometry.Rotation2d", ["angle"], ["Angle of the module."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModulePosition", "wpimath.units.meters", ["distance"], ["Distance the wheel of a module has traveled"]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModulePosition", "wpimath.units.meters", ["distance"], ["Distance the wheel of a module has traveled"]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.SwerveModulePosition", "wpimath.units.feet", ["distance_ft"], [""]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModulePosition", "wpimath.units.feet", ["distance_ft"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

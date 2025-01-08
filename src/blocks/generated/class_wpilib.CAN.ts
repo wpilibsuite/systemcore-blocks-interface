@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.CAN
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.CAN", "hal.CANDeviceType", ["kTeamDeviceType"], []);
-  python.initializeClassVariableGetter("wpilib.CAN", "hal.CANManufacturer", ["kTeamManufacturer"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.CAN", "hal.CANDeviceType", ["kTeamDeviceType"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.CAN", "hal.CANManufacturer", ["kTeamManufacturer"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.TimedRobot
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.TimedRobot", "float", ["kDefaultPeriod"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.TimedRobot", "float", ["kDefaultPeriod"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

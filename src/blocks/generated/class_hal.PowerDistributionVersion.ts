@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.PowerDistributionVersion
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.PowerDistributionVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["Firmware fix version number.", "Firmware major version number.", "Firmware minor version number.", "Hardware major version number.", "Hardware minor version number.", "Unique ID."]);
-  python.initializeInstanceVariableSetter("hal.PowerDistributionVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["Firmware fix version number.", "Firmware major version number.", "Firmware minor version number.", "Hardware major version number.", "Hardware minor version number.", "Unique ID."]);
+  pythonVariable.initializeInstanceVariableGetter("hal.PowerDistributionVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["Firmware fix version number.", "Firmware major version number.", "Firmware minor version number.", "Hardware major version number.", "Hardware minor version number.", "Unique ID."]);
+  pythonVariable.initializeInstanceVariableSetter("hal.PowerDistributionVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["Firmware fix version number.", "Firmware major version number.", "Firmware minor version number.", "Hardware major version number.", "Hardware minor version number.", "Unique ID."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

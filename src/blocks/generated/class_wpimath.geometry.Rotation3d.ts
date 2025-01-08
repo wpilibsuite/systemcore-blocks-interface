@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Rotation3d
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.geometry.Rotation3d", "wpimath.units.radians", ["angle", "x", "y", "z"], ["", "", "", ""]);
-  python.initializeInstanceVariableGetter("wpimath.geometry.Rotation3d", "wpimath.units.degrees", ["angle_degrees", "x_degrees", "y_degrees", "z_degrees"], ["", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Rotation3d", "wpimath.units.radians", ["angle", "x", "y", "z"], ["", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Rotation3d", "wpimath.units.degrees", ["angle_degrees", "x_degrees", "y_degrees", "z_degrees"], ["", "", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

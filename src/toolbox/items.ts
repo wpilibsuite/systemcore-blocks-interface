@@ -50,13 +50,17 @@ export class Block extends Item {
 export class Category extends Item  {
   /** The category name. */
   name: string;
+  categorystyle?: string;
+  custom?: string;
 
   /** The blocks for this category. */
-  contents: Item[];
+  contents?: Item[];
 
-  constructor(name: string, contents: Item[]) {
+  constructor(name: string, contents: Item[], categorystyle: string, custom: string) {
     super('category');
     this.name = name;
+    this.categorystyle = categorystyle;
+    this.custom = custom;
     this.contents = contents;
   }
 }

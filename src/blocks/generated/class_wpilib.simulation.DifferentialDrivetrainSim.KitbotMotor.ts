@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.simulation.DifferentialDrivetrainSim.KitbotMotor
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.simulation.DifferentialDrivetrainSim.KitbotMotor", "wpimath.system.plant.DCMotor", ["DualCIMPerSide", "DualFalcon500PerSide", "DualMiniCIMPerSide", "DualNEOPerSide", "SingleCIMPerSide", "SingleFalcon500PerSide", "SingleMiniCIMPerSide", "SingleNEOPerSide"], []);
-  python.initializeClassVariableSetter("wpilib.simulation.DifferentialDrivetrainSim.KitbotMotor", "wpimath.system.plant.DCMotor", ["DualCIMPerSide", "DualFalcon500PerSide", "DualMiniCIMPerSide", "DualNEOPerSide", "SingleCIMPerSide", "SingleFalcon500PerSide", "SingleMiniCIMPerSide", "SingleNEOPerSide"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.simulation.DifferentialDrivetrainSim.KitbotMotor", "wpimath.system.plant.DCMotor", ["DualCIMPerSide", "DualFalcon500PerSide", "DualMiniCIMPerSide", "DualNEOPerSide", "SingleCIMPerSide", "SingleFalcon500PerSide", "SingleMiniCIMPerSide", "SingleNEOPerSide"], []);
+  pythonVariable.initializeClassVariableSetter("wpilib.simulation.DifferentialDrivetrainSim.KitbotMotor", "wpimath.system.plant.DCMotor", ["DualCIMPerSide", "DualFalcon500PerSide", "DualMiniCIMPerSide", "DualNEOPerSide", "SingleCIMPerSide", "SingleFalcon500PerSide", "SingleMiniCIMPerSide", "SingleNEOPerSide"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

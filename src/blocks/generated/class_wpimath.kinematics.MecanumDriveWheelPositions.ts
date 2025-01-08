@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.MecanumDriveWheelPositions
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.kinematics.MecanumDriveWheelPositions", "wpimath.units.meters", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Distance driven by the front-left wheel.", "Distance driven by the front-right wheel.", "Distance driven by the rear-left wheel.", "Distance driven by the rear-right wheel."]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.MecanumDriveWheelPositions", "wpimath.units.meters", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Distance driven by the front-left wheel.", "Distance driven by the front-right wheel.", "Distance driven by the rear-left wheel.", "Distance driven by the rear-right wheel."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.MecanumDriveWheelPositions", "wpimath.units.meters", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Distance driven by the front-left wheel.", "Distance driven by the front-right wheel.", "Distance driven by the rear-left wheel.", "Distance driven by the rear-right wheel."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.MecanumDriveWheelPositions", "wpimath.units.meters", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Distance driven by the front-left wheel.", "Distance driven by the front-right wheel.", "Distance driven by the rear-left wheel.", "Distance driven by the rear-right wheel."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

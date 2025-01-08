@@ -1,23 +1,23 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.trajectory.Trajectory.State
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.meters_per_second_squared", ["acceleration"], ["The acceleration at that point of the trajectory."]);
-  python.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.units.meters_per_second_squared", ["acceleration"], ["The acceleration at that point of the trajectory."]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.feet_per_second_squared", ["acceleration_fps"], [""]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.radians_per_meter", ["curvature"], [""]);
-  python.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.units.radians_per_meter", ["curvature"], [""]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.geometry._geometry.Pose2d", ["pose"], ["The pose at that point of the trajectory."]);
-  python.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.geometry._geometry.Pose2d", ["pose"], ["The pose at that point of the trajectory."]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.seconds", ["t"], ["The time elapsed since the beginning of the trajectory."]);
-  python.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.units.seconds", ["t"], ["The time elapsed since the beginning of the trajectory."]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.meters_per_second", ["velocity"], ["The speed at that point of the trajectory."]);
-  python.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.units.meters_per_second", ["velocity"], ["The speed at that point of the trajectory."]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.feet_per_second", ["velocity_fps"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.meters_per_second_squared", ["acceleration"], ["The acceleration at that point of the trajectory."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.units.meters_per_second_squared", ["acceleration"], ["The acceleration at that point of the trajectory."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.feet_per_second_squared", ["acceleration_fps"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.radians_per_meter", ["curvature"], [""]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.units.radians_per_meter", ["curvature"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.geometry._geometry.Pose2d", ["pose"], ["The pose at that point of the trajectory."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.geometry._geometry.Pose2d", ["pose"], ["The pose at that point of the trajectory."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.seconds", ["t"], ["The time elapsed since the beginning of the trajectory."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.units.seconds", ["t"], ["The time elapsed since the beginning of the trajectory."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.meters_per_second", ["velocity"], ["The speed at that point of the trajectory."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.trajectory.Trajectory.State", "wpimath.units.meters_per_second", ["velocity"], ["The speed at that point of the trajectory."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.Trajectory.State", "wpimath.units.feet_per_second", ["velocity_fps"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

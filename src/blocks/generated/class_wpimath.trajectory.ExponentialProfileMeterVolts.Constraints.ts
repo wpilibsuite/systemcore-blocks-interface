@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.trajectory.ExponentialProfileMeterVolts.Constraints
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "wpimath.units.units_per_second", ["A"], ["The State-Space 1x1 system matrix."]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "wpimath.units.meters_per_second_squared_per_volt", ["B"], ["The State-Space 1x1 input matrix."]);
-  python.initializeInstanceVariableGetter("wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "wpimath.units.volts", ["maxInput"], ["Maximum unsigned input voltage."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "wpimath.units.units_per_second", ["A"], ["The State-Space 1x1 system matrix."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "wpimath.units.meters_per_second_squared_per_volt", ["B"], ["The State-Space 1x1 input matrix."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "wpimath.units.volts", ["maxInput"], ["Maximum unsigned input voltage."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

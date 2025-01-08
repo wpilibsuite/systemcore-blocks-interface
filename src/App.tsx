@@ -2,8 +2,10 @@
 // extendedPythonGenerator doesn't copy them from the blockly python
 // generator.
 // TODO(lizlooney): fix that.
-import './blocks/python'; // Defines blocks for accessing code in python (like wpilib, etc).
-import './blocks/misc';   // Defines a few miscellaneous blocks like a comment block.
+import './blocks/misc';
+import './blocks/python_enum';
+import './blocks/python_function';
+import './blocks/python_variable';
 
 import React, { useEffect, useState, useRef } from 'react';
 

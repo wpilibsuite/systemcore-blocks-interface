@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.REVPHFaults
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.REVPHFaults", "int", ["brownout", "canWarning", "channel0Fault", "channel10Fault", "channel11Fault", "channel12Fault", "channel13Fault", "channel14Fault", "channel15Fault", "channel1Fault", "channel2Fault", "channel3Fault", "channel4Fault", "channel5Fault", "channel6Fault", "channel7Fault", "channel8Fault", "channel9Fault", "compressorOpen", "compressorOverCurrent", "hardwareFault", "solenoidOverCurrent"], ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
-  python.initializeInstanceVariableSetter("hal.REVPHFaults", "int", ["brownout", "canWarning", "channel0Fault", "channel10Fault", "channel11Fault", "channel12Fault", "channel13Fault", "channel14Fault", "channel15Fault", "channel1Fault", "channel2Fault", "channel3Fault", "channel4Fault", "channel5Fault", "channel6Fault", "channel7Fault", "channel8Fault", "channel9Fault", "compressorOpen", "compressorOverCurrent", "hardwareFault", "solenoidOverCurrent"], ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.REVPHFaults", "int", ["brownout", "canWarning", "channel0Fault", "channel10Fault", "channel11Fault", "channel12Fault", "channel13Fault", "channel14Fault", "channel15Fault", "channel1Fault", "channel2Fault", "channel3Fault", "channel4Fault", "channel5Fault", "channel6Fault", "channel7Fault", "channel8Fault", "channel9Fault", "compressorOpen", "compressorOverCurrent", "hardwareFault", "solenoidOverCurrent"], ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.REVPHFaults", "int", ["brownout", "canWarning", "channel0Fault", "channel10Fault", "channel11Fault", "channel12Fault", "channel13Fault", "channel14Fault", "channel15Fault", "channel1Fault", "channel2Fault", "channel3Fault", "channel4Fault", "channel5Fault", "channel6Fault", "channel7Fault", "channel8Fault", "channel9Fault", "compressorOpen", "compressorOverCurrent", "hardwareFault", "solenoidOverCurrent"], ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

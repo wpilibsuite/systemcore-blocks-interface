@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for module hal.simulation
 
 export function initialize() {
-  python.initializeEnum("hal.simulation.AnalogTriggerMode", ["HALSIM_AnalogTriggerAveraged", "HALSIM_AnalogTriggerDutyCycle", "HALSIM_AnalogTriggerFiltered", "HALSIM_AnalogTriggerUnassigned"], "Members:\n\n  HALSIM_AnalogTriggerUnassigned\n\n  HALSIM_AnalogTriggerFiltered\n\n  HALSIM_AnalogTriggerDutyCycle\n\n  HALSIM_AnalogTriggerAveraged");
+  pythonEnum.initializeEnum("hal.simulation.AnalogTriggerMode", ["HALSIM_AnalogTriggerAveraged", "HALSIM_AnalogTriggerDutyCycle", "HALSIM_AnalogTriggerFiltered", "HALSIM_AnalogTriggerUnassigned"], "Members:\n\n  HALSIM_AnalogTriggerUnassigned\n\n  HALSIM_AnalogTriggerFiltered\n\n  HALSIM_AnalogTriggerDutyCycle\n\n  HALSIM_AnalogTriggerAveraged");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

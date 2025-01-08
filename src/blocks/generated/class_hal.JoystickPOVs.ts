@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.JoystickPOVs
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.JoystickPOVs", "int", ["count"], [""]);
-  python.initializeInstanceVariableSetter("hal.JoystickPOVs", "int", ["count"], [""]);
-  python.initializeInstanceVariableGetter("hal.JoystickPOVs", "memoryview", ["povs"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.JoystickPOVs", "int", ["count"], [""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.JoystickPOVs", "int", ["count"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.JoystickPOVs", "memoryview", ["povs"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

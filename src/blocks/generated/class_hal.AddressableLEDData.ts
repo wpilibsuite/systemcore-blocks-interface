@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.AddressableLEDData
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.AddressableLEDData", "int", ["b", "g", "r"], ["///< blue value", "///< green value", "///< red value"]);
-  python.initializeInstanceVariableSetter("hal.AddressableLEDData", "int", ["b", "g", "r"], ["///< blue value", "///< green value", "///< red value"]);
+  pythonVariable.initializeInstanceVariableGetter("hal.AddressableLEDData", "int", ["b", "g", "r"], ["///< blue value", "///< green value", "///< red value"]);
+  pythonVariable.initializeInstanceVariableSetter("hal.AddressableLEDData", "int", ["b", "g", "r"], ["///< blue value", "///< green value", "///< red value"]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

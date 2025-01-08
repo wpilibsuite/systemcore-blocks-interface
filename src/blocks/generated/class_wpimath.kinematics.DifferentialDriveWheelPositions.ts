@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.DifferentialDriveWheelPositions
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.kinematics.DifferentialDriveWheelPositions", "wpimath.units.meters", ["left", "right"], ["Distance driven by the left side.", "Distance driven by the right side."]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.DifferentialDriveWheelPositions", "wpimath.units.meters", ["left", "right"], ["Distance driven by the left side.", "Distance driven by the right side."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.DifferentialDriveWheelPositions", "wpimath.units.meters", ["left", "right"], ["Distance driven by the left side.", "Distance driven by the right side."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.DifferentialDriveWheelPositions", "wpimath.units.meters", ["left", "right"], ["Distance driven by the left side.", "Distance driven by the right side."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

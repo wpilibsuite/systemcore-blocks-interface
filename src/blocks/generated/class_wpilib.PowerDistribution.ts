@@ -1,13 +1,14 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.PowerDistribution
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.PowerDistribution", "int", ["kDefaultModule"], []);
-  python.initializeEnum("wpilib.PowerDistribution.ModuleType", ["kCTRE", "kRev"], "Power distribution module type.\n\nMembers:\n\n  kCTRE : CTRE (Cross The Road Electronics) CTRE Power Distribution Panel (PDP).\n\n  kRev : REV Power Distribution Hub (PDH).");
+  pythonVariable.initializeClassVariableGetter("wpilib.PowerDistribution", "int", ["kDefaultModule"], []);
+  pythonEnum.initializeEnum("wpilib.PowerDistribution.ModuleType", ["kCTRE", "kRev"], "Power distribution module type.\n\nMembers:\n\n  kCTRE : CTRE (Cross The Road Electronics) CTRE Power Distribution Panel (PDP).\n\n  kRev : REV Power Distribution Hub (PDH).");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

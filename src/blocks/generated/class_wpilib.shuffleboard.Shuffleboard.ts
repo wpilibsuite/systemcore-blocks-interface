@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.shuffleboard.Shuffleboard
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.shuffleboard.Shuffleboard", "str", ["kBaseTableName"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.shuffleboard.Shuffleboard", "str", ["kBaseTableName"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

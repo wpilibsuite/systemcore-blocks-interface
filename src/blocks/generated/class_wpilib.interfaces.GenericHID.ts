@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
 import {Category} from "../../toolbox/items";
+import * as pythonEnum from "../python_enum";
 
 // Blocks for class wpilib.interfaces.GenericHID
 
 export function initialize() {
-  python.initializeEnum("wpilib.interfaces.GenericHID.HIDType", ["kHID1stPerson", "kHIDDriving", "kHIDFlight", "kHIDGamepad", "kHIDJoystick", "kUnknown", "kXInputArcadePad", "kXInputArcadeStick", "kXInputDancePad", "kXInputDrumKit", "kXInputFlightStick", "kXInputGamepad", "kXInputGuitar", "kXInputGuitar2", "kXInputGuitar3", "kXInputUnknown", "kXInputWheel"], "USB HID interface type.\n\nMembers:\n\n  kUnknown : Unknown.\n\n  kXInputUnknown : XInputUnknown.\n\n  kXInputGamepad : XInputGamepad.\n\n  kXInputWheel : XInputWheel.\n\n  kXInputArcadeStick : XInputArcadeStick.\n\n  kXInputFlightStick : XInputFlightStick.\n\n  kXInputDancePad : XInputDancePad.\n\n  kXInputGuitar : XInputGuitar.\n\n  kXInputGuitar2 : XInputGuitar2.\n\n  kXInputDrumKit : XInputDrumKit.\n\n  kXInputGuitar3 : XInputGuitar3.\n\n  kXInputArcadePad : XInputArcadePad.\n\n  kHIDJoystick : HIDJoystick.\n\n  kHIDGamepad : HIDGamepad.\n\n  kHIDDriving : HIDDriving.\n\n  kHIDFlight : HIDFlight.\n\n  kHID1stPerson : HID1stPerson.");
-  python.initializeEnum("wpilib.interfaces.GenericHID.RumbleType", ["kBothRumble", "kLeftRumble", "kRightRumble"], "Represents a rumble output on the Joystick.\n\nMembers:\n\n  kLeftRumble : Left rumble motor.\n\n  kRightRumble : Right rumble motor.\n\n  kBothRumble : Both left and right rumble motors.");
+  pythonEnum.initializeEnum("wpilib.interfaces.GenericHID.HIDType", ["kHID1stPerson", "kHIDDriving", "kHIDFlight", "kHIDGamepad", "kHIDJoystick", "kUnknown", "kXInputArcadePad", "kXInputArcadeStick", "kXInputDancePad", "kXInputDrumKit", "kXInputFlightStick", "kXInputGamepad", "kXInputGuitar", "kXInputGuitar2", "kXInputGuitar3", "kXInputUnknown", "kXInputWheel"], "USB HID interface type.\n\nMembers:\n\n  kUnknown : Unknown.\n\n  kXInputUnknown : XInputUnknown.\n\n  kXInputGamepad : XInputGamepad.\n\n  kXInputWheel : XInputWheel.\n\n  kXInputArcadeStick : XInputArcadeStick.\n\n  kXInputFlightStick : XInputFlightStick.\n\n  kXInputDancePad : XInputDancePad.\n\n  kXInputGuitar : XInputGuitar.\n\n  kXInputGuitar2 : XInputGuitar2.\n\n  kXInputDrumKit : XInputDrumKit.\n\n  kXInputGuitar3 : XInputGuitar3.\n\n  kXInputArcadePad : XInputArcadePad.\n\n  kHIDJoystick : HIDJoystick.\n\n  kHIDGamepad : HIDGamepad.\n\n  kHIDDriving : HIDDriving.\n\n  kHIDFlight : HIDFlight.\n\n  kHID1stPerson : HID1stPerson.");
+  pythonEnum.initializeEnum("wpilib.interfaces.GenericHID.RumbleType", ["kBothRumble", "kLeftRumble", "kRightRumble"], "Represents a rumble output on the Joystick.\n\nMembers:\n\n  kLeftRumble : Left rumble motor.\n\n  kRightRumble : Right rumble motor.\n\n  kBothRumble : Both left and right rumble motors.");
 }
 
 export function getToolboxCategory(subcategories: any): Category {

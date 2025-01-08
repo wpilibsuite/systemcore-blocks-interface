@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.XboxController.Axis
 
 export function initialize() {
-  python.initializeClassVariableGetter("wpilib.XboxController.Axis", "int", ["kLeftTrigger", "kLeftX", "kLeftY", "kRightTrigger", "kRightX", "kRightY"], []);
+  pythonVariable.initializeClassVariableGetter("wpilib.XboxController.Axis", "int", ["kLeftTrigger", "kLeftX", "kLeftY", "kRightTrigger", "kRightX", "kRightY"], []);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.REVPHVersion
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.REVPHVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["", "", "", "", "", ""]);
-  python.initializeInstanceVariableSetter("hal.REVPHVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.REVPHVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.REVPHVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["", "", "", "", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

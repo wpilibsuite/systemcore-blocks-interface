@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.spline.Spline5.ControlVector
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.spline.Spline5.ControlVector", "Tuple[float, float, float]", ["x", "y"], ["The x components of the control vector.", "The y components of the control vector."]);
-  python.initializeInstanceVariableSetter("wpimath.spline.Spline5.ControlVector", "Tuple[float, float, float]", ["x", "y"], ["The x components of the control vector.", "The y components of the control vector."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.spline.Spline5.ControlVector", "Tuple[float, float, float]", ["x", "y"], ["The x components of the control vector.", "The y components of the control vector."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.spline.Spline5.ControlVector", "Tuple[float, float, float]", ["x", "y"], ["The x components of the control vector.", "The y components of the control vector."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

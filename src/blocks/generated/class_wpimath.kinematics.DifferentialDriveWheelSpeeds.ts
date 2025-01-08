@@ -1,15 +1,15 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.DifferentialDriveWheelSpeeds
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.kinematics.DifferentialDriveWheelSpeeds", "wpimath.units.meters_per_second", ["left", "right"], ["Speed of the left side of the robot.", "Speed of the right side of the robot."]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.DifferentialDriveWheelSpeeds", "wpimath.units.meters_per_second", ["left", "right"], ["Speed of the left side of the robot.", "Speed of the right side of the robot."]);
-  python.initializeInstanceVariableGetter("wpimath.kinematics.DifferentialDriveWheelSpeeds", "wpimath.units.feet_per_second", ["left_fps", "right_fps"], ["", ""]);
-  python.initializeInstanceVariableSetter("wpimath.kinematics.DifferentialDriveWheelSpeeds", "wpimath.units.feet_per_second", ["left_fps", "right_fps"], ["", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.DifferentialDriveWheelSpeeds", "wpimath.units.meters_per_second", ["left", "right"], ["Speed of the left side of the robot.", "Speed of the right side of the robot."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.DifferentialDriveWheelSpeeds", "wpimath.units.meters_per_second", ["left", "right"], ["Speed of the left side of the robot.", "Speed of the right side of the robot."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.kinematics.DifferentialDriveWheelSpeeds", "wpimath.units.feet_per_second", ["left_fps", "right_fps"], ["", ""]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.DifferentialDriveWheelSpeeds", "wpimath.units.feet_per_second", ["left_fps", "right_fps"], ["", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

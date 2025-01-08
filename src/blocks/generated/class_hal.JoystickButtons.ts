@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.JoystickButtons
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("hal.JoystickButtons", "int", ["buttons", "count"], ["", ""]);
-  python.initializeInstanceVariableSetter("hal.JoystickButtons", "int", ["buttons", "count"], ["", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.JoystickButtons", "int", ["buttons", "count"], ["", ""]);
+  pythonVariable.initializeInstanceVariableSetter("hal.JoystickButtons", "int", ["buttons", "count"], ["", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

@@ -1,15 +1,15 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.CANStatus
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpilib.CANStatus", "int", ["busOffCount", "receiveErrorCount", "transmitErrorCount", "txFullCount"], ["", "", "", ""]);
-  python.initializeInstanceVariableSetter("wpilib.CANStatus", "int", ["busOffCount", "receiveErrorCount", "transmitErrorCount", "txFullCount"], ["", "", "", ""]);
-  python.initializeInstanceVariableGetter("wpilib.CANStatus", "float", ["percentBusUtilization"], [""]);
-  python.initializeInstanceVariableSetter("wpilib.CANStatus", "float", ["percentBusUtilization"], [""]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.CANStatus", "int", ["busOffCount", "receiveErrorCount", "transmitErrorCount", "txFullCount"], ["", "", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.CANStatus", "int", ["busOffCount", "receiveErrorCount", "transmitErrorCount", "txFullCount"], ["", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.CANStatus", "float", ["percentBusUtilization"], [""]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.CANStatus", "float", ["percentBusUtilization"], [""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

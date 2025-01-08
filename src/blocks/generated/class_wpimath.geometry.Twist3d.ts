@@ -1,19 +1,19 @@
 // This file was generated. Do not edit!
 
-import * as python from "../python";
+import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Twist3d
 
 export function initialize() {
-  python.initializeInstanceVariableGetter("wpimath.geometry.Twist3d", "wpimath.units.meters", ["dx", "dy", "dz"], ["Linear \"dx\" component", "Linear \"dy\" component", "Linear \"dz\" component"]);
-  python.initializeInstanceVariableSetter("wpimath.geometry.Twist3d", "wpimath.units.meters", ["dx", "dy", "dz"], ["Linear \"dx\" component", "Linear \"dy\" component", "Linear \"dz\" component"]);
-  python.initializeInstanceVariableGetter("wpimath.geometry.Twist3d", "wpimath.units.feet", ["dx_feet", "dy_feet", "dz_feet"], ["", "", ""]);
-  python.initializeInstanceVariableSetter("wpimath.geometry.Twist3d", "wpimath.units.feet", ["dx_feet", "dy_feet", "dz_feet"], ["", "", ""]);
-  python.initializeInstanceVariableGetter("wpimath.geometry.Twist3d", "wpimath.units.radians", ["rx", "ry", "rz"], ["Rotation vector x component.", "Rotation vector y component.", "Rotation vector z component."]);
-  python.initializeInstanceVariableSetter("wpimath.geometry.Twist3d", "wpimath.units.radians", ["rx", "ry", "rz"], ["Rotation vector x component.", "Rotation vector y component.", "Rotation vector z component."]);
-  python.initializeInstanceVariableGetter("wpimath.geometry.Twist3d", "wpimath.units.degrees", ["rx_degrees", "ry_degrees", "rz_degrees"], ["", "", ""]);
-  python.initializeInstanceVariableSetter("wpimath.geometry.Twist3d", "wpimath.units.degrees", ["rx_degrees", "ry_degrees", "rz_degrees"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Twist3d", "wpimath.units.meters", ["dx", "dy", "dz"], ["Linear \"dx\" component", "Linear \"dy\" component", "Linear \"dz\" component"]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.geometry.Twist3d", "wpimath.units.meters", ["dx", "dy", "dz"], ["Linear \"dx\" component", "Linear \"dy\" component", "Linear \"dz\" component"]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Twist3d", "wpimath.units.feet", ["dx_feet", "dy_feet", "dz_feet"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.geometry.Twist3d", "wpimath.units.feet", ["dx_feet", "dy_feet", "dz_feet"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Twist3d", "wpimath.units.radians", ["rx", "ry", "rz"], ["Rotation vector x component.", "Rotation vector y component.", "Rotation vector z component."]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.geometry.Twist3d", "wpimath.units.radians", ["rx", "ry", "rz"], ["Rotation vector x component.", "Rotation vector y component.", "Rotation vector z component."]);
+  pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Twist3d", "wpimath.units.degrees", ["rx_degrees", "ry_degrees", "rz_degrees"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableSetter("wpimath.geometry.Twist3d", "wpimath.units.degrees", ["rx_degrees", "ry_degrees", "rz_degrees"], ["", "", ""]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {
