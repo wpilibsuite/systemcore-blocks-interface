@@ -30,9 +30,9 @@ export class Block extends Item {
   type: string;
 
   // For mutating the block.
-  extraState: {[key: string]: any};
-  fields: {[key: string]: any};
-  inputs: {[key: string]: any};
+  extraState?: {[key: string]: any};
+  fields?: {[key: string]: any};
+  inputs?: {[key: string]: any};
 
   constructor(
       type: string,

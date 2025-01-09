@@ -20,18 +20,22 @@
  */
 
 import * as Blockly from 'blockly/core';
-import { PythonGenerator, pythonGenerator } from 'blockly/python';
+import { PythonGenerator } from 'blockly/python';
+import {Block} from "../toolbox/items";
+import {FunctionArg} from '../blocks/python_function';
 import * as commonStorage from '../storage/common_storage.js';
 
 // Extends the python generator to collect some information about functions and
 // variables that have been defined so they can be used in other modules.
 
 class ExtendedPythonGenerator extends PythonGenerator {
+  private mapWorkspaceIdToExportedBlocks: {[key: string]: Block[]} = Object.create(null);
+
   constructor() {
     super('Python');
-    this.mapWorkspaceIdToExportedBlocks = {};
   }
-  init(workspace) {
+
+  init(workspace: Blockly.Workspace) {
     super.init(workspace);
 
     // The exported blocks produced here have the extraState.importModule and fields.MODULE values
@@ -48,17 +52,25 @@ class ExtendedPythonGenerator extends PythonGenerator {
     for (const procedureTuple of procedureTuples) {
       const functionName = procedureTuple[0];
       const blockDefinition = Blockly.Procedures.getDefinition(functionName, workspace);
-      if (!blockDefinition.isEnabled()) {
+      if (!blockDefinition || !blockDefinition.isEnabled()) {
         continue;
       }
       const actualFunctionName = super.getProcedureName(functionName);
       const hasReturnValue = procedureTuple[2];
-      const callFunctionBlock = {
+      const args: FunctionArg[] = [];
+      const parameterNames = procedureTuple[1];
+      parameterNames.forEach((parameterName) => {
+        args.push({
+          'name': parameterName,
+          'type': '',
+        })
+      });
+      const callFunctionBlock: Block = {
         'kind': 'block',
         'type': 'call_python_module_function',
         'extraState': {
           'returnType': hasReturnValue ? '' : 'None',
-          'args': [],
+          'args': args,
           'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
           'actualFunctionName': actualFunctionName,
           'exportedFunction': true,
@@ -68,26 +80,19 @@ class ExtendedPythonGenerator extends PythonGenerator {
           'FUNC': functionName,
         },
       };
-      const parameterNames = procedureTuple[1];
-      for (const parameterName of parameterNames) {
-        callFunctionBlock.extraState.args.push({
-          'name': parameterName,
-          'type': '',
-        })
-      }
       exportedBlocks.push(callFunctionBlock);
     }
 
     const allVariables = workspace.getAllVariables();
     for (const variableModel of allVariables) {
       // Only variables that are used outside of functions are exported. (I'm not sure if this is
-      // the right choice, since all variables in blockly are global variables.)
+      // the right choice, since all blockly variables are global variables.)
       let exported = false;
       const variableUsesById = workspace.getVariableUsesById(variableModel.getId())
       if (variableUsesById.length === 0) {
         continue;
       }
-      for (const block of variableUsesById) {
+      variableUsesById.forEach((block) => {
         if (block.type === 'variables_get' ||
             block.type === 'variables_set' ||
             block.type === 'math_change' ||
@@ -98,7 +103,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
             exported = true;
           }
         }
-      }
+      });
       if (exported) {
         const variableName = variableModel.name;
         const actualVariableName = super.getVariableName(variableModel.getId());
@@ -134,7 +139,8 @@ class ExtendedPythonGenerator extends PythonGenerator {
     }
     this.mapWorkspaceIdToExportedBlocks[workspace.id] = exportedBlocks;
   }
-  getExportedBlocks(workspace) {
+
+  getExportedBlocks(workspace: Blockly.Workspace) {
     return this.mapWorkspaceIdToExportedBlocks[workspace.id];
   }
 }

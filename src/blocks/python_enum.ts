@@ -23,9 +23,9 @@ import * as Blockly from 'blockly/core';
 import { PythonGenerator, pythonGenerator } from 'blockly/python';
 import { Order } from 'blockly/python';
 
-import * as pythonUtils from './generated/python_utils';
-import * as wpilibUtils from './wpilib_utils';
-import { createFieldDropdown, createNonEditableField } from './blocks_utils';
+import * as pythonUtils from './utils/generated/python';
+import { createFieldDropdown, createNonEditableField } from './utils/blocks';
+import { getOutputCheck, addImport } from './utils/python';
 
 // A block to access a python enum.
 
@@ -113,7 +113,7 @@ const GET_PYTHON_ENUM_VALUE = {
     // Set the output plug.
     this.setPreviousStatement(false, null);
     this.setNextStatement(false, null);
-    const outputCheck = wpilibUtils.getOutputCheck(this.firstAttributes_.enumType);
+    const outputCheck = getOutputCheck(this.firstAttributes_.enumType);
     if (outputCheck) {
       this.setOutput(true, outputCheck);
     } else {
@@ -129,12 +129,12 @@ const GET_PYTHON_ENUM_VALUE = {
 Blockly.Blocks['get_python_enum_value'] = GET_PYTHON_ENUM_VALUE;
 
 pythonGenerator.forBlock['get_python_enum_value'] = function(
-    block: GetPythonEnumValueBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const getPythonEnumValueBlock = block as GetPythonEnumValueBlock;
   const enumClassName = block.getFieldValue(pythonUtils.FIELD_ENUM_CLASS_NAME);
   const enumValue = block.getFieldValue(pythonUtils.FIELD_ENUM_VALUE);
-  if (block.firstAttributes_.importModule) {
-    (generator as any).definitions_['import_' + block.firstAttributes_.importModule] =
-        'import ' + block.firstAttributes_.importModule;
+  if (getPythonEnumValueBlock.firstAttributes_.importModule) {
+    addImport(generator, getPythonEnumValueBlock.firstAttributes_.importModule);
   }
   const code = enumClassName + '.' + enumValue;
   return [code, Order.MEMBER];

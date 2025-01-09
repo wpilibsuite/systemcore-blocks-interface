@@ -23,9 +23,9 @@ import * as Blockly from 'blockly/core';
 import { PythonGenerator, pythonGenerator } from 'blockly/python';
 import { Order } from 'blockly/python';
 
-import * as pythonUtils from './generated/python_utils';
-import { createFieldDropdown, createNonEditableField } from './blocks_utils';
-import { getAllowedTypesForSetCheck, getOutputCheck} from './wpilib_utils';
+import * as pythonUtils from './utils/generated/python';
+import { createFieldDropdown, createNonEditableField } from './utils/blocks';
+import { getAllowedTypesForSetCheck, getOutputCheck, addImport } from './utils/python';
 
 
 const COLOR_VARIABLE_GETTER = 120; // green
@@ -263,13 +263,14 @@ Blockly.Blocks['get_python_module_variable'] = {
 };
 
 pythonGenerator.forBlock['get_python_module_variable'] = function(
-    block: GetPythonVariableBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const getPythonVariableBlock = block as GetPythonVariableBlock;
   const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_NAME);
-  const varName = (block.firstAttributes_.actualVariableName)
-      ? block.firstAttributes_.actualVariableName : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
-  if (block.firstAttributes_.importModule) {
-    (generator as any).definitions_['import_' + block.firstAttributes_.importModule] =
-        'import ' + block.firstAttributes_.importModule;
+  const varName = (getPythonVariableBlock.firstAttributes_.actualVariableName)
+      ? getPythonVariableBlock.firstAttributes_.actualVariableName
+      : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
+  if (getPythonVariableBlock.firstAttributes_.importModule) {
+    addImport(generator, getPythonVariableBlock.firstAttributes_.importModule);
   }
   const code = moduleName + '.' + varName;
   return [code, Order.MEMBER];
@@ -307,13 +308,13 @@ Blockly.Blocks['get_python_class_variable'] = {
 };
 
 pythonGenerator.forBlock['get_python_class_variable'] = function(
-    block: GetPythonVariableBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const getPythonVariableBlock = block as GetPythonVariableBlock;
   const className = block.getFieldValue(pythonUtils.FIELD_CLASS_NAME);
-  const varName = (block.firstAttributes_.actualVariableName)
-      ? block.firstAttributes_.actualVariableName : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
-  if (block.firstAttributes_.importModule) {
-    (generator as any).definitions_['import_' + block.firstAttributes_.importModule] =
-        'import ' + block.firstAttributes_.importModule;
+  const varName = (getPythonVariableBlock.firstAttributes_.actualVariableName)
+      ? getPythonVariableBlock.firstAttributes_.actualVariableName : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
+  if (getPythonVariableBlock.firstAttributes_.importModule) {
+    addImport(generator, getPythonVariableBlock.firstAttributes_.importModule);
   }
   const code = className + '.' + varName;
   return [code, Order.MEMBER];
@@ -491,14 +492,15 @@ Blockly.Blocks['set_python_module_variable'] = {
 };
 
 pythonGenerator.forBlock['set_python_module_variable'] = function(
-    block: GetPythonVariableBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const setPythonVariableBlock = block as SetPythonVariableBlock;
   const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_NAME);
-  const varName = (block.firstAttributes_.actualVariableName)
-      ? block.firstAttributes_.actualVariableName : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
+  const varName = (setPythonVariableBlock.firstAttributes_.actualVariableName)
+      ? setPythonVariableBlock.firstAttributes_.actualVariableName
+      : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
   const value = generator.valueToCode(block, 'VALUE', Order.NONE);
-  if (block.firstAttributes_.importModule) {
-    (generator as any).definitions_['import_' + block.firstAttributes_.importModule] =
-        'import ' + block.firstAttributes_.importModule;
+  if (setPythonVariableBlock.firstAttributes_.importModule) {
+    addImport(generator, setPythonVariableBlock.firstAttributes_.importModule);
   }
   const code = moduleName + '.' + varName + ' = ' + value + ';\n';
   return code;
@@ -536,14 +538,15 @@ Blockly.Blocks['set_python_class_variable'] = {
 };
 
 pythonGenerator.forBlock['set_python_class_variable'] = function(
-    block: GetPythonVariableBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const setPythonVariableBlock = block as SetPythonVariableBlock;
   const className = block.getFieldValue(pythonUtils.FIELD_CLASS_NAME);
-  const varName = (block.firstAttributes_.actualVariableName)
-      ? block.firstAttributes_.actualVariableName : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
+  const varName = (setPythonVariableBlock.firstAttributes_.actualVariableName)
+      ? setPythonVariableBlock.firstAttributes_.actualVariableName
+      : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
   const value = generator.valueToCode(block, 'VALUE', Order.NONE);
-  if (block.firstAttributes_.importModule) {
-    (generator as any).definitions_['import_' + block.firstAttributes_.importModule] =
-        'import ' + block.firstAttributes_.importModule;
+  if (setPythonVariableBlock.firstAttributes_.importModule) {
+    addImport(generator, setPythonVariableBlock.firstAttributes_.importModule);
   }
   const code = className + '.' + varName + ' = ' + value + ';\n';
   return code;
@@ -581,10 +584,12 @@ Blockly.Blocks['set_python_instance_variable'] = {
 };
 
 pythonGenerator.forBlock['set_python_instance_variable'] = function(
-    block: GetPythonVariableBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const setPythonVariableBlock = block as SetPythonVariableBlock;
   const selfValue = generator.valueToCode(block, 'SELF', Order.MEMBER);
-  const varName = (block.firstAttributes_.actualVariableName)
-      ? block.firstAttributes_.actualVariableName : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
+  const varName = (setPythonVariableBlock.firstAttributes_.actualVariableName)
+      ? setPythonVariableBlock.firstAttributes_.actualVariableName
+      : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
   const value = generator.valueToCode(block, 'VALUE', Order.NONE);
   const code = selfValue + '.' + varName + ' = ' + value + ';\n';
   return code;

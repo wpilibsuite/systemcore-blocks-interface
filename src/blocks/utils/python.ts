@@ -19,15 +19,16 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import * as wpilibUtils from './generated/wpilib_utils';
+import { PythonGenerator } from 'blockly/python';
+import * as pythonUtils from './generated/python';
 
 // Functions used in multiple python block definitions.
 
-export function getAllowedTypesForSetCheck(type) {
+export function getAllowedTypesForSetCheck(type: string): string[] {
   // For the given python type, returns an array of compatible input types.
 
   // Type Aliases
-  const alias = wpilibUtils.getAlias(type);
+  const alias = pythonUtils.getAlias(type);
   if (alias) {
     return [type].concat(getAllowedTypesForSetCheck(alias));
   }
@@ -35,18 +36,18 @@ export function getAllowedTypesForSetCheck(type) {
   // Builtin python types.
   const check = getCheckForBuiltInType(type);
   if (check) {
-    return check;
+    return [check];
   }
 
-  const allowedTypes = wpilibUtils.getAllowedTypes(type);
+  const allowedTypes = pythonUtils.getAllowedTypes(type);
   if (allowedTypes) {
     return allowedTypes;
   }
 
-  return type;
+  return [type];
 }
 
-export function getCheckForBuiltInType(type) {
+export function getCheckForBuiltInType(type: string): string {
   // If type is a built-in python type, return the blockly check for it.
   if (type === 'bool') {
     return 'Boolean';
@@ -70,14 +71,14 @@ export function getCheckForBuiltInType(type) {
   return '';
 }
 
-export function getOutputCheck(type) {
+export function getOutputCheck(type: string): string {
   // For the given python type, returns the output type.
   if (type === 'None') {
     return '';
   }
 
   // Type Aliases
-  const alias = wpilibUtils.getAlias(type);
+  const alias = pythonUtils.getAlias(type);
   if (alias) {
     return getOutputCheck(alias);
   }
@@ -89,4 +90,11 @@ export function getOutputCheck(type) {
   }
 
   return type;
+}
+
+// Functions used in python code generation for multiple python blocks.
+
+export function addImport(generator: PythonGenerator, importModule: string): void {
+  (generator as any).definitions_['import_' + importModule] =
+      'import ' + importModule;
 }

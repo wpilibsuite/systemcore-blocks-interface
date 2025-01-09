@@ -23,14 +23,14 @@ import * as Blockly from 'blockly/core';
 import { PythonGenerator, pythonGenerator } from 'blockly/python';
 import { Order } from 'blockly/python';
 
-import * as pythonUtils from './generated/python_utils';
-import { createNonEditableField } from './blocks_utils';
-import { getAllowedTypesForSetCheck, getOutputCheck} from './wpilib_utils';
+import * as pythonUtils from './utils/generated/python';
+import { createNonEditableField } from './utils/blocks';
+import { getAllowedTypesForSetCheck, getOutputCheck, addImport } from './utils/python';
 
 
 const COLOR_FUNCTION = 270;        // blue-magenta
 
-type FunctionArg = {
+export type FunctionArg = {
   name: string,
   type: string,
 };
@@ -103,12 +103,12 @@ const CALL_PYTHON_FUNCTION_COMMON = {
     if (this.firstAttributes_.tooltip) {
       extraState.tooltip = this.firstAttributes_.tooltip;
     }
-    for (const arg of this.firstAttributes_.args) {
+    this.firstAttributes_.args.forEach((arg) => {
       extraState.args.push({
         'name': arg.name,
         'type': arg.type,
       });
-    }
+    });
     if (this.firstAttributes_.importModule) {
       extraState.importModule = this.firstAttributes_.importModule;
     }
@@ -131,12 +131,12 @@ const CALL_PYTHON_FUNCTION_COMMON = {
     this.firstAttributes_.returnType = extraState.returnType ? extraState.returnType : '';
     this.firstAttributes_.tooltip = extraState.tooltip ? extraState.tooltip : '';
     this.firstAttributes_.args = [];
-    for (const arg of extraState.args) {
+    extraState.args.forEach((arg) => {
       this.firstAttributes_.args.push({
         'name': arg.name,
         'type': arg.type,
       });
-    }
+    });
     this.firstAttributes_.importModule = extraState.importModule
         ? extraState.importModule : '';
     this.firstAttributes_.actualFunctionName = extraState.actualFunctionName
@@ -200,16 +200,17 @@ Blockly.Blocks['call_python_module_function'] = {
 };
 
 pythonGenerator.forBlock['call_python_module_function'] = function(
-    block: CallPythonFunctionBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const callPythonFunctionBlock = block as CallPythonFunctionBlock;
   const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_NAME);
-  const functionName = (block.firstAttributes_.actualFunctionName)
-      ? block.firstAttributes_.actualFunctionName : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
-  if (block.firstAttributes_.importModule) {
-    (generator as any).definitions_['import_' + block.firstAttributes_.importModule] =
-        'import ' + block.firstAttributes_.importModule;
+  const functionName = (callPythonFunctionBlock.firstAttributes_.actualFunctionName)
+      ? callPythonFunctionBlock.firstAttributes_.actualFunctionName
+      : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+  if (callPythonFunctionBlock.firstAttributes_.importModule) {
+    addImport(generator, callPythonFunctionBlock.firstAttributes_.importModule);
   }
   let code = moduleName + '.' + functionName + '(' +
-      generateCodeForArguments(block, generator, 0) + ')';
+      generateCodeForArguments(callPythonFunctionBlock, generator, 0) + ')';
   if (block.outputConnection) {
     return [code, Order.FUNCTION_CALL];
   } else {
@@ -240,16 +241,17 @@ Blockly.Blocks['call_python_static_method'] = {
 };
 
 pythonGenerator.forBlock['call_python_static_method'] = function(
-    block: CallPythonFunctionBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const callPythonFunctionBlock = block as CallPythonFunctionBlock;
   const className = block.getFieldValue(pythonUtils.FIELD_CLASS_NAME);
-  const functionName = (block.firstAttributes_.actualFunctionName)
-      ? block.firstAttributes_.actualFunctionName : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
-  if (block.firstAttributes_.importModule) {
-    (generator as any).definitions_['import_' + block.firstAttributes_.importModule] =
-        'import ' + block.firstAttributes_.importModule;
+  const functionName = (callPythonFunctionBlock.firstAttributes_.actualFunctionName)
+      ? callPythonFunctionBlock.firstAttributes_.actualFunctionName
+      : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+  if (callPythonFunctionBlock.firstAttributes_.importModule) {
+    addImport(generator, callPythonFunctionBlock.firstAttributes_.importModule);
   }
   let code = className + '.' + functionName + '(' +
-      generateCodeForArguments(block, generator, 0) + ')';
+      generateCodeForArguments(callPythonFunctionBlock, generator, 0) + ')';
   if (block.outputConnection) {
     return [code, Order.FUNCTION_CALL];
   } else {
@@ -277,14 +279,14 @@ Blockly.Blocks['call_python_constructor'] = {
 };
 
 pythonGenerator.forBlock['call_python_constructor'] = function(
-    block: CallPythonFunctionBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const callPythonFunctionBlock = block as CallPythonFunctionBlock;
   const className = block.getFieldValue(pythonUtils.FIELD_CLASS_NAME);
-  if (block.firstAttributes_.importModule) {
-    (generator as any).definitions_['import_' + block.firstAttributes_.importModule] =
-        'import ' + block.firstAttributes_.importModule;
+  if (callPythonFunctionBlock.firstAttributes_.importModule) {
+    addImport(generator, callPythonFunctionBlock.firstAttributes_.importModule);
   }
   let code = className + '(' +
-      generateCodeForArguments(block, generator, 0) + ')';
+      generateCodeForArguments(callPythonFunctionBlock, generator, 0) + ')';
   return [code, Order.FUNCTION_CALL];
 };
 
@@ -311,13 +313,15 @@ Blockly.Blocks['call_python_instance_method'] = {
 };
 
 pythonGenerator.forBlock['call_python_instance_method'] = function(
-    block: CallPythonFunctionBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator) {
+  const callPythonFunctionBlock = block as CallPythonFunctionBlock;
   const selfValue = generator.valueToCode(block, 'ARG0', Order.MEMBER);
-  const functionName = (block.firstAttributes_.actualFunctionName)
-      ? block.firstAttributes_.actualFunctionName : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+  const functionName = (callPythonFunctionBlock.firstAttributes_.actualFunctionName)
+      ? callPythonFunctionBlock.firstAttributes_.actualFunctionName
+      : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
   // Pass 1 to generateCodeForArguments so we skip the self argument.
   let code = selfValue + '.' + functionName + '(' +
-      generateCodeForArguments(block, generator, 1) + ')';
+      generateCodeForArguments(callPythonFunctionBlock, generator, 1) + ')';
   if (block.outputConnection) {
     return [code, Order.FUNCTION_CALL];
   } else {

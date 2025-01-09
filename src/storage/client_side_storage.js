@@ -185,9 +185,9 @@ export function listModules(callback) {
     } else {
       const modules = [];
       const sortedWorkspaceNames = Object.keys(workspaces).sort();
-      for (const workspaceName of sortedWorkspaceNames) {
+      sortedWorkspaceNames.forEach((workspaceName) => {
         modules.push(workspaces[workspaceName]);
-      }
+      });
       callback(modules, '');
     }
   };
@@ -403,9 +403,9 @@ export function deleteWorkspaces(workspaceNames, callback) {
       }
     }
   };
-  for (const workspaceName of workspaceNames) {
+  workspaceNames.forEach((workspaceName) => {
     deleteOneWorkspace(workspaceName, callback1);
-  }
+  });
 }
 
 export function deleteOneWorkspace(workspaceName, callback) {

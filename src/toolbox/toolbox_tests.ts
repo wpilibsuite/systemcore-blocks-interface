@@ -50,7 +50,7 @@ class ToolboxTestData {
   }
 
   private collectBlocks(contents: toolboxItems.Item[]): void {
-    for (const item of contents) {
+    contents.forEach((item) => {
       switch (item.kind) {
         default:
           console.log('Error - item.kind is ' + item.kind + '. It must be block, category, or sep.');
@@ -68,7 +68,7 @@ class ToolboxTestData {
         case 'sep':
           break;
       }
-    }
+    });
   }
 
   runTests(): void {

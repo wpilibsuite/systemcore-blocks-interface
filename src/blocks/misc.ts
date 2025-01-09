@@ -24,9 +24,8 @@
 import * as Blockly from 'blockly/core';
 import { pythonGenerator } from 'blockly/python';
 import { Order } from 'blockly/python';
-import { ContextMenuOption, LegacyContextMenuOption } from 'blockly/core/contextmenu_registry';
 
-import { createFieldDropdown } from './blocks_utils';
+import { createFieldDropdown } from './utils/blocks';
 
 const miscColor = 240;        // blue
 

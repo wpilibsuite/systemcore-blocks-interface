@@ -24,7 +24,7 @@ import * as toolboxItems from "../toolbox/items";
 
 export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: toolboxItems.Item[]) {
   const contents: toolboxItems.Item[] = generatedToolbox.getToolboxCategories();
-  if (opt_includeExportedBlocksFromWorkspace) {
+  if (opt_includeExportedBlocksFromWorkspace.length) {
     contents.push.apply(
       contents,
       [

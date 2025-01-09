@@ -24,12 +24,12 @@ import './blocks/misc';
 import './blocks/python_enum';
 import './blocks/python_function';
 import './blocks/python_variable';
-import { initialize as initializeBlocks } from './blocks/generated/initialize';
+import { initialize as initializeBlocks } from './blocks/utils/generated/initialize';
 
 import * as editor from './editor/editor.js';
-import * as toolbox from './editor/toolbox';
-import { extendedPythonGenerator } from './editor/extended_python_generator.js';
-//import { testAllBlocksInToolbox } from './editor/toolbox_tests';
+import { extendedPythonGenerator } from './editor/extended_python_generator';
+import { getToolboxJSON } from './toolbox/toolbox';
+//import { testAllBlocksInToolbox } from './toolbox/toolbox_tests';
 
 import * as storage from './storage/client_side_storage.js';
 import * as commonStorage from './storage/common_storage.js';
@@ -196,7 +196,7 @@ const App = () => {
         blocklyWorkspace.addChangeListener(handleBlocksChanged);
 
         // Set the toolbox.
-        const toolboxJSON = toolbox.getToolboxJSON([]);
+        const toolboxJSON = getToolboxJSON([]);
         //testAllBlocksInToolbox(toolboxJSON.contents);
         blocklyWorkspace.updateToolbox(toolboxJSON);
       }
@@ -277,9 +277,9 @@ const App = () => {
     const opModeNames = [];
     for (const workspace of modules) {
       if (workspace.workspaceName === workspaceName) {
-        for (const opMode of workspace.opModes) {
+        workspace.opModes.forEach((opMode) => {
           opModeNames.push(opMode.moduleName);
-        }
+        });
         break;
       }
     }

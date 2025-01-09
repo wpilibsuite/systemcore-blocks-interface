@@ -39,8 +39,8 @@ export function createFieldDropdown(items: string[]): Blockly.Field {
     return new FieldNonEditableText(items[0]);
   }
   const options: Blockly.MenuOption[] = [];
-  for (const item of items) {
+  items.forEach((item) => {
     options.push([item, item]);
-  }
+  });
   return new Blockly.FieldDropdown(options);
 }
