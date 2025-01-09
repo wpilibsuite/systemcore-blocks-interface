@@ -139,15 +139,4 @@ class ExtendedPythonGenerator extends PythonGenerator {
   }
 }
 
-function createExtendedPythonGenerator() {
-  const extendedPythonGenerator = new ExtendedPythonGenerator();
-
-  extendedPythonGenerator.forBlock = {};
-  for (const property in pythonGenerator.forBlock) {
-    extendedPythonGenerator.forBlock[property] = pythonGenerator.forBlock[property];
-  }
-
-  return extendedPythonGenerator;
-}
-
-export const extendedPythonGenerator = createExtendedPythonGenerator();
+export const extendedPythonGenerator = new ExtendedPythonGenerator();

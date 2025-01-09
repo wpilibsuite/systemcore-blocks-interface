@@ -1,12 +1,3 @@
-// Import our block definitions before anything else. Otherwise the
-// extendedPythonGenerator doesn't copy them from the blockly python
-// generator.
-// TODO(lizlooney): fix that.
-import './blocks/misc';
-import './blocks/python_enum';
-import './blocks/python_function';
-import './blocks/python_variable';
-
 import React, { useEffect, useState, useRef } from 'react';
 
 import { Button, ConfigProvider, Flex, Input, Modal, Space, Splitter, Tooltip, Tree, Typography, theme } from 'antd';
@@ -24,16 +15,25 @@ import {
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+import * as Blockly from 'blockly/core';
+import {pythonGenerator} from 'blockly/python'
+
 import BlocklyComponent from './Blockly';
+
+import './blocks/misc';
+import './blocks/python_enum';
+import './blocks/python_function';
+import './blocks/python_variable';
+import { initialize as initializeBlocks } from './blocks/generated/initialize';
 
 //import { testAllBlocksInToolbox } from './editor/toolbox_tests';
 import * as editor from './editor/editor.js';
+import * as toolbox from './editor/toolbox';
+import { extendedPythonGenerator } from './editor/extended_python_generator.js';
+
 import * as storage from './storage/client_side_storage.js';
 import * as commonStorage from './storage/common_storage.js';
 
-import * as blocksInitialize from './blocks/generated/initialize';
-import * as toolbox from './editor/toolbox';
-import { extendedPythonGenerator } from './editor/extended_python_generator.js';
 
 
 const NewWorkspaceModal = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
@@ -157,28 +157,29 @@ const NewOpModeModal = ({ isOpen, getCurrentWorkspaceName, getOpModeNames, onOk,
 
 const App = () => {
   const isFirstRender = useRef(true);
-  const treeComponent = useRef(null);
-  const blocklyComponent = useRef(null);
+  const [triggerListModules, setTriggerListModules] = useState(false);
   const [modules, setModules] = useState([]);
   const [treeData, setTreeData] = useState([])
   const [treeExpandedKeys, setTreeExpandedKeys] = React.useState([])
   const [pathToExpand, setPathToExpand] = React.useState('');
   const [treeSelectedPath, setTreeSelectedPath] = useState('');
   const [currentModulePath, setCurrentModulePath] = useState('');
+  const blocklyComponent = useRef(null);
   const [generatedCode, setGeneratedCode] = useState('');
   const [isNewWorkspaceModalOpen, setIsNewWorkspaceModalOpen] = useState(false);
   const [isNewOpModeModalOpen, setIsNewOpModeModalOpen] = useState(false);
 
-  // When the app is loaded, fetch the list of modules from storage and initialize blockly.
+  // When the app is loaded, initialize the blocks we provide.
   useEffect(() => {
     if (isFirstRender.current) {
-      listModules();
-      initializeBlockly();
+      initializeBlocks();
+      Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
       isFirstRender.current = false;
     }
   }, []);
 
-  const listModules = () => {
+  // Fetch the list of modules from storage.
+  useEffect(() => {
     storage.listModules((array, error) => {
       if (array) {
         setModules(array)
@@ -186,27 +187,14 @@ const App = () => {
         console.log(error);
       }
     });
-  };
+  }, [triggerListModules]);
 
-  const initializeBlockly = () => {
-    blocksInitialize.initialize();
+  useEffect(() => {
     if (blocklyComponent.current) {
       const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
       if (blocklyWorkspace) {
         // Show generated python code.
-        blocklyWorkspace.addChangeListener((event) => {
-          if (event.isUiEvent) {
-            // UI events are things like scrolling, zooming, etc.
-            // No need to regenerate python code after one of these.
-            return;
-          }
-          if (blocklyWorkspace.isDragging()) {
-            // Don't regenerate python code mid-drag.
-            return;
-          }
-          const code = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
-          setGeneratedCode(code);
-        });
+        blocklyWorkspace.addChangeListener(handleBlocksChanged);
 
         // Set the toolbox.
         const toolboxJSON = toolbox.getToolboxJSON([]);
@@ -214,6 +202,21 @@ const App = () => {
         blocklyWorkspace.updateToolbox(toolboxJSON);
       }
     }
+  }, [blocklyComponent]);
+
+  const handleBlocksChanged = (event) => {
+    if (event.isUiEvent) {
+      // UI events are things like scrolling, zooming, etc.
+      // No need to regenerate python code after one of these.
+      return;
+    }
+    const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
+    if (blocklyWorkspace && (blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
+      // Don't regenerate python code mid-drag.
+      return;
+    }
+    const code = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
+    setGeneratedCode(code);
   };
 
   // When the list of modules has been fetched, fill the tree.
@@ -343,7 +346,7 @@ const App = () => {
     }
   }, [pathToExpand, treeExpandedKeys]);
 
-  const copyCodeToClipboard = () => {
+  const handleCopy = () => {
     navigator.clipboard.writeText(generatedCode).then(
       () => {
         console.log('Code copied to clipboard');
@@ -448,7 +451,6 @@ const App = () => {
         >
           <Splitter.Panel min='2%' defaultSize='15%'>
             <Tree
-              ref={treeComponent}
               showIcon={true}
               blockNode={true}
               treeData={treeData}
@@ -476,7 +478,7 @@ const App = () => {
                 <Tooltip title="Copy">
                   <Button
                     icon={<CopyOutlined />}
-                    onClick={copyCodeToClipboard}
+                    onClick={handleCopy}
                     size="small"
                     style={{ color: 'white' }}
                   >
@@ -506,7 +508,7 @@ const App = () => {
           setIsNewWorkspaceModalOpen(false);
           handleNewWorkspaceOk(w, (success, error) => {
             if (success) {
-              listModules();
+              setTriggerListModules(!triggerListModules);
             } else if (error) {
               console.log(error);
             }
@@ -522,7 +524,7 @@ const App = () => {
           setIsNewOpModeModalOpen(false);
           handleNewOpModeOk(w, o, (success, error) => {
             if (success) {
-              listModules();
+              setTriggerListModules(!triggerListModules);
             } else if (error) {
               console.log(error);
             }
