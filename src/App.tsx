@@ -26,14 +26,13 @@ import './blocks/python_function';
 import './blocks/python_variable';
 import { initialize as initializeBlocks } from './blocks/generated/initialize';
 
-//import { testAllBlocksInToolbox } from './editor/toolbox_tests';
 import * as editor from './editor/editor.js';
 import * as toolbox from './editor/toolbox';
 import { extendedPythonGenerator } from './editor/extended_python_generator.js';
+//import { testAllBlocksInToolbox } from './editor/toolbox_tests';
 
 import * as storage from './storage/client_side_storage.js';
 import * as commonStorage from './storage/common_storage.js';
-
 
 
 const NewWorkspaceModal = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
@@ -340,9 +339,8 @@ const App = () => {
 
   useEffect(() => {
     if (pathToExpand) {
-      const expandedKeys = [...treeExpandedKeys];
-      expandedKeys.push(pathToExpand);
-      setTreeExpandedKeys(expandedKeys);
+      setTreeExpandedKeys(treeExpandedKeys.concat(pathToExpand));
+      setPathToExpand('');
     }
   }, [pathToExpand, treeExpandedKeys]);
 
