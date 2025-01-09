@@ -79,7 +79,7 @@ type CallPythonFunctionExtraState = {
 /** Type of a block using the CALL_PYTHON_FUNCTION_COMMON mixin. */
 type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin;
 interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
-  firstAttributes_: any; // HeyLiz fix this!
+  firstAttributes_: CallPythonFunctionExtraState;
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION_COMMON;
 
@@ -200,7 +200,7 @@ Blockly.Blocks['call_python_module_function'] = {
 };
 
 pythonGenerator.forBlock['call_python_module_function'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): [string, Order] | string {
   const callPythonFunctionBlock = block as CallPythonFunctionBlock;
   const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_NAME);
   const functionName = (callPythonFunctionBlock.firstAttributes_.actualFunctionName)
@@ -241,7 +241,7 @@ Blockly.Blocks['call_python_static_method'] = {
 };
 
 pythonGenerator.forBlock['call_python_static_method'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): [string, Order] | string {
   const callPythonFunctionBlock = block as CallPythonFunctionBlock;
   const className = block.getFieldValue(pythonUtils.FIELD_CLASS_NAME);
   const functionName = (callPythonFunctionBlock.firstAttributes_.actualFunctionName)
@@ -279,7 +279,7 @@ Blockly.Blocks['call_python_constructor'] = {
 };
 
 pythonGenerator.forBlock['call_python_constructor'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): [string, Order] {
   const callPythonFunctionBlock = block as CallPythonFunctionBlock;
   const className = block.getFieldValue(pythonUtils.FIELD_CLASS_NAME);
   if (callPythonFunctionBlock.firstAttributes_.importModule) {
@@ -313,7 +313,7 @@ Blockly.Blocks['call_python_instance_method'] = {
 };
 
 pythonGenerator.forBlock['call_python_instance_method'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): [string, Order] | string {
   const callPythonFunctionBlock = block as CallPythonFunctionBlock;
   const selfValue = generator.valueToCode(block, 'ARG0', Order.MEMBER);
   const functionName = (callPythonFunctionBlock.firstAttributes_.actualFunctionName)

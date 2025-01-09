@@ -36,7 +36,8 @@ const COLOR_ENUM = 180;            // cyan
 const PythonEnumValues = Object.create(null);
 const PythonEnumTooltips = Object.create(null);
 
-export function initializeEnum(enumClassName, enumValues, tooltips): void {
+export function initializeEnum(
+    enumClassName: string, enumValues: string[], tooltips: string[] | string): void {
   PythonEnumValues[enumClassName] = enumValues;
   PythonEnumTooltips[enumClassName] = tooltips;
 }
@@ -46,7 +47,7 @@ export function initializeEnum(enumClassName, enumValues, tooltips): void {
 
 export type GetPythonEnumValueBlock = Blockly.Block & GetPythonEnumValueMixin;
 interface GetPythonEnumValueMixin extends GetPythonEnumValueMixinType {
-  firstAttributes_: any; // HeyLiz fix this!
+  firstAttributes_: GetPythonEnumValueExtraState;
 }
 type GetPythonEnumValueMixinType = typeof GET_PYTHON_ENUM_VALUE;
 
@@ -129,7 +130,7 @@ const GET_PYTHON_ENUM_VALUE = {
 Blockly.Blocks['get_python_enum_value'] = GET_PYTHON_ENUM_VALUE;
 
 pythonGenerator.forBlock['get_python_enum_value'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): [string, Order] {
   const getPythonEnumValueBlock = block as GetPythonEnumValueBlock;
   const enumClassName = block.getFieldValue(pythonUtils.FIELD_ENUM_CLASS_NAME);
   const enumValue = block.getFieldValue(pythonUtils.FIELD_ENUM_VALUE);

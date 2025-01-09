@@ -53,37 +53,43 @@ export function createInitializationKeyForInstanceVariable(
   return 'instance ' + className + ' ' + varType;
 }
 
-export function initializeModuleVariableGetter(moduleName, varType, varNames, tooltips) {
+export function initializeModuleVariableGetter(
+    moduleName: string, varType: string, varNames: string[], tooltips: string[]): void {
   const key = createInitializationKeyForModuleVariable(moduleName, varType);
   PythonVariableGetterNames[key] = varNames;
   PythonVariableGetterTooltips[key] = tooltips;
 }
 
-export function initializeModuleVariableSetter(moduleName, varType, varNames, tooltips) {
+export function initializeModuleVariableSetter(
+    moduleName: string, varType: string, varNames: string[], tooltips: string[]): void {
   const key = createInitializationKeyForModuleVariable(moduleName, varType);
   PythonVariableSetterNames[key] = varNames;
   PythonVariableSetterTooltips[key] = tooltips;
 }
 
-export function initializeClassVariableGetter(className, varType, varNames, tooltips) {
+export function initializeClassVariableGetter(
+    className: string, varType: string, varNames: string[], tooltips: string[]): void {
   const key = createInitializationKeyForClassVariable(className, varType);
   PythonVariableGetterNames[key] = varNames;
   PythonVariableGetterTooltips[key] = tooltips;
 }
 
-export function initializeClassVariableSetter(className, varType, varNames, tooltips) {
+export function initializeClassVariableSetter(
+    className: string, varType: string, varNames: string[], tooltips: string[]): void {
   const key = createInitializationKeyForClassVariable(className, varType);
   PythonVariableSetterNames[key] = varNames;
   PythonVariableSetterTooltips[key] = tooltips;
 }
 
-export function initializeInstanceVariableGetter(className, varType, varNames, tooltips) {
+export function initializeInstanceVariableGetter(
+    className: string, varType: string, varNames: string[], tooltips: string[]): void {
   const key = createInitializationKeyForInstanceVariable(className, varType);
   PythonVariableGetterNames[key] = varNames;
   PythonVariableGetterTooltips[key] = tooltips;
 }
 
-export function initializeInstanceVariableSetter(className, varType, varNames, tooltips) {
+export function initializeInstanceVariableSetter(
+    className: string, varType: string, varNames: string[], tooltips: string[]): void {
   const key = createInitializationKeyForInstanceVariable(className, varType);
   PythonVariableSetterNames[key] = varNames;
   PythonVariableSetterTooltips[key] = tooltips;
@@ -140,7 +146,7 @@ type PythonVariableExtraState = {
 /** Type of a block using the GET_PYTHON_VARIABLE_COMMON mixin. */
 type GetPythonVariableBlock = Blockly.Block & GetPythonVariableMixin;
 interface GetPythonVariableMixin extends GetPythonVariableMixinType {
-  firstAttributes_: any; // HeyLiz fix this!
+  firstAttributes_: PythonVariableExtraState;
 }
 type GetPythonVariableMixinType = typeof GET_PYTHON_VARIABLE_COMMON;
 
@@ -215,12 +221,14 @@ const GET_PYTHON_VARIABLE_COMMON = {
       this.setOutput(true);
     }
     const input = this.getInput('VAR');
-    const varNames = PythonVariableGetterNames[this.firstAttributes_.key];
-    if (varNames) {
-      // Create the drop-down with the variable names.
-      input.appendField(createFieldDropdown(varNames), pythonUtils.FIELD_VARIABLE_NAME);
-    } else {
-      input.appendField(createNonEditableField(''), pythonUtils.FIELD_VARIABLE_NAME);
+    if (input) {
+      const varNames = PythonVariableGetterNames[this.firstAttributes_.key];
+      if (varNames) {
+        // Create the drop-down with the variable names.
+        input.appendField(createFieldDropdown(varNames), pythonUtils.FIELD_VARIABLE_NAME);
+      } else {
+        input.appendField(createNonEditableField(''), pythonUtils.FIELD_VARIABLE_NAME);
+      }
     }
     // Add input socket for self, if necessary.
     if (this.firstAttributes_.selfLabel && this.firstAttributes_.selfType) {
@@ -263,7 +271,7 @@ Blockly.Blocks['get_python_module_variable'] = {
 };
 
 pythonGenerator.forBlock['get_python_module_variable'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): [string, Order] {
   const getPythonVariableBlock = block as GetPythonVariableBlock;
   const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_NAME);
   const varName = (getPythonVariableBlock.firstAttributes_.actualVariableName)
@@ -308,7 +316,7 @@ Blockly.Blocks['get_python_class_variable'] = {
 };
 
 pythonGenerator.forBlock['get_python_class_variable'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): [string, Order] {
   const getPythonVariableBlock = block as GetPythonVariableBlock;
   const className = block.getFieldValue(pythonUtils.FIELD_CLASS_NAME);
   const varName = (getPythonVariableBlock.firstAttributes_.actualVariableName)
@@ -352,10 +360,12 @@ Blockly.Blocks['get_python_instance_variable'] = {
 };
 
 pythonGenerator.forBlock['get_python_instance_variable'] = function(
-    block: GetPythonVariableBlock, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): [string, Order] {
+  const getPythonVariableBlock = block as GetPythonVariableBlock;
   const selfValue = generator.valueToCode(block, 'SELF', Order.MEMBER);
-  const varName = (block.firstAttributes_.actualVariableName)
-      ? block.firstAttributes_.actualVariableName : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
+  const varName = (getPythonVariableBlock.firstAttributes_.actualVariableName)
+      ? getPythonVariableBlock.firstAttributes_.actualVariableName
+      : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
   const code = selfValue + '.' + varName;
   return [code, Order.MEMBER];
 };
@@ -440,17 +450,19 @@ const SET_PYTHON_VARIABLE_COMMON = {
     this.setNextStatement(true, null);
     this.setOutput(false);
     const input = this.getInput('VALUE');
-    const varNames = PythonVariableSetterNames[this.firstAttributes_.key];
-    if (varNames) {
-      // Create the drop-down with the variable names.
-      input.appendField(createFieldDropdown(varNames), pythonUtils.FIELD_VARIABLE_NAME)
-    } else {
-      input.appendField(createNonEditableField(''), pythonUtils.FIELD_VARIABLE_NAME)
-    }
-    input.appendField('to');
-    if (this.firstAttributes_.varType) {
-      input.setCheck(getAllowedTypesForSetCheck(this.firstAttributes_.varType));
-    }
+    if (input) {
+      const varNames = PythonVariableSetterNames[this.firstAttributes_.key];
+      if (varNames) {
+        // Create the drop-down with the variable names.
+        input.appendField(createFieldDropdown(varNames), pythonUtils.FIELD_VARIABLE_NAME)
+      } else {
+        input.appendField(createNonEditableField(''), pythonUtils.FIELD_VARIABLE_NAME)
+      }
+      input.appendField('to');
+      if (this.firstAttributes_.varType) {
+        input.setCheck(getAllowedTypesForSetCheck(this.firstAttributes_.varType));
+     }
+   }
     // Add input socket for self, if necessary.
     if (this.firstAttributes_.selfLabel && this.firstAttributes_.selfType) {
       this.appendValueInput('SELF')
@@ -492,7 +504,7 @@ Blockly.Blocks['set_python_module_variable'] = {
 };
 
 pythonGenerator.forBlock['set_python_module_variable'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): string {
   const setPythonVariableBlock = block as SetPythonVariableBlock;
   const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_NAME);
   const varName = (setPythonVariableBlock.firstAttributes_.actualVariableName)
@@ -538,7 +550,7 @@ Blockly.Blocks['set_python_class_variable'] = {
 };
 
 pythonGenerator.forBlock['set_python_class_variable'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): string {
   const setPythonVariableBlock = block as SetPythonVariableBlock;
   const className = block.getFieldValue(pythonUtils.FIELD_CLASS_NAME);
   const varName = (setPythonVariableBlock.firstAttributes_.actualVariableName)
@@ -584,7 +596,7 @@ Blockly.Blocks['set_python_instance_variable'] = {
 };
 
 pythonGenerator.forBlock['set_python_instance_variable'] = function(
-    block: Blockly.Block, generator: PythonGenerator) {
+    block: Blockly.Block, generator: PythonGenerator): string {
   const setPythonVariableBlock = block as SetPythonVariableBlock;
   const selfValue = generator.valueToCode(block, 'SELF', Order.MEMBER);
   const varName = (setPythonVariableBlock.firstAttributes_.actualVariableName)

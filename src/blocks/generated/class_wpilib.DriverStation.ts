@@ -1,8 +1,8 @@
 // This file was generated. Do not edit!
 
-import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 import * as pythonEnum from "../python_enum";
+import * as pythonVariable from "../python_variable";
 
 // Blocks for class wpilib.DriverStation
 

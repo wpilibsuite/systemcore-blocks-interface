@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
+import * as pythonVariable from "../python_variable";
 
 // Blocks for class wpimath.system.plant.DCMotor
 

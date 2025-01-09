@@ -914,7 +914,7 @@ export function getAlias(type: string): string {
 }
 
 // For the given python type, returns an array of compatible input types.
-export function getAllowedTypes(type) {
+export function getAllowedTypes(type: string): string[] {
   // Subclasses
   if (type === "hal.AddressableLEDData") {
     return ['hal.AddressableLEDData', 'wpilib.AddressableLED.LEDData'];
@@ -1244,5 +1244,5 @@ export function getAllowedTypes(type) {
     return ['wpiutil.log.DataLogEntry', 'wpiutil.log.BooleanArrayLogEntry', 'wpiutil.log.BooleanLogEntry', 'wpiutil.log.DoubleArrayLogEntry', 'wpiutil.log.DoubleLogEntry', 'wpiutil.log.FloatArrayLogEntry', 'wpiutil.log.FloatLogEntry', 'wpiutil.log.IntegerArrayLogEntry', 'wpiutil.log.IntegerLogEntry', 'wpiutil.log.RawLogEntry', 'wpiutil.log.StringArrayLogEntry', 'wpiutil.log.StringLogEntry', 'wpiutil.log.StructArrayLogEntry', 'wpiutil.log.StructLogEntry'];
   }
 
-  return "";
+  return [""];
 }
