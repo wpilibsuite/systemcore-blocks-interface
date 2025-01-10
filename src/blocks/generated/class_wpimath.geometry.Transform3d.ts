@@ -36,6 +36,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTranslation3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the translation component of the transformation.\n\n:returns: Reference to the translational component of the transform.", "returnType": "wpimath.geometry._geometry.Translation3d", "args": [{"name": "transform3d", "type": "wpimath.geometry._geometry.Transform3d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Transform3d", "FUNC": "translation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform3d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -22,6 +22,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the configuration for the up source.\n\n:param configuration: The up source configuration.", "returnType": "None", "args": [{"name": "upDownCounter", "type": "wpilib.counter._counter.UpDownCounter"}, {"name": "configuration", "type": "wpilib.counter._counter.EdgeConfiguration"}], "importModule": ""}, "fields": {"CLASS": "wpilib.counter.UpDownCounter", "FUNC": "setUpEdgeConfiguration"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myUpDownCounter"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEdgeConfiguration"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

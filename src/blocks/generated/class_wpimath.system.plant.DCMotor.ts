@@ -53,6 +53,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDCMotor"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns a copy of this motor with the given gearbox reduction applied.\n\n:param gearboxReduction: The gearbox reduction.", "returnType": "wpimath._controls._controls.plant.DCMotor", "args": [{"name": "dCMotor", "type": "wpimath._controls._controls.plant.DCMotor"}, {"name": "gearboxReduction", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpimath.system.plant.DCMotor", "FUNC": "withReduction"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

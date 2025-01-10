@@ -20,6 +20,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myState"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "wpimath._controls._controls.trajectory.TrapezoidProfile.State", "args": [{"name": "position", "type": "float"}, {"name": "velocity", "type": "wpimath.units.units_per_second"}], "importModule": "wpimath.trajectory"}, "fields": {"CLASS": "wpimath.trajectory.TrapezoidProfile.State"}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

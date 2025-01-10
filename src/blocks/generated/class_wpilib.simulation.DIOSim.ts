@@ -33,6 +33,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the DIO value.\n\n:param value: the new value", "returnType": "None", "args": [{"name": "dIOSim", "type": "wpilib.simulation._simulation.DIOSim"}, {"name": "value", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DIOSim", "FUNC": "setValue"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDIOSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

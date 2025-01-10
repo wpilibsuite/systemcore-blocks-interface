@@ -63,6 +63,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Gets whether there is a fault at the specified channel.\n\n:param channel: Channel to check for faults.\n\n:returns: True if a a fault exists at the channel, otherwise false.\n          @throws A ChannelIndexOutOfRange error if the provided channel is outside\n          of the range supported by the hardware.", "returnType": "bool", "args": [{"name": "faults", "type": "wpilib._wpilib.PneumaticHub.Faults"}, {"name": "channel", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PneumaticHub.Faults", "FUNC": "getChannelFault"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myFaults"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

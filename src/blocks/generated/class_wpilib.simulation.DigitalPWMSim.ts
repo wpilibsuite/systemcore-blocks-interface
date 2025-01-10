@@ -27,6 +27,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the pin number.\n\n:param pin: the new pin number", "returnType": "None", "args": [{"name": "digitalPWMSim", "type": "wpilib.simulation._simulation.DigitalPWMSim"}, {"name": "pin", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DigitalPWMSim", "FUNC": "setPin"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalPWMSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

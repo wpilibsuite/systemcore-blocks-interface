@@ -25,6 +25,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Calculates the minimum achievable velocity given a maximum voltage supply,\na position, and an acceleration.  Useful for ensuring that velocity and\nacceleration constraints for a trapezoidal profile are simultaneously\nachievable - enter the acceleration constraint, and this will give you\na simultaneously-achievable velocity constraint.\n\n:param maxVoltage:   The maximum voltage that can be supplied to the arm.\n:param angle:        The angle of the arm. This angle should be measured\n                     from the horizontal (i.e. if the provided angle is 0,\n                     the arm should be parallel to the floor). If your\n                     encoder does not follow this convention, an offset\n                     should be added.\n:param acceleration: The acceleration of the arm.\n\n:returns: The minimum possible velocity at the given acceleration and angle.", "returnType": "wpimath.units.radians_per_second", "args": [{"name": "armFeedforward", "type": "wpimath._controls._controls.controller.ArmFeedforward"}, {"name": "maxVoltage", "type": "wpimath.units.volts"}, {"name": "angle", "type": "wpimath.units.radians"}, {"name": "acceleration", "type": "wpimath.units.radians_per_second_squared"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.ArmFeedforward", "FUNC": "minAchievableVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myArmFeedforward"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -25,6 +25,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Computes the new y given the control input.\n\nThis is used by state observers directly to run updates based on state\nestimate.\n\n:param x:        The current state.\n:param clampedU: The control input.", "returnType": "numpy.ndarray[numpy.float64[3, 1]]", "args": [{"name": "linearSystem_1_1_3", "type": "wpimath._controls._controls.system.LinearSystem_1_1_3"}, {"name": "x", "type": "numpy.ndarray[numpy.float64[1, 1]]"}, {"name": "clampedU", "type": "numpy.ndarray[numpy.float64[1, 1]]"}], "importModule": ""}, "fields": {"CLASS": "wpimath.system.LinearSystem_1_1_3", "FUNC": "calculateY"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystem_1_1_3"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[1, 1]]"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[1, 1]]"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

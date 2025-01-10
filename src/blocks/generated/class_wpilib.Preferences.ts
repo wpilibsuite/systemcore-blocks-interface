@@ -36,6 +36,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Puts the given string into the preferences table.\n\nThe value may not have quotation marks, nor may the key have any whitespace\nnor an equals sign.\n\n:param key:   the key\n:param value: the value", "returnType": "None", "args": [{"name": "key", "type": "str"}, {"name": "value", "type": "str"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.Preferences", "FUNC": "setString"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

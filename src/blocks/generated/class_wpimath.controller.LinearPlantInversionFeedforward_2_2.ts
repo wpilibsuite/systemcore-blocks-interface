@@ -23,6 +23,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns an element of the previously calculated feedforward.\n\n:param i: Row of uff.\n\n:returns: The row of the calculated feedforward.", "returnType": "float", "args": [{"name": "linearPlantInversionFeedforward_2_2", "type": "wpimath._controls._controls.controller.LinearPlantInversionFeedforward_2_2"}, {"name": "i", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.LinearPlantInversionFeedforward_2_2", "FUNC": "uff"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearPlantInversionFeedforward_2_2"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

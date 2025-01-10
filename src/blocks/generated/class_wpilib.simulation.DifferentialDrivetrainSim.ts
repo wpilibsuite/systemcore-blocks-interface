@@ -41,6 +41,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the simulation.\n\n:param dt: The time that's passed since the last Update(units::second_t)\n           call.", "returnType": "None", "args": [{"name": "differentialDrivetrainSim", "type": "wpilib.simulation._simulation.DifferentialDrivetrainSim"}, {"name": "dt", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDrivetrainSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

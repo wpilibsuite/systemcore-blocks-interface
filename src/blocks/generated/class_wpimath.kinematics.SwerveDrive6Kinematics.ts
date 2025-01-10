@@ -25,6 +25,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySwerveModuleState]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "Tuple[wpimath.kinematics._kinematics.SwerveModuleState, wpimath.kinematics._kinematics.SwerveModuleState, wpimath.kinematics._kinematics.SwerveModuleState, wpimath.kinematics._kinematics.SwerveModuleState, wpimath.kinematics._kinematics.SwerveModuleState, wpimath.kinematics._kinematics.SwerveModuleState]", "args": [{"name": "swerveDrive6Kinematics", "type": "wpimath.kinematics._kinematics.SwerveDrive6Kinematics"}, {"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.SwerveDrive6Kinematics", "FUNC": "toWheelSpeeds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveDrive6Kinematics"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

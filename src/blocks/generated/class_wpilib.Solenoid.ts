@@ -24,6 +24,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Toggle the value of the solenoid.\n\nIf the solenoid is set to on, it'll be turned off. If the solenoid is set\nto off, it'll be turned on.", "returnType": "None", "args": [{"name": "solenoid", "type": "wpilib._wpilib.Solenoid"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Solenoid", "FUNC": "toggle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySolenoid"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

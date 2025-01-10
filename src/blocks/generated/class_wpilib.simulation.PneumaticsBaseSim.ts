@@ -35,6 +35,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the solenoid output on a specific channel.\n\n:param channel:        the channel to check\n:param solenoidOutput: the new solenoid output", "returnType": "None", "args": [{"name": "pneumaticsBaseSim", "type": "wpilib.simulation._simulation.PneumaticsBaseSim"}, {"name": "channel", "type": "int"}, {"name": "solenoidOutput", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.PneumaticsBaseSim", "FUNC": "setSolenoidOutput"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsBaseSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

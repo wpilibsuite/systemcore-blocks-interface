@@ -20,6 +20,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Restarts the epoch timer.", "returnType": "None", "args": [{"name": "tracer", "type": "wpilib._wpilib.Tracer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Tracer", "FUNC": "resetTimer"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTracer"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

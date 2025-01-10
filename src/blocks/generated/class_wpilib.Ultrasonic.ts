@@ -26,6 +26,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "ultrasonic", "type": "wpilib._wpilib.Ultrasonic"}, {"name": "enable", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Ultrasonic", "FUNC": "setEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myUltrasonic"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

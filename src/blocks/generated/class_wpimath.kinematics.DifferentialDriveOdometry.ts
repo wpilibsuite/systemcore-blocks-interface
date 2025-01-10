@@ -21,6 +21,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the robot position on the field using distance measurements from\nencoders. This method is more numerically accurate than using velocities to\nintegrate the pose and is also advantageous for teams that are using lower\nCPR encoders.\n\n:param gyroAngle:     The angle reported by the gyroscope.\n:param leftDistance:  The distance traveled by the left encoder.\n:param rightDistance: The distance traveled by the right encoder.\n\n:returns: The new pose of the robot.", "returnType": "wpimath.geometry._geometry.Pose2d", "args": [{"name": "differentialDriveOdometry", "type": "wpimath.kinematics._kinematics.DifferentialDriveOdometry"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation2d"}, {"name": "leftDistance", "type": "wpimath.units.meters"}, {"name": "rightDistance", "type": "wpimath.units.meters"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.DifferentialDriveOdometry", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveOdometry"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

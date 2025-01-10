@@ -37,6 +37,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Latches PWM to zero.", "returnType": "None", "args": [{"name": "pWM", "type": "wpilib._wpilib.PWM"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PWM", "FUNC": "setZeroLatch"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWM"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

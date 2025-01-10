@@ -20,6 +20,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRotation2d]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sample the buffer at the given time. If the buffer is empty, an empty\noptional is returned.\n\n:param time: The time at which to sample the buffer.", "returnType": "Optional[wpimath.geometry._geometry.Rotation2d]", "args": [{"name": "timeInterpolatableRotation2dBuffer", "type": "wpimath.interpolation._interpolation.TimeInterpolatableRotation2dBuffer"}, {"name": "time", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.interpolation.TimeInterpolatableRotation2dBuffer", "FUNC": "sample"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimeInterpolatableRotation2dBuffer"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

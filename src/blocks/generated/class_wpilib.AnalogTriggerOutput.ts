@@ -21,6 +21,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Is source an AnalogTrigger", "returnType": "bool", "args": [{"name": "analogTriggerOutput", "type": "wpilib._wpilib.AnalogTriggerOutput"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogTriggerOutput", "FUNC": "isAnalogTrigger"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogTriggerOutput"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

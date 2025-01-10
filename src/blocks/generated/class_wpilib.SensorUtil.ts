@@ -26,6 +26,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "", "returnType": "int", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.SensorUtil", "FUNC": "getNumRelayChannels"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

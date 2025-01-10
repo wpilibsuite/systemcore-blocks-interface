@@ -33,6 +33,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change whether the LEDs are active.\n\n:param running: the new value", "returnType": "None", "args": [{"name": "addressableLEDSim", "type": "wpilib.simulation._simulation.AddressableLEDSim"}, {"name": "running", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.AddressableLEDSim", "FUNC": "setRunning"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLEDSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

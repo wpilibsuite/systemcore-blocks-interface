@@ -27,6 +27,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[2, 2]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns matrix representation of this rotation.", "returnType": "numpy.ndarray[numpy.float64[2, 2]]", "args": [{"name": "rotation2d", "type": "wpimath.geometry._geometry.Rotation2d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Rotation2d", "FUNC": "toMatrix"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

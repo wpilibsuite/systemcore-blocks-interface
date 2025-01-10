@@ -19,6 +19,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Resets the slew rate limiter to the specified value; ignores the rate limit\nwhen doing so.\n\n:param value: The value to reset to.", "returnType": "None", "args": [{"name": "slewRateLimiter", "type": "wpimath.filter._filter.SlewRateLimiter"}, {"name": "value", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpimath.filter.SlewRateLimiter", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySlewRateLimiter"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

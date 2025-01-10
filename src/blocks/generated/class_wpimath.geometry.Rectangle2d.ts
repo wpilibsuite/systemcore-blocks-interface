@@ -32,6 +32,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRectangle2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Transforms the center of the rectangle and returns the new rectangle.\n\n:param other: The transform to transform by.\n\n:returns: The transformed rectangle", "returnType": "wpimath.geometry._geometry.Rectangle2d", "args": [{"name": "rectangle2d", "type": "wpimath.geometry._geometry.Rectangle2d"}, {"name": "other", "type": "wpimath.geometry._geometry.Transform2d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Rectangle2d", "FUNC": "transformBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRectangle2d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

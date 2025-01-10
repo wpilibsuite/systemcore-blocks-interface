@@ -32,6 +32,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Write an RTR frame to the CAN device with a specific ID. This ID is 10\nbits. The length by spec must match what is returned by the responding\ndevice\n\n:param length: The length to request (0 to 8)\n:param apiId:  The API ID to write.", "returnType": "int", "args": [{"name": "cAN", "type": "wpilib._wpilib.CAN"}, {"name": "length", "type": "int"}, {"name": "apiId", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.CAN", "FUNC": "writeRTRFrameNoError"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCAN"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

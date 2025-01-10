@@ -22,6 +22,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myControlVector"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "wpimath.spline._spline.Spline3.ControlVector", "args": [{"name": "x", "type": "Tuple[float, float]"}, {"name": "y", "type": "Tuple[float, float]"}], "importModule": "wpimath.spline"}, "fields": {"CLASS": "wpimath.spline.Spline3.ControlVector"}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

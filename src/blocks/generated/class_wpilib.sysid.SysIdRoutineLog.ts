@@ -18,6 +18,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "", "returnType": "str", "args": [{"name": "state", "type": "wpilib._wpilib.sysid.State"}], "importModule": "wpilib.sysid"}, "fields": {"CLASS": "wpilib.sysid.SysIdRoutineLog", "FUNC": "stateEnumToString"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myState"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

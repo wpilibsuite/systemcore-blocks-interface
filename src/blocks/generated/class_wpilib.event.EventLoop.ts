@@ -18,6 +18,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Poll all bindings.", "returnType": "None", "args": [{"name": "eventLoop", "type": "wpilib.event._event.EventLoop"}], "importModule": ""}, "fields": {"CLASS": "wpilib.event.EventLoop", "FUNC": "poll"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEventLoop"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

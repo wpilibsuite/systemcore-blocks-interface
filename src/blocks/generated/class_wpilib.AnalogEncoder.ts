@@ -23,6 +23,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the encoder voltage percentage range. Analog sensors are not always\nfully stable at the end of their travel ranges. Shrinking this range down\ncan help mitigate issues with that.\n\n:param min: minimum voltage percentage (0-1 range)\n:param max: maximum voltage percentage (0-1 range)", "returnType": "None", "args": [{"name": "analogEncoder", "type": "wpilib._wpilib.AnalogEncoder"}, {"name": "min", "type": "float"}, {"name": "max", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogEncoder", "FUNC": "setVoltagePercentageRange"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogEncoder"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

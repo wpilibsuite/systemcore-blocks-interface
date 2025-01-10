@@ -53,6 +53,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Sets a new source to provide the clock time in microseconds. Changing this\naffects the return value of ``GetTime``.\n\n:param supplier: Function to return the time in microseconds.", "returnType": "None", "args": [{"name": "supplier", "type": "Callable[[], int]"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.RobotController", "FUNC": "setTimeSource"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

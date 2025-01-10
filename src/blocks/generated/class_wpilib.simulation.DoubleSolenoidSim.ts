@@ -20,6 +20,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "doubleSolenoidSim", "type": "wpilib.simulation._simulation.DoubleSolenoidSim"}, {"name": "output", "type": "wpilib._wpilib.DoubleSolenoid.Value"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DoubleSolenoidSim", "FUNC": "set"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDoubleSolenoidSim"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myValue"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

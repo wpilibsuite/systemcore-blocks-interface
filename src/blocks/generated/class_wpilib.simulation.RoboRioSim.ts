@@ -77,6 +77,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Define the Vin voltage.\n\n:param vInVoltage: the new voltage", "returnType": "None", "args": [{"name": "vInVoltage", "type": "wpimath.units.volts"}], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.RoboRioSim", "FUNC": "setVInVoltage"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

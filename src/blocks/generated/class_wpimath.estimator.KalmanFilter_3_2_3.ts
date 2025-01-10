@@ -26,6 +26,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns an element of the state estimate x-hat.\n\n:param i: Row of x-hat.", "returnType": "float", "args": [{"name": "kalmanFilter_3_2_3", "type": "wpimath._controls._controls.estimator.KalmanFilter_3_2_3"}, {"name": "i", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpimath.estimator.KalmanFilter_3_2_3", "FUNC": "xhat"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myKalmanFilter_3_2_3"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

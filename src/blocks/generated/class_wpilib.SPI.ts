@@ -58,6 +58,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS3"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

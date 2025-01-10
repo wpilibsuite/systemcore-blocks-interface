@@ -44,6 +44,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Creates a Twist2d from ChassisSpeeds.\n\n:param dt: The duration of the timestep.\n\n:returns: Twist2d.", "returnType": "wpimath.geometry._geometry.Twist2d", "args": [{"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}, {"name": "dt", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.ChassisSpeeds", "FUNC": "toTwist2d"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

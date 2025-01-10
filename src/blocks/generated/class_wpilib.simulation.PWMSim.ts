@@ -36,6 +36,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Define whether the PWM has been zero latched.\n\n:param zeroLatch: true to indicate zero latched", "returnType": "None", "args": [{"name": "pWMSim", "type": "wpilib.simulation._simulation.PWMSim"}, {"name": "zeroLatch", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.PWMSim", "FUNC": "setZeroLatch"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWMSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

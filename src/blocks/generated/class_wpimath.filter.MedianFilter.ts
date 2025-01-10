@@ -18,6 +18,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Resets the filter, clearing the window of all elements.", "returnType": "None", "args": [{"name": "medianFilter", "type": "wpimath.filter._filter.MedianFilter"}], "importModule": ""}, "fields": {"CLASS": "wpimath.filter.MedianFilter", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMedianFilter"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

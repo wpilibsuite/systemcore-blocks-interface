@@ -25,6 +25,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the error within which AtSetpoint will return true.\n\n:param tolerance: Position error which is tolerable.", "returnType": "None", "args": [{"name": "bangBangController", "type": "wpimath._controls._controls.controller.BangBangController"}, {"name": "tolerance", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.BangBangController", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBangBangController"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

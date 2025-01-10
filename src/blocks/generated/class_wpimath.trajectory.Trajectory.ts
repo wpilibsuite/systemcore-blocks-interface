@@ -22,6 +22,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTrajectory"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Transforms all poses in the trajectory by the given transform. This is\nuseful for converting a robot-relative trajectory into a field-relative\ntrajectory. This works with respect to the first pose in the trajectory.\n\n:param transform: The transform to transform the trajectory by.\n\n:returns: The transformed trajectory.", "returnType": "wpimath._controls._controls.trajectory.Trajectory", "args": [{"name": "trajectory", "type": "wpimath._controls._controls.trajectory.Trajectory"}, {"name": "transform", "type": "wpimath.geometry._geometry.Transform2d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.trajectory.Trajectory", "FUNC": "transformBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectory"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -24,6 +24,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_module_function", "extraState": {"tooltip": "", "returnType": "None", "args": [], "importModule": "wpilib.simulation"}, "fields": {"MODULE": "wpilib.simulation", "FUNC": "waitForProgramStart"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -17,6 +17,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Calculate the loaded battery voltage. Use this with\nRoboRioSimSetVInVoltage(double) to set the simulated battery voltage, which\ncan then be retrieved with the RobotController::GetBatteryVoltage() method.\nThis function assumes a nominal voltage of 12V and a resistance of 20\nmilliohms (0.020 ohms).\n\n:param currents: The currents drawn from the battery.\n\n:returns: The battery's voltage under load.", "returnType": "wpimath.units.volts", "args": [{"name": "currents", "type": "List[wpimath.units.amperes]"}], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.BatterySim", "FUNC": "calculate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myamperes]"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -23,6 +23,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDriveWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns left and right component velocities from a chassis speed using\ninverse kinematics.\n\n:param chassisSpeeds: The linear and angular (dx and dtheta) components that\n                      represent the chassis' speed.\n\n:returns: The left and right velocities.", "returnType": "wpimath.kinematics._kinematics.DifferentialDriveWheelSpeeds", "args": [{"name": "differentialDriveKinematics", "type": "wpimath.kinematics._kinematics.DifferentialDriveKinematics"}, {"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.DifferentialDriveKinematics", "FUNC": "toWheelSpeeds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveKinematics"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

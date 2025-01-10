@@ -25,6 +25,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Enable or disable suppression of the generic timeout message.\n\nThis may be desirable if the user-provided callback already prints a more\nspecific message.\n\n:param suppress: Whether to suppress generic timeout message.", "returnType": "None", "args": [{"name": "watchdog", "type": "wpilib._wpilib.Watchdog"}, {"name": "suppress", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Watchdog", "FUNC": "suppressTimeoutMessage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myWatchdog"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

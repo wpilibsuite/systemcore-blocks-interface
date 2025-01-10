@@ -49,6 +49,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "", "returnType": "wpimath.geometry._geometry.Twist3d", "args": [{"name": "dx", "type": "wpimath.units.feet"}, {"name": "dy", "type": "wpimath.units.feet"}, {"name": "dz", "type": "wpimath.units.feet"}, {"name": "rx", "type": "wpimath.units.radians"}, {"name": "ry", "type": "wpimath.units.radians"}, {"name": "rz", "type": "wpimath.units.radians"}], "importModule": "wpimath.geometry"}, "fields": {"CLASS": "wpimath.geometry.Twist3d", "FUNC": "fromFeet"}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

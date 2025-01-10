@@ -31,6 +31,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the starting velocity of the trajectory.\n\n:returns: The starting velocity of the trajectory.", "returnType": "wpimath.units.meters_per_second", "args": [{"name": "trajectoryConfig", "type": "wpimath._controls._controls.trajectory.TrajectoryConfig"}], "importModule": ""}, "fields": {"CLASS": "wpimath.trajectory.TrajectoryConfig", "FUNC": "startVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectoryConfig"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

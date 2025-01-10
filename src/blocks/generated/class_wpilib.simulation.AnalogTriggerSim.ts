@@ -27,6 +27,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the upper bound.\n\n:param triggerUpperBound: the new upper bound", "returnType": "None", "args": [{"name": "analogTriggerSim", "type": "wpilib.simulation._simulation.AnalogTriggerSim"}, {"name": "triggerUpperBound", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.AnalogTriggerSim", "FUNC": "setTriggerUpperBound"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogTriggerSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

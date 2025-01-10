@@ -60,6 +60,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Synchronize with network table values by calling the getters for all\nproperties and setters when the network table value has changed.", "returnType": "None", "args": [{"name": "sendableBuilderImpl", "type": "wpilib._wpilib.SendableBuilderImpl"}], "importModule": ""}, "fields": {"CLASS": "wpilib.SendableBuilderImpl", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableBuilderImpl"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

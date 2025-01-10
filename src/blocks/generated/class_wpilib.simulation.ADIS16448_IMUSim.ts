@@ -24,6 +24,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the Z axis angular rate (CCW positive).\n\n:param angularRate: The angular rate.", "returnType": "None", "args": [{"name": "aDIS16448_IMUSim", "type": "wpilib.simulation._simulation.ADIS16448_IMUSim"}, {"name": "angularRate", "type": "wpimath.units.degrees_per_second"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.ADIS16448_IMUSim", "FUNC": "setGyroRateZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADIS16448_IMUSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

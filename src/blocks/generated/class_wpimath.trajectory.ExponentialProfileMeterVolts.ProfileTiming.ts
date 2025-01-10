@@ -20,6 +20,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Decides if the profile is finished by time t.\n\n:param t: The time since the beginning of the profile.\n\n:returns: if the profile is finished at time t.", "returnType": "bool", "args": [{"name": "profileTiming", "type": "wpimath._controls._controls.trajectory.ExponentialProfileMeterVolts.ProfileTiming"}, {"name": "t", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.trajectory.ExponentialProfileMeterVolts.ProfileTiming", "FUNC": "isFinished"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myProfileTiming"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

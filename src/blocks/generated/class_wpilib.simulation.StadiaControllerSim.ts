@@ -49,6 +49,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the value of the Y button on the controller.\n\n:param value: the new value", "returnType": "None", "args": [{"name": "stadiaControllerSim", "type": "wpilib.simulation._simulation.StadiaControllerSim"}, {"name": "value", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.StadiaControllerSim", "FUNC": "setYButton"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStadiaControllerSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

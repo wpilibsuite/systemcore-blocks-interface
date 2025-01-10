@@ -22,6 +22,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_module_variable", "extraState": {"varType": "int", "key": "module wpimath.units int", "importModule": "wpimath.units"}, "fields": {"MODULE": "wpimath.units", "VAR": "kSecondsPerMinute"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

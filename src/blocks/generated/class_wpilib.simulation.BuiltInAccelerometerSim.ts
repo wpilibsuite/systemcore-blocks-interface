@@ -32,6 +32,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the Z axis value of the accelerometer.\n\n:param z: the new reading of the Z axis", "returnType": "None", "args": [{"name": "builtInAccelerometerSim", "type": "wpilib.simulation._simulation.BuiltInAccelerometerSim"}, {"name": "z", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.BuiltInAccelerometerSim", "FUNC": "setZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBuiltInAccelerometerSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -28,6 +28,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SynchronousInterrupt.WaitResult", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SynchronousInterrupt.WaitResult", "ENUM_VALUE": "kTimeout"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -27,6 +27,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the duty cycle output.\n\n:param output: the new output value", "returnType": "None", "args": [{"name": "dutyCycleSim", "type": "wpilib.simulation._simulation.DutyCycleSim"}, {"name": "output", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleSim", "FUNC": "setOutput"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

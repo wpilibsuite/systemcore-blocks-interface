@@ -41,6 +41,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myState"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Interpolates between two States.\n\n:param endValue: The end value for the interpolation.\n:param i:        The interpolant (fraction).\n\n:returns: The interpolated state.", "returnType": "wpimath._controls._controls.trajectory.Trajectory.State", "args": [{"name": "state", "type": "wpimath._controls._controls.trajectory.Trajectory.State"}, {"name": "endValue", "type": "wpimath._controls._controls.trajectory.Trajectory.State"}, {"name": "i", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpimath.trajectory.Trajectory.State", "FUNC": "interpolate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myState"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myState"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

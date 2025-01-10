@@ -28,6 +28,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.I2C.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.I2C.Port", "ENUM_VALUE": "kOnboard"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

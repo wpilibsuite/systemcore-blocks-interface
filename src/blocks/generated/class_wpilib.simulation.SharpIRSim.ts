@@ -17,6 +17,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the range returned by the distance sensor.\n\n:param rng: range of the target returned by the sensor", "returnType": "None", "args": [{"name": "sharpIRSim", "type": "wpilib.simulation._simulation.SharpIRSim"}, {"name": "rng", "type": "wpimath.units.centimeters"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.SharpIRSim", "FUNC": "setRange"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySharpIRSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

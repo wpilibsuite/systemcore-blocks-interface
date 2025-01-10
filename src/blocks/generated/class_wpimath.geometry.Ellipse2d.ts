@@ -33,6 +33,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myEllipse2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Transforms the center of the ellipse and returns the new ellipse.\n\n:param other: The transform to transform by.\n\n:returns: The transformed ellipse.", "returnType": "wpimath.geometry._geometry.Ellipse2d", "args": [{"name": "ellipse2d", "type": "wpimath.geometry._geometry.Ellipse2d"}, {"name": "other", "type": "wpimath.geometry._geometry.Transform2d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Ellipse2d", "FUNC": "transformBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEllipse2d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

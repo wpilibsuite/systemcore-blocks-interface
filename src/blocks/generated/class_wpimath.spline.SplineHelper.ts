@@ -20,6 +20,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myList"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Returns quintic splines from a set of waypoints.\n\n:param waypoints: The waypoints\n\n:returns: List of quintic splines.", "returnType": "list[wpimath.spline._spline.QuinticHermiteSpline]", "args": [{"name": "waypoints", "type": "list[wpimath.geometry._geometry.Pose2d]"}], "importModule": "wpimath.spline"}, "fields": {"CLASS": "wpimath.spline.SplineHelper", "FUNC": "quinticSplinesFromWaypoints"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myList"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

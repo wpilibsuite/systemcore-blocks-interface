@@ -51,6 +51,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kTrivial"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

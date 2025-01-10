@@ -41,6 +41,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTranslation3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the underlying translation.\n\n:returns: Reference to the translational component of the pose.", "returnType": "wpimath.geometry._geometry.Translation3d", "args": [{"name": "pose3d", "type": "wpimath.geometry._geometry.Pose3d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Pose3d", "FUNC": "translation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose3d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

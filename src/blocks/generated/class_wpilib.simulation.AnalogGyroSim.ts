@@ -26,6 +26,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the rate of the gyro.\n\n:param rate: the new rate", "returnType": "None", "args": [{"name": "analogGyroSim", "type": "wpilib.simulation._simulation.AnalogGyroSim"}, {"name": "rate", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.AnalogGyroSim", "FUNC": "setRate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogGyroSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

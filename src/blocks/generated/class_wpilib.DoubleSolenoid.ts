@@ -29,6 +29,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kReverse"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

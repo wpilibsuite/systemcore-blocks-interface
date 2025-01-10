@@ -19,6 +19,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_instance_variable", "extraState": {"varType": "object", "key": "instance hal.Value object", "importModule": "", "selfLabel": "value", "selfType": "hal.Value"}, "fields": {"CLASS": "hal.Value", "VAR": "value"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myValue"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

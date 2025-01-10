@@ -44,6 +44,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kSimulation"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

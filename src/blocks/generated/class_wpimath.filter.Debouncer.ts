@@ -21,6 +21,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpimath.filter.Debouncer.DebounceType", "importModule": "wpimath.filter"}, "fields": {"ENUM_TYPE": "wpimath.filter.Debouncer.DebounceType", "ENUM_VALUE": "kRising"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

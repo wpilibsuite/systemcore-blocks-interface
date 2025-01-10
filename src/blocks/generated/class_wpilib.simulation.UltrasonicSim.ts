@@ -18,6 +18,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets if the range measurement is valid.\n\n:param valid: True if valid", "returnType": "None", "args": [{"name": "ultrasonicSim", "type": "wpilib.simulation._simulation.UltrasonicSim"}, {"name": "valid", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.UltrasonicSim", "FUNC": "setRangeValid"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myUltrasonicSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -41,6 +41,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.LEDPattern.GradientType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.LEDPattern.GradientType", "ENUM_VALUE": "kDiscontinuous"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -19,6 +19,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the total time the profile takes to reach the goal.\n\n:returns: The total time the profile takes to reach the goal.", "returnType": "wpimath.units.seconds", "args": [{"name": "trapezoidProfileRadians", "type": "wpimath._controls._controls.trajectory.TrapezoidProfileRadians"}], "importModule": ""}, "fields": {"CLASS": "wpimath.trajectory.TrapezoidProfileRadians", "FUNC": "totalTime"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrapezoidProfileRadians"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

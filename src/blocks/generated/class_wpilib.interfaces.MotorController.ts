@@ -22,6 +22,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Common interface to stop the motor until Set is called again.", "returnType": "None", "args": [{"name": "motorController", "type": "wpilib.interfaces._interfaces.MotorController"}], "importModule": ""}, "fields": {"CLASS": "wpilib.interfaces.MotorController", "FUNC": "stopMotor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorController"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -30,6 +30,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set if this encoder is inverted.\n\n:param inverted: true to invert the encoder, false otherwise", "returnType": "None", "args": [{"name": "dutyCycleEncoder", "type": "wpilib._wpilib.DutyCycleEncoder"}, {"name": "inverted", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DutyCycleEncoder", "FUNC": "setInverted"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoder"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

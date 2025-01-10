@@ -27,6 +27,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns whether the compressor is active or not.\n\n:returns: true if the compressor is on - otherwise false.", "returnType": "bool", "args": [{"name": "compressor", "type": "wpilib._wpilib.Compressor"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Compressor", "FUNC": "isEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCompressor"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

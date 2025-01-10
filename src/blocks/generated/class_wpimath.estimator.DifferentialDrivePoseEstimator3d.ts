@@ -27,6 +27,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the pose estimator with wheel encoder and gyro information. This\nshould be called every loop.\n\n:param currentTime:   The time at which this method was called.\n:param gyroAngle:     The current gyro angle.\n:param leftDistance:  The distance traveled by the left encoder.\n:param rightDistance: The distance traveled by the right encoder.\n\n:returns: The estimated pose of the robot.", "returnType": "wpimath.geometry._geometry.Pose3d", "args": [{"name": "differentialDrivePoseEstimator3d", "type": "wpimath._controls._controls.estimator.DifferentialDrivePoseEstimator3d"}, {"name": "currentTime", "type": "wpimath.units.seconds"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation3d"}, {"name": "leftDistance", "type": "wpimath.units.meters"}, {"name": "rightDistance", "type": "wpimath.units.meters"}], "importModule": ""}, "fields": {"CLASS": "wpimath.estimator.DifferentialDrivePoseEstimator3d", "FUNC": "updateWithTime"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDrivePoseEstimator3d"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

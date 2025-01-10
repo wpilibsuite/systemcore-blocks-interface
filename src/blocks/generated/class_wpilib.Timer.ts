@@ -26,6 +26,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Stop the timer.\n\nThis computes the time as of now and clears the running flag, causing all\nsubsequent time requests to be read from the accumulated time rather than\nlooking at the system clock.", "returnType": "None", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Timer", "FUNC": "stop"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

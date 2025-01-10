@@ -29,6 +29,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "A helper method to set all values of the LED.\n\n:param r: the r value [0-255]\n:param g: the g value [0-255]\n:param b: the b value [0-255]", "returnType": "None", "args": [{"name": "lEDData", "type": "wpilib._wpilib.AddressableLED.LEDData"}, {"name": "r", "type": "int"}, {"name": "g", "type": "int"}, {"name": "b", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AddressableLED.LEDData", "FUNC": "setRGB"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLEDData"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

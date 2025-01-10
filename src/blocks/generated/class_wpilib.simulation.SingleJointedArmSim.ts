@@ -35,6 +35,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns whether the arm would hit the upper limit.\n\n:param armAngle: The arm height.\n\n:returns: Whether the arm would hit the upper limit.", "returnType": "bool", "args": [{"name": "singleJointedArmSim", "type": "wpilib.simulation._simulation.SingleJointedArmSim"}, {"name": "armAngle", "type": "wpimath.units.radians"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.SingleJointedArmSim", "FUNC": "wouldHitUpperLimit"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySingleJointedArmSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -448,6 +448,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerUnassigned"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

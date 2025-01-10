@@ -169,6 +169,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Return this color represented as a hex string.\n\n:returns: a string of the format <tt>\\#RRGGBB</tt>", "returnType": "str", "args": [{"name": "color", "type": "wpilib._wpilib.Color"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Color", "FUNC": "hexString"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myColor"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

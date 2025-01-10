@@ -20,6 +20,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set if the encoder is connected.\n\n:param isConnected: Whether or not the sensor is connected.", "returnType": "None", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}, {"name": "isConnected", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "setConnected"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

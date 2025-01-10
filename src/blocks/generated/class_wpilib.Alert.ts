@@ -26,6 +26,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kWarning"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

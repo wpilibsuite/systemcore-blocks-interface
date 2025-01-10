@@ -23,6 +23,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Tell all the sensors to update (send) their values.\n\nActuators are handled through callbacks on their value changing from the\nSmartDashboard widgets.", "returnType": "None", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.LiveWindow", "FUNC": "updateValues"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

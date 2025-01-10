@@ -43,6 +43,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Indicates this input is used by a simulated device.\n\n:param device: simulated device handle", "returnType": "None", "args": [{"name": "analogInput", "type": "wpilib._wpilib.AnalogInput"}, {"name": "device", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogInput", "FUNC": "setSimDevice"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInput"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

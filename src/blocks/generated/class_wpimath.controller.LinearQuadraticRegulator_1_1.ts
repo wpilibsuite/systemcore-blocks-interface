@@ -31,6 +31,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Resets the controller.", "returnType": "None", "args": [{"name": "linearQuadraticRegulator_1_1", "type": "wpimath._controls._controls.controller.LinearQuadraticRegulator_1_1"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.LinearQuadraticRegulator_1_1", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearQuadraticRegulator_1_1"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

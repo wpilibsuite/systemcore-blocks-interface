@@ -30,6 +30,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the duty-cycle that is being generated on the line.\n\nThe resolution of the duty cycle is 8-bit for low frequencies (1kHz or\nless) but is reduced the higher the frequency of the PWM signal is.\n\n:param dutyCycle: The duty-cycle to change to. [0..1]", "returnType": "None", "args": [{"name": "digitalOutput", "type": "wpilib._wpilib.DigitalOutput"}, {"name": "dutyCycle", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DigitalOutput", "FUNC": "updateDutyCycle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalOutput"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

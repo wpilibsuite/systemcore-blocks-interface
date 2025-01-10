@@ -36,6 +36,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Tank drive inverse kinematics for differential drive platform.\n\n:param leftSpeed:    The robot left side's speed along the X axis\n                     [-1.0..1.0]. Forward is positive.\n:param rightSpeed:   The robot right side's speed along the X axis\n                     [-1.0..1.0]. Forward is positive.\n:param squareInputs: If set, decreases the input sensitivity at low speeds.\n\n:returns: Wheel speeds [-1.0..1.0].", "returnType": "wpilib.drive._drive.DifferentialDrive.WheelSpeeds", "args": [{"name": "leftSpeed", "type": "float"}, {"name": "rightSpeed", "type": "float"}, {"name": "squareInputs", "type": "bool"}], "importModule": "wpilib.drive"}, "fields": {"CLASS": "wpilib.drive.DifferentialDrive", "FUNC": "tankDriveIK"}, "inputs": {"ARG2": {"shadow": {"type": "logic_boolean", "fields": {"BOOL": "TRUE"}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

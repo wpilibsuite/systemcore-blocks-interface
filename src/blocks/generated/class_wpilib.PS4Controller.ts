@@ -111,6 +111,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBooleanEvent"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Constructs an event instance around the triangle button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the triangle button's\n          digital signal attached to the given loop.", "returnType": "wpilib.event._event.BooleanEvent", "args": [{"name": "pS4Controller", "type": "wpilib._wpilib.PS4Controller"}, {"name": "loop", "type": "wpilib.event._event.EventLoop"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PS4Controller", "FUNC": "triangle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPS4Controller"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEventLoop"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

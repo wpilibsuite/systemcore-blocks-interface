@@ -16,6 +16,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Gets the string type of the layout as defined by that layout in\nShuffleboard.", "returnType": "str", "args": [{"name": "layoutType", "type": "wpilib.shuffleboard._shuffleboard.LayoutType"}], "importModule": ""}, "fields": {"CLASS": "wpilib.shuffleboard.LayoutType", "FUNC": "getLayoutName"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLayoutType"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

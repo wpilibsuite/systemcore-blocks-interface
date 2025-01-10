@@ -29,6 +29,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Updates all the values in Shuffleboard. Iterative and timed robots are\npre-configured to call this method in the main robot loop; teams using\ncustom robot base classes, or subclass SampleRobot, should make sure to\ncall this repeatedly to keep data on the dashboard up to date.", "returnType": "None", "args": [], "importModule": "wpilib.shuffleboard"}, "fields": {"CLASS": "wpilib.shuffleboard.Shuffleboard", "FUNC": "update"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

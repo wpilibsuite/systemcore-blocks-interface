@@ -29,6 +29,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Reset all SimDevice data.", "returnType": "None", "args": [], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.SimDeviceSim", "FUNC": "resetData"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

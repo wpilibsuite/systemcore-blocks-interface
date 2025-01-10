@@ -44,6 +44,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the voltage.\n\n:param voltage: the new value", "returnType": "None", "args": [{"name": "analogInputSim", "type": "wpilib.simulation._simulation.AnalogInputSim"}, {"name": "voltage", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.AnalogInputSim", "FUNC": "setVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInputSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

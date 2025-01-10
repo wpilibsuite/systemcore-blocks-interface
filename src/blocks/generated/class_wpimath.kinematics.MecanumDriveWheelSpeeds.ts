@@ -38,6 +38,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelSpeeds", "args": [{"name": "frontLeft", "type": "wpimath.units.feet_per_second"}, {"name": "frontRight", "type": "wpimath.units.feet_per_second"}, {"name": "rearLeft", "type": "wpimath.units.feet_per_second"}, {"name": "rearRight", "type": "wpimath.units.feet_per_second"}], "importModule": "wpimath.kinematics"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelSpeeds", "FUNC": "fromFeet"}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

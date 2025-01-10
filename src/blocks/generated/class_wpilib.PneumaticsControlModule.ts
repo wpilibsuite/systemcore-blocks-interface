@@ -51,6 +51,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "pneumaticsControlModule", "type": "wpilib._wpilib.PneumaticsControlModule"}, {"name": "mask", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PneumaticsControlModule", "FUNC": "unreserveSolenoids"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsControlModule"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

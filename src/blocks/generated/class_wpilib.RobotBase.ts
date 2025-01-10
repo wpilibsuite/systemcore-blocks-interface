@@ -30,6 +30,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Start the main robot code. This function will be called once and should not\nexit until signalled by EndCompetition()", "returnType": "None", "args": [{"name": "robotBase", "type": "wpilib._wpilib.RobotBase"}], "importModule": ""}, "fields": {"CLASS": "wpilib.RobotBase", "FUNC": "startCompetition"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRobotBase"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

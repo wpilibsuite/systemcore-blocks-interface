@@ -56,6 +56,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Periodic code for test mode should go here.\n\nUsers should override this method for code which will be called each time a\nnew packet is received from the driver station and the robot is in test\nmode.", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "importModule": ""}, "fields": {"CLASS": "wpilib.IterativeRobotBase", "FUNC": "testPeriodic"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

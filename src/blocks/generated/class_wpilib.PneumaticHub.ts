@@ -50,6 +50,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "pneumaticHub", "type": "wpilib._wpilib.PneumaticHub"}, {"name": "mask", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PneumaticHub", "FUNC": "unreserveSolenoids"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticHub"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

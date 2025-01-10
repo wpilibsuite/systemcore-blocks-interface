@@ -23,6 +23,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the simulation.\n\n:param dt: The time between updates.", "returnType": "None", "args": [{"name": "linearSystemSim_1_1_2", "type": "wpilib.simulation._simulation.LinearSystemSim_1_1_2"}, {"name": "dt", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.LinearSystemSim_1_1_2", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystemSim_1_1_2"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

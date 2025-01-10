@@ -32,6 +32,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kOutput"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -805,6 +805,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.tResourceType", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.tResourceType", "ENUM_VALUE": "kResourceType_XboxController"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

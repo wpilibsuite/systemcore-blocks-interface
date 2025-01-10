@@ -22,6 +22,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTransform3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Converts the given transform from one coordinate system to another.\n\n:param transform: The transform to convert.\n:param from_:     The coordinate system the transform starts in.\n:param to:        The coordinate system to which to convert.\n\n:returns: The given transform in the desired coordinate system.", "returnType": "wpimath.geometry._geometry.Transform3d", "args": [{"name": "transform", "type": "wpimath.geometry._geometry.Transform3d"}, {"name": "from_", "type": "wpimath.geometry._geometry.CoordinateSystem"}, {"name": "to", "type": "wpimath.geometry._geometry.CoordinateSystem"}], "importModule": "wpimath.geometry"}, "fields": {"CLASS": "wpimath.geometry.CoordinateSystem", "FUNC": "convert"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform3d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCoordinateSystem"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCoordinateSystem"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

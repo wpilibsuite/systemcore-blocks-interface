@@ -73,6 +73,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Gets whether there is a breaker fault at a specified channel.\n\n:param channel: Channel to check for faults.\n\n:returns: If there is a breaker fault.\n          @throws A ChannelIndexOutOfRange error if the given int is outside of the\n          range supported by the hardware.", "returnType": "bool", "args": [{"name": "faults", "type": "wpilib._wpilib.PowerDistribution.Faults"}, {"name": "channel", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PowerDistribution.Faults", "FUNC": "getBreakerFault"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myFaults"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

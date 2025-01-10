@@ -27,6 +27,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the upper and lower limits of the analog trigger.\n\nThe limits are given as floating point voltage values.\n\n:param lower: The lower limit of the trigger in Volts.\n:param upper: The upper limit of the trigger in Volts.", "returnType": "None", "args": [{"name": "analogTrigger", "type": "wpilib._wpilib.AnalogTrigger"}, {"name": "lower", "type": "float"}, {"name": "upper", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogTrigger", "FUNC": "setLimitsVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogTrigger"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

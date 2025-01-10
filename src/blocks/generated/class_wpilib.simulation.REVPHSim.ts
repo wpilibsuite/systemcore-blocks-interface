@@ -39,6 +39,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "rEVPHSim", "type": "wpilib.simulation._simulation.REVPHSim"}, {"name": "channel", "type": "int"}, {"name": "solenoidOutput", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.REVPHSim", "FUNC": "setSolenoidOutput"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

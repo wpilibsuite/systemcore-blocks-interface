@@ -21,6 +21,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Stop timer events from occurring.\n\nStop any repeating timer events from occurring. This will also remove any\nsingle notification events from the queue.\n\nIf a timer-based call to the registered handler is in progress, this\nfunction will block until the handler call is complete.", "returnType": "None", "args": [{"name": "notifier", "type": "wpilib._wpilib.Notifier"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Notifier", "FUNC": "stop"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNotifier"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

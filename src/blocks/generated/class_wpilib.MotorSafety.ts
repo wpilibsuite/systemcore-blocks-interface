@@ -25,6 +25,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Called to stop the motor when the timeout expires.", "returnType": "None", "args": [{"name": "motorSafety", "type": "wpilib._wpilib.MotorSafety"}], "importModule": ""}, "fields": {"CLASS": "wpilib.MotorSafety", "FUNC": "stopMotor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorSafety"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

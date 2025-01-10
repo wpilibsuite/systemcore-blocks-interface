@@ -21,6 +21,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot.", "returnType": "wpimath.geometry._geometry.Pose2d", "args": [{"name": "mecanumDriveOdometryBase", "type": "wpimath.kinematics._kinematics.MecanumDriveOdometryBase"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation2d"}, {"name": "wheelPositions", "type": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveOdometryBase", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveOdometryBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

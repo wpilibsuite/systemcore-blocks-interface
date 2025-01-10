@@ -35,6 +35,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_4X"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

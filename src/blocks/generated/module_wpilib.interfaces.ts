@@ -14,6 +14,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
     contents: [
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

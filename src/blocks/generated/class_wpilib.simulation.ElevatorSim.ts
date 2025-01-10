@@ -35,6 +35,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns whether the elevator would hit the upper limit.\n\n:param elevatorHeight: The elevator height.\n\n:returns: Whether the elevator would hit the upper limit.", "returnType": "bool", "args": [{"name": "elevatorSim", "type": "wpilib.simulation._simulation.ElevatorSim"}, {"name": "elevatorHeight", "type": "wpimath.units.meters"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.ElevatorSim", "FUNC": "wouldHitUpperLimit"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myElevatorSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

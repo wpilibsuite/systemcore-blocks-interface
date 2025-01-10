@@ -21,6 +21,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the robot pose from x, y, and rotation.\n\n:param x:        X location\n:param y:        Y location\n:param rotation: rotation", "returnType": "None", "args": [{"name": "field2d", "type": "wpilib._wpilib.Field2d"}, {"name": "x", "type": "wpimath.units.meters"}, {"name": "y", "type": "wpimath.units.meters"}, {"name": "rotation", "type": "wpimath.geometry._geometry.Rotation2d"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Field2d", "FUNC": "setRobotPose"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myField2d"}}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

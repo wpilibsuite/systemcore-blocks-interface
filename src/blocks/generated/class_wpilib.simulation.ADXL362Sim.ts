@@ -18,6 +18,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the Z acceleration.\n\n:param accel: The Z acceleration.", "returnType": "None", "args": [{"name": "aDXL362Sim", "type": "wpilib.simulation._simulation.ADXL362Sim"}, {"name": "accel", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.ADXL362Sim", "FUNC": "setZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXL362Sim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

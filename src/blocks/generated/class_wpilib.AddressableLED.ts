@@ -21,6 +21,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Stops the output.", "returnType": "None", "args": [{"name": "addressableLED", "type": "wpilib._wpilib.AddressableLED"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AddressableLED", "FUNC": "stop"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLED"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

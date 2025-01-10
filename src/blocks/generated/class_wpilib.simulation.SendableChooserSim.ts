@@ -17,6 +17,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the selected option.\n\n:param option: The option.", "returnType": "None", "args": [{"name": "sendableChooserSim", "type": "wpilib.simulation._simulation.SendableChooserSim"}, {"name": "option", "type": "str"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.SendableChooserSim", "FUNC": "setSelected"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableChooserSim"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

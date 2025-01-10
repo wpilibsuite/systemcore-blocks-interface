@@ -22,6 +22,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "shuffleboardComponentBase", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardComponentBase"}, {"name": "type", "type": "str"}], "importModule": ""}, "fields": {"CLASS": "wpilib.shuffleboard.ShuffleboardComponentBase", "FUNC": "setType"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardComponentBase"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

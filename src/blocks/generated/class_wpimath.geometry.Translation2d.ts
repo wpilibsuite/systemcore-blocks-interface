@@ -38,6 +38,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[2, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns a 2D translation vector representation of this translation.\n\n:returns: A 2D translation vector representation of this translation.", "returnType": "numpy.ndarray[numpy.float64[2, 1]]", "args": [{"name": "translation2d", "type": "wpimath.geometry._geometry.Translation2d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Translation2d", "FUNC": "toVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation2d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

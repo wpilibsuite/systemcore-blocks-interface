@@ -63,6 +63,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADIS16448_IMU.IMUAxis", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADIS16448_IMU.IMUAxis", "ENUM_VALUE": "kZ"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

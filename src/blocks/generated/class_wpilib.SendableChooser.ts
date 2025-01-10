@@ -20,6 +20,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Add the given object to the list of options and marks it as the default.\n\nFunctionally, this is very close to AddOption() except that it will use\nthis as the default option if none other is explicitly selected.\n\n:param name:   the name of the option\n:param object: the option", "returnType": "None", "args": [{"name": "sendableChooser", "type": "wpilib._wpilib.SendableChooser"}, {"name": "name", "type": "str"}, {"name": "object", "type": "object"}], "importModule": ""}, "fields": {"CLASS": "wpilib.SendableChooser", "FUNC": "setDefaultOption"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableChooser"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

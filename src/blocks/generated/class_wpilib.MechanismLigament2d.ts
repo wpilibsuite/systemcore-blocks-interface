@@ -24,6 +24,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the line thickness.\n\n:param lineWidth: the line thickness", "returnType": "None", "args": [{"name": "mechanismLigament2d", "type": "wpilib._wpilib.MechanismLigament2d"}, {"name": "lineWidth", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.MechanismLigament2d", "FUNC": "setLineWeight"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMechanismLigament2d"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

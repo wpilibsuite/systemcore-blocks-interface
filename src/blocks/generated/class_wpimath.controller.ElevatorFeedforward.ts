@@ -25,6 +25,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Calculates the minimum achievable velocity given a maximum voltage supply\nand an acceleration.  Useful for ensuring that velocity and\nacceleration constraints for a trapezoidal profile are simultaneously\nachievable - enter the acceleration constraint, and this will give you\na simultaneously-achievable velocity constraint.\n\n:param maxVoltage:   The maximum voltage that can be supplied to the elevator.\n:param acceleration: The acceleration of the elevator.\n\n:returns: The minimum possible velocity at the given acceleration.", "returnType": "wpimath.units.meters_per_second", "args": [{"name": "elevatorFeedforward", "type": "wpimath._controls._controls.controller.ElevatorFeedforward"}, {"name": "maxVoltage", "type": "wpimath.units.volts"}, {"name": "acceleration", "type": "wpimath.units.meters_per_second_squared"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.ElevatorFeedforward", "FUNC": "minAchievableVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myElevatorFeedforward"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

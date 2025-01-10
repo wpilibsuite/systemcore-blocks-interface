@@ -28,6 +28,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets if to update when empty.\n\n:param updateWhenEmpty: True to update when empty.", "returnType": "None", "args": [{"name": "tachometer", "type": "wpilib.counter._counter.Tachometer"}, {"name": "updateWhenEmpty", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.counter.Tachometer", "FUNC": "setUpdateWhenEmpty"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTachometer"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

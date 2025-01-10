@@ -39,6 +39,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns a 3D translation vector representation of this translation.\n\n:returns: A 3D translation vector representation of this translation.", "returnType": "numpy.ndarray[numpy.float64[3, 1]]", "args": [{"name": "translation3d", "type": "wpimath.geometry._geometry.Translation3d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Translation3d", "FUNC": "toVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation3d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

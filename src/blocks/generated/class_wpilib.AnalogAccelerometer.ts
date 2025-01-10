@@ -20,6 +20,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the voltage that corresponds to 0 G.\n\nThe zero G voltage varies by accelerometer model. There are constants\ndefined for various models.\n\n:param zero: The zero G voltage.", "returnType": "None", "args": [{"name": "analogAccelerometer", "type": "wpilib._wpilib.AnalogAccelerometer"}, {"name": "zero", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogAccelerometer", "FUNC": "setZero"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogAccelerometer"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

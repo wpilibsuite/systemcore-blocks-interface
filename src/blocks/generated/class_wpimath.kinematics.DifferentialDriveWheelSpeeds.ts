@@ -30,6 +30,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDriveWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "", "returnType": "wpimath.kinematics._kinematics.DifferentialDriveWheelSpeeds", "args": [{"name": "left", "type": "wpimath.units.feet_per_second"}, {"name": "right", "type": "wpimath.units.feet_per_second"}], "importModule": "wpimath.kinematics"}, "fields": {"CLASS": "wpimath.kinematics.DifferentialDriveWheelSpeeds", "FUNC": "fromFeet"}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

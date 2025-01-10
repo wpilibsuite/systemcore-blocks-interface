@@ -28,6 +28,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySuppliedStringValueWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the type of widget used to display the data. If not set, the default\nwidget type will be used. This method should only be used to use a widget\nthat does not come built into Shuffleboard (i.e. one that comes with a\ncustom or third-party plugin). To use a widget that is built into\nShuffleboard, use WithWidget(WidgetType) and BuiltInWidgets.\n\n:param widgetType: the type of the widget used to display the data\n\n:returns: this widget object", "returnType": "wpilib.shuffleboard._shuffleboard.SuppliedStringValueWidget", "args": [{"name": "_SuppliedValueWidget_string", "type": "wpilib.shuffleboard._shuffleboard._SuppliedValueWidget_string"}, {"name": "widgetType", "type": "str"}], "importModule": ""}, "fields": {"CLASS": "wpilib.shuffleboard._SuppliedValueWidget_string", "FUNC": "withWidget"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_SuppliedValueWidget_string"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

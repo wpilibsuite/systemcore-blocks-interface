@@ -43,6 +43,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns rotation vector representation of this rotation.\n\n:returns: Rotation vector representation of this rotation.", "returnType": "numpy.ndarray[numpy.float64[3, 1]]", "args": [{"name": "rotation3d", "type": "wpimath.geometry._geometry.Rotation3d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Rotation3d", "FUNC": "toVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

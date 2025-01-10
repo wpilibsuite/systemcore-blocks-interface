@@ -19,6 +19,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySwerveModuleState]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Performs inverse kinematics to return the wheel speeds from a desired\nchassis velocity. This method is often used to convert joystick values into\nwheel speeds.\n\n:param chassisSpeeds: The desired chassis speed.\n\n:returns: The wheel speeds.", "returnType": "Tuple[wpimath.kinematics._kinematics.SwerveModuleState, wpimath.kinematics._kinematics.SwerveModuleState, wpimath.kinematics._kinematics.SwerveModuleState, wpimath.kinematics._kinematics.SwerveModuleState]", "args": [{"name": "swerveDrive4KinematicsBase", "type": "wpimath.kinematics._kinematics.SwerveDrive4KinematicsBase"}, {"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.SwerveDrive4KinematicsBase", "FUNC": "toWheelSpeeds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveDrive4KinematicsBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

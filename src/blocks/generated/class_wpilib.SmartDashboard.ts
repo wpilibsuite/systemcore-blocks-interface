@@ -50,6 +50,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Puts all sendable data to the dashboard.", "returnType": "None", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.SmartDashboard", "FUNC": "updateValues"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

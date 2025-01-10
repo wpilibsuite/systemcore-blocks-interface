@@ -63,6 +63,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Gets the title of this Shuffleboard value.", "returnType": "str", "args": [{"name": "shuffleboardValue", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardValue"}], "importModule": ""}, "fields": {"CLASS": "wpilib.shuffleboard.ShuffleboardValue", "FUNC": "getTitle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardValue"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

@@ -54,6 +54,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Counter.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Counter.Mode", "ENUM_VALUE": "kTwoPulse"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

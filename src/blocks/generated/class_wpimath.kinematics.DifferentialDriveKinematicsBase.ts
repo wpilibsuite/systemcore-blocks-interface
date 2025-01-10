@@ -19,6 +19,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDriveWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Performs inverse kinematics to return the wheel speeds from a desired\nchassis velocity. This method is often used to convert joystick values into\nwheel speeds.\n\n:param chassisSpeeds: The desired chassis speed.\n\n:returns: The wheel speeds.", "returnType": "wpimath.kinematics._kinematics.DifferentialDriveWheelSpeeds", "args": [{"name": "differentialDriveKinematicsBase", "type": "wpimath.kinematics._kinematics.DifferentialDriveKinematicsBase"}, {"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.DifferentialDriveKinematicsBase", "FUNC": "toWheelSpeeds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveKinematicsBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

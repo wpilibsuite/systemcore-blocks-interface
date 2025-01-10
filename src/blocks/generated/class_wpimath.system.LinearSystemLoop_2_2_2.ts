@@ -32,6 +32,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns an element of the observer's state estimate x-hat.\n\n:param i: Row of x-hat.", "returnType": "float", "args": [{"name": "linearSystemLoop_2_2_2", "type": "wpimath._controls._controls.system.LinearSystemLoop_2_2_2"}, {"name": "i", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpimath.system.LinearSystemLoop_2_2_2", "FUNC": "xhat"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystemLoop_2_2_2"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

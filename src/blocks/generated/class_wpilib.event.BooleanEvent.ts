@@ -21,6 +21,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBooleanEvent"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Creates a new event that triggers when this one changes from false to true.\n\n:returns: the new event.", "returnType": "wpilib.event._event.BooleanEvent", "args": [{"name": "booleanEvent", "type": "wpilib.event._event.BooleanEvent"}], "importModule": ""}, "fields": {"CLASS": "wpilib.event.BooleanEvent", "FUNC": "rising"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBooleanEvent"}}}}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

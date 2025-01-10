@@ -61,6 +61,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Change whether the DS is in test.\n\n:param test: the new value", "returnType": "None", "args": [{"name": "test", "type": "bool"}], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DriverStationSim", "FUNC": "setTest"}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

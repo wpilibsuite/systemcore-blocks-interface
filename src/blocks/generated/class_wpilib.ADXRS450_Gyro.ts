@@ -24,6 +24,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Reset the gyro.\n\nResets the gyro to a heading of zero. This can be used if there is\nsignificant drift in the gyro and it needs to be recalibrated after it has\nbeen running.", "returnType": "None", "args": [{"name": "aDXRS450_Gyro", "type": "wpilib._wpilib.ADXRS450_Gyro"}], "importModule": ""}, "fields": {"CLASS": "wpilib.ADXRS450_Gyro", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXRS450_Gyro"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }

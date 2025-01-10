@@ -24,6 +24,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Computes the max achievable velocity for an Exponential Profile.\n\n:returns: The steady-state velocity achieved by this profile.", "returnType": "wpimath.units.meters_per_second", "args": [{"name": "constraints", "type": "wpimath._controls._controls.trajectory.ExponentialProfileMeterVolts.Constraints"}], "importModule": ""}, "fields": {"CLASS": "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "FUNC": "maxVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myConstraints"}}}}}},
     ],
   };
-  category.contents.push(...subcategories);
+  if (category.contents) {
+    category.contents.push(...subcategories);
+  }
   return category;
 }
