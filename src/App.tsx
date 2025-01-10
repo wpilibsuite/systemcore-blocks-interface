@@ -102,7 +102,7 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
 type NewOpModeModalProps = {
   isOpen: boolean;
   getCurrentWorkspaceName: () => string;
-  getOpModeNames: () => string[];
+  getOpModeNames: (workspaceName: string) => string[];
   onOk: (w: string, o: string) => void;
   onCancel: () => void;
 }
@@ -289,7 +289,7 @@ const App = () => {
     return commonStorage.getWorkspaceName(currentModulePath);
   };
 
-  const getOpModeNames = (workspaceName): string[] => {
+  const getOpModeNames = (workspaceName: string): string[] => {
     const opModeNames = [];
     for (const workspace of modules) {
       if (workspace.workspaceName === workspaceName) {
