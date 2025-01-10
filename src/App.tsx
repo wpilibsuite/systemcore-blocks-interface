@@ -26,13 +26,13 @@ import './blocks/python_function';
 import './blocks/python_variable';
 import { initialize as initializeBlocks } from './blocks/utils/generated/initialize';
 
-import * as editor from './editor/editor.js';
+import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
 import { getToolboxJSON } from './toolbox/toolbox';
 //import { testAllBlocksInToolbox } from './toolbox/toolbox_tests';
 
-import * as storage from './storage/client_side_storage.js';
-import * as commonStorage from './storage/common_storage.js';
+import * as storage from './storage/client_side_storage';
+import * as commonStorage from './storage/common_storage';
 
 
 type NewWorkspaceModalProps = {
@@ -520,7 +520,7 @@ const App = () => {
         getWorkspaceNames={getWorkspaceNames}
         onOk={(w) => {
           setIsNewWorkspaceModalOpen(false);
-          handleNewWorkspaceOk(w, (success, error) => {
+          handleNewWorkspaceOk(w, (success: boolean, error: string) => {
             if (success) {
               setTriggerListModules(!triggerListModules);
             } else if (error) {

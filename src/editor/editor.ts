@@ -22,8 +22,8 @@
 import * as Blockly from 'blockly/core';
 
 import { extendedPythonGenerator } from './extended_python_generator';
-import * as storage from '../storage/client_side_storage.js';
-import * as commonStorage from '../storage/common_storage.js';
+import * as storage from '../storage/client_side_storage';
+import * as commonStorage from '../storage/common_storage';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
 function onChangeBeforeFinishedLoading(event) {
