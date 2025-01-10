@@ -10,8 +10,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.SPI.Port", ["kMXP", "kOnboardCS0", "kOnboardCS1", "kOnboardCS2", "kOnboardCS3"], "SPI port.\n\nMembers:\n\n  kOnboardCS0 : Onboard SPI bus port CS0.\n\n  kOnboardCS1 : Onboard SPI bus port CS1.\n\n  kOnboardCS2 : Onboard SPI bus port CS2.\n\n  kOnboardCS3 : Onboard SPI bus port CS3.\n\n  kMXP : MXP (roboRIO MXP) SPI bus port.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SPI",
     contents: [
@@ -58,8 +58,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS3"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "TrajectoryUtil",
     contents: [
@@ -18,8 +18,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Exports a Trajectory to a PathWeaver-style JSON file.\n\n:param trajectory: the trajectory to export\n:param path:       the path of the file to export to", "returnType": "None", "args": [{"name": "trajectory", "type": "wpimath._controls._controls.trajectory.Trajectory"}, {"name": "path", "type": "str"}], "importModule": "wpimath.trajectory"}, "fields": {"CLASS": "wpimath.trajectory.TrajectoryUtil", "FUNC": "toPathweaverJson"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectory"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

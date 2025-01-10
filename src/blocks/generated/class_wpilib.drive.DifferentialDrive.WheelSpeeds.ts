@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.drive.DifferentialDrive.WheelSpeeds
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpilib.drive.DifferentialDrive.WheelSpeeds", "float", ["left", "right"], ["Left wheel speed.", "Right wheel speed."]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "WheelSpeeds",
     contents: [
@@ -22,8 +22,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "wpilib.drive._drive.DifferentialDrive.WheelSpeeds", "args": [], "importModule": "wpilib.drive"}, "fields": {"CLASS": "wpilib.drive.DifferentialDrive.WheelSpeeds"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

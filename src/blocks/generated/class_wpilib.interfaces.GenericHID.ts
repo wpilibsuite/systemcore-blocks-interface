@@ -10,8 +10,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.interfaces.GenericHID.RumbleType", ["kBothRumble", "kLeftRumble", "kRightRumble"], "Represents a rumble output on the Joystick.\n\nMembers:\n\n  kLeftRumble : Left rumble motor.\n\n  kRightRumble : Right rumble motor.\n\n  kBothRumble : Both left and right rumble motors.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "GenericHID",
     contents: [
@@ -68,8 +68,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.interfaces.GenericHID.RumbleType", "importModule": "wpilib.interfaces"}, "fields": {"ENUM_TYPE": "wpilib.interfaces.GenericHID.RumbleType", "ENUM_VALUE": "kRightRumble"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

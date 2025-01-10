@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "JoystickSim",
     contents: [
@@ -37,8 +37,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the Z value of the joystick.\n\n:param value: the new Z value", "returnType": "None", "args": [{"name": "joystickSim", "type": "wpilib.simulation._simulation.JoystickSim"}, {"name": "value", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.JoystickSim", "FUNC": "setZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myJoystickSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -10,8 +10,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.Relay.Value", ["kForward", "kOff", "kOn", "kReverse"], "The state to drive a Relay to.\n\nMembers:\n\n  kOff : Off.\n\n  kOn : On.\n\n  kForward : Forward.\n\n  kReverse : Reverse.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Relay",
     contents: [
@@ -39,8 +39,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kReverse"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "_SuppliedValueWidget_vector_bool",
     contents: [
@@ -28,8 +28,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySuppliedBoolListValueWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the type of widget used to display the data. If not set, the default\nwidget type will be used. This method should only be used to use a widget\nthat does not come built into Shuffleboard (i.e. one that comes with a\ncustom or third-party plugin). To use a widget that is built into\nShuffleboard, use WithWidget(WidgetType) and BuiltInWidgets.\n\n:param widgetType: the type of the widget used to display the data\n\n:returns: this widget object", "returnType": "wpilib.shuffleboard._shuffleboard.SuppliedBoolListValueWidget", "args": [{"name": "_SuppliedValueWidget_vector_bool", "type": "wpilib.shuffleboard._shuffleboard._SuppliedValueWidget_vector_bool"}, {"name": "widgetType", "type": "str"}], "importModule": ""}, "fields": {"CLASS": "wpilib.shuffleboard._SuppliedValueWidget_vector_bool", "FUNC": "withWidget"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_SuppliedValueWidget_vector_bool"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

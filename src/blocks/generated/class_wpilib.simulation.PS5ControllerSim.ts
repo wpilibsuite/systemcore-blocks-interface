@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "PS5ControllerSim",
     contents: [
@@ -50,8 +50,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the type of this device.\n\n:param type: the new device type", "returnType": "None", "args": [{"name": "genericHIDSim", "type": "wpilib.simulation._simulation.GenericHIDSim"}, {"name": "type", "type": "wpilib.interfaces._interfaces.GenericHID.HIDType"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.GenericHIDSim", "FUNC": "setType"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myGenericHIDSim"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myHIDType"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "PneumaticsBase",
     contents: [
@@ -41,8 +41,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Unreserve the solenoids marked in the bitmask.\n\n:param mask: The bitmask of solenoids to unreserve. The LSB represents\n             solenoid 0.", "returnType": "None", "args": [{"name": "pneumaticsBase", "type": "wpilib._wpilib.PneumaticsBase"}, {"name": "mask", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PneumaticsBase", "FUNC": "unreserveSolenoids"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsBase"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

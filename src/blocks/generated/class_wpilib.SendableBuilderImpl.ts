@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SendableBuilderImpl",
     contents: [
@@ -60,8 +60,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Synchronize with network table values by calling the getters for all\nproperties and setters when the network table value has changed.", "returnType": "None", "args": [{"name": "sendableBuilderImpl", "type": "wpilib._wpilib.SendableBuilderImpl"}], "importModule": ""}, "fields": {"CLASS": "wpilib.SendableBuilderImpl", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableBuilderImpl"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

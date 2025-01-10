@@ -10,8 +10,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.ADIS16448_IMU.IMUAxis", ["kX", "kY", "kZ"], "IMU axes.\n\nMembers:\n\n  kX : The IMU's X axis.\n\n  kY : The IMU's Y axis.\n\n  kZ : The IMU's Z axis.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "ADIS16448_IMU",
     contents: [
@@ -63,8 +63,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADIS16448_IMU.IMUAxis", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADIS16448_IMU.IMUAxis", "ENUM_VALUE": "kZ"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

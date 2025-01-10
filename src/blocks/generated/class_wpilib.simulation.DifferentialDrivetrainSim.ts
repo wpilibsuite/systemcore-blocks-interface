@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DifferentialDrivetrainSim",
     contents: [
@@ -41,8 +41,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the simulation.\n\n:param dt: The time that's passed since the last Update(units::second_t)\n           call.", "returnType": "None", "args": [{"name": "differentialDrivetrainSim", "type": "wpilib.simulation._simulation.DifferentialDrivetrainSim"}, {"name": "dt", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DifferentialDrivetrainSim", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDrivetrainSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

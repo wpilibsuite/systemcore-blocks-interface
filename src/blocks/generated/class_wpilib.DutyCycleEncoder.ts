@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DutyCycleEncoder",
     contents: [
@@ -30,8 +30,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set if this encoder is inverted.\n\n:param inverted: true to invert the encoder, false otherwise", "returnType": "None", "args": [{"name": "dutyCycleEncoder", "type": "wpilib._wpilib.DutyCycleEncoder"}, {"name": "inverted", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DutyCycleEncoder", "FUNC": "setInverted"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoder"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

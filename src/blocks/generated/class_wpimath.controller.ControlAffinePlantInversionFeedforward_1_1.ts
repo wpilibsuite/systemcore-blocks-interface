@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "ControlAffinePlantInversionFeedforward_1_1",
     contents: [
@@ -24,8 +24,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns an element of the previously calculated feedforward.\n\n:param i: Row of uff.\n\n:returns: The row of the calculated feedforward.", "returnType": "float", "args": [{"name": "controlAffinePlantInversionFeedforward_1_1", "type": "wpimath._controls._controls.controller.ControlAffinePlantInversionFeedforward_1_1"}, {"name": "i", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.ControlAffinePlantInversionFeedforward_1_1", "FUNC": "uff"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myControlAffinePlantInversionFeedforward_1_1"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

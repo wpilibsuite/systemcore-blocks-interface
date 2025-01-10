@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Translation3d
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Translation3d", "wpimath.units.feet", ["x_feet", "y_feet", "z_feet"], ["", "", ""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Translation3d",
     contents: [
@@ -39,8 +39,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns a 3D translation vector representation of this translation.\n\n:returns: A 3D translation vector representation of this translation.", "returnType": "numpy.ndarray[numpy.float64[3, 1]]", "args": [{"name": "translation3d", "type": "wpimath.geometry._geometry.Translation3d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Translation3d", "FUNC": "toVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation3d"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

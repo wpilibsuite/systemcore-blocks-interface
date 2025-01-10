@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.Counter.Mode", ["kExternalDirection", "kPulseLength", "kSemiperiod", "kTwoPulse"], "Members:\n\n  kTwoPulse\n\n  kSemiperiod\n\n  kPulseLength\n\n  kExternalDirection");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Counter",
     contents: [
@@ -54,8 +54,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Counter.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Counter.Mode", "ENUM_VALUE": "kTwoPulse"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

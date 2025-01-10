@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.ControlWord
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("hal.ControlWord", "int", ["autonomous", "control_reserved", "dsAttached", "eStop", "enabled", "fmsAttached", "test"], ["", "", "", "", "", "", ""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "ControlWord",
     contents: [
@@ -32,8 +32,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myControlWord"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "hal._wpiHal.ControlWord", "args": [], "importModule": "hal"}, "fields": {"CLASS": "hal.ControlWord"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

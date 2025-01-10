@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Twist2d
 
@@ -16,8 +16,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpimath.geometry.Twist2d", "wpimath.units.feet", ["dx_feet", "dy_feet"], ["", ""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Twist2d",
     contents: [
@@ -37,8 +37,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "", "returnType": "wpimath.geometry._geometry.Twist2d", "args": [{"name": "dx", "type": "wpimath.units.feet"}, {"name": "dy", "type": "wpimath.units.feet"}, {"name": "dtheta", "type": "wpimath.units.radians"}], "importModule": "wpimath.geometry"}, "fields": {"CLASS": "wpimath.geometry.Twist2d", "FUNC": "fromFeet"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

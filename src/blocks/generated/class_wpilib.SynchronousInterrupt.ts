@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.SynchronousInterrupt.WaitResult", ["kBoth", "kFallingEdge", "kRisingEdge", "kTimeout"], "Event trigger combinations for a synchronous interrupt.\n\nMembers:\n\n  kTimeout : Timeout event.\n\n  kRisingEdge : Rising edge event.\n\n  kFallingEdge : Falling edge event.\n\n  kBoth : Both rising and falling edge events.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SynchronousInterrupt",
     contents: [
@@ -28,8 +28,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SynchronousInterrupt.WaitResult", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SynchronousInterrupt.WaitResult", "ENUM_VALUE": "kTimeout"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

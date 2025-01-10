@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DifferentialDriveOdometry3d",
     contents: [
@@ -21,8 +21,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the robot position on the field using distance measurements from\nencoders. This method is more numerically accurate than using velocities to\nintegrate the pose and is also advantageous for teams that are using lower\nCPR encoders.\n\n:param gyroAngle:     The angle reported by the gyroscope.\n:param leftDistance:  The distance traveled by the left encoder.\n:param rightDistance: The distance traveled by the right encoder.\n\n:returns: The new pose of the robot.", "returnType": "wpimath.geometry._geometry.Pose3d", "args": [{"name": "differentialDriveOdometry3d", "type": "wpimath.kinematics._kinematics.DifferentialDriveOdometry3d"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation3d"}, {"name": "leftDistance", "type": "wpimath.units.meters"}, {"name": "rightDistance", "type": "wpimath.units.meters"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.DifferentialDriveOdometry3d", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveOdometry3d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

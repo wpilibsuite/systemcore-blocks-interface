@@ -11,8 +11,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.shuffleboard.ShuffleboardEventImportance", ["kCritical", "kHigh", "kLow", "kNormal", "kTrivial"], "Members:\n\n  kTrivial\n\n  kLow\n\n  kNormal\n\n  kHigh\n\n  kCritical");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "shuffleboard",
     contents: [
@@ -51,8 +51,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kTrivial"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

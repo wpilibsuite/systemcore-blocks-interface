@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.MecanumDriveWheelPositions
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.MecanumDriveWheelPositions", "wpimath.units.meters", ["frontLeft", "frontRight", "rearLeft", "rearRight"], ["Distance driven by the front-left wheel.", "Distance driven by the front-right wheel.", "Distance driven by the rear-left wheel.", "Distance driven by the rear-right wheel."]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "MecanumDriveWheelPositions",
     contents: [
@@ -27,8 +27,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions", "args": [{"name": "mecanumDriveWheelPositions", "type": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions"}, {"name": "endValue", "type": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions"}, {"name": "t", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "FUNC": "interpolate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

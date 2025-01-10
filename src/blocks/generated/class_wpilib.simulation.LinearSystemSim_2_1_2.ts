@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "LinearSystemSim_2_1_2",
     contents: [
@@ -23,8 +23,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the simulation.\n\n:param dt: The time between updates.", "returnType": "None", "args": [{"name": "linearSystemSim_2_1_2", "type": "wpilib.simulation._simulation.LinearSystemSim_2_1_2"}, {"name": "dt", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.LinearSystemSim_2_1_2", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystemSim_2_1_2"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

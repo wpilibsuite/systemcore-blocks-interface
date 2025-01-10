@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.PWM.PeriodMultiplier", ["kPeriodMultiplier_1X", "kPeriodMultiplier_2X", "kPeriodMultiplier_4X"], "Represents the amount to multiply the minimum servo-pulse pwm period by.\n\nMembers:\n\n  kPeriodMultiplier_1X : Don't skip pulses. PWM pulses occur every 5.05 ms\n\n  kPeriodMultiplier_2X : Skip every other pulse. PWM pulses occur every 10.10 ms\n\n  kPeriodMultiplier_4X : Skip three out of four pulses. PWM pulses occur every 20.20 ms");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "PWM",
     contents: [
@@ -35,8 +35,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_4X"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

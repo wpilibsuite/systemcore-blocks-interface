@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.SwerveModuleState
 
@@ -14,8 +14,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.SwerveModuleState", "wpimath.units.feet_per_second", ["speed_fps"], [""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SwerveModuleState",
     contents: [
@@ -30,8 +30,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Minimize the change in the heading this swerve module state would\nrequire by potentially reversing the direction the wheel spins. If this is\nused with the PIDController class's continuous input functionality, the\nfurthest a wheel will ever rotate is 90 degrees.\n\n:param currentAngle: The current module angle.", "returnType": "None", "args": [{"name": "swerveModuleState", "type": "wpimath.kinematics._kinematics.SwerveModuleState"}, {"name": "currentAngle", "type": "wpimath.geometry._geometry.Rotation2d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.SwerveModuleState", "FUNC": "optimize"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModuleState"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

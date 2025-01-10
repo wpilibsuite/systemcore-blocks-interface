@@ -25,6 +25,12 @@ export class Item {
   }
 }
 
+export class Sep extends Item {
+  constructor() {
+    super('sep');
+  }
+}
+
 export class Block extends Item {
   /** The block type. */
   type: string;
@@ -47,6 +53,8 @@ export class Block extends Item {
   }
 }
 
+export type ContentsType = Sep | Block | Category;
+
 export class Category extends Item  {
   /** The category name. */
   name: string;
@@ -54,9 +62,9 @@ export class Category extends Item  {
   custom?: string;
 
   /** The blocks for this category. */
-  contents?: Item[];
+  contents?: ContentsType[];
 
-  constructor(name: string, contents: Item[], categorystyle: string, custom: string) {
+  constructor(name: string, contents: ContentsType[], categorystyle: string, custom: string) {
     super('category');
     this.name = name;
     this.categorystyle = categorystyle;

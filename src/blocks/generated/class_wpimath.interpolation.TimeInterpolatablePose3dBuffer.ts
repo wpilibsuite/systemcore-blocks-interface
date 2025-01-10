@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "TimeInterpolatablePose3dBuffer",
     contents: [
@@ -20,8 +20,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose3d]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sample the buffer at the given time. If the buffer is empty, an empty\noptional is returned.\n\n:param time: The time at which to sample the buffer.", "returnType": "Optional[wpimath.geometry._geometry.Pose3d]", "args": [{"name": "timeInterpolatablePose3dBuffer", "type": "wpimath.interpolation._interpolation.TimeInterpolatablePose3dBuffer"}, {"name": "time", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.interpolation.TimeInterpolatablePose3dBuffer", "FUNC": "sample"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimeInterpolatablePose3dBuffer"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

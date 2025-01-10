@@ -13,8 +13,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.RuntimeType", ["kRoboRIO", "kRoboRIO2", "kSimulation"], "Runtime type.\n\nMembers:\n\n  kRoboRIO : roboRIO 1.0.\n\n  kRoboRIO2 : roboRIO 2.0.\n\n  kSimulation : Simulation runtime.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "wpilib",
     contents: [
@@ -44,8 +44,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kSimulation"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

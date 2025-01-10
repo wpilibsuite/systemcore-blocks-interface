@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "MecanumDriveKinematicsBase",
     contents: [
@@ -19,8 +19,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Performs inverse kinematics to return the wheel speeds from a desired\nchassis velocity. This method is often used to convert joystick values into\nwheel speeds.\n\n:param chassisSpeeds: The desired chassis speed.\n\n:returns: The wheel speeds.", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelSpeeds", "args": [{"name": "mecanumDriveKinematicsBase", "type": "wpimath.kinematics._kinematics.MecanumDriveKinematicsBase"}, {"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveKinematicsBase", "FUNC": "toWheelSpeeds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveKinematicsBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Pose2d
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Pose2d", "wpimath.units.feet", ["x_feet", "y_feet"], ["", ""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Pose2d",
     contents: [
@@ -39,8 +39,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTranslation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the underlying translation.\n\n:returns: Reference to the translational component of the pose.", "returnType": "wpimath.geometry._geometry.Translation2d", "args": [{"name": "pose2d", "type": "wpimath.geometry._geometry.Pose2d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Pose2d", "FUNC": "translation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

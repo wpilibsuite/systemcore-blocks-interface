@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "MechanismLigament2d",
     contents: [
@@ -24,8 +24,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the line thickness.\n\n:param lineWidth: the line thickness", "returnType": "None", "args": [{"name": "mechanismLigament2d", "type": "wpilib._wpilib.MechanismLigament2d"}, {"name": "lineWidth", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.MechanismLigament2d", "FUNC": "setLineWeight"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMechanismLigament2d"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

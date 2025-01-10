@@ -13,8 +13,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.SerialPort.WriteBufferMode", ["kFlushOnAccess", "kFlushWhenFull"], "Represents which type of buffer mode to use when writing to a serial port.\n\nMembers:\n\n  kFlushOnAccess : Flush the buffer on each access.\n\n  kFlushWhenFull : Flush the buffer when it is full.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SerialPort",
     contents: [
@@ -53,8 +53,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SerialPort.WriteBufferMode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SerialPort.WriteBufferMode", "ENUM_VALUE": "kFlushWhenFull"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

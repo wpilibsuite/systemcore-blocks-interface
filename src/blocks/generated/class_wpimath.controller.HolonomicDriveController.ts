@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "HolonomicDriveController",
     contents: [
@@ -23,8 +23,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the pose error which is considered tolerable for use with\nAtReference().\n\n:param tolerance: Pose error which is tolerable.", "returnType": "None", "args": [{"name": "holonomicDriveController", "type": "wpimath._controls._controls.controller.HolonomicDriveController"}, {"name": "tolerance", "type": "wpimath.geometry._geometry.Pose2d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.HolonomicDriveController", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myHolonomicDriveController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

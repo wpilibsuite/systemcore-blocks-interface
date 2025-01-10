@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.DoubleSolenoid.Value", ["kForward", "kOff", "kReverse"], "Possible values for a DoubleSolenoid.\n\nMembers:\n\n  kOff : Off position.\n\n  kForward : Forward position.\n\n  kReverse : Reverse position.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DoubleSolenoid",
     contents: [
@@ -29,8 +29,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kReverse"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

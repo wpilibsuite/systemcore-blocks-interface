@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "AnalogOutputSim",
     contents: [
@@ -23,8 +23,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the analog output voltage.\n\n:param voltage: the new voltage on this analog output", "returnType": "None", "args": [{"name": "analogOutputSim", "type": "wpilib.simulation._simulation.AnalogOutputSim"}, {"name": "voltage", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.AnalogOutputSim", "FUNC": "setVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogOutputSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

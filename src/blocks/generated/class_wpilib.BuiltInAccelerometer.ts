@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.BuiltInAccelerometer.Range", ["kRange_2G", "kRange_4G", "kRange_8G"], "Accelerometer range.\n\nMembers:\n\n  kRange_2G : 2 Gs max.\n\n  kRange_4G : 4 Gs max.\n\n  kRange_8G : 8 Gs max.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "BuiltInAccelerometer",
     contents: [
@@ -25,8 +25,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.BuiltInAccelerometer.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.BuiltInAccelerometer.Range", "ENUM_VALUE": "kRange_8G"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

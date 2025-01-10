@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "LinearFilter",
     contents: [
@@ -22,8 +22,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearFilter"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Creates a one-pole IIR low-pass filter of the form:\ny[n] = (1 - gain) x[n] + gain y[n-1]\nwhere gain = e:sup:`-dt / T`, T is the time constant in seconds\n\nNote: T = 1 / (2\u03c0f) where f is the cutoff frequency in Hz, the frequency\nabove which the input starts to attenuate.\n\nThis filter is stable for time constants greater than zero.\n\n:param timeConstant: The discrete-time time constant in seconds.\n:param period:       The period in seconds between samples taken by the\n                     user.", "returnType": "wpimath.filter._filter.LinearFilter", "args": [{"name": "timeConstant", "type": "float"}, {"name": "period", "type": "wpimath.units.seconds"}], "importModule": "wpimath.filter"}, "fields": {"CLASS": "wpimath.filter.LinearFilter", "FUNC": "singlePoleIIR"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

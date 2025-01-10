@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SwerveDrive4Odometry",
     contents: [
@@ -21,8 +21,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot.", "returnType": "wpimath.geometry._geometry.Pose2d", "args": [{"name": "swerveDrive4OdometryBase", "type": "wpimath.kinematics._kinematics.SwerveDrive4OdometryBase"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation2d"}, {"name": "wheelPositions", "type": "Tuple[wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition]"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.SwerveDrive4OdometryBase", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveDrive4OdometryBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModulePosition]"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

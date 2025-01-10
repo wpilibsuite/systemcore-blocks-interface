@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "AnalogGyroSim",
     contents: [
@@ -26,8 +26,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the rate of the gyro.\n\n:param rate: the new rate", "returnType": "None", "args": [{"name": "analogGyroSim", "type": "wpilib.simulation._simulation.AnalogGyroSim"}, {"name": "rate", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.AnalogGyroSim", "FUNC": "setRate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogGyroSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

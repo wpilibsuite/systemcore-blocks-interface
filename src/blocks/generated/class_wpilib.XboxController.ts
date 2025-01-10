@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "XboxController",
     contents: [
@@ -102,8 +102,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBooleanEvent"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Constructs an event instance around the start button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the start button's\n          digital signal attached to the given loop.", "returnType": "wpilib.event._event.BooleanEvent", "args": [{"name": "xboxController", "type": "wpilib._wpilib.XboxController"}, {"name": "loop", "type": "wpilib.event._event.EventLoop"}], "importModule": ""}, "fields": {"CLASS": "wpilib.XboxController", "FUNC": "start"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myXboxController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEventLoop"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

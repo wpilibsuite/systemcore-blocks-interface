@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SharpIRSim",
     contents: [
@@ -17,8 +17,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the range returned by the distance sensor.\n\n:param rng: range of the target returned by the sensor", "returnType": "None", "args": [{"name": "sharpIRSim", "type": "wpilib.simulation._simulation.SharpIRSim"}, {"name": "rng", "type": "wpimath.units.centimeters"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.SharpIRSim", "FUNC": "setRange"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySharpIRSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "EncoderSim",
     contents: [
@@ -49,8 +49,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the samples-to-average value.\n\n:param samplesToAverage: the new value", "returnType": "None", "args": [{"name": "encoderSim", "type": "wpilib.simulation._simulation.EncoderSim"}, {"name": "samplesToAverage", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.EncoderSim", "FUNC": "setSamplesToAverage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEncoderSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

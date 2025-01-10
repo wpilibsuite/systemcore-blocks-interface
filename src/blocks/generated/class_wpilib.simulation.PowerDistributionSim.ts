@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "PowerDistributionSim",
     contents: [
@@ -31,8 +31,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the PowerDistribution voltage.\n\n:param voltage: the new PowerDistribution voltage", "returnType": "None", "args": [{"name": "powerDistributionSim", "type": "wpilib.simulation._simulation.PowerDistributionSim"}, {"name": "voltage", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.PowerDistributionSim", "FUNC": "setVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

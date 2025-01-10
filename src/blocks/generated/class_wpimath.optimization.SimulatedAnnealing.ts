@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SimulatedAnnealing",
     contents: [
@@ -16,8 +16,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Runs the Simulated Annealing algorithm.\n\n:param initialGuess: The initial state.\n:param iterations:   Number of iterations to run the solver.\n\n:returns: The optimized state.", "returnType": "object", "args": [{"name": "simulatedAnnealing", "type": "wpimath._controls._controls.optimization.SimulatedAnnealing"}, {"name": "initialGuess", "type": "object"}, {"name": "iterations", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpimath.optimization.SimulatedAnnealing", "FUNC": "solve"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySimulatedAnnealing"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Twist3d
 
@@ -16,8 +16,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpimath.geometry.Twist3d", "wpimath.units.degrees", ["rx_degrees", "ry_degrees", "rz_degrees"], ["", "", ""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Twist3d",
     contents: [
@@ -49,8 +49,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "", "returnType": "wpimath.geometry._geometry.Twist3d", "args": [{"name": "dx", "type": "wpimath.units.feet"}, {"name": "dy", "type": "wpimath.units.feet"}, {"name": "dz", "type": "wpimath.units.feet"}, {"name": "rx", "type": "wpimath.units.radians"}, {"name": "ry", "type": "wpimath.units.radians"}, {"name": "rz", "type": "wpimath.units.radians"}], "importModule": "wpimath.geometry"}, "fields": {"CLASS": "wpimath.geometry.Twist3d", "FUNC": "fromFeet"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

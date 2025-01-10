@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.Encoder.IndexingType", ["kResetOnFallingEdge", "kResetOnRisingEdge", "kResetWhileHigh", "kResetWhileLow"], "Encoder indexing types.\n\nMembers:\n\n  kResetWhileHigh : Reset while the signal is high.\n\n  kResetWhileLow : Reset while the signal is low.\n\n  kResetOnFallingEdge : Reset on falling edge of the signal.\n\n  kResetOnRisingEdge : Reset on rising edge of the signal.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Encoder",
     contents: [
@@ -43,8 +43,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetWhileLow"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

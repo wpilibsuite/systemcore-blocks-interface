@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SmartDashboard",
     contents: [
@@ -50,8 +50,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Puts all sendable data to the dashboard.", "returnType": "None", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.SmartDashboard", "FUNC": "updateValues"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

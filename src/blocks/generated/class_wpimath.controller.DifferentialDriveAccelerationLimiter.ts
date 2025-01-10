@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DifferentialDriveAccelerationLimiter",
     contents: [
@@ -17,8 +17,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDriveWheelVoltages"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the next voltage pair subject to acceleration constraints.\n\n:param leftVelocity:  The left wheel velocity.\n:param rightVelocity: The right wheel velocity.\n:param leftVoltage:   The unconstrained left motor voltage.\n:param rightVoltage:  The unconstrained right motor voltage.\n\n:returns: The constrained wheel voltages.", "returnType": "wpimath._controls._controls.controller.DifferentialDriveWheelVoltages", "args": [{"name": "differentialDriveAccelerationLimiter", "type": "wpimath._controls._controls.controller.DifferentialDriveAccelerationLimiter"}, {"name": "leftVelocity", "type": "wpimath.units.meters_per_second"}, {"name": "rightVelocity", "type": "wpimath.units.meters_per_second"}, {"name": "leftVoltage", "type": "wpimath.units.volts"}, {"name": "rightVoltage", "type": "wpimath.units.volts"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.DifferentialDriveAccelerationLimiter", "FUNC": "calculate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveAccelerationLimiter"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

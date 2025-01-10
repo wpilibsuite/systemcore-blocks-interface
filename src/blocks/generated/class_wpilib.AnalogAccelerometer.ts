@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "AnalogAccelerometer",
     contents: [
@@ -20,8 +20,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the voltage that corresponds to 0 G.\n\nThe zero G voltage varies by accelerometer model. There are constants\ndefined for various models.\n\n:param zero: The zero G voltage.", "returnType": "None", "args": [{"name": "analogAccelerometer", "type": "wpilib._wpilib.AnalogAccelerometer"}, {"name": "zero", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogAccelerometer", "FUNC": "setZero"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogAccelerometer"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.AnalogInput
 
@@ -9,8 +9,8 @@ export function initialize() {
   pythonVariable.initializeClassVariableGetter("wpilib.AnalogInput", "int", ["kAccumulatorModuleNumber", "kAccumulatorNumChannels"], []);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "AnalogInput",
     contents: [
@@ -43,8 +43,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Indicates this input is used by a simulated device.\n\n:param device: simulated device handle", "returnType": "None", "args": [{"name": "analogInput", "type": "wpilib._wpilib.AnalogInput"}, {"name": "device", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogInput", "FUNC": "setSimDevice"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInput"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

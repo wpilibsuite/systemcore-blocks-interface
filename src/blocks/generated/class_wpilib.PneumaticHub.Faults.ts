@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.PneumaticHub.Faults
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpilib.PneumaticHub.Faults", "int", ["Brownout", "CanWarning", "Channel0Fault", "Channel10Fault", "Channel11Fault", "Channel12Fault", "Channel13Fault", "Channel14Fault", "Channel15Fault", "Channel1Fault", "Channel2Fault", "Channel3Fault", "Channel4Fault", "Channel5Fault", "Channel6Fault", "Channel7Fault", "Channel8Fault", "Channel9Fault", "CompressorOpen", "CompressorOverCurrent", "HardwareFault", "SolenoidOverCurrent"], ["The input voltage is below the minimum voltage.", "A warning was raised by the device's CAN controller.", "Fault on channel 0.", "Fault on channel 10.", "Fault on channel 11.", "Fault on channel 12.", "Fault on channel 13.", "Fault on channel 14.", "Fault on channel 15.", "Fault on channel 1.", "Fault on channel 2.", "Fault on channel 3.", "Fault on channel 4.", "Fault on channel 5.", "Fault on channel 6.", "Fault on channel 7.", "Fault on channel 8.", "Fault on channel 9.", "The compressor output has an open circuit.", "An overcurrent event occurred on the compressor output.", "The hardware on the device has malfunctioned.", "An overcurrent event occurred on a solenoid output."]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Faults",
     contents: [
@@ -63,8 +63,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Gets whether there is a fault at the specified channel.\n\n:param channel: Channel to check for faults.\n\n:returns: True if a a fault exists at the channel, otherwise false.\n          @throws A ChannelIndexOutOfRange error if the provided channel is outside\n          of the range supported by the hardware.", "returnType": "bool", "args": [{"name": "faults", "type": "wpilib._wpilib.PneumaticHub.Faults"}, {"name": "channel", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PneumaticHub.Faults", "FUNC": "getChannelFault"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myFaults"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

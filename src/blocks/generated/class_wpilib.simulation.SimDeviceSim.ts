@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SimDeviceSim",
     contents: [
@@ -29,8 +29,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Reset all SimDevice data.", "returnType": "None", "args": [], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.SimDeviceSim", "FUNC": "resetData"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

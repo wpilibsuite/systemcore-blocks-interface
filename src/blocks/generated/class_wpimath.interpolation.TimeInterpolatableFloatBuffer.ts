@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "TimeInterpolatableFloatBuffer",
     contents: [
@@ -20,8 +20,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sample the buffer at the given time. If the buffer is empty, an empty\noptional is returned.\n\n:param time: The time at which to sample the buffer.", "returnType": "Optional[float]", "args": [{"name": "timeInterpolatableFloatBuffer", "type": "wpimath.interpolation._interpolation.TimeInterpolatableFloatBuffer"}, {"name": "time", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.interpolation.TimeInterpolatableFloatBuffer", "FUNC": "sample"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimeInterpolatableFloatBuffer"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

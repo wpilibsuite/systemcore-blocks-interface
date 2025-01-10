@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeModuleVariableGetter("wpimath.units", "int", ["kMillisecondsPerSecond", "kSecondsPerMinute"], []);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "units",
     contents: [
@@ -22,8 +22,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_module_variable", "extraState": {"varType": "int", "key": "module wpimath.units int", "importModule": "wpimath.units"}, "fields": {"MODULE": "wpimath.units", "VAR": "kSecondsPerMinute"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

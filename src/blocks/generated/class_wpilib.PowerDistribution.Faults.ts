@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.PowerDistribution.Faults
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpilib.PowerDistribution.Faults", "int", ["Brownout", "CanWarning", "Channel0BreakerFault", "Channel10BreakerFault", "Channel11BreakerFault", "Channel12BreakerFault", "Channel13BreakerFault", "Channel14BreakerFault", "Channel15BreakerFault", "Channel16BreakerFault", "Channel17BreakerFault", "Channel18BreakerFault", "Channel19BreakerFault", "Channel1BreakerFault", "Channel20BreakerFault", "Channel21BreakerFault", "Channel22BreakerFault", "Channel23BreakerFault", "Channel2BreakerFault", "Channel3BreakerFault", "Channel4BreakerFault", "Channel5BreakerFault", "Channel6BreakerFault", "Channel7BreakerFault", "Channel8BreakerFault", "Channel9BreakerFault", "HardwareFault"], ["The input voltage is below the minimum voltage.", "A warning was raised by the device's CAN controller.", "Breaker fault on channel 0.", "Breaker fault on channel 10.", "Breaker fault on channel 12.", "Breaker fault on channel 13.", "Breaker fault on channel 14.", "Breaker fault on channel 15.", "Breaker fault on channel 16.", "Breaker fault on channel 17.", "Breaker fault on channel 18.", "Breaker fault on channel 19.", "Breaker fault on channel 20.", "Breaker fault on channel 1.", "Breaker fault on channel 21.", "Breaker fault on channel 22.", "Breaker fault on channel 23.", "Breaker fault on channel 24.", "Breaker fault on channel 2.", "Breaker fault on channel 3.", "Breaker fault on channel 4.", "Breaker fault on channel 5.", "Breaker fault on channel 6.", "Breaker fault on channel 7.", "Breaker fault on channel 8.", "Breaker fault on channel 9.", "The hardware on the device has malfunctioned."]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Faults",
     contents: [
@@ -73,8 +73,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Gets whether there is a breaker fault at a specified channel.\n\n:param channel: Channel to check for faults.\n\n:returns: If there is a breaker fault.\n          @throws A ChannelIndexOutOfRange error if the given int is outside of the\n          range supported by the hardware.", "returnType": "bool", "args": [{"name": "faults", "type": "wpilib._wpilib.PowerDistribution.Faults"}, {"name": "channel", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PowerDistribution.Faults", "FUNC": "getBreakerFault"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myFaults"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

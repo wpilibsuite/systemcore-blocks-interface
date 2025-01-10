@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.CAN
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeClassVariableGetter("wpilib.CAN", "hal.CANManufacturer", ["kTeamManufacturer"], []);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "CAN",
     contents: [
@@ -32,8 +32,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Write an RTR frame to the CAN device with a specific ID. This ID is 10\nbits. The length by spec must match what is returned by the responding\ndevice\n\n:param length: The length to request (0 to 8)\n:param apiId:  The API ID to write.", "returnType": "int", "args": [{"name": "cAN", "type": "wpilib._wpilib.CAN"}, {"name": "length", "type": "int"}, {"name": "apiId", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.CAN", "FUNC": "writeRTRFrameNoError"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCAN"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

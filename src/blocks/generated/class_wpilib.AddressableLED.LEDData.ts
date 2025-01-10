@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.AddressableLED.LEDData
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpilib.AddressableLED.LEDData", "int", ["b", "g", "r"], ["///< blue value", "///< green value", "///< red value"]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "LEDData",
     contents: [
@@ -29,8 +29,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "A helper method to set all values of the LED.\n\n:param r: the r value [0-255]\n:param g: the g value [0-255]\n:param b: the b value [0-255]", "returnType": "None", "args": [{"name": "lEDData", "type": "wpilib._wpilib.AddressableLED.LEDData"}, {"name": "r", "type": "int"}, {"name": "g", "type": "int"}, {"name": "b", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AddressableLED.LEDData", "FUNC": "setRGB"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLEDData"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

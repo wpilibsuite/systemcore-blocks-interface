@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "RoboRioSim",
     contents: [
@@ -77,8 +77,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Define the Vin voltage.\n\n:param vInVoltage: the new voltage", "returnType": "None", "args": [{"name": "vInVoltage", "type": "wpimath.units.volts"}], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.RoboRioSim", "FUNC": "setVInVoltage"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

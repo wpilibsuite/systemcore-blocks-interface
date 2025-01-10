@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.trajectory.TrapezoidProfileRadians.Constraints
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableGetter("wpimath.trajectory.TrapezoidProfileRadians.Constraints", "wpimath.units.radians_per_second", ["maxVelocity"], ["Maximum velocity."]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Constraints",
     contents: [
@@ -20,8 +20,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myConstraints"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Constructs constraints for a Trapezoid Profile.\n\n:param maxVelocity:     Maximum velocity.\n:param maxAcceleration: Maximum acceleration.", "returnType": "wpimath._controls._controls.trajectory.TrapezoidProfileRadians.Constraints", "args": [{"name": "maxVelocity", "type": "wpimath.units.radians_per_second"}, {"name": "maxAcceleration", "type": "wpimath.units.radians_per_second_squared"}], "importModule": "wpimath.trajectory"}, "fields": {"CLASS": "wpimath.trajectory.TrapezoidProfileRadians.Constraints"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "_SuppliedValueComponent_vector_float",
     contents: [
@@ -25,8 +25,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySuppliedFloatListValueWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the size of this component in the tab. This has no effect if this\ncomponent is inside a layout.\n\n:param width:  how many columns wide the component should be\n:param height: how many rows high the component should be\n\n:returns: this component", "returnType": "wpilib.shuffleboard._shuffleboard.SuppliedFloatListValueWidget", "args": [{"name": "_SuppliedValueComponent_vector_float", "type": "wpilib.shuffleboard._shuffleboard._SuppliedValueComponent_vector_float"}, {"name": "width", "type": "int"}, {"name": "height", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.shuffleboard._SuppliedValueComponent_vector_float", "FUNC": "withSize"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_SuppliedValueComponent_vector_float"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

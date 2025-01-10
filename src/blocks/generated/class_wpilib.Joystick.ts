@@ -12,8 +12,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.Joystick.ButtonType", ["kTopButton", "kTriggerButton"], "Represents a digital button on a joystick.\n\nMembers:\n\n  kTriggerButton : kTrigger.\n\n  kTopButton : kTop.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Joystick",
     contents: [
@@ -88,8 +88,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Joystick.ButtonType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Joystick.ButtonType", "ENUM_VALUE": "kTriggerButton"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

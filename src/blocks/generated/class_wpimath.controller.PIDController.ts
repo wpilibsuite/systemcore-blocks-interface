@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "PIDController",
     contents: [
@@ -46,8 +46,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the error which is considered tolerable for use with AtSetpoint().\n\n:param errorTolerance:           error which is tolerable.\n:param errorDerivativeTolerance: error derivative which is tolerable.", "returnType": "None", "args": [{"name": "pIDController", "type": "wpimath._controls._controls.controller.PIDController"}, {"name": "errorTolerance", "type": "float"}, {"name": "errorDerivativeTolerance", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.PIDController", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPIDController"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

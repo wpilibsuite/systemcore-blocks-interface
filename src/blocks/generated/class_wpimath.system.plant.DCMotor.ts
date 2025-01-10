@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.system.plant.DCMotor
 
@@ -15,8 +15,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableGetter("wpimath.system.plant.DCMotor", "wpimath.units.newton_meters", ["stallTorque"], ["Torque when stalled."]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DCMotor",
     contents: [
@@ -53,8 +53,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDCMotor"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns a copy of this motor with the given gearbox reduction applied.\n\n:param gearboxReduction: The gearbox reduction.", "returnType": "wpimath._controls._controls.plant.DCMotor", "args": [{"name": "dCMotor", "type": "wpimath._controls._controls.plant.DCMotor"}, {"name": "gearboxReduction", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpimath.system.plant.DCMotor", "FUNC": "withReduction"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "TrapezoidProfileRadians",
     contents: [
@@ -19,8 +19,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the total time the profile takes to reach the goal.\n\n:returns: The total time the profile takes to reach the goal.", "returnType": "wpimath.units.seconds", "args": [{"name": "trapezoidProfileRadians", "type": "wpimath._controls._controls.trajectory.TrapezoidProfileRadians"}], "importModule": ""}, "fields": {"CLASS": "wpimath.trajectory.TrapezoidProfileRadians", "FUNC": "totalTime"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrapezoidProfileRadians"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

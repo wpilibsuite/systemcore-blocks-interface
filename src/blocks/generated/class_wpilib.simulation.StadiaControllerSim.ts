@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "StadiaControllerSim",
     contents: [
@@ -49,8 +49,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the value of the Y button on the controller.\n\n:param value: the new value", "returnType": "None", "args": [{"name": "stadiaControllerSim", "type": "wpilib.simulation._simulation.StadiaControllerSim"}, {"name": "value", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.StadiaControllerSim", "FUNC": "setYButton"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStadiaControllerSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

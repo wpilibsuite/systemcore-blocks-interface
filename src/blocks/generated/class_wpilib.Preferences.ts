@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Preferences",
     contents: [
@@ -36,8 +36,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Puts the given string into the preferences table.\n\nThe value may not have quotation marks, nor may the key have any whitespace\nnor an equals sign.\n\n:param key:   the key\n:param value: the value", "returnType": "None", "args": [{"name": "key", "type": "str"}, {"name": "value", "type": "str"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.Preferences", "FUNC": "setString"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

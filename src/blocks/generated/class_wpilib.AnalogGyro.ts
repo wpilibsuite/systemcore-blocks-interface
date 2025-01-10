@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.AnalogGyro
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeClassVariableGetter("wpilib.AnalogGyro", "float", ["kCalibrationSampleTime", "kDefaultVoltsPerDegreePerSecond", "kSamplesPerSecond"], []);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "AnalogGyro",
     contents: [
@@ -38,8 +38,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the gyro sensitivity.\n\nThis takes the number of volts/degree/second sensitivity of the gyro and\nuses it in subsequent calculations to allow the code to work with multiple\ngyros. This value is typically found in the gyro datasheet.\n\n:param voltsPerDegreePerSecond: The sensitivity in Volts/degree/second", "returnType": "None", "args": [{"name": "analogGyro", "type": "wpilib._wpilib.AnalogGyro"}, {"name": "voltsPerDegreePerSecond", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogGyro", "FUNC": "setSensitivity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogGyro"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

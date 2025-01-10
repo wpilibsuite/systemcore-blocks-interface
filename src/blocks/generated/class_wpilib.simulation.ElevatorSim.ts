@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "ElevatorSim",
     contents: [
@@ -35,8 +35,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns whether the elevator would hit the upper limit.\n\n:param elevatorHeight: The elevator height.\n\n:returns: Whether the elevator would hit the upper limit.", "returnType": "bool", "args": [{"name": "elevatorSim", "type": "wpilib.simulation._simulation.ElevatorSim"}, {"name": "elevatorHeight", "type": "wpimath.units.meters"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.ElevatorSim", "FUNC": "wouldHitUpperLimit"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myElevatorSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "RobotController",
     contents: [
@@ -53,8 +53,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Sets a new source to provide the clock time in microseconds. Changing this\naffects the return value of ``GetTime``.\n\n:param supplier: Function to return the time in microseconds.", "returnType": "None", "args": [{"name": "supplier", "type": "Callable[[], int]"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.RobotController", "FUNC": "setTimeSource"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

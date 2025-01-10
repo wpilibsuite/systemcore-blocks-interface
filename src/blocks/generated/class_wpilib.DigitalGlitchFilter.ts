@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DigitalGlitchFilter",
     contents: [
@@ -26,8 +26,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the number of nanoseconds that the input must not change state for.\n\n:param nanoseconds: The number of nanoseconds.", "returnType": "None", "args": [{"name": "digitalGlitchFilter", "type": "wpilib._wpilib.DigitalGlitchFilter"}, {"name": "nanoseconds", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DigitalGlitchFilter", "FUNC": "setPeriodNanoSeconds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalGlitchFilter"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

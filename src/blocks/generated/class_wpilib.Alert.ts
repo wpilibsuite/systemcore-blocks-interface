@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.Alert.AlertType", ["kError", "kInfo", "kWarning"], "Represents an alert's level of urgency.\n\nMembers:\n\n  kError : High priority alert - displayed first on the dashboard with a red \"X\"\nsymbol. Use this type for problems which will seriously affect the\nrobot's functionality and thus require immediate attention.\n\n  kWarning : Medium priority alert - displayed second on the dashboard with a yellow\n\"!\" symbol. Use this type for problems which could affect the robot's\nfunctionality but do not necessarily require immediate attention.\n\n  kInfo : Low priority alert - displayed last on the dashboard with a green \"i\"\nsymbol. Use this type for problems which are unlikely to affect the\nrobot's functionality, or any other alerts which do not fall under the\nother categories.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Alert",
     contents: [
@@ -26,8 +26,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kWarning"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.REVPHFaults
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("hal.REVPHFaults", "int", ["brownout", "canWarning", "channel0Fault", "channel10Fault", "channel11Fault", "channel12Fault", "channel13Fault", "channel14Fault", "channel15Fault", "channel1Fault", "channel2Fault", "channel3Fault", "channel4Fault", "channel5Fault", "channel6Fault", "channel7Fault", "channel8Fault", "channel9Fault", "compressorOpen", "compressorOverCurrent", "hardwareFault", "solenoidOverCurrent"], ["The input voltage is below the minimum voltage.", "A warning was raised by the device's CAN controller.", "Fault on channel 0.", "Fault on channel 10.", "Fault on channel 11.", "Fault on channel 12.", "Fault on channel 13.", "Fault on channel 14.", "Fault on channel 15.", "Fault on channel 1.", "Fault on channel 2.", "Fault on channel 3.", "Fault on channel 4.", "Fault on channel 5.", "Fault on channel 6.", "Fault on channel 7.", "Fault on channel 8.", "Fault on channel 9.", "The compressor output has an open circuit.", "An overcurrent event occurred on the compressor output.", "The hardware on the device has malfunctioned.", "An overcurrent event occurred on a solenoid output."]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "REVPHFaults",
     contents: [
@@ -62,8 +62,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myREVPHFaults"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "hal._wpiHal.REVPHFaults", "args": [], "importModule": "hal"}, "fields": {"CLASS": "hal.REVPHFaults"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

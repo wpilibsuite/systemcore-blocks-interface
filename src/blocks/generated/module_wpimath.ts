@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "wpimath",
     contents: [
@@ -20,8 +20,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_module_function", "extraState": {"tooltip": "", "returnType": "wpimath.geometry._geometry.Pose3d", "args": [{"name": "objectInField", "type": "wpimath.geometry._geometry.Pose3d"}, {"name": "cameraToObject", "type": "wpimath.geometry._geometry.Transform3d"}, {"name": "robotToCamera", "type": "wpimath.geometry._geometry.Transform3d"}], "importModule": "wpimath"}, "fields": {"MODULE": "wpimath", "FUNC": "objectToRobotPose"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose3d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform3d"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform3d"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

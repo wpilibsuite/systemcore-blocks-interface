@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "ImplicitModelFollower_2_1",
     contents: [
@@ -22,8 +22,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Resets the controller.", "returnType": "None", "args": [{"name": "implicitModelFollower_2_1", "type": "wpimath._controls._controls.controller.ImplicitModelFollower_2_1"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.ImplicitModelFollower_2_1", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myImplicitModelFollower_2_1"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

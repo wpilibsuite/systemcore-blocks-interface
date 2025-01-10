@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Rotation3d
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Rotation3d", "wpimath.units.degrees", ["angle_degrees", "x_degrees", "y_degrees", "z_degrees"], ["", "", "", ""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Rotation3d",
     contents: [
@@ -43,8 +43,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns rotation vector representation of this rotation.\n\n:returns: Rotation vector representation of this rotation.", "returnType": "numpy.ndarray[numpy.float64[3, 1]]", "args": [{"name": "rotation3d", "type": "wpimath.geometry._geometry.Rotation3d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Rotation3d", "FUNC": "toVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "RobotBase",
     contents: [
@@ -30,8 +30,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Start the main robot code. This function will be called once and should not\nexit until signalled by EndCompetition()", "returnType": "None", "args": [{"name": "robotBase", "type": "wpilib._wpilib.RobotBase"}], "importModule": ""}, "fields": {"CLASS": "wpilib.RobotBase", "FUNC": "startCompetition"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRobotBase"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "LinearSystemId",
     contents: [
@@ -28,8 +28,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearSystem_2_1_2"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Create a state-space model of a single-jointed arm system.The states of the\nsystem are [angle, angular velocity], inputs are [voltage], and outputs are\n[angle].\n\n:param motor:   The motor (or gearbox) attached to the arm.\n:param J:       The moment of inertia J of the arm.\n:param gearing: Gear ratio from motor to arm.\n                @throws std::domain_error if J <= 0 or gearing <= 0.", "returnType": "wpimath._controls._controls.system.LinearSystem_2_1_2", "args": [{"name": "motor", "type": "wpimath._controls._controls.plant.DCMotor"}, {"name": "J", "type": "wpimath.units.kilogram_square_meters"}, {"name": "gearing", "type": "float"}], "importModule": "wpimath.system.plant"}, "fields": {"CLASS": "wpimath.system.plant.LinearSystemId", "FUNC": "singleJointedArmSystem"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

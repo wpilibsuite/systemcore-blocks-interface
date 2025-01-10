@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.I2C.Port", ["kMXP", "kOnboard"], "I2C connection ports.\n\nMembers:\n\n  kOnboard : Onboard I2C port.\n\n  kMXP : MXP (roboRIO MXP) I2C port.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "I2C",
     contents: [
@@ -28,8 +28,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.I2C.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.I2C.Port", "ENUM_VALUE": "kOnboard"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

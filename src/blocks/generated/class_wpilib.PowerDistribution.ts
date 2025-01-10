@@ -11,8 +11,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.PowerDistribution.ModuleType", ["kCTRE", "kRev"], "Power distribution module type.\n\nMembers:\n\n  kCTRE : CTRE (Cross The Road Electronics) CTRE Power Distribution Panel (PDP).\n\n  kRev : REV Power Distribution Hub (PDH).");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "PowerDistribution",
     contents: [
@@ -41,8 +41,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PowerDistribution.ModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PowerDistribution.ModuleType", "ENUM_VALUE": "kRev"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

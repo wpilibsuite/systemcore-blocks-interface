@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DSControlWord",
     contents: [
@@ -25,8 +25,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Check if the DS is commanding test mode.\n\n:returns: True if the robot is being commanded to be in test mode", "returnType": "bool", "args": [{"name": "dSControlWord", "type": "wpilib._wpilib.DSControlWord"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DSControlWord", "FUNC": "isTest"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDSControlWord"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -26,7 +26,7 @@ import * as toolboxItems from '../toolbox/items';
 
 // Tests
 
-export function testAllBlocksInToolbox(contents: toolboxItems.Item[]) {
+export function testAllBlocksInToolbox(contents: toolboxItems.ContentsType[]) {
   alert('Press OK to run tests on all blocks from the toolbox.');
   const toolboxTestData = new ToolboxTestData(contents, () => {
     alert('Completed tests on all blocks in the toolbox. See console for any errors.');
@@ -40,7 +40,7 @@ class ToolboxTestData {
   jsonBlocks: toolboxItems.Block[];
   index: number;
 
-  constructor(contents: toolboxItems.Item[], onFinish: () => void) {
+  constructor(contents: toolboxItems.ContentsType[], onFinish: () => void) {
     this.onFinish = onFinish;
     this.blocklyWorkspace = new Blockly.Workspace();
     this.blocklyWorkspace.MAX_UNDO = 0;
@@ -49,7 +49,7 @@ class ToolboxTestData {
     this.index = 0;
   }
 
-  private collectBlocks(contents: toolboxItems.Item[]): void {
+  private collectBlocks(contents: toolboxItems.ContentsType[]): void {
     contents.forEach((item) => {
       switch (item.kind) {
         default:

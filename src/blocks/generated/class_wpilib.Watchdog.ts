@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Watchdog",
     contents: [
@@ -25,8 +25,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Enable or disable suppression of the generic timeout message.\n\nThis may be desirable if the user-provided callback already prints a more\nspecific message.\n\n:param suppress: Whether to suppress generic timeout message.", "returnType": "None", "args": [{"name": "watchdog", "type": "wpilib._wpilib.Watchdog"}, {"name": "suppress", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Watchdog", "FUNC": "suppressTimeoutMessage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myWatchdog"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

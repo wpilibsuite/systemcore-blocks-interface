@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "MecanumDriveKinematics",
     contents: [
@@ -25,8 +25,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Performs inverse kinematics to return the wheel speeds from a desired\nchassis velocity. This method is often used to convert joystick values into\nwheel speeds.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\n:param chassisSpeeds:    The desired chassis speed.\n:param centerOfRotation: The center of rotation. For example, if you set the\n                         center of rotation at one corner of the robot and\n                         provide a chassis speed that only has a dtheta\n                         component, the robot will rotate around that\n                         corner.\n\n:returns: The wheel speeds. Use caution because they are not normalized.\n          Sometimes, a user input may cause one of the wheel speeds to go\n          above the attainable max velocity. Use the\n          :meth:`MecanumDriveWheelSpeeds.normalize` method to rectify\n          this issue. In addition, you can use Python unpacking syntax\n          to directly assign the wheel speeds to variables::\n\n            fl, fr, bl, br = kinematics.toWheelSpeeds(chassisSpeeds)", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelSpeeds", "args": [{"name": "mecanumDriveKinematics", "type": "wpimath.kinematics._kinematics.MecanumDriveKinematics"}, {"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveKinematics", "FUNC": "toWheelSpeeds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveKinematics"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

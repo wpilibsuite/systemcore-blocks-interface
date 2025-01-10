@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.LEDPattern.GradientType", ["kContinuous", "kDiscontinuous"], "Types of gradients.\n\nMembers:\n\n  kContinuous : A continuous gradient, where the gradient wraps around to allow for\nseamless scrolling effects.\n\n  kDiscontinuous : A discontinuous gradient, where the first pixel is set to the first color\nof the gradient and the final pixel is set to the last color of the\ngradient. There is no wrapping effect, so scrolling effects will display\nan obvious seam.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "LEDPattern",
     contents: [
@@ -41,8 +41,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.LEDPattern.GradientType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.LEDPattern.GradientType", "ENUM_VALUE": "kDiscontinuous"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

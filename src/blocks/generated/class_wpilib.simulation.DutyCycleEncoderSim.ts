@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DutyCycleEncoderSim",
     contents: [
@@ -20,8 +20,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set if the encoder is connected.\n\n:param isConnected: Whether or not the sensor is connected.", "returnType": "None", "args": [{"name": "dutyCycleEncoderSim", "type": "wpilib.simulation._simulation.DutyCycleEncoderSim"}, {"name": "isConnected", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.DutyCycleEncoderSim", "FUNC": "setConnected"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoderSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

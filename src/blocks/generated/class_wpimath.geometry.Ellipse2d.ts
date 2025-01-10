@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.geometry.Ellipse2d
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableGetter("wpimath.geometry.Ellipse2d", "wpimath.units.feet", ["xsemiaxis_feet", "ysemiaxis_feet"], ["", ""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Ellipse2d",
     contents: [
@@ -33,8 +33,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myEllipse2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Transforms the center of the ellipse and returns the new ellipse.\n\n:param other: The transform to transform by.\n\n:returns: The transformed ellipse.", "returnType": "wpimath.geometry._geometry.Ellipse2d", "args": [{"name": "ellipse2d", "type": "wpimath.geometry._geometry.Ellipse2d"}, {"name": "other", "type": "wpimath.geometry._geometry.Transform2d"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Ellipse2d", "FUNC": "transformBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEllipse2d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

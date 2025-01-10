@@ -12,8 +12,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.DriverStation.MatchType", ["kElimination", "kNone", "kPractice", "kQualification"], "The type of robot match that the robot is part of.\n\nMembers:\n\n  kNone : None.\n\n  kPractice : Practice.\n\n  kQualification : Qualification.\n\n  kElimination : Elimination.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DriverStation",
     contents: [
@@ -68,8 +68,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kQualification"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

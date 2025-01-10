@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "ExternalDirectionCounter",
     contents: [
@@ -21,8 +21,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets to reverse the counter direction.\n\n:param reverseDirection: True to reverse counting direction.", "returnType": "None", "args": [{"name": "externalDirectionCounter", "type": "wpilib.counter._counter.ExternalDirectionCounter"}, {"name": "reverseDirection", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.counter.ExternalDirectionCounter", "FUNC": "setReverseDirection"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myExternalDirectionCounter"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

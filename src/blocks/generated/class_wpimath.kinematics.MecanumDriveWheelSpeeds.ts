@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.MecanumDriveWheelSpeeds
 
@@ -12,8 +12,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.MecanumDriveWheelSpeeds", "wpimath.units.feet_per_second", ["frontLeft_fps", "frontRight_fps", "rearLeft_fps", "rearRight_fps"], ["", "", "", ""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "MecanumDriveWheelSpeeds",
     contents: [
@@ -38,8 +38,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelSpeeds", "args": [{"name": "frontLeft", "type": "wpimath.units.feet_per_second"}, {"name": "frontRight", "type": "wpimath.units.feet_per_second"}, {"name": "rearLeft", "type": "wpimath.units.feet_per_second"}, {"name": "rearRight", "type": "wpimath.units.feet_per_second"}], "importModule": "wpimath.kinematics"}, "fields": {"CLASS": "wpimath.kinematics.MecanumDriveWheelSpeeds", "FUNC": "fromFeet"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

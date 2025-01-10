@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.TimedRobot
 
@@ -9,8 +9,8 @@ export function initialize() {
   pythonVariable.initializeClassVariableGetter("wpilib.TimedRobot", "float", ["kDefaultPeriod"], []);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "TimedRobot",
     contents: [
@@ -55,8 +55,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Periodic code for test mode should go here.\n\nUsers should override this method for code which will be called each time a\nnew packet is received from the driver station and the robot is in test\nmode.", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "importModule": ""}, "fields": {"CLASS": "wpilib.IterativeRobotBase", "FUNC": "testPeriodic"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

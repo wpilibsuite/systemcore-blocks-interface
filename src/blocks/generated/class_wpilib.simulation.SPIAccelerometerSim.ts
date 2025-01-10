@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SPIAccelerometerSim",
     contents: [
@@ -31,8 +31,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Change the Z axis value of the accelerometer.\n\n:param z: the new reading of the Z axis", "returnType": "None", "args": [{"name": "sPIAccelerometerSim", "type": "wpilib.simulation._simulation.SPIAccelerometerSim"}, {"name": "z", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.SPIAccelerometerSim", "FUNC": "setZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySPIAccelerometerSim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "MecanumDrivePoseEstimator3d",
     contents: [
@@ -27,8 +27,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates the pose estimator with wheel encoder and gyro information. This\nshould be called every loop.\n\n:param currentTime:    The time at which this method was called.\n:param gyroAngle:      The current gyro angle.\n:param wheelPositions: The distances traveled by the encoders.\n\n:returns: The estimated pose of the robot in meters.", "returnType": "wpimath.geometry._geometry.Pose3d", "args": [{"name": "mecanumDrivePoseEstimator3dBase", "type": "wpimath._controls._controls.estimator.MecanumDrivePoseEstimator3dBase"}, {"name": "currentTime", "type": "wpimath.units.seconds"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation3d"}, {"name": "wheelPositions", "type": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions"}], "importModule": ""}, "fields": {"CLASS": "wpimath.estimator.MecanumDrivePoseEstimator3dBase", "FUNC": "updateWithTime"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDrivePoseEstimator3dBase"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

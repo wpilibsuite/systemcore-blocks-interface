@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("hal.simulation.AnalogTriggerMode", ["HALSIM_AnalogTriggerAveraged", "HALSIM_AnalogTriggerDutyCycle", "HALSIM_AnalogTriggerFiltered", "HALSIM_AnalogTriggerUnassigned"], "Members:\n\n  HALSIM_AnalogTriggerUnassigned\n\n  HALSIM_AnalogTriggerFiltered\n\n  HALSIM_AnalogTriggerDutyCycle\n\n  HALSIM_AnalogTriggerAveraged");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "simulation",
     contents: [
@@ -448,8 +448,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerUnassigned"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

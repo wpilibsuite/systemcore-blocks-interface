@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.PneumaticHub.StickyFaults
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpilib.PneumaticHub.StickyFaults", "int", ["Brownout", "CanBusOff", "CanWarning", "CompressorOpen", "CompressorOverCurrent", "FirmwareFault", "HardwareFault", "HasReset", "SolenoidOverCurrent"], ["The input voltage is below the minimum voltage.", "The device's CAN controller experienced a \"Bus Off\" event.", "A warning was raised by the device's CAN controller.", "The compressor output has an open circuit.", "An overcurrent event occurred on the compressor output.", "The firmware on the device has malfunctioned.", "The hardware on the device has malfunctioned.", "The device has rebooted.", "An overcurrent event occurred on a solenoid output."]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "StickyFaults",
     contents: [
@@ -36,8 +36,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myStickyFaults"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "wpilib._wpilib.PneumaticHub.StickyFaults", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.PneumaticHub.StickyFaults"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

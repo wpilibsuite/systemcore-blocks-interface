@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "MotorLog",
     contents: [
@@ -23,8 +23,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMotorLog"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Log the voltage applied to the motor.\n\n:param voltage: The voltage to record.\n\n:returns: The motor log (for call chaining).", "returnType": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog", "args": [{"name": "motorLog", "type": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog"}, {"name": "voltage", "type": "wpimath.units.volts"}], "importModule": ""}, "fields": {"CLASS": "wpilib.sysid.SysIdRoutineLog.MotorLog", "FUNC": "voltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorLog"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

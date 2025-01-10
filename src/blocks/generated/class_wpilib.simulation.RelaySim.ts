@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "RelaySim",
     contents: [
@@ -29,8 +29,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set whether the reverse direction is active.\n\n:param reverse: true to make active", "returnType": "None", "args": [{"name": "relaySim", "type": "wpilib.simulation._simulation.RelaySim"}, {"name": "reverse", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.simulation.RelaySim", "FUNC": "setReverse"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRelaySim"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

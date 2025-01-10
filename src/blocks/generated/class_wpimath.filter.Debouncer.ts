@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpimath.filter.Debouncer.DebounceType", ["kBoth", "kFalling", "kRising"], "Type of debouncing to perform.\n\nMembers:\n\n  kRising : Rising edge.\n\n  kFalling : Falling edge.\n\n  kBoth : Both rising and falling edges.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Debouncer",
     contents: [
@@ -21,8 +21,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpimath.filter.Debouncer.DebounceType", "importModule": "wpimath.filter"}, "fields": {"ENUM_TYPE": "wpimath.filter.Debouncer.DebounceType", "ENUM_VALUE": "kRising"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

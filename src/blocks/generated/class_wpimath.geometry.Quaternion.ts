@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "Quaternion",
     contents: [
@@ -32,8 +32,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the rotation vector representation of this quaternion.\n\nThis is also the log operator of SO(3).", "returnType": "numpy.ndarray[numpy.float64[3, 1]]", "args": [{"name": "quaternion", "type": "wpimath.geometry._geometry.Quaternion"}], "importModule": ""}, "fields": {"CLASS": "wpimath.geometry.Quaternion", "FUNC": "toRotationVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myQuaternion"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

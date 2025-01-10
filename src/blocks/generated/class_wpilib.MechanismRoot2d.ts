@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "MechanismRoot2d",
     contents: [
@@ -17,8 +17,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the root's position.\n\n:param x: new x coordinate\n:param y: new y coordinate", "returnType": "None", "args": [{"name": "mechanismRoot2d", "type": "wpilib._wpilib.MechanismRoot2d"}, {"name": "x", "type": "float"}, {"name": "y", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.MechanismRoot2d", "FUNC": "setPosition"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMechanismRoot2d"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

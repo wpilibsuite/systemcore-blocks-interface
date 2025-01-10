@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpimath.kinematics.ChassisSpeeds
 
@@ -16,8 +16,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("wpimath.kinematics.ChassisSpeeds", "wpimath.units.feet_per_second", ["vx_fps", "vy_fps"], ["", ""]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "ChassisSpeeds",
     contents: [
@@ -44,8 +44,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Creates a Twist2d from ChassisSpeeds.\n\n:param dt: The duration of the timestep.\n\n:returns: Twist2d.", "returnType": "wpimath.geometry._geometry.Twist2d", "args": [{"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}, {"name": "dt", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpimath.kinematics.ChassisSpeeds", "FUNC": "toTwist2d"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

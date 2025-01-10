@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "DriverStationSim",
     contents: [
@@ -61,8 +61,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Change whether the DS is in test.\n\n:param test: the new value", "returnType": "None", "args": [{"name": "test", "type": "bool"}], "importModule": "wpilib.simulation"}, "fields": {"CLASS": "wpilib.simulation.DriverStationSim", "FUNC": "setTest"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

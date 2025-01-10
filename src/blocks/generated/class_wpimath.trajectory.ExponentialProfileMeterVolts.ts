@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "ExponentialProfileMeterVolts",
     contents: [
@@ -19,8 +19,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Calculates the time it will take for this profile to reach the goal state.\n\n:param current: The current state.\n:param goal:    The desired state when the profile is complete.\n\n:returns: The total duration of this profile.", "returnType": "wpimath.units.seconds", "args": [{"name": "exponentialProfileMeterVolts", "type": "wpimath._controls._controls.trajectory.ExponentialProfileMeterVolts"}, {"name": "current", "type": "wpimath._controls._controls.trajectory.ExponentialProfileMeterVolts.State"}, {"name": "goal", "type": "wpimath._controls._controls.trajectory.ExponentialProfileMeterVolts.State"}], "importModule": ""}, "fields": {"CLASS": "wpimath.trajectory.ExponentialProfileMeterVolts", "FUNC": "timeLeftUntil"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myExponentialProfileMeterVolts"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myState"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myState"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

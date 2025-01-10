@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonVariable from "../python_variable";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class hal.PowerDistributionStickyFaults
 
@@ -10,8 +10,8 @@ export function initialize() {
   pythonVariable.initializeInstanceVariableSetter("hal.PowerDistributionStickyFaults", "int", ["brownout", "canBusOff", "canWarning", "channel0BreakerFault", "channel10BreakerFault", "channel11BreakerFault", "channel12BreakerFault", "channel13BreakerFault", "channel14BreakerFault", "channel15BreakerFault", "channel16BreakerFault", "channel17BreakerFault", "channel18BreakerFault", "channel19BreakerFault", "channel1BreakerFault", "channel20BreakerFault", "channel21BreakerFault", "channel22BreakerFault", "channel23BreakerFault", "channel2BreakerFault", "channel3BreakerFault", "channel4BreakerFault", "channel5BreakerFault", "channel6BreakerFault", "channel7BreakerFault", "channel8BreakerFault", "channel9BreakerFault", "firmwareFault", "hardwareFault", "hasReset"], ["The input voltage is below the minimum voltage.", "The device's CAN controller experienced a \"Bus Off\" event.", "A warning was raised by the device's CAN controller.", "Breaker fault on channel 0.", "Breaker fault on channel 10.", "Breaker fault on channel 12.", "Breaker fault on channel 13.", "Breaker fault on channel 14.", "Breaker fault on channel 15.", "Breaker fault on channel 16.", "Breaker fault on channel 17.", "Breaker fault on channel 18.", "Breaker fault on channel 19.", "Breaker fault on channel 20.", "Breaker fault on channel 1.", "Breaker fault on channel 21.", "Breaker fault on channel 22.", "Breaker fault on channel 23.", "Breaker fault on channel 24.", "Breaker fault on channel 2.", "Breaker fault on channel 3.", "Breaker fault on channel 4.", "Breaker fault on channel 5.", "Breaker fault on channel 6.", "Breaker fault on channel 7.", "Breaker fault on channel 8.", "Breaker fault on channel 9.", "The firmware on the device has malfunctioned.", "The hardware on the device has malfunctioned.", "The device has rebooted."]);
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "PowerDistributionStickyFaults",
     contents: [
@@ -78,8 +78,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPowerDistributionStickyFaults"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "hal._wpiHal.PowerDistributionStickyFaults", "args": [], "importModule": "hal"}, "fields": {"CLASS": "hal.PowerDistributionStickyFaults"}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

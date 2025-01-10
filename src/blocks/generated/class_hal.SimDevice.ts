@@ -11,8 +11,8 @@ export function initialize() {
   pythonEnum.initializeEnum("hal.SimDevice.Direction", ["kBidir", "kInput", "kOutput"], "Direction of a simulated value (from the perspective of user code).\n\nMembers:\n\n  kInput\n\n  kOutput\n\n  kBidir");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "SimDevice",
     contents: [
@@ -32,8 +32,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kOutput"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

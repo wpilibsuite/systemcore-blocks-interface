@@ -7,8 +7,8 @@ import {Category} from "../../toolbox/items";
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "ProfiledPIDControllerRadians",
     contents: [
@@ -50,8 +50,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the error which is considered tolerable for use with\nAtSetpoint().\n\n:param positionTolerance: Position error which is tolerable.\n:param velocityTolerance: Velocity error which is tolerable.", "returnType": "None", "args": [{"name": "profiledPIDControllerRadians", "type": "wpimath._controls._controls.controller.ProfiledPIDControllerRadians"}, {"name": "positionTolerance", "type": "wpimath.units.radians"}, {"name": "velocityTolerance", "type": "wpimath.units.radians_per_second"}], "importModule": ""}, "fields": {"CLASS": "wpimath.controller.ProfiledPIDControllerRadians", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myProfiledPIDControllerRadians"}}}}}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }

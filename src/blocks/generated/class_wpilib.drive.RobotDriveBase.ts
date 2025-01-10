@@ -9,8 +9,8 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.drive.RobotDriveBase.MotorType", ["kBack", "kFrontLeft", "kFrontRight", "kLeft", "kRearLeft", "kRearRight", "kRight"], "The location of a motor on the robot for the purpose of driving.\n\nMembers:\n\n  kFrontLeft : Front-left motor.\n\n  kFrontRight : Front-right motor.\n\n  kRearLeft : Rear-left motor.\n\n  kRearRight : Rear-right motor.\n\n  kLeft : Left motor.\n\n  kRight : Right motor.\n\n  kBack : Back motor.");
 }
 
-export function getToolboxCategory(subcategories: any): Category {
-  const category = {
+export function getToolboxCategory(subcategories: Category[] = []): Category {
+  const category: Category = {
     kind: "category",
     name: "RobotDriveBase",
     contents: [
@@ -37,8 +37,6 @@ export function getToolboxCategory(subcategories: any): Category {
       {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kRight"}},
     ],
   };
-  if (subcategories) {
-    category.contents.push(...subcategories);
-  }
+  category.contents.push(...subcategories);
   return category;
 }
