@@ -1,14 +1,14 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonEnum from "../python_enum";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.SerialPort
 
 export function initialize() {
   pythonEnum.initializeEnum("wpilib.SerialPort.FlowControl", ["kFlowControl_DtrDsr", "kFlowControl_None", "kFlowControl_RtsCts", "kFlowControl_XonXoff"], "Represents what type of flow control to use for serial communication.\n\nMembers:\n\n  kFlowControl_None : No flow control.\n\n  kFlowControl_XonXoff : XON/XOFF flow control.\n\n  kFlowControl_RtsCts : RTS/CTS flow control.\n\n  kFlowControl_DtrDsr : DTS/DSR flow control.");
   pythonEnum.initializeEnum("wpilib.SerialPort.Parity", ["kParity_Even", "kParity_Mark", "kParity_None", "kParity_Odd", "kParity_Space"], "Represents the parity to use for serial communications.\n\nMembers:\n\n  kParity_None : No parity.\n\n  kParity_Odd : Odd parity.\n\n  kParity_Even : Even parity.\n\n  kParity_Mark : Parity bit always on.\n\n  kParity_Space : Parity bit always off.");
-  pythonEnum.initializeEnum("wpilib.SerialPort.Port", ["kMXP", "kOnboard", "kUSB", "kUSB1", "kUSB2"], "Serial port.\n\nMembers:\n\n  kOnboard : Onboard serial port on the roboRIO.\n\n  kMXP : MXP (roboRIO MXP) serial port.\n\n  kUSB : USB serial port (same as KUSB1).\n\n  kUSB1 : USB serial port 1.\n\n  kUSB2 : USB serial port 2.");
+  pythonEnum.initializeEnum("wpilib.SerialPort.Port", ["kMXP", "kOnboard", "kUSB", "kUSB1", "kUSB2"], "Serial port.\n\nMembers:\n\n  kOnboard : Onboard serial port on the roboRIO.\n\n  kMXP : MXP (roboRIO MXP) serial port.\n\n  kUSB : USB serial port (same as kUSB1).\n\n  kUSB1 : USB serial port 1.\n\n  kUSB2 : USB serial port 2.");
   pythonEnum.initializeEnum("wpilib.SerialPort.StopBits", ["kStopBits_One", "kStopBits_OnePointFive", "kStopBits_Two"], "Represents the number of stop bits to use for Serial Communication.\n\nMembers:\n\n  kStopBits_One : One stop bit.\n\n  kStopBits_OnePointFive : One and a half stop bits.\n\n  kStopBits_Two : Two stop bits.");
   pythonEnum.initializeEnum("wpilib.SerialPort.WriteBufferMode", ["kFlushOnAccess", "kFlushWhenFull"], "Represents which type of buffer mode to use when writing to a serial port.\n\nMembers:\n\n  kFlushOnAccess : Flush the buffer on each access.\n\n  kFlushWhenFull : Flush the buffer when it is full.");
 }

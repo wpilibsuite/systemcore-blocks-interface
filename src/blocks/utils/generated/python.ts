@@ -70,6 +70,9 @@ export function getAlias(type: string): string {
   if (type === "wpimath.units.celsius") {
     return "float";
   }
+  if (type === "wpimath.units.centimeters") {
+    return "float";
+  }
   if (type === "wpimath.units.chains") {
     return "float";
   }
@@ -1157,34 +1160,49 @@ export function getAllowedTypes(type: string): string[] {
     return ['wpilib.shuffleboard._SuppliedValueWidget_vector_string', 'wpilib.shuffleboard.SuppliedStringListValueWidget'];
   }
   if (type === "wpilib.simulation.GenericHIDSim") {
-    return ['wpilib.simulation.GenericHIDSim', 'wpilib.simulation.JoystickSim', 'wpilib.simulation.PS4ControllerSim', 'wpilib.simulation.PS5ControllerSim', 'wpilib.simulation.XboxControllerSim'];
+    return ['wpilib.simulation.GenericHIDSim', 'wpilib.simulation.JoystickSim', 'wpilib.simulation.PS4ControllerSim', 'wpilib.simulation.PS5ControllerSim', 'wpilib.simulation.StadiaControllerSim', 'wpilib.simulation.XboxControllerSim'];
   }
   if (type === "wpilib.simulation.LinearSystemSim_1_1_1") {
     return ['wpilib.simulation.LinearSystemSim_1_1_1', 'wpilib.simulation.FlywheelSim'];
   }
-  if (type === "wpilib.simulation.LinearSystemSim_2_1_1") {
-    return ['wpilib.simulation.LinearSystemSim_2_1_1', 'wpilib.simulation.ElevatorSim', 'wpilib.simulation.SingleJointedArmSim'];
-  }
   if (type === "wpilib.simulation.LinearSystemSim_2_1_2") {
-    return ['wpilib.simulation.LinearSystemSim_2_1_2', 'wpilib.simulation.DCMotorSim'];
+    return ['wpilib.simulation.LinearSystemSim_2_1_2', 'wpilib.simulation.DCMotorSim', 'wpilib.simulation.ElevatorSim', 'wpilib.simulation.SingleJointedArmSim'];
   }
   if (type === "wpilib.simulation.PneumaticsBaseSim") {
     return ['wpilib.simulation.PneumaticsBaseSim', 'wpilib.simulation.CTREPCMSim', 'wpilib.simulation.REVPHSim'];
   }
+  if (type === "wpimath.estimator.DifferentialDrivePoseEstimator3dBase") {
+    return ['wpimath.estimator.DifferentialDrivePoseEstimator3dBase', 'wpimath.estimator.DifferentialDrivePoseEstimator3d'];
+  }
   if (type === "wpimath.estimator.DifferentialDrivePoseEstimatorBase") {
     return ['wpimath.estimator.DifferentialDrivePoseEstimatorBase', 'wpimath.estimator.DifferentialDrivePoseEstimator'];
+  }
+  if (type === "wpimath.estimator.MecanumDrivePoseEstimator3dBase") {
+    return ['wpimath.estimator.MecanumDrivePoseEstimator3dBase', 'wpimath.estimator.MecanumDrivePoseEstimator3d'];
   }
   if (type === "wpimath.estimator.MecanumDrivePoseEstimatorBase") {
     return ['wpimath.estimator.MecanumDrivePoseEstimatorBase', 'wpimath.estimator.MecanumDrivePoseEstimator'];
   }
+  if (type === "wpimath.estimator.SwerveDrive2PoseEstimator3dBase") {
+    return ['wpimath.estimator.SwerveDrive2PoseEstimator3dBase', 'wpimath.estimator.SwerveDrive2PoseEstimator3d'];
+  }
   if (type === "wpimath.estimator.SwerveDrive2PoseEstimatorBase") {
     return ['wpimath.estimator.SwerveDrive2PoseEstimatorBase', 'wpimath.estimator.SwerveDrive2PoseEstimator'];
+  }
+  if (type === "wpimath.estimator.SwerveDrive3PoseEstimator3dBase") {
+    return ['wpimath.estimator.SwerveDrive3PoseEstimator3dBase', 'wpimath.estimator.SwerveDrive3PoseEstimator3d'];
   }
   if (type === "wpimath.estimator.SwerveDrive3PoseEstimatorBase") {
     return ['wpimath.estimator.SwerveDrive3PoseEstimatorBase', 'wpimath.estimator.SwerveDrive3PoseEstimator'];
   }
+  if (type === "wpimath.estimator.SwerveDrive4PoseEstimator3dBase") {
+    return ['wpimath.estimator.SwerveDrive4PoseEstimator3dBase', 'wpimath.estimator.SwerveDrive4PoseEstimator3d'];
+  }
   if (type === "wpimath.estimator.SwerveDrive4PoseEstimatorBase") {
     return ['wpimath.estimator.SwerveDrive4PoseEstimatorBase', 'wpimath.estimator.SwerveDrive4PoseEstimator'];
+  }
+  if (type === "wpimath.estimator.SwerveDrive6PoseEstimator3dBase") {
+    return ['wpimath.estimator.SwerveDrive6PoseEstimator3dBase', 'wpimath.estimator.SwerveDrive6PoseEstimator3d'];
   }
   if (type === "wpimath.estimator.SwerveDrive6PoseEstimatorBase") {
     return ['wpimath.estimator.SwerveDrive6PoseEstimatorBase', 'wpimath.estimator.SwerveDrive6PoseEstimator'];
@@ -1192,11 +1210,17 @@ export function getAllowedTypes(type: string): string[] {
   if (type === "wpimath.kinematics.DifferentialDriveKinematicsBase") {
     return ['wpimath.kinematics.DifferentialDriveKinematicsBase', 'wpimath.kinematics.DifferentialDriveKinematics'];
   }
+  if (type === "wpimath.kinematics.DifferentialDriveOdometry3dBase") {
+    return ['wpimath.kinematics.DifferentialDriveOdometry3dBase', 'wpimath.kinematics.DifferentialDriveOdometry3d'];
+  }
   if (type === "wpimath.kinematics.DifferentialDriveOdometryBase") {
     return ['wpimath.kinematics.DifferentialDriveOdometryBase', 'wpimath.kinematics.DifferentialDriveOdometry'];
   }
   if (type === "wpimath.kinematics.MecanumDriveKinematicsBase") {
     return ['wpimath.kinematics.MecanumDriveKinematicsBase', 'wpimath.kinematics.MecanumDriveKinematics'];
+  }
+  if (type === "wpimath.kinematics.MecanumDriveOdometry3dBase") {
+    return ['wpimath.kinematics.MecanumDriveOdometry3dBase', 'wpimath.kinematics.MecanumDriveOdometry3d'];
   }
   if (type === "wpimath.kinematics.MecanumDriveOdometryBase") {
     return ['wpimath.kinematics.MecanumDriveOdometryBase', 'wpimath.kinematics.MecanumDriveOdometry'];
@@ -1204,11 +1228,17 @@ export function getAllowedTypes(type: string): string[] {
   if (type === "wpimath.kinematics.SwerveDrive2KinematicsBase") {
     return ['wpimath.kinematics.SwerveDrive2KinematicsBase', 'wpimath.kinematics.SwerveDrive2Kinematics'];
   }
+  if (type === "wpimath.kinematics.SwerveDrive2Odometry3dBase") {
+    return ['wpimath.kinematics.SwerveDrive2Odometry3dBase', 'wpimath.kinematics.SwerveDrive2Odometry3d'];
+  }
   if (type === "wpimath.kinematics.SwerveDrive2OdometryBase") {
     return ['wpimath.kinematics.SwerveDrive2OdometryBase', 'wpimath.kinematics.SwerveDrive2Odometry'];
   }
   if (type === "wpimath.kinematics.SwerveDrive3KinematicsBase") {
     return ['wpimath.kinematics.SwerveDrive3KinematicsBase', 'wpimath.kinematics.SwerveDrive3Kinematics'];
+  }
+  if (type === "wpimath.kinematics.SwerveDrive3Odometry3dBase") {
+    return ['wpimath.kinematics.SwerveDrive3Odometry3dBase', 'wpimath.kinematics.SwerveDrive3Odometry3d'];
   }
   if (type === "wpimath.kinematics.SwerveDrive3OdometryBase") {
     return ['wpimath.kinematics.SwerveDrive3OdometryBase', 'wpimath.kinematics.SwerveDrive3Odometry'];
@@ -1216,11 +1246,17 @@ export function getAllowedTypes(type: string): string[] {
   if (type === "wpimath.kinematics.SwerveDrive4KinematicsBase") {
     return ['wpimath.kinematics.SwerveDrive4KinematicsBase', 'wpimath.kinematics.SwerveDrive4Kinematics'];
   }
+  if (type === "wpimath.kinematics.SwerveDrive4Odometry3dBase") {
+    return ['wpimath.kinematics.SwerveDrive4Odometry3dBase', 'wpimath.kinematics.SwerveDrive4Odometry3d'];
+  }
   if (type === "wpimath.kinematics.SwerveDrive4OdometryBase") {
     return ['wpimath.kinematics.SwerveDrive4OdometryBase', 'wpimath.kinematics.SwerveDrive4Odometry'];
   }
   if (type === "wpimath.kinematics.SwerveDrive6KinematicsBase") {
     return ['wpimath.kinematics.SwerveDrive6KinematicsBase', 'wpimath.kinematics.SwerveDrive6Kinematics'];
+  }
+  if (type === "wpimath.kinematics.SwerveDrive6Odometry3dBase") {
+    return ['wpimath.kinematics.SwerveDrive6Odometry3dBase', 'wpimath.kinematics.SwerveDrive6Odometry3d'];
   }
   if (type === "wpimath.kinematics.SwerveDrive6OdometryBase") {
     return ['wpimath.kinematics.SwerveDrive6OdometryBase', 'wpimath.kinematics.SwerveDrive6Odometry'];
@@ -1235,13 +1271,49 @@ export function getAllowedTypes(type: string): string[] {
     return ['wpimath.trajectory.constraint.TrajectoryConstraint', 'wpimath.trajectory.constraint.CentripetalAccelerationConstraint', 'wpimath.trajectory.constraint.DifferentialDriveKinematicsConstraint', 'wpimath.trajectory.constraint.DifferentialDriveVoltageConstraint', 'wpimath.trajectory.constraint.EllipticalRegionConstraint', 'wpimath.trajectory.constraint.MaxVelocityConstraint', 'wpimath.trajectory.constraint.MecanumDriveKinematicsConstraint', 'wpimath.trajectory.constraint.RectangularRegionConstraint', 'wpimath.trajectory.constraint.SwerveDrive2KinematicsConstraint', 'wpimath.trajectory.constraint.SwerveDrive3KinematicsConstraint', 'wpimath.trajectory.constraint.SwerveDrive4KinematicsConstraint', 'wpimath.trajectory.constraint.SwerveDrive6KinematicsConstraint'];
   }
   if (type === "wpiutil.Sendable") {
-    return ['wpiutil.Sendable', 'ntcore.NTSendable', 'wpilib.ADIS16448_IMU', 'wpilib.ADIS16470_IMU', 'wpilib.ADXRS450_Gyro', 'wpilib.AnalogAccelerometer', 'wpilib.AnalogEncoder', 'wpilib.AnalogGyro', 'wpilib.AnalogInput', 'wpilib.AnalogOutput', 'wpilib.AnalogPotentiometer', 'wpilib.AnalogTrigger', 'wpilib.DigitalSource', 'wpilib.BuiltInAccelerometer', 'wpilib.Compressor', 'wpilib.interfaces.CounterBase', 'wpilib.MotorSafety', 'wpilib.DigitalGlitchFilter', 'wpilib.DoubleSolenoid', 'wpilib.DutyCycle', 'wpilib.DutyCycleEncoder', 'wpilib.MotorControllerGroup', 'wpilib.PWM', 'wpilib.PowerDistribution', 'wpilib.SendableChooserBase', 'wpilib.Solenoid', 'wpilib.Ultrasonic', 'wpilib.counter.ExternalDirectionCounter', 'wpilib.counter.Tachometer', 'wpilib.counter.UpDownCounter', 'wpimath.controller.BangBangController', 'wpimath.controller.PIDController', 'wpimath.controller.ProfiledPIDController', 'wpimath.controller.ProfiledPIDControllerRadians'];
+    return ['wpiutil.Sendable', 'ntcore.NTSendable', 'wpilib.ADIS16448_IMU', 'wpilib.ADIS16470_IMU', 'wpilib.ADXRS450_Gyro', 'wpilib.AnalogAccelerometer', 'wpilib.AnalogEncoder', 'wpilib.AnalogGyro', 'wpilib.AnalogInput', 'wpilib.AnalogOutput', 'wpilib.AnalogPotentiometer', 'wpilib.AnalogTrigger', 'wpilib.DigitalSource', 'wpilib.BuiltInAccelerometer', 'wpilib.Compressor', 'wpilib.interfaces.CounterBase', 'wpilib.MotorSafety', 'wpilib.DigitalGlitchFilter', 'wpilib.DoubleSolenoid', 'wpilib.DutyCycle', 'wpilib.DutyCycleEncoder', 'wpilib.MotorControllerGroup', 'wpilib.interfaces.GenericHID', 'wpilib.PWM', 'wpilib.PowerDistribution', 'wpilib.SendableChooserBase', 'wpilib.SharpIR', 'wpilib.Solenoid', 'wpilib.Ultrasonic', 'wpilib.counter.ExternalDirectionCounter', 'wpilib.counter.Tachometer', 'wpilib.counter.UpDownCounter', 'wpimath.controller.BangBangController', 'wpimath.controller.PIDController', 'wpimath.controller.ProfiledPIDController', 'wpimath.controller.ProfiledPIDControllerRadians'];
   }
   if (type === "wpiutil.SendableBuilder") {
     return ['wpiutil.SendableBuilder', 'ntcore.NTSendableBuilder'];
   }
+  if (type === "wpiutil.log.DataLog") {
+    return ['wpiutil.log.DataLog', 'wpiutil.DataLogBackgroundWriter', 'wpiutil.DataLogWriter'];
+  }
   if (type === "wpiutil.log.DataLogEntry") {
-    return ['wpiutil.log.DataLogEntry', 'wpiutil.log.BooleanArrayLogEntry', 'wpiutil.log.BooleanLogEntry', 'wpiutil.log.DoubleArrayLogEntry', 'wpiutil.log.DoubleLogEntry', 'wpiutil.log.FloatArrayLogEntry', 'wpiutil.log.FloatLogEntry', 'wpiutil.log.IntegerArrayLogEntry', 'wpiutil.log.IntegerLogEntry', 'wpiutil.log.RawLogEntry', 'wpiutil.log.StringArrayLogEntry', 'wpiutil.log.StringLogEntry', 'wpiutil.log.StructArrayLogEntry', 'wpiutil.log.StructLogEntry'];
+    return ['wpiutil.log.DataLogEntry', 'wpiutil.log._BooleanArrayLogEntryImpl', 'wpiutil.log._BooleanLogEntryImpl', 'wpiutil.log._DoubleArrayLogEntryImpl', 'wpiutil.log._DoubleLogEntryImpl', 'wpiutil.log._FloatArrayLogEntryImpl', 'wpiutil.log._FloatLogEntryImpl', 'wpiutil.log._IntegerArrayLogEntryImpl', 'wpiutil.log._IntegerLogEntryImpl', 'wpiutil.log._RawLogEntryImpl', 'wpiutil.log._StringArrayLogEntryImpl', 'wpiutil.log._StringLogEntryImpl', 'wpiutil.log.StructArrayLogEntry', 'wpiutil.log.StructLogEntry'];
+  }
+  if (type === "wpiutil.log._BooleanArrayLogEntryImpl") {
+    return ['wpiutil.log._BooleanArrayLogEntryImpl', 'wpiutil.log.BooleanArrayLogEntry'];
+  }
+  if (type === "wpiutil.log._BooleanLogEntryImpl") {
+    return ['wpiutil.log._BooleanLogEntryImpl', 'wpiutil.log.BooleanLogEntry'];
+  }
+  if (type === "wpiutil.log._DoubleArrayLogEntryImpl") {
+    return ['wpiutil.log._DoubleArrayLogEntryImpl', 'wpiutil.log.DoubleArrayLogEntry'];
+  }
+  if (type === "wpiutil.log._DoubleLogEntryImpl") {
+    return ['wpiutil.log._DoubleLogEntryImpl', 'wpiutil.log.DoubleLogEntry'];
+  }
+  if (type === "wpiutil.log._FloatArrayLogEntryImpl") {
+    return ['wpiutil.log._FloatArrayLogEntryImpl', 'wpiutil.log.FloatArrayLogEntry'];
+  }
+  if (type === "wpiutil.log._FloatLogEntryImpl") {
+    return ['wpiutil.log._FloatLogEntryImpl', 'wpiutil.log.FloatLogEntry'];
+  }
+  if (type === "wpiutil.log._IntegerArrayLogEntryImpl") {
+    return ['wpiutil.log._IntegerArrayLogEntryImpl', 'wpiutil.log.IntegerArrayLogEntry'];
+  }
+  if (type === "wpiutil.log._IntegerLogEntryImpl") {
+    return ['wpiutil.log._IntegerLogEntryImpl', 'wpiutil.log.IntegerLogEntry'];
+  }
+  if (type === "wpiutil.log._RawLogEntryImpl") {
+    return ['wpiutil.log._RawLogEntryImpl', 'wpiutil.log.RawLogEntry'];
+  }
+  if (type === "wpiutil.log._StringArrayLogEntryImpl") {
+    return ['wpiutil.log._StringArrayLogEntryImpl', 'wpiutil.log.StringArrayLogEntry'];
+  }
+  if (type === "wpiutil.log._StringLogEntryImpl") {
+    return ['wpiutil.log._StringLogEntryImpl', 'wpiutil.log.StringLogEntry'];
   }
 
   return [""];

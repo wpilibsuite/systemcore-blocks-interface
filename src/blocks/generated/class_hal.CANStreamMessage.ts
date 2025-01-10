@@ -6,9 +6,9 @@ import * as pythonVariable from "../python_variable";
 // Blocks for class hal.CANStreamMessage
 
 export function initialize() {
-  pythonVariable.initializeInstanceVariableGetter("hal.CANStreamMessage", "memoryview", ["data"], [""]);
-  pythonVariable.initializeInstanceVariableGetter("hal.CANStreamMessage", "int", ["dataSize", "messageID", "timeStamp"], ["", "", ""]);
-  pythonVariable.initializeInstanceVariableSetter("hal.CANStreamMessage", "int", ["dataSize", "messageID", "timeStamp"], ["", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.CANStreamMessage", "memoryview", ["data"], ["The message data"]);
+  pythonVariable.initializeInstanceVariableGetter("hal.CANStreamMessage", "int", ["dataSize", "messageID", "timeStamp"], ["The size of the data received (0-8 bytes)", "The message ID", "The packet received timestamp (based off of CLOCK_MONOTONIC)"]);
+  pythonVariable.initializeInstanceVariableSetter("hal.CANStreamMessage", "int", ["dataSize", "messageID", "timeStamp"], ["The size of the data received (0-8 bytes)", "The message ID", "The packet received timestamp (based off of CLOCK_MONOTONIC)"]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

@@ -9,7 +9,7 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.AnalogTriggerType", ["kFallingPulse", "kInWindow", "kRisingPulse", "kState"], "Defines the state in which the AnalogTrigger triggers.\n\nMembers:\n\n  kInWindow : In window.\n\n  kState : State.\n\n  kRisingPulse : Rising Pulse.\n\n  kFallingPulse : Falling pulse.");
   pythonEnum.initializeEnum("wpilib.CompressorConfigType", ["Analog", "Digital", "Disabled", "Hybrid"], "Compressor config type.\n\nMembers:\n\n  Disabled : Disabled.\n\n  Digital : Digital.\n\n  Analog : Analog.\n\n  Hybrid : Hybrid.");
   pythonEnum.initializeEnum("wpilib.PneumaticsModuleType", ["CTREPCM", "REVPH"], "Pneumatics module type.\n\nMembers:\n\n  CTREPCM : CTRE PCM.\n\n  REVPH : REV PH.");
-  pythonEnum.initializeEnum("wpilib.RadioLEDState", ["kGreen", "kOff", "kOrange", "kRed"], "Members:\n\n  kOff\n\n  kGreen\n\n  kRed\n\n  kOrange");
+  pythonEnum.initializeEnum("wpilib.RadioLEDState", ["kGreen", "kOff", "kOrange", "kRed"], "State for the radio led.\n\nMembers:\n\n  kOff : ///< Off.\n\n  kGreen : ///< Green.\n\n  kRed : ///< Red.\n\n  kOrange : ///< Orange.");
   pythonEnum.initializeEnum("wpilib.RuntimeType", ["kRoboRIO", "kRoboRIO2", "kSimulation"], "Runtime type.\n\nMembers:\n\n  kRoboRIO : roboRIO 1.0.\n\n  kRoboRIO2 : roboRIO 2.0.\n\n  kSimulation : Simulation runtime.");
 }
 

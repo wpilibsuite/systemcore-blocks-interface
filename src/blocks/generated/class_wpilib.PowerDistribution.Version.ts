@@ -6,8 +6,8 @@ import * as pythonVariable from "../python_variable";
 // Blocks for class wpilib.PowerDistribution.Version
 
 export function initialize() {
-  pythonVariable.initializeInstanceVariableGetter("wpilib.PowerDistribution.Version", "int", ["FirmwareFix", "FirmwareMajor", "FirmwareMinor", "HardwareMajor", "HardwareMinor", "UniqueId"], ["", "", "", "", "", ""]);
-  pythonVariable.initializeInstanceVariableSetter("wpilib.PowerDistribution.Version", "int", ["FirmwareFix", "FirmwareMajor", "FirmwareMinor", "HardwareMajor", "HardwareMinor", "UniqueId"], ["", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.PowerDistribution.Version", "int", ["FirmwareFix", "FirmwareMajor", "FirmwareMinor", "HardwareMajor", "HardwareMinor", "UniqueId"], ["Firmware fix version number.", "Firmware major version number.", "Firmware minor version number.", "Hardware major version number.", "Hardware minor version number.", "Unique ID."]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.PowerDistribution.Version", "int", ["FirmwareFix", "FirmwareMajor", "FirmwareMinor", "HardwareMajor", "HardwareMinor", "UniqueId"], ["Firmware fix version number.", "Firmware major version number.", "Firmware minor version number.", "Hardware major version number.", "Hardware minor version number.", "Unique ID."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

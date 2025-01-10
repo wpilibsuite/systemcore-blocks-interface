@@ -42,6 +42,7 @@ import * as wpilib_ADXL362_AllAxes from '../../blocks/generated/class_wpilib.ADX
 import * as wpilib_ADXRS450_Gyro from '../../blocks/generated/class_wpilib.ADXRS450_Gyro';
 import * as wpilib_AddressableLED from '../../blocks/generated/class_wpilib.AddressableLED';
 import * as wpilib_AddressableLED_LEDData from '../../blocks/generated/class_wpilib.AddressableLED.LEDData';
+import * as wpilib_Alert from '../../blocks/generated/class_wpilib.Alert';
 import * as wpilib_AnalogAccelerometer from '../../blocks/generated/class_wpilib.AnalogAccelerometer';
 import * as wpilib_AnalogEncoder from '../../blocks/generated/class_wpilib.AnalogEncoder';
 import * as wpilib_AnalogGyro from '../../blocks/generated/class_wpilib.AnalogGyro';
@@ -76,6 +77,8 @@ import * as wpilib_I2C from '../../blocks/generated/class_wpilib.I2C';
 import * as wpilib_IterativeRobotBase from '../../blocks/generated/class_wpilib.IterativeRobotBase';
 import * as wpilib_Jaguar from '../../blocks/generated/class_wpilib.Jaguar';
 import * as wpilib_Joystick from '../../blocks/generated/class_wpilib.Joystick';
+import * as wpilib_LEDPattern from '../../blocks/generated/class_wpilib.LEDPattern';
+import * as wpilib_LEDPattern_LEDReader from '../../blocks/generated/class_wpilib.LEDPattern.LEDReader';
 import * as wpilib_LiveWindow from '../../blocks/generated/class_wpilib.LiveWindow';
 import * as wpilib_Mechanism2d from '../../blocks/generated/class_wpilib.Mechanism2d';
 import * as wpilib_MechanismLigament2d from '../../blocks/generated/class_wpilib.MechanismLigament2d';
@@ -122,6 +125,7 @@ import * as wpilib_SendableChooserBase from '../../blocks/generated/class_wpilib
 import * as wpilib_SensorUtil from '../../blocks/generated/class_wpilib.SensorUtil';
 import * as wpilib_SerialPort from '../../blocks/generated/class_wpilib.SerialPort';
 import * as wpilib_Servo from '../../blocks/generated/class_wpilib.Servo';
+import * as wpilib_SharpIR from '../../blocks/generated/class_wpilib.SharpIR';
 import * as wpilib_SmartDashboard from '../../blocks/generated/class_wpilib.SmartDashboard';
 import * as wpilib_Solenoid from '../../blocks/generated/class_wpilib.Solenoid';
 import * as wpilib_Spark from '../../blocks/generated/class_wpilib.Spark';
@@ -158,10 +162,8 @@ import * as wpilib_event_BooleanEvent from '../../blocks/generated/class_wpilib.
 import * as wpilib_event_EventLoop from '../../blocks/generated/class_wpilib.event.EventLoop';
 import * as wpilib_event_NetworkBooleanEvent from '../../blocks/generated/class_wpilib.event.NetworkBooleanEvent';
 import * as wpilib_interfaces from '../../blocks/generated/module_wpilib.interfaces';
-import * as wpilib_interfaces_Accelerometer from '../../blocks/generated/class_wpilib.interfaces.Accelerometer';
 import * as wpilib_interfaces_CounterBase from '../../blocks/generated/class_wpilib.interfaces.CounterBase';
 import * as wpilib_interfaces_GenericHID from '../../blocks/generated/class_wpilib.interfaces.GenericHID';
-import * as wpilib_interfaces_Gyro from '../../blocks/generated/class_wpilib.interfaces.Gyro';
 import * as wpilib_interfaces_MotorController from '../../blocks/generated/class_wpilib.interfaces.MotorController';
 import * as wpilib_shuffleboard from '../../blocks/generated/module_wpilib.shuffleboard';
 import * as wpilib_shuffleboard_ComplexWidget from '../../blocks/generated/class_wpilib.shuffleboard.ComplexWidget';
@@ -260,9 +262,12 @@ import * as wpilib_simulation_REVPHSim from '../../blocks/generated/class_wpilib
 import * as wpilib_simulation_RelaySim from '../../blocks/generated/class_wpilib.simulation.RelaySim';
 import * as wpilib_simulation_RoboRioSim from '../../blocks/generated/class_wpilib.simulation.RoboRioSim';
 import * as wpilib_simulation_SPIAccelerometerSim from '../../blocks/generated/class_wpilib.simulation.SPIAccelerometerSim';
+import * as wpilib_simulation_SendableChooserSim from '../../blocks/generated/class_wpilib.simulation.SendableChooserSim';
+import * as wpilib_simulation_SharpIRSim from '../../blocks/generated/class_wpilib.simulation.SharpIRSim';
 import * as wpilib_simulation_SimDeviceSim from '../../blocks/generated/class_wpilib.simulation.SimDeviceSim';
 import * as wpilib_simulation_SingleJointedArmSim from '../../blocks/generated/class_wpilib.simulation.SingleJointedArmSim';
 import * as wpilib_simulation_SolenoidSim from '../../blocks/generated/class_wpilib.simulation.SolenoidSim';
+import * as wpilib_simulation_StadiaControllerSim from '../../blocks/generated/class_wpilib.simulation.StadiaControllerSim';
 import * as wpilib_simulation_UltrasonicSim from '../../blocks/generated/class_wpilib.simulation.UltrasonicSim';
 import * as wpilib_simulation_XboxControllerSim from '../../blocks/generated/class_wpilib.simulation.XboxControllerSim';
 import * as wpilib_sysid_SysIdRoutineLog from '../../blocks/generated/class_wpilib.sysid.SysIdRoutineLog';
@@ -299,6 +304,8 @@ import * as wpimath_controller_SimpleMotorFeedforwardMeters from '../../blocks/g
 import * as wpimath_controller_SimpleMotorFeedforwardRadians from '../../blocks/generated/class_wpimath.controller.SimpleMotorFeedforwardRadians';
 import * as wpimath_estimator from '../../blocks/generated/module_wpimath.estimator';
 import * as wpimath_estimator_DifferentialDrivePoseEstimator from '../../blocks/generated/class_wpimath.estimator.DifferentialDrivePoseEstimator';
+import * as wpimath_estimator_DifferentialDrivePoseEstimator3d from '../../blocks/generated/class_wpimath.estimator.DifferentialDrivePoseEstimator3d';
+import * as wpimath_estimator_DifferentialDrivePoseEstimator3dBase from '../../blocks/generated/class_wpimath.estimator.DifferentialDrivePoseEstimator3dBase';
 import * as wpimath_estimator_DifferentialDrivePoseEstimatorBase from '../../blocks/generated/class_wpimath.estimator.DifferentialDrivePoseEstimatorBase';
 import * as wpimath_estimator_ExtendedKalmanFilter_1_1_1 from '../../blocks/generated/class_wpimath.estimator.ExtendedKalmanFilter_1_1_1';
 import * as wpimath_estimator_ExtendedKalmanFilter_2_1_1 from '../../blocks/generated/class_wpimath.estimator.ExtendedKalmanFilter_2_1_1';
@@ -308,14 +315,24 @@ import * as wpimath_estimator_KalmanFilter_2_1_1 from '../../blocks/generated/cl
 import * as wpimath_estimator_KalmanFilter_2_2_2 from '../../blocks/generated/class_wpimath.estimator.KalmanFilter_2_2_2';
 import * as wpimath_estimator_KalmanFilter_3_2_3 from '../../blocks/generated/class_wpimath.estimator.KalmanFilter_3_2_3';
 import * as wpimath_estimator_MecanumDrivePoseEstimator from '../../blocks/generated/class_wpimath.estimator.MecanumDrivePoseEstimator';
+import * as wpimath_estimator_MecanumDrivePoseEstimator3d from '../../blocks/generated/class_wpimath.estimator.MecanumDrivePoseEstimator3d';
+import * as wpimath_estimator_MecanumDrivePoseEstimator3dBase from '../../blocks/generated/class_wpimath.estimator.MecanumDrivePoseEstimator3dBase';
 import * as wpimath_estimator_MecanumDrivePoseEstimatorBase from '../../blocks/generated/class_wpimath.estimator.MecanumDrivePoseEstimatorBase';
 import * as wpimath_estimator_SwerveDrive2PoseEstimator from '../../blocks/generated/class_wpimath.estimator.SwerveDrive2PoseEstimator';
+import * as wpimath_estimator_SwerveDrive2PoseEstimator3d from '../../blocks/generated/class_wpimath.estimator.SwerveDrive2PoseEstimator3d';
+import * as wpimath_estimator_SwerveDrive2PoseEstimator3dBase from '../../blocks/generated/class_wpimath.estimator.SwerveDrive2PoseEstimator3dBase';
 import * as wpimath_estimator_SwerveDrive2PoseEstimatorBase from '../../blocks/generated/class_wpimath.estimator.SwerveDrive2PoseEstimatorBase';
 import * as wpimath_estimator_SwerveDrive3PoseEstimator from '../../blocks/generated/class_wpimath.estimator.SwerveDrive3PoseEstimator';
+import * as wpimath_estimator_SwerveDrive3PoseEstimator3d from '../../blocks/generated/class_wpimath.estimator.SwerveDrive3PoseEstimator3d';
+import * as wpimath_estimator_SwerveDrive3PoseEstimator3dBase from '../../blocks/generated/class_wpimath.estimator.SwerveDrive3PoseEstimator3dBase';
 import * as wpimath_estimator_SwerveDrive3PoseEstimatorBase from '../../blocks/generated/class_wpimath.estimator.SwerveDrive3PoseEstimatorBase';
 import * as wpimath_estimator_SwerveDrive4PoseEstimator from '../../blocks/generated/class_wpimath.estimator.SwerveDrive4PoseEstimator';
+import * as wpimath_estimator_SwerveDrive4PoseEstimator3d from '../../blocks/generated/class_wpimath.estimator.SwerveDrive4PoseEstimator3d';
+import * as wpimath_estimator_SwerveDrive4PoseEstimator3dBase from '../../blocks/generated/class_wpimath.estimator.SwerveDrive4PoseEstimator3dBase';
 import * as wpimath_estimator_SwerveDrive4PoseEstimatorBase from '../../blocks/generated/class_wpimath.estimator.SwerveDrive4PoseEstimatorBase';
 import * as wpimath_estimator_SwerveDrive6PoseEstimator from '../../blocks/generated/class_wpimath.estimator.SwerveDrive6PoseEstimator';
+import * as wpimath_estimator_SwerveDrive6PoseEstimator3d from '../../blocks/generated/class_wpimath.estimator.SwerveDrive6PoseEstimator3d';
+import * as wpimath_estimator_SwerveDrive6PoseEstimator3dBase from '../../blocks/generated/class_wpimath.estimator.SwerveDrive6PoseEstimator3dBase';
 import * as wpimath_estimator_SwerveDrive6PoseEstimatorBase from '../../blocks/generated/class_wpimath.estimator.SwerveDrive6PoseEstimatorBase';
 import * as wpimath_filter from '../../blocks/generated/module_wpimath.filter';
 import * as wpimath_filter_Debouncer from '../../blocks/generated/class_wpimath.filter.Debouncer';
@@ -325,9 +342,11 @@ import * as wpimath_filter_SlewRateLimiter from '../../blocks/generated/class_wp
 import * as wpimath_geometry from '../../blocks/generated/module_wpimath.geometry';
 import * as wpimath_geometry_CoordinateAxis from '../../blocks/generated/class_wpimath.geometry.CoordinateAxis';
 import * as wpimath_geometry_CoordinateSystem from '../../blocks/generated/class_wpimath.geometry.CoordinateSystem';
+import * as wpimath_geometry_Ellipse2d from '../../blocks/generated/class_wpimath.geometry.Ellipse2d';
 import * as wpimath_geometry_Pose2d from '../../blocks/generated/class_wpimath.geometry.Pose2d';
 import * as wpimath_geometry_Pose3d from '../../blocks/generated/class_wpimath.geometry.Pose3d';
 import * as wpimath_geometry_Quaternion from '../../blocks/generated/class_wpimath.geometry.Quaternion';
+import * as wpimath_geometry_Rectangle2d from '../../blocks/generated/class_wpimath.geometry.Rectangle2d';
 import * as wpimath_geometry_Rotation2d from '../../blocks/generated/class_wpimath.geometry.Rotation2d';
 import * as wpimath_geometry_Rotation3d from '../../blocks/generated/class_wpimath.geometry.Rotation3d';
 import * as wpimath_geometry_Transform2d from '../../blocks/generated/class_wpimath.geometry.Transform2d';
@@ -349,35 +368,43 @@ import * as wpimath_kinematics_ChassisSpeeds from '../../blocks/generated/class_
 import * as wpimath_kinematics_DifferentialDriveKinematics from '../../blocks/generated/class_wpimath.kinematics.DifferentialDriveKinematics';
 import * as wpimath_kinematics_DifferentialDriveKinematicsBase from '../../blocks/generated/class_wpimath.kinematics.DifferentialDriveKinematicsBase';
 import * as wpimath_kinematics_DifferentialDriveOdometry from '../../blocks/generated/class_wpimath.kinematics.DifferentialDriveOdometry';
+import * as wpimath_kinematics_DifferentialDriveOdometry3d from '../../blocks/generated/class_wpimath.kinematics.DifferentialDriveOdometry3d';
+import * as wpimath_kinematics_DifferentialDriveOdometry3dBase from '../../blocks/generated/class_wpimath.kinematics.DifferentialDriveOdometry3dBase';
 import * as wpimath_kinematics_DifferentialDriveOdometryBase from '../../blocks/generated/class_wpimath.kinematics.DifferentialDriveOdometryBase';
 import * as wpimath_kinematics_DifferentialDriveWheelPositions from '../../blocks/generated/class_wpimath.kinematics.DifferentialDriveWheelPositions';
 import * as wpimath_kinematics_DifferentialDriveWheelSpeeds from '../../blocks/generated/class_wpimath.kinematics.DifferentialDriveWheelSpeeds';
 import * as wpimath_kinematics_MecanumDriveKinematics from '../../blocks/generated/class_wpimath.kinematics.MecanumDriveKinematics';
 import * as wpimath_kinematics_MecanumDriveKinematicsBase from '../../blocks/generated/class_wpimath.kinematics.MecanumDriveKinematicsBase';
 import * as wpimath_kinematics_MecanumDriveOdometry from '../../blocks/generated/class_wpimath.kinematics.MecanumDriveOdometry';
+import * as wpimath_kinematics_MecanumDriveOdometry3d from '../../blocks/generated/class_wpimath.kinematics.MecanumDriveOdometry3d';
+import * as wpimath_kinematics_MecanumDriveOdometry3dBase from '../../blocks/generated/class_wpimath.kinematics.MecanumDriveOdometry3dBase';
 import * as wpimath_kinematics_MecanumDriveOdometryBase from '../../blocks/generated/class_wpimath.kinematics.MecanumDriveOdometryBase';
 import * as wpimath_kinematics_MecanumDriveWheelPositions from '../../blocks/generated/class_wpimath.kinematics.MecanumDriveWheelPositions';
 import * as wpimath_kinematics_MecanumDriveWheelSpeeds from '../../blocks/generated/class_wpimath.kinematics.MecanumDriveWheelSpeeds';
 import * as wpimath_kinematics_SwerveDrive2Kinematics from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive2Kinematics';
 import * as wpimath_kinematics_SwerveDrive2KinematicsBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive2KinematicsBase';
 import * as wpimath_kinematics_SwerveDrive2Odometry from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive2Odometry';
+import * as wpimath_kinematics_SwerveDrive2Odometry3d from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive2Odometry3d';
+import * as wpimath_kinematics_SwerveDrive2Odometry3dBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive2Odometry3dBase';
 import * as wpimath_kinematics_SwerveDrive2OdometryBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive2OdometryBase';
-import * as wpimath_kinematics_SwerveDrive2WheelPositions from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive2WheelPositions';
 import * as wpimath_kinematics_SwerveDrive3Kinematics from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive3Kinematics';
 import * as wpimath_kinematics_SwerveDrive3KinematicsBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive3KinematicsBase';
 import * as wpimath_kinematics_SwerveDrive3Odometry from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive3Odometry';
+import * as wpimath_kinematics_SwerveDrive3Odometry3d from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive3Odometry3d';
+import * as wpimath_kinematics_SwerveDrive3Odometry3dBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive3Odometry3dBase';
 import * as wpimath_kinematics_SwerveDrive3OdometryBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive3OdometryBase';
-import * as wpimath_kinematics_SwerveDrive3WheelPositions from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive3WheelPositions';
 import * as wpimath_kinematics_SwerveDrive4Kinematics from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive4Kinematics';
 import * as wpimath_kinematics_SwerveDrive4KinematicsBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive4KinematicsBase';
 import * as wpimath_kinematics_SwerveDrive4Odometry from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive4Odometry';
+import * as wpimath_kinematics_SwerveDrive4Odometry3d from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive4Odometry3d';
+import * as wpimath_kinematics_SwerveDrive4Odometry3dBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive4Odometry3dBase';
 import * as wpimath_kinematics_SwerveDrive4OdometryBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive4OdometryBase';
-import * as wpimath_kinematics_SwerveDrive4WheelPositions from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive4WheelPositions';
 import * as wpimath_kinematics_SwerveDrive6Kinematics from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive6Kinematics';
 import * as wpimath_kinematics_SwerveDrive6KinematicsBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive6KinematicsBase';
 import * as wpimath_kinematics_SwerveDrive6Odometry from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive6Odometry';
+import * as wpimath_kinematics_SwerveDrive6Odometry3d from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive6Odometry3d';
+import * as wpimath_kinematics_SwerveDrive6Odometry3dBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive6Odometry3dBase';
 import * as wpimath_kinematics_SwerveDrive6OdometryBase from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive6OdometryBase';
-import * as wpimath_kinematics_SwerveDrive6WheelPositions from '../../blocks/generated/class_wpimath.kinematics.SwerveDrive6WheelPositions';
 import * as wpimath_kinematics_SwerveModulePosition from '../../blocks/generated/class_wpimath.kinematics.SwerveModulePosition';
 import * as wpimath_kinematics_SwerveModuleState from '../../blocks/generated/class_wpimath.kinematics.SwerveModuleState';
 import * as wpimath_optimization from '../../blocks/generated/module_wpimath.optimization';
@@ -497,6 +524,7 @@ export function getToolboxCategories() {
       wpilib_AddressableLED.getToolboxCategory([
         wpilib_AddressableLED_LEDData.getToolboxCategory([]),
       ]),
+      wpilib_Alert.getToolboxCategory([]),
       wpilib_AnalogAccelerometer.getToolboxCategory([]),
       wpilib_AnalogEncoder.getToolboxCategory([]),
       wpilib_AnalogGyro.getToolboxCategory([]),
@@ -531,6 +559,9 @@ export function getToolboxCategories() {
       wpilib_IterativeRobotBase.getToolboxCategory([]),
       wpilib_Jaguar.getToolboxCategory([]),
       wpilib_Joystick.getToolboxCategory([]),
+      wpilib_LEDPattern.getToolboxCategory([
+        wpilib_LEDPattern_LEDReader.getToolboxCategory([]),
+      ]),
       wpilib_LiveWindow.getToolboxCategory([]),
       wpilib_Mechanism2d.getToolboxCategory([]),
       wpilib_MechanismLigament2d.getToolboxCategory([]),
@@ -581,6 +612,7 @@ export function getToolboxCategories() {
       wpilib_SensorUtil.getToolboxCategory([]),
       wpilib_SerialPort.getToolboxCategory([]),
       wpilib_Servo.getToolboxCategory([]),
+      wpilib_SharpIR.getToolboxCategory([]),
       wpilib_SmartDashboard.getToolboxCategory([]),
       wpilib_Solenoid.getToolboxCategory([]),
       wpilib_Spark.getToolboxCategory([]),
@@ -625,10 +657,8 @@ export function getToolboxCategories() {
         wpilib_event_NetworkBooleanEvent.getToolboxCategory([]),
       ]),
       wpilib_interfaces.getToolboxCategory([
-        wpilib_interfaces_Accelerometer.getToolboxCategory([]),
         wpilib_interfaces_CounterBase.getToolboxCategory([]),
         wpilib_interfaces_GenericHID.getToolboxCategory([]),
-        wpilib_interfaces_Gyro.getToolboxCategory([]),
         wpilib_interfaces_MotorController.getToolboxCategory([]),
       ]),
       wpilib_shuffleboard.getToolboxCategory([
@@ -730,9 +760,12 @@ export function getToolboxCategories() {
         wpilib_simulation_RelaySim.getToolboxCategory([]),
         wpilib_simulation_RoboRioSim.getToolboxCategory([]),
         wpilib_simulation_SPIAccelerometerSim.getToolboxCategory([]),
+        wpilib_simulation_SendableChooserSim.getToolboxCategory([]),
+        wpilib_simulation_SharpIRSim.getToolboxCategory([]),
         wpilib_simulation_SimDeviceSim.getToolboxCategory([]),
         wpilib_simulation_SingleJointedArmSim.getToolboxCategory([]),
         wpilib_simulation_SolenoidSim.getToolboxCategory([]),
+        wpilib_simulation_StadiaControllerSim.getToolboxCategory([]),
         wpilib_simulation_UltrasonicSim.getToolboxCategory([]),
         wpilib_simulation_XboxControllerSim.getToolboxCategory([]),
       ]),
@@ -775,6 +808,8 @@ export function getToolboxCategories() {
       ]),
       wpimath_estimator.getToolboxCategory([
         wpimath_estimator_DifferentialDrivePoseEstimator.getToolboxCategory([]),
+        wpimath_estimator_DifferentialDrivePoseEstimator3d.getToolboxCategory([]),
+        wpimath_estimator_DifferentialDrivePoseEstimator3dBase.getToolboxCategory([]),
         wpimath_estimator_DifferentialDrivePoseEstimatorBase.getToolboxCategory([]),
         wpimath_estimator_ExtendedKalmanFilter_1_1_1.getToolboxCategory([]),
         wpimath_estimator_ExtendedKalmanFilter_2_1_1.getToolboxCategory([]),
@@ -784,14 +819,24 @@ export function getToolboxCategories() {
         wpimath_estimator_KalmanFilter_2_2_2.getToolboxCategory([]),
         wpimath_estimator_KalmanFilter_3_2_3.getToolboxCategory([]),
         wpimath_estimator_MecanumDrivePoseEstimator.getToolboxCategory([]),
+        wpimath_estimator_MecanumDrivePoseEstimator3d.getToolboxCategory([]),
+        wpimath_estimator_MecanumDrivePoseEstimator3dBase.getToolboxCategory([]),
         wpimath_estimator_MecanumDrivePoseEstimatorBase.getToolboxCategory([]),
         wpimath_estimator_SwerveDrive2PoseEstimator.getToolboxCategory([]),
+        wpimath_estimator_SwerveDrive2PoseEstimator3d.getToolboxCategory([]),
+        wpimath_estimator_SwerveDrive2PoseEstimator3dBase.getToolboxCategory([]),
         wpimath_estimator_SwerveDrive2PoseEstimatorBase.getToolboxCategory([]),
         wpimath_estimator_SwerveDrive3PoseEstimator.getToolboxCategory([]),
+        wpimath_estimator_SwerveDrive3PoseEstimator3d.getToolboxCategory([]),
+        wpimath_estimator_SwerveDrive3PoseEstimator3dBase.getToolboxCategory([]),
         wpimath_estimator_SwerveDrive3PoseEstimatorBase.getToolboxCategory([]),
         wpimath_estimator_SwerveDrive4PoseEstimator.getToolboxCategory([]),
+        wpimath_estimator_SwerveDrive4PoseEstimator3d.getToolboxCategory([]),
+        wpimath_estimator_SwerveDrive4PoseEstimator3dBase.getToolboxCategory([]),
         wpimath_estimator_SwerveDrive4PoseEstimatorBase.getToolboxCategory([]),
         wpimath_estimator_SwerveDrive6PoseEstimator.getToolboxCategory([]),
+        wpimath_estimator_SwerveDrive6PoseEstimator3d.getToolboxCategory([]),
+        wpimath_estimator_SwerveDrive6PoseEstimator3dBase.getToolboxCategory([]),
         wpimath_estimator_SwerveDrive6PoseEstimatorBase.getToolboxCategory([]),
       ]),
       wpimath_filter.getToolboxCategory([
@@ -803,9 +848,11 @@ export function getToolboxCategories() {
       wpimath_geometry.getToolboxCategory([
         wpimath_geometry_CoordinateAxis.getToolboxCategory([]),
         wpimath_geometry_CoordinateSystem.getToolboxCategory([]),
+        wpimath_geometry_Ellipse2d.getToolboxCategory([]),
         wpimath_geometry_Pose2d.getToolboxCategory([]),
         wpimath_geometry_Pose3d.getToolboxCategory([]),
         wpimath_geometry_Quaternion.getToolboxCategory([]),
+        wpimath_geometry_Rectangle2d.getToolboxCategory([]),
         wpimath_geometry_Rotation2d.getToolboxCategory([]),
         wpimath_geometry_Rotation3d.getToolboxCategory([]),
         wpimath_geometry_Transform2d.getToolboxCategory([]),
@@ -829,35 +876,43 @@ export function getToolboxCategories() {
         wpimath_kinematics_DifferentialDriveKinematics.getToolboxCategory([]),
         wpimath_kinematics_DifferentialDriveKinematicsBase.getToolboxCategory([]),
         wpimath_kinematics_DifferentialDriveOdometry.getToolboxCategory([]),
+        wpimath_kinematics_DifferentialDriveOdometry3d.getToolboxCategory([]),
+        wpimath_kinematics_DifferentialDriveOdometry3dBase.getToolboxCategory([]),
         wpimath_kinematics_DifferentialDriveOdometryBase.getToolboxCategory([]),
         wpimath_kinematics_DifferentialDriveWheelPositions.getToolboxCategory([]),
         wpimath_kinematics_DifferentialDriveWheelSpeeds.getToolboxCategory([]),
         wpimath_kinematics_MecanumDriveKinematics.getToolboxCategory([]),
         wpimath_kinematics_MecanumDriveKinematicsBase.getToolboxCategory([]),
         wpimath_kinematics_MecanumDriveOdometry.getToolboxCategory([]),
+        wpimath_kinematics_MecanumDriveOdometry3d.getToolboxCategory([]),
+        wpimath_kinematics_MecanumDriveOdometry3dBase.getToolboxCategory([]),
         wpimath_kinematics_MecanumDriveOdometryBase.getToolboxCategory([]),
         wpimath_kinematics_MecanumDriveWheelPositions.getToolboxCategory([]),
         wpimath_kinematics_MecanumDriveWheelSpeeds.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive2Kinematics.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive2KinematicsBase.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive2Odometry.getToolboxCategory([]),
+        wpimath_kinematics_SwerveDrive2Odometry3d.getToolboxCategory([]),
+        wpimath_kinematics_SwerveDrive2Odometry3dBase.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive2OdometryBase.getToolboxCategory([]),
-        wpimath_kinematics_SwerveDrive2WheelPositions.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive3Kinematics.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive3KinematicsBase.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive3Odometry.getToolboxCategory([]),
+        wpimath_kinematics_SwerveDrive3Odometry3d.getToolboxCategory([]),
+        wpimath_kinematics_SwerveDrive3Odometry3dBase.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive3OdometryBase.getToolboxCategory([]),
-        wpimath_kinematics_SwerveDrive3WheelPositions.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive4Kinematics.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive4KinematicsBase.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive4Odometry.getToolboxCategory([]),
+        wpimath_kinematics_SwerveDrive4Odometry3d.getToolboxCategory([]),
+        wpimath_kinematics_SwerveDrive4Odometry3dBase.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive4OdometryBase.getToolboxCategory([]),
-        wpimath_kinematics_SwerveDrive4WheelPositions.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive6Kinematics.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive6KinematicsBase.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive6Odometry.getToolboxCategory([]),
+        wpimath_kinematics_SwerveDrive6Odometry3d.getToolboxCategory([]),
+        wpimath_kinematics_SwerveDrive6Odometry3dBase.getToolboxCategory([]),
         wpimath_kinematics_SwerveDrive6OdometryBase.getToolboxCategory([]),
-        wpimath_kinematics_SwerveDrive6WheelPositions.getToolboxCategory([]),
         wpimath_kinematics_SwerveModulePosition.getToolboxCategory([]),
         wpimath_kinematics_SwerveModuleState.getToolboxCategory([]),
       ]),

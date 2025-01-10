@@ -6,8 +6,8 @@ import * as pythonVariable from "../python_variable";
 // Blocks for class hal.REVPHVersion
 
 export function initialize() {
-  pythonVariable.initializeInstanceVariableGetter("hal.REVPHVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["", "", "", "", "", ""]);
-  pythonVariable.initializeInstanceVariableSetter("hal.REVPHVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("hal.REVPHVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["The firmware fix version.", "The firmware major version.", "The firmware minor version.", "The hardware major version.", "The hardware minor version.", "The device's unique ID."]);
+  pythonVariable.initializeInstanceVariableSetter("hal.REVPHVersion", "int", ["firmwareFix", "firmwareMajor", "firmwareMinor", "hardwareMajor", "hardwareMinor", "uniqueId"], ["The firmware fix version.", "The firmware major version.", "The firmware minor version.", "The hardware major version.", "The hardware minor version.", "The device's unique ID."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {

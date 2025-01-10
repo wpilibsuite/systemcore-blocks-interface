@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
 import * as pythonEnum from "../python_enum";
+import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.ADXL362
 

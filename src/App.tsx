@@ -173,6 +173,7 @@ const App = () => {
     if (isFirstRender.current) {
       initializeBlocks();
       Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
+      //testAllBlocksInToolbox(getToolboxJSON([]).contents);
       isFirstRender.current = false;
     }
   }, []);
@@ -197,7 +198,6 @@ const App = () => {
 
         // Set the toolbox.
         const toolboxJSON = getToolboxJSON([]);
-        //testAllBlocksInToolbox(toolboxJSON.contents);
         blocklyWorkspace.updateToolbox(toolboxJSON);
       }
     }

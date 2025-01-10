@@ -6,8 +6,8 @@ import * as pythonVariable from "../python_variable";
 // Blocks for class wpilib.PneumaticHub.Version
 
 export function initialize() {
-  pythonVariable.initializeInstanceVariableGetter("wpilib.PneumaticHub.Version", "int", ["FirmwareFix", "FirmwareMajor", "FirmwareMinor", "HardwareMajor", "HardwareMinor", "UniqueId"], ["", "", "", "", "", ""]);
-  pythonVariable.initializeInstanceVariableSetter("wpilib.PneumaticHub.Version", "int", ["FirmwareFix", "FirmwareMajor", "FirmwareMinor", "HardwareMajor", "HardwareMinor", "UniqueId"], ["", "", "", "", "", ""]);
+  pythonVariable.initializeInstanceVariableGetter("wpilib.PneumaticHub.Version", "int", ["FirmwareFix", "FirmwareMajor", "FirmwareMinor", "HardwareMajor", "HardwareMinor", "UniqueId"], ["The firmware fix version.", "The firmware major version.", "The firmware minor version.", "The hardware major version.", "The hardware minor version.", "The device's unique ID."]);
+  pythonVariable.initializeInstanceVariableSetter("wpilib.PneumaticHub.Version", "int", ["FirmwareFix", "FirmwareMajor", "FirmwareMinor", "HardwareMajor", "HardwareMinor", "UniqueId"], ["The firmware fix version.", "The firmware major version.", "The firmware minor version.", "The hardware major version.", "The hardware minor version.", "The device's unique ID."]);
 }
 
 export function getToolboxCategory(subcategories: any): Category {
