@@ -35,7 +35,14 @@ import * as storage from './storage/client_side_storage.js';
 import * as commonStorage from './storage/common_storage.js';
 
 
-const NewWorkspaceModal = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
+type NewWorkspaceModalProps = {
+  isOpen: boolean;
+  getWorkspaceNames: () => string[];
+  onOk: (w: string) => void;
+  onCancel: () => void;
+}
+
+const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
   const [value, setValue] = useState('');
   const [workspaceNames, setWorkspaceNames] = useState([]);
 
@@ -91,7 +98,16 @@ const NewWorkspaceModal = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
   );
 };
 
-const NewOpModeModal = ({ isOpen, getCurrentWorkspaceName, getOpModeNames, onOk, onCancel }) => {
+
+type NewOpModeModalProps = {
+  isOpen: boolean;
+  getCurrentWorkspaceName: () => string;
+  getOpModeNames: () => string[];
+  onOk: (w: string, o: string) => void;
+  onCancel: () => void;
+}
+
+const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorkspaceName, getOpModeNames, onOk, onCancel }) => {
   const [value, setValue] = useState('');
   const [workspaceName, setWorkspaceName] = useState('');
   const [opModeNames, setOpModeNames] = useState([]);

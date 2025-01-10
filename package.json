@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@shadcn/ui": "^0.0.4",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "autoprefixer": "^10.4.20",
     "customize-cra": "^1.0.0",
     "postcss": "^8.4.49",
