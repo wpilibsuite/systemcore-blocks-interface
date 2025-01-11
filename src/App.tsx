@@ -176,18 +176,18 @@ type BlocklyComponentType = {
 
 type TreeKey = string | number | bigint;
 
-interface TreeData {
+interface TreeNode {
   key: string;
   title: string;
   icon?: React.ReactNode;
-  children?: TreeData[];
+  children?: TreeNode[];
 }
 
 const App: React.FC = () => {
   const isFirstRender = useRef(true);
   const [triggerListModules, setTriggerListModules] = useState(false);
   const [modules, setModules] = useState<commonStorage.Workspace[]>([]);
-  const [treeData, setTreeData] = useState<TreeData[]>([]);
+  const [treeData, setTreeData] = useState<any>([]);
   const [treeExpandedKeys, setTreeExpandedKeys] = React.useState<string[]>([]);
   const [pathToExpand, setPathToExpand] = React.useState('');
   const [treeSelectedPath, setTreeSelectedPath] = useState('');
@@ -257,18 +257,18 @@ const App: React.FC = () => {
 
   // When the list of modules has been fetched, fill the tree.
   useEffect(() => {
-    const treeDataArray: TreeData[] = [];
+    const treeDataArray: TreeNode[] = [];
     modules.forEach((workspace) => {
-      const children: TreeData[] = [];
+      const children: TreeNode[] = [];
       workspace.opModes.forEach((opMode) => {
-        const child: TreeData = {
+        const child: TreeNode = {
           key: opMode.modulePath,
           title: opMode.moduleName,
           icon: <FileOutlined />,
         };
         children.push(child);
       });
-      const parent: TreeData = {
+      const parent: TreeNode = {
         key: workspace.modulePath,
         title: workspace.workspaceName,
         children: children,
