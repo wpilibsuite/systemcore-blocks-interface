@@ -4,10 +4,13 @@
   "homepage": "/blocks",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^5.5.2",
     "@blockly/theme-dark": "^7.0.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
     "antd": "^5.22.1",
     "blockly": "^11.1.1",
     "lucide-react": "^0.460.0",
@@ -45,11 +48,13 @@
   },
   "devDependencies": {
     "@shadcn/ui": "^0.0.4",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "autoprefixer": "^10.4.20",
     "customize-cra": "^1.0.0",
     "postcss": "^8.4.49",
     "raw-loader": "^4.0.2",
     "react-app-rewired": "^2.2.1",
-    "tailwindcss": "^3.4.15"
+    "tailwindcss": "^3.4.15",
+    "typescript-strict-plugin": "^2.4.4"
   }
 }

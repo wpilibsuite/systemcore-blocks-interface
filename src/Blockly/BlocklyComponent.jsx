@@ -4,19 +4,11 @@ import * as locale from 'blockly/msg/en';
 import DarkTheme from '@blockly/theme-dark';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
-import '../blocks/misc';   // Defines a few miscellaneous blocks like a comment block.
-import '../blocks/python'; // Defines blocks for accessing code in python (like wpilib, etc).
 
-import { extendedPythonGenerator } from '../editor/extended_python_generator.js';
-import * as toolbox from '../editor/toolbox.js';
-//import { testAllBlocksInToolbox } from '../editor/toolbox_tests.js';
-import * as storage from '../storage/client_side_storage.js';
-import * as commonStorage from '../storage/common_storage.js';
 
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
   const workspaceRef = useRef();
-  const extendedPythonGeneratorRef = useRef();
 
   // Initialize Blockly
   useEffect(() => {
@@ -25,7 +17,11 @@ function BlocklyComponent(props) {
       theme: DarkTheme,
       horizontalLayout: false, // Forces vertical layout for the workspace
 
-      toolbox: toolbox.getToolboxJSON(),
+      // Start with an empty (but not null) toolbox. It will be replaced later.
+      toolbox: {
+        kind: 'categoryToolbox',
+        contents: [],
+      },
       grid: {
         spacing: 20,
         length: 3,
@@ -57,31 +53,6 @@ function BlocklyComponent(props) {
     const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
     workspaceRef.current = workspace;
 
-    // Create extended python generator
-    extendedPythonGeneratorRef.current = extendedPythonGenerator;
-    // TODO(lizlooney): Figure out if we have to add reserved words for wpilib module names.
-    // extendedPythonGenerator.addReservedWords(???);
-
-    //testAllBlocksInToolbox(workspace);
-
-    // Add change listener
-    const onWorkspaceChange = (event) => {
-      if (event.isUiEvent) {
-        // UI events are things like scrolling, zooming, etc.
-        // No need to regenerate python code after one of these.
-        return;
-      }
-      if (workspace.isDragging()) {
-        // Don't regenerate python code mid-drag.
-        return;
-      }
-      if (props.onGeneratedCodeChanged) {
-        const code = extendedPythonGenerator.workspaceToCode(workspace);
-        props.onGeneratedCodeChanged(code);
-      }
-    };
-    workspace.addChangeListener(onWorkspaceChange);
-
     // Cleanup on unmount
     return () => {
       if (workspaceRef.current) {
@@ -92,16 +63,17 @@ function BlocklyComponent(props) {
 
   // Handle workspace resize
   useEffect(() => {
-    if (blocklyDiv.current) {
+    const div = blocklyDiv.current;
+    if (div) {
       const resizeObserver = new ResizeObserver(() => {
         if (workspaceRef.current) {
           Blockly.svgResize(workspaceRef.current);
         }
       });
-      resizeObserver.observe(blocklyDiv.current);
+      resizeObserver.observe(div);
 
       return () => {
-        resizeObserver.unobserve(blocklyDiv.current);
+        resizeObserver.unobserve(div);
       };
     }
   }, [blocklyDiv]);
@@ -119,9 +91,8 @@ function BlocklyComponent(props) {
     <div
       className="blockly-workspace-container"
       style={{
-        width: props.width || '100%',
+        width: '100%',
         height: '100%',
-        ...props.style,
       }}
     >
       <div
