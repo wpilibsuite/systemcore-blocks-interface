@@ -26,7 +26,10 @@ import * as storage from '../storage/client_side_storage';
 import * as commonStorage from '../storage/common_storage';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
-function onChangeBeforeFinishedLoading(event) {
+function onChangeBeforeFinishedLoading(event: Blockly.Events.Abstract) {
+  if (!event.workspaceId) {
+    return;
+  }
   if (event.type === Blockly.Events.FINISHED_LOADING) {
     const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
     if (blocklyWorkspace) {
@@ -52,43 +55,50 @@ function onChangeBeforeFinishedLoading(event) {
   // If there is any differences, put a warning on the block.
 }
 
-function onChangeAfterFinishedLoading(event) {
+function onChangeAfterFinishedLoading(event: Blockly.Events.Abstract) {
   if (event.isUiEvent) {
     // UI events are things like scrolling, zooming, etc.
     return;
   }
+  if (!event.workspaceId) {
+    return;
+  }
   const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
-  if (blocklyWorkspace && blocklyWorkspace.isDragging()) {
+  if (!blocklyWorkspace) {
+    return;
+  }
+  if ((blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
     return;
   }
   // TODO(lizlooney): do we need to do anything here?
 }
 
-export function loadModuleBlocks(blocklyWorkspace, modulePath) {
+export function loadModuleBlocks(blocklyWorkspace: Blockly.WorkspaceSvg, modulePath: string) {
   storage.fetchModuleContent(
     modulePath,
-    function(moduleContent, errorMessage) {
+    (moduleContent: string | null, errorMessage: string) => {
       if (errorMessage) {
         alert(errorMessage);
         return;
       }
-      // Remove all of the listeners we may have added.
-      blocklyWorkspace.removeChangeListener(onChangeAfterFinishedLoading);
-      blocklyWorkspace.removeChangeListener(onChangeBeforeFinishedLoading);
-      blocklyWorkspace.clear();
-      // Add the before-finish-loading listener.
-      blocklyWorkspace.addChangeListener(onChangeBeforeFinishedLoading);
-      const blocksContent = commonStorage.extractBlocksContent(moduleContent);
-      if (blocksContent) {
-        Blockly.serialization.workspaces.load(JSON.parse(blocksContent), blocklyWorkspace);
+      if (moduleContent != null) {
+        // Remove all of the listeners we may have added.
+        blocklyWorkspace.removeChangeListener(onChangeAfterFinishedLoading);
+        blocklyWorkspace.removeChangeListener(onChangeBeforeFinishedLoading);
+        blocklyWorkspace.clear();
+        // Add the before-finish-loading listener.
+        blocklyWorkspace.addChangeListener(onChangeBeforeFinishedLoading);
+        const blocksContent = commonStorage.extractBlocksContent(moduleContent);
+        if (blocksContent) {
+          Blockly.serialization.workspaces.load(JSON.parse(blocksContent), blocklyWorkspace);
+        }
+        updateToolbox(blocklyWorkspace, modulePath);
       }
-
-      updateToolbox(blocklyWorkspace, modulePath );
     }
   );
 }
 
-function updateToolbox(blocklyWorkspace, modulePath) {
+function updateToolbox(blocklyWorkspace: Blockly.WorkspaceSvg, modulePath: string): void {
   const workspaceName = commonStorage.getWorkspaceName(modulePath);
   const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
   if (modulePath === workspacePath) {
@@ -99,19 +109,21 @@ function updateToolbox(blocklyWorkspace, modulePath) {
   // Otherwise, we add the exported blocks from the Workspace.
   storage.fetchModuleContent(
     workspacePath,
-    function(workspaceContent, errorMessage) {
+    (workspaceContent: string | null, errorMessage: string) => {
       if (errorMessage) {
         alert(errorMessage);
         blocklyWorkspace.updateToolbox(getToolboxJSON([]));
         return;
       }
-      const exportedBlocks = commonStorage.extractExportedBlocks(
-        workspaceName, workspaceContent);
-      blocklyWorkspace.updateToolbox(getToolboxJSON(exportedBlocks));
+      if (workspaceContent != null) {
+        const exportedBlocks = commonStorage.extractExportedBlocks(
+            workspaceName, workspaceContent);
+        blocklyWorkspace.updateToolbox(getToolboxJSON(exportedBlocks));
+      }
     });
 }
 
-export function saveModule(blocklyWorkspace, modulePath) {
+export function saveModule(blocklyWorkspace: Blockly.WorkspaceSvg, modulePath: string): void {
   const pythonCode = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
   const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(blocklyWorkspace));
   const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(blocklyWorkspace));

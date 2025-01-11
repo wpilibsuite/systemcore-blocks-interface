@@ -44,7 +44,7 @@ type NewWorkspaceModalProps = {
 
 const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
   const [value, setValue] = useState('');
-  const [workspaceNames, setWorkspaceNames] = useState([]);
+  const [workspaceNames, setWorkspaceNames] = useState<string[]>([]);
 
   return (
     <Modal
@@ -110,7 +110,7 @@ type NewOpModeModalProps = {
 const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorkspaceName, getOpModeNames, onOk, onCancel }) => {
   const [value, setValue] = useState('');
   const [workspaceName, setWorkspaceName] = useState('');
-  const [opModeNames, setOpModeNames] = useState([]);
+  const [opModeNames, setOpModeNames] = useState<string[]>([]);
 
   return (
     <Modal
@@ -170,16 +170,29 @@ const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorks
   );
 };
 
-const App = () => {
+type BlocklyComponentType = {
+  getBlocklyWorkspace: () => Blockly.WorkspaceSvg,
+};
+
+type TreeKey = string | number | bigint;
+
+interface TreeData {
+  key: string;
+  title: string;
+  icon?: React.ReactNode;
+  children?: TreeData[];
+}
+
+const App: React.FC = () => {
   const isFirstRender = useRef(true);
   const [triggerListModules, setTriggerListModules] = useState(false);
-  const [modules, setModules] = useState([]);
-  const [treeData, setTreeData] = useState([])
-  const [treeExpandedKeys, setTreeExpandedKeys] = React.useState([])
+  const [modules, setModules] = useState<commonStorage.Workspace[]>([]);
+  const [treeData, setTreeData] = useState<TreeData[]>([]);
+  const [treeExpandedKeys, setTreeExpandedKeys] = React.useState<string[]>([]);
   const [pathToExpand, setPathToExpand] = React.useState('');
   const [treeSelectedPath, setTreeSelectedPath] = useState('');
   const [currentModulePath, setCurrentModulePath] = useState('');
-  const blocklyComponent = useRef(null);
+  const blocklyComponent = useRef<BlocklyComponentType | null>(null);
   const [generatedCode, setGeneratedCode] = useState('');
   const [isNewWorkspaceModalOpen, setIsNewWorkspaceModalOpen] = useState(false);
   const [isNewOpModeModalOpen, setIsNewOpModeModalOpen] = useState(false);
@@ -196,11 +209,13 @@ const App = () => {
 
   // Fetch the list of modules from storage.
   useEffect(() => {
-    storage.listModules((array, error) => {
-      if (array) {
-        setModules(array)
-      } else if (error) {
+    storage.listModules((array: commonStorage.Workspace[] | null, error: string) => {
+      if (error) {
         console.log(error);
+        return
+      }
+      if (array != null) {
+        setModules(array)
       }
     });
   }, [triggerListModules]);
@@ -219,14 +234,20 @@ const App = () => {
     }
   }, [blocklyComponent]);
 
-  const handleBlocksChanged = (event) => {
+  const handleBlocksChanged = (event: Blockly.Events.Abstract) => {
     if (event.isUiEvent) {
       // UI events are things like scrolling, zooming, etc.
       // No need to regenerate python code after one of these.
       return;
     }
+    if (!event.workspaceId) {
+      return;
+    }
     const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
-    if (blocklyWorkspace && (blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
+    if (!blocklyWorkspace) {
+      return;
+    }
+    if ((blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
       // Don't regenerate python code mid-drag.
       return;
     }
@@ -236,40 +257,43 @@ const App = () => {
 
   // When the list of modules has been fetched, fill the tree.
   useEffect(() => {
-    const treeData = [];
+    const treeDataArray: TreeData[] = [];
     modules.forEach((workspace) => {
-      const parent = {
-        title: workspace.workspaceName,
-        key: workspace.modulePath,
-        icon: <FolderOutlined />,
-        children: [],
-      };
+      const children: TreeData[] = [];
       workspace.opModes.forEach((opMode) => {
-        const child = {
-          title: opMode.moduleName,
+        const child: TreeData = {
           key: opMode.modulePath,
+          title: opMode.moduleName,
           icon: <FileOutlined />,
         };
-        parent.children.push(child);
+        children.push(child);
       });
-      treeData.push(parent);
+      const parent: TreeData = {
+        key: workspace.modulePath,
+        title: workspace.workspaceName,
+        children: children,
+        icon: <FolderOutlined />,
+      };
+      treeDataArray.push(parent);
     });
-    setTreeData(treeData);
+    setTreeData(treeDataArray);
 
     if (!currentModulePath) {
-      storage.fetchEntry('currentModulePath', (modulePath, error) => {
-        if (modulePath) {
+      storage.fetchEntry('currentModulePath', (modulePath: string | null, error: string) => {
+        if (error) {
+          console.log(error);
+          return;
+        }
+        if (modulePath != null) {
           if (!currentModulePath) {
             setCurrentModulePath(modulePath);
           }
-        } else if (error) {
-          console.log(error);
-        }
+        } 
       });
     }
   }, [modules, currentModulePath]);
 
-  const handleNewWorkspaceOk = (workspaceName: string, callback) => {
+  const handleNewWorkspaceOk = (workspaceName: string, callback: (success: boolean, error: string) => void) => {
     const workspaceContent = commonStorage.newModuleContent();
     const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
     storage.createModule(
@@ -278,7 +302,7 @@ const App = () => {
   };
 
   const getWorkspaceNames = (): string[] => {
-    const workspaceNames = [];
+    const workspaceNames: string[] = [];
     modules.forEach((workspace) => {
       workspaceNames.push(workspace.workspaceName);
     });
@@ -290,7 +314,7 @@ const App = () => {
   };
 
   const getOpModeNames = (workspaceName: string): string[] => {
-    const opModeNames = [];
+    const opModeNames: string[] = [];
     for (const workspace of modules) {
       if (workspace.workspaceName === workspaceName) {
         workspace.opModes.forEach((opMode) => {
@@ -302,7 +326,7 @@ const App = () => {
     return opModeNames;
   };
 
-  const handleNewOpModeOk = (workspaceName: string, opModeName: string, callback) => {
+  const handleNewOpModeOk = (workspaceName: string, opModeName: string, callback: (success: boolean, error: string) => void) => {
     const opModeContent = commonStorage.newModuleContent();
     const opModePath = commonStorage.makeModulePath(workspaceName, opModeName);
     storage.createModule(
@@ -311,10 +335,10 @@ const App = () => {
   };
 
   const handleSave = () => {
-    if (currentModulePath) {
+    if (currentModulePath && blocklyComponent.current) {
       editor.saveModule(
-        blocklyComponent.current.getBlocklyWorkspace(),
-        currentModulePath);
+          blocklyComponent.current.getBlocklyWorkspace(),
+          currentModulePath);
     }
   };
 
@@ -326,12 +350,19 @@ const App = () => {
     console.log('Download clicked');
   };
 
-  const handleModuleSelected = (selectedKeys, e) => {
-    // e:{selected: boolean, selectedNodes, node, event}
+  const handleModuleExpanded = (expandedKeys: TreeKey[], info: { node: never; expanded: boolean; nativeEvent: MouseEvent; }) => {
+    const stringKeys: string[] = [];
+    expandedKeys.forEach((key) => {
+      stringKeys.push(key as string);
+    });
+    setTreeExpandedKeys(stringKeys);
+  };
+
+  const handleModuleSelected = (selectedKeys: TreeKey[], info: { event: "select"; selected: boolean; node: never; selectedNodes: never[]; nativeEvent: MouseEvent; }) => {
     if (selectedKeys.length === 1) {
       // TODO(lizlooney): Before loading different module, check whether the
       // blocks need to be saved.
-      const modulePath = selectedKeys[0];
+      const modulePath = selectedKeys[0] as string;
       setCurrentModulePath(modulePath);
     }
   };
@@ -349,7 +380,9 @@ const App = () => {
       setPathToExpand(workspacePath);
 
       storage.saveEntry('currentModulePath', currentModulePath);
-      editor.loadModuleBlocks(blocklyComponent.current.getBlocklyWorkspace(), currentModulePath);
+      if (blocklyComponent.current) {
+        editor.loadModuleBlocks(blocklyComponent.current.getBlocklyWorkspace(), currentModulePath);
+      }
     }
   }, [currentModulePath]);
 
@@ -465,11 +498,11 @@ const App = () => {
         >
           <Splitter.Panel min='2%' defaultSize='15%'>
             <Tree
-              showIcon={true}
-              blockNode={true}
+              showIcon
+              blockNode
               treeData={treeData}
               expandedKeys={treeExpandedKeys}
-              onExpand={setTreeExpandedKeys}
+              onExpand={handleModuleExpanded}
               selectedKeys={[treeSelectedPath]}
               onSelect={handleModuleSelected}
             />
@@ -536,7 +569,7 @@ const App = () => {
         getOpModeNames={getOpModeNames}
         onOk={(w, o) => {
           setIsNewOpModeModalOpen(false);
-          handleNewOpModeOk(w, o, (success, error) => {
+          handleNewOpModeOk(w, o, (success: boolean, error: string) => {
             if (success) {
               setTriggerListModules(!triggerListModules);
             } else if (error) {

@@ -23,18 +23,23 @@ import * as commonStorage from './common_storage';
 
 // Functions for saving blocks modules to client side storage.
 
-const databaseName = 'systemcore-blocks-interface';
-let db = false;
+export type BooleanCallback = (success: boolean, error: string) => void;
+export type StringCallback = (value: string | null, error: string) => void;
+export type ModulesCallback = (modules: commonStorage.Workspace[] | null, error: string) => void;
 
-function openDatabase(callback) {
+
+const databaseName = 'systemcore-blocks-interface';
+let db: IDBDatabase | null = null;
+
+function openDatabase(callback: BooleanCallback): void {
   const openRequest = window.indexedDB.open(databaseName, 1);
-  openRequest.onerror = function(event) {
+  openRequest.onerror = (event: Event) => {
     console.log('IndexedDB open request failed:');
     console.log(openRequest.error);
     callback(false, 'openRequest error');
   };
-  openRequest.onupgradeneeded = function(event) {
-    const db1 = event.target.result;
+  openRequest.onupgradeneeded = (event: Event) => {
+    const db1 = openRequest.result;
 
     var stores = db1.objectStoreNames;
 
@@ -48,15 +53,17 @@ function openDatabase(callback) {
       db1.createObjectStore('entries', { keyPath: 'key' });
     }
   };
-  openRequest.onsuccess = function(event) {
-    db = event.target.result;
+  openRequest.onsuccess = (event: Event) => {
+    db = openRequest.result;
     callback(true, '');
   };
 }
 
-export function saveEntry(entryKey, entryValue, callback) {
+export function saveEntry(
+    entryKey: string, entryValue: string,
+    callback: BooleanCallback | null = null): void {
   if (!db) {
-    openDatabase(function(success, errorReason) {
+    openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         saveEntry(entryKey, entryValue, callback);
       } else {
@@ -68,31 +75,31 @@ export function saveEntry(entryKey, entryValue, callback) {
     return;
   }
   const transaction = db.transaction(['entries'], 'readwrite');
-  transaction.oncomplete = function(event) {
+  transaction.oncomplete = (event: Event) => {
     if (callback) {
       callback(true, '');
     }
   };
   const entriesObjectStore = transaction.objectStore('entries');
   const getRequest = entriesObjectStore.get(entryKey);
-  getRequest.onerror = function(event) {
+  getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
     if (callback) {
       callback(false, 'Save entry failed. (getRequest error)');
     }
   };
-  getRequest.onsuccess = function(event) {
+  getRequest.onsuccess = (event: Event) => {
     let value;
-    if (event.target.result === undefined) {
+    if (getRequest.result === undefined) {
       value = Object.create(null);
       value.key = entryKey;
     } else {
-      value = event.target.result;
+      value = getRequest.result;
     }
     value.value = entryValue;
     const putRequest = entriesObjectStore.put(value);
-    putRequest.onerror = function(event) {
+    putRequest.onerror = (event: Event) => {
       console.log('IndexedDB put request failed:');
       console.log(putRequest.error);
       if (callback) {
@@ -102,9 +109,9 @@ export function saveEntry(entryKey, entryValue, callback) {
   };
 }
 
-export function fetchEntry(entryKey, callback) {
+export function fetchEntry(entryKey: string, callback: StringCallback): void {
   if (!db) {
-    openDatabase(function(success, errorReason) {
+    openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         fetchEntry(entryKey, callback);
       } else {
@@ -115,25 +122,25 @@ export function fetchEntry(entryKey, callback) {
   }
   const getRequest = db.transaction(['entries'], 'readonly')
       .objectStore('entries').get(entryKey);
-  getRequest.onerror = function(event) {
+  getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
     callback(null, 'Fetch entry failed. (getRequest error)');
   };
-  getRequest.onsuccess = function(event) {
-    if (event.target.result === undefined) {
+  getRequest.onsuccess = (event: Event) => {
+    if (getRequest.result === undefined) {
       // Entry does not exist.
       callback(null, 'Entry does not exist');
       return;
     }
-    const value = event.target.result;
+    const value = getRequest.result;
     callback(value.value, '');
   };
 }
 
-export function listModules(callback) {
+export function listModules(callback: ModulesCallback): void {
   if (!db) {
-    openDatabase(function(success, errorReason) {
+    openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         listModules(callback);
       } else {
@@ -142,22 +149,22 @@ export function listModules(callback) {
     });
     return;
   }
-  const workspaces = {}; // key is workspace name, value is Workspace item
-  const opModes = {}; // key is workspace name, value is list of OpMode items
+  const workspaces: {[key: string]: commonStorage.Workspace} = {}; // key is workspace name, value is Workspace
+  const opModes: {[key: string]: commonStorage.OpMode[]} = {}; // key is workspace name, value is list of OpModes
   const openCursorRequest = db.transaction(['modules'], 'readonly')
       .objectStore('modules')
       .openCursor();
-  openCursorRequest.onerror = function(event) {
+  openCursorRequest.onerror = (event: Event) => {
     console.log('IndexedDB openCursor request failed:');
     console.log(openCursorRequest.error);
     callback(null, 'List modules failed. Could not open cursor.');
   };
-  openCursorRequest.onsuccess = function(event) {
-    const cursor = event.target.result;
+  openCursorRequest.onsuccess = (event: Event) => {
+    const cursor = openCursorRequest.result;
     if (cursor) {
       const value = cursor.value;
       const path = value.path;
-      const item = {
+      const module: commonStorage.Module = {
         modulePath: path,
         moduleType: value.type,
         workspaceName: commonStorage.getWorkspaceName(path),
@@ -165,25 +172,32 @@ export function listModules(callback) {
         dateModifiedMillis: value.dateModifiedMillis,
       }
       if (value.type === commonStorage.MODULE_TYPE_WORKSPACE) {
-        workspaces[item.workspaceName] = item;
-        if (item.workspaceName in opModes) {
-          item.opModes = opModes[item.workspaceName];
-          delete opModes[item.workspaceName];
+        const workspace: commonStorage.Workspace = {
+          ...module,
+          opModes: [],
+        };
+        workspaces[workspace.workspaceName] = workspace;
+        if (workspace.workspaceName in opModes) {
+          workspace.opModes = opModes[workspace.workspaceName];
+          delete opModes[workspace.workspaceName];
         } else {
-          item.opModes = [];
+          workspace.opModes = [];
         }
       } else if (value.type === commonStorage.MODULE_TYPE_OPMODE) {
-        if (item.workspaceName in workspaces) {
-          workspaces[item.workspaceName].opModes.push(item);
-        } else if (item.workspaceName in opModes) {
-          opModes[item.workspaceName].push(item);
+        const opMode: commonStorage.OpMode = {
+          ...module,
+        };
+        if (opMode.workspaceName in workspaces) {
+          workspaces[opMode.workspaceName].opModes.push(opMode);
+        } else if (opMode.workspaceName in opModes) {
+          opModes[opMode.workspaceName].push(opMode);
         } else {
-          opModes[item.workspaceName] = [item];
+          opModes[opMode.workspaceName] = [opMode];
         }
       }
       cursor.continue();
     } else {
-      const modules = [];
+      const modules: commonStorage.Workspace[] = [];
       const sortedWorkspaceNames = Object.keys(workspaces).sort();
       sortedWorkspaceNames.forEach((workspaceName) => {
         modules.push(workspaces[workspaceName]);
@@ -193,9 +207,11 @@ export function listModules(callback) {
   };
 }
 
-export function fetchModuleContent(modulePath, callback) {
+export function fetchModuleContent(
+    modulePath: string,
+    callback : (content: string | null, error: string) => void): void {
   if (!db) {
-    openDatabase(function(success, errorReason) {
+    openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         fetchModuleContent(modulePath, callback);
       } else {
@@ -206,35 +222,41 @@ export function fetchModuleContent(modulePath, callback) {
   }
   const getRequest = db.transaction(['modules'], 'readonly')
       .objectStore('modules').get(modulePath);
-  getRequest.onerror = function(event) {
+  getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
     callback(null, 'Fetch module failed. (getRequest error)');
   };
-  getRequest.onsuccess = function(event) {
-    if (event.target.result === undefined) {
+  getRequest.onsuccess = (event: Event) => {
+    if (getRequest.result === undefined) {
       // Module does not exist.
       callback(null, 'Module does not exist');
       return;
     }
-    const value = event.target.result;
+    const value = getRequest.result;
     callback(value.content, '');
   };
 }
 
-export function createModule(moduleType, modulePath, moduleContent, callback) {
+export function createModule(
+    moduleType: string, modulePath: string, moduleContent: string,
+    callback: BooleanCallback): void {
   _saveModule(moduleType, modulePath, moduleContent, callback);
 }
 
-export function saveModule(modulePath, moduleContent, callback) {
+export function saveModule(
+    modulePath: string, moduleContent: string,
+    callback: BooleanCallback): void {
   _saveModule('', modulePath, moduleContent, callback);
 }
 
-function _saveModule(moduleType, modulePath, moduleContent, callback) {
+function _saveModule(
+    moduleType: string, modulePath: string, moduleContent: string,
+    callback: BooleanCallback): void {
   // When creating a new module, moduleType must be truthy.
   // When saving an existing module, the moduleType must be falsy.
   if (!db) {
-    openDatabase(function(success, errorReason) {
+    openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         _saveModule(moduleType, modulePath, moduleContent, callback);
       } else {
@@ -244,19 +266,19 @@ function _saveModule(moduleType, modulePath, moduleContent, callback) {
     return;
   }
   const transaction = db.transaction(['modules'], 'readwrite');
-  transaction.oncomplete = function(event) {
+  transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
   const getRequest = modulesObjectStore.get(modulePath);
-  getRequest.onerror = function(event) {
+  getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
     callback(false, 'Save module failed. (getRequest error)');
   };
-  getRequest.onsuccess = function(event) {
+  getRequest.onsuccess = (event: Event) => {
     let value;
-    if (event.target.result === undefined) {
+    if (getRequest.result === undefined) {
       if (!moduleType) {
         throw new Error('Module type must be truthy when creating a module.');
       }
@@ -267,12 +289,12 @@ function _saveModule(moduleType, modulePath, moduleContent, callback) {
       if (moduleType) {
         throw new Error('Module type must be falsy when saving an existing module.');
       }
-      value = event.target.result;
+      value = getRequest.result;
     }
     value.content = moduleContent;
     value.dateModifiedMillis = Date.now();
     const putRequest = modulesObjectStore.put(value);
-    putRequest.onerror = function(event) {
+    putRequest.onerror = (event: Event) => {
       console.log('IndexedDB put request failed:');
       console.log(putRequest.error);
       callback(false, 'Save module failed. (putRequest error)');
@@ -280,9 +302,11 @@ function _saveModule(moduleType, modulePath, moduleContent, callback) {
   };
 }
 
-export function renameWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
+export function renameWorkspace(
+    oldWorkspaceName: string, newWorkspaceName: string,
+    callback: BooleanCallback): void {
   if (!db) {
-    openDatabase(function(success, errorReason) {
+    openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         renameWorkspace(oldWorkspaceName, newWorkspaceName, callback);
       } else {
@@ -294,47 +318,49 @@ export function renameWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
   const oldWorkspacePath = commonStorage.makeModulePath(oldWorkspaceName, oldWorkspaceName);
   const newWorkspacePath = commonStorage.makeModulePath(newWorkspaceName, newWorkspaceName);
   const transaction = db.transaction(['modules'], 'readwrite');
-  transaction.oncomplete = function(event) {
+  transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
   const getRequest = modulesObjectStore.get(oldWorkspacePath);
-  getRequest.onerror = function(event) {
+  getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
     callback(false, 'Rename workspace failed. (getRequest error)');
   };
-  getRequest.onsuccess = function(event) {
-    if (event.target.result === undefined) {
+  getRequest.onsuccess = (event: Event) => {
+    if (getRequest.result === undefined) {
       callback(false, 'Rename workspace failed. (workspace not found)');
       return;
     }
-    const value = event.target.result;
+    const value = getRequest.result;
     value.path = newWorkspacePath;
     value.dateModifiedMillis = Date.now();
     const putRequest = modulesObjectStore.put(value);
-    putRequest.onerror = function(event) {
+    putRequest.onerror = (event: Event) => {
       console.log('IndexedDB put request failed:');
       console.log(putRequest.error);
       callback(false, 'Rename workspace failed. (putRequest error)');
     };
-    putRequest.onsuccess = function(event) {
+    putRequest.onsuccess = (event: Event) => {
       const deleteRequest = modulesObjectStore.delete(oldWorkspacePath);
-      deleteRequest.onerror = function(event) {
+      deleteRequest.onerror = (event: Event) => {
         console.log('IndexedDB delete request failed:');
         console.log(deleteRequest.error);
         callback(false, 'Rename workspace failed. (deleteRequest error)');
       };
-      deleteRequest.onsuccess = function(event) {
+      deleteRequest.onsuccess = (event: Event) => {
         // TODO(lizlooney): Rename all OpModes in the workspace.
       };
     };
   };
 }
 
-export function copyWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
+export function copyWorkspace(
+    oldWorkspaceName: string, newWorkspaceName: string,
+    callback: BooleanCallback): void {
   if (!db) {
-    openDatabase(function(success, errorReason) {
+    openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         copyWorkspace(oldWorkspaceName, newWorkspaceName, callback);
       } else {
@@ -346,39 +372,41 @@ export function copyWorkspace(oldWorkspaceName, newWorkspaceName, callback) {
   const oldWorkspacePath = commonStorage.makeModulePath(oldWorkspaceName, oldWorkspaceName);
   const newWorkspacePath = commonStorage.makeModulePath(newWorkspaceName, newWorkspaceName);
   const transaction = db.transaction(['modules'], 'readwrite');
-  transaction.oncomplete = function(event) {
+  transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
   const getRequest = modulesObjectStore.get(oldWorkspacePath);
-  getRequest.onerror = function(event) {
+  getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
     callback(false, 'Copy workspace failed. (getRequest error)');
   };
-  getRequest.onsuccess = function(event) {
-    if (event.target.result === undefined) {
+  getRequest.onsuccess = (event: Event) => {
+    if (getRequest.result === undefined) {
       callback(false, 'Copy workspace failed. (workspace not found)');
       return;
     }
-    const value = event.target.result;
+    const value = getRequest.result;
     value.path = newWorkspacePath;
     value.dateModifiedMillis = Date.now();
     const putRequest = modulesObjectStore.put(value);
-    putRequest.onerror = function(event) {
+    putRequest.onerror = (event: Event) => {
       console.log('IndexedDB put request failed:');
       console.log(putRequest.error);
       callback(false, 'Copy workspace failed. (putRequest error)');
     };
-    putRequest.onsuccess = function(event) {
+    putRequest.onsuccess = (event: Event) => {
       // TODO(lizlooney): Copy all OpModes in the workspace.
     };
   };
 }
 
-export function deleteWorkspaces(workspaceNames, callback) {
+export function deleteWorkspaces(
+    workspaceNames: string[],
+    callback: BooleanCallback): void {
   if (!db) {
-    openDatabase(function(success, errorReason) {
+    openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         deleteWorkspaces(workspaceNames, callback);
       } else {
@@ -387,9 +415,9 @@ export function deleteWorkspaces(workspaceNames, callback) {
     });
     return;
   }
-  const errorReasons = [];
-  const successes = [];
-  const callback1 = function(success, errorReason) {
+  const errorReasons: string[] = [];
+  const successes: boolean[] = [];
+  const callback1 = (success: boolean, errorReason: string) => {
     if (success) {
       successes.push(true);
     } else {
@@ -408,20 +436,32 @@ export function deleteWorkspaces(workspaceNames, callback) {
   });
 }
 
-export function deleteOneWorkspace(workspaceName, callback) {
+export function deleteOneWorkspace(
+    workspaceName: string,
+    callback: BooleanCallback): void {
+  if (!db) {
+    openDatabase((success: boolean, errorReason: string) => {
+      if (success) {
+        deleteOneWorkspace(workspaceName, callback);
+      } else {
+        callback(false, 'Delete workspace failed. (' + errorReason + ')');
+      }
+    });
+    return;
+  }
   const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
   const transaction = db.transaction(['modules'], 'readwrite');
-  transaction.oncomplete = function(event) {
+  transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
   const deleteRequest = modulesObjectStore.delete(workspacePath);
-  deleteRequest.onerror = function(event) {
+  deleteRequest.onerror = (event: Event) => {
     console.log('IndexedDB delete request failed:');
     console.log(deleteRequest.error);
     callback(false, 'deleteRequest error');
   };
-  deleteRequest.onsuccess = function(event) {
+  deleteRequest.onsuccess = (event: Event) => {
     // TODO(lizlooney): Delete all the OpModes in the workspace directory.
   };
 }

@@ -140,7 +140,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
     this.mapWorkspaceIdToExportedBlocks[workspace.id] = exportedBlocks;
   }
 
-  getExportedBlocks(workspace: Blockly.Workspace) {
+  getExportedBlocks(workspace: Blockly.Workspace): Block[] {
     return this.mapWorkspaceIdToExportedBlocks[workspace.id];
   }
 }

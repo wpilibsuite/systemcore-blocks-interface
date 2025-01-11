@@ -25,7 +25,9 @@ class FieldNonEditableText extends Blockly.FieldTextInput {
   constructor(value: string) {
     super(value);
     this.CURSOR = '';
-    this.showEditor_ = function(opt_quietInput) {};
+  }
+
+  protected override showEditor_() {
   }
 }
 

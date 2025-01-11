@@ -4,6 +4,7 @@
   "homepage": "/blocks",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^5.5.2",
     "@blockly/theme-dark": "^7.0.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

@@ -19,7 +19,23 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-// Functions related to modules, regardless of where the modules are stored.
+import {Block} from "../toolbox/items";
+
+// Types, constants, and functions related to modules, regardless of where the modules are stored.
+
+export type Module = {
+  modulePath: string,
+  moduleType: string,
+  workspaceName: string,
+  moduleName: string,
+  dateModifiedMillis: number,
+};
+
+export type OpMode = Module;
+
+export type Workspace = Module & {
+  opModes: OpMode[],
+};
 
 export const MODULE_TYPE_WORKSPACE = 'workspace';
 export const MODULE_TYPE_OPMODE = 'opmode';
@@ -29,7 +45,7 @@ export const MODULE_NAME_PLACEHOLDER = '%module_name%';
 /**
  * Returns true if the given name is a valid python module name.
  */
-export function isValidPythonModuleName(name) {
+export function isValidPythonModuleName(name: string): boolean {
   if (name) {
     return /^[a-z_][a-z0-9_]*$/.test(name);
   }
@@ -39,14 +55,14 @@ export function isValidPythonModuleName(name) {
 /**
  * Returns the module path for the given workspace and module names.
  */
-export function makeModulePath(workspaceName, moduleName) {
+export function makeModulePath(workspaceName: string, moduleName: string): string {
   return workspaceName + '/' + moduleName + '.py';
 }
 
 /**
  * Returns the workspace name for given module path.
  */
-export function getWorkspaceName(modulePath) {
+export function getWorkspaceName(modulePath: string): string {
   const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
   const result = regex.exec(modulePath)
   if (!result) {
@@ -58,7 +74,7 @@ export function getWorkspaceName(modulePath) {
 /**
  * Returns the module name for given module path.
  */
-export function getModuleName(modulePath) {
+export function getModuleName(modulePath: string): string {
   const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
   const result = regex.exec(modulePath)
   if (!result) {
@@ -70,11 +86,11 @@ export function getModuleName(modulePath) {
 /**
  * Returns the download file name for the given module path.
  */
-export function makeDownloadFileName(modulePath) {
+export function makeDownloadFileName(modulePath: string): string {
   return getWorkspaceName(modulePath) + '-' + getModuleName(modulePath) + '.wpilib_blocks';
 }
 
-export function makeUploadWorkspaceName(uploadFileName) {
+export function makeUploadWorkspaceName(uploadFileName: string): string {
   // Check if the name is <workspace name>-<workspace name>.
   const regex = new RegExp('^([a-z_][a-z0-9_]*)-([a-z_][a-z0-9_]*).wpilib_blocks$');
   const result = regex.exec(uploadFileName);
@@ -87,7 +103,7 @@ export function makeUploadWorkspaceName(uploadFileName) {
 /**
  * Returns the module content for a new module.
  */
-export function newModuleContent() {
+export function newModuleContent(): string {
   const pythonCode = '\n';
   const exportedBlocks = '[]';
   const blocksContent = '{}';
@@ -97,7 +113,7 @@ export function newModuleContent() {
 /**
  * Make the module content from the given python code and blocks content.
  */
-export function makeModuleContent(pythonCode, exportedBlocks, blocksContent) {
+export function makeModuleContent(pythonCode: string, exportedBlocks: string, blocksContent: string): string {
   let delimiter = 'BlocksContent';
   while (blocksContent.includes(delimiter) || exportedBlocks.includes(delimiter)) {
     delimiter += '.';
@@ -117,7 +133,7 @@ export function makeModuleContent(pythonCode, exportedBlocks, blocksContent) {
 /**
  * Extract the blocks content from the given module content.
  */
-export function extractBlocksContent(moduleContent) {
+export function extractBlocksContent(moduleContent: string): string {
   // The last line is """.
   const lastChars = '\n"""\n';
   if (!moduleContent.endsWith(lastChars) || moduleContent.length <= lastChars.length) {
@@ -145,7 +161,7 @@ export function extractBlocksContent(moduleContent) {
 /**
  * Extract the exportedBlocks from the given module content.
  */
-export function extractExportedBlocks(moduleName, moduleContent) {
+export function extractExportedBlocks(moduleName: string, moduleContent: string): Block[] {
   // The last line is """.
   const lastChars = '\n"""\n';
   if (!moduleContent.endsWith(lastChars) || moduleContent.length <= lastChars.length) {
@@ -173,15 +189,14 @@ export function extractExportedBlocks(moduleName, moduleContent) {
   // The exportedBlocks content is between the two delimiters.
   const iStartOfExportedBlocks = iStartOfPreviousDelimiter + delimiter.length + 1;
   const exportedBlocksContent = moduleContent.substring(iStartOfExportedBlocks, iEndOfExportedBlocks);
-  const exportedBlocks = JSON.parse(exportedBlocksContent);
-  for (let i = 0; i < exportedBlocks.length; i++) {
-    const block = exportedBlocks[i];
+  const exportedBlocks: Block[] = JSON.parse(exportedBlocksContent);
+  exportedBlocks.forEach((block) => {
     if (block.extraState?.importModule === MODULE_NAME_PLACEHOLDER) {
       block.extraState.importModule = moduleName;
     }
     if (block.fields?.MODULE === MODULE_NAME_PLACEHOLDER) {
       block.fields.MODULE = moduleName;
     }
-  }
+  });
   return exportedBlocks;
 }

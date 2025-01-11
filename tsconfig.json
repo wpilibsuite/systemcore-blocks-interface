@@ -11,9 +11,6 @@
     "jsx": "react",
     "allowJs": true,
     //"strict": true,
-    //"noImplicitAny": true,
-    "plugins": [
-      { "name": "typescript-strict-plugin" }
-    ]
+    "noImplicitAny": true,
   }
 }
