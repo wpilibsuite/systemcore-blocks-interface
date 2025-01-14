@@ -20,7 +20,7 @@ import {pythonGenerator} from 'blockly/python'
 
 import BlocklyComponent from './Blockly';
 
-import './blocks/misc';
+import * as CustomBlocks from './blocks/setup_custom_blocks';
 import './blocks/python_enum';
 import './blocks/python_function';
 import './blocks/python_variable';
@@ -200,8 +200,11 @@ const App: React.FC = () => {
   // When the app is loaded, initialize the blocks we provide.
   useEffect(() => {
     if (isFirstRender.current) {
-      initializeBlocks();
+      const forBlock = Object.create(null);
+      CustomBlocks.setup(forBlock);
+      Object.assign(pythonGenerator.forBlock, forBlock);
       Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
+      initializeBlocks();
       //testAllBlocksInToolbox(getToolboxJSON([]).contents);
       isFirstRender.current = false;
     }
