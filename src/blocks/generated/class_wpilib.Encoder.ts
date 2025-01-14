@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.Encoder
@@ -37,10 +37,10 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the direction sensing for this encoder.\n\nThis sets the direction sensing on the encoder so that it could count in\nthe correct software direction regardless of the mounting.\n\n:param reverseDirection: true if the encoder direction should be reversed", "returnType": "None", "args": [{"name": "encoder", "type": "wpilib._wpilib.Encoder"}, {"name": "reverseDirection", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Encoder", "FUNC": "setReverseDirection"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEncoder"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the Samples to Average which specifies the number of samples of the\ntimer to average when calculating the period.\n\nPerform averaging to account for mechanical imperfections or as\noversampling to increase resolution.\n\n:param samplesToAverage: The number of samples to average from 1 to 127.", "returnType": "None", "args": [{"name": "encoder", "type": "wpilib._wpilib.Encoder"}, {"name": "samplesToAverage", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Encoder", "FUNC": "setSamplesToAverage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEncoder"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Indicates this encoder is used by a simulated device.\n\n:param device: simulated device handle", "returnType": "None", "args": [{"name": "encoder", "type": "wpilib._wpilib.Encoder"}, {"name": "device", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Encoder", "FUNC": "setSimDevice"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEncoder"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetOnFallingEdge"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetOnRisingEdge"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetWhileHigh"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetWhileLow"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetOnFallingEdge"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetOnRisingEdge"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetWhileHigh"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetWhileLow"}},
     ],
   };
   if (category.contents) {

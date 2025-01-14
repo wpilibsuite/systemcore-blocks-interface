@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.Relay
@@ -30,13 +30,13 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the expiration time for the corresponding motor safety object.\n\n:param expirationTime: The timeout value.", "returnType": "None", "args": [{"name": "motorSafety", "type": "wpilib._wpilib.MotorSafety"}, {"name": "expirationTime", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.MotorSafety", "FUNC": "setExpiration"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorSafety"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Enable/disable motor safety for this device.\n\nTurn on and off the motor safety option for this PWM object.\n\n:param enabled: True if motor safety is enforced for this object.", "returnType": "None", "args": [{"name": "motorSafety", "type": "wpilib._wpilib.MotorSafety"}, {"name": "enabled", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.MotorSafety", "FUNC": "setSafetyEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorSafety"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "relay", "type": "wpilib._wpilib.Relay"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Relay", "FUNC": "stopMotor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRelay"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Direction", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Direction", "ENUM_VALUE": "kBothDirections"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Direction", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Direction", "ENUM_VALUE": "kForwardOnly"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Direction", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Direction", "ENUM_VALUE": "kReverseOnly"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kForward"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kOff"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kOn"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kReverse"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Direction", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Direction", "ENUM_VALUE": "kBothDirections"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Direction", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Direction", "ENUM_VALUE": "kForwardOnly"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Direction", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Direction", "ENUM_VALUE": "kReverseOnly"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kForward"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kOff"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kOn"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kReverse"}},
     ],
   };
   if (category.contents) {

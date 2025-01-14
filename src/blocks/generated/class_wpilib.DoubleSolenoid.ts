@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.DoubleSolenoid
@@ -24,9 +24,9 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Check if the reverse solenoid is Disabled.\n\nIf a solenoid is shorted, it is added to the DisabledList and disabled\nuntil power cycle, or until faults are cleared.\n\n@see ClearAllStickyFaults()\n\n:returns: If solenoid is disabled due to short.", "returnType": "bool", "args": [{"name": "doubleSolenoid", "type": "wpilib._wpilib.DoubleSolenoid"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DoubleSolenoid", "FUNC": "isRevSolenoidDisabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDoubleSolenoid"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the value of a solenoid.\n\n:param value: The value to set (Off, Forward or Reverse)", "returnType": "None", "args": [{"name": "doubleSolenoid", "type": "wpilib._wpilib.DoubleSolenoid"}, {"name": "value", "type": "wpilib._wpilib.DoubleSolenoid.Value"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DoubleSolenoid", "FUNC": "set"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDoubleSolenoid"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myValue"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Toggle the value of the solenoid.\n\nIf the solenoid is set to forward, it'll be set to reverse. If the solenoid\nis set to reverse, it'll be set to forward. If the solenoid is set to off,\nnothing happens.", "returnType": "None", "args": [{"name": "doubleSolenoid", "type": "wpilib._wpilib.DoubleSolenoid"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DoubleSolenoid", "FUNC": "toggle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDoubleSolenoid"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kForward"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kOff"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kReverse"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kForward"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kOff"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kReverse"}},
     ],
   };
   if (category.contents) {

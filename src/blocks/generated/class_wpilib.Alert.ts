@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.Alert
@@ -21,9 +21,9 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAlertType"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Get the type of this alert.\n\n:returns: the type", "returnType": "wpilib._wpilib.Alert.AlertType", "args": [{"name": "alert", "type": "wpilib._wpilib.Alert"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Alert", "FUNC": "getType"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAlert"}}}}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets whether the alert should currently be displayed. This method can be\nsafely called periodically.\n\n:param active: Whether to display the alert.", "returnType": "None", "args": [{"name": "alert", "type": "wpilib._wpilib.Alert"}, {"name": "active", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Alert", "FUNC": "set"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAlert"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Updates current alert text. Use this method to dynamically change the\ndisplayed alert, such as including more details about the detected problem.\n\n:param text: Text to be displayed when the alert is active.", "returnType": "None", "args": [{"name": "alert", "type": "wpilib._wpilib.Alert"}, {"name": "text", "type": "str"}], "importModule": ""}, "fields": {"CLASS": "wpilib.Alert", "FUNC": "setText"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAlert"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kError"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kInfo"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kWarning"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kError"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kInfo"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kWarning"}},
     ],
   };
   if (category.contents) {

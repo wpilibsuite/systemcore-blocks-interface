@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
@@ -27,9 +27,9 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySimInt"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Creates an int value on the simulated device.\n\nIf not in simulation, results in an \"empty\" object that evaluates to false\nin a boolean context.\n\n:param name:         value name\n:param direction:    input/output/bidir (from perspective of user code)\n:param initialValue: initial value\n\n:returns: simulated double value object", "returnType": "hal._wpiHal.SimInt", "args": [{"name": "simDevice", "type": "hal._wpiHal.SimDevice"}, {"name": "name", "type": "str"}, {"name": "direction", "type": "int"}, {"name": "initialValue", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "hal.SimDevice", "FUNC": "createInt"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySimDevice"}}}}}}}}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySimLong"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Creates a long value on the simulated device.\n\nIf not in simulation, results in an \"empty\" object that evaluates to false\nin a boolean context.\n\n:param name:         value name\n:param direction:    input/output/bidir (from perspective of user code)\n:param initialValue: initial value\n\n:returns: simulated double value object", "returnType": "hal._wpiHal.SimLong", "args": [{"name": "simDevice", "type": "hal._wpiHal.SimDevice"}, {"name": "name", "type": "str"}, {"name": "direction", "type": "int"}, {"name": "initialValue", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "hal.SimDevice", "FUNC": "createLong"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySimDevice"}}}}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Get the name of the simulated device.\n\n:returns: name", "returnType": "str", "args": [{"name": "simDevice", "type": "hal._wpiHal.SimDevice"}], "importModule": ""}, "fields": {"CLASS": "hal.SimDevice", "FUNC": "getName"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySimDevice"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kBidir"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kInput"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kOutput"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kBidir"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kInput"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kOutput"}},
     ],
   };
   if (category.contents) {

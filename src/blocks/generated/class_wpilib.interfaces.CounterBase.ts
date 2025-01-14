@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.interfaces.CounterBase
@@ -21,9 +21,9 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "bool", "args": [{"name": "counterBase", "type": "wpilib.interfaces._interfaces.CounterBase"}], "importModule": ""}, "fields": {"CLASS": "wpilib.interfaces.CounterBase", "FUNC": "getStopped"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCounterBase"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "counterBase", "type": "wpilib.interfaces._interfaces.CounterBase"}], "importModule": ""}, "fields": {"CLASS": "wpilib.interfaces.CounterBase", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCounterBase"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "counterBase", "type": "wpilib.interfaces._interfaces.CounterBase"}, {"name": "maxPeriod", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.interfaces.CounterBase", "FUNC": "setMaxPeriod"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCounterBase"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.interfaces.CounterBase.EncodingType", "importModule": "wpilib.interfaces"}, "fields": {"ENUM_TYPE": "wpilib.interfaces.CounterBase.EncodingType", "ENUM_VALUE": "k1X"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.interfaces.CounterBase.EncodingType", "importModule": "wpilib.interfaces"}, "fields": {"ENUM_TYPE": "wpilib.interfaces.CounterBase.EncodingType", "ENUM_VALUE": "k2X"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.interfaces.CounterBase.EncodingType", "importModule": "wpilib.interfaces"}, "fields": {"ENUM_TYPE": "wpilib.interfaces.CounterBase.EncodingType", "ENUM_VALUE": "k4X"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.interfaces.CounterBase.EncodingType", "importModule": "wpilib.interfaces"}, "fields": {"ENUM_TYPE": "wpilib.interfaces.CounterBase.EncodingType", "ENUM_VALUE": "k1X"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.interfaces.CounterBase.EncodingType", "importModule": "wpilib.interfaces"}, "fields": {"ENUM_TYPE": "wpilib.interfaces.CounterBase.EncodingType", "ENUM_VALUE": "k2X"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.interfaces.CounterBase.EncodingType", "importModule": "wpilib.interfaces"}, "fields": {"ENUM_TYPE": "wpilib.interfaces.CounterBase.EncodingType", "ENUM_VALUE": "k4X"}},
     ],
   };
   if (category.contents) {

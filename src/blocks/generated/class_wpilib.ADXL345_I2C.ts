@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
@@ -28,13 +28,13 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the acceleration along the Z axis in g-forces.\n\n:returns: The acceleration along the Z axis in g-forces.", "returnType": "float", "args": [{"name": "aDXL345_I2C", "type": "wpilib._wpilib.ADXL345_I2C"}], "importModule": ""}, "fields": {"CLASS": "wpilib.ADXL345_I2C", "FUNC": "getZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXL345_I2C"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "aDXL345_I2C", "type": "wpilib._wpilib.ADXL345_I2C"}, {"name": "builder", "type": "ntcore._ntcore.NTSendableBuilder"}], "importModule": ""}, "fields": {"CLASS": "wpilib.ADXL345_I2C", "FUNC": "initSendable"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXL345_I2C"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNTSendableBuilder"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the measuring range of the accelerometer.\n\n:param range: The maximum acceleration, positive or negative, that the\n              accelerometer will measure.", "returnType": "None", "args": [{"name": "aDXL345_I2C", "type": "wpilib._wpilib.ADXL345_I2C"}, {"name": "range", "type": "wpilib._wpilib.ADXL345_I2C.Range"}], "importModule": ""}, "fields": {"CLASS": "wpilib.ADXL345_I2C", "FUNC": "setRange"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXL345_I2C"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRange"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Axes", "ENUM_VALUE": "kAxis_X"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Axes", "ENUM_VALUE": "kAxis_Y"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Axes", "ENUM_VALUE": "kAxis_Z"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_16G"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_2G"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_4G"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_8G"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Axes", "ENUM_VALUE": "kAxis_X"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Axes", "ENUM_VALUE": "kAxis_Y"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Axes", "ENUM_VALUE": "kAxis_Z"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_16G"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_2G"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_4G"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_8G"}},
     ],
   };
   if (category.contents) {

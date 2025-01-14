@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.I2C
@@ -24,8 +24,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Verify that a device's registers contain expected values.\n\nMost devices will have a set of registers that contain a known value that\ncan be used to identify them.  This allows an I2C device driver to easily\nverify that the device contains the expected value.\n\n@pre The device must support and be configured to use register\nauto-increment.\n\n:param registerAddress: The base register to start reading from the device.\n:param count:           The size of the field to be verified.\n:param expected:        A buffer containing the values expected from the\n                        device.", "returnType": "bool", "args": [{"name": "i2C", "type": "wpilib._wpilib.I2C"}, {"name": "registerAddress", "type": "int"}, {"name": "expected", "type": "Buffer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.I2C", "FUNC": "verifySensor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myI2C"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Execute a write transaction with the device.\n\nWrite a single byte to a register on a device and wait until the\ntransaction is complete.\n\n:param registerAddress: The address of the register on the device to be\n                        written.\n:param data:            The byte to write to the register on the device.\n\n:returns: Transfer Aborted... false for success, true for aborted.", "returnType": "bool", "args": [{"name": "i2C", "type": "wpilib._wpilib.I2C"}, {"name": "registerAddress", "type": "int"}, {"name": "data", "type": "int"}], "importModule": ""}, "fields": {"CLASS": "wpilib.I2C", "FUNC": "write"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myI2C"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Execute a bulk write transaction with the device.\n\nWrite multiple bytes to a device and wait until the\ntransaction is complete.\n\n:param data:  The data to write to the register on the device.\n:param count: The number of bytes to be written.\n\n:returns: Transfer Aborted... false for success, true for aborted.", "returnType": "bool", "args": [{"name": "i2C", "type": "wpilib._wpilib.I2C"}, {"name": "data", "type": "Buffer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.I2C", "FUNC": "writeBulk"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myI2C"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.I2C.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.I2C.Port", "ENUM_VALUE": "kMXP"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.I2C.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.I2C.Port", "ENUM_VALUE": "kOnboard"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.I2C.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.I2C.Port", "ENUM_VALUE": "kMXP"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.I2C.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.I2C.Port", "ENUM_VALUE": "kOnboard"}},
     ],
   };
   if (category.contents) {

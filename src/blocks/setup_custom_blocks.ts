@@ -4,12 +4,14 @@ import * as ListAddItem from './mrc_list_add_item';
 import * as MathMinMax from './mrc_math_min_max';
 import * as MiscComment from './mrc_misc_comment';
 import * as MiscEvaluateButIgnoreResult from './mrc_misc_evaluate_but_ignore_result';
+import * as GetPythonEnumValue from './mrc_get_python_enum_value';
 
 const customBlocks = [
   ListAddItem,
   MathMinMax,
   MiscComment,
   MiscEvaluateButIgnoreResult,
+  GetPythonEnumValue,
 ];
 
 export const setup = function(forBlock: any) {

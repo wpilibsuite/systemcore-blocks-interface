@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for module hal.simulation
@@ -442,10 +442,10 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_module_function", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "delta", "type": "int"}], "importModule": "hal.simulation"}, "fields": {"MODULE": "hal.simulation", "FUNC": "stepTiming"}},
       {"kind": "block", "type": "call_python_module_function", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "delta", "type": "int"}], "importModule": "hal.simulation"}, "fields": {"MODULE": "hal.simulation", "FUNC": "stepTimingAsync"}},
       {"kind": "block", "type": "call_python_module_function", "extraState": {"tooltip": "", "returnType": "None", "args": [], "importModule": "hal.simulation"}, "fields": {"MODULE": "hal.simulation", "FUNC": "waitForProgramStart"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerAveraged"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerDutyCycle"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerFiltered"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerUnassigned"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerAveraged"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerDutyCycle"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerFiltered"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerUnassigned"}},
     ],
   };
   if (category.contents) {

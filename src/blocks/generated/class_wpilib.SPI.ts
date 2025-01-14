@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.SPI
@@ -47,15 +47,15 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Stop running the automatic SPI transfer engine.", "returnType": "None", "args": [{"name": "sPI", "type": "wpilib._wpilib.SPI"}], "importModule": ""}, "fields": {"CLASS": "wpilib.SPI", "FUNC": "stopAuto"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySPI"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Perform a simultaneous read/write transaction with the device\n\n:param dataToSend:   The data to be written out to the device\n:param dataReceived: Buffer to receive data from the device\n:param size:         The length of the transaction, in bytes", "returnType": "int", "args": [{"name": "sPI", "type": "wpilib._wpilib.SPI"}, {"name": "dataToSend", "type": "Buffer"}, {"name": "dataReceived", "type": "Buffer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.SPI", "FUNC": "transaction"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySPI"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Write data to the peripheral device.  Blocks until there is space in the\noutput FIFO.\n\nIf not running in output only mode, also saves the data received\non the CIPO input during the transfer into the receive FIFO.", "returnType": "int", "args": [{"name": "sPI", "type": "wpilib._wpilib.SPI"}, {"name": "data", "type": "Buffer"}], "importModule": ""}, "fields": {"CLASS": "wpilib.SPI", "FUNC": "write"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySPI"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Mode", "ENUM_VALUE": "kMode0"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Mode", "ENUM_VALUE": "kMode1"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Mode", "ENUM_VALUE": "kMode2"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Mode", "ENUM_VALUE": "kMode3"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kMXP"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS0"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS1"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS2"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS3"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Mode", "ENUM_VALUE": "kMode0"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Mode", "ENUM_VALUE": "kMode1"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Mode", "ENUM_VALUE": "kMode2"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Mode", "ENUM_VALUE": "kMode3"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kMXP"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS0"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS1"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS2"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS3"}},
     ],
   };
   if (category.contents) {

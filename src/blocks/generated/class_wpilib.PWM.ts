@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.PWM
@@ -30,9 +30,9 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the PWM pulse time directly to the hardware.\n\nWrite a microsecond value to a PWM channel.\n\n:param time: Microsecond PWM value.", "returnType": "None", "args": [{"name": "pWM", "type": "wpilib._wpilib.PWM"}, {"name": "time", "type": "wpimath.units.microseconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PWM", "FUNC": "setPulseTime"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWM"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the PWM value based on a speed.\n\nThis is intended to be used by motor controllers.\n\n@pre SetBounds() called.\n\n:param speed: The speed to set the motor controller between -1.0 and 1.0.", "returnType": "None", "args": [{"name": "pWM", "type": "wpilib._wpilib.PWM"}, {"name": "speed", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PWM", "FUNC": "setSpeed"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWM"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Latches PWM to zero.", "returnType": "None", "args": [{"name": "pWM", "type": "wpilib._wpilib.PWM"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PWM", "FUNC": "setZeroLatch"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWM"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_1X"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_2X"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_4X"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_1X"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_2X"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_4X"}},
     ],
   };
   if (category.contents) {

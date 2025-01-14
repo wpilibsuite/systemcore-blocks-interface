@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.drive.RobotDriveBase
@@ -28,13 +28,13 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Configure the scaling factor for using RobotDrive with motor controllers in\na mode other than PercentVbus or to limit the maximum output.\n\n:param maxOutput: Multiplied with the output percentage computed by the\n                  drive functions.", "returnType": "None", "args": [{"name": "robotDriveBase", "type": "wpilib.drive._drive.RobotDriveBase"}, {"name": "maxOutput", "type": "float"}], "importModule": ""}, "fields": {"CLASS": "wpilib.drive.RobotDriveBase", "FUNC": "setMaxOutput"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRobotDriveBase"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Enable/disable motor safety for this device.\n\nTurn on and off the motor safety option for this PWM object.\n\n:param enabled: True if motor safety is enforced for this object.", "returnType": "None", "args": [{"name": "motorSafety", "type": "wpilib._wpilib.MotorSafety"}, {"name": "enabled", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.MotorSafety", "FUNC": "setSafetyEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorSafety"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "robotDriveBase", "type": "wpilib.drive._drive.RobotDriveBase"}], "importModule": ""}, "fields": {"CLASS": "wpilib.drive.RobotDriveBase", "FUNC": "stopMotor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRobotDriveBase"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kBack"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kFrontLeft"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kFrontRight"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kLeft"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kRearLeft"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kRearRight"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kRight"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kBack"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kFrontLeft"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kFrontRight"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kLeft"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kRearLeft"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kRearRight"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kRight"}},
     ],
   };
   if (category.contents) {

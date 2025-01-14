@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
@@ -60,12 +60,12 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Allows the user to specify whether they want joystick connection warnings\nto be printed to the console. This setting is ignored when the FMS is\nconnected -- warnings will always be on in that scenario.\n\n:param silence: Whether warning messages should be silenced.", "returnType": "None", "args": [{"name": "silence", "type": "bool"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.DriverStation", "FUNC": "silenceJoystickConnectionWarning"}},
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Starts logging DriverStation data to data log. Repeated calls are ignored.\n\n:param log:          data log\n:param logJoysticks: if true, log joystick data", "returnType": "None", "args": [{"name": "log", "type": "wpiutil._wpiutil.log.DataLog"}, {"name": "logJoysticks", "type": "bool"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.DriverStation", "FUNC": "startDataLog"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDataLog"}}}}, "ARG1": {"shadow": {"type": "logic_boolean", "fields": {"BOOL": "TRUE"}}}}},
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Wait for a DS connection.\n\n:param timeout: timeout in seconds. 0 for infinite.\n\n:returns: true if connected, false if timeout", "returnType": "bool", "args": [{"name": "timeout", "type": "wpimath.units.seconds"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.DriverStation", "FUNC": "waitForDsConnection"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.Alliance", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.Alliance", "ENUM_VALUE": "kBlue"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.Alliance", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.Alliance", "ENUM_VALUE": "kRed"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kElimination"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kNone"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kPractice"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kQualification"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.Alliance", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.Alliance", "ENUM_VALUE": "kBlue"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.Alliance", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.Alliance", "ENUM_VALUE": "kRed"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kElimination"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kNone"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kPractice"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kQualification"}},
     ],
   };
   if (category.contents) {

@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
@@ -37,8 +37,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "powerDistribution", "type": "wpilib._wpilib.PowerDistribution"}, {"name": "builder", "type": "wpiutil._wpiutil.SendableBuilder"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PowerDistribution", "FUNC": "initSendable"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistribution"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableBuilder"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Reset the total energy drawn from the PDP.\n\nNot supported on the Rev PDH and does nothing.\n\n@see PowerDistribution#GetTotalEnergy", "returnType": "None", "args": [{"name": "powerDistribution", "type": "wpilib._wpilib.PowerDistribution"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PowerDistribution", "FUNC": "resetTotalEnergy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistribution"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Sets the PDH switchable channel on or off. Does nothing with the CTRE PDP.\n\n:param enabled: Whether to turn the PDH switchable channel on or off", "returnType": "None", "args": [{"name": "powerDistribution", "type": "wpilib._wpilib.PowerDistribution"}, {"name": "enabled", "type": "bool"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PowerDistribution", "FUNC": "setSwitchableChannel"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistribution"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PowerDistribution.ModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PowerDistribution.ModuleType", "ENUM_VALUE": "kCTRE"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PowerDistribution.ModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PowerDistribution.ModuleType", "ENUM_VALUE": "kRev"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PowerDistribution.ModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PowerDistribution.ModuleType", "ENUM_VALUE": "kCTRE"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PowerDistribution.ModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PowerDistribution.ModuleType", "ENUM_VALUE": "kRev"}},
     ],
   };
   if (category.contents) {

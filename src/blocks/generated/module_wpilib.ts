@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for module wpilib
@@ -25,23 +25,23 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_module_function", "extraState": {"tooltip": "Gives real-time clock system time with nanosecond resolution\n\n:returns: The time, just in case you want the robot to start autonomous at 8pm\n          on Saturday.", "returnType": "wpimath.units.seconds", "args": [], "importModule": "wpilib"}, "fields": {"MODULE": "wpilib", "FUNC": "getTime"}},
       {"kind": "block", "type": "call_python_module_function", "extraState": {"tooltip": "Sets the thread priority for the current thread.\n\n:param realTime: Set to true to set a real-time priority, false for standard\n                 priority.\n:param priority: Priority to set the thread to. For real-time, this is 1-99\n                 with 99 being highest. For non-real-time, this is forced to\n                 0. See \"man 7 sched\" for more details.\n\n:returns: True on success.", "returnType": "bool", "args": [{"name": "realTime", "type": "bool"}, {"name": "priority", "type": "int"}], "importModule": "wpilib"}, "fields": {"MODULE": "wpilib", "FUNC": "setCurrentThreadPriority"}},
       {"kind": "block", "type": "call_python_module_function", "extraState": {"tooltip": "Pause the task for a specified time.\n\nPause the execution of the program for a specified period of time given in\nseconds. Motors will continue to run at their last assigned values, and\nsensors will continue to update. Only the task containing the wait will pause\nuntil the wait time is expired.\n\n:param seconds: Length of time to pause, in seconds.", "returnType": "None", "args": [{"name": "seconds", "type": "wpimath.units.seconds"}], "importModule": "wpilib"}, "fields": {"MODULE": "wpilib", "FUNC": "wait"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.AnalogTriggerType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.AnalogTriggerType", "ENUM_VALUE": "kFallingPulse"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.AnalogTriggerType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.AnalogTriggerType", "ENUM_VALUE": "kInWindow"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.AnalogTriggerType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.AnalogTriggerType", "ENUM_VALUE": "kRisingPulse"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.AnalogTriggerType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.AnalogTriggerType", "ENUM_VALUE": "kState"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.CompressorConfigType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.CompressorConfigType", "ENUM_VALUE": "Analog"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.CompressorConfigType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.CompressorConfigType", "ENUM_VALUE": "Digital"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.CompressorConfigType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.CompressorConfigType", "ENUM_VALUE": "Disabled"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.CompressorConfigType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.CompressorConfigType", "ENUM_VALUE": "Hybrid"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PneumaticsModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PneumaticsModuleType", "ENUM_VALUE": "CTREPCM"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.PneumaticsModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PneumaticsModuleType", "ENUM_VALUE": "REVPH"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.RadioLEDState", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RadioLEDState", "ENUM_VALUE": "kGreen"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.RadioLEDState", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RadioLEDState", "ENUM_VALUE": "kOff"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.RadioLEDState", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RadioLEDState", "ENUM_VALUE": "kOrange"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.RadioLEDState", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RadioLEDState", "ENUM_VALUE": "kRed"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kRoboRIO"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kRoboRIO2"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kSimulation"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.AnalogTriggerType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.AnalogTriggerType", "ENUM_VALUE": "kFallingPulse"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.AnalogTriggerType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.AnalogTriggerType", "ENUM_VALUE": "kInWindow"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.AnalogTriggerType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.AnalogTriggerType", "ENUM_VALUE": "kRisingPulse"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.AnalogTriggerType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.AnalogTriggerType", "ENUM_VALUE": "kState"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.CompressorConfigType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.CompressorConfigType", "ENUM_VALUE": "Analog"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.CompressorConfigType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.CompressorConfigType", "ENUM_VALUE": "Digital"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.CompressorConfigType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.CompressorConfigType", "ENUM_VALUE": "Disabled"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.CompressorConfigType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.CompressorConfigType", "ENUM_VALUE": "Hybrid"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PneumaticsModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PneumaticsModuleType", "ENUM_VALUE": "CTREPCM"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PneumaticsModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PneumaticsModuleType", "ENUM_VALUE": "REVPH"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.RadioLEDState", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RadioLEDState", "ENUM_VALUE": "kGreen"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.RadioLEDState", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RadioLEDState", "ENUM_VALUE": "kOff"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.RadioLEDState", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RadioLEDState", "ENUM_VALUE": "kOrange"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.RadioLEDState", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RadioLEDState", "ENUM_VALUE": "kRed"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kRoboRIO"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kRoboRIO2"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kSimulation"}},
     ],
   };
   if (category.contents) {

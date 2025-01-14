@@ -1,6 +1,6 @@
 // This file was generated. Do not edit!
 
-import * as pythonEnum from "../python_enum";
+import * as pythonEnum from "../mrc_get_python_enum_value";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.ADXL362
@@ -25,12 +25,12 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Returns the acceleration along the Z axis in g-forces.\n\n:returns: The acceleration along the Z axis in g-forces.", "returnType": "float", "args": [{"name": "aDXL362", "type": "wpilib._wpilib.ADXL362"}], "importModule": ""}, "fields": {"CLASS": "wpilib.ADXL362", "FUNC": "getZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXL362"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "", "returnType": "None", "args": [{"name": "aDXL362", "type": "wpilib._wpilib.ADXL362"}, {"name": "builder", "type": "ntcore._ntcore.NTSendableBuilder"}], "importModule": ""}, "fields": {"CLASS": "wpilib.ADXL362", "FUNC": "initSendable"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXL362"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNTSendableBuilder"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Set the measuring range of the accelerometer.\n\n:param range: The maximum acceleration, positive or negative, that the\n              accelerometer will measure.", "returnType": "None", "args": [{"name": "aDXL362", "type": "wpilib._wpilib.ADXL362"}, {"name": "range", "type": "wpilib._wpilib.ADXL362.Range"}], "importModule": ""}, "fields": {"CLASS": "wpilib.ADXL362", "FUNC": "setRange"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXL362"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRange"}}}}}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Axes", "ENUM_VALUE": "kAxis_X"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Axes", "ENUM_VALUE": "kAxis_Y"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Axes", "ENUM_VALUE": "kAxis_Z"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Range", "ENUM_VALUE": "kRange_2G"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Range", "ENUM_VALUE": "kRange_4G"}},
-      {"kind": "block", "type": "get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Range", "ENUM_VALUE": "kRange_8G"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Axes", "ENUM_VALUE": "kAxis_X"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Axes", "ENUM_VALUE": "kAxis_Y"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Axes", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Axes", "ENUM_VALUE": "kAxis_Z"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Range", "ENUM_VALUE": "kRange_2G"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Range", "ENUM_VALUE": "kRange_4G"}},
+      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Range", "ENUM_VALUE": "kRange_8G"}},
     ],
   };
   if (category.contents) {

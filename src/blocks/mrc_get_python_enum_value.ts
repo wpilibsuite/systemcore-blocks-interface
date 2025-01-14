@@ -19,16 +19,20 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import * as Blockly from 'blockly/core';
-import { PythonGenerator, pythonGenerator } from 'blockly/python';
-import { Order } from 'blockly/python';
+
+import * as Blockly from 'blockly';
+import { Order, PythonGenerator } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown, createNonEditableField } from './utils/blocks';
 import { getOutputCheck, addImport } from './utils/python';
 
+
+export const BLOCK_NAME = 'mrc_get_python_enum_value';
+
 // A block to access a python enum.
 
+// TODO(lizlooney): Use style instead of color.
 const COLOR_ENUM = 180;            // cyan
 
 // Variables and functions used for populating the drop down field for the enum values.
@@ -42,12 +46,10 @@ export function initializeEnum(
   PythonEnumTooltips[enumClassName] = tooltips;
 }
 
-// Block types:
-// get_python_enum_value - requires fields FIELD_ENUM_CLASS_NAME and FIELD_ENUM_VALUE
-
-export type GetPythonEnumValueBlock = Blockly.Block & GetPythonEnumValueMixin;
+type GetPythonEnumValueBlock = Blockly.Block & GetPythonEnumValueMixin;
 interface GetPythonEnumValueMixin extends GetPythonEnumValueMixinType {
-  firstAttributes_: GetPythonEnumValueExtraState;
+  mrcEnumType: string,
+  mrcImportModule: string,
 }
 type GetPythonEnumValueMixinType = typeof GET_PYTHON_ENUM_VALUE;
 
@@ -88,11 +90,11 @@ const GET_PYTHON_ENUM_VALUE = {
    */
   saveExtraState: function(this: GetPythonEnumValueBlock): GetPythonEnumValueExtraState {
     const extraState: GetPythonEnumValueExtraState = {
-      'enumType': this.firstAttributes_.enumType,
+      'enumType': this.mrcEnumType,
       importModule: '',
     };
-    if (this.firstAttributes_.importModule) {
-      extraState.importModule = this.firstAttributes_.importModule;
+    if (this.mrcImportModule) {
+      extraState.importModule = this.mrcImportModule;
     }
     return extraState;
   },
@@ -100,11 +102,8 @@ const GET_PYTHON_ENUM_VALUE = {
    * Applies the given state to this block.
    */
   loadExtraState: function(this: GetPythonEnumValueBlock, extraState: GetPythonEnumValueExtraState): void {
-    if (!this.firstAttributes_) {
-      this.firstAttributes_ = Object.create(null);
-    }
-    this.firstAttributes_.enumType = extraState.enumType;
-    this.firstAttributes_.importModule = extraState.importModule ? extraState.importModule : '';
+    this.mrcEnumType = extraState.enumType;
+    this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
     this.updateBlock_();
   },
   /**
@@ -114,28 +113,32 @@ const GET_PYTHON_ENUM_VALUE = {
     // Set the output plug.
     this.setPreviousStatement(false, null);
     this.setNextStatement(false, null);
-    const outputCheck = getOutputCheck(this.firstAttributes_.enumType);
+    const outputCheck = getOutputCheck(this.mrcEnumType);
     if (outputCheck) {
       this.setOutput(true, outputCheck);
     } else {
       this.setOutput(true);
     }
     // Create the drop-down with the enum values.
-    const enumValues = PythonEnumValues[this.firstAttributes_.enumType];
+    const enumValues = PythonEnumValues[this.mrcEnumType];
     this.getInput('ENUM')!
         .appendField(createFieldDropdown(enumValues), pythonUtils.FIELD_ENUM_VALUE);
   }
 };
 
-Blockly.Blocks['get_python_enum_value'] = GET_PYTHON_ENUM_VALUE;
+export const setup = function() {
+  Blockly.Blocks[BLOCK_NAME] = GET_PYTHON_ENUM_VALUE;
+};
 
-pythonGenerator.forBlock['get_python_enum_value'] = function(
-    block: Blockly.Block, generator: PythonGenerator): [string, Order] {
+export const pythonFromBlock = function(
+    block: Blockly.Block,
+    generator: PythonGenerator,
+) {
   const getPythonEnumValueBlock = block as GetPythonEnumValueBlock;
   const enumClassName = block.getFieldValue(pythonUtils.FIELD_ENUM_CLASS_NAME);
   const enumValue = block.getFieldValue(pythonUtils.FIELD_ENUM_VALUE);
-  if (getPythonEnumValueBlock.firstAttributes_.importModule) {
-    addImport(generator, getPythonEnumValueBlock.firstAttributes_.importModule);
+  if (getPythonEnumValueBlock.mrcImportModule) {
+    addImport(generator, getPythonEnumValueBlock.mrcImportModule);
   }
   const code = enumClassName + '.' + enumValue;
   return [code, Order.MEMBER];
