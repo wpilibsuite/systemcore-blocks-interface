@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as pythonVariable from "../python_variable";
+import * as getPythonVariable from "../mrc_get_python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.TimesliceRobot
 
 export function initialize() {
-  pythonVariable.initializeClassVariableGetter("wpilib.TimesliceRobot", "float", ["kDefaultPeriod"], []);
+  getPythonVariable.initializeClassVariableGetter("wpilib.TimesliceRobot", "float", ["kDefaultPeriod"], []);
 }
 
 export function getToolboxCategory(subcategories: Category[] = []): Category {
@@ -14,7 +14,7 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
     kind: "category",
     name: "TimesliceRobot",
     contents: [
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.TimesliceRobot float", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.TimesliceRobot", "VAR": "kDefaultPeriod"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.TimesliceRobot", "varType": "float", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.TimesliceRobot", "VAR": "kDefaultPeriod"}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTimesliceRobot"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Constructor for TimesliceRobot.\n\n:param robotPeriodicAllocation: The allocation to give the TimesliceRobot\n                                periodic functions.\n:param controllerPeriod:        The controller period. The sum of all scheduler\n                                allocations should be less than or equal to this\n                                value.", "returnType": "wpilib._wpilib.TimesliceRobot", "args": [{"name": "robotPeriodicAllocation", "type": "wpimath.units.seconds"}, {"name": "controllerPeriod", "type": "wpimath.units.seconds"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.TimesliceRobot"}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Add a callback to run at a specific period with a starting time offset.\n\nThis is scheduled on TimedRobot's Notifier, so TimedRobot and the callback\nrun synchronously. Interactions between them are thread-safe.\n\n:param callback: The callback to run.\n:param period:   The period at which to run the callback.\n:param offset:   The offset from the common starting time. This is useful\n                 for scheduling a callback in a different timeslot relative\n                 to TimedRobot.", "returnType": "None", "args": [{"name": "timedRobot", "type": "wpilib._wpilib.TimedRobot"}, {"name": "callback", "type": "Callable[[], None]"}, {"name": "period", "type": "wpimath.units.seconds"}, {"name": "offset", "type": "wpimath.units.seconds"}], "importModule": ""}, "fields": {"CLASS": "wpilib.TimedRobot", "FUNC": "addPeriodic"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimedRobot"}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Exit code for autonomous mode should go here.\n\nUsers should override this method for code which will be called each time\nthe robot exits autonomous mode.", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "importModule": ""}, "fields": {"CLASS": "wpilib.IterativeRobotBase", "FUNC": "autonomousExit"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},

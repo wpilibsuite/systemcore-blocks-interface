@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
+import * as getPythonVariable from "../mrc_get_python_variable";
 import * as pythonEnum from "../mrc_get_python_enum_value";
-import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.DriverStation
 
 export function initialize() {
-  pythonVariable.initializeClassVariableGetter("wpilib.DriverStation", "int", ["kJoystickPorts"], []);
+  getPythonVariable.initializeClassVariableGetter("wpilib.DriverStation", "int", ["kJoystickPorts"], []);
   pythonEnum.initializeEnum("wpilib.DriverStation.Alliance", ["kBlue", "kRed"], "The robot alliance that the robot is a part of.\n\nMembers:\n\n  kRed : Red alliance.\n\n  kBlue : Blue alliance.");
   pythonEnum.initializeEnum("wpilib.DriverStation.MatchType", ["kElimination", "kNone", "kPractice", "kQualification"], "The type of robot match that the robot is part of.\n\nMembers:\n\n  kNone : None.\n\n  kPractice : Practice.\n\n  kQualification : Qualification.\n\n  kElimination : Elimination.");
 }
@@ -17,7 +17,7 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
     kind: "category",
     name: "DriverStation",
     contents: [
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "int", "key": "class wpilib.DriverStation int", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.DriverStation", "VAR": "kJoystickPorts"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.DriverStation", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DriverStation", "VAR": "kJoystickPorts"}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAlliance]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Get the current alliance from the FMS.\n\nIf the FMS is not connected, it is set from the team alliance setting on\nthe driver station.\n\n:returns: The alliance (red or blue) or an empty optional if the alliance is\n          invalid", "returnType": "Optional[wpilib._wpilib.DriverStation.Alliance]", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.DriverStation", "FUNC": "getAlliance"}}}}},
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Read the battery voltage.\n\n:returns: The battery voltage in Volts.", "returnType": "float", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.DriverStation", "FUNC": "getBatteryVoltage"}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTuple"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "More efficient way to determine what state the robot is in.\n\n:returns: booleans representing enabled, isautonomous, istest\n\n.. versionadded:: 2019.2.1\n\n.. note:: This function only exists in RobotPy", "returnType": "tuple[bool, bool, bool]", "args": [{"name": "driverStation", "type": "wpilib._wpilib.DriverStation"}], "importModule": ""}, "fields": {"CLASS": "wpilib.DriverStation", "FUNC": "getControlState"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDriverStation"}}}}}}}}},

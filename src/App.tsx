@@ -22,7 +22,6 @@ import BlocklyComponent from './Blockly';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 import './blocks/python_function';
-import './blocks/python_variable';
 import { initialize as initializeBlocks } from './blocks/utils/generated/initialize';
 
 import * as editor from './editor/editor';

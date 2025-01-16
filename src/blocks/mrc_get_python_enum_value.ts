@@ -28,12 +28,12 @@ import { createFieldDropdown, createNonEditableField } from './utils/blocks';
 import { getOutputCheck, addImport } from './utils/python';
 
 
-export const BLOCK_NAME = 'mrc_get_python_enum_value';
-
 // A block to access a python enum.
 
+export const BLOCK_NAME = 'mrc_get_python_enum_value';
+
 // TODO(lizlooney): Use style instead of color.
-const COLOR_ENUM = 180;            // cyan
+const COLOR_ENUM = 180; // cyan
 
 // Variables and functions used for populating the drop down field for the enum values.
 
@@ -46,6 +46,8 @@ export function initializeEnum(
   PythonEnumTooltips[enumClassName] = tooltips;
 }
 
+//..............................................................................
+
 type GetPythonEnumValueBlock = Blockly.Block & GetPythonEnumValueMixin;
 interface GetPythonEnumValueMixin extends GetPythonEnumValueMixinType {
   mrcEnumType: string,
@@ -53,7 +55,7 @@ interface GetPythonEnumValueMixin extends GetPythonEnumValueMixinType {
 }
 type GetPythonEnumValueMixinType = typeof GET_PYTHON_ENUM_VALUE;
 
-/** Extra state for serialising get_python_enum_vaue blocks. */
+/** Extra state for serialising mrc_get_python_enum_value blocks. */
 type GetPythonEnumValueExtraState = {
   enumType: string,
   importModule: string,
@@ -61,7 +63,7 @@ type GetPythonEnumValueExtraState = {
 
 const GET_PYTHON_ENUM_VALUE = {
   /**
-   * Block for accessing a python enum value.
+   * Block initialization.
    */
   init: function(this: GetPythonEnumValueBlock): void {
     this.appendDummyInput('ENUM')
@@ -88,9 +90,10 @@ const GET_PYTHON_ENUM_VALUE = {
   /**
    * Returns the state of this block as a JSON serializable object.
    */
-  saveExtraState: function(this: GetPythonEnumValueBlock): GetPythonEnumValueExtraState {
+  saveExtraState: function(
+      this: GetPythonEnumValueBlock): GetPythonEnumValueExtraState {
     const extraState: GetPythonEnumValueExtraState = {
-      'enumType': this.mrcEnumType,
+      enumType: this.mrcEnumType,
       importModule: '',
     };
     if (this.mrcImportModule) {
@@ -101,7 +104,10 @@ const GET_PYTHON_ENUM_VALUE = {
   /**
    * Applies the given state to this block.
    */
-  loadExtraState: function(this: GetPythonEnumValueBlock, extraState: GetPythonEnumValueExtraState): void {
+  loadExtraState: function(
+      this: GetPythonEnumValueBlock,
+      extraState: GetPythonEnumValueExtraState
+  ): void {
     this.mrcEnumType = extraState.enumType;
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
     this.updateBlock_();

@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as pythonVariable from "../python_variable";
+import * as getPythonVariable from "../mrc_get_python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.CAN
 
 export function initialize() {
-  pythonVariable.initializeClassVariableGetter("wpilib.CAN", "hal.CANDeviceType", ["kTeamDeviceType"], []);
-  pythonVariable.initializeClassVariableGetter("wpilib.CAN", "hal.CANManufacturer", ["kTeamManufacturer"], []);
+  getPythonVariable.initializeClassVariableGetter("wpilib.CAN", "hal.CANDeviceType", ["kTeamDeviceType"], []);
+  getPythonVariable.initializeClassVariableGetter("wpilib.CAN", "hal.CANManufacturer", ["kTeamManufacturer"], []);
 }
 
 export function getToolboxCategory(subcategories: Category[] = []): Category {
@@ -15,8 +15,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
     kind: "category",
     name: "CAN",
     contents: [
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "hal.CANDeviceType", "key": "class wpilib.CAN hal.CANDeviceType", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.CAN", "VAR": "kTeamDeviceType"}},
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "hal.CANManufacturer", "key": "class wpilib.CAN hal.CANManufacturer", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.CAN", "VAR": "kTeamManufacturer"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.CAN", "varType": "hal.CANDeviceType", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.CAN", "VAR": "kTeamDeviceType"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.CAN", "varType": "hal.CANManufacturer", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.CAN", "VAR": "kTeamManufacturer"}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCAN"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Create a new CAN communication interface with the specific device ID.\nThis uses the team manufacturer and device types.\nThe device ID is 6 bits (0-63)\n\n:param deviceId: The device id", "returnType": "wpilib._wpilib.CAN", "args": [{"name": "deviceId", "type": "int"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.CAN"}}}}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCAN"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Create a new CAN communication interface with a specific device ID,\nmanufacturer and device type. The device ID is 6 bits, the\nmanufacturer is 8 bits, and the device type is 5 bits.\n\n:param deviceId:           The device ID\n:param deviceManufacturer: The device manufacturer\n:param deviceType:         The device type", "returnType": "wpilib._wpilib.CAN", "args": [{"name": "deviceId", "type": "int"}, {"name": "deviceManufacturer", "type": "int"}, {"name": "deviceType", "type": "int"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.CAN"}}}}},
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Reads the current value of the millisecond-resolution timer that CANData\ntimestamps are based on\n\n:returns: Current value of timer used as a base time for CANData timestamps\n          in milliseconds", "returnType": "int", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.CAN", "FUNC": "getTimestampBaseTime"}},

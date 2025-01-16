@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as pythonVariable from "../python_variable";
+import * as getPythonVariable from "../mrc_get_python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.shuffleboard.Shuffleboard
 
 export function initialize() {
-  pythonVariable.initializeClassVariableGetter("wpilib.shuffleboard.Shuffleboard", "str", ["kBaseTableName"], []);
+  getPythonVariable.initializeClassVariableGetter("wpilib.shuffleboard.Shuffleboard", "str", ["kBaseTableName"], []);
 }
 
 export function getToolboxCategory(subcategories: Category[] = []): Category {
@@ -14,7 +14,7 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
     kind: "category",
     name: "Shuffleboard",
     contents: [
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "str", "key": "class wpilib.shuffleboard.Shuffleboard str", "importModule": "wpilib.shuffleboard"}, "fields": {"CLASS": "wpilib.shuffleboard.Shuffleboard", "VAR": "kBaseTableName"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.shuffleboard.Shuffleboard", "varType": "str", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.Shuffleboard", "VAR": "kBaseTableName"}},
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Notifies Shuffleboard of an event. Events can range from as trivial as a\nchange in a command state to as critical as a total power loss or component\nfailure. If Shuffleboard is recording, the event will also be recorded.\n\nIf ``name`` is ``null`` or empty, no event will be sent and an\nerror will be printed to the driver station.\n\n:param name:        the name of the event\n:param description: a description of the event\n:param importance:  the importance of the event", "returnType": "None", "args": [{"name": "name", "type": "str"}, {"name": "description", "type": "str"}, {"name": "importance", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardEventImportance"}], "importModule": "wpilib.shuffleboard"}, "fields": {"CLASS": "wpilib.shuffleboard.Shuffleboard", "FUNC": "addEventMarker"}, "inputs": {"ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardEventImportance"}}}}}},
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Notifies Shuffleboard of an event. Events can range from as trivial as a\nchange in a command state to as critical as a total power loss or component\nfailure. If Shuffleboard is recording, the event will also be recorded.\n\nIf ``name`` is ``null`` or empty, no event will be sent and an\nerror will be printed to the driver station.\n\n:param name:       the name of the event\n:param importance: the importance of the event", "returnType": "None", "args": [{"name": "name", "type": "str"}, {"name": "importance", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardEventImportance"}], "importModule": "wpilib.shuffleboard"}, "fields": {"CLASS": "wpilib.shuffleboard.Shuffleboard", "FUNC": "addEventMarker"}, "inputs": {"ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardEventImportance"}}}}}},
       {"kind": "block", "type": "call_python_static_method", "extraState": {"tooltip": "Clears the custom name format for recording files. New recordings will use\nthe default format.\n\n@see SetRecordingFileNameFormat(std::string_view)", "returnType": "None", "args": [], "importModule": "wpilib.shuffleboard"}, "fields": {"CLASS": "wpilib.shuffleboard.Shuffleboard", "FUNC": "clearRecordingFileNameFormat"}},

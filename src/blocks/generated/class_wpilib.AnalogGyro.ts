@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
-import * as pythonVariable from "../python_variable";
+import * as getPythonVariable from "../mrc_get_python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.AnalogGyro
 
 export function initialize() {
-  pythonVariable.initializeClassVariableGetter("wpilib.AnalogGyro", "int", ["kAverageBits", "kOversampleBits"], []);
-  pythonVariable.initializeClassVariableGetter("wpilib.AnalogGyro", "float", ["kCalibrationSampleTime", "kDefaultVoltsPerDegreePerSecond", "kSamplesPerSecond"], []);
+  getPythonVariable.initializeClassVariableGetter("wpilib.AnalogGyro", "int", ["kAverageBits", "kOversampleBits"], []);
+  getPythonVariable.initializeClassVariableGetter("wpilib.AnalogGyro", "float", ["kCalibrationSampleTime", "kDefaultVoltsPerDegreePerSecond", "kSamplesPerSecond"], []);
 }
 
 export function getToolboxCategory(subcategories: Category[] = []): Category {
@@ -15,11 +15,11 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
     kind: "category",
     name: "AnalogGyro",
     contents: [
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "int", "key": "class wpilib.AnalogGyro int", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogGyro", "VAR": "kAverageBits"}},
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "int", "key": "class wpilib.AnalogGyro int", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogGyro", "VAR": "kOversampleBits"}},
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.AnalogGyro float", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogGyro", "VAR": "kCalibrationSampleTime"}},
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.AnalogGyro float", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogGyro", "VAR": "kDefaultVoltsPerDegreePerSecond"}},
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "float", "key": "class wpilib.AnalogGyro float", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogGyro", "VAR": "kSamplesPerSecond"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogGyro", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogGyro", "VAR": "kAverageBits"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogGyro", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogGyro", "VAR": "kOversampleBits"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogGyro", "varType": "float", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogGyro", "VAR": "kCalibrationSampleTime"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogGyro", "varType": "float", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogGyro", "VAR": "kDefaultVoltsPerDegreePerSecond"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogGyro", "varType": "float", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogGyro", "VAR": "kSamplesPerSecond"}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogGyro"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "%Gyro constructor using the Analog Input channel number.\n\n:param channel: The analog channel the gyro is connected to. Gyros can only\n                be used on on-board Analog Inputs 0-1.", "returnType": "wpilib._wpilib.AnalogGyro", "args": [{"name": "channel", "type": "int"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogGyro"}}}}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogGyro"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "%Gyro constructor with a precreated AnalogInput object.\n\nUse this constructor when the analog channel needs to be shared.\nThis object will not clean up the AnalogInput object when using this\nconstructor.\n\n:param channel: A pointer to the AnalogInput object that the gyro is\n                connected to.", "returnType": "wpilib._wpilib.AnalogGyro", "args": [{"name": "channel", "type": "wpilib._wpilib.AnalogInput"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogGyro"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInput"}}}}}}}}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogGyro"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "%Gyro constructor using the Analog Input channel number with parameters for\npresetting the center and offset values. Bypasses calibration.\n\n:param channel: The analog channel the gyro is connected to. Gyros can only\n                be used on on-board Analog Inputs 0-1.\n:param center:  Preset uncalibrated value to use as the accumulator center\n                value.\n:param offset:  Preset uncalibrated value to use as the gyro offset.", "returnType": "wpilib._wpilib.AnalogGyro", "args": [{"name": "channel", "type": "int"}, {"name": "center", "type": "int"}, {"name": "offset", "type": "float"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogGyro"}}}}},

@@ -1,13 +1,13 @@
 // This file was generated. Do not edit!
 
+import * as getPythonVariable from "../mrc_get_python_variable";
 import * as pythonEnum from "../mrc_get_python_enum_value";
-import * as pythonVariable from "../python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.PowerDistribution
 
 export function initialize() {
-  pythonVariable.initializeClassVariableGetter("wpilib.PowerDistribution", "int", ["kDefaultModule"], []);
+  getPythonVariable.initializeClassVariableGetter("wpilib.PowerDistribution", "int", ["kDefaultModule"], []);
   pythonEnum.initializeEnum("wpilib.PowerDistribution.ModuleType", ["kCTRE", "kRev"], "Power distribution module type.\n\nMembers:\n\n  kCTRE : CTRE (Cross The Road Electronics) CTRE Power Distribution Panel (PDP).\n\n  kRev : REV Power Distribution Hub (PDH).");
 }
 
@@ -16,7 +16,7 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
     kind: "category",
     name: "PowerDistribution",
     contents: [
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "int", "key": "class wpilib.PowerDistribution int", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.PowerDistribution", "VAR": "kDefaultModule"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.PowerDistribution", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PowerDistribution", "VAR": "kDefaultModule"}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPowerDistribution"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Constructs a PowerDistribution object.\n\nDetects the connected PDP/PDH using the default CAN ID (0 for CTRE and 1\nfor REV).", "returnType": "wpilib._wpilib.PowerDistribution", "args": [], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.PowerDistribution"}}}}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPowerDistribution"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Constructs a PowerDistribution object.\n\n:param module:     The CAN ID of the PDP/PDH\n:param moduleType: The type of module", "returnType": "wpilib._wpilib.PowerDistribution", "args": [{"name": "module", "type": "int"}, {"name": "moduleType", "type": "wpilib._wpilib.PowerDistribution.ModuleType"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.PowerDistribution"}, "inputs": {"ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myModuleType"}}}}}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Remove all of the fault flags on the PDP/PDH.", "returnType": "None", "args": [{"name": "powerDistribution", "type": "wpilib._wpilib.PowerDistribution"}], "importModule": ""}, "fields": {"CLASS": "wpilib.PowerDistribution", "FUNC": "clearStickyFaults"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistribution"}}}}}},

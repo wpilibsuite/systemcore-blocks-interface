@@ -1,12 +1,12 @@
 // This file was generated. Do not edit!
 
-import * as pythonVariable from "../python_variable";
+import * as getPythonVariable from "../mrc_get_python_variable";
 import {Category} from "../../toolbox/items";
 
 // Blocks for class wpilib.AnalogInput
 
 export function initialize() {
-  pythonVariable.initializeClassVariableGetter("wpilib.AnalogInput", "int", ["kAccumulatorModuleNumber", "kAccumulatorNumChannels"], []);
+  getPythonVariable.initializeClassVariableGetter("wpilib.AnalogInput", "int", ["kAccumulatorModuleNumber", "kAccumulatorNumChannels"], []);
 }
 
 export function getToolboxCategory(subcategories: Category[] = []): Category {
@@ -14,8 +14,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
     kind: "category",
     name: "AnalogInput",
     contents: [
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "int", "key": "class wpilib.AnalogInput int", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogInput", "VAR": "kAccumulatorModuleNumber"}},
-      {"kind": "block", "type": "get_python_class_variable", "extraState": {"varType": "int", "key": "class wpilib.AnalogInput int", "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogInput", "VAR": "kAccumulatorNumChannels"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogInput", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogInput", "VAR": "kAccumulatorModuleNumber"}},
+      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogInput", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogInput", "VAR": "kAccumulatorNumChannels"}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogInput"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "Construct an analog input.\n\n:param channel: The channel number on the roboRIO to represent. 0-3 are\n                on-board 4-7 are on the MXP port.", "returnType": "wpilib._wpilib.AnalogInput", "args": [{"name": "channel", "type": "int"}], "importModule": "wpilib"}, "fields": {"CLASS": "wpilib.AnalogInput"}}}}},
       {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Read the number of accumulated values.\n\nRead the count of the accumulated values since the accumulator was last\nReset().\n\n:returns: The number of times samples from the channel were accumulated.", "returnType": "int", "args": [{"name": "analogInput", "type": "wpilib._wpilib.AnalogInput"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogInput", "FUNC": "getAccumulatorCount"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInput"}}}}}},
       {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTuple"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Read the accumulated value and the number of accumulated values atomically.\n\nThis function reads the value and count from the FPGA atomically.\nThis can be used for averaging.\n\n:param value: Reference to the 64-bit accumulated output.\n:param count: Reference to the number of accumulation cycles.", "returnType": "tuple[int, int]", "args": [{"name": "analogInput", "type": "wpilib._wpilib.AnalogInput"}], "importModule": ""}, "fields": {"CLASS": "wpilib.AnalogInput", "FUNC": "getAccumulatorOutput"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInput"}}}}}}}}},
