@@ -50,14 +50,14 @@ export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: toolboxIt
         contents: [
           {
             kind: 'block',
-            type: 'misc_comment',
+            type: 'mrc_misc_comment',
             fields: {
               COMMENT: 'Enter your comment here!',
             },
           },
           {
             kind: 'block',
-            type: 'misc_evaluateButIgnoreResult',
+            type: 'mrc_misc_evaluate_but_ignore_result',
           },
         ],
       },
@@ -435,7 +435,7 @@ export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: toolboxIt
           },
           {
             kind: 'block',
-            type: 'misc_minmax',
+            type: 'mrc_math_min_max',
           },
           {
             kind: 'block',
@@ -767,7 +767,7 @@ export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: toolboxIt
           },
           {
             kind: 'block',
-            type: 'misc_addItemToList',
+            type: 'mrc_list_add_item',
             inputs: {
               LIST: {
                 block: {

@@ -12,8 +12,8 @@ export function getToolboxCategory(subcategories: Category[] = []): Category {
     kind: "category",
     name: "LayoutType",
     contents: [
-      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLayoutType"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "call_python_constructor", "extraState": {"tooltip": "", "returnType": "wpilib.shuffleboard._shuffleboard.LayoutType", "args": [{"name": "layoutName", "type": "str"}], "importModule": "wpilib.shuffleboard"}, "fields": {"CLASS": "wpilib.shuffleboard.LayoutType"}}}}},
-      {"kind": "block", "type": "call_python_instance_method", "extraState": {"tooltip": "Gets the string type of the layout as defined by that layout in\nShuffleboard.", "returnType": "str", "args": [{"name": "layoutType", "type": "wpilib.shuffleboard._shuffleboard.LayoutType"}], "importModule": ""}, "fields": {"CLASS": "wpilib.shuffleboard.LayoutType", "FUNC": "getLayoutName"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLayoutType"}}}}}},
+      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLayoutType"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.shuffleboard._shuffleboard.LayoutType", "args": [{"name": "layoutName", "type": "str"}], "tooltip": "", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.LayoutType"}}}}},
+      {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "str", "args": [{"name": "layoutType", "type": "wpilib.shuffleboard._shuffleboard.LayoutType"}], "tooltip": "Gets the string type of the layout as defined by that layout in\nShuffleboard.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.LayoutType", "FUNC": "getLayoutName"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLayoutType"}}}}}},
     ],
   };
   if (category.contents) {

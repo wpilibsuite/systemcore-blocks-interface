@@ -2,8 +2,7 @@
 
 // Blocks constants and utilities.
 
-export const FIELD_MODULE_NAME = "MODULE";
-export const FIELD_CLASS_NAME = "CLASS";
+export const FIELD_MODULE_OR_CLASS_NAME = "MODULE_OR_CLASS";
 export const FIELD_VARIABLE_NAME = "VAR";
 export const FIELD_FUNCTION_NAME = "FUNC";
 export const FIELD_ENUM_CLASS_NAME = "ENUM_TYPE";
