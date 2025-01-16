@@ -135,7 +135,7 @@ const GET_PYTHON_VARIABLE = {
     this.setColour(COLOR_VARIABLE_GETTER);
     this.setTooltip(() => {
       const varName = this.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
-      let tooltip;
+      let tooltip: string;
       switch (this.mrcVarKind) {
         case VAR_KIND_MODULE: {
           const moduleName = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
