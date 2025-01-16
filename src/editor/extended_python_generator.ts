@@ -67,8 +67,9 @@ class ExtendedPythonGenerator extends PythonGenerator {
       });
       const callFunctionBlock: Block = {
         'kind': 'block',
-        'type': 'call_python_module_function',
+        'type': 'mrc_call_python_function',
         'extraState': {
+          'functionKind': 'module',
           'returnType': hasReturnValue ? '' : 'None',
           'args': args,
           'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
@@ -76,7 +77,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
           'exportedFunction': true,
         },
         'fields': {
-          'MODULE': commonStorage.MODULE_NAME_PLACEHOLDER,
+          'MODULE_OR_CLASS': commonStorage.MODULE_NAME_PLACEHOLDER,
           'FUNC': functionName,
         },
       };
@@ -109,28 +110,30 @@ class ExtendedPythonGenerator extends PythonGenerator {
         const actualVariableName = super.getVariableName(variableModel.getId());
         const getPythonModuleVariableBlock = {
           'kind': 'block',
-          'type': 'get_python_module_variable',
+          'type': 'mrc_get_python_variable',
           'extraState': {
+            'varKind': 'module',
             'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
             'actualVariableName': actualVariableName,
             'exportedVariable': true,
           },
           'fields': {
-            'MODULE': commonStorage.MODULE_NAME_PLACEHOLDER,
+            'MODULE_OR_CLASS': commonStorage.MODULE_NAME_PLACEHOLDER,
             'VAR': variableName,
           },
         };
         exportedBlocks.push(getPythonModuleVariableBlock);
         const setPythonModuleVariableBlock = {
           'kind': 'block',
-          'type': 'set_python_module_variable',
+          'type': 'mrc_set_python_variable',
           'extraState': {
+            'varKind': 'module',
             'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
             'actualVariableName': actualVariableName,
             'exportedVariable': true,
           },
           'fields': {
-            'MODULE': commonStorage.MODULE_NAME_PLACEHOLDER,
+            'MODULE_OR_CLASS': commonStorage.MODULE_NAME_PLACEHOLDER,
             'VAR': variableName,
           },
         };

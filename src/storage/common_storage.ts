@@ -194,8 +194,8 @@ export function extractExportedBlocks(moduleName: string, moduleContent: string)
     if (block.extraState?.importModule === MODULE_NAME_PLACEHOLDER) {
       block.extraState.importModule = moduleName;
     }
-    if (block.fields?.MODULE === MODULE_NAME_PLACEHOLDER) {
-      block.fields.MODULE = moduleName;
+    if (block.fields?.MODULE_OR_CLASS === MODULE_NAME_PLACEHOLDER) {
+      block.fields.MODULE_OR_CLASS = moduleName;
     }
   });
   return exportedBlocks;
