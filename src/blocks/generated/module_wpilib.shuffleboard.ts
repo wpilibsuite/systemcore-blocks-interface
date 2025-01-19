@@ -1,7 +1,7 @@
 // This file was generated. Do not edit!
 
 import * as pythonEnum from "../mrc_get_python_enum_value";
-import {Category} from "../../toolbox/items";
+import * as toolboxItems from "../../toolbox/items";
 
 // Blocks for module wpilib.shuffleboard
 
@@ -11,48 +11,48 @@ export function initialize() {
   pythonEnum.initializeEnum("wpilib.shuffleboard.ShuffleboardEventImportance", ["kCritical", "kHigh", "kLow", "kNormal", "kTrivial"], "Members:\n\n  kTrivial\n\n  kLow\n\n  kNormal\n\n  kHigh\n\n  kCritical");
 }
 
-export function getToolboxCategory(subcategories: Category[] = []): Category {
-  const category: Category = {
+export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+  const contents: toolboxItems.ContentsType[] = [
+    {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "str", "args": [{"name": "importance", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardEventImportance"}], "tooltip": "Returns name of the given enum.\n\n:returns: Name of the given enum.", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard", "FUNC": "shuffleboardEventImportanceName"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardEventImportance"}}}}}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInLayouts", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInLayouts", "ENUM_VALUE": "kGrid"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInLayouts", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInLayouts", "ENUM_VALUE": "kList"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "k3AxisAccelerometer"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kAccelerometer"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kBooleanBox"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kCameraStream"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kComboBoxChooser"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kCommand"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kDial"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kDifferentialDrive"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kEncoder"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kField"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kGraph"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kGyro"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kMecanumDrive"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kMotorController"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kNumberBar"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kNumberSlider"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kPIDCommand"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kPIDController"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kPowerDistribution"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kRelay"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kSplitButtonChooser"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kTextView"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kToggleButton"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kToggleSwitch"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kVoltageView"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kCritical"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kHigh"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kLow"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kNormal"}},
+    {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kTrivial"}},
+  ];
+  contents.push(...subcategories);
+  const category: toolboxItems.PythonModuleCategory = {
     kind: "category",
-    name: "shuffleboard",
-    contents: [
-      {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "str", "args": [{"name": "importance", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardEventImportance"}], "tooltip": "Returns name of the given enum.\n\n:returns: Name of the given enum.", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard", "FUNC": "shuffleboardEventImportanceName"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardEventImportance"}}}}}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInLayouts", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInLayouts", "ENUM_VALUE": "kGrid"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInLayouts", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInLayouts", "ENUM_VALUE": "kList"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "k3AxisAccelerometer"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kAccelerometer"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kBooleanBox"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kCameraStream"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kComboBoxChooser"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kCommand"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kDial"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kDifferentialDrive"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kEncoder"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kField"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kGraph"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kGyro"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kMecanumDrive"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kMotorController"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kNumberBar"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kNumberSlider"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kPIDCommand"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kPIDController"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kPowerDistribution"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kRelay"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kSplitButtonChooser"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kTextView"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kToggleButton"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kToggleSwitch"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInWidgets", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInWidgets", "ENUM_VALUE": "kVoltageView"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kCritical"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kHigh"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kLow"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kNormal"}},
-      {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kTrivial"}},
-    ],
+    moduleName: "wpilib.shuffleboard",
+    name:  "shuffleboard",
+      contents: contents,
   };
-  if (category.contents) {
-    category.contents.push(...subcategories);
-  }
   return category;
 }

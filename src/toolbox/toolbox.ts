@@ -20,10 +20,15 @@
  */
 
 import * as generatedToolbox from './generated/toolbox';
-import * as toolboxItems from "../toolbox/items";
+import * as toolboxItems from '../toolbox/items';
+import type { TreeDataNode } from 'antd';
 
-export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: toolboxItems.ContentsType[]) {
+export function getToolboxJSON(
+    opt_includeExportedBlocksFromWorkspace: toolboxItems.ContentsType[],
+    shownPythonToolboxCategories: Set<string>) {
   const contents: toolboxItems.ContentsType[] = generatedToolbox.getToolboxCategories();
+  filterGeneratedCategories(contents, shownPythonToolboxCategories);
+
   if (opt_includeExportedBlocksFromWorkspace.length) {
     contents.push.apply(
       contents,
@@ -898,4 +903,43 @@ export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: toolboxIt
     kind: 'categoryToolbox',
     contents: contents
   };
+}
+
+function filterGeneratedCategories(
+    contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string>) {
+  console.log("HeyLiz - filterGeneratedCategories - " + Array.from(shownPythonToolboxCategories).sort());
+  return;
+  // TODO(lizlooney): Only fill categories whose moduleName/className is in shownPythonToolboxCategories.
+  contents.forEach((item) => {
+    if (item.kind === 'category') {
+      const category = item as toolboxItems.Category;
+      if ((category as toolboxItems.PythonModuleCategory).moduleName) {
+        const moduleName = (item as toolboxItems.PythonModuleCategory).moduleName;
+        if (!shownPythonToolboxCategories.has(moduleName)) {
+          if (category.contents) {
+            removeBlocks(category.contents);
+          }
+        }
+      }
+      if ((category as toolboxItems.PythonClassCategory).className) {
+        const className = (item as toolboxItems.PythonClassCategory).className;
+        if (!shownPythonToolboxCategories.has(className)) {
+          if (category.contents) {
+            removeBlocks(category.contents);
+          }
+        }
+      }
+    }
+  });
+}
+
+function removeBlocks(contents: toolboxItems.ContentsType[]) {
+  let i = 0;
+  while (i < contents.length) {
+    if (contents[i].kind !== 'block') {
+      contents.splice(i, 1);
+    } else {
+      i++;
+    }
+  }
 }

@@ -2,7 +2,7 @@
 
 import * as getPythonVariable from "../mrc_get_python_variable";
 import * as setPythonVariable from "../mrc_set_python_variable";
-import {Category} from "../../toolbox/items";
+import * as toolboxItems from "../../toolbox/items";
 
 // Blocks for class wpilib.CANData
 
@@ -12,21 +12,21 @@ export function initialize() {
   setPythonVariable.initializeInstanceVariableSetter("wpilib.CANData", "int", ["length", "timestamp"], ["Length of packet in bytes.", "CAN frame timestamp in milliseconds."]);
 }
 
-export function getToolboxCategory(subcategories: Category[] = []): Category {
-  const category: Category = {
+export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+  const contents: toolboxItems.ContentsType[] = [
+    {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "memoryview", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "data"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
+    {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "int", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "length"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
+    {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "int", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "length"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
+    {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "int", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "timestamp"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
+    {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "int", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "timestamp"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
+    {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCANData"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.CANData", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData"}}}}},
+  ];
+  contents.push(...subcategories);
+  const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    name: "CANData",
-    contents: [
-      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "memoryview", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "data"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
-      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "int", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "length"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
-      {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "int", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "length"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
-      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "int", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "timestamp"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
-      {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANData", "varType": "int", "importModule": "", "selfLabel": "cANData", "selfType": "wpilib.CANData"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData", "VAR": "timestamp"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANData"}}}}}},
-      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCANData"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.CANData", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANData"}}}}},
-    ],
+    className: "wpilib.CANData",
+    name:  "CANData",
+      contents: contents,
   };
-  if (category.contents) {
-    category.contents.push(...subcategories);
-  }
   return category;
 }

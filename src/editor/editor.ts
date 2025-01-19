@@ -73,7 +73,9 @@ function onChangeAfterFinishedLoading(event: Blockly.Events.Abstract) {
   // TODO(lizlooney): do we need to do anything here?
 }
 
-export function loadModuleBlocks(blocklyWorkspace: Blockly.WorkspaceSvg, modulePath: string) {
+export function loadModuleBlocks(
+    blocklyWorkspace: Blockly.WorkspaceSvg,
+    modulePath: string) {
   storage.fetchModuleContent(
     modulePath,
     (moduleContent: string | null, errorMessage: string) => {
@@ -92,18 +94,20 @@ export function loadModuleBlocks(blocklyWorkspace: Blockly.WorkspaceSvg, moduleP
         if (blocksContent) {
           Blockly.serialization.workspaces.load(JSON.parse(blocksContent), blocklyWorkspace);
         }
-        updateToolbox(blocklyWorkspace, modulePath);
       }
     }
   );
 }
 
-function updateToolbox(blocklyWorkspace: Blockly.WorkspaceSvg, modulePath: string): void {
+export function updateToolbox(
+    blocklyWorkspace: Blockly.WorkspaceSvg,
+    modulePath: string,
+    shownPythonToolboxCategories: Set<string>): void {
   const workspaceName = commonStorage.getWorkspaceName(modulePath);
   const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
   if (modulePath === workspacePath) {
     // If we are editing a Workspace, we don't add any additional blocks to the toolbox.
-    blocklyWorkspace.updateToolbox(getToolboxJSON([]));
+    blocklyWorkspace.updateToolbox(getToolboxJSON([], shownPythonToolboxCategories));
     return;
   }
   // Otherwise, we add the exported blocks from the Workspace.
@@ -112,13 +116,13 @@ function updateToolbox(blocklyWorkspace: Blockly.WorkspaceSvg, modulePath: strin
     (workspaceContent: string | null, errorMessage: string) => {
       if (errorMessage) {
         alert(errorMessage);
-        blocklyWorkspace.updateToolbox(getToolboxJSON([]));
+        blocklyWorkspace.updateToolbox(getToolboxJSON([], shownPythonToolboxCategories));
         return;
       }
       if (workspaceContent != null) {
         const exportedBlocks = commonStorage.extractExportedBlocks(
             workspaceName, workspaceContent);
-        blocklyWorkspace.updateToolbox(getToolboxJSON(exportedBlocks));
+        blocklyWorkspace.updateToolbox(getToolboxJSON(exportedBlocks, shownPythonToolboxCategories));
       }
     });
 }

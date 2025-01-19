@@ -1,21 +1,21 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
+import * as toolboxItems from "../../toolbox/items";
 
 // Blocks for module wpimath.path
 
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: Category[] = []): Category {
-  const category: Category = {
+export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+  const contents: toolboxItems.ContentsType[] = [
+  ];
+  contents.push(...subcategories);
+  const category: toolboxItems.PythonModuleCategory = {
     kind: "category",
-    name: "path",
-    contents: [
-    ],
+    moduleName: "wpimath.path",
+    name:  "path",
+      contents: contents,
   };
-  if (category.contents) {
-    category.contents.push(...subcategories);
-  }
   return category;
 }

@@ -2,7 +2,7 @@
 
 import * as getPythonVariable from "../mrc_get_python_variable";
 import * as setPythonVariable from "../mrc_set_python_variable";
-import {Category} from "../../toolbox/items";
+import * as toolboxItems from "../../toolbox/items";
 
 // Blocks for class wpilib.ADXL362.AllAxes
 
@@ -11,22 +11,22 @@ export function initialize() {
   setPythonVariable.initializeInstanceVariableSetter("wpilib.ADXL362.AllAxes", "float", ["XAxis", "YAxis", "ZAxis"], ["Acceleration along the X axis in g-forces.", "Acceleration along the Y axis in g-forces.", "Acceleration along the Z axis in g-forces."]);
 }
 
-export function getToolboxCategory(subcategories: Category[] = []): Category {
-  const category: Category = {
+export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+  const contents: toolboxItems.ContentsType[] = [
+    {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "XAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
+    {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "XAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
+    {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "YAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
+    {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "YAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
+    {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "ZAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
+    {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "ZAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
+    {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAllAxes"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADXL362.AllAxes", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes"}}}}},
+  ];
+  contents.push(...subcategories);
+  const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    name: "AllAxes",
-    contents: [
-      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "XAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
-      {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "XAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
-      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "YAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
-      {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "YAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
-      {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "ZAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
-      {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.ADXL362.AllAxes", "varType": "float", "importModule": "", "selfLabel": "allAxes", "selfType": "wpilib.ADXL362.AllAxes"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes", "VAR": "ZAxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAllAxes"}}}}}},
-      {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAllAxes"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADXL362.AllAxes", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362.AllAxes"}}}}},
-    ],
+    className: "wpilib.ADXL362.AllAxes",
+    name:  "AllAxes",
+      contents: contents,
   };
-  if (category.contents) {
-    category.contents.push(...subcategories);
-  }
   return category;
 }
