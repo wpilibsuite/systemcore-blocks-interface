@@ -1,21 +1,21 @@
 // This file was generated. Do not edit!
 
-import {Category} from "../../toolbox/items";
+import * as toolboxItems from "../../toolbox/items";
 
 // Blocks for class wpilib.cameraserver.CameraServer
 
 export function initialize() {
 }
 
-export function getToolboxCategory(subcategories: Category[] = []): Category {
-  const category: Category = {
+export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+  const contents: toolboxItems.ContentsType[] = [
+  ];
+  contents.push(...subcategories);
+  const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    name: "CameraServer",
-    contents: [
-    ],
+    className: "wpilib.cameraserver.CameraServer",
+    name:  "CameraServer",
+      contents: contents,
   };
-  if (category.contents) {
-    category.contents.push(...subcategories);
-  }
   return category;
 }

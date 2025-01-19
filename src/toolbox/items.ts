@@ -64,11 +64,48 @@ export class Category extends Item  {
   /** The blocks for this category. */
   contents?: ContentsType[];
 
-  constructor(name: string, contents: ContentsType[], categorystyle: string, custom: string) {
+  constructor(name: string, contents: ContentsType[]);
+  constructor(name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {
     super('category');
     this.name = name;
-    this.categorystyle = categorystyle;
-    this.custom = custom;
     this.contents = contents;
+    if (categorystyle) {
+      this.categorystyle = categorystyle;
+    }
+    if (custom) {
+      this.custom = custom;
+    }
+  }
+}
+
+export class PythonModuleCategory extends Category {
+  moduleName: string;
+
+  constructor(moduleName: string, name: string, contents: ContentsType[]);
+  constructor(moduleName: string, name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {
+    super(name, contents);
+    if (categorystyle) {
+      this.categorystyle = categorystyle;
+    }
+    if (custom) {
+      this.custom = custom;
+    }
+    this.moduleName = moduleName;
+  }
+}
+
+export class PythonClassCategory extends Category {
+  className: string;
+
+  constructor(className: string, name: string, contents: ContentsType[]);
+  constructor(className: string, name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {
+    super(name, contents);
+    if (categorystyle) {
+      this.categorystyle = categorystyle;
+    }
+    if (custom) {
+      this.custom = custom;
+    }
+    this.className = className;
   }
 }

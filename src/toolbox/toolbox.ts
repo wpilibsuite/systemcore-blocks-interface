@@ -20,10 +20,15 @@
  */
 
 import * as generatedToolbox from './generated/toolbox';
-import * as toolboxItems from "../toolbox/items";
+import * as toolboxItems from '../toolbox/items';
+import type { TreeDataNode } from 'antd';
 
-export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: toolboxItems.ContentsType[]) {
+export function getToolboxJSON(
+    opt_includeExportedBlocksFromWorkspace: toolboxItems.ContentsType[],
+    shownPythonToolboxCategories: Set<string>) {
   const contents: toolboxItems.ContentsType[] = generatedToolbox.getToolboxCategories();
+  filterGeneratedCategories(contents, shownPythonToolboxCategories);
+
   if (opt_includeExportedBlocksFromWorkspace.length) {
     contents.push.apply(
       contents,
@@ -898,4 +903,73 @@ export function getToolboxJSON(opt_includeExportedBlocksFromWorkspace: toolboxIt
     kind: 'categoryToolbox',
     contents: contents
   };
+}
+
+function filterGeneratedCategories(
+    contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string>) {
+  contents.forEach((item) => {
+    if (item.kind === 'category') {
+      const category = item as toolboxItems.Category;
+      // Traverse the tree depth-first so we can easily identify and remove empty categories.
+      if (category.contents) {
+        filterGeneratedCategories(category.contents, shownPythonToolboxCategories);
+      }
+      if ((category as toolboxItems.PythonModuleCategory).moduleName) {
+        const moduleName = (item as toolboxItems.PythonModuleCategory).moduleName;
+        if (!shownPythonToolboxCategories.has(moduleName)) {
+          if (category.contents) {
+            removeBlocksAndSeparators(category.contents);
+          }
+        }
+      }
+      if ((category as toolboxItems.PythonClassCategory).className) {
+        const className = (item as toolboxItems.PythonClassCategory).className;
+        if (!shownPythonToolboxCategories.has(className)) {
+          if (category.contents) {
+            removeBlocksAndSeparators(category.contents);
+          }
+        }
+      }
+    }
+  });
+  removeEmptyCategories(contents, shownPythonToolboxCategories);
+}
+
+function removeBlocksAndSeparators(contents: toolboxItems.ContentsType[]) {
+  let i = 0;
+  while (i < contents.length) {
+    const remove = (contents[i].kind === 'block' || contents[i].kind === 'sep');
+    if (remove) {
+      contents.splice(i, 1);
+      continue;
+    }
+    i++;
+  }
+}
+
+function removeEmptyCategories(
+    contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string>) {
+  let i = 0;
+  while (i < contents.length) {
+    let remove = false;
+    if (contents[i].kind === 'category') {
+      const category = contents[i] as toolboxItems.Category;
+      let fullCategoryName = '';
+      if ((category as toolboxItems.PythonModuleCategory).moduleName) {
+        fullCategoryName = (category as toolboxItems.PythonModuleCategory).moduleName
+      } else if ((category as toolboxItems.PythonClassCategory).className) {
+        fullCategoryName = (category as toolboxItems.PythonClassCategory).className;
+      }
+      if (category.contents &&
+          category.contents.length == 0 &&
+          !shownPythonToolboxCategories.has(fullCategoryName)) {
+        remove = true;
+      }
+    }
+    if (remove) {
+      contents.splice(i, 1);
+      continue;
+    }
+    i++;
+  }
 }

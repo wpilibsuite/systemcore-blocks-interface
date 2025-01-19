@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 
 import { Button, ConfigProvider, Flex, Input, Modal, Space, Splitter, Tooltip, Tree, Typography, theme } from 'antd';
+import type { TreeDataNode } from 'antd';
 import {
   CopyOutlined,
   DownloadOutlined,
@@ -9,6 +10,7 @@ import {
   FolderAddOutlined,
   FolderOutlined,
   SaveOutlined,
+  SettingOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
 
@@ -21,12 +23,15 @@ import {pythonGenerator} from 'blockly/python'
 import BlocklyComponent from './Blockly';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
-import { initialize as initializeBlocks } from './blocks/utils/generated/initialize';
+import { initialize as initializeGeneratedBlocks } from './blocks/utils/generated/initialize';
 
 import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
-import { getToolboxJSON } from './toolbox/toolbox';
+
+import * as toolboxItems from './toolbox/items';
+import * as toolbox from './toolbox/toolbox';
 //import { testAllBlocksInToolbox } from './toolbox/toolbox_tests';
+import ToolboxSettingsModal from './toolbox/settings';
 
 import * as storage from './storage/client_side_storage';
 import * as commonStorage from './storage/common_storage';
@@ -171,41 +176,49 @@ type BlocklyComponentType = {
   getBlocklyWorkspace: () => Blockly.WorkspaceSvg,
 };
 
-type TreeKey = string | number | bigint;
-
-interface TreeNode {
-  key: string;
-  title: string;
-  icon?: React.ReactNode;
-  children?: TreeNode[];
-}
-
 const App: React.FC = () => {
   const isFirstRender = useRef(true);
+  const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = useState<Set<string>>(new Set());
   const [triggerListModules, setTriggerListModules] = useState(false);
   const [modules, setModules] = useState<commonStorage.Workspace[]>([]);
   const [treeData, setTreeData] = useState<any>([]);
-  const [treeExpandedKeys, setTreeExpandedKeys] = React.useState<string[]>([]);
-  const [pathToExpand, setPathToExpand] = React.useState('');
-  const [treeSelectedPath, setTreeSelectedPath] = useState('');
+  const [treeExpandedKeys, setTreeExpandedKeys] = useState<string[]>([]);
+  const [pathToExpand, setPathToExpand] = useState('');
+  const [treeSelectedKey, setTreeSelectedKey] = useState('');
   const [currentModulePath, setCurrentModulePath] = useState('');
   const blocklyComponent = useRef<BlocklyComponentType | null>(null);
   const [generatedCode, setGeneratedCode] = useState('');
   const [isNewWorkspaceModalOpen, setIsNewWorkspaceModalOpen] = useState(false);
   const [isNewOpModeModalOpen, setIsNewOpModeModalOpen] = useState(false);
+  const [isToolboxSettingsModalOpen, setIsToolboxSettingsModalOpen] = useState(false);
 
   // When the app is loaded, initialize the blocks we provide.
   useEffect(() => {
     if (isFirstRender.current) {
-      const forBlock = Object.create(null);
-      CustomBlocks.setup(forBlock);
-      Object.assign(pythonGenerator.forBlock, forBlock);
-      Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
+      initializeShownPythonToolboxCategories();
       initializeBlocks();
-      //testAllBlocksInToolbox(getToolboxJSON([]).contents);
+      //testAllBlocksInToolbox(toolbox.getToolboxJSON([], []).contents);
       isFirstRender.current = false;
     }
   }, []);
+
+  const initializeShownPythonToolboxCategories = () => {
+    storage.fetchEntry('shownPythonToolboxCategories', (value: string | null, error: string) => {
+      if (value != null) {
+        const shownCategories: string[] = JSON.parse(value);
+        setShownPythonToolboxCategories(new Set(shownCategories));
+      }
+    });
+  };
+
+  const initializeBlocks = () => {
+    // Initialize blocks and extended python generator.
+    const forBlock = Object.create(null);
+    CustomBlocks.setup(forBlock);
+    Object.assign(pythonGenerator.forBlock, forBlock);
+    Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
+    initializeGeneratedBlocks();
+  };
 
   // Fetch the list of modules from storage.
   useEffect(() => {
@@ -226,10 +239,6 @@ const App: React.FC = () => {
       if (blocklyWorkspace) {
         // Show generated python code.
         blocklyWorkspace.addChangeListener(handleBlocksChanged);
-
-        // Set the toolbox.
-        const toolboxJSON = getToolboxJSON([]);
-        blocklyWorkspace.updateToolbox(toolboxJSON);
       }
     }
   }, [blocklyComponent]);
@@ -257,18 +266,18 @@ const App: React.FC = () => {
 
   // When the list of modules has been fetched, fill the tree.
   useEffect(() => {
-    const treeDataArray: TreeNode[] = [];
+    const treeDataArray: TreeDataNode[] = [];
     modules.forEach((workspace) => {
-      const children: TreeNode[] = [];
+      const children: TreeDataNode[] = [];
       workspace.opModes.forEach((opMode) => {
-        const child: TreeNode = {
+        const child: TreeDataNode = {
           key: opMode.modulePath,
           title: opMode.moduleName,
           icon: <FileOutlined />,
         };
         children.push(child);
       });
-      const parent: TreeNode = {
+      const parent: TreeDataNode = {
         key: workspace.modulePath,
         title: workspace.workspaceName,
         children: children,
@@ -293,20 +302,38 @@ const App: React.FC = () => {
     }
   }, [modules, currentModulePath]);
 
-  const handleNewWorkspaceOk = (workspaceName: string, callback: (success: boolean, error: string) => void) => {
-    const workspaceContent = commonStorage.newModuleContent();
-    const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
-    storage.createModule(
-        commonStorage.MODULE_TYPE_WORKSPACE, workspacePath, workspaceContent,
-        callback);
+  const handleNewWorkspaceClick = () => {
+    // TODO(lizlooney): Before showing the New Workspace modal, check whether
+    // the blocks in the editor need to be saved.
+    setIsNewWorkspaceModalOpen(true);
   };
-
+  
   const getWorkspaceNames = (): string[] => {
     const workspaceNames: string[] = [];
     modules.forEach((workspace) => {
       workspaceNames.push(workspace.workspaceName);
     });
     return workspaceNames;
+  };
+
+  const handleNewWorkspaceOk = (workspaceName: string) => {
+    const workspaceContent = commonStorage.newModuleContent();
+    const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
+    storage.createModule(
+        commonStorage.MODULE_TYPE_WORKSPACE, workspacePath, workspaceContent,
+        (success: boolean, error: string) => {
+            if (success) {
+              setTriggerListModules(!triggerListModules);
+            } else if (error) {
+              console.log(error);
+            }
+          });
+  };
+
+  const handleNewOpModeClick = () => {
+    // TODO(lizlooney): Before showing the New OpMode modal, check whether
+    // the blocks in the editor need to be saved.
+    setIsNewOpModeModalOpen(true);
   };
 
   const getCurrentWorkspaceName = (): string => {
@@ -326,15 +353,21 @@ const App: React.FC = () => {
     return opModeNames;
   };
 
-  const handleNewOpModeOk = (workspaceName: string, opModeName: string, callback: (success: boolean, error: string) => void) => {
+  const handleNewOpModeOk = (workspaceName: string, opModeName: string) => {
     const opModeContent = commonStorage.newModuleContent();
     const opModePath = commonStorage.makeModulePath(workspaceName, opModeName);
     storage.createModule(
         commonStorage.MODULE_TYPE_OPMODE, opModePath, opModeContent,
-        callback);
+        (success: boolean, error: string) => {
+            if (success) {
+              setTriggerListModules(!triggerListModules);
+            } else if (error) {
+              console.log(error);
+            }
+          });
   };
 
-  const handleSave = () => {
+  const handleSaveClick = () => {
     if (currentModulePath && blocklyComponent.current) {
       editor.saveModule(
           blocklyComponent.current.getBlocklyWorkspace(),
@@ -342,15 +375,26 @@ const App: React.FC = () => {
     }
   };
 
-  const handleUpload = () => {
+  const handleUploadClick = () => {
     console.log('Upload clicked');
   };
 
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
     console.log('Download clicked');
   };
 
-  const handleModuleExpanded = (expandedKeys: TreeKey[], info: { node: never; expanded: boolean; nativeEvent: MouseEvent; }) => {
+  const handleToolboxSettingsClick = () => {
+    setIsToolboxSettingsModalOpen(true);
+  };
+
+  const handleToolboxSettingsOk = (updatedShownCategories: Set<string>) => {
+    setShownPythonToolboxCategories(updatedShownCategories);
+    const array = Array.from(updatedShownCategories);
+    array.sort();
+    storage.saveEntry('shownPythonToolboxCategories', JSON.stringify(array));
+  };
+
+  const handleModuleExpanded = (expandedKeys: React.Key[]) => {
     const stringKeys: string[] = [];
     expandedKeys.forEach((key) => {
       stringKeys.push(key as string);
@@ -358,10 +402,10 @@ const App: React.FC = () => {
     setTreeExpandedKeys(stringKeys);
   };
 
-  const handleModuleSelected = (selectedKeys: TreeKey[], info: { event: "select"; selected: boolean; node: never; selectedNodes: never[]; nativeEvent: MouseEvent; }) => {
+  const handleModuleSelected = (selectedKeys: React.Key[]) => {
     if (selectedKeys.length === 1) {
-      // TODO(lizlooney): Before loading different module, check whether the
-      // blocks need to be saved.
+      // TODO(lizlooney): Before loading a different module, check whether the
+      // blocks in the editor need to be saved.
       const modulePath = selectedKeys[0] as string;
       setCurrentModulePath(modulePath);
     }
@@ -373,7 +417,7 @@ const App: React.FC = () => {
   // workspace node in the tree.
   useEffect(() => {
     if (currentModulePath) {
-      setTreeSelectedPath(currentModulePath);
+      setTreeSelectedKey(currentModulePath);
       const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
       const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
 
@@ -381,10 +425,23 @@ const App: React.FC = () => {
 
       storage.saveEntry('currentModulePath', currentModulePath);
       if (blocklyComponent.current) {
-        editor.loadModuleBlocks(blocklyComponent.current.getBlocklyWorkspace(), currentModulePath);
+        editor.loadModuleBlocks(
+            blocklyComponent.current.getBlocklyWorkspace(),
+            currentModulePath);
       }
     }
   }, [currentModulePath]);
+
+  useEffect(() => {
+    if (currentModulePath) {
+      if (blocklyComponent.current) {
+        editor.updateToolbox(
+            blocklyComponent.current.getBlocklyWorkspace(),
+            currentModulePath,
+            shownPythonToolboxCategories);
+      }
+    }
+  }, [currentModulePath, shownPythonToolboxCategories]);
 
   useEffect(() => {
     if (pathToExpand) {
@@ -393,7 +450,7 @@ const App: React.FC = () => {
     }
   }, [pathToExpand, treeExpandedKeys]);
 
-  const handleCopy = () => {
+  const handleCopyClick = () => {
     navigator.clipboard.writeText(generatedCode).then(
       () => {
         console.log('Code copied to clipboard');
@@ -441,11 +498,7 @@ const App: React.FC = () => {
             <Tooltip title="New Workspace">
               <Button
                 icon={<FolderAddOutlined />} 
-                onClick={() => {
-                  // TODO(lizlooney): Before showing the New Worksapce modal,
-                  // check whether the blocks need to be saved.
-                  setIsNewWorkspaceModalOpen(true);
-                }}
+                onClick={handleNewWorkspaceClick}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -454,11 +507,7 @@ const App: React.FC = () => {
               <Button
                 icon={<FileAddOutlined />} 
                 disabled={!currentModulePath}
-                onClick={() => {
-                  // TODO(lizlooney): Before showing the New OpMode modal,
-                  // check whether the blocks need to be saved.
-                  setIsNewOpModeModalOpen(true);
-                }}
+                onClick={handleNewOpModeClick}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -467,7 +516,7 @@ const App: React.FC = () => {
               <Button
                 icon={<SaveOutlined />} 
                 disabled={!currentModulePath}
-                onClick={handleSave}
+                onClick={handleSaveClick}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -475,7 +524,7 @@ const App: React.FC = () => {
             <Tooltip title="Upload">
               <Button
                 icon={<UploadOutlined />}
-                onClick={handleUpload}
+                onClick={handleUploadClick}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -484,7 +533,15 @@ const App: React.FC = () => {
               <Button
                 icon={<DownloadOutlined />}
                 disabled={!currentModulePath}
-                onClick={handleDownload}
+                onClick={handleDownloadClick}
+                style={{ color: 'white' }}
+              >
+              </Button>
+            </Tooltip>
+            <Tooltip title="Toolbox Settings">
+              <Button
+                icon={<SettingOutlined />}
+                onClick={handleToolboxSettingsClick}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -503,7 +560,7 @@ const App: React.FC = () => {
               treeData={treeData}
               expandedKeys={treeExpandedKeys}
               onExpand={handleModuleExpanded}
-              selectedKeys={[treeSelectedPath]}
+              selectedKeys={[treeSelectedKey]}
               onSelect={handleModuleSelected}
             />
           </Splitter.Panel>
@@ -525,7 +582,7 @@ const App: React.FC = () => {
                 <Tooltip title="Copy">
                   <Button
                     icon={<CopyOutlined />}
-                    onClick={handleCopy}
+                    onClick={handleCopyClick}
                     size="small"
                     style={{ color: 'white' }}
                   >
@@ -553,13 +610,7 @@ const App: React.FC = () => {
         getWorkspaceNames={getWorkspaceNames}
         onOk={(w) => {
           setIsNewWorkspaceModalOpen(false);
-          handleNewWorkspaceOk(w, (success: boolean, error: string) => {
-            if (success) {
-              setTriggerListModules(!triggerListModules);
-            } else if (error) {
-              console.log(error);
-            }
-          });
+          handleNewWorkspaceOk(w);
         }}
         onCancel={() => setIsNewWorkspaceModalOpen(false)}
       />
@@ -569,15 +620,18 @@ const App: React.FC = () => {
         getOpModeNames={getOpModeNames}
         onOk={(w, o) => {
           setIsNewOpModeModalOpen(false);
-          handleNewOpModeOk(w, o, (success: boolean, error: string) => {
-            if (success) {
-              setTriggerListModules(!triggerListModules);
-            } else if (error) {
-              console.log(error);
-            }
-          });
+          handleNewOpModeOk(w, o);
         }}
         onCancel={() => setIsNewOpModeModalOpen(false)}
+      />
+      <ToolboxSettingsModal
+        isOpen={isToolboxSettingsModalOpen}
+        shownCategories={shownPythonToolboxCategories}
+        onOk={(updatedShownCategories: Set<string>) => {
+          setIsToolboxSettingsModalOpen(false);
+          handleToolboxSettingsOk(updatedShownCategories);
+        }}
+        onCancel={() => setIsToolboxSettingsModalOpen(false)}
       />
     </ConfigProvider>
   );
