@@ -1,6 +1,20 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-import { Button, ConfigProvider, Flex, Input, Modal, Space, Splitter, Tooltip, Tree, Typography, theme } from 'antd';
+import {
+  Button,
+  ConfigProvider,
+  Flex,
+  Input,
+  message,
+  Modal,
+  Popconfirm,
+  Space,
+  Splitter,
+  Tooltip,
+  Tree,
+  Typography,
+  theme
+} from 'antd';
 import type { TreeDataNode } from 'antd';
 import {
   CopyOutlined,
@@ -70,10 +84,12 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
           key="ok"
           onClick={() => {
             if (!commonStorage.isValidPythonModuleName(value)) {
+              // TODO(lizlooney): Use antd alert here.
               alert(value + ' is not a valid python module name');
               return;
             }
             if (workspaceNames.includes(value)) {
+              // TODO(lizlooney): Use antd alert here.
               alert('There is already a workspace named ' +  value);
               return;
             }
@@ -138,14 +154,17 @@ const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorks
           key="ok"
           onClick={() => {
             if (!commonStorage.isValidPythonModuleName(value)) {
+              // TODO(lizlooney): Use antd alert here.
               alert(value + ' is not a valid python module name');
               return;
             }
             if (workspaceName === value) {
+              // TODO(lizlooney): Use antd alert here.
               alert('An OpMode cannot have the same name as its workspace.');
               return;
             }
             if (opModeNames.includes(value)) {
+              // TODO(lizlooney): Use antd alert here.
               alert('There is already an OpMode named ' +  value);
               return;
             }
@@ -178,6 +197,7 @@ type BlocklyComponentType = {
 
 const App: React.FC = () => {
   const isFirstRender = useRef(true);
+  const [messageApi, contextHolder] = message.useMessage();
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = useState<Set<string>>(new Set());
   const [triggerListModules, setTriggerListModules] = useState(false);
   const [modules, setModules] = useState<commonStorage.Workspace[]>([]);
@@ -187,10 +207,14 @@ const App: React.FC = () => {
   const [treeSelectedKey, setTreeSelectedKey] = useState('');
   const [currentModulePath, setCurrentModulePath] = useState('');
   const blocklyComponent = useRef<BlocklyComponentType | null>(null);
+  const blocksEditor = useRef<editor.Editor | null>(null);
   const [generatedCode, setGeneratedCode] = useState('');
   const [isNewWorkspaceModalOpen, setIsNewWorkspaceModalOpen] = useState(false);
   const [isNewOpModeModalOpen, setIsNewOpModeModalOpen] = useState(false);
   const [isToolboxSettingsModalOpen, setIsToolboxSettingsModalOpen] = useState(false);
+  const [openAskToSave, setOpenAskToSave] = useState(false);
+  const afterAskToSaveOk = useRef<() => void>(() => {});
+  const [askToSaveSaving, setAskToSaveSaving] = useState(false);
 
   // When the app is loaded, initialize the blocks we provide.
   useEffect(() => {
@@ -240,6 +264,8 @@ const App: React.FC = () => {
         // Show generated python code.
         blocklyWorkspace.addChangeListener(handleBlocksChanged);
       }
+
+      blocksEditor.current = new editor.Editor(blocklyWorkspace);
     }
   }, [blocklyComponent]);
 
@@ -302,10 +328,38 @@ const App: React.FC = () => {
     }
   }, [modules, currentModulePath]);
 
+  const handleAskToSaveOk = () => {
+    afterAskToSaveOk.current();
+  };
+
+  const checkIfBlocksWereModified = (callback: () => void) => {
+    if (blocksEditor.current && currentModulePath) {
+      if (!blocksEditor.current.isModified()) {
+        callback();
+        return;
+      }
+
+      // Show a bubble confirmation box to ask the user if they want to save the blocks.
+      // Set the function to be executed if the user clicks "ok".
+      afterAskToSaveOk.current = () => {
+        setAskToSaveSaving(true);
+        saveModule((success) => {
+          setOpenAskToSave(false);
+          setAskToSaveSaving(false);
+          if (success) {
+            callback();
+          }
+        });
+        afterAskToSaveOk.current = () => {};
+      };
+      setOpenAskToSave(true);
+    }
+  };
+
   const handleNewWorkspaceClick = () => {
-    // TODO(lizlooney): Before showing the New Workspace modal, check whether
-    // the blocks in the editor need to be saved.
-    setIsNewWorkspaceModalOpen(true);
+    checkIfBlocksWereModified(() => {
+      setIsNewWorkspaceModalOpen(true);
+    });
   };
   
   const getWorkspaceNames = (): string[] => {
@@ -331,9 +385,9 @@ const App: React.FC = () => {
   };
 
   const handleNewOpModeClick = () => {
-    // TODO(lizlooney): Before showing the New OpMode modal, check whether
-    // the blocks in the editor need to be saved.
-    setIsNewOpModeModalOpen(true);
+    checkIfBlocksWereModified(() => {
+      setIsNewOpModeModalOpen(true);
+    });
   };
 
   const getCurrentWorkspaceName = (): string => {
@@ -368,10 +422,23 @@ const App: React.FC = () => {
   };
 
   const handleSaveClick = () => {
-    if (currentModulePath && blocklyComponent.current) {
-      editor.saveModule(
-          blocklyComponent.current.getBlocklyWorkspace(),
-          currentModulePath);
+    saveModule((success) => {});
+  };
+
+  const saveModule = (callback: (success: boolean) => void) => {
+    if (blocksEditor.current && currentModulePath) {
+      blocksEditor.current.saveModule((success, errorMessage) => {
+        if (errorMessage) {
+          // TODO(lizlooney): Use antd alert here.
+          alert(errorMessage);
+        } else {
+          messageApi.open({
+            type: 'success',
+            content: 'Save completed successfully.',
+          });
+        }
+        callback(success);
+      });
     }
   };
 
@@ -404,10 +471,10 @@ const App: React.FC = () => {
 
   const handleModuleSelected = (selectedKeys: React.Key[]) => {
     if (selectedKeys.length === 1) {
-      // TODO(lizlooney): Before loading a different module, check whether the
-      // blocks in the editor need to be saved.
-      const modulePath = selectedKeys[0] as string;
-      setCurrentModulePath(modulePath);
+      checkIfBlocksWereModified(() => {
+        const modulePath = selectedKeys[0] as string;
+        setCurrentModulePath(modulePath);
+      });
     }
   };
 
@@ -424,21 +491,16 @@ const App: React.FC = () => {
       setPathToExpand(workspacePath);
 
       storage.saveEntry('currentModulePath', currentModulePath);
-      if (blocklyComponent.current) {
-        editor.loadModuleBlocks(
-            blocklyComponent.current.getBlocklyWorkspace(),
-            currentModulePath);
+      if (blocksEditor.current) {
+        blocksEditor.current.loadModuleBlocks(currentModulePath, workspacePath);
       }
     }
   }, [currentModulePath]);
 
   useEffect(() => {
     if (currentModulePath) {
-      if (blocklyComponent.current) {
-        editor.updateToolbox(
-            blocklyComponent.current.getBlocklyWorkspace(),
-            currentModulePath,
-            shownPythonToolboxCategories);
+      if (blocksEditor.current) {
+        blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
       }
     }
   }, [currentModulePath, shownPythonToolboxCategories]);
@@ -477,6 +539,7 @@ const App: React.FC = () => {
         },
       }}
     >
+      {contextHolder}
       <Flex
         vertical
         style={{
@@ -565,9 +628,18 @@ const App: React.FC = () => {
             />
           </Splitter.Panel>
           <Splitter.Panel min='2%' defaultSize='50%'>
-            <BlocklyComponent
-              ref={blocklyComponent}
-            />
+            <Popconfirm
+              title="Blocks have been modified!"
+              description="Press ok to save and continue"
+              open={openAskToSave}
+              onConfirm={handleAskToSaveOk}
+              okButtonProps={{ loading: askToSaveSaving }}
+              onCancel={() => setOpenAskToSave(false)}
+            >
+              <BlocklyComponent
+                ref={blocklyComponent}
+              />
+            </Popconfirm>
           </Splitter.Panel>
           <Splitter.Panel min='2%'>
             <Flex

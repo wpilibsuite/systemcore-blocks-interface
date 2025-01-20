@@ -26,121 +26,175 @@ import * as storage from '../storage/client_side_storage';
 import * as commonStorage from '../storage/common_storage';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
-function onChangeBeforeFinishedLoading(event: Blockly.Events.Abstract) {
-  if (!event.workspaceId) {
-    return;
-  }
-  if (event.type === Blockly.Events.FINISHED_LOADING) {
-    const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
-    if (blocklyWorkspace) {
-      // Remove the before-finish-loading listener.
-      blocklyWorkspace.removeChangeListener(onChangeBeforeFinishedLoading);
+export class Editor {
+  private blocklyWorkspace: Blockly.WorkspaceSvg;
+  private modulePath: string = '';
+  private workspacePath: string = '';
+  private moduleContent: string = '';
+  private workspaceContent: string = '';
+  private bindedOnChange: any = null;
 
-      // Add the after-finish-loading listener.
-      blocklyWorkspace.addChangeListener(onChangeAfterFinishedLoading);
+  constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
+    this.blocklyWorkspace = blocklyWorkspace;
+  }
+
+  private onChangeWhileLoading(event: Blockly.Events.Abstract) {
+    if (event.type === Blockly.Events.FINISHED_LOADING) {
+      // Remove the while-loading listener.
+      this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
+
+      // Add the after-loading listener.
+      this.bindedOnChange = this.onChangeAfterLoading.bind(this);
+      this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
+      return;
     }
-  }
-  // TODO(lizlooney): Look at blocks where block.firstAttributes_?.exportedVariable === true:
-  // Look at block.firstAttributes_.importModule and get the exported blocks for that module.
-  // Check whether block.firstAttributes_.actualVariableName matches any exportedBlock's
-  // extraState.actualVariableName. If there is no match, put a warning on the block.
 
-  // TODO(lizlooney): Look at blocks where block.firstAttributes_?.exportedFunction === true:
-  // Look at block.firstAttributes_.importModule and get the exported blocks for that module.
-  // Check whether block.firstAttributes_.actualFunctionName matches any exportedBlock's
-  // extraState.actualFunctionName. If there is no match, put a warning on the block.
-  // If there is a match, check whether
-  // block.firstAttributes.args.length === exportedBlock.extraState.args.length and
-  // block.firstAttributes.args[i].name === exportedBlock.extraState.args[i].name for all args.
-  // If there is any differences, put a warning on the block.
-}
+    // TODO(lizlooney): As blocks are loaded, determine whether the block
+    // a version of a block defined in another blocks file (like a Workspace)
+    // that no longer matches the current definition. This might happen if the
+    // user defines a variable or function in the Workspace, uses the variable
+    // or function in the OpMode, and then removes or changes the variable or
+    // function in the Workspace.
 
-function onChangeAfterFinishedLoading(event: Blockly.Events.Abstract) {
-  if (event.isUiEvent) {
-    // UI events are things like scrolling, zooming, etc.
-    return;
-  }
-  if (!event.workspaceId) {
-    return;
-  }
-  const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
-  if (!blocklyWorkspace) {
-    return;
-  }
-  if ((blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
-    return;
-  }
-  // TODO(lizlooney): do we need to do anything here?
-}
+    // TODO(lizlooney): Look at blocks with type 'mrc_get_python_variable' or
+    // 'mrc_set_python_variable', and where block.mrcExportedVariable === true.
+    // Look at block.mrcImportModule and get the exported blocks for that module.
+    // (It should be the workspace and we already have the workspace content.)
+    // Check whether block.mrcActualVariableName matches any exportedBlock's
+    // extraState.actualVariableName. If there is no match, put a warning on the
+    // block.
 
-export function loadModuleBlocks(
-    blocklyWorkspace: Blockly.WorkspaceSvg,
-    modulePath: string) {
-  storage.fetchModuleContent(
-    modulePath,
-    (moduleContent: string | null, errorMessage: string) => {
-      if (errorMessage) {
-        alert(errorMessage);
-        return;
-      }
-      if (moduleContent != null) {
-        // Remove all of the listeners we may have added.
-        blocklyWorkspace.removeChangeListener(onChangeAfterFinishedLoading);
-        blocklyWorkspace.removeChangeListener(onChangeBeforeFinishedLoading);
-        blocklyWorkspace.clear();
-        // Add the before-finish-loading listener.
-        blocklyWorkspace.addChangeListener(onChangeBeforeFinishedLoading);
-        const blocksContent = commonStorage.extractBlocksContent(moduleContent);
-        if (blocksContent) {
-          Blockly.serialization.workspaces.load(JSON.parse(blocksContent), blocklyWorkspace);
+    // TODO(lizlooney): Look at blocks with type 'mrc_call_python_function' and
+    // where block.mrcExportedFunction === true.
+    // Look at block.mrcImportModule and get the exported blocks for that module.
+    // (It should be the workspace and we already have the workspace content.)
+    // Check whether block.mrcActualFunctionName matches any exportedBlock's
+    // extraState.actualFunctionName. If there is no match, put a warning on the block.
+    // If there is a match, check whether
+    // block.mrcArgs.length === exportedBlock.extraState.args.length and
+    // block.mrcArgs[i].name === exportedBlock.extraState.args[i].name for all args.
+    // If there is any differences, put a warning on the block.
+  }
+
+  private onChangeAfterLoading(event: Blockly.Events.Abstract) {
+    if (event.isUiEvent) {
+      // UI events are things like scrolling, zooming, etc.
+      return;
+    }
+    if (this.blocklyWorkspace.isDragging()) {
+      return;
+    }
+    // TODO(lizlooney): do we need to do anything here?
+  }
+
+  public loadModuleBlocks(modulePath: string, workspacePath: string) {
+    this.modulePath = modulePath;
+    this.workspacePath = workspacePath;
+    this.moduleContent = '';
+    this.workspaceContent = '';
+
+    storage.fetchModuleContent(
+      this.modulePath,
+      (moduleContent: string | null, errorMessage: string) => {
+        if (errorMessage) {
+          alert(errorMessage);
+          return;
+        }
+        if (moduleContent) {
+          this.moduleContent = moduleContent;
+          if (this.workspacePath === this.modulePath) {
+            this.workspaceContent = moduleContent
+          }
+
+          // If both the workspace and the module have been loaded, load the
+          // blocks into the blockly workspace.
+          if (this.workspaceContent) {
+            this.loadBlocksIntoBlocklyWorkspace();
+          }
         }
       }
-    }
-  );
-}
+    );
+    if (this.workspacePath !== this.modulePath) {
+      storage.fetchModuleContent(
+        this.workspacePath,
+        (workspaceContent: string | null, errorMessage: string) => {
+          if (errorMessage) {
+            alert(errorMessage);
+            return;
+          }
+          if (workspaceContent) {
+            this.workspaceContent = workspaceContent;
 
-export function updateToolbox(
-    blocklyWorkspace: Blockly.WorkspaceSvg,
-    modulePath: string,
-    shownPythonToolboxCategories: Set<string>): void {
-  const workspaceName = commonStorage.getWorkspaceName(modulePath);
-  const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
-  if (modulePath === workspacePath) {
-    // If we are editing a Workspace, we don't add any additional blocks to the toolbox.
-    blocklyWorkspace.updateToolbox(getToolboxJSON([], shownPythonToolboxCategories));
-    return;
+            // If both the workspace and the module have been loaded, load the
+            // blocks into the blockly workspace.
+            if (this.moduleContent) {
+              this.loadBlocksIntoBlocklyWorkspace();
+            }
+          }
+        }
+      );
+    }
   }
-  // Otherwise, we add the exported blocks from the Workspace.
-  storage.fetchModuleContent(
-    workspacePath,
-    (workspaceContent: string | null, errorMessage: string) => {
-      if (errorMessage) {
-        alert(errorMessage);
-        blocklyWorkspace.updateToolbox(getToolboxJSON([], shownPythonToolboxCategories));
-        return;
-      }
-      if (workspaceContent != null) {
-        const exportedBlocks = commonStorage.extractExportedBlocks(
-            workspaceName, workspaceContent);
-        blocklyWorkspace.updateToolbox(getToolboxJSON(exportedBlocks, shownPythonToolboxCategories));
-      }
-    });
-}
 
-export function saveModule(blocklyWorkspace: Blockly.WorkspaceSvg, modulePath: string): void {
-  const pythonCode = extendedPythonGenerator.workspaceToCode(blocklyWorkspace);
-  const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(blocklyWorkspace));
-  const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(blocklyWorkspace));
-  const moduleContent = commonStorage.makeModuleContent(pythonCode, exportedBlocks, blocksContent);
-
-  storage.saveModule(
-    modulePath, moduleContent,
-    function(success, errorMessage) {
-      if (errorMessage) {
-        alert(errorMessage);
-        return;
-      }
-      // TODO(lizlooney): Indicate that the module was saved successfully.
+  private loadBlocksIntoBlocklyWorkspace() {
+    if (this.bindedOnChange) {
+      this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
     }
-  );
+    this.blocklyWorkspace.clear();
+    this.blocklyWorkspace.scroll(0, 0);
+
+    // Add the while-loading listener.
+    this.bindedOnChange = this.onChangeWhileLoading.bind(this);
+    this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
+    const blocksContent = commonStorage.extractBlocksContent(this.moduleContent);
+    if (blocksContent) {
+      Blockly.serialization.workspaces.load(JSON.parse(blocksContent), this.blocklyWorkspace);
+    }
+  }
+
+  public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
+    if (this.modulePath === this.workspacePath) {
+      // If we are editing a Workspace, we don't add any additional blocks to
+      // the toolbox.
+      this.blocklyWorkspace.updateToolbox(
+          getToolboxJSON([], shownPythonToolboxCategories));
+      return;
+    }
+    // Otherwise, we add the exported blocks from the Workspace.
+    if (!this.workspaceContent) {
+      // The workspace content hasn't been fetched yet. Try again in a second.
+      setTimeout(() => {
+        this.updateToolbox(shownPythonToolboxCategories)
+      }, 50);
+      return;
+      
+    }
+    const workspaceName = commonStorage.getWorkspaceName(this.modulePath);
+    const exportedBlocks = commonStorage.extractExportedBlocks(
+       workspaceName, this.workspaceContent);
+    this.blocklyWorkspace.updateToolbox(
+        getToolboxJSON(exportedBlocks, shownPythonToolboxCategories));
+  }
+
+  public isModified(): boolean {
+    const moduleContent = this.getModuleContent();
+    return moduleContent !== this.moduleContent;
+  }
+
+  private getModuleContent(): string {
+    const pythonCode = extendedPythonGenerator.workspaceToCode(this.blocklyWorkspace);
+    const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(this.blocklyWorkspace));
+    const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(this.blocklyWorkspace));
+    return commonStorage.makeModuleContent(pythonCode, exportedBlocks, blocksContent);
+  }
+
+  public saveModule(callback: storage.BooleanCallback): void {
+    const moduleContent = this.getModuleContent();
+    storage.saveModule(this.modulePath, moduleContent, (success, errorMessage) => {
+      if (success) {
+        this.moduleContent = moduleContent;
+      }
+      callback(success, errorMessage);
+    });
+  }
 }
