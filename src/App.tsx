@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 
 import {
+  Alert,
   Button,
   ConfigProvider,
   Flex,
@@ -61,6 +62,29 @@ type NewWorkspaceModalProps = {
 const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
   const [value, setValue] = useState('');
   const [workspaceNames, setWorkspaceNames] = useState<string[]>([]);
+  const [alertErrorMessage, setAlertErrorMessage] = useState('');
+  const [alertErrorVisible, setAlertErrorVisible] = useState(false);
+
+  const afterOpenChange = (open: boolean) => {
+    setValue('');
+    if (open) {
+      setWorkspaceNames(getWorkspaceNames());
+    }
+  };
+
+  const handleOk = () => {
+    if (!commonStorage.isValidPythonModuleName(value)) {
+      setAlertErrorMessage(value + ' is not a valid python module name');
+      setAlertErrorVisible(true);
+      return;
+    }
+    if (workspaceNames.includes(value)) {
+      setAlertErrorMessage('There is already a workspace named ' +  value);
+      setAlertErrorVisible(true);
+      return;
+    }
+    onOk(value);
+  };
 
   return (
     <Modal
@@ -74,43 +98,27 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
       }}
       onCancel={onCancel}
       footer={[
-        <Button
-          key="cancel"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>,
-        <Button
-          key="ok"
-          onClick={() => {
-            if (!commonStorage.isValidPythonModuleName(value)) {
-              // TODO(lizlooney): Use antd alert here.
-              alert(value + ' is not a valid python module name');
-              return;
-            }
-            if (workspaceNames.includes(value)) {
-              // TODO(lizlooney): Use antd alert here.
-              alert('There is already a workspace named ' +  value);
-              return;
-            }
-            onOk(value);
-          }}
-        >
-          OK
-        </Button>
+        <Button key="cancel" onClick={onCancel}> Cancel </Button>,
+        <Button key="ok" onClick={handleOk}> OK </Button>
       ]}
     >
       <Flex
         vertical
         gap="small"
       >
-        <Typography.Paragraph>
-          Workspace Name
-        </Typography.Paragraph>
+        <Typography.Paragraph> Workspace Name </Typography.Paragraph>
         <Input
           value={value}
           onChange={(e) => setValue(e.target.value.toLowerCase())}
         />
+        {alertErrorVisible && (
+          <Alert
+            type="error"
+            message={alertErrorMessage}
+            closable
+            afterClose={() => setAlertErrorVisible(false)}
+          />
+        )}
       </Flex>
     </Modal>
   );
@@ -129,63 +137,62 @@ const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorks
   const [value, setValue] = useState('');
   const [workspaceName, setWorkspaceName] = useState('');
   const [opModeNames, setOpModeNames] = useState<string[]>([]);
+  const [alertErrorMessage, setAlertErrorMessage] = useState('');
+  const [alertErrorVisible, setAlertErrorVisible] = useState(false);
+
+  const afterOpenChange = (open: boolean) => {
+    setValue('');
+    if (open) {
+      const currentWorkspaceName = getCurrentWorkspaceName();
+      setWorkspaceName(currentWorkspaceName);
+      setOpModeNames(getOpModeNames(currentWorkspaceName));
+    }
+  };
+
+  const handleOk = () => {
+    if (!commonStorage.isValidPythonModuleName(value)) {
+      setAlertErrorMessage(value + ' is not a valid python module name');
+      setAlertErrorVisible(true);
+      return;
+    }
+    if (workspaceName === value) {
+      setAlertErrorMessage('An OpMode cannot have the same name as its workspace.');
+      setAlertErrorVisible(true);
+      return;
+    }
+    if (opModeNames.includes(value)) {
+      setAlertErrorMessage('There is already an OpMode named ' +  value);
+      setAlertErrorVisible(true);
+      return;
+    }
+    onOk(workspaceName, value);
+  };
 
   return (
     <Modal
       title="New OpMode"
       open={isOpen}
-      afterOpenChange={(open: boolean) => {
-        setValue('');
-        if (open) {
-          const currentWorkspaceName = getCurrentWorkspaceName();
-          setWorkspaceName(currentWorkspaceName);
-          setOpModeNames(getOpModeNames(currentWorkspaceName));
-        }
-      }}
+      afterOpenChange={afterOpenChange}
       onCancel={onCancel}
       footer={[
-        <Button
-          key="cancel"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>,
-        <Button
-          key="ok"
-          onClick={() => {
-            if (!commonStorage.isValidPythonModuleName(value)) {
-              // TODO(lizlooney): Use antd alert here.
-              alert(value + ' is not a valid python module name');
-              return;
-            }
-            if (workspaceName === value) {
-              // TODO(lizlooney): Use antd alert here.
-              alert('An OpMode cannot have the same name as its workspace.');
-              return;
-            }
-            if (opModeNames.includes(value)) {
-              // TODO(lizlooney): Use antd alert here.
-              alert('There is already an OpMode named ' +  value);
-              return;
-            }
-            onOk(workspaceName, value);
-          }}
-        >
-          OK
-        </Button>
+        <Button key="cancel" onClick={onCancel}> Cancel </Button>,
+        <Button key="ok" onClick={handleOk}> OK </Button>
       ]}
     >
-      <Flex
-        vertical
-        gap="small"
-      >
-        <Typography.Paragraph>
-          OpMode Name
-        </Typography.Paragraph>
+      <Flex vertical gap="small" >
+        <Typography.Paragraph> OpMode Name </Typography.Paragraph>
         <Input
           value={value}
           onChange={(e) => setValue(e.target.value.toLowerCase())}
         />
+        {alertErrorVisible && (
+          <Alert
+            type="error"
+            message={alertErrorMessage}
+            closable
+            afterClose={() => setAlertErrorVisible(false)}
+          />
+        )}
       </Flex>
     </Modal>
   );
@@ -198,6 +205,8 @@ type BlocklyComponentType = {
 const App: React.FC = () => {
   const isFirstRender = useRef(true);
   const [messageApi, contextHolder] = message.useMessage();
+  const [alertErrorMessage, setAlertErrorMessage] = useState('');
+  const [alertErrorVisible, setAlertErrorVisible] = useState(false);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = useState<Set<string>>(new Set());
   const [triggerListModules, setTriggerListModules] = useState(false);
   const [modules, setModules] = useState<commonStorage.Workspace[]>([]);
@@ -429,8 +438,8 @@ const App: React.FC = () => {
     if (blocksEditor.current && currentModulePath) {
       blocksEditor.current.saveModule((success, errorMessage) => {
         if (errorMessage) {
-          // TODO(lizlooney): Use antd alert here.
-          alert(errorMessage);
+          setAlertErrorMessage(errorMessage);
+          setAlertErrorVisible(true);
         } else {
           messageApi.open({
             type: 'success',
@@ -548,15 +557,17 @@ const App: React.FC = () => {
         }}
       >
         <Flex vertical>
-          <Typography.Paragraph
-            strong={true}
-            underline={true}
-            style={{
-              color: '#aaf',
-            }}
-          >
-            WPILib Blocks
-          </Typography.Paragraph>
+          <Flex>
+            <Typography.Paragraph
+              strong={true}
+              underline={true}
+              style={{
+                color: '#aaf',
+              }}
+            >
+              WPILib Blocks
+            </Typography.Paragraph>
+          </Flex>
           <Space>
             <Tooltip title="New Workspace">
               <Button
@@ -609,6 +620,14 @@ const App: React.FC = () => {
               >
               </Button>
             </Tooltip>
+            {alertErrorVisible && (
+              <Alert
+                type="error"
+                message={alertErrorMessage}
+                closable
+                afterClose={() => setAlertErrorVisible(false)}
+              />
+            )}
           </Space>
         </Flex>
         <Splitter
@@ -635,11 +654,11 @@ const App: React.FC = () => {
               onConfirm={handleAskToSaveOk}
               okButtonProps={{ loading: askToSaveSaving }}
               onCancel={() => setOpenAskToSave(false)}
-            >
+            ><span>
               <BlocklyComponent
                 ref={blocklyComponent}
               />
-            </Popconfirm>
+            </span></Popconfirm>
           </Splitter.Panel>
           <Splitter.Panel min='2%'>
             <Flex
