@@ -91,7 +91,8 @@ type CallPythonFunctionExtraState = {
    */
   actualFunctionName?: string,
   /**
-   * True if this blocks refers to an exported function.
+   * True if this blocks refers to an exported function (for example, from a
+   * user's Workspace).
    */
   exportedFunction: boolean,
 };

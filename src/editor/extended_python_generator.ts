@@ -113,6 +113,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
           'type': 'mrc_get_python_variable',
           'extraState': {
             'varKind': 'module',
+            'moduleOrClassName': commonStorage.MODULE_NAME_PLACEHOLDER,
             'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
             'actualVariableName': actualVariableName,
             'exportedVariable': true,
@@ -128,6 +129,7 @@ class ExtendedPythonGenerator extends PythonGenerator {
           'type': 'mrc_set_python_variable',
           'extraState': {
             'varKind': 'module',
+            'moduleOrClassName': commonStorage.MODULE_NAME_PLACEHOLDER,
             'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
             'actualVariableName': actualVariableName,
             'exportedVariable': true,
