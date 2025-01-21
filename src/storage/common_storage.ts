@@ -104,7 +104,7 @@ export function makeUploadWorkspaceName(uploadFileName: string): string {
  * Returns the module content for a new module.
  */
 export function newModuleContent(): string {
-  const pythonCode = '\n';
+  const pythonCode = '';
   const exportedBlocks = '[]';
   const blocksContent = '{}';
   return makeModuleContent(pythonCode, exportedBlocks, blocksContent);

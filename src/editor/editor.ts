@@ -177,8 +177,7 @@ export class Editor {
   }
 
   public isModified(): boolean {
-    const moduleContent = this.getModuleContent();
-    return moduleContent !== this.moduleContent;
+    return this.getModuleContent() !== this.moduleContent;
   }
 
   private getModuleContent(): string {

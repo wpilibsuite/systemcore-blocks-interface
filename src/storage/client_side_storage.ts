@@ -109,11 +109,11 @@ export function saveEntry(
   };
 }
 
-export function fetchEntry(entryKey: string, callback: StringCallback): void {
+export function fetchEntry(entryKey: string, defaultValue: string, callback: StringCallback): void {
   if (!db) {
     openDatabase((success: boolean, errorReason: string) => {
       if (success) {
-        fetchEntry(entryKey, callback);
+        fetchEntry(entryKey, defaultValue, callback);
       } else {
         callback(null, 'Fetch entry failed. (' + errorReason + ')');
       }
@@ -130,7 +130,7 @@ export function fetchEntry(entryKey: string, callback: StringCallback): void {
   getRequest.onsuccess = (event: Event) => {
     if (getRequest.result === undefined) {
       // Entry does not exist.
-      callback(null, 'Entry does not exist');
+      callback(defaultValue, '');
       return;
     }
     const value = getRequest.result;
