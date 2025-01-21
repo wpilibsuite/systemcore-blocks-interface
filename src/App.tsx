@@ -16,6 +16,7 @@ import {
   Typography,
   theme
 } from 'antd';
+import type { InputRef } from 'antd';
 import type { TreeDataNode } from 'antd';
 import {
   CopyOutlined,
@@ -60,6 +61,7 @@ type NewWorkspaceModalProps = {
 }
 
 const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
+  const inputRef = useRef<InputRef>(null);
   const [value, setValue] = useState('');
   const [workspaceNames, setWorkspaceNames] = useState<string[]>([]);
   const [alertErrorMessage, setAlertErrorMessage] = useState('');
@@ -69,12 +71,15 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
     setValue('');
     if (open) {
       setWorkspaceNames(getWorkspaceNames());
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
   };
 
   const handleOk = () => {
     if (!commonStorage.isValidPythonModuleName(value)) {
-      setAlertErrorMessage(value + ' is not a valid python module name');
+      setAlertErrorMessage(value + ' is not a valid blocks module name');
       setAlertErrorVisible(true);
       return;
     }
@@ -90,12 +95,7 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
     <Modal
       title="New Workspace"
       open={isOpen}
-      afterOpenChange={(open: boolean) => {
-        setValue('');
-        if (open) {
-          setWorkspaceNames(getWorkspaceNames());
-        }
-      }}
+      afterOpenChange={afterOpenChange}
       onCancel={onCancel}
       footer={[
         <Button key="cancel" onClick={onCancel}> Cancel </Button>,
@@ -108,7 +108,9 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
       >
         <Typography.Paragraph> Workspace Name </Typography.Paragraph>
         <Input
+          ref={inputRef}
           value={value}
+          onPressEnter={handleOk}
           onChange={(e) => setValue(e.target.value.toLowerCase())}
         />
         {alertErrorVisible && (
@@ -134,6 +136,7 @@ type NewOpModeModalProps = {
 }
 
 const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorkspaceName, getOpModeNames, onOk, onCancel }) => {
+  const inputRef = useRef<InputRef>(null);
   const [value, setValue] = useState('');
   const [workspaceName, setWorkspaceName] = useState('');
   const [opModeNames, setOpModeNames] = useState<string[]>([]);
@@ -146,12 +149,15 @@ const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorks
       const currentWorkspaceName = getCurrentWorkspaceName();
       setWorkspaceName(currentWorkspaceName);
       setOpModeNames(getOpModeNames(currentWorkspaceName));
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
   };
 
   const handleOk = () => {
     if (!commonStorage.isValidPythonModuleName(value)) {
-      setAlertErrorMessage(value + ' is not a valid python module name');
+      setAlertErrorMessage(value + ' is not a valid blocks module name');
       setAlertErrorVisible(true);
       return;
     }
@@ -182,7 +188,9 @@ const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorks
       <Flex vertical gap="small" >
         <Typography.Paragraph> OpMode Name </Typography.Paragraph>
         <Input
+          ref={inputRef}
           value={value}
+          onPressEnter={handleOk}
           onChange={(e) => setValue(e.target.value.toLowerCase())}
         />
         {alertErrorVisible && (
@@ -209,6 +217,7 @@ const App: React.FC = () => {
   const [alertErrorVisible, setAlertErrorVisible] = useState(false);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = useState<Set<string>>(new Set());
   const [triggerListModules, setTriggerListModules] = useState(false);
+  const afterListModulesSuccess = useRef<() => void>(() => {});
   const [modules, setModules] = useState<commonStorage.Workspace[]>([]);
   const [treeData, setTreeData] = useState<any>([]);
   const [treeExpandedKeys, setTreeExpandedKeys] = useState<string[]>([]);
@@ -236,7 +245,7 @@ const App: React.FC = () => {
   }, []);
 
   const initializeShownPythonToolboxCategories = () => {
-    storage.fetchEntry('shownPythonToolboxCategories', (value: string | null, error: string) => {
+    storage.fetchEntry('shownPythonToolboxCategories', '[]', (value: string | null, errorMessage: string) => {
       if (value != null) {
         const shownCategories: string[] = JSON.parse(value);
         setShownPythonToolboxCategories(new Set(shownCategories));
@@ -255,13 +264,15 @@ const App: React.FC = () => {
 
   // Fetch the list of modules from storage.
   useEffect(() => {
-    storage.listModules((array: commonStorage.Workspace[] | null, error: string) => {
-      if (error) {
-        console.log(error);
+    storage.listModules((array: commonStorage.Workspace[] | null, errorMessage: string) => {
+      if (errorMessage) {
+        setAlertErrorMessage('Unable to load the list of modules: ' + errorMessage);
+        setAlertErrorVisible(true);
         return
       }
       if (array != null) {
         setModules(array)
+        afterListModulesSuccess.current();
       }
     });
   }, [triggerListModules]);
@@ -323,16 +334,14 @@ const App: React.FC = () => {
     setTreeData(treeDataArray);
 
     if (!currentModulePath) {
-      storage.fetchEntry('currentModulePath', (modulePath: string | null, error: string) => {
-        if (error) {
-          console.log(error);
-          return;
-        }
-        if (modulePath != null) {
-          if (!currentModulePath) {
+      storage.fetchEntry('currentModulePath', '', (modulePath: string | null, errorMessage: string) => {
+        if (!currentModulePath) {
+          if (modulePath) {
             setCurrentModulePath(modulePath);
+          } else if (modules.length > 0) {
+            setCurrentModulePath(modules[0].modulePath);
           }
-        } 
+        }
       });
     }
   }, [modules, currentModulePath]);
@@ -342,7 +351,11 @@ const App: React.FC = () => {
   };
 
   const checkIfBlocksWereModified = (callback: () => void) => {
-    if (blocksEditor.current && currentModulePath) {
+    if (blocksEditor.current) {
+      if (!currentModulePath) {
+        callback();
+        return;
+      }
       if (!blocksEditor.current.isModified()) {
         callback();
         return;
@@ -365,7 +378,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleNewWorkspaceClick = () => {
+  const handleNewWorkspaceClicked = () => {
     checkIfBlocksWereModified(() => {
       setIsNewWorkspaceModalOpen(true);
     });
@@ -384,16 +397,20 @@ const App: React.FC = () => {
     const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
     storage.createModule(
         commonStorage.MODULE_TYPE_WORKSPACE, workspacePath, workspaceContent,
-        (success: boolean, error: string) => {
-            if (success) {
-              setTriggerListModules(!triggerListModules);
-            } else if (error) {
-              console.log(error);
-            }
-          });
+        (success: boolean, errorMessage: string) => {
+          if (success) {
+            afterListModulesSuccess.current = () => {
+              setCurrentModulePath(workspacePath);
+            };
+            setTriggerListModules(!triggerListModules);
+          } else if (errorMessage) {
+            setAlertErrorMessage('Failed to create a new Workspace: ' + errorMessage);
+            setAlertErrorVisible(true);
+          }
+        });
   };
 
-  const handleNewOpModeClick = () => {
+  const handleNewOpModeClicked = () => {
     checkIfBlocksWereModified(() => {
       setIsNewOpModeModalOpen(true);
     });
@@ -421,16 +438,20 @@ const App: React.FC = () => {
     const opModePath = commonStorage.makeModulePath(workspaceName, opModeName);
     storage.createModule(
         commonStorage.MODULE_TYPE_OPMODE, opModePath, opModeContent,
-        (success: boolean, error: string) => {
+        (success: boolean, errorMessage: string) => {
             if (success) {
+              afterListModulesSuccess.current = () => {
+                setCurrentModulePath(opModePath);
+              };
               setTriggerListModules(!triggerListModules);
-            } else if (error) {
-              console.log(error);
+            } else if (errorMessage) {
+              setAlertErrorMessage('Failed to create a new OpMode: ' + errorMessage);
+              setAlertErrorVisible(true);
             }
           });
   };
 
-  const handleSaveClick = () => {
+  const handleSaveClicked = () => {
     saveModule((success) => {});
   };
 
@@ -451,15 +472,21 @@ const App: React.FC = () => {
     }
   };
 
-  const handleUploadClick = () => {
-    console.log('Upload clicked');
+  const handleUploadClicked = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Not implemented yet .',
+    });
   };
 
-  const handleDownloadClick = () => {
-    console.log('Download clicked');
+  const handleDownloadClicked = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Not implemented yet .',
+    });
   };
 
-  const handleToolboxSettingsClick = () => {
+  const handleToolboxSettingsClicked = () => {
     setIsToolboxSettingsModalOpen(true);
   };
 
@@ -521,13 +548,17 @@ const App: React.FC = () => {
     }
   }, [pathToExpand, treeExpandedKeys]);
 
-  const handleCopyClick = () => {
+  const handleCopyClicked = () => {
     navigator.clipboard.writeText(generatedCode).then(
       () => {
-        console.log('Code copied to clipboard');
+        messageApi.open({
+          type: 'success',
+          content: 'Copy completed successfully.',
+        });
       },
       (err) => {
-        console.error('Could not copy code: ', err);
+        setAlertErrorMessage('Could not copy code: ' + err);
+        setAlertErrorVisible(true);
       }
     );
   };
@@ -572,7 +603,7 @@ const App: React.FC = () => {
             <Tooltip title="New Workspace">
               <Button
                 icon={<FolderAddOutlined />} 
-                onClick={handleNewWorkspaceClick}
+                onClick={handleNewWorkspaceClicked}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -581,7 +612,7 @@ const App: React.FC = () => {
               <Button
                 icon={<FileAddOutlined />} 
                 disabled={!currentModulePath}
-                onClick={handleNewOpModeClick}
+                onClick={handleNewOpModeClicked}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -590,7 +621,7 @@ const App: React.FC = () => {
               <Button
                 icon={<SaveOutlined />} 
                 disabled={!currentModulePath}
-                onClick={handleSaveClick}
+                onClick={handleSaveClicked}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -598,7 +629,7 @@ const App: React.FC = () => {
             <Tooltip title="Upload">
               <Button
                 icon={<UploadOutlined />}
-                onClick={handleUploadClick}
+                onClick={handleUploadClicked}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -607,7 +638,7 @@ const App: React.FC = () => {
               <Button
                 icon={<DownloadOutlined />}
                 disabled={!currentModulePath}
-                onClick={handleDownloadClick}
+                onClick={handleDownloadClicked}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -615,7 +646,7 @@ const App: React.FC = () => {
             <Tooltip title="Toolbox Settings">
               <Button
                 icon={<SettingOutlined />}
-                onClick={handleToolboxSettingsClick}
+                onClick={handleToolboxSettingsClicked}
                 style={{ color: 'white' }}
               >
               </Button>
@@ -673,7 +704,7 @@ const App: React.FC = () => {
                 <Tooltip title="Copy">
                   <Button
                     icon={<CopyOutlined />}
-                    onClick={handleCopyClick}
+                    onClick={handleCopyClicked}
                     size="small"
                     style={{ color: 'white' }}
                   >
