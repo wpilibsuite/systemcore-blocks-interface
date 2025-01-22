@@ -24,7 +24,8 @@ import * as Blockly from 'blockly';
 import { Order, PythonGenerator } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
-import { createFieldDropdown, createNonEditableField } from './utils/blocks';
+import { createFieldDropdown } from '../fields/FieldDropdown';
+import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { getAllowedTypesForSetCheck, getOutputCheck, addImport } from './utils/python';
 
 
@@ -131,7 +132,7 @@ const SET_PYTHON_VARIABLE = {
   init: function(this: SetPythonVariableBlock): void {
     this.appendValueInput('VALUE')
         .appendField('set')
-        .appendField(createNonEditableField(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
+        .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
         .appendField('.');
     this.setColour(COLOR_VARIABLE_SETTER);
     this.setTooltip(() => {
@@ -234,7 +235,7 @@ const SET_PYTHON_VARIABLE = {
         // Create the drop-down with the variable names.
         input.appendField(createFieldDropdown(varNames), pythonUtils.FIELD_VARIABLE_NAME);
       } else {
-        input.appendField(createNonEditableField(''), pythonUtils.FIELD_VARIABLE_NAME);
+        input.appendField(createFieldNonEditableText(''), pythonUtils.FIELD_VARIABLE_NAME);
       }
       input.appendField('to');
       if (this.mrcVarType) {

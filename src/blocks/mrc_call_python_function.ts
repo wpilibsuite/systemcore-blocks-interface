@@ -24,7 +24,8 @@ import * as Blockly from 'blockly';
 import { Order, PythonGenerator } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
-import { createNonEditableField } from './utils/blocks';
+import { createFieldDropdown } from '../fields/FieldDropdown';
+import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { getAllowedTypesForSetCheck, getOutputCheck, addImport } from './utils/python';
 
 
@@ -217,28 +218,28 @@ const CALL_PYTHON_FUNCTION = {
       case FUNCTION_KIND_MODULE:
         this.appendDummyInput()
             .appendField('call')
-            .appendField(createNonEditableField(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
+            .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
             .appendField('.')
-            .appendField(createNonEditableField(''), pythonUtils.FIELD_FUNCTION_NAME);
+            .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
         break;
       case FUNCTION_KIND_STATIC:
         this.appendDummyInput()
             .appendField('call')
-            .appendField(createNonEditableField(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
+            .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
             .appendField('.')
-            .appendField(createNonEditableField(''), pythonUtils.FIELD_FUNCTION_NAME);
+            .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
         break;
       case FUNCTION_KIND_CONSTRUCTOR:
         this.appendDummyInput()
             .appendField('create')
-            .appendField(createNonEditableField(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+            .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
         break;
       case FUNCTION_KIND_INSTANCE:
         this.appendDummyInput()
             .appendField('call')
-            .appendField(createNonEditableField(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
+            .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
             .appendField('.')
-            .appendField(createNonEditableField(''), pythonUtils.FIELD_FUNCTION_NAME);
+            .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
         break;
       default:
         throw new Error('mrcVarKind must be "module", "static", "constructor", or "instance".')

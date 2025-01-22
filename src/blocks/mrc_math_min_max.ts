@@ -24,8 +24,7 @@
 import * as Blockly from 'blockly';
 import { Order, PythonGenerator } from 'blockly/python';
 
-import { createFieldDropdown } from './utils/blocks';
-
+import { createFieldDropdown } from '../fields/FieldDropdown';
 
 export const BLOCK_NAME = 'mrc_math_min_max';
 

@@ -18,27 +18,13 @@
 /**
  * @author lizlooney@google.com (Liz Looney)
  */
-
 import * as Blockly from 'blockly/core';
-
-class FieldNonEditableText extends Blockly.FieldTextInput {
-  constructor(value: string) {
-    super(value);
-    this.CURSOR = '';
-  }
-
-  protected override showEditor_() {
-  }
-}
-
-export function createNonEditableField(label: string): Blockly.Field {
-  return new FieldNonEditableText(label);
-}
+import { createFieldNonEditableText } from './FieldNonEditableText';
 
 export function createFieldDropdown(items: string[]): Blockly.Field {
   // If there is only one item, don't create a dropdown.
   if (items.length === 1) {
-    return new FieldNonEditableText(items[0]);
+    return createFieldNonEditableText(items[0]);
   }
   const options: Blockly.MenuOption[] = [];
   items.forEach((item) => {
