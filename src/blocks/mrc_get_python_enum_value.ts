@@ -24,7 +24,8 @@ import * as Blockly from 'blockly';
 import { Order, PythonGenerator } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
-import { createFieldDropdown, createNonEditableField } from './utils/blocks';
+import { createFieldDropdown } from '../fields/FieldDropdown';
+import { createFieldNonEditableText } from 'src/fields/FieldNonEditableText';
 import { getOutputCheck, addImport } from './utils/python';
 
 
@@ -67,7 +68,7 @@ const GET_PYTHON_ENUM_VALUE = {
    */
   init: function(this: GetPythonEnumValueBlock): void {
     this.appendDummyInput('ENUM')
-        .appendField(createNonEditableField(''), pythonUtils.FIELD_ENUM_CLASS_NAME)
+        .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_ENUM_CLASS_NAME)
         .appendField('.');
     this.setColour(COLOR_ENUM);
     this.setTooltip(() => {
