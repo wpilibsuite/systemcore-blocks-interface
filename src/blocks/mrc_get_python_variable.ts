@@ -25,7 +25,7 @@ import { Order, PythonGenerator } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown } from '../fields/FieldDropdown';
-import { createFieldNonEditableText } from 'src/fields/FieldNonEditableText';
+import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { getAllowedTypesForSetCheck, getOutputCheck, addImport } from './utils/python';
 
 
