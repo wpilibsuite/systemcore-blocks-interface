@@ -23,10 +23,7 @@
 
 import * as Blockly from 'blockly';
 import { Order, PythonGenerator } from 'blockly/python';
-
-
-// TODO(lizlooney): Use style instead of color.
-const miscColor = 240;        // blue
+import { MRC_STYLE_MISC } from '../themes/styles';
 
 export const BLOCK_NAME = 'mrc_misc_evaluate_but_ignore_result';
 
@@ -38,7 +35,7 @@ export const setup = function() {
           .setAlign(Blockly.inputs.Align.RIGHT);
       this.setPreviousStatement(true);
       this.setNextStatement(true);
-      this.setColour(miscColor);
+      this.setStyle(MRC_STYLE_MISC);
       this.setTooltip(
           'Executes the connected block and ignores the result. ' +
           'Allows you to call a function and ignore the return value.');

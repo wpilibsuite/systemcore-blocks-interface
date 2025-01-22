@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as Blockly from 'blockly/core';
 import * as locale from 'blockly/msg/en';
-import DarkTheme from '@blockly/theme-dark';
+import * as MrcTheme from '../themes/mrc_theme_dark'
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
 
@@ -14,7 +14,7 @@ function BlocklyComponent(props) {
   useEffect(() => {
     // Configure Blockly workspace
     const workspaceConfig = {
-      theme: DarkTheme,
+      theme: MrcTheme.theme,
       horizontalLayout: false, // Forces vertical layout for the workspace
 
       // Start with an empty (but not null) toolbox. It will be replaced later.

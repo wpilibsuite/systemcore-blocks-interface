@@ -27,14 +27,12 @@ import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { getAllowedTypesForSetCheck, getOutputCheck, addImport } from './utils/python';
-
+import { MRC_STYLE_VARIABLES } from '../themes/styles';
 
 // A block to set a python variable.
 
 export const BLOCK_NAME = 'mrc_set_python_variable';
 
-// TODO(lizlooney): Use style instead of color.
-const COLOR_VARIABLE_SETTER = 120; // green
 
 const VAR_KIND_MODULE = 'module';
 const VAR_KIND_CLASS = 'class';
@@ -134,7 +132,7 @@ const SET_PYTHON_VARIABLE = {
         .appendField('set')
         .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
         .appendField('.');
-    this.setColour(COLOR_VARIABLE_SETTER);
+    this.setStyle(MRC_STYLE_VARIABLES);
     this.setTooltip(() => {
       const varName = this.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
       let tooltip: string;

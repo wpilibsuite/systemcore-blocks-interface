@@ -26,14 +26,11 @@ import { Order, PythonGenerator } from 'blockly/python';
 import * as pythonUtils from './utils/generated/python';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { getAllowedTypesForSetCheck, getOutputCheck, addImport } from './utils/python';
-
+import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 
 // A block to call a python function.
 
 export const BLOCK_NAME = 'mrc_call_python_function';
-
-// TODO(lizlooney): Use style instead of color.
-const COLOR_FUNCTION = 270;        // blue-magenta
 
 const FUNCTION_KIND_MODULE = 'module';
 const FUNCTION_KIND_STATIC = 'static';
@@ -102,7 +99,7 @@ const CALL_PYTHON_FUNCTION = {
    * Block initialization.
    */
   init: function(this: CallPythonFunctionBlock): void {
-    this.setColour(COLOR_FUNCTION);
+    this.setStyle(MRC_STYLE_FUNCTIONS);
     this.setTooltip(() => {
       let tooltip: string;
       switch (this.mrcFunctionKind) {

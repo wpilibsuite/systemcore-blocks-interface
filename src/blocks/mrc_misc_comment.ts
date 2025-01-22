@@ -23,10 +23,7 @@
 
 import * as Blockly from 'blockly';
 import { PythonGenerator } from 'blockly/python';
-
-
-// TODO(lizlooney): Use style instead of color.
-const miscColor = 240;        // blue
+import { MRC_STYLE_COMMENTS } from '../themes/styles';
 
 export const BLOCK_NAME = 'mrc_misc_comment';
 
@@ -38,7 +35,7 @@ export const setup = function() {
       this.getField('COMMENT').maxDisplayLength = 140;
       this.setPreviousStatement(true);
       this.setNextStatement(true);
-      this.setColour(miscColor);
+      this.setStyle(MRC_STYLE_COMMENTS);
     },
   };
 };

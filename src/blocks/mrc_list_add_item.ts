@@ -39,7 +39,7 @@ export const setup = function() {
           .setCheck("Array");
       this.setPreviousStatement(true);
       this.setNextStatement(true);
-      this.setColour(Blockly.Msg.LISTS_HUE);
+      this.setStyle('list_blocks');
       this.setTooltip("Add the item to the end of the list.");
     },
   };
