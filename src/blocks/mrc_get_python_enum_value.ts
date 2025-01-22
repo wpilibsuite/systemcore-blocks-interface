@@ -26,14 +26,12 @@ import { Order, PythonGenerator } from 'blockly/python';
 import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown, createNonEditableField } from './utils/blocks';
 import { getOutputCheck, addImport } from './utils/python';
+import { MRC_STYLE_ENUM } from '../themes/styles'
 
 
 // A block to access a python enum.
 
 export const BLOCK_NAME = 'mrc_get_python_enum_value';
-
-// TODO(lizlooney): Use style instead of color.
-const COLOR_ENUM = 180; // cyan
 
 // Variables and functions used for populating the drop down field for the enum values.
 
@@ -69,7 +67,7 @@ const GET_PYTHON_ENUM_VALUE = {
     this.appendDummyInput('ENUM')
         .appendField(createNonEditableField(''), pythonUtils.FIELD_ENUM_CLASS_NAME)
         .appendField('.');
-    this.setColour(COLOR_ENUM);
+    this.setStyle(MRC_STYLE_ENUM);
     this.setTooltip(() => {
       const enumClassName = this.getFieldValue(pythonUtils.FIELD_ENUM_CLASS_NAME);
       const enumValue = this.getFieldValue(pythonUtils.FIELD_ENUM_VALUE);

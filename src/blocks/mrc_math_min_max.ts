@@ -45,7 +45,7 @@ export const setup = function() {
       this.appendValueInput("B").setCheck("Number")
           .appendField("b")
           .setAlign(Blockly.inputs.Align.RIGHT);
-      this.setColour(Blockly.Msg.MATH_HUE);
+      this.setStyle('math_blocks');
       const TOOLTIPS = [
         ["max", "Returns the greater of two numerical values."],
         ["min", "Returns the smaller of two numerical values."],

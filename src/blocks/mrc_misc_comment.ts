@@ -23,6 +23,7 @@
 
 import * as Blockly from 'blockly';
 import { PythonGenerator } from 'blockly/python';
+import { MRC_STYLE_COMMENTS } from '../themes/styles';
 
 
 // TODO(lizlooney): Use style instead of color.
@@ -38,7 +39,7 @@ export const setup = function() {
       this.getField('COMMENT').maxDisplayLength = 140;
       this.setPreviousStatement(true);
       this.setNextStatement(true);
-      this.setColour(miscColor);
+      this.setStyle(MRC_STYLE_COMMENTS);
     },
   };
 };
