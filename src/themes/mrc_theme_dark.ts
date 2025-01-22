@@ -2,7 +2,7 @@ import * as Blockly from 'blockly/core'
 import DarkTheme from '@blockly/theme-dark';
 import { add_mrc_styles } from './styles';
 
-export const THEME_NAME = 'mrc_theme_dark';
+const THEME_NAME = 'mrc_theme_dark';
 
 const create_theme = function() : Blockly.Theme{    
    let newTheme = Blockly.Theme.defineTheme(THEME_NAME, {

@@ -1,7 +1,7 @@
 import * as Blockly from 'blockly/core'
 import { add_mrc_styles } from './styles';
 
-export const THEME_NAME = 'mrc_theme_light';
+const THEME_NAME = 'mrc_theme_light';
 
 const create_theme = function() : Blockly.Theme{    
    let newTheme = Blockly.Theme.defineTheme(THEME_NAME, {

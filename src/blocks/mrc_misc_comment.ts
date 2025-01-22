@@ -25,10 +25,6 @@ import * as Blockly from 'blockly';
 import { PythonGenerator } from 'blockly/python';
 import { MRC_STYLE_COMMENTS } from '../themes/styles';
 
-
-// TODO(lizlooney): Use style instead of color.
-const miscColor = 240;        // blue
-
 export const BLOCK_NAME = 'mrc_misc_comment';
 
 export const setup = function() {
