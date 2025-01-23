@@ -8,7 +8,7 @@ export const category =
       kind: 'block',
       type: 'math_number',
       fields: {
-        NUM: 123,
+        NUM: 0,
       },
     },
     {

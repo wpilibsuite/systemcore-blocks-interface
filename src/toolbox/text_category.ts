@@ -58,43 +58,58 @@ export const category =
             kind: 'block',
             type: 'text_indexOf',
             inputs: {
-                VALUE: {
-                    block: {
-                        type: 'variables_get',
+              VALUE: {
+                block: {
+                  type: 'variables_get',
+                  fields: {
+                    VAR: {
+                      name: 'myText',
                     },
+                  },
                 },
-                FIND: {
-                    shadow: {
-                        type: 'text',
-                        fields: {
-                            TEXT: 'abc',
-                        },
-                    },
+              },
+              FIND: {
+                shadow: {
+                  type: 'text',
+                  fields: {
+                    TEXT: 'abc',
+                  },
                 },
+              },
             },
-        },
-        {
+          },
+          {
             kind: 'block',
             type: 'text_charAt',
             inputs: {
-                VALUE: {
-                    block: {
-                        type: 'variables_get',
+              VALUE: {
+                block: {
+                  type: 'variables_get',
+                  fields: {
+                    VAR: {
+                      name: 'myText',
                     },
+                  },
                 },
+              },
             },
-        },
-        {
+          },
+          {
             kind: 'block',
             type: 'text_getSubstring',
             inputs: {
-                STRING: {
-                    block: {
-                        type: 'variables_get',
+              STRING: {
+                block: {
+                  type: 'variables_get',
+                  fields: {
+                    VAR: {
+                      name: 'myText',
                     },
+                  },
                 },
+              },
             },
-        },
+          },
         {
             kind: 'block',
             type: 'text_changeCase',

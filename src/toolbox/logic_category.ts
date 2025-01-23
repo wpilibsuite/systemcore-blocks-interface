@@ -13,6 +13,13 @@ export const category =
             type: 'controls_if',
             extraState: {
               hasElse: 'true',
+            },
+          },
+        {
+            kind: 'block',
+            type: 'controls_if',
+            extraState: {
+              hasElse: 'true',
               elseIfCount: 1,
             },
           },

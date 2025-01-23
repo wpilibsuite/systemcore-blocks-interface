@@ -59,6 +59,11 @@ export const category = {
           VALUE: {
             block: {
               type: 'variables_get',
+              fields: {
+                VAR: {
+                  name: 'myList',
+                },
+              },
             },
           },
         },
@@ -70,6 +75,11 @@ export const category = {
           VALUE: {
             block: {
               type: 'variables_get',
+              fields: {
+                VAR: {
+                  name: 'myList',
+                },
+              },
             },
           },
         },
@@ -81,6 +91,11 @@ export const category = {
           LIST: {
             block: {
               type: 'variables_get',
+              fields: {
+                VAR: {
+                  name: 'myList',
+                },
+              },
             },
           },
         },
@@ -92,6 +107,11 @@ export const category = {
           LIST: {
             block: {
               type: 'variables_get',
+              fields: {
+                VAR: {
+                  name: 'myList',
+                },
+              },
             },
           },
         },
@@ -113,6 +133,18 @@ export const category = {
       {
         kind: 'block',
         type: 'lists_sort',
+        inputs: {
+          LIST: {
+            block: {
+              type: 'variables_get',
+              fields: {
+                VAR: {
+                  name: 'myList',
+                },
+              },
+            },
+          },
+        },
       },
       {
         kind: 'block',
