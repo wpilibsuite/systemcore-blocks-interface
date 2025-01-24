@@ -860,16 +860,17 @@ const App: React.FC = () => {
           }}
         >
           <Splitter.Panel min='2%' defaultSize='15%'>
-            <Flex vertical
+            <Flex vertical gap="small"
               style={{
                 height: '100%',
               }}
             >
-              <Flex vertical>
+              <Flex vertical gap="small">
                 <Space>
                   <Tooltip title="New Workspace">
                     <Button
                       icon={<FolderAddOutlined />} 
+                      size="small"
                       onClick={handleNewWorkspaceClicked}
                       style={{ color: 'white' }}
                     >
@@ -878,6 +879,7 @@ const App: React.FC = () => {
                   <Tooltip title="New OpMode">
                     <Button
                       icon={<FileAddOutlined />} 
+                      size="small"
                       disabled={!currentModulePath}
                       onClick={handleNewOpModeClicked}
                       style={{ color: 'white' }}
@@ -887,6 +889,7 @@ const App: React.FC = () => {
                   <Tooltip title="Save">
                     <Button
                       icon={<SaveOutlined />} 
+                      size="small"
                       disabled={!currentModulePath}
                       onClick={handleSaveClicked}
                       style={{ color: 'white' }}
@@ -898,6 +901,7 @@ const App: React.FC = () => {
                   <Tooltip title={renameTooltip}>
                     <Button
                       icon={<EditOutlined />} 
+                      size="small"
                       disabled={!currentModulePath}
                       onClick={handleRenameClicked}
                       style={{ color: 'white' }}
@@ -907,6 +911,7 @@ const App: React.FC = () => {
                   <Tooltip title={copyTooltip}>
                     <Button
                       icon={<CopyOutlined />} 
+                      size="small"
                       disabled={!currentModulePath}
                       onClick={handleCopyClicked}
                       style={{ color: 'white' }}
@@ -916,6 +921,7 @@ const App: React.FC = () => {
                   <Tooltip title={deleteTooltip}>
                     <Button
                       icon={<DeleteOutlined />} 
+                      size="small"
                       disabled={!currentModulePath}
                       onClick={handleDeleteClicked}
                       style={{ color: 'white' }}
@@ -925,6 +931,7 @@ const App: React.FC = () => {
                   <Tooltip title="Upload">
                     <Button
                       icon={<UploadOutlined />}
+                      size="small"
                       onClick={handleUploadClicked}
                       style={{ color: 'white' }}
                     >
@@ -933,6 +940,7 @@ const App: React.FC = () => {
                   <Tooltip title="Download">
                     <Button
                       icon={<DownloadOutlined />}
+                      size="small"
                       disabled={!currentModulePath}
                       onClick={handleDownloadClicked}
                       style={{ color: 'white' }}
@@ -954,13 +962,14 @@ const App: React.FC = () => {
           </Splitter.Panel>
           <Splitter.Panel min='2%' defaultSize='50%'>
             <Flex
-              vertical
+              vertical gap="small"
               style={modules.length === 0 ? { display: 'none'} : { height: '100%' }}
             >
               <Space>
                 <Tooltip title="Toolbox Settings">
                   <Button
                     icon={<SettingOutlined />}
+                    size="small"
                     onClick={handleToolboxSettingsClicked}
                     style={{ color: 'white' }}
                   >
@@ -987,7 +996,7 @@ const App: React.FC = () => {
           </Splitter.Panel>
           <Splitter.Panel min='2%'>
             <Flex
-              vertical
+              vertical gap="small"
               style={modules.length === 0 ? { display: 'none'} : { height: '100%' }}
             >
               <Space>
@@ -995,8 +1004,8 @@ const App: React.FC = () => {
                 <Tooltip title="Copy">
                   <Button
                     icon={<CopyOutlined />}
-                    onClick={handleCopyPythonClicked}
                     size="small"
+                    onClick={handleCopyPythonClicked}
                     style={{ color: 'white' }}
                   >
                   </Button>
