@@ -98,7 +98,7 @@ const NewWorkspaceNameModal: React.FC<NewWorkspaceNameModalProps> = ({ isOpen, i
 
   return (
     <Modal
-      title="New Workspace"
+      title={workspaceNames.length === 0 ? "Welcome to WPILib Blocks!" : "New Workspace" }
       open={isOpen}
       afterOpenChange={afterOpenChange}
       onCancel={onCancel}
@@ -108,6 +108,11 @@ const NewWorkspaceNameModal: React.FC<NewWorkspaceNameModalProps> = ({ isOpen, i
       ]}
     >
       <Flex vertical gap="small">
+        <Typography.Paragraph
+          style={workspaceNames.length === 0 ? { } : { display: 'none' }}
+        >
+        Let's create your first workspace. You just need to give it a name.
+        </Typography.Paragraph>
         <Typography.Paragraph> Workspace Name </Typography.Paragraph>
         <Input
           ref={inputRef}
@@ -325,6 +330,12 @@ const App: React.FC = () => {
         const callback = afterListModulesSuccess.current;
         afterListModulesSuccess.current = () => {};
         callback();
+
+        if (array.length === 0) {
+          setNewWorkspaceNameModalPurpose('NewWorkspace');
+          setNewWorkspaceNameModalInitialValue('');
+          setNewWorkspaceNameModalIsOpen(true);
+        }
       }
     });
   }, [triggerListModules]);

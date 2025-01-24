@@ -280,14 +280,18 @@ function _saveModule(
     let value;
     if (getRequest.result === undefined) {
       if (!moduleType) {
-        throw new Error('Module type must be truthy when creating a module.');
+        // Since moduleType is not truthy, we are trying to save an existing module.
+        // So it is unexpected that the getRequest.result is undefined.
+        throw new Error('Unable to save module ' + modulePath);
       }
       value = Object.create(null);
       value.path = modulePath;
       value.type = moduleType;
     } else {
       if (moduleType) {
-        throw new Error('Module type must be falsy when saving an existing module.');
+        // Since moduleType is truthy, we are trying to create an existing module.
+        // So it is unexpected that the getRequest.result is not undefined.
+        throw new Error('Unable to create module ' + modulePath);
       }
       value = getRequest.result;
     }
