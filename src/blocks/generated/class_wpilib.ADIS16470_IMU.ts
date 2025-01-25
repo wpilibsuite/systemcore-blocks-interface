@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 44 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADIS16470_IMU"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADIS16470_IMU", "args": [], "tooltip": "Creates a new ADIS16740 IMU object.\n\nThe default setup is the onboard SPI port with a calibration time of 1\nsecond. Yaw, pitch, and roll are kZ, kX, and kY respectively.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADIS16470_IMU"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADIS16470_IMU"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADIS16470_IMU", "args": [{"name": "yaw_axis", "type": "wpilib._wpilib.ADIS16470_IMU.IMUAxis"}, {"name": "pitch_axis", "type": "wpilib._wpilib.ADIS16470_IMU.IMUAxis"}, {"name": "roll_axis", "type": "wpilib._wpilib.ADIS16470_IMU.IMUAxis"}], "tooltip": "Creates a new ADIS16740 IMU object.\n\nThe default setup is the onboard SPI port with a calibration time of 1\nsecond.\n\n:strong:`:emphasis:`Input axes limited to kX, kY and kZ. Specifying kYaw, kPitch,or kRoll\nwill result in an error.``\n\n:param yaw_axis:   The axis that measures the yaw\n:param pitch_axis: The axis that measures the pitch\n:param roll_axis:  The axis that measures the roll", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADIS16470_IMU"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIMUAxis"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIMUAxis"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIMUAxis"}}}}}}}}},
@@ -57,12 +59,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADIS16470_IMU.IMUAxis", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADIS16470_IMU.IMUAxis", "ENUM_VALUE": "kYaw"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADIS16470_IMU.IMUAxis", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADIS16470_IMU.IMUAxis", "ENUM_VALUE": "kZ"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.ADIS16470_IMU",
     name:  "ADIS16470_IMU",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.ADIS16470_IMU",
   };
+
   return category;
 }

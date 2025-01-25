@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 39 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.units.volts", "args": [], "tooltip": "Read the battery voltage.\n\n:returns: The battery voltage in Volts.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.RobotController", "FUNC": "getBatteryVoltage"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.units.volts", "args": [], "tooltip": "Get the current brownout voltage setting.\n\n:returns: The brownout voltage", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.RobotController", "FUNC": "getBrownoutVoltage"}},
@@ -49,12 +51,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "state", "type": "wpilib._wpilib.RadioLEDState"}], "tooltip": "Set the state of the \"Radio\" LED. On the RoboRIO, this writes to sysfs, so\nthis function should not be called multiple times per loop cycle to avoid\noverruns.\n\n:param state: The state to set the LED to.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.RobotController", "FUNC": "setRadioLEDState"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRadioLEDState"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "supplier", "type": "Callable[[], int]"}], "tooltip": "Sets a new source to provide the clock time in microseconds. Changing this\naffects the return value of ``GetTime``.\n\n:param supplier: Function to return the time in microseconds.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.RobotController", "FUNC": "setTimeSource"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.RobotController",
     name:  "RobotController",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.RobotController",
   };
+
   return category;
 }

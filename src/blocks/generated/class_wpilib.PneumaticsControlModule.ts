@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 37 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPneumaticsControlModule"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PneumaticsControlModule", "args": [], "tooltip": "Constructs a PneumaticsControlModule with the default ID (0).", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticsControlModule"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPneumaticsControlModule"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PneumaticsControlModule", "args": [{"name": "module", "type": "int"}], "tooltip": "Constructs a PneumaticsControlModule.\n\n:param module: module number to construct", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticsControlModule"}}}}},
@@ -47,12 +49,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pneumaticsControlModule", "type": "wpilib._wpilib.PneumaticsControlModule"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticsControlModule", "FUNC": "unreserveCompressor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsControlModule"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pneumaticsControlModule", "type": "wpilib._wpilib.PneumaticsControlModule"}, {"name": "mask", "type": "int"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticsControlModule", "FUNC": "unreserveSolenoids"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsControlModule"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PneumaticsControlModule",
     name:  "PneumaticsControlModule",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PneumaticsControlModule",
   };
+
   return category;
 }

@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myNotifier"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Notifier", "args": [{"name": "handler", "type": "Callable[[], None]"}], "tooltip": "Create a Notifier for timer event notification.\n\n:param handler: The handler is called at the notification time which is set\n                using StartSingle or StartPeriodic.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Notifier"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "notifier", "type": "wpilib._wpilib.Notifier"}, {"name": "handler", "type": "Callable[[], None]"}], "tooltip": "Change the handler function.\n\n:param handler: Handler", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Notifier", "FUNC": "setCallback"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNotifier"}}}}}},
@@ -17,12 +19,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "notifier", "type": "wpilib._wpilib.Notifier"}, {"name": "delay", "type": "wpimath.units.seconds"}], "tooltip": "Register for single event notification.\n\nA timer event is queued for a single event after the specified delay.\n\n:param delay: Amount of time to wait before the handler is called.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Notifier", "FUNC": "startSingle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNotifier"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "notifier", "type": "wpilib._wpilib.Notifier"}], "tooltip": "Stop timer events from occurring.\n\nStop any repeating timer events from occurring. This will also remove any\nsingle notification events from the queue.\n\nIf a timer-based call to the registered handler is in progress, this\nfunction will block until the handler call is complete.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Notifier", "FUNC": "stop"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNotifier"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Notifier",
     name:  "Notifier",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Notifier",
   };
+
   return category;
 }

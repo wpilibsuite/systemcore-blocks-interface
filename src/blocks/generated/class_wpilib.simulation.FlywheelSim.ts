@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 19 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myFlywheelSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.FlywheelSim", "args": [{"name": "plant", "type": "wpimath._controls._controls.system.LinearSystem_1_1_1"}, {"name": "gearbox", "type": "wpimath._controls._controls.plant.DCMotor"}, {"name": "measurementStdDevs", "type": "Annotated[list[float], FixedSize(1)]"}], "tooltip": "Creates a simulated flywheel mechanism.\n\n:param plant:              The linear system representing the flywheel. This\n                           system can be created with\n                           LinearSystemId::FlywheelSystem() or\n                           LinearSystemId::IdentifyVelocitySystem().\n:param gearbox:            The type of and number of motors in the flywheel\n                           gearbox.\n:param measurementStdDevs: The standard deviation of the measurement noise.", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.FlywheelSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystem_1_1_1"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.kilogram_square_meters", "args": [{"name": "flywheelSim", "type": "wpilib.simulation._simulation.FlywheelSim"}], "tooltip": "Returns the moment of inertia", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.FlywheelSim", "FUNC": "J"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myFlywheelSim"}}}}}},
@@ -29,12 +31,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "flywheelSim", "type": "wpilib.simulation._simulation.FlywheelSim"}, {"name": "velocity", "type": "wpimath.units.radians_per_second"}], "tooltip": "Sets the flywheel's angular velocity.\n\n:param velocity: The new velocity", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.FlywheelSim", "FUNC": "setVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myFlywheelSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "linearSystemSim_1_1_1", "type": "wpilib.simulation._simulation.LinearSystemSim_1_1_1"}, {"name": "dt", "type": "wpimath.units.seconds"}], "tooltip": "Updates the simulation.\n\n:param dt: The time between updates.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.LinearSystemSim_1_1_1", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystemSim_1_1_1"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.FlywheelSim",
     name:  "FlywheelSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.FlywheelSim",
   };
+
   return category;
 }

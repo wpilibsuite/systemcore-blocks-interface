@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 10 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAlert"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Alert", "args": [{"name": "text", "type": "str"}, {"name": "type", "type": "wpilib._wpilib.Alert.AlertType"}], "tooltip": "Creates a new alert in the default group - \"Alerts\". If this is the first\nto be instantiated, the appropriate entries will be added to NetworkTables.\n\n:param text: Text to be displayed when the alert is active.\n:param type: Alert urgency level.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Alert"}, "inputs": {"ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAlertType"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAlert"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Alert", "args": [{"name": "group", "type": "str"}, {"name": "text", "type": "str"}, {"name": "type", "type": "wpilib._wpilib.Alert.AlertType"}], "tooltip": "Creates a new alert. If this is the first to be instantiated in its group,\nthe appropriate entries will be added to NetworkTables.\n\n:param group: Group identifier, used as the entry name in NetworkTables.\n:param text:  Text to be displayed when the alert is active.\n:param type:  Alert urgency level.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Alert"}, "inputs": {"ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAlertType"}}}}}}}}},
@@ -22,12 +24,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kInfo"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Alert.AlertType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Alert.AlertType", "ENUM_VALUE": "kWarning"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Alert",
     name:  "Alert",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Alert",
   };
+
   return category;
 }

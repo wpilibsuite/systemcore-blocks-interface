@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 19 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PneumaticHub.StickyFaults", "varType": "int", "importModule": "", "selfLabel": "stickyFaults", "selfType": "wpilib.PneumaticHub.StickyFaults"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.StickyFaults", "VAR": "Brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStickyFaults"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PneumaticHub.StickyFaults", "varType": "int", "importModule": "", "selfLabel": "stickyFaults", "selfType": "wpilib.PneumaticHub.StickyFaults"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.StickyFaults", "VAR": "Brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStickyFaults"}}}}}},
@@ -33,12 +35,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PneumaticHub.StickyFaults", "varType": "int", "importModule": "", "selfLabel": "stickyFaults", "selfType": "wpilib.PneumaticHub.StickyFaults"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.StickyFaults", "VAR": "SolenoidOverCurrent"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStickyFaults"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myStickyFaults"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PneumaticHub.StickyFaults", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.StickyFaults"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PneumaticHub.StickyFaults",
     name:  "StickyFaults",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PneumaticHub.StickyFaults",
   };
+
   return category;
 }

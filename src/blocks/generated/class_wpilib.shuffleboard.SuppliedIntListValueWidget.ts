@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 14 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "suppliedIntListValueWidget", "type": "wpilib.shuffleboard._shuffleboard.SuppliedIntListValueWidget"}, {"name": "parentTable", "type": "ntcore._ntcore.NetworkTable"}, {"name": "metaTable", "type": "ntcore._ntcore.NetworkTable"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.SuppliedIntListValueWidget", "FUNC": "buildInto"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySuppliedIntListValueWidget"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNetworkTable"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNetworkTable"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "shuffleboardComponentBase", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardComponentBase"}, {"name": "metaTable", "type": "ntcore._ntcore.NetworkTable"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.ShuffleboardComponentBase", "FUNC": "buildMetadata"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardComponentBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNetworkTable"}}}}}},
@@ -24,12 +26,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySuppliedIntListValueWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.shuffleboard._shuffleboard.SuppliedIntListValueWidget", "args": [{"name": "_SuppliedValueWidget_vector_int", "type": "wpilib.shuffleboard._shuffleboard._SuppliedValueWidget_vector_int"}, {"name": "widgetType", "type": "wpilib.shuffleboard._shuffleboard.WidgetType"}], "tooltip": "Sets the type of widget used to display the data. If not set, the default\nwidget type will be used.\n\n:param widgetType: the type of the widget used to display the data\n\n:returns: this widget object", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard._SuppliedValueWidget_vector_int", "FUNC": "withWidget"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_SuppliedValueWidget_vector_int"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myWidgetType"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySuppliedIntListValueWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.shuffleboard._shuffleboard.SuppliedIntListValueWidget", "args": [{"name": "_SuppliedValueWidget_vector_int", "type": "wpilib.shuffleboard._shuffleboard._SuppliedValueWidget_vector_int"}, {"name": "widgetType", "type": "str"}], "tooltip": "Sets the type of widget used to display the data. If not set, the default\nwidget type will be used. This method should only be used to use a widget\nthat does not come built into Shuffleboard (i.e. one that comes with a\ncustom or third-party plugin). To use a widget that is built into\nShuffleboard, use WithWidget(WidgetType) and BuiltInWidgets.\n\n:param widgetType: the type of the widget used to display the data\n\n:returns: this widget object", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard._SuppliedValueWidget_vector_int", "FUNC": "withWidget"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_SuppliedValueWidget_vector_int"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.shuffleboard.SuppliedIntListValueWidget",
     name:  "SuppliedIntListValueWidget",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.shuffleboard.SuppliedIntListValueWidget",
   };
+
   return category;
 }

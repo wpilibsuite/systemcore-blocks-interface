@@ -18,6 +18,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 14 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Twist2d", "varType": "wpimath.units.radians", "importModule": "", "selfLabel": "twist2d", "selfType": "wpimath.geometry.Twist2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Twist2d", "VAR": "dtheta"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTwist2d"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Twist2d", "varType": "wpimath.units.radians", "importModule": "", "selfLabel": "twist2d", "selfType": "wpimath.geometry.Twist2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Twist2d", "VAR": "dtheta"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTwist2d"}}}}}},
@@ -34,12 +36,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.geometry._geometry.Twist2d", "args": [{"name": "dx", "type": "wpimath.units.meters"}, {"name": "dy", "type": "wpimath.units.meters"}, {"name": "dtheta", "type": "wpimath.units.radians"}], "tooltip": "", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Twist2d"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.geometry._geometry.Twist2d", "args": [{"name": "dx", "type": "wpimath.units.feet"}, {"name": "dy", "type": "wpimath.units.feet"}, {"name": "dtheta", "type": "wpimath.units.radians"}], "tooltip": "", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Twist2d", "FUNC": "fromFeet"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Twist2d",
     name:  "Twist2d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Twist2d",
   };
+
   return category;
 }

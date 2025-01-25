@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 35 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myStadiaControllerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.StadiaControllerSim", "args": [{"name": "joystick", "type": "wpilib._wpilib.StadiaController"}], "tooltip": "Constructs from a StadiaController object.\n\n:param joystick: controller to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.StadiaControllerSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStadiaController"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myStadiaControllerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.StadiaControllerSim", "args": [{"name": "port", "type": "int"}], "tooltip": "Constructs from a joystick port number.\n\n:param port: port number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.StadiaControllerSim"}}}}},
@@ -45,12 +47,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "stadiaControllerSim", "type": "wpilib.simulation._simulation.StadiaControllerSim"}, {"name": "value", "type": "bool"}], "tooltip": "Change the value of the X button on the controller.\n\n:param value: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.StadiaControllerSim", "FUNC": "setXButton"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStadiaControllerSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "stadiaControllerSim", "type": "wpilib.simulation._simulation.StadiaControllerSim"}, {"name": "value", "type": "bool"}], "tooltip": "Change the value of the Y button on the controller.\n\n:param value: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.StadiaControllerSim", "FUNC": "setYButton"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStadiaControllerSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.StadiaControllerSim",
     name:  "StadiaControllerSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.StadiaControllerSim",
   };
+
   return category;
 }

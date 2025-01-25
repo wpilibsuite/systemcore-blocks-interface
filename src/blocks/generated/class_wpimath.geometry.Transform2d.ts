@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 17 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Transform2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "transform2d", "selfType": "wpimath.geometry.Transform2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Transform2d", "VAR": "x"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Transform2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "transform2d", "selfType": "wpimath.geometry.Transform2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Transform2d", "VAR": "y"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}},
@@ -30,12 +32,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 3]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[3, 3]]", "args": [{"name": "transform2d", "type": "wpimath.geometry._geometry.Transform2d"}], "tooltip": "Returns an affine transformation matrix representation of this\ntransformation.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Transform2d", "FUNC": "toMatrix"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTranslation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Translation2d", "args": [{"name": "transform2d", "type": "wpimath.geometry._geometry.Transform2d"}], "tooltip": "Returns the translation component of the transformation.\n\n:returns: Reference to the translational component of the transform.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Transform2d", "FUNC": "translation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Transform2d",
     name:  "Transform2d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Transform2d",
   };
+
   return category;
 }

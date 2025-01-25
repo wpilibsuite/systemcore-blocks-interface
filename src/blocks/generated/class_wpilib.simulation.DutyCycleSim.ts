@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDutyCycleSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.DutyCycleSim", "args": [{"name": "dutyCycle", "type": "wpilib._wpilib.DutyCycle"}], "tooltip": "Constructs from a DutyCycle object.\n\n:param dutyCycle: DutyCycle to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DutyCycleSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycle"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDutyCycleSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpilib.simulation._simulation.DutyCycleSim", "args": [{"name": "channel", "type": "int"}], "tooltip": "Creates a DutyCycleSim for a digital input channel.\n\n:param channel: digital input channel\n\n:returns: Simulated object\n          @throws std::out_of_range if no DutyCycle is configured for that channel", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DutyCycleSim", "FUNC": "createForChannel"}}}}},
@@ -23,12 +25,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "dutyCycleSim", "type": "wpilib.simulation._simulation.DutyCycleSim"}, {"name": "initialized", "type": "bool"}], "tooltip": "Define whether this duty cycle input has been initialized.\n\n:param initialized: whether this object is initialized", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DutyCycleSim", "FUNC": "setInitialized"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "dutyCycleSim", "type": "wpilib.simulation._simulation.DutyCycleSim"}, {"name": "output", "type": "float"}], "tooltip": "Change the duty cycle output.\n\n:param output: the new output value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DutyCycleSim", "FUNC": "setOutput"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.DutyCycleSim",
     name:  "DutyCycleSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.DutyCycleSim",
   };
+
   return category;
 }

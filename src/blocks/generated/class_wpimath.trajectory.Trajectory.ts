@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 8 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTrajectory"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.trajectory.Trajectory", "args": [], "tooltip": "", "importModule": "wpimath.trajectory"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.Trajectory"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTrajectory"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.trajectory.Trajectory", "args": [{"name": "states", "type": "list[wpimath._controls._controls.trajectory.Trajectory.State]"}], "tooltip": "Constructs a trajectory from a vector of states.\n\n@throws std::invalid_argument if the vector of states is empty.", "importModule": "wpimath.trajectory"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.Trajectory"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myList"}}}}}}}}},
@@ -18,12 +20,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.seconds", "args": [{"name": "trajectory", "type": "wpimath._controls._controls.trajectory.Trajectory"}], "tooltip": "Returns the overall duration of the trajectory.\n\n:returns: The duration of the trajectory.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.Trajectory", "FUNC": "totalTime"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectory"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTrajectory"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath._controls._controls.trajectory.Trajectory", "args": [{"name": "trajectory", "type": "wpimath._controls._controls.trajectory.Trajectory"}, {"name": "transform", "type": "wpimath.geometry._geometry.Transform2d"}], "tooltip": "Transforms all poses in the trajectory by the given transform. This is\nuseful for converting a robot-relative trajectory into a field-relative\ntrajectory. This works with respect to the first pose in the trajectory.\n\n:param transform: The transform to transform the trajectory by.\n\n:returns: The transformed trajectory.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.Trajectory", "FUNC": "transformBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectory"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.trajectory.Trajectory",
     name:  "Trajectory",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.trajectory.Trajectory",
   };
+
   return category;
 }

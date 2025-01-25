@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRamseteController"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.RamseteController", "args": [{"name": "b", "type": "float"}, {"name": "zeta", "type": "float"}], "tooltip": "Construct a Ramsete unicycle controller.\n\n:deprecated: Use LTVUnicycleController instead.\n\n:param b:    Tuning parameter (b > 0 rad\u00b2/m\u00b2) for which larger values make\n             convergence more aggressive like a proportional term.\n:param zeta: Tuning parameter (0 rad\u207b\u00b9 < zeta < 1 rad\u207b\u00b9) for which larger\n             values provide more damping in response.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.RamseteController"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRamseteController"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.RamseteController", "args": [], "tooltip": "Construct a Ramsete unicycle controller. The default arguments for\nb and zeta of 2.0 rad\u00b2/m\u00b2 and 0.7 rad\u207b\u00b9 have been well-tested to produce\ndesirable results.\n\n:deprecated: Use LTVUnicycleController instead.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.RamseteController"}}}}},
@@ -17,12 +19,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "ramseteController", "type": "wpimath._controls._controls.controller.RamseteController"}, {"name": "enabled", "type": "bool"}], "tooltip": "Enables and disables the controller for troubleshooting purposes.\n\n:param enabled: If the controller is enabled or not.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.RamseteController", "FUNC": "setEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRamseteController"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "ramseteController", "type": "wpimath._controls._controls.controller.RamseteController"}, {"name": "poseTolerance", "type": "wpimath.geometry._geometry.Pose2d"}], "tooltip": "Sets the pose error which is considered tolerable for use with\nAtReference().\n\n:param poseTolerance: Pose error which is tolerable.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.RamseteController", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRamseteController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.controller.RamseteController",
     name:  "RamseteController",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.controller.RamseteController",
   };
+
   return category;
 }

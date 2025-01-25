@@ -16,6 +16,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.SwerveModuleState", "varType": "wpimath.geometry._geometry.Rotation2d", "importModule": "", "selfLabel": "swerveModuleState", "selfType": "wpimath.kinematics.SwerveModuleState"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveModuleState", "VAR": "angle"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModuleState"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.SwerveModuleState", "varType": "wpimath.geometry._geometry.Rotation2d", "importModule": "", "selfLabel": "swerveModuleState", "selfType": "wpimath.kinematics.SwerveModuleState"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveModuleState", "VAR": "angle"}, "inputs": {"VALUE": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}, "SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModuleState"}}}}}},
@@ -27,12 +29,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "swerveModuleState", "type": "wpimath.kinematics._kinematics.SwerveModuleState"}, {"name": "currentAngle", "type": "wpimath.geometry._geometry.Rotation2d"}], "tooltip": "Scales speed by cosine of angle error. This scales down movement\nperpendicular to the desired direction of travel that can occur when\nmodules change directions. This results in smoother driving.\n\n:param currentAngle: The current module angle.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveModuleState", "FUNC": "cosineScale"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModuleState"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "swerveModuleState", "type": "wpimath.kinematics._kinematics.SwerveModuleState"}, {"name": "currentAngle", "type": "wpimath.geometry._geometry.Rotation2d"}], "tooltip": "Minimize the change in the heading this swerve module state would\nrequire by potentially reversing the direction the wheel spins. If this is\nused with the PIDController class's continuous input functionality, the\nfurthest a wheel will ever rotate is 90 degrees.\n\n:param currentAngle: The current module angle.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveModuleState", "FUNC": "optimize"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModuleState"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.kinematics.SwerveModuleState",
     name:  "SwerveModuleState",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.kinematics.SwerveModuleState",
   };
+
   return category;
 }

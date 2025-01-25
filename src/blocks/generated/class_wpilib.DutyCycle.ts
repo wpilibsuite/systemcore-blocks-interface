@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDutyCycle"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.DutyCycle", "args": [{"name": "source", "type": "wpilib._wpilib.DigitalSource"}], "tooltip": "Constructs a DutyCycle input from a DigitalSource input.\n\nThis class does not own the inputted source.\n\n:param source: The DigitalSource to use.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DutyCycle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "int", "args": [{"name": "dutyCycle", "type": "wpilib._wpilib.DutyCycle"}], "tooltip": "Get the FPGA index for the DutyCycle.\n\n:returns: the FPGA index", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DutyCycle", "FUNC": "getFPGAIndex"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycle"}}}}}},
@@ -17,12 +19,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "int", "args": [{"name": "dutyCycle", "type": "wpilib._wpilib.DutyCycle"}], "tooltip": "Get the channel of the source.\n\n:returns: the source channel", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DutyCycle", "FUNC": "getSourceChannel"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycle"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sendable", "type": "wpiutil._wpiutil.Sendable"}, {"name": "builder", "type": "wpiutil._wpiutil.SendableBuilder"}], "tooltip": "Initializes this Sendable object.\n\n:param builder: sendable builder", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpiutil.Sendable", "FUNC": "initSendable"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendable"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableBuilder"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.DutyCycle",
     name:  "DutyCycle",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.DutyCycle",
   };
+
   return category;
 }

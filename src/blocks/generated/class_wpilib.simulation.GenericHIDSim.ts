@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 16 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myGenericHIDSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.GenericHIDSim", "args": [{"name": "joystick", "type": "wpilib.interfaces._interfaces.GenericHID"}], "tooltip": "Constructs from a GenericHID object.\n\n:param joystick: joystick to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.GenericHIDSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myGenericHID"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myGenericHIDSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.GenericHIDSim", "args": [{"name": "port", "type": "int"}], "tooltip": "Constructs from a joystick port number.\n\n:param port: port number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.GenericHIDSim"}}}}},
@@ -26,12 +28,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "genericHIDSim", "type": "wpilib.simulation._simulation.GenericHIDSim"}, {"name": "button", "type": "int"}, {"name": "value", "type": "bool"}], "tooltip": "Set the value of a given button.\n\n:param button: the button to set\n:param value:  the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.GenericHIDSim", "FUNC": "setRawButton"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myGenericHIDSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "genericHIDSim", "type": "wpilib.simulation._simulation.GenericHIDSim"}, {"name": "type", "type": "wpilib.interfaces._interfaces.GenericHID.HIDType"}], "tooltip": "Set the type of this device.\n\n:param type: the new device type", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.GenericHIDSim", "FUNC": "setType"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myGenericHIDSim"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myHIDType"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.GenericHIDSim",
     name:  "GenericHIDSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.GenericHIDSim",
   };
+
   return category;
 }

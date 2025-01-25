@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogEncoder"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.AnalogEncoder", "args": [{"name": "channel", "type": "int"}], "tooltip": "Construct a new AnalogEncoder attached to a specific AnalogIn channel.\n\nThis has a fullRange of 1 and an expectedZero of 0.\n\n:param channel: the analog input channel to attach to", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogEncoder"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogEncoder"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.AnalogEncoder", "args": [{"name": "analogInput", "type": "wpilib._wpilib.AnalogInput"}], "tooltip": "Construct a new AnalogEncoder attached to a specific AnalogInput.\n\nThis has a fullRange of 1 and an expectedZero of 0.\n\n:param analogInput: the analog input to attach to", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogEncoder"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInput"}}}}}}}}},
@@ -19,12 +21,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogEncoder", "type": "wpilib._wpilib.AnalogEncoder"}, {"name": "inverted", "type": "bool"}], "tooltip": "Set if this encoder is inverted.\n\n:param inverted: true to invert the encoder, false otherwise", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogEncoder", "FUNC": "setInverted"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogEncoder"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogEncoder", "type": "wpilib._wpilib.AnalogEncoder"}, {"name": "min", "type": "float"}, {"name": "max", "type": "float"}], "tooltip": "Set the encoder voltage percentage range. Analog sensors are not always\nfully stable at the end of their travel ranges. Shrinking this range down\ncan help mitigate issues with that.\n\n:param min: minimum voltage percentage (0-1 range)\n:param max: maximum voltage percentage (0-1 range)", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogEncoder", "FUNC": "setVoltagePercentageRange"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogEncoder"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.AnalogEncoder",
     name:  "AnalogEncoder",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.AnalogEncoder",
   };
+
   return category;
 }

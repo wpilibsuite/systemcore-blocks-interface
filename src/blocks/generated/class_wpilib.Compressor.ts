@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCompressor"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Compressor", "args": [{"name": "module", "type": "int"}, {"name": "moduleType", "type": "wpilib._wpilib.PneumaticsModuleType"}], "tooltip": "Constructs a compressor for a specified module and type.\n\n:param module:     The module ID to use.\n:param moduleType: The module type to use.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Compressor"}, "inputs": {"ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsModuleType"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCompressor"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Compressor", "args": [{"name": "moduleType", "type": "wpilib._wpilib.PneumaticsModuleType"}], "tooltip": "Constructs a compressor for a default module and specified type.\n\n:param moduleType: The module type to use.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Compressor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsModuleType"}}}}}}}}},
@@ -23,12 +25,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "compressor", "type": "wpilib._wpilib.Compressor"}, {"name": "builder", "type": "wpiutil._wpiutil.SendableBuilder"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Compressor", "FUNC": "initSendable"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCompressor"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableBuilder"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "compressor", "type": "wpilib._wpilib.Compressor"}], "tooltip": "Returns whether the compressor is active or not.\n\n:returns: true if the compressor is on - otherwise false.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Compressor", "FUNC": "isEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCompressor"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Compressor",
     name:  "Compressor",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Compressor",
   };
+
   return category;
 }

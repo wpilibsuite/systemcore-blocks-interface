@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 97 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPS4Controller"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PS4Controller", "args": [{"name": "port", "type": "int"}], "tooltip": "Construct an instance of a controller.\n\nThe controller index is the USB port on the Driver Station.\n\n:param port: The port on the Driver Station that the controller is plugged\n             into (0-5).", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PS4Controller"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBooleanEvent"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.event._event.BooleanEvent", "args": [{"name": "pS4Controller", "type": "wpilib._wpilib.PS4Controller"}, {"name": "loop", "type": "wpilib.event._event.EventLoop"}], "tooltip": "Constructs an event instance around the left trigger 1 button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the left trigger 1 button's\n          digital signal attached to the given loop.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PS4Controller", "FUNC": "L1"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPS4Controller"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEventLoop"}}}}}}}}},
@@ -107,12 +109,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBooleanEvent"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.event._event.BooleanEvent", "args": [{"name": "pS4Controller", "type": "wpilib._wpilib.PS4Controller"}, {"name": "loop", "type": "wpilib.event._event.EventLoop"}], "tooltip": "Constructs an event instance around the touchpad button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the touchpad button's\n          digital signal attached to the given loop.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PS4Controller", "FUNC": "touchpad"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPS4Controller"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEventLoop"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBooleanEvent"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.event._event.BooleanEvent", "args": [{"name": "pS4Controller", "type": "wpilib._wpilib.PS4Controller"}, {"name": "loop", "type": "wpilib.event._event.EventLoop"}], "tooltip": "Constructs an event instance around the triangle button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the triangle button's\n          digital signal attached to the given loop.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PS4Controller", "FUNC": "triangle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPS4Controller"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEventLoop"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PS4Controller",
     name:  "PS4Controller",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PS4Controller",
   };
+
   return category;
 }

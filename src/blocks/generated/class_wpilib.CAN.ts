@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 15 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.CAN", "varType": "hal.CANDeviceType", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.CAN", "VAR": "kTeamDeviceType"}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.CAN", "varType": "hal.CANManufacturer", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.CAN", "VAR": "kTeamManufacturer"}},
@@ -28,12 +30,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "cAN", "type": "wpilib._wpilib.CAN"}, {"name": "length", "type": "int"}, {"name": "apiId", "type": "int"}], "tooltip": "Write an RTR frame to the CAN device with a specific ID. This ID is 10\nbits. The length by spec must match what is returned by the responding\ndevice\n\n:param length: The length to request (0 to 8)\n:param apiId:  The API ID to write.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.CAN", "FUNC": "writeRTRFrame"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCAN"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "int", "args": [{"name": "cAN", "type": "wpilib._wpilib.CAN"}, {"name": "length", "type": "int"}, {"name": "apiId", "type": "int"}], "tooltip": "Write an RTR frame to the CAN device with a specific ID. This ID is 10\nbits. The length by spec must match what is returned by the responding\ndevice\n\n:param length: The length to request (0 to 8)\n:param apiId:  The API ID to write.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.CAN", "FUNC": "writeRTRFrameNoError"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCAN"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.CAN",
     name:  "CAN",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.CAN",
   };
+
   return category;
 }

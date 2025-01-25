@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 10 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySolenoid"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Solenoid", "args": [{"name": "module", "type": "int"}, {"name": "moduleType", "type": "wpilib._wpilib.PneumaticsModuleType"}, {"name": "channel", "type": "int"}], "tooltip": "Constructs a solenoid for a specified module and type.\n\n:param module:     The module ID to use.\n:param moduleType: The module type to use.\n:param channel:    The channel the solenoid is on.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Solenoid"}, "inputs": {"ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsModuleType"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySolenoid"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Solenoid", "args": [{"name": "moduleType", "type": "wpilib._wpilib.PneumaticsModuleType"}, {"name": "channel", "type": "int"}], "tooltip": "Constructs a solenoid for a default module and specified type.\n\n:param moduleType: The module type to use.\n:param channel:    The channel the solenoid is on.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Solenoid"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsModuleType"}}}}}}}}},
@@ -20,12 +22,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "solenoid", "type": "wpilib._wpilib.Solenoid"}], "tooltip": "%Trigger the pneumatics module to generate a pulse of the duration set in\nsetPulseDuration.\n\n@see setPulseDuration()", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Solenoid", "FUNC": "startPulse"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySolenoid"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "solenoid", "type": "wpilib._wpilib.Solenoid"}], "tooltip": "Toggle the value of the solenoid.\n\nIf the solenoid is set to on, it'll be turned off. If the solenoid is set\nto off, it'll be turned on.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Solenoid", "FUNC": "toggle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySolenoid"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Solenoid",
     name:  "Solenoid",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Solenoid",
   };
+
   return category;
 }

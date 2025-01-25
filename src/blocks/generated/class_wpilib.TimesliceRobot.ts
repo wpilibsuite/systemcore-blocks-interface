@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 40 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.TimesliceRobot", "varType": "float", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.TimesliceRobot", "VAR": "kDefaultPeriod"}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTimesliceRobot"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.TimesliceRobot", "args": [{"name": "robotPeriodicAllocation", "type": "wpimath.units.seconds"}, {"name": "controllerPeriod", "type": "wpimath.units.seconds"}], "tooltip": "Constructor for TimesliceRobot.\n\n:param robotPeriodicAllocation: The allocation to give the TimesliceRobot\n                                periodic functions.\n:param controllerPeriod:        The controller period. The sum of all scheduler\n                                allocations should be less than or equal to this\n                                value.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.TimesliceRobot"}}}}},
@@ -52,12 +54,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "tooltip": "Initialization code for test mode should go here.\n\nUsers should override this method for initialization code which will be\ncalled each time the robot enters test mode.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.IterativeRobotBase", "FUNC": "testInit"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "tooltip": "Periodic code for test mode should go here.\n\nUsers should override this method for code which will be called each time a\nnew packet is received from the driver station and the robot is in test\nmode.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.IterativeRobotBase", "FUNC": "testPeriodic"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.TimesliceRobot",
     name:  "TimesliceRobot",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.TimesliceRobot",
   };
+
   return category;
 }

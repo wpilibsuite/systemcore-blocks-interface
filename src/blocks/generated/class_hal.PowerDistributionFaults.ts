@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 55 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.PowerDistributionFaults", "varType": "int", "importModule": "", "selfLabel": "powerDistributionFaults", "selfType": "hal.PowerDistributionFaults"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionFaults", "VAR": "brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionFaults"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.PowerDistributionFaults", "varType": "int", "importModule": "", "selfLabel": "powerDistributionFaults", "selfType": "hal.PowerDistributionFaults"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionFaults", "VAR": "brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionFaults"}}}}}},
@@ -69,12 +71,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.PowerDistributionFaults", "varType": "int", "importModule": "", "selfLabel": "powerDistributionFaults", "selfType": "hal.PowerDistributionFaults"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionFaults", "VAR": "hardwareFault"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionFaults"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPowerDistributionFaults"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "hal._wpiHal.PowerDistributionFaults", "args": [], "tooltip": "", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionFaults"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.PowerDistributionFaults",
     name:  "PowerDistributionFaults",
-      contents: contents,
+    contents: contents,
+    className: "hal.PowerDistributionFaults",
   };
+
   return category;
 }

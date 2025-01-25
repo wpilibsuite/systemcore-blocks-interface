@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 11 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySimpleMotorFeedforwardMeters"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.SimpleMotorFeedforwardMeters", "args": [{"name": "kS", "type": "wpimath.units.volts"}, {"name": "kV", "type": "wpimath.units.volt_seconds_per_meter"}, {"name": "kA", "type": "wpimath.units.volt_seconds_squared_per_meter"}, {"name": "dt", "type": "wpimath.units.seconds"}], "tooltip": "Creates a new SimpleMotorFeedforward with the specified gains.\n\n:param kS: The static gain, in volts.\n:param kV: The velocity gain, in volt seconds per distance.\n:param kA: The acceleration gain, in volt seconds\u00b2 per distance.\n:param dt: The period in seconds.\n           @throws IllegalArgumentException for kv &lt; zero.\n           @throws IllegalArgumentException for ka &lt; zero.\n           @throws IllegalArgumentException for period &le; zero.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.SimpleMotorFeedforwardMeters"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.volts", "args": [{"name": "simpleMotorFeedforwardMeters", "type": "wpimath._controls._controls.controller.SimpleMotorFeedforwardMeters"}, {"name": "velocity", "type": "wpimath.units.meters_per_second"}], "tooltip": "Calculates the feedforward from the gains and velocity setpoint assuming\ndiscrete control. Use this method when the velocity setpoint does not\nchange.\n\n:param velocity: The velocity setpoint.\n\n:returns: The computed feedforward, in volts.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.SimpleMotorFeedforwardMeters", "FUNC": "calculate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySimpleMotorFeedforwardMeters"}}}}}},
@@ -21,12 +23,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.meters_per_second_squared", "args": [{"name": "simpleMotorFeedforwardMeters", "type": "wpimath._controls._controls.controller.SimpleMotorFeedforwardMeters"}, {"name": "maxVoltage", "type": "wpimath.units.volts"}, {"name": "velocity", "type": "wpimath.units.meters_per_second"}], "tooltip": "Calculates the minimum achievable acceleration given a maximum voltage\nsupply and a velocity. Useful for ensuring that velocity and\nacceleration constraints for a trapezoidal profile are simultaneously\nachievable - enter the velocity constraint, and this will give you\na simultaneously-achievable acceleration constraint.\n\n:param maxVoltage: The maximum voltage that can be supplied to the motor.\n:param velocity:   The velocity of the motor.\n\n:returns: The minimum possible acceleration at the given velocity.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.SimpleMotorFeedforwardMeters", "FUNC": "minAchievableAcceleration"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySimpleMotorFeedforwardMeters"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.meters_per_second", "args": [{"name": "simpleMotorFeedforwardMeters", "type": "wpimath._controls._controls.controller.SimpleMotorFeedforwardMeters"}, {"name": "maxVoltage", "type": "wpimath.units.volts"}, {"name": "acceleration", "type": "wpimath.units.meters_per_second_squared"}], "tooltip": "Calculates the minimum achievable velocity given a maximum voltage supply\nand an acceleration.  Useful for ensuring that velocity and\nacceleration constraints for a trapezoidal profile are simultaneously\nachievable - enter the acceleration constraint, and this will give you\na simultaneously-achievable velocity constraint.\n\n:param maxVoltage:   The maximum voltage that can be supplied to the motor.\n:param acceleration: The acceleration of the motor.\n\n:returns: The minimum possible velocity at the given acceleration.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.SimpleMotorFeedforwardMeters", "FUNC": "minAchievableVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySimpleMotorFeedforwardMeters"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.controller.SimpleMotorFeedforwardMeters",
     name:  "SimpleMotorFeedforwardMeters",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.controller.SimpleMotorFeedforwardMeters",
   };
+
   return category;
 }

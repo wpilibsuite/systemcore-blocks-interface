@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 36 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPS4ControllerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.PS4ControllerSim", "args": [{"name": "joystick", "type": "wpilib._wpilib.PS4Controller"}], "tooltip": "Constructs from a PS4Controller object.\n\n:param joystick: controller to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PS4ControllerSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPS4Controller"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPS4ControllerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.PS4ControllerSim", "args": [{"name": "port", "type": "int"}], "tooltip": "Constructs from a joystick port number.\n\n:param port: port number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PS4ControllerSim"}}}}},
@@ -46,12 +48,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pS4ControllerSim", "type": "wpilib.simulation._simulation.PS4ControllerSim"}, {"name": "value", "type": "bool"}], "tooltip": "Change the value of the triangle button on the controller.\n\n:param value: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PS4ControllerSim", "FUNC": "setTriangleButton"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPS4ControllerSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "genericHIDSim", "type": "wpilib.simulation._simulation.GenericHIDSim"}, {"name": "type", "type": "wpilib.interfaces._interfaces.GenericHID.HIDType"}], "tooltip": "Set the type of this device.\n\n:param type: the new device type", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.GenericHIDSim", "FUNC": "setType"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myGenericHIDSim"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myHIDType"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.PS4ControllerSim",
     name:  "PS4ControllerSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.PS4ControllerSim",
   };
+
   return category;
 }

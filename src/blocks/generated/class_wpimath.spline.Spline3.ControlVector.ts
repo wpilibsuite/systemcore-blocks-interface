@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 5 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.spline.Spline3.ControlVector", "varType": "Tuple[float, float]", "importModule": "", "selfLabel": "controlVector", "selfType": "wpimath.spline.Spline3.ControlVector"}, "fields": {"MODULE_OR_CLASS": "wpimath.spline.Spline3.ControlVector", "VAR": "x"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myControlVector"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.spline.Spline3.ControlVector", "varType": "Tuple[float, float]", "importModule": "", "selfLabel": "controlVector", "selfType": "wpimath.spline.Spline3.ControlVector"}, "fields": {"MODULE_OR_CLASS": "wpimath.spline.Spline3.ControlVector", "VAR": "x"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myControlVector"}}}}}},
@@ -19,12 +21,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.spline.Spline3.ControlVector", "varType": "Tuple[float, float]", "importModule": "", "selfLabel": "controlVector", "selfType": "wpimath.spline.Spline3.ControlVector"}, "fields": {"MODULE_OR_CLASS": "wpimath.spline.Spline3.ControlVector", "VAR": "y"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myControlVector"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myControlVector"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.spline._spline.Spline3.ControlVector", "args": [{"name": "x", "type": "Tuple[float, float]"}, {"name": "y", "type": "Tuple[float, float]"}], "tooltip": "", "importModule": "wpimath.spline"}, "fields": {"MODULE_OR_CLASS": "wpimath.spline.Spline3.ControlVector"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.spline.Spline3.ControlVector",
     name:  "ControlVector",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.spline.Spline3.ControlVector",
   };
+
   return category;
 }

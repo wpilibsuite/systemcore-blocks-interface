@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 26 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Rotation3d", "varType": "wpimath.units.radians", "importModule": "", "selfLabel": "rotation3d", "selfType": "wpimath.geometry.Rotation3d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rotation3d", "VAR": "angle"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Rotation3d", "varType": "wpimath.units.radians", "importModule": "", "selfLabel": "rotation3d", "selfType": "wpimath.geometry.Rotation3d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rotation3d", "VAR": "x"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}}},
@@ -39,12 +41,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRotation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Rotation2d", "args": [{"name": "rotation3d", "type": "wpimath.geometry._geometry.Rotation3d"}], "tooltip": "Returns a Rotation2d representing this Rotation3d projected into the X-Y\nplane.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rotation3d", "FUNC": "toRotation2d"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[3, 1]]", "args": [{"name": "rotation3d", "type": "wpimath.geometry._geometry.Rotation3d"}], "tooltip": "Returns rotation vector representation of this rotation.\n\n:returns: Rotation vector representation of this rotation.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rotation3d", "FUNC": "toVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Rotation3d",
     name:  "Rotation3d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Rotation3d",
   };
+
   return category;
 }

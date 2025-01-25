@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 12 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "bool", "args": [{"name": "channel", "type": "int"}], "tooltip": "Check that the analog input number is value.\n\nVerify that the analog input number is one of the legal channel numbers.\nChannel numbers are 0-based.\n\n:returns: Analog channel is valid", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SensorUtil", "FUNC": "checkAnalogInputChannel"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "bool", "args": [{"name": "channel", "type": "int"}], "tooltip": "Check that the analog output number is valid.\n\nVerify that the analog output number is one of the legal channel numbers.\nChannel numbers are 0-based.\n\n:returns: Analog channel is valid", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SensorUtil", "FUNC": "checkAnalogOutputChannel"}},
@@ -22,12 +24,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "int", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SensorUtil", "FUNC": "getNumPwmChannels"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "int", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SensorUtil", "FUNC": "getNumRelayChannels"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.SensorUtil",
     name:  "SensorUtil",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.SensorUtil",
   };
+
   return category;
 }

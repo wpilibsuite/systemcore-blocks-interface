@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 16 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRobotBase"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.RobotBase", "args": [], "tooltip": "Constructor for a generic robot program.\n\nUser code can be placed in the constructor that runs before the\nAutonomous or Operator Control period starts. The constructor will run to\ncompletion before Autonomous is entered.\n\nThis must be used to ensure that the communications code starts. In the\nfuture it would be nice to put this code into it's own task that loads on\nboot so ensure that it runs.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.RobotBase"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "robotBase", "type": "wpilib._wpilib.RobotBase"}], "tooltip": "Ends the main loop in StartCompetition().", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.RobotBase", "FUNC": "endCompetition"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRobotBase"}}}}}},
@@ -26,12 +28,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "object", "args": [{"name": "robot_cls", "type": "object"}], "tooltip": "Starting point for the application", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.RobotBase", "FUNC": "main"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "robotBase", "type": "wpilib._wpilib.RobotBase"}], "tooltip": "Start the main robot code. This function will be called once and should not\nexit until signalled by EndCompetition()", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.RobotBase", "FUNC": "startCompetition"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRobotBase"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.RobotBase",
     name:  "RobotBase",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.RobotBase",
   };
+
   return category;
 }

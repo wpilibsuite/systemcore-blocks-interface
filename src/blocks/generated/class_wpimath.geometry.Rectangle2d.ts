@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 15 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Rectangle2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "rectangle2d", "selfType": "wpimath.geometry.Rectangle2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rectangle2d", "VAR": "xwidth"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRectangle2d"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Rectangle2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "rectangle2d", "selfType": "wpimath.geometry.Rectangle2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rectangle2d", "VAR": "ywidth"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRectangle2d"}}}}}},
@@ -28,12 +30,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRotation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Rotation2d", "args": [{"name": "rectangle2d", "type": "wpimath.geometry._geometry.Rectangle2d"}], "tooltip": "Returns the rotational component of the rectangle.\n\n:returns: The rotational component of the rectangle.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rectangle2d", "FUNC": "rotation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRectangle2d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRectangle2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Rectangle2d", "args": [{"name": "rectangle2d", "type": "wpimath.geometry._geometry.Rectangle2d"}, {"name": "other", "type": "wpimath.geometry._geometry.Transform2d"}], "tooltip": "Transforms the center of the rectangle and returns the new rectangle.\n\n:param other: The transform to transform by.\n\n:returns: The transformed rectangle", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rectangle2d", "FUNC": "transformBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRectangle2d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Rectangle2d",
     name:  "Rectangle2d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Rectangle2d",
   };
+
   return category;
 }

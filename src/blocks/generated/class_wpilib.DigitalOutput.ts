@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 16 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDigitalOutput"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.DigitalOutput", "args": [{"name": "channel", "type": "int"}], "tooltip": "Create an instance of a digital output.\n\nCreate a digital output given a channel.\n\n:param channel: The digital channel 0-9 are on-board, 10-25 are on the MXP\n                port", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DigitalOutput"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "digitalOutput", "type": "wpilib._wpilib.DigitalOutput"}], "tooltip": "Change this line from a PWM output back to a static Digital Output line.\n\nFree up one of the 6 DO PWM generator resources that were in use.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DigitalOutput", "FUNC": "disablePWM"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalOutput"}}}}}},
@@ -26,12 +28,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "digitalOutput", "type": "wpilib._wpilib.DigitalOutput"}, {"name": "device", "type": "int"}], "tooltip": "Indicates this output is used by a simulated device.\n\n:param device: simulated device handle", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DigitalOutput", "FUNC": "setSimDevice"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalOutput"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "digitalOutput", "type": "wpilib._wpilib.DigitalOutput"}, {"name": "dutyCycle", "type": "float"}], "tooltip": "Change the duty-cycle that is being generated on the line.\n\nThe resolution of the duty cycle is 8-bit for low frequencies (1kHz or\nless) but is reduced the higher the frequency of the PWM signal is.\n\n:param dutyCycle: The duty-cycle to change to. [0..1]", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DigitalOutput", "FUNC": "updateDutyCycle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalOutput"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.DigitalOutput",
     name:  "DigitalOutput",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.DigitalOutput",
   };
+
   return category;
 }

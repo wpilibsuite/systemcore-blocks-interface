@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 36 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myProfiledPIDController"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.ProfiledPIDController", "args": [{"name": "Kp", "type": "float"}, {"name": "Ki", "type": "float"}, {"name": "Kd", "type": "float"}, {"name": "constraints", "type": "wpimath._controls._controls.trajectory.TrapezoidProfile.Constraints"}, {"name": "period", "type": "wpimath.units.seconds"}], "tooltip": "Allocates a ProfiledPIDController with the given constants for Kp, Ki, and\nKd. Users should call reset() when they first start running the controller\nto avoid unwanted behavior.\n\n:param Kp:          The proportional coefficient. Must be >= 0.\n:param Ki:          The integral coefficient. Must be >= 0.\n:param Kd:          The derivative coefficient. Must be >= 0.\n:param constraints: Velocity and acceleration constraints for goal.\n:param period:      The period between controller updates in seconds. The\n                    default is 20 milliseconds. Must be positive.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.ProfiledPIDController"}, "inputs": {"ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myConstraints"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "profiledPIDController", "type": "wpimath._controls._controls.controller.ProfiledPIDController"}], "tooltip": "Returns true if the error is within the tolerance of the error.\n\nThis will return false until at least one input value has been computed.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.ProfiledPIDController", "FUNC": "atGoal"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myProfiledPIDController"}}}}}},
@@ -46,12 +48,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "profiledPIDController", "type": "wpimath._controls._controls.controller.ProfiledPIDController"}, {"name": "Kp", "type": "float"}, {"name": "Ki", "type": "float"}, {"name": "Kd", "type": "float"}], "tooltip": "Sets the PID Controller gain parameters.\n\nSets the proportional, integral, and differential coefficients.\n\n:param Kp: The proportional coefficient. Must be >= 0.\n:param Ki: The integral coefficient. Must be >= 0.\n:param Kd: The differential coefficient. Must be >= 0.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.ProfiledPIDController", "FUNC": "setPID"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myProfiledPIDController"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "profiledPIDController", "type": "wpimath._controls._controls.controller.ProfiledPIDController"}, {"name": "positionTolerance", "type": "float"}, {"name": "velocityTolerance", "type": "wpimath.units.units_per_second"}], "tooltip": "Sets the error which is considered tolerable for use with\nAtSetpoint().\n\n:param positionTolerance: Position error which is tolerable.\n:param velocityTolerance: Velocity error which is tolerable.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.ProfiledPIDController", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myProfiledPIDController"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.controller.ProfiledPIDController",
     name:  "ProfiledPIDController",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.controller.ProfiledPIDController",
   };
+
   return category;
 }

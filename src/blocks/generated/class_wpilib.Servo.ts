@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 23 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myServo"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Servo", "args": [{"name": "channel", "type": "int"}], "tooltip": "Constructor.\n\nBy default, 2.4 ms is used as the max PWM value and 0.6 ms is used as the\nmin PWM value.\n\n:param channel: The PWM channel to which the servo is attached. 0-9 are\n                on-board, 10-19 are on the MXP port", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Servo"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pWM", "type": "wpilib._wpilib.PWM"}, {"name": "eliminateDeadband", "type": "bool"}], "tooltip": "Optionally eliminate the deadband from a motor controller.\n\n:param eliminateDeadband: If true, set the motor curve on the motor\n                          controller to eliminate the deadband in the middle\n                          of the range. Otherwise, keep the full range\n                          without modifying any values.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PWM", "FUNC": "enableDeadbandElimination"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWM"}}}}}},
@@ -33,12 +35,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pWM", "type": "wpilib._wpilib.PWM"}, {"name": "speed", "type": "float"}], "tooltip": "Set the PWM value based on a speed.\n\nThis is intended to be used by motor controllers.\n\n@pre SetBounds() called.\n\n:param speed: The speed to set the motor controller between -1.0 and 1.0.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PWM", "FUNC": "setSpeed"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWM"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pWM", "type": "wpilib._wpilib.PWM"}], "tooltip": "Latches PWM to zero.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PWM", "FUNC": "setZeroLatch"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWM"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Servo",
     name:  "Servo",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Servo",
   };
+
   return category;
 }

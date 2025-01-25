@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 12 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.AddressableLED.LEDData", "varType": "int", "importModule": "", "selfLabel": "lEDData", "selfType": "wpilib.AddressableLED.LEDData"}, "fields": {"MODULE_OR_CLASS": "wpilib.AddressableLED.LEDData", "VAR": "b"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLEDData"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.AddressableLED.LEDData", "varType": "int", "importModule": "", "selfLabel": "lEDData", "selfType": "wpilib.AddressableLED.LEDData"}, "fields": {"MODULE_OR_CLASS": "wpilib.AddressableLED.LEDData", "VAR": "b"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLEDData"}}}}}},
@@ -26,12 +28,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "lEDData", "type": "wpilib._wpilib.AddressableLED.LEDData"}, {"name": "color", "type": "wpilib._wpilib.Color8Bit"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AddressableLED.LEDData", "FUNC": "setLED"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLEDData"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myColor8Bit"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "lEDData", "type": "wpilib._wpilib.AddressableLED.LEDData"}, {"name": "r", "type": "int"}, {"name": "g", "type": "int"}, {"name": "b", "type": "int"}], "tooltip": "A helper method to set all values of the LED.\n\n:param r: the r value [0-255]\n:param g: the g value [0-255]\n:param b: the b value [0-255]", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AddressableLED.LEDData", "FUNC": "setRGB"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLEDData"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.AddressableLED.LEDData",
     name:  "LEDData",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.AddressableLED.LEDData",
   };
+
   return category;
 }

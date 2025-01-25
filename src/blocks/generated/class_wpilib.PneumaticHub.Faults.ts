@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 46 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PneumaticHub.Faults", "varType": "int", "importModule": "", "selfLabel": "faults", "selfType": "wpilib.PneumaticHub.Faults"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.Faults", "VAR": "Brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myFaults"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PneumaticHub.Faults", "varType": "int", "importModule": "", "selfLabel": "faults", "selfType": "wpilib.PneumaticHub.Faults"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.Faults", "VAR": "Brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myFaults"}}}}}},
@@ -60,12 +62,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myFaults"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PneumaticHub.Faults", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.Faults"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "faults", "type": "wpilib._wpilib.PneumaticHub.Faults"}, {"name": "channel", "type": "int"}], "tooltip": "Gets whether there is a fault at the specified channel.\n\n:param channel: Channel to check for faults.\n\n:returns: True if a a fault exists at the channel, otherwise false.\n          @throws A ChannelIndexOutOfRange error if the provided channel is outside\n          of the range supported by the hardware.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.Faults", "FUNC": "getChannelFault"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myFaults"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PneumaticHub.Faults",
     name:  "Faults",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PneumaticHub.Faults",
   };
+
   return category;
 }

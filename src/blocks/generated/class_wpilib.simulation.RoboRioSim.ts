@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 63 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRoboRioSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.RoboRioSim", "args": [], "tooltip": "", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.RoboRioSim"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.units.volts", "args": [], "tooltip": "Measure the brownout voltage.\n\n:returns: the brownout voltage", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.RoboRioSim", "FUNC": "getBrownoutVoltage"}},
@@ -73,12 +75,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "vInCurrent", "type": "wpimath.units.amperes"}], "tooltip": "Define the Vin current.\n\n:param vInCurrent: the new current", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.RoboRioSim", "FUNC": "setVInCurrent"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "vInVoltage", "type": "wpimath.units.volts"}], "tooltip": "Define the Vin voltage.\n\n:param vInVoltage: the new voltage", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.RoboRioSim", "FUNC": "setVInVoltage"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.RoboRioSim",
     name:  "RoboRioSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.RoboRioSim",
   };
+
   return category;
 }

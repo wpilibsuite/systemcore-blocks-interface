@@ -14,6 +14,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 11 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANStatus", "varType": "int", "importModule": "", "selfLabel": "cANStatus", "selfType": "wpilib.CANStatus"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANStatus", "VAR": "busOffCount"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANStatus"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANStatus", "varType": "int", "importModule": "", "selfLabel": "cANStatus", "selfType": "wpilib.CANStatus"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANStatus", "VAR": "busOffCount"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANStatus"}}}}}},
@@ -27,12 +29,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.CANStatus", "varType": "float", "importModule": "", "selfLabel": "cANStatus", "selfType": "wpilib.CANStatus"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANStatus", "VAR": "percentBusUtilization"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCANStatus"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCANStatus"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.CANStatus", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.CANStatus"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.CANStatus",
     name:  "CANStatus",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.CANStatus",
   };
+
   return category;
 }

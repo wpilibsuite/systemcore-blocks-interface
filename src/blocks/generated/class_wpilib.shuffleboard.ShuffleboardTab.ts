@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 49 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myShuffleboardTab"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.shuffleboard._shuffleboard.ShuffleboardTab", "args": [{"name": "root", "type": "wpilib.shuffleboard._shuffleboard._ShuffleboardRoot"}, {"name": "title", "type": "str"}], "tooltip": "", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.ShuffleboardTab"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_ShuffleboardRoot"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myComplexWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.shuffleboard._shuffleboard.ComplexWidget", "args": [{"name": "shuffleboardContainer", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardContainer"}, {"name": "title", "type": "str"}, {"name": "defaultValue", "type": "wpiutil._wpiutil.Sendable"}], "tooltip": "Adds a widget to this container to display the given sendable.\n\n:param title:        the title of the widget\n:param defaultValue: the sendable to display\n\n:returns: a widget to display the sendable data\n          @throws IllegalArgumentException if a widget already exists in this\n          container with the given title", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.ShuffleboardContainer", "FUNC": "add"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardContainer"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendable"}}}}}}}}},
@@ -59,12 +61,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "my_ShuffleboardRoot"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.shuffleboard._shuffleboard._ShuffleboardRoot", "args": [{"name": "shuffleboardTab", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardTab"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.ShuffleboardTab", "FUNC": "getRoot"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardTab"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "str", "args": [{"name": "shuffleboardValue", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardValue"}], "tooltip": "Gets the title of this Shuffleboard value.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.ShuffleboardValue", "FUNC": "getTitle"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardValue"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.shuffleboard.ShuffleboardTab",
     name:  "ShuffleboardTab",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.shuffleboard.ShuffleboardTab",
   };
+
   return category;
 }

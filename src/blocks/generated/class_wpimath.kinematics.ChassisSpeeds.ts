@@ -18,6 +18,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 21 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.ChassisSpeeds", "varType": "wpimath.units.radians_per_second", "importModule": "", "selfLabel": "chassisSpeeds", "selfType": "wpimath.kinematics.ChassisSpeeds"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.ChassisSpeeds", "VAR": "omega"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.ChassisSpeeds", "varType": "wpimath.units.radians_per_second", "importModule": "", "selfLabel": "chassisSpeeds", "selfType": "wpimath.kinematics.ChassisSpeeds"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.ChassisSpeeds", "VAR": "omega"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}},
@@ -41,12 +43,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myChassisSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.kinematics._kinematics.ChassisSpeeds", "args": [{"name": "robotRelativeSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}, {"name": "robotAngle", "type": "wpimath.geometry._geometry.Rotation2d"}], "tooltip": "Converts a user provided robot-relative ChassisSpeeds object into a\nfield-relative ChassisSpeeds object.\n\n:param robotRelativeSpeeds: The ChassisSpeeds object representing the speeds\n                            in the robot frame of reference. Positive x is the towards robot's\n                            front. Positive y is towards the robot's left.\n:param robotAngle:          The angle of the robot as measured by a gyroscope. The\n                            robot's angle is considered to be zero when it is facing directly away\n                            from your alliance station wall. Remember that this should be CCW\n                            positive.\n\n:returns: ChassisSpeeds object representing the speeds in the field's frame\n          of reference.", "importModule": "wpimath.kinematics"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.ChassisSpeeds", "FUNC": "fromRobotRelativeSpeeds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Twist2d", "args": [{"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}, {"name": "dt", "type": "wpimath.units.seconds"}], "tooltip": "Creates a Twist2d from ChassisSpeeds.\n\n:param dt: The duration of the timestep.\n\n:returns: Twist2d.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.ChassisSpeeds", "FUNC": "toTwist2d"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.kinematics.ChassisSpeeds",
     name:  "ChassisSpeeds",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.kinematics.ChassisSpeeds",
   };
+
   return category;
 }

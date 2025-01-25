@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBuiltInAccelerometer"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.BuiltInAccelerometer", "args": [{"name": "range", "type": "wpilib._wpilib.BuiltInAccelerometer.Range"}], "tooltip": "Constructor.\n\n:param range: The range the accelerometer will measure", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.BuiltInAccelerometer"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRange"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "float", "args": [{"name": "builtInAccelerometer", "type": "wpilib._wpilib.BuiltInAccelerometer"}], "tooltip": ":returns: The acceleration of the roboRIO along the X axis in g-forces", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.BuiltInAccelerometer", "FUNC": "getX"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBuiltInAccelerometer"}}}}}},
@@ -21,12 +23,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.BuiltInAccelerometer.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.BuiltInAccelerometer.Range", "ENUM_VALUE": "kRange_4G"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.BuiltInAccelerometer.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.BuiltInAccelerometer.Range", "ENUM_VALUE": "kRange_8G"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.BuiltInAccelerometer",
     name:  "BuiltInAccelerometer",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.BuiltInAccelerometer",
   };
+
   return category;
 }

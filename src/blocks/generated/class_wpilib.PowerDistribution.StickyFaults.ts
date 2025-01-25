@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 62 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PowerDistribution.StickyFaults", "varType": "int", "importModule": "", "selfLabel": "stickyFaults", "selfType": "wpilib.PowerDistribution.StickyFaults"}, "fields": {"MODULE_OR_CLASS": "wpilib.PowerDistribution.StickyFaults", "VAR": "Brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStickyFaults"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PowerDistribution.StickyFaults", "varType": "int", "importModule": "", "selfLabel": "stickyFaults", "selfType": "wpilib.PowerDistribution.StickyFaults"}, "fields": {"MODULE_OR_CLASS": "wpilib.PowerDistribution.StickyFaults", "VAR": "Brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStickyFaults"}}}}}},
@@ -76,12 +78,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myStickyFaults"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PowerDistribution.StickyFaults", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PowerDistribution.StickyFaults"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "stickyFaults", "type": "wpilib._wpilib.PowerDistribution.StickyFaults"}, {"name": "channel", "type": "int"}], "tooltip": "Gets whether there is a sticky breaker fault at the specified channel.\n\n:param channel: Index to check for sticky faults.\n\n:returns: True if there is a sticky breaker fault at the channel, otherwise\n          false.\n          @throws A ChannelIndexOutOfRange error if the provided channel is outside\n          of the range supported by the hardware.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PowerDistribution.StickyFaults", "FUNC": "getBreakerFault"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStickyFaults"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PowerDistribution.StickyFaults",
     name:  "StickyFaults",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PowerDistribution.StickyFaults",
   };
+
   return category;
 }

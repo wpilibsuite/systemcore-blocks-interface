@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 19 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPWM"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PWM", "args": [{"name": "channel", "type": "int"}, {"name": "registerSendable", "type": "bool"}], "tooltip": "Allocate a PWM given a channel number.\n\nChecks channel value range and allocates the appropriate channel.\nThe allocation is only done to help users ensure that they don't double\nassign channels.\n\n:param channel:          The PWM channel number. 0-9 are on-board, 10-19 are on the\n                         MXP port\n:param registerSendable: If true, adds this instance to SendableRegistry\n                         and LiveWindow", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PWM"}, "inputs": {"ARG1": {"shadow": {"type": "logic_boolean", "fields": {"BOOL": "TRUE"}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pWM", "type": "wpilib._wpilib.PWM"}, {"name": "eliminateDeadband", "type": "bool"}], "tooltip": "Optionally eliminate the deadband from a motor controller.\n\n:param eliminateDeadband: If true, set the motor curve on the motor\n                          controller to eliminate the deadband in the middle\n                          of the range. Otherwise, keep the full range\n                          without modifying any values.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PWM", "FUNC": "enableDeadbandElimination"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWM"}}}}}},
@@ -31,12 +33,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_2X"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PWM.PeriodMultiplier", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PWM.PeriodMultiplier", "ENUM_VALUE": "kPeriodMultiplier_4X"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PWM",
     name:  "PWM",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PWM",
   };
+
   return category;
 }

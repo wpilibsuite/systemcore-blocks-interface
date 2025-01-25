@@ -82,6 +82,7 @@ export class Category extends Item  {
 
 export class PythonModuleCategory extends Category {
   moduleName: string;
+  packageName?: string
 
   constructor(moduleName: string, name: string, contents: ContentsType[]);
   constructor(moduleName: string, name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {

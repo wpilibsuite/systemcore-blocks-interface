@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 33 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "str", "args": [{"name": "importance", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardEventImportance"}], "tooltip": "Returns name of the given enum.\n\n:returns: Name of the given enum.", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard", "FUNC": "shuffleboardEventImportanceName"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardEventImportance"}}}}}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.BuiltInLayouts", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.BuiltInLayouts", "ENUM_VALUE": "kGrid"}},
@@ -47,12 +49,16 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kNormal"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.shuffleboard.ShuffleboardEventImportance", "importModule": "wpilib.shuffleboard"}, "fields": {"ENUM_TYPE": "wpilib.shuffleboard.ShuffleboardEventImportance", "ENUM_VALUE": "kTrivial"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonModuleCategory = {
     kind: "category",
-    moduleName: "wpilib.shuffleboard",
     name:  "shuffleboard",
-      contents: contents,
+    contents: contents,
+    moduleName: "wpilib.shuffleboard",
+    packageName: "wpilib.shuffleboard",
   };
+
   return category;
 }

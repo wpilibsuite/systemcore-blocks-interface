@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.PowerDistributionVersion", "varType": "int", "importModule": "", "selfLabel": "powerDistributionVersion", "selfType": "hal.PowerDistributionVersion"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionVersion", "VAR": "firmwareFix"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionVersion"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.PowerDistributionVersion", "varType": "int", "importModule": "", "selfLabel": "powerDistributionVersion", "selfType": "hal.PowerDistributionVersion"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionVersion", "VAR": "firmwareFix"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionVersion"}}}}}},
@@ -27,12 +29,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.PowerDistributionVersion", "varType": "int", "importModule": "", "selfLabel": "powerDistributionVersion", "selfType": "hal.PowerDistributionVersion"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionVersion", "VAR": "uniqueId"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionVersion"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPowerDistributionVersion"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "hal._wpiHal.PowerDistributionVersion", "args": [], "tooltip": "", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionVersion"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.PowerDistributionVersion",
     name:  "PowerDistributionVersion",
-      contents: contents,
+    contents: contents,
+    className: "hal.PowerDistributionVersion",
   };
+
   return category;
 }

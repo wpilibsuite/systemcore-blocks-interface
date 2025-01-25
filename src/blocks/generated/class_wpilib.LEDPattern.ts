@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 25 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLEDPattern"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.LEDPattern", "args": [{"name": "impl", "type": "Callable[[wpilib._wpilib.LEDPattern.LEDReader, Callable[[int, wpilib._wpilib.Color], None]], None]"}], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.LEDPattern"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myColor], None]], None]"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "lEDPattern", "type": "wpilib._wpilib.LEDPattern"}, {"name": "reader", "type": "wpilib._wpilib.LEDPattern.LEDReader"}, {"name": "writer", "type": "Callable[[int, wpilib._wpilib.Color], None]"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.LEDPattern", "FUNC": "applyTo"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLEDPattern"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLEDReader"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myColor], None]"}}}}}},
@@ -37,12 +39,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.LEDPattern.GradientType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.LEDPattern.GradientType", "ENUM_VALUE": "kContinuous"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.LEDPattern.GradientType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.LEDPattern.GradientType", "ENUM_VALUE": "kDiscontinuous"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.LEDPattern",
     name:  "LEDPattern",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.LEDPattern",
   };
+
   return category;
 }

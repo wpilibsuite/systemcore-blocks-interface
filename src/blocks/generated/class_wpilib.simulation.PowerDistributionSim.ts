@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 17 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPowerDistributionSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.PowerDistributionSim", "args": [{"name": "module", "type": "int"}], "tooltip": "Constructs from a PowerDistribution module number (CAN ID).\n\n:param module: module number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PowerDistributionSim"}, "inputs": {"ARG0": {"shadow": {"type": "math_number", "fields": {"NUM": 0.0}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPowerDistributionSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.PowerDistributionSim", "args": [{"name": "pdp", "type": "wpilib._wpilib.PowerDistribution"}], "tooltip": "Constructs from a PowerDistribution object.\n\n:param pdp: PowerDistribution to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PowerDistributionSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistribution"}}}}}}}}},
@@ -27,12 +29,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "powerDistributionSim", "type": "wpilib.simulation._simulation.PowerDistributionSim"}, {"name": "temperature", "type": "float"}], "tooltip": "Define the PowerDistribution temperature.\n\n:param temperature: the new PowerDistribution temperature", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PowerDistributionSim", "FUNC": "setTemperature"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "powerDistributionSim", "type": "wpilib.simulation._simulation.PowerDistributionSim"}, {"name": "voltage", "type": "float"}], "tooltip": "Set the PowerDistribution voltage.\n\n:param voltage: the new PowerDistribution voltage", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PowerDistributionSim", "FUNC": "setVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.PowerDistributionSim",
     name:  "PowerDistributionSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.PowerDistributionSim",
   };
+
   return category;
 }

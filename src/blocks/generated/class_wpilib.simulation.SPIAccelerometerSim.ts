@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 17 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySPIAccelerometerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.SPIAccelerometerSim", "args": [{"name": "index", "type": "int"}], "tooltip": "Construct a new simulation object.\n\n:param index: the HAL index of the accelerometer", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.SPIAccelerometerSim"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "sPIAccelerometerSim", "type": "wpilib.simulation._simulation.SPIAccelerometerSim"}], "tooltip": "Check whether the accelerometer is active.\n\n:returns: true if active", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.SPIAccelerometerSim", "FUNC": "getActive"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySPIAccelerometerSim"}}}}}},
@@ -27,12 +29,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sPIAccelerometerSim", "type": "wpilib.simulation._simulation.SPIAccelerometerSim"}, {"name": "y", "type": "float"}], "tooltip": "Change the Y axis value of the accelerometer.\n\n:param y: the new reading of the Y axis", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.SPIAccelerometerSim", "FUNC": "setY"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySPIAccelerometerSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sPIAccelerometerSim", "type": "wpilib.simulation._simulation.SPIAccelerometerSim"}, {"name": "z", "type": "float"}], "tooltip": "Change the Z axis value of the accelerometer.\n\n:param z: the new reading of the Z axis", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.SPIAccelerometerSim", "FUNC": "setZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySPIAccelerometerSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.SPIAccelerometerSim",
     name:  "SPIAccelerometerSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.SPIAccelerometerSim",
   };
+
   return category;
 }

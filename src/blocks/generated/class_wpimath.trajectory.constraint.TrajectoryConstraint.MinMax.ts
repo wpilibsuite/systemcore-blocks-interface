@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 6 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax", "varType": "wpimath.units.meters_per_second_squared", "importModule": "", "selfLabel": "minMax", "selfType": "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax", "VAR": "maxAcceleration"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMinMax"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax", "varType": "wpimath.units.meters_per_second_squared", "importModule": "", "selfLabel": "minMax", "selfType": "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax", "VAR": "maxAcceleration"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMinMax"}}}}}},
@@ -20,12 +22,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMinMax"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.constraint.TrajectoryConstraint.MinMax", "args": [], "tooltip": "", "importModule": "wpimath.trajectory.constraint"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMinMax"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.constraint.TrajectoryConstraint.MinMax", "args": [{"name": "minAcceleration", "type": "wpimath.units.meters_per_second_squared"}, {"name": "maxAcceleration", "type": "wpimath.units.meters_per_second_squared"}], "tooltip": "", "importModule": "wpimath.trajectory.constraint"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax",
     name:  "MinMax",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.trajectory.constraint.TrajectoryConstraint.MinMax",
   };
+
   return category;
 }

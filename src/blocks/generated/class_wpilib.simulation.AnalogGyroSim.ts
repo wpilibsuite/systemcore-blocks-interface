@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 12 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogGyroSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.AnalogGyroSim", "args": [{"name": "gyro", "type": "wpilib._wpilib.AnalogGyro"}], "tooltip": "Constructs from an AnalogGyro object.\n\n:param gyro: AnalogGyro to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogGyroSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogGyro"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogGyroSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.AnalogGyroSim", "args": [{"name": "channel", "type": "int"}], "tooltip": "Constructs from an analog input channel number.\n\n:param channel: Channel number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogGyroSim"}}}}},
@@ -22,12 +24,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogGyroSim", "type": "wpilib.simulation._simulation.AnalogGyroSim"}, {"name": "initialized", "type": "bool"}], "tooltip": "Set whether this gyro is initialized.\n\n:param initialized: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogGyroSim", "FUNC": "setInitialized"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogGyroSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogGyroSim", "type": "wpilib.simulation._simulation.AnalogGyroSim"}, {"name": "rate", "type": "float"}], "tooltip": "Change the rate of the gyro.\n\n:param rate: the new rate", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogGyroSim", "FUNC": "setRate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogGyroSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.AnalogGyroSim",
     name:  "AnalogGyroSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.AnalogGyroSim",
   };
+
   return category;
 }
