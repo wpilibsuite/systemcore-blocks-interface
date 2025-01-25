@@ -26,6 +26,12 @@ import * as storage from '../storage/client_side_storage';
 import * as commonStorage from '../storage/common_storage';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
+
+const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
+   kind: 'categoryToolbox',
+   contents: [],
+};
+
 export class Editor {
   private blocklyWorkspace: Blockly.WorkspaceSvg;
   private modulePath: string = '';
@@ -33,6 +39,7 @@ export class Editor {
   private moduleContent: string = '';
   private workspaceContent: string = '';
   private bindedOnChange: any = null;
+  private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
   constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
     this.blocklyWorkspace = blocklyWorkspace;
@@ -49,12 +56,19 @@ export class Editor {
       return;
     }
 
-    // TODO(lizlooney): As blocks are loaded, determine whether the block
-    // a version of a block defined in another blocks file (like a Workspace)
-    // that no longer matches the current definition. This might happen if the
-    // user defines a variable or function in the Workspace, uses the variable
-    // or function in the OpMode, and then removes or changes the variable or
-    // function in the Workspace.
+    // TODO(lizlooney): As blocks are loaded, determine whether any blocks
+    // are accessing variable or calling functions thar are defined in another
+    // blocks file (like a Workspace) and check whether the variable or function
+    // definition has changed. This might happen if the user defines a variable
+    // or function in the Workspace, uses the variable or function in the
+    // OpMode, and then removes or changes the variable or function in the
+    // Workspace.
+
+    // TODO(lizlooney): We will need a way to identify which variable or
+    // function, other than by the variable name or function name, because the
+    // user might change the name. This will take some thought and I should
+    // write up a design doc and discuss it with others to make sure we have a
+    // good solution.
 
     // TODO(lizlooney): Look at blocks with type 'mrc_get_python_variable' or
     // 'mrc_set_python_variable', and where block.mrcExportedVariable === true.
@@ -92,57 +106,70 @@ export class Editor {
     this.workspacePath = workspacePath;
     this.moduleContent = '';
     this.workspaceContent = '';
+    this.clearBlocklyWorkspace();
 
-    storage.fetchModuleContent(
-      this.modulePath,
-      (moduleContent: string | null, errorMessage: string) => {
-        if (errorMessage) {
-          alert(errorMessage);
-          return;
-        }
-        if (moduleContent) {
-          this.moduleContent = moduleContent;
-          if (this.workspacePath === this.modulePath) {
-            this.workspaceContent = moduleContent
-          }
-
-          // If both the workspace and the module have been loaded, load the
-          // blocks into the blockly workspace.
-          if (this.workspaceContent) {
-            this.loadBlocksIntoBlocklyWorkspace();
-          }
-        }
-      }
-    );
-    if (this.workspacePath !== this.modulePath) {
+    if (modulePath) {
       storage.fetchModuleContent(
-        this.workspacePath,
-        (workspaceContent: string | null, errorMessage: string) => {
+        this.modulePath,
+        (moduleContent: string | null, errorMessage: string) => {
           if (errorMessage) {
             alert(errorMessage);
             return;
           }
-          if (workspaceContent) {
-            this.workspaceContent = workspaceContent;
+          if (moduleContent) {
+            this.moduleContent = moduleContent;
+            if (this.workspacePath === this.modulePath) {
+              this.workspaceContent = moduleContent
+            }
 
             // If both the workspace and the module have been loaded, load the
             // blocks into the blockly workspace.
-            if (this.moduleContent) {
+            if (this.workspaceContent) {
               this.loadBlocksIntoBlocklyWorkspace();
             }
           }
         }
       );
+      if (this.workspacePath !== this.modulePath) {
+        storage.fetchModuleContent(
+          this.workspacePath,
+          (workspaceContent: string | null, errorMessage: string) => {
+            if (errorMessage) {
+              alert(errorMessage);
+              return;
+            }
+            if (workspaceContent) {
+              this.workspaceContent = workspaceContent;
+
+              // If both the workspace and the module have been loaded, load the
+              // blocks into the blockly workspace.
+              if (this.moduleContent) {
+                this.loadBlocksIntoBlocklyWorkspace();
+              }
+            }
+          }
+        );
+      }
     }
   }
 
-  private loadBlocksIntoBlocklyWorkspace() {
+  private clearBlocklyWorkspace() {
     if (this.bindedOnChange) {
       this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
     }
     this.blocklyWorkspace.clear();
     this.blocklyWorkspace.scroll(0, 0);
+    this.setToolbox(EMPTY_TOOLBOX);
+  }
 
+  private setToolbox(toolbox: Blockly.utils.toolbox.ToolboxDefinition) {
+    if (toolbox != this.toolbox) {
+      this.toolbox = toolbox;
+      this.blocklyWorkspace.updateToolbox(toolbox);
+    }
+  }
+
+  private loadBlocksIntoBlocklyWorkspace() {
     // Add the while-loading listener.
     this.bindedOnChange = this.onChangeWhileLoading.bind(this);
     this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
@@ -153,27 +180,26 @@ export class Editor {
   }
 
   public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
-    if (this.modulePath === this.workspacePath) {
-      // If we are editing a Workspace, we don't add any additional blocks to
-      // the toolbox.
-      this.blocklyWorkspace.updateToolbox(
-          getToolboxJSON([], shownPythonToolboxCategories));
-      return;
+    if (this.modulePath) {
+      if (this.modulePath === this.workspacePath) {
+        // If we are editing a Workspace, we don't add any additional blocks to
+        // the toolbox.
+        this.setToolbox(getToolboxJSON([], shownPythonToolboxCategories));
+        return;
+      }
+      // Otherwise, we add the exported blocks from the Workspace.
+      if (!this.workspaceContent) {
+        // The workspace content hasn't been fetched yet. Try again in a bit.
+        setTimeout(() => {
+          this.updateToolbox(shownPythonToolboxCategories)
+        }, 50);
+        return;
+      }
+      const workspaceName = commonStorage.getWorkspaceName(this.modulePath);
+      const exportedBlocks = commonStorage.extractExportedBlocks(
+         workspaceName, this.workspaceContent);
+      this.setToolbox(getToolboxJSON(exportedBlocks, shownPythonToolboxCategories));
     }
-    // Otherwise, we add the exported blocks from the Workspace.
-    if (!this.workspaceContent) {
-      // The workspace content hasn't been fetched yet. Try again in a second.
-      setTimeout(() => {
-        this.updateToolbox(shownPythonToolboxCategories)
-      }, 50);
-      return;
-      
-    }
-    const workspaceName = commonStorage.getWorkspaceName(this.modulePath);
-    const exportedBlocks = commonStorage.extractExportedBlocks(
-       workspaceName, this.workspaceContent);
-    this.blocklyWorkspace.updateToolbox(
-        getToolboxJSON(exportedBlocks, shownPythonToolboxCategories));
   }
 
   public isModified(): boolean {

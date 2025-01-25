@@ -183,10 +183,6 @@ const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, sho
     }
   };
 
-  const handleClassTreeExpanded: TreeProps['onExpand'] = (a: React.Key[], e) => {
-    setClassTreeExpandedKeys(a);
-  };
-
   const handleOkClicked = () => {
     const shownCategories: Set<string> = new Set();
     shownModuleCategories.forEach((category) => {

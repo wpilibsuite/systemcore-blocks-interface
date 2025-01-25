@@ -78,6 +78,8 @@ export class Category extends Item  {
   }
 }
 
+// TODO(lizlooney): Figure out if PythonModuleCategory should actually be called PythonPackageCategory.
+
 export class PythonModuleCategory extends Category {
   moduleName: string;
 

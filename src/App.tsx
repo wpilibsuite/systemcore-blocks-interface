@@ -17,10 +17,12 @@ import {
   theme
 } from 'antd';
 import type { InputRef } from 'antd';
-import type { TreeDataNode } from 'antd';
+import type { TreeDataNode, TreeProps } from 'antd';
 import {
   CopyOutlined,
+  DeleteOutlined,
   DownloadOutlined,
+  EditOutlined,
   FileAddOutlined,
   FileOutlined,
   FolderAddOutlined,
@@ -53,14 +55,15 @@ import * as storage from './storage/client_side_storage';
 import * as commonStorage from './storage/common_storage';
 
 
-type NewWorkspaceModalProps = {
+type NewWorkspaceNameModalProps = {
   isOpen: boolean;
+  initialValue: string;
   getWorkspaceNames: () => string[];
   onOk: (w: string) => void;
   onCancel: () => void;
 }
 
-const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorkspaceNames, onOk, onCancel }) => {
+const NewWorkspaceNameModal: React.FC<NewWorkspaceNameModalProps> = ({ isOpen, initialValue, getWorkspaceNames, onOk, onCancel }) => {
   const inputRef = useRef<InputRef>(null);
   const [value, setValue] = useState('');
   const [workspaceNames, setWorkspaceNames] = useState<string[]>([]);
@@ -68,12 +71,14 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
   const [alertErrorVisible, setAlertErrorVisible] = useState(false);
 
   const afterOpenChange = (open: boolean) => {
-    setValue('');
     if (open) {
+      setValue(initialValue);
       setWorkspaceNames(getWorkspaceNames());
       if (inputRef.current) {
         inputRef.current.focus();
       }
+    } else {
+      setValue('');
     }
   };
 
@@ -93,7 +98,7 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
 
   return (
     <Modal
-      title="New Workspace"
+      title={workspaceNames.length === 0 ? "Welcome to WPILib Blocks!" : "New Workspace" }
       open={isOpen}
       afterOpenChange={afterOpenChange}
       onCancel={onCancel}
@@ -102,10 +107,12 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
         <Button key="ok" onClick={handleOk}> OK </Button>
       ]}
     >
-      <Flex
-        vertical
-        gap="small"
-      >
+      <Flex vertical gap="small">
+        <Typography.Paragraph
+          style={workspaceNames.length === 0 ? { } : { display: 'none' }}
+        >
+        Let's create your first workspace. You just need to give it a name.
+        </Typography.Paragraph>
         <Typography.Paragraph> Workspace Name </Typography.Paragraph>
         <Input
           ref={inputRef}
@@ -127,15 +134,16 @@ const NewWorkspaceModal: React.FC<NewWorkspaceModalProps> = ({ isOpen, getWorksp
 };
 
 
-type NewOpModeModalProps = {
+type NewOpModeNameModalProps = {
   isOpen: boolean;
+  initialValue: string;
   getCurrentWorkspaceName: () => string;
   getOpModeNames: (workspaceName: string) => string[];
   onOk: (w: string, o: string) => void;
   onCancel: () => void;
 }
 
-const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorkspaceName, getOpModeNames, onOk, onCancel }) => {
+const NewOpModeNameModal: React.FC<NewOpModeNameModalProps> = ({ isOpen, initialValue, getCurrentWorkspaceName, getOpModeNames, onOk, onCancel }) => {
   const inputRef = useRef<InputRef>(null);
   const [value, setValue] = useState('');
   const [workspaceName, setWorkspaceName] = useState('');
@@ -144,14 +152,16 @@ const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorks
   const [alertErrorVisible, setAlertErrorVisible] = useState(false);
 
   const afterOpenChange = (open: boolean) => {
-    setValue('');
     if (open) {
+      setValue(initialValue);
       const currentWorkspaceName = getCurrentWorkspaceName();
       setWorkspaceName(currentWorkspaceName);
       setOpModeNames(getOpModeNames(currentWorkspaceName));
       if (inputRef.current) {
         inputRef.current.focus();
       }
+    } else {
+      setValue('');
     }
   };
 
@@ -185,7 +195,7 @@ const NewOpModeModal: React.FC<NewOpModeModalProps> = ({ isOpen, getCurrentWorks
         <Button key="ok" onClick={handleOk}> OK </Button>
       ]}
     >
-      <Flex vertical gap="small" >
+      <Flex vertical gap="small">
         <Typography.Paragraph> OpMode Name </Typography.Paragraph>
         <Input
           ref={inputRef}
@@ -211,42 +221,76 @@ type BlocklyComponentType = {
 };
 
 const App: React.FC = () => {
-  const isFirstRender = useRef(true);
+  const renderCounter = useRef(0);
   const [messageApi, contextHolder] = message.useMessage();
   const [alertErrorMessage, setAlertErrorMessage] = useState('');
   const [alertErrorVisible, setAlertErrorVisible] = useState(false);
+  const [mostRecentModulePath, setMostRecentModulePath] = useState<string | null>(null);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = useState<Set<string>>(new Set());
   const [triggerListModules, setTriggerListModules] = useState(false);
   const afterListModulesSuccess = useRef<() => void>(() => {});
   const [modules, setModules] = useState<commonStorage.Workspace[]>([]);
-  const [treeData, setTreeData] = useState<any>([]);
-  const [treeExpandedKeys, setTreeExpandedKeys] = useState<string[]>([]);
-  const [pathToExpand, setPathToExpand] = useState('');
-  const [treeSelectedKey, setTreeSelectedKey] = useState('');
+  const [treeData, setTreeData] = useState<TreeDataNode[]>([]);
+  const [treeExpandedKeys, setTreeExpandedKeys] = useState<React.Key[]>([]);
+  const [treeSelectedKey, setTreeSelectedKey] = useState<React.Key>('');
   const [currentModulePath, setCurrentModulePath] = useState('');
+  const [renameTooltip, setRenameTooltip] = useState('Rename');
+  const [copyTooltip, setCopyTooltip] = useState('Copy');
+  const [deleteTooltip, setDeleteTooltip] = useState('Delete');
   const blocklyComponent = useRef<BlocklyComponentType | null>(null);
   const blocksEditor = useRef<editor.Editor | null>(null);
   const [generatedCode, setGeneratedCode] = useState('');
-  const [isNewWorkspaceModalOpen, setIsNewWorkspaceModalOpen] = useState(false);
-  const [isNewOpModeModalOpen, setIsNewOpModeModalOpen] = useState(false);
-  const [isToolboxSettingsModalOpen, setIsToolboxSettingsModalOpen] = useState(false);
+  const [newWorkspaceNameModalPurpose, setNewWorkspaceNameModalPurpose] = useState('');
+  const [newWorkspaceNameModalInitialValue, setNewWorkspaceNameModalInitialValue] = useState('');
+  const [newWorkspaceNameModalIsOpen, setNewWorkspaceNameModalIsOpen] = useState(false);
+  const [newOpModeNameModalPurpose, setNewOpModeNameModalPurpose] = useState('');
+  const [newOpModeNameModalInitialValue, setNewOpModeNameModalInitialValue] = useState('');
+  const [newOpModeNameModalIsOpen, setNewOpModeNameModalIsOpen] = useState(false);
+  const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = useState(false);
   const [openAskToSave, setOpenAskToSave] = useState(false);
   const afterAskToSaveOk = useRef<() => void>(() => {});
   const [askToSaveSaving, setAskToSaveSaving] = useState(false);
 
+  const ignoreEffect = () => {
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+      // Development mode.
+      return (renderCounter.current < 2);
+    }
+    return false;
+  }
+
   // When the app is loaded, initialize the blocks we provide.
   useEffect(() => {
-    if (isFirstRender.current) {
-      initializeShownPythonToolboxCategories();
-      initializeBlocks();
-      //testAllBlocksInToolbox(toolbox.getToolboxJSON([], []).contents);
-      isFirstRender.current = false;
+    renderCounter.current = renderCounter.current + 1;
+
+    if (ignoreEffect()) {
+      return;
     }
+
+    fetchMostRecentModulePath();
+    initializeShownPythonToolboxCategories();
+    initializeBlocks();
+    //testAllBlocksInToolbox(toolbox.getToolboxJSON([], []).contents);
   }, []);
 
+  const fetchMostRecentModulePath = () => {
+    storage.fetchEntry(
+        'mostRecentModulePath', '',
+        (value: string | null, errorMessage: string) => {
+      if (value) {
+        setMostRecentModulePath(value);
+      } else {
+        // There is no most recent module path.
+        setMostRecentModulePath('');
+      }
+    });
+  };
+
   const initializeShownPythonToolboxCategories = () => {
-    storage.fetchEntry('shownPythonToolboxCategories', '[]', (value: string | null, errorMessage: string) => {
-      if (value != null) {
+    storage.fetchEntry(
+        'shownPythonToolboxCategories', '[]',
+        (value: string | null, errorMessage: string) => {
+      if (value) {
         const shownCategories: string[] = JSON.parse(value);
         setShownPythonToolboxCategories(new Set(shownCategories));
       }
@@ -264,6 +308,17 @@ const App: React.FC = () => {
 
   // Fetch the list of modules from storage.
   useEffect(() => {
+    if (ignoreEffect()) {
+      return;
+    }
+    // mostRecentModulePath hasn't been fetched yet. Try agagin in a bit.
+    if (mostRecentModulePath == null) {
+      setTimeout(() => {
+        setTriggerListModules(!triggerListModules);
+      }, 50);
+      return;
+    }
+
     storage.listModules((array: commonStorage.Workspace[] | null, errorMessage: string) => {
       if (errorMessage) {
         setAlertErrorMessage('Unable to load the list of modules: ' + errorMessage);
@@ -272,12 +327,127 @@ const App: React.FC = () => {
       }
       if (array != null) {
         setModules(array)
-        afterListModulesSuccess.current();
+        const callback = afterListModulesSuccess.current;
+        afterListModulesSuccess.current = () => {};
+        callback();
+
+        if (array.length === 0) {
+          setNewWorkspaceNameModalPurpose('NewWorkspace');
+          setNewWorkspaceNameModalInitialValue('');
+          setNewWorkspaceNameModalIsOpen(true);
+        }
       }
     });
   }, [triggerListModules]);
 
+  // When the list of modules is set, update the treeData and treeExpandedKeys.
   useEffect(() => {
+    if (ignoreEffect()) {
+      return;
+    }
+    if (modules.length === 0 && treeData.length === 0) {
+      return;
+    }
+    let foundCurrentModulePath = false;
+    let foundMostRecentModulePath = false;
+    const data: TreeDataNode[] = [];
+    const expandedKeys: React.Key[] = []
+    modules.forEach((workspace) => {
+      if (workspace.modulePath === currentModulePath) {
+        foundCurrentModulePath = true;
+      }
+      if (workspace.modulePath === mostRecentModulePath) {
+        foundMostRecentModulePath = true;
+      }
+      const children: TreeDataNode[] = [];
+      workspace.opModes.forEach((opMode) => {
+        if (opMode.modulePath === currentModulePath) {
+          foundCurrentModulePath = true;
+        }
+        if (opMode.modulePath === mostRecentModulePath) {
+          foundMostRecentModulePath = true;
+        }
+        const child: TreeDataNode = {
+          key: opMode.modulePath,
+          title: opMode.moduleName,
+          icon: <FileOutlined />,
+        };
+        children.push(child);
+      });
+      const parent: TreeDataNode = {
+        key: workspace.modulePath,
+        title: workspace.workspaceName,
+        children: children,
+        icon: <FolderOutlined />,
+      };
+      data.push(parent);
+      expandedKeys.push(parent.key);
+    });
+    setTreeData(data);
+    setTreeExpandedKeys([...expandedKeys]);
+
+    if (foundCurrentModulePath) {
+      setTreeSelectedKey(currentModulePath as React.Key);
+    } else if (foundMostRecentModulePath) {
+      setTreeSelectedKey(mostRecentModulePath as React.Key);
+    } else if (modules.length) {
+      setTreeSelectedKey(modules[0].modulePath as React.Key);
+    } else {
+      setTreeSelectedKey('' as React.Key);
+    }
+  }, [modules]);
+
+  // When a module path has become the current module path (either by fetching
+  // the most recent module path (soon after the app is loaded) or by the user
+  // selecting it in the tree, set the current workspace, expend the
+  // workspace node in the tree.
+  useEffect(() => {
+    if (ignoreEffect()) {
+      return;
+    }
+    if (currentModulePath && modules.length > 0) {
+      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
+      const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
+
+      if (currentModulePath === workspacePath) {
+        setRenameTooltip('Rename Workspace');
+        setCopyTooltip('Copy Workspace');
+        setDeleteTooltip('Delete Workspace');
+      } else {
+        setRenameTooltip('Rename OpMode');
+        setCopyTooltip('Copy OpMode');
+        setDeleteTooltip('Delete OpMode');
+      }
+
+      storage.saveEntry('mostRecentModulePath', currentModulePath);
+      if (blocksEditor.current) {
+        blocksEditor.current.loadModuleBlocks(currentModulePath, workspacePath);
+      }
+    } else {
+      setRenameTooltip('Rename');
+      setCopyTooltip('Copy');
+      setDeleteTooltip('Delete');
+
+      storage.saveEntry('mostRecentModulePath', '');
+      if (blocksEditor.current) {
+        blocksEditor.current.loadModuleBlocks('', '');
+      }
+    }
+  }, [currentModulePath]);
+
+  useEffect(() => {
+    if (ignoreEffect()) {
+      return;
+    }
+    if (blocksEditor.current) {
+      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+    }
+  }, [currentModulePath, shownPythonToolboxCategories]);
+
+  useEffect(() => {
+    if (ignoreEffect()) {
+      return;
+    }
     if (blocklyComponent.current) {
       const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
       if (blocklyWorkspace) {
@@ -310,44 +480,10 @@ const App: React.FC = () => {
     setGeneratedCode(code);
   };
 
-  // When the list of modules has been fetched, fill the tree.
-  useEffect(() => {
-    const treeDataArray: TreeDataNode[] = [];
-    modules.forEach((workspace) => {
-      const children: TreeDataNode[] = [];
-      workspace.opModes.forEach((opMode) => {
-        const child: TreeDataNode = {
-          key: opMode.modulePath,
-          title: opMode.moduleName,
-          icon: <FileOutlined />,
-        };
-        children.push(child);
-      });
-      const parent: TreeDataNode = {
-        key: workspace.modulePath,
-        title: workspace.workspaceName,
-        children: children,
-        icon: <FolderOutlined />,
-      };
-      treeDataArray.push(parent);
-    });
-    setTreeData(treeDataArray);
-
-    if (!currentModulePath) {
-      storage.fetchEntry('currentModulePath', '', (modulePath: string | null, errorMessage: string) => {
-        if (!currentModulePath) {
-          if (modulePath) {
-            setCurrentModulePath(modulePath);
-          } else if (modules.length > 0) {
-            setCurrentModulePath(modules[0].modulePath);
-          }
-        }
-      });
-    }
-  }, [modules, currentModulePath]);
-
   const handleAskToSaveOk = () => {
-    afterAskToSaveOk.current();
+    const callback = afterAskToSaveOk.current;
+    afterAskToSaveOk.current = () => {};
+    callback();
   };
 
   const checkIfBlocksWereModified = (callback: () => void) => {
@@ -372,7 +508,6 @@ const App: React.FC = () => {
             callback();
           }
         });
-        afterAskToSaveOk.current = () => {};
       };
       setOpenAskToSave(true);
     }
@@ -380,10 +515,12 @@ const App: React.FC = () => {
 
   const handleNewWorkspaceClicked = () => {
     checkIfBlocksWereModified(() => {
-      setIsNewWorkspaceModalOpen(true);
+      setNewWorkspaceNameModalPurpose('NewWorkspace');
+      setNewWorkspaceNameModalInitialValue('');
+      setNewWorkspaceNameModalIsOpen(true);
     });
   };
-  
+
   const getWorkspaceNames = (): string[] => {
     const workspaceNames: string[] = [];
     modules.forEach((workspace) => {
@@ -392,27 +529,59 @@ const App: React.FC = () => {
     return workspaceNames;
   };
 
-  const handleNewWorkspaceOk = (workspaceName: string) => {
-    const workspaceContent = commonStorage.newModuleContent();
-    const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
-    storage.createModule(
-        commonStorage.MODULE_TYPE_WORKSPACE, workspacePath, workspaceContent,
-        (success: boolean, errorMessage: string) => {
-          if (success) {
-            afterListModulesSuccess.current = () => {
-              setCurrentModulePath(workspacePath);
-            };
-            setTriggerListModules(!triggerListModules);
-          } else if (errorMessage) {
-            setAlertErrorMessage('Failed to create a new Workspace: ' + errorMessage);
-            setAlertErrorVisible(true);
-          }
-        });
+  const handleNewWorkspaceNameOk = (newWorkspaceName: string) => {
+    const newWorkspacePath = commonStorage.makeModulePath(newWorkspaceName, newWorkspaceName);
+    if (newWorkspaceNameModalPurpose === 'NewWorkspace') {
+      const workspaceContent = commonStorage.newModuleContent();
+      storage.createModule(
+          commonStorage.MODULE_TYPE_WORKSPACE, newWorkspacePath, workspaceContent,
+          (success: boolean, errorMessage: string) => {
+            if (success) {
+              afterListModulesSuccess.current = () => {
+                setCurrentModulePath(newWorkspacePath);
+              };
+              setTriggerListModules(!triggerListModules);
+            } else if (errorMessage) {
+              setAlertErrorMessage('Failed to create a new Workspace: ' + errorMessage);
+              setAlertErrorVisible(true);
+            }
+          });
+    } else if (newWorkspaceNameModalPurpose === 'RenameWorkspace') {
+      const oldWorkspaceName = commonStorage.getWorkspaceName(currentModulePath);
+      storage.renameWorkspace(oldWorkspaceName, newWorkspaceName,
+          (success: boolean, errorMessage: string) => {
+            if (success) {
+              afterListModulesSuccess.current = () => {
+                setCurrentModulePath(newWorkspacePath);
+              };
+              setTriggerListModules(!triggerListModules);
+            } else if (errorMessage) {
+              setAlertErrorMessage('Failed to rename the Workspace: ' + errorMessage);
+              setAlertErrorVisible(true);
+            }
+          });
+    } else if (newWorkspaceNameModalPurpose === 'CopyWorkspace') {
+      const oldWorkspaceName = commonStorage.getWorkspaceName(currentModulePath);
+      storage.copyWorkspace(oldWorkspaceName, newWorkspaceName,
+          (success: boolean, errorMessage: string) => {
+            if (success) {
+              afterListModulesSuccess.current = () => {
+                setCurrentModulePath(newWorkspacePath);
+              };
+              setTriggerListModules(!triggerListModules);
+            } else if (errorMessage) {
+              setAlertErrorMessage('Failed to copy the Workspace: ' + errorMessage);
+              setAlertErrorVisible(true);
+            }
+          });
+    }
   };
 
   const handleNewOpModeClicked = () => {
     checkIfBlocksWereModified(() => {
-      setIsNewOpModeModalOpen(true);
+      setNewOpModeNameModalPurpose('NewOpMode');
+      setNewOpModeNameModalInitialValue('');
+      setNewOpModeNameModalIsOpen(true);
     });
   };
 
@@ -433,15 +602,16 @@ const App: React.FC = () => {
     return opModeNames;
   };
 
-  const handleNewOpModeOk = (workspaceName: string, opModeName: string) => {
-    const opModeContent = commonStorage.newModuleContent();
-    const opModePath = commonStorage.makeModulePath(workspaceName, opModeName);
-    storage.createModule(
-        commonStorage.MODULE_TYPE_OPMODE, opModePath, opModeContent,
-        (success: boolean, errorMessage: string) => {
+  const handleNewOpModeNameOk = (workspaceName: string, newOpModeName: string) => {
+    const newOpModePath = commonStorage.makeModulePath(workspaceName, newOpModeName);
+    if (newOpModeNameModalPurpose === 'NewOpMode') {
+      const opModeContent = commonStorage.newModuleContent();
+      storage.createModule(
+          commonStorage.MODULE_TYPE_OPMODE, newOpModePath, opModeContent,
+          (success: boolean, errorMessage: string) => {
             if (success) {
               afterListModulesSuccess.current = () => {
-                setCurrentModulePath(opModePath);
+                setCurrentModulePath(newOpModePath);
               };
               setTriggerListModules(!triggerListModules);
             } else if (errorMessage) {
@@ -449,6 +619,37 @@ const App: React.FC = () => {
               setAlertErrorVisible(true);
             }
           });
+    } else if (newOpModeNameModalPurpose === 'RenameOpMode') {
+      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
+      const oldOpModeName = commonStorage.getModuleName(currentModulePath);
+      storage.renameOpMode(workspaceName, oldOpModeName, newOpModeName,
+          (success: boolean, errorMessage: string) => {
+            if (success) {
+              afterListModulesSuccess.current = () => {
+                setCurrentModulePath(newOpModePath);
+              };
+              setTriggerListModules(!triggerListModules);
+            } else if (errorMessage) {
+              setAlertErrorMessage('Failed to rename the OpMode: ' + errorMessage);
+              setAlertErrorVisible(true);
+            }
+          });
+    } else if (newOpModeNameModalPurpose === 'CopyOpMode') {
+      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
+      const oldOpModeName = commonStorage.getModuleName(currentModulePath);
+      storage.copyOpMode(workspaceName, oldOpModeName, newOpModeName,
+          (success: boolean, errorMessage: string) => {
+            if (success) {
+              afterListModulesSuccess.current = () => {
+                setCurrentModulePath(newOpModePath);
+              };
+              setTriggerListModules(!triggerListModules);
+            } else if (errorMessage) {
+              setAlertErrorMessage('Failed to copy the OpMode: ' + errorMessage);
+              setAlertErrorVisible(true);
+            }
+          });
+    }
   };
 
   const handleSaveClicked = () => {
@@ -472,6 +673,86 @@ const App: React.FC = () => {
     }
   };
 
+  const handleRenameClicked = () => {
+    checkIfBlocksWereModified(() => {
+      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
+      const moduleName = commonStorage.getModuleName(currentModulePath);
+      if (workspaceName === moduleName) {
+        // This is a workspace.
+        setNewWorkspaceNameModalPurpose('RenameWorkspace');
+        setNewWorkspaceNameModalInitialValue(workspaceName);
+        setNewWorkspaceNameModalIsOpen(true);
+      } else {
+        // This is an OpMode.
+        setNewOpModeNameModalPurpose('RenameOpMode');
+        setNewOpModeNameModalInitialValue(moduleName);
+        setNewOpModeNameModalIsOpen(true);
+      }
+    });
+  };
+
+  const handleCopyClicked = () => {
+    checkIfBlocksWereModified(() => {
+      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
+      const moduleName = commonStorage.getModuleName(currentModulePath);
+      if (workspaceName === moduleName) {
+        // This is a workspace.
+        setNewWorkspaceNameModalPurpose('CopyWorkspace');
+        setNewWorkspaceNameModalInitialValue(workspaceName + "_copy");
+        setNewWorkspaceNameModalIsOpen(true);
+      } else {
+        // This is an OpMode.
+        setNewOpModeNameModalPurpose('CopyOpMode');
+        setNewOpModeNameModalInitialValue(moduleName + "_copy");
+        setNewOpModeNameModalIsOpen(true);
+      }
+    });
+  };
+
+  const handleDeleteClicked = () => {
+    checkIfBlocksWereModified(() => {
+      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
+      const moduleName = commonStorage.getModuleName(currentModulePath);
+      if (workspaceName === moduleName) {
+        // This is a workspace.
+        // Before deleting it, select another workspace, if there is one.
+        let foundAnotherWorkspace = false;
+        for (const workspace of modules) {
+          if (workspace.workspaceName !== workspaceName) {
+            setCurrentModulePath(workspace.modulePath);
+            foundAnotherWorkspace = true;
+            break;
+          }
+        }
+        if (!foundAnotherWorkspace) {
+          setCurrentModulePath('');
+        }
+        storage.deleteWorkspace(workspaceName, 
+          (success: boolean, errorMessage: string) => {
+            if (success) {
+              setTriggerListModules(!triggerListModules);
+            } else if (errorMessage) {
+              setAlertErrorMessage('Failed to rename the Workspace: ' + errorMessage);
+              setAlertErrorVisible(true);
+            }
+          });
+      } else {
+        // This is an OpMode.
+        const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
+        setCurrentModulePath(workspacePath);
+        storage.deleteOpMode(currentModulePath, 
+          (success: boolean, errorMessage: string) => {
+            if (success) {
+              setTriggerListModules(!triggerListModules);
+            } else if (errorMessage) {
+              setAlertErrorMessage('Failed to rename the Workspace: ' + errorMessage);
+              setAlertErrorVisible(true);
+            }
+          });
+      }
+    });
+  };
+
   const handleUploadClicked = () => {
     messageApi.open({
       type: 'success',
@@ -487,7 +768,7 @@ const App: React.FC = () => {
   };
 
   const handleToolboxSettingsClicked = () => {
-    setIsToolboxSettingsModalOpen(true);
+    setToolboxSettingsModalIsOpen(true);
   };
 
   const handleToolboxSettingsOk = (updatedShownCategories: Set<string>) => {
@@ -497,58 +778,28 @@ const App: React.FC = () => {
     storage.saveEntry('shownPythonToolboxCategories', JSON.stringify(array));
   };
 
-  const handleModuleExpanded = (expandedKeys: React.Key[]) => {
-    const stringKeys: string[] = [];
-    expandedKeys.forEach((key) => {
-      stringKeys.push(key as string);
-    });
-    setTreeExpandedKeys(stringKeys);
-  };
-
-  const handleModuleSelected = (selectedKeys: React.Key[]) => {
-    if (selectedKeys.length === 1) {
+  const handleModuleSelected: TreeProps['onSelect'] = (a: React.Key[], e) => {
+    if (a.length === 1) {
       checkIfBlocksWereModified(() => {
-        const modulePath = selectedKeys[0] as string;
-        setCurrentModulePath(modulePath);
+        setTreeSelectedKey(a[0]);
       });
     }
   };
 
-  // When a module path has become the current module path (either by fetching
-  // the most recent module path (soon after the app is loaded) or by the user
-  // selecting it in the tree, set the current workspace, expend the
-  // workspace node in the tree.
   useEffect(() => {
-    if (currentModulePath) {
-      setTreeSelectedKey(currentModulePath);
-      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
-      const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
-
-      setPathToExpand(workspacePath);
-
-      storage.saveEntry('currentModulePath', currentModulePath);
-      if (blocksEditor.current) {
-        blocksEditor.current.loadModuleBlocks(currentModulePath, workspacePath);
-      }
+    if (ignoreEffect()) {
+      return;
     }
-  }, [currentModulePath]);
-
-  useEffect(() => {
-    if (currentModulePath) {
-      if (blocksEditor.current) {
-        blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
-      }
+    // When a module is selected in the tree, make it the current module.
+    const modulePath = treeSelectedKey as string;
+    if (modulePath !== currentModulePath) {
+      checkIfBlocksWereModified(() => {
+        setCurrentModulePath(modulePath);
+      });
     }
-  }, [currentModulePath, shownPythonToolboxCategories]);
+  }, [treeSelectedKey]);
 
-  useEffect(() => {
-    if (pathToExpand) {
-      setTreeExpandedKeys(treeExpandedKeys.concat(pathToExpand));
-      setPathToExpand('');
-    }
-  }, [pathToExpand, treeExpandedKeys]);
-
-  const handleCopyClicked = () => {
+  const handleCopyPythonClicked = () => {
     navigator.clipboard.writeText(generatedCode).then(
       () => {
         messageApi.open({
@@ -580,86 +831,28 @@ const App: React.FC = () => {
       }}
     >
       {contextHolder}
-      <Flex
-        vertical
+      <Flex vertical
         style={{
           background: '#000',
           height: '100vh',
         }}
       >
         <Flex vertical>
-          <Flex>
-            <Typography.Paragraph
-              strong={true}
-              underline={true}
-              style={{
-                color: '#aaf',
-              }}
-            >
-              WPILib Blocks
-            </Typography.Paragraph>
-          </Flex>
-          <Space>
-            <Tooltip title="New Workspace">
-              <Button
-                icon={<FolderAddOutlined />} 
-                onClick={handleNewWorkspaceClicked}
-                style={{ color: 'white' }}
-              >
-              </Button>
-            </Tooltip>
-            <Tooltip title="New OpMode">
-              <Button
-                icon={<FileAddOutlined />} 
-                disabled={!currentModulePath}
-                onClick={handleNewOpModeClicked}
-                style={{ color: 'white' }}
-              >
-              </Button>
-            </Tooltip>
-            <Tooltip title="Save">
-              <Button
-                icon={<SaveOutlined />} 
-                disabled={!currentModulePath}
-                onClick={handleSaveClicked}
-                style={{ color: 'white' }}
-              >
-              </Button>
-            </Tooltip>
-            <Tooltip title="Upload">
-              <Button
-                icon={<UploadOutlined />}
-                onClick={handleUploadClicked}
-                style={{ color: 'white' }}
-              >
-              </Button>
-            </Tooltip>
-            <Tooltip title="Download">
-              <Button
-                icon={<DownloadOutlined />}
-                disabled={!currentModulePath}
-                onClick={handleDownloadClicked}
-                style={{ color: 'white' }}
-              >
-              </Button>
-            </Tooltip>
-            <Tooltip title="Toolbox Settings">
-              <Button
-                icon={<SettingOutlined />}
-                onClick={handleToolboxSettingsClicked}
-                style={{ color: 'white' }}
-              >
-              </Button>
-            </Tooltip>
-            {alertErrorVisible && (
-              <Alert
-                type="error"
-                message={alertErrorMessage}
-                closable
-                afterClose={() => setAlertErrorVisible(false)}
-              />
-            )}
-          </Space>
+          <Typography.Paragraph
+            strong={true}
+            underline={true}
+            style={{
+              color: '#aaf',
+            }}
+          >
+            WPILib Blocks
+          </Typography.Paragraph>
+          {alertErrorVisible && (<Alert
+            type="error"
+            message={alertErrorMessage}
+            closable
+            afterClose={() => setAlertErrorVisible(false)}
+          />)}
         </Flex>
         <Splitter
           style={{
@@ -667,45 +860,152 @@ const App: React.FC = () => {
           }}
         >
           <Splitter.Panel min='2%' defaultSize='15%'>
-            <Tree
-              showIcon
-              blockNode
-              treeData={treeData}
-              expandedKeys={treeExpandedKeys}
-              onExpand={handleModuleExpanded}
-              selectedKeys={[treeSelectedKey]}
-              onSelect={handleModuleSelected}
-            />
+            <Flex vertical gap="small"
+              style={{
+                height: '100%',
+              }}
+            >
+              <Flex vertical gap="small">
+                <Space>
+                  <Tooltip title="New Workspace">
+                    <Button
+                      icon={<FolderAddOutlined />} 
+                      size="small"
+                      onClick={handleNewWorkspaceClicked}
+                      style={{ color: 'white' }}
+                    >
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="New OpMode">
+                    <Button
+                      icon={<FileAddOutlined />} 
+                      size="small"
+                      disabled={!currentModulePath}
+                      onClick={handleNewOpModeClicked}
+                      style={{ color: 'white' }}
+                    >
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Save">
+                    <Button
+                      icon={<SaveOutlined />} 
+                      size="small"
+                      disabled={!currentModulePath}
+                      onClick={handleSaveClicked}
+                      style={{ color: 'white' }}
+                    >
+                    </Button>
+                  </Tooltip>
+                </Space>
+                <Space>
+                  <Tooltip title={renameTooltip}>
+                    <Button
+                      icon={<EditOutlined />} 
+                      size="small"
+                      disabled={!currentModulePath}
+                      onClick={handleRenameClicked}
+                      style={{ color: 'white' }}
+                    >
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title={copyTooltip}>
+                    <Button
+                      icon={<CopyOutlined />} 
+                      size="small"
+                      disabled={!currentModulePath}
+                      onClick={handleCopyClicked}
+                      style={{ color: 'white' }}
+                    >
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title={deleteTooltip}>
+                    <Button
+                      icon={<DeleteOutlined />} 
+                      size="small"
+                      disabled={!currentModulePath}
+                      onClick={handleDeleteClicked}
+                      style={{ color: 'white' }}
+                    >
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Upload">
+                    <Button
+                      icon={<UploadOutlined />}
+                      size="small"
+                      onClick={handleUploadClicked}
+                      style={{ color: 'white' }}
+                    >
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Download">
+                    <Button
+                      icon={<DownloadOutlined />}
+                      size="small"
+                      disabled={!currentModulePath}
+                      onClick={handleDownloadClicked}
+                      style={{ color: 'white' }}
+                    >
+                    </Button>
+                  </Tooltip>
+                </Space>
+              </Flex>
+              <Tree
+                showIcon
+                blockNode
+                treeData={treeData}
+                expandedKeys={treeExpandedKeys}
+                onExpand={setTreeExpandedKeys}
+                selectedKeys={[treeSelectedKey]}
+                onSelect={handleModuleSelected}
+              />
+            </Flex>
           </Splitter.Panel>
           <Splitter.Panel min='2%' defaultSize='50%'>
-            <Popconfirm
-              title="Blocks have been modified!"
-              description="Press ok to save and continue"
-              open={openAskToSave}
-              onConfirm={handleAskToSaveOk}
-              okButtonProps={{ loading: askToSaveSaving }}
-              onCancel={() => setOpenAskToSave(false)}
-            ><span>
-              <BlocklyComponent
-                ref={blocklyComponent}
-              />
-            </span></Popconfirm>
+            <Flex
+              vertical gap="small"
+              style={modules.length === 0 ? { display: 'none'} : { height: '100%' }}
+            >
+              <Space>
+                <Tooltip title="Toolbox Settings">
+                  <Button
+                    icon={<SettingOutlined />}
+                    size="small"
+                    onClick={handleToolboxSettingsClicked}
+                    style={{ color: 'white' }}
+                  >
+                  </Button>
+                </Tooltip>
+              </Space>
+              <Popconfirm
+                title="Blocks have been modified!"
+                description="Press ok to save and continue"
+                open={openAskToSave}
+                onConfirm={handleAskToSaveOk}
+                okButtonProps={{ loading: askToSaveSaving }}
+                onCancel={() => setOpenAskToSave(false)}
+              >
+                <Flex
+                  style={{
+                    height: '100%'
+                  }}
+                >
+                  <BlocklyComponent ref={blocklyComponent} />
+                </Flex>
+              </Popconfirm>
+            </Flex>
           </Splitter.Panel>
           <Splitter.Panel min='2%'>
             <Flex
-              vertical
-              style={{
-                paddingLeft: '5px',
-                height: '100%',
-              }}
+              vertical gap="small"
+              style={modules.length === 0 ? { display: 'none'} : { height: '100%' }}
             >
               <Space>
                 <h3 style={{ color: '#fff', margin: 0 }}>Python Code</h3>
                 <Tooltip title="Copy">
                   <Button
                     icon={<CopyOutlined />}
-                    onClick={handleCopyClicked}
                     size="small"
+                    onClick={handleCopyPythonClicked}
                     style={{ color: 'white' }}
                   >
                   </Button>
@@ -727,33 +1027,35 @@ const App: React.FC = () => {
         </Splitter>
       </Flex>
 
-      <NewWorkspaceModal
-        isOpen={isNewWorkspaceModalOpen}
+      <NewWorkspaceNameModal
+        isOpen={newWorkspaceNameModalIsOpen}
+        initialValue={newWorkspaceNameModalInitialValue}
         getWorkspaceNames={getWorkspaceNames}
         onOk={(w) => {
-          setIsNewWorkspaceModalOpen(false);
-          handleNewWorkspaceOk(w);
+          setNewWorkspaceNameModalIsOpen(false);
+          handleNewWorkspaceNameOk(w);
         }}
-        onCancel={() => setIsNewWorkspaceModalOpen(false)}
+        onCancel={() => setNewWorkspaceNameModalIsOpen(false)}
       />
-      <NewOpModeModal
-        isOpen={isNewOpModeModalOpen}
+      <NewOpModeNameModal
+        isOpen={newOpModeNameModalIsOpen}
+        initialValue={newOpModeNameModalInitialValue}
         getCurrentWorkspaceName={getCurrentWorkspaceName}
         getOpModeNames={getOpModeNames}
         onOk={(w, o) => {
-          setIsNewOpModeModalOpen(false);
-          handleNewOpModeOk(w, o);
+          setNewOpModeNameModalIsOpen(false);
+          handleNewOpModeNameOk(w, o);
         }}
-        onCancel={() => setIsNewOpModeModalOpen(false)}
+        onCancel={() => setNewOpModeNameModalIsOpen(false)}
       />
       <ToolboxSettingsModal
-        isOpen={isToolboxSettingsModalOpen}
+        isOpen={toolboxSettingsModalIsOpen}
         shownCategories={shownPythonToolboxCategories}
         onOk={(updatedShownCategories: Set<string>) => {
-          setIsToolboxSettingsModalOpen(false);
+          setToolboxSettingsModalIsOpen(false);
           handleToolboxSettingsOk(updatedShownCategories);
         }}
-        onCancel={() => setIsToolboxSettingsModalOpen(false)}
+        onCancel={() => setToolboxSettingsModalIsOpen(false)}
       />
     </ConfigProvider>
   );

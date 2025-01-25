@@ -280,14 +280,18 @@ function _saveModule(
     let value;
     if (getRequest.result === undefined) {
       if (!moduleType) {
-        throw new Error('Module type must be truthy when creating a module.');
+        // Since moduleType is not truthy, we are trying to save an existing module.
+        // So it is unexpected that the getRequest.result is undefined.
+        throw new Error('Unable to save module ' + modulePath);
       }
       value = Object.create(null);
       value.path = modulePath;
       value.type = moduleType;
     } else {
       if (moduleType) {
-        throw new Error('Module type must be falsy when saving an existing module.');
+        // Since moduleType is truthy, we are trying to create an existing module.
+        // So it is unexpected that the getRequest.result is not undefined.
+        throw new Error('Unable to create module ' + modulePath);
       }
       value = getRequest.result;
     }
@@ -305,163 +309,252 @@ function _saveModule(
 export function renameWorkspace(
     oldWorkspaceName: string, newWorkspaceName: string,
     callback: BooleanCallback): void {
-  if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
-      if (success) {
-        renameWorkspace(oldWorkspaceName, newWorkspaceName, callback);
-      } else {
-        callback(false, 'Rename workspace failed. (' + errorReason + ')');
-      }
-    });
-    return;
-  }
-  const oldWorkspacePath = commonStorage.makeModulePath(oldWorkspaceName, oldWorkspaceName);
-  const newWorkspacePath = commonStorage.makeModulePath(newWorkspaceName, newWorkspaceName);
-  const transaction = db.transaction(['modules'], 'readwrite');
-  transaction.oncomplete = (event: Event) => {
-    callback(true, '');
-  };
-  const modulesObjectStore = transaction.objectStore('modules');
-  const getRequest = modulesObjectStore.get(oldWorkspacePath);
-  getRequest.onerror = (event: Event) => {
-    console.log('IndexedDB get request failed:');
-    console.log(getRequest.error);
-    callback(false, 'Rename workspace failed. (getRequest error)');
-  };
-  getRequest.onsuccess = (event: Event) => {
-    if (getRequest.result === undefined) {
-      callback(false, 'Rename workspace failed. (workspace not found)');
-      return;
-    }
-    const value = getRequest.result;
-    value.path = newWorkspacePath;
-    value.dateModifiedMillis = Date.now();
-    const putRequest = modulesObjectStore.put(value);
-    putRequest.onerror = (event: Event) => {
-      console.log('IndexedDB put request failed:');
-      console.log(putRequest.error);
-      callback(false, 'Rename workspace failed. (putRequest error)');
-    };
-    putRequest.onsuccess = (event: Event) => {
-      const deleteRequest = modulesObjectStore.delete(oldWorkspacePath);
-      deleteRequest.onerror = (event: Event) => {
-        console.log('IndexedDB delete request failed:');
-        console.log(deleteRequest.error);
-        callback(false, 'Rename workspace failed. (deleteRequest error)');
-      };
-      deleteRequest.onsuccess = (event: Event) => {
-        // TODO(lizlooney): Rename all OpModes in the workspace.
-      };
-    };
-  };
+  _renameOrCopyWorkspace(oldWorkspaceName, newWorkspaceName, callback, false);
 }
 
 export function copyWorkspace(
     oldWorkspaceName: string, newWorkspaceName: string,
     callback: BooleanCallback): void {
+  _renameOrCopyWorkspace(oldWorkspaceName, newWorkspaceName, callback, true);
+}
+
+export function _renameOrCopyWorkspace(
+    oldWorkspaceName: string, newWorkspaceName: string,
+    callback: BooleanCallback, copy: boolean): void {
+  const errorMessage = copy
+      ? 'Copy Workspace failed.'
+      : 'Rename Workspace failed.'
   if (!db) {
     openDatabase((success: boolean, errorReason: string) => {
       if (success) {
-        copyWorkspace(oldWorkspaceName, newWorkspaceName, callback);
+        _renameOrCopyWorkspace(oldWorkspaceName, newWorkspaceName, callback, copy);
       } else {
-        callback(false, 'Copy workspace failed. (' + errorReason + ')');
+        callback(false, errorMessage + ' (' + errorReason + ')');
       }
     });
     return;
   }
-  const oldWorkspacePath = commonStorage.makeModulePath(oldWorkspaceName, oldWorkspaceName);
-  const newWorkspacePath = commonStorage.makeModulePath(newWorkspaceName, newWorkspaceName);
+
   const transaction = db.transaction(['modules'], 'readwrite');
   transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
-  const getRequest = modulesObjectStore.get(oldWorkspacePath);
+  // First get the list of modules in the workspace.
+  const oldToNewModulePaths: {[key: string]: string} = {};
+  const openCursorRequest = modulesObjectStore.openCursor();
+  openCursorRequest.onerror = (event: Event) => {
+    console.log('IndexedDB openCursor request failed:');
+    console.log(openCursorRequest.error);
+    callback(false, errorMessage + ' Could not open cursor.');
+  };
+  openCursorRequest.onsuccess = (event: Event) => {
+    const cursor = openCursorRequest.result;
+    if (cursor) {
+      const value = cursor.value;
+      const path = value.path;
+      if (commonStorage.getWorkspaceName(path) === oldWorkspaceName) {
+        let newPath;
+        if (value.type === commonStorage.MODULE_TYPE_WORKSPACE) {
+          newPath = commonStorage.makeModulePath(newWorkspaceName, newWorkspaceName);
+        } else {
+          const moduleName = commonStorage.getModuleName(path);
+          newPath = commonStorage.makeModulePath(newWorkspaceName, moduleName);
+        }
+        oldToNewModulePaths[path] = newPath;
+      }
+      cursor.continue();
+    } else {
+      // Now rename the workspace for each of the modules.
+      Object.entries(oldToNewModulePaths).forEach(([oldModulePath, newModulePath]) => {
+        const getRequest = modulesObjectStore.get(oldModulePath);
+        getRequest.onerror = (event: Event) => {
+          console.log('IndexedDB get request failed:');
+          console.log(getRequest.error);
+          callback(false, errorMessage + ' (getRequest error)');
+        };
+        getRequest.onsuccess = (event: Event) => {
+          if (getRequest.result === undefined) {
+            callback(false, errorMessage + ' (workspace not found)');
+            return;
+          }
+          const value = getRequest.result;
+          value.path = newModulePath;
+          value.dateModifiedMillis = Date.now();
+          const putRequest = modulesObjectStore.put(value);
+          putRequest.onerror = (event: Event) => {
+            console.log('IndexedDB put request failed:');
+            console.log(putRequest.error);
+            callback(false, errorMessage + ' (putRequest error)');
+          };
+          putRequest.onsuccess = (event: Event) => {
+            if (!copy) {
+              const deleteRequest = modulesObjectStore.delete(oldModulePath);
+              deleteRequest.onerror = (event: Event) => {
+                console.log('IndexedDB delete request failed:');
+                console.log(deleteRequest.error);
+                callback(false, errorMessage + ' (deleteRequest error)');
+              };
+              deleteRequest.onsuccess = (event: Event) => {
+              };
+            }
+          };
+        };
+      });
+    }
+  };
+}
+
+export function renameOpMode(
+    workspaceName: string, oldOpModeName: string, newOpModeName: string,
+    callback: BooleanCallback): void {
+  _renameOrCopyOpMode(
+      workspaceName, oldOpModeName, newOpModeName, callback, false);
+}
+
+export function copyOpMode(
+    workspaceName: string, oldOpModeName: string, newOpModeName: string,
+    callback: BooleanCallback): void {
+  _renameOrCopyOpMode(
+      workspaceName, oldOpModeName, newOpModeName, callback, true);
+}
+
+export function _renameOrCopyOpMode(
+    workspaceName: string, oldOpModeName: string, newOpModeName: string,
+    callback: BooleanCallback, copy: boolean): void {
+  const errorMessage = copy
+      ? 'Copy OpMode failed.'
+      : 'Rename OpMode failed.'
+  if (!db) {
+    openDatabase((success: boolean, errorReason: string) => {
+      if (success) {
+        _renameOrCopyOpMode(workspaceName, oldOpModeName, newOpModeName, callback, copy);
+      } else {
+        callback(false, errorMessage + '(' + errorReason + ')');
+      }
+    });
+    return;
+  }
+
+  const transaction = db.transaction(['modules'], 'readwrite');
+  transaction.oncomplete = (event: Event) => {
+    callback(true, '');
+  };
+  const modulesObjectStore = transaction.objectStore('modules');
+  const oldModulePath = commonStorage.makeModulePath(workspaceName, oldOpModeName);
+  const newModulePath = commonStorage.makeModulePath(workspaceName, newOpModeName);
+  const getRequest = modulesObjectStore.get(oldModulePath);
   getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
-    callback(false, 'Copy workspace failed. (getRequest error)');
+    callback(false, errorMessage + ' (getRequest error)');
   };
   getRequest.onsuccess = (event: Event) => {
     if (getRequest.result === undefined) {
-      callback(false, 'Copy workspace failed. (workspace not found)');
+      callback(false, errorMessage + ' (OpMode not found)');
       return;
     }
     const value = getRequest.result;
-    value.path = newWorkspacePath;
+    value.path = newModulePath;
     value.dateModifiedMillis = Date.now();
     const putRequest = modulesObjectStore.put(value);
     putRequest.onerror = (event: Event) => {
       console.log('IndexedDB put request failed:');
       console.log(putRequest.error);
-      callback(false, 'Copy workspace failed. (putRequest error)');
+      callback(false, errorMessage + ' (putRequest error)');
     };
     putRequest.onsuccess = (event: Event) => {
-      // TODO(lizlooney): Copy all OpModes in the workspace.
+      if (!copy) {
+        const deleteRequest = modulesObjectStore.delete(oldModulePath);
+        deleteRequest.onerror = (event: Event) => {
+          console.log('IndexedDB delete request failed:');
+          console.log(deleteRequest.error);
+          callback(false, errorMessage + ' (deleteRequest error)');
+        };
+        deleteRequest.onsuccess = (event: Event) => {
+        };
+      }
     };
   };
 }
 
-export function deleteWorkspaces(
-    workspaceNames: string[],
-    callback: BooleanCallback): void {
-  if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
-      if (success) {
-        deleteWorkspaces(workspaceNames, callback);
-      } else {
-        callback(false, 'Delete workspaces failed. (' + errorReason + ')');
-      }
-    });
-    return;
-  }
-  const errorReasons: string[] = [];
-  const successes: boolean[] = [];
-  const callback1 = (success: boolean, errorReason: string) => {
-    if (success) {
-      successes.push(true);
-    } else {
-      errorReasons.push(errorReason);
-    }
-    if (successes.length + errorReasons.length === workspaceNames.length) {
-      if (errorReasons.length === 0) {
-        callback(true, '');
-      } else {
-        callback(false, 'Delete workspaces failed. (' + errorReasons.join(', ') + ')');
-      }
-    }
-  };
-  workspaceNames.forEach((workspaceName) => {
-    deleteOneWorkspace(workspaceName, callback1);
-  });
-}
-
-export function deleteOneWorkspace(
+export function deleteWorkspace(
     workspaceName: string,
     callback: BooleanCallback): void {
   if (!db) {
     openDatabase((success: boolean, errorReason: string) => {
       if (success) {
-        deleteOneWorkspace(workspaceName, callback);
+        deleteWorkspace(workspaceName, callback);
       } else {
         callback(false, 'Delete workspace failed. (' + errorReason + ')');
       }
     });
     return;
   }
-  const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
+
   const transaction = db.transaction(['modules'], 'readwrite');
   transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
-  const deleteRequest = modulesObjectStore.delete(workspacePath);
+  // First get the list of modulePaths in the workspace.
+  const modulePaths: string[] = [];
+  const openCursorRequest = modulesObjectStore.openCursor();
+  openCursorRequest.onerror = (event: Event) => {
+    console.log('IndexedDB openCursor request failed:');
+    console.log(openCursorRequest.error);
+    callback(false, 'Delete workspace failed. Could not open cursor.');
+  };
+  openCursorRequest.onsuccess = (event: Event) => {
+    const cursor = openCursorRequest.result;
+    if (cursor) {
+      const value = cursor.value;
+      const path = value.path;
+      if (commonStorage.getWorkspaceName(path) === workspaceName) {
+        modulePaths.push(path);
+      }
+      cursor.continue();
+    } else {
+      // Now delete each of the modules.
+      modulePaths.forEach((modulePath) => {
+        const deleteRequest = modulesObjectStore.delete(modulePath);
+        deleteRequest.onerror = (event: Event) => {
+          console.log('IndexedDB delete request failed:');
+          console.log(deleteRequest.error);
+          callback(false, 'Delete workspace failed. (deleteRequest error)');
+        };
+        deleteRequest.onsuccess = (event: Event) => {
+        };
+      });
+    }
+  };
+}
+
+export function deleteOpMode(
+    opModePath: string,
+    callback: BooleanCallback): void {
+  if (!db) {
+    openDatabase((success: boolean, errorReason: string) => {
+      if (success) {
+        deleteOpMode(opModePath, callback);
+      } else {
+        callback(false, 'Delete OpMode failed. (' + errorReason + ')');
+      }
+    });
+    return;
+  }
+
+  const transaction = db.transaction(['modules'], 'readwrite');
+  transaction.oncomplete = (event: Event) => {
+    callback(true, '');
+  };
+  const modulesObjectStore = transaction.objectStore('modules');
+  const deleteRequest = modulesObjectStore.delete(opModePath);
   deleteRequest.onerror = (event: Event) => {
     console.log('IndexedDB delete request failed:');
     console.log(deleteRequest.error);
-    callback(false, 'deleteRequest error');
+    callback(false, 'Delete OpMode failed. (deleteRequest error)');
   };
   deleteRequest.onsuccess = (event: Event) => {
-    // TODO(lizlooney): Delete all the OpModes in the workspace directory.
   };
 }
