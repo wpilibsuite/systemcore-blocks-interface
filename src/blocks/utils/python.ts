@@ -22,6 +22,8 @@
 import { PythonGenerator } from 'blockly/python';
 import * as pythonUtils from './generated/python';
 
+export const RETURN_TYPE_NONE = 'None';
+
 // Functions used in multiple python block definitions.
 
 export function getAllowedTypesForSetCheck(type: string): string[] {
