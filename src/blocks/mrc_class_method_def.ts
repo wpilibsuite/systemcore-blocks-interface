@@ -252,8 +252,6 @@ export const pythonFromBlock = function (
 
     const funcName = generator.getProcedureName(blocklyName);
 
-    const comment = block.getCommentText();
-
     let xfix1 = '';
     if (generator.STATEMENT_PREFIX) {
         xfix1 += generator.injectId(generator.STATEMENT_PREFIX, block);
@@ -290,12 +288,6 @@ export const pythonFromBlock = function (
         branch = generator.PASS;
     }
 
-
-    let code = ""
-    if (comment) {
-        code += generator.prefixLines(comment + '\n', '# ');
-    }
-
     let params = block.mrcParameters;
     let paramString = "self"
     if (params.length != 0) {
@@ -304,7 +296,7 @@ export const pythonFromBlock = function (
         });
     }
 
-    code += 'def ' +
+    let code = 'def ' +
         funcName +
         '(' +
         paramString +
