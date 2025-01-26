@@ -54,6 +54,9 @@ import ToolboxSettingsModal from './toolbox/settings';
 import * as storage from './storage/client_side_storage';
 import * as commonStorage from './storage/common_storage';
 
+import * as ChangeFramework from './blocks/utils/change_framework'
+import {mutatorOpenListener}  from './blocks/mrc_class_method_def'
+
 
 type NewWorkspaceNameModalProps = {
   isOpen: boolean;
@@ -451,6 +454,9 @@ const App: React.FC = () => {
     if (blocklyComponent.current) {
       const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
       if (blocklyWorkspace) {
+        ChangeFramework.setup(blocklyWorkspace);
+        blocklyWorkspace.addChangeListener(mutatorOpenListener);
+
         // Show generated python code.
         blocklyWorkspace.addChangeListener(handleBlocksChanged);
       }
