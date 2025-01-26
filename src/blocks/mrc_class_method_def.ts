@@ -20,10 +20,13 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
-import { MRC_STYLE_FUNCTIONS } from '../themes/styles';
-import { RETURN_TYPE_NONE, getOutputCheck } from './utils/python'
+import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
+import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
 
-export const BLOCK_NAME = 'mrc_class_method_def'
+export const BLOCK_NAME = 'mrc_class_method_def';
+
+const MUTATOR_BLOCK_NAME = 'methods_mutatorarg';
+const PARAM_CONTAINER_BLOCK_NAME    = 'method_param_container';
 
 class MethodInput extends Blockly.inputs.Input {
     readonly type = Blockly.inputs.inputTypes.CUSTOM;
@@ -37,7 +40,7 @@ export type Parameter = {
     type?: string,
 };
 
-type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin;
+type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin & Blockly.BlockSvg;
 interface ClassMethodDefMixin extends ClassMethodDefMixinType {
     mrcCanChangeSignature: boolean,
     mrcCanDelete: boolean,
@@ -81,11 +84,10 @@ const CLASS_METHOD_DEF = {
      */
     init: function (this: ClassMethodDefBlock): void {
         this.appendDummyInput("TITLE")
-            .appendField('my_method', 'NAME')
+            .appendField('', 'NAME')
             .appendField('', 'PARAMS');
-        this.setInputsInline(false)
         this.setOutput(false);
-        this.setStyle(MRC_STYLE_FUNCTIONS)
+        this.setStyle(MRC_STYLE_CLASS_BLOCKS);
         this.appendStatementInput('STACK').appendField('');
     },
     /**
@@ -115,13 +117,15 @@ const CLASS_METHOD_DEF = {
      * Applies the given state to this block.
      */
     loadExtraState: function (
-        this: ClassMethodDefBlock & Blockly.BlockSvg,
+        this: ClassMethodDefBlock,
         extraState: ClassMethodDefExtraState
     ): void {
         this.mrcCanChangeSignature = extraState.canChangeSignature;
         this.mrcCanDelete = extraState.canDelete;
         this.mrcPythonMethodName = extraState.pythonMethodName ? extraState.pythonMethodName : '';
         this.mrcReturnType = extraState.returnType;
+        this.mrcParameters = [];
+
         extraState.params.forEach((param) => {
             this.mrcParameters.push({
                 'name': param.name,
@@ -133,34 +137,120 @@ const CLASS_METHOD_DEF = {
     /**
      * Update the block to reflect the newly loaded extra state.
      */
-    updateBlock_: function (this: ClassMethodDefBlock & Blockly.BlockSvg): void {
+    updateBlock_: function (this: ClassMethodDefBlock): void {
+        const name = this.getFieldValue('NAME');
+        const input = this.getInput('TITLE');
+        if (!input){
+            return;
+        }
+        input.removeField('NAME');
+            
         if (this.mrcCanChangeSignature) {
-            this.setMutator(new Blockly.icons.MutatorIcon(['methods_mutatorarg'], this));
+            input.insertFieldAt(0, new Blockly.FieldTextInput(name), 'NAME');
+            this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
         }
         else {
+            input.insertFieldAt(0, createFieldNonEditableText(name), 'NAME');
             //TODO: This should turn it off, but I have an outstanding question on blockly mailing list on how to do that in typescript
             // this.setMutator( null );
         }
         this.setDeletable(this.mrcCanDelete);
+        this.mrcUpdateParams();
+    },
+    compose: function (this: ClassMethodDefBlock, containerBlock: any) {
+        // Parameter list.
+        this.mrcParameters = [];
 
-        let paramString = ''
-        this.mrcParameters.forEach((param) => {
-            if (paramString != '') {
-                paramString += ', ';
+        let paramBlock = containerBlock.getInputTargetBlock('STACK');
+        while (paramBlock && !paramBlock.isInsertionMarker()) {
+            let param : Parameter = {
+                name : paramBlock.getFieldValue('NAME'),
+                type : ''
             }
-            paramString += param.name;
-        });
-    }
+            this.mrcParameters.push(param);
+            paramBlock =
+                paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
+        }
+        this.mrcUpdateParams();
+        //Blockly.Procedures.mutateCallers(this);
+    },
+    decompose: function (this: ClassMethodDefBlock, workspace: Blockly.Workspace) {
+        // This is a special sub-block that only gets created in the mutator UI.
+        // It acts as our "top block"
+        let topBlock = workspace.newBlock(PARAM_CONTAINER_BLOCK_NAME);
+        (topBlock as Blockly.BlockSvg).initSvg();
+
+        // Then we add one sub-block for each item in the list.
+        var connection = topBlock!.getInput('STACK')!.connection;
+
+        for (var i = 0; i < this.mrcParameters.length; i++) {
+            let itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME);
+            (itemBlock as Blockly.BlockSvg).initSvg();
+            itemBlock.setFieldValue(this.mrcParameters[i], 'NAME')
+
+            connection!.connect(itemBlock.previousConnection!);
+            connection = itemBlock.nextConnection;
+        }
+        return topBlock;
+    },
+    mrcUpdateParams: function (this : ClassMethodDefBlock) {
+        let paramString = '';
+        if (this.mrcParameters.length > 0){
+            this.mrcParameters.forEach((param) => {
+                if (paramString != '') {
+                    paramString += ', ';
+                }
+                paramString += param.name;
+            });
+            paramString = Blockly.Msg['PROCEDURES_BEFORE_PARAMS'] + ' ' + paramString;
+        }
+        // The params field is deterministic based on the mutation,
+        // no need to fire a change event.
+        Blockly.Events.disable();
+        try {
+            this.setFieldValue(paramString, 'PARAMS');
+        } finally {
+            Blockly.Events.enable();
+        }
+    },
+};
+
+const METHOD_PARAM_CONTAINER = {
+    init: function (this : Blockly.Block) {
+        this.appendDummyInput("TITLE").appendField('Parameters');
+        this.appendStatementInput('STACK');
+        this.setStyle(MRC_STYLE_CLASS_BLOCKS);
+        this.contextMenu = false;
+    },
+};
+
+const METHODS_MUTATORARG = {
+    init: function (this : Blockly.Block) {
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldTextInput(Blockly.Procedures.DEFAULT_ARG), 'NAME');
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setStyle(MRC_STYLE_CLASS_BLOCKS);
+        this.contextMenu = false;
+    },
+}
+
+export const setup = function() {
+  Blockly.Blocks[BLOCK_NAME] = CLASS_METHOD_DEF;
+  Blockly.Blocks[MUTATOR_BLOCK_NAME] = METHODS_MUTATORARG;
+  Blockly.Blocks[PARAM_CONTAINER_BLOCK_NAME] = METHOD_PARAM_CONTAINER;
 };
 
 import { Order, PythonGenerator } from 'blockly/python';
-import { MutatorIcon } from 'blockly/core/icons';
+import { Block } from 'src/Blockly';
 
 export const pythonFromBlock = function (
-    block: Blockly.Block,
+    block: ClassMethodDefBlock,
     generator: PythonGenerator,
 ) {
-    const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
+    const blocklyName = block.mrcPythonMethodName ? block.mrcPythonMethodName : block.getFieldValue('NAME');
+
+    const funcName = generator.getProcedureName(blocklyName);
 
     const comment = block.getCommentText();
 
@@ -199,22 +289,25 @@ export const pythonFromBlock = function (
     } else if (!branch) {
         branch = generator.PASS;
     }
-    let args = (block as any).arguments_;
+
 
     let code = ""
     if (comment) {
         code += generator.prefixLines(comment + '\n', '# ');
     }
 
-    let argString = "self"
-    if (args.length != 0) {
-        argString = argString + ", " + args.join(', ')
+    let params = block.mrcParameters;
+    let paramString = "self"
+    if (params.length != 0) {
+        block.mrcParameters.forEach((param) => {
+            paramString += ', ' + param.name;
+        });
     }
 
     code += 'def ' +
         funcName +
         '(' +
-        argString +
+        paramString +
         '):\n';
 
     code +=
@@ -225,5 +318,5 @@ export const pythonFromBlock = function (
         returnValue;
     code = generator.scrub_(block, code);
 
-    return [code, Order.NONE];
+    return code;
 }
