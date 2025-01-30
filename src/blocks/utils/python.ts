@@ -102,6 +102,7 @@ export function addImport(generator: PythonGenerator, importModule: string): voi
 }
 
 // Function to return a legal name based off of proposed names and making sure it doesn't conflict
+// This is a legal name for python methods and variables. 
 export function getLegalName(proposedName: string, existingNames: string[]){
   let newName = proposedName.trim().replace(' ', '_');
   

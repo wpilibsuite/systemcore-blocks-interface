@@ -12,6 +12,7 @@ import * as ClassMethodDef from './mrc_class_method_def';
 
 const customBlocks = [
   CallPythonFunction,
+  ClassMethodDef,
   GetPythonEnumValue,
   GetPythonVariable,
   ListAddItem,
@@ -19,7 +20,6 @@ const customBlocks = [
   MiscComment,
   MiscEvaluateButIgnoreResult,
   SetPythonVariable,
-  ClassMethodDef,
 ];
 
 export const setup = function(forBlock: any) {

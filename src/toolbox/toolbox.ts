@@ -29,9 +29,6 @@ import {category as listsCategory} from './lists_category';
 import {category as miscCategory} from './misc_category';
 import {category as methodsCategory} from './opmode_methods_category';
 
-import type { TreeDataNode } from 'antd';
-import { OmitProps } from 'antd/es/transfer/ListBody';
-
 export function getToolboxJSON(
     opt_includeExportedBlocksFromWorkspace: toolboxItems.ContentsType[],
     shownPythonToolboxCategories: Set<string>) {
