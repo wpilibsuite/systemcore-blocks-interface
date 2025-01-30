@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAddressableLED"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.AddressableLED", "args": [{"name": "port", "type": "int"}], "tooltip": "Constructs a new driver for a specific port.\n\n:param port: the output port to use (Must be a PWM header)", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AddressableLED"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "addressableLED", "type": "wpilib._wpilib.AddressableLED"}, {"name": "highTime0", "type": "wpimath.units.nanoseconds"}, {"name": "lowTime0", "type": "wpimath.units.nanoseconds"}, {"name": "highTime1", "type": "wpimath.units.nanoseconds"}, {"name": "lowTime1", "type": "wpimath.units.nanoseconds"}], "tooltip": "Sets the bit timing.\n\nBy default, the driver is set up to drive WS2812Bs, so nothing needs to\nbe set for those.\n\n:param highTime0: high time for 0 bit (default 400ns)\n:param lowTime0:  low time for 0 bit (default 900ns)\n:param highTime1: high time for 1 bit (default 900ns)\n:param lowTime1:  low time for 1 bit (default 600ns)", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AddressableLED", "FUNC": "setBitTiming"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLED"}}}}}},
@@ -17,12 +19,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "addressableLED", "type": "wpilib._wpilib.AddressableLED"}], "tooltip": "Starts the output.\n\nThe output writes continuously.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AddressableLED", "FUNC": "start"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLED"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "addressableLED", "type": "wpilib._wpilib.AddressableLED"}], "tooltip": "Stops the output.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AddressableLED", "FUNC": "stop"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLED"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.AddressableLED",
     name:  "AddressableLED",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.AddressableLED",
   };
+
   return category;
 }

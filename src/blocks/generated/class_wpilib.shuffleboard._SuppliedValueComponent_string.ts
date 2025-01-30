@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 11 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "shuffleboardValue", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardValue"}, {"name": "parentTable", "type": "ntcore._ntcore.NetworkTable"}, {"name": "metaTable", "type": "ntcore._ntcore.NetworkTable"}], "tooltip": "Builds the entries for this value.\n\n:param parentTable: The table containing all the data for the parent. Values\n                    that require a complex entry or table structure should\n                    call ``parentTable.getSubtable(getTitle())`` to get\n                    the table to put data into. Values that only use a\n                    single entry should call\n                    ``parentTable.getEntry(getTitle())`` to get that\n                    entry.\n:param metaTable:   The table containing all the metadata for this value and\n                    its sub-values", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.ShuffleboardValue", "FUNC": "buildInto"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardValue"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNetworkTable"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNetworkTable"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "shuffleboardComponentBase", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardComponentBase"}, {"name": "metaTable", "type": "ntcore._ntcore.NetworkTable"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.ShuffleboardComponentBase", "FUNC": "buildMetadata"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardComponentBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNetworkTable"}}}}}},
@@ -21,12 +23,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySuppliedStringValueWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.shuffleboard._shuffleboard.SuppliedStringValueWidget", "args": [{"name": "_SuppliedValueComponent_string", "type": "wpilib.shuffleboard._shuffleboard._SuppliedValueComponent_string"}, {"name": "properties", "type": "dict[str, ntcore._ntcore.Value]"}], "tooltip": "Sets custom properties for this component. Property names are\ncase-sensitive and whitespace-insensitive (capitalization and spaces do not\nmatter).\n\n:param properties: the properties for this component\n\n:returns: this component", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard._SuppliedValueComponent_string", "FUNC": "withProperties"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_SuppliedValueComponent_string"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDict"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySuppliedStringValueWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.shuffleboard._shuffleboard.SuppliedStringValueWidget", "args": [{"name": "_SuppliedValueComponent_string", "type": "wpilib.shuffleboard._shuffleboard._SuppliedValueComponent_string"}, {"name": "width", "type": "int"}, {"name": "height", "type": "int"}], "tooltip": "Sets the size of this component in the tab. This has no effect if this\ncomponent is inside a layout.\n\n:param width:  how many columns wide the component should be\n:param height: how many rows high the component should be\n\n:returns: this component", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard._SuppliedValueComponent_string", "FUNC": "withSize"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_SuppliedValueComponent_string"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.shuffleboard._SuppliedValueComponent_string",
     name:  "_SuppliedValueComponent_string",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.shuffleboard._SuppliedValueComponent_string",
   };
+
   return category;
 }

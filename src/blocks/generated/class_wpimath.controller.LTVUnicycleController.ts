@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLTVUnicycleController"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.LTVUnicycleController", "args": [{"name": "dt", "type": "wpimath.units.seconds"}, {"name": "maxVelocity", "type": "wpimath.units.meters_per_second"}], "tooltip": "Constructs a linear time-varying unicycle controller with default maximum\ndesired error tolerances of (x = 0.0625 m, y = 0.125 m, heading = 2 rad)\nand default maximum desired control effort of (linear velocity = 1 m/s,\nangular velocity = 2 rad/s).\n\n:param dt:          Discretization timestep.\n:param maxVelocity: The maximum velocity for the controller gain lookup\n                    table.\n                    @throws std::domain_error if maxVelocity <= 0 m/s or >= 15 m/s.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.LTVUnicycleController"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLTVUnicycleController"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.LTVUnicycleController", "args": [{"name": "Qelems", "type": "Tuple[float, float, float]"}, {"name": "Relems", "type": "Tuple[float, float]"}, {"name": "dt", "type": "wpimath.units.seconds"}, {"name": "maxVelocity", "type": "wpimath.units.meters_per_second"}], "tooltip": "Constructs a linear time-varying unicycle controller.\n\nSee\nhttps://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-intro.html#lqr-tuning\nfor how to select the tolerances.\n\n:param Qelems:      The maximum desired error tolerance for each state (x, y,\n                    heading).\n:param Relems:      The maximum desired control effort for each input (linear\n                    velocity, angular velocity).\n:param dt:          Discretization timestep.\n:param maxVelocity: The maximum velocity for the controller gain lookup\n                    table.\n                    @throws std::domain_error if maxVelocity <= 0 m/s or >= 15 m/s.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.LTVUnicycleController"}}}}},
@@ -17,12 +19,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "lTVUnicycleController", "type": "wpimath._controls._controls.controller.LTVUnicycleController"}, {"name": "enabled", "type": "bool"}], "tooltip": "Enables and disables the controller for troubleshooting purposes.\n\n:param enabled: If the controller is enabled or not.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.LTVUnicycleController", "FUNC": "setEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLTVUnicycleController"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "lTVUnicycleController", "type": "wpimath._controls._controls.controller.LTVUnicycleController"}, {"name": "poseTolerance", "type": "wpimath.geometry._geometry.Pose2d"}], "tooltip": "Sets the pose error which is considered tolerable for use with\nAtReference().\n\n:param poseTolerance: Pose error which is tolerable.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.LTVUnicycleController", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLTVUnicycleController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.controller.LTVUnicycleController",
     name:  "LTVUnicycleController",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.controller.LTVUnicycleController",
   };
+
   return category;
 }

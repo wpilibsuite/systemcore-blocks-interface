@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 17 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTrajectoryConfig"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.trajectory.TrajectoryConfig", "args": [{"name": "maxVelocity", "type": "wpimath.units.meters_per_second"}, {"name": "maxAcceleration", "type": "wpimath.units.meters_per_second_squared"}], "tooltip": "Constructs a config object.\n\n:param maxVelocity:     The max velocity of the trajectory.\n:param maxAcceleration: The max acceleration of the trajectory.", "importModule": "wpimath.trajectory"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.TrajectoryConfig"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "trajectoryConfig", "type": "wpimath._controls._controls.trajectory.TrajectoryConfig"}, {"name": "constraint", "type": "wpimath._controls._controls.constraint.TrajectoryConstraint"}], "tooltip": "Adds a user-defined constraint to the trajectory.\n\n:param constraint: The user-defined constraint.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.TrajectoryConfig", "FUNC": "addConstraint"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectoryConfig"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectoryConstraint"}}}}}},
@@ -27,12 +29,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "trajectoryConfig", "type": "wpimath._controls._controls.trajectory.TrajectoryConfig"}, {"name": "startVelocity", "type": "wpimath.units.meters_per_second"}], "tooltip": "Sets the start velocity of the trajectory.\n\n:param startVelocity: The start velocity of the trajectory.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.TrajectoryConfig", "FUNC": "setStartVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectoryConfig"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.meters_per_second", "args": [{"name": "trajectoryConfig", "type": "wpimath._controls._controls.trajectory.TrajectoryConfig"}], "tooltip": "Returns the starting velocity of the trajectory.\n\n:returns: The starting velocity of the trajectory.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.TrajectoryConfig", "FUNC": "startVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectoryConfig"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.trajectory.TrajectoryConfig",
     name:  "TrajectoryConfig",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.trajectory.TrajectoryConfig",
   };
+
   return category;
 }

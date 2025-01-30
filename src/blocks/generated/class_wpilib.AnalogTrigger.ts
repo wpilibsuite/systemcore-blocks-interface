@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogTrigger"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.AnalogTrigger", "args": [{"name": "channel", "type": "int"}], "tooltip": "Constructor for an analog trigger given a channel number.\n\n:param channel: The channel number on the roboRIO to represent. 0-3 are\n                on-board 4-7 are on the MXP port.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogTrigger"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogTrigger"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.AnalogTrigger", "args": [{"name": "input", "type": "wpilib._wpilib.AnalogInput"}], "tooltip": "Construct an analog trigger using an existing analog input.\n\nThis should be used in the case of sharing an analog channel between the\ntrigger and an analog input object.\n\n:param input: A shared_ptr to the existing AnalogInput object", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogTrigger"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInput"}}}}}}}}},
@@ -23,12 +25,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogTrigger", "type": "wpilib._wpilib.AnalogTrigger"}, {"name": "lower", "type": "int"}, {"name": "upper", "type": "int"}], "tooltip": "Set the upper and lower limits of the analog trigger.\n\nThe limits are given in ADC codes.  If oversampling is used, the units must\nbe scaled appropriately.\n\n:param lower: The lower limit of the trigger in ADC codes (12-bit values).\n:param upper: The upper limit of the trigger in ADC codes (12-bit values).", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogTrigger", "FUNC": "setLimitsRaw"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogTrigger"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogTrigger", "type": "wpilib._wpilib.AnalogTrigger"}, {"name": "lower", "type": "float"}, {"name": "upper", "type": "float"}], "tooltip": "Set the upper and lower limits of the analog trigger.\n\nThe limits are given as floating point voltage values.\n\n:param lower: The lower limit of the trigger in Volts.\n:param upper: The upper limit of the trigger in Volts.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogTrigger", "FUNC": "setLimitsVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogTrigger"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.AnalogTrigger",
     name:  "AnalogTrigger",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.AnalogTrigger",
   };
+
   return category;
 }

@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearPlantInversionFeedforward_2_1"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.LinearPlantInversionFeedforward_2_1", "args": [{"name": "A", "type": "numpy.ndarray[numpy.float64[2, 2]]"}, {"name": "B", "type": "numpy.ndarray[numpy.float64[2, 1]]"}, {"name": "dt", "type": "wpimath.units.seconds"}], "tooltip": "Constructs a feedforward with the given coefficients.\n\n:param A:  Continuous system matrix of the plant being controlled.\n:param B:  Continuous input matrix of the plant being controlled.\n:param dt: Discretization timestep.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.LinearPlantInversionFeedforward_2_1"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[2, 2]]"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[2, 1]]"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[2, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[2, 1]]", "args": [{"name": "linearPlantInversionFeedforward_2_1", "type": "wpimath._controls._controls.controller.LinearPlantInversionFeedforward_2_1"}], "tooltip": "Returns the current reference vector r.\n\n:returns: The current reference vector.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.LinearPlantInversionFeedforward_2_1", "FUNC": "R"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearPlantInversionFeedforward_2_1"}}}}}}}}},
@@ -19,12 +21,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[1, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[1, 1]]", "args": [{"name": "linearPlantInversionFeedforward_2_1", "type": "wpimath._controls._controls.controller.LinearPlantInversionFeedforward_2_1"}], "tooltip": "Returns the previously calculated feedforward as an input vector.\n\n:returns: The calculated feedforward.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.LinearPlantInversionFeedforward_2_1", "FUNC": "uff"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearPlantInversionFeedforward_2_1"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "float", "args": [{"name": "linearPlantInversionFeedforward_2_1", "type": "wpimath._controls._controls.controller.LinearPlantInversionFeedforward_2_1"}, {"name": "i", "type": "int"}], "tooltip": "Returns an element of the previously calculated feedforward.\n\n:param i: Row of uff.\n\n:returns: The row of the calculated feedforward.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.LinearPlantInversionFeedforward_2_1", "FUNC": "uff"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearPlantInversionFeedforward_2_1"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.controller.LinearPlantInversionFeedforward_2_1",
     name:  "LinearPlantInversionFeedforward_2_1",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.controller.LinearPlantInversionFeedforward_2_1",
   };
+
   return category;
 }

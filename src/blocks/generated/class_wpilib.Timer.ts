@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 12 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTimer"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Timer", "args": [], "tooltip": "Create a new timer object.\n\nCreate a new timer object and reset the time to zero. The timer is\ninitially not running and must be started.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Timer"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}, {"name": "period", "type": "wpimath.units.seconds"}], "tooltip": "Check if the period specified has passed and if it has, advance the start\ntime by that period. This is useful to decide if it's time to do periodic\nwork without drifting later by the time it took to get around to checking.\n\n:param period: The period to check for.\n\n:returns: True if the period has passed.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Timer", "FUNC": "advanceIfElapsed"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
@@ -22,12 +24,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}], "tooltip": "Start the timer running.\n\nJust set the running flag to true indicating that all time requests should\nbe relative to the system clock. Note that this method is a no-op if the\ntimer is already running.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Timer", "FUNC": "start"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "timer", "type": "wpilib._wpilib.Timer"}], "tooltip": "Stop the timer.\n\nThis computes the time as of now and clears the running flag, causing all\nsubsequent time requests to be read from the accumulated time rather than\nlooking at the system clock.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Timer", "FUNC": "stop"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTimer"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Timer",
     name:  "Timer",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Timer",
   };
+
   return category;
 }

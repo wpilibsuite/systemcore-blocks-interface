@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 15 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRelaySim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.RelaySim", "args": [{"name": "relay", "type": "wpilib._wpilib.Relay"}], "tooltip": "Constructs from a Relay object.\n\n:param relay: Relay to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.RelaySim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRelay"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRelaySim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.RelaySim", "args": [{"name": "channel", "type": "int"}], "tooltip": "Constructs from a relay channel number.\n\n:param channel: Channel number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.RelaySim"}}}}},
@@ -25,12 +27,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "relaySim", "type": "wpilib.simulation._simulation.RelaySim"}, {"name": "initializedReverse", "type": "bool"}], "tooltip": "Define whether the reverse direction has been initialized.\n\n:param initializedReverse: whether this object is initialized", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.RelaySim", "FUNC": "setInitializedReverse"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRelaySim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "relaySim", "type": "wpilib.simulation._simulation.RelaySim"}, {"name": "reverse", "type": "bool"}], "tooltip": "Set whether the reverse direction is active.\n\n:param reverse: true to make active", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.RelaySim", "FUNC": "setReverse"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRelaySim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.RelaySim",
     name:  "RelaySim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.RelaySim",
   };
+
   return category;
 }

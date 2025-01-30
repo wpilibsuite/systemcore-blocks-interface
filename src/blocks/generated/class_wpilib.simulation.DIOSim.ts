@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 19 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDIOSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.DIOSim", "args": [{"name": "input", "type": "wpilib._wpilib.DigitalInput"}], "tooltip": "Constructs from a DigitalInput object.\n\n:param input: DigitalInput to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DIOSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalInput"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDIOSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.DIOSim", "args": [{"name": "output", "type": "wpilib._wpilib.DigitalOutput"}], "tooltip": "Constructs from a DigitalOutput object.\n\n:param output: DigitalOutput to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DIOSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalOutput"}}}}}}}}},
@@ -29,12 +31,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "dIOSim", "type": "wpilib.simulation._simulation.DIOSim"}, {"name": "pulseLength", "type": "float"}], "tooltip": "Change the pulse length of this DIO port.\n\n:param pulseLength: the new pulse length", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DIOSim", "FUNC": "setPulseLength"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDIOSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "dIOSim", "type": "wpilib.simulation._simulation.DIOSim"}, {"name": "value", "type": "bool"}], "tooltip": "Change the DIO value.\n\n:param value: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DIOSim", "FUNC": "setValue"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDIOSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.DIOSim",
     name:  "DIOSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.DIOSim",
   };
+
   return category;
 }

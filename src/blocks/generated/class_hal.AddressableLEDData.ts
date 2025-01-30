@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.AddressableLEDData", "varType": "int", "importModule": "", "selfLabel": "addressableLEDData", "selfType": "hal.AddressableLEDData"}, "fields": {"MODULE_OR_CLASS": "hal.AddressableLEDData", "VAR": "b"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLEDData"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.AddressableLEDData", "varType": "int", "importModule": "", "selfLabel": "addressableLEDData", "selfType": "hal.AddressableLEDData"}, "fields": {"MODULE_OR_CLASS": "hal.AddressableLEDData", "VAR": "b"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLEDData"}}}}}},
@@ -21,12 +23,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.AddressableLEDData", "varType": "int", "importModule": "", "selfLabel": "addressableLEDData", "selfType": "hal.AddressableLEDData"}, "fields": {"MODULE_OR_CLASS": "hal.AddressableLEDData", "VAR": "r"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLEDData"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAddressableLEDData"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "hal._wpiHal.AddressableLEDData", "args": [], "tooltip": "", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal.AddressableLEDData"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.AddressableLEDData",
     name:  "AddressableLEDData",
-      contents: contents,
+    contents: contents,
+    className: "hal.AddressableLEDData",
   };
+
   return category;
 }

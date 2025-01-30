@@ -10,18 +10,24 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 4 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.counter.EdgeConfiguration", "importModule": "wpilib.counter"}, "fields": {"ENUM_TYPE": "wpilib.counter.EdgeConfiguration", "ENUM_VALUE": "kBoth"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.counter.EdgeConfiguration", "importModule": "wpilib.counter"}, "fields": {"ENUM_TYPE": "wpilib.counter.EdgeConfiguration", "ENUM_VALUE": "kFallingEdge"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.counter.EdgeConfiguration", "importModule": "wpilib.counter"}, "fields": {"ENUM_TYPE": "wpilib.counter.EdgeConfiguration", "ENUM_VALUE": "kNone"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.counter.EdgeConfiguration", "importModule": "wpilib.counter"}, "fields": {"ENUM_TYPE": "wpilib.counter.EdgeConfiguration", "ENUM_VALUE": "kRisingEdge"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonModuleCategory = {
     kind: "category",
-    moduleName: "wpilib.counter",
     name:  "counter",
-      contents: contents,
+    contents: contents,
+    moduleName: "wpilib.counter",
+    packageName: "wpilib.counter",
   };
+
   return category;
 }

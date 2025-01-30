@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 27 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myEncoder"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Encoder", "args": [{"name": "aChannel", "type": "int"}, {"name": "bChannel", "type": "int"}, {"name": "reverseDirection", "type": "bool"}, {"name": "encodingType", "type": "wpilib.interfaces._interfaces.CounterBase.EncodingType"}], "tooltip": "Encoder constructor.\n\nConstruct a Encoder given a and b channels.\n\nThe counter will start counting immediately.\n\n:param aChannel:         The a channel DIO channel. 0-9 are on-board, 10-25\n                         are on the MXP port\n:param bChannel:         The b channel DIO channel. 0-9 are on-board, 10-25\n                         are on the MXP port\n:param reverseDirection: represents the orientation of the encoder and\n                         inverts the output values if necessary so forward\n                         represents positive values.\n:param encodingType:     either k1X, k2X, or k4X to indicate 1X, 2X or 4X\n                         decoding. If 4X is selected, then an encoder FPGA\n                         object is used and the returned counts will be 4x\n                         the encoder spec'd value since all rising and\n                         falling edges are counted. If 1X or 2X are selected\n                         then a counter object will be used and the returned\n                         value will either exactly match the spec'd count or\n                         be double (2x) the spec'd count.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Encoder"}, "inputs": {"ARG2": {"shadow": {"type": "logic_boolean", "fields": {"BOOL": "FALSE"}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEncodingType"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myEncoder"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Encoder", "args": [{"name": "aSource", "type": "wpilib._wpilib.DigitalSource"}, {"name": "bSource", "type": "wpilib._wpilib.DigitalSource"}, {"name": "reverseDirection", "type": "bool"}, {"name": "encodingType", "type": "wpilib.interfaces._interfaces.CounterBase.EncodingType"}], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Encoder"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}, "ARG2": {"shadow": {"type": "logic_boolean", "fields": {"BOOL": "FALSE"}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEncodingType"}}}}}}}}},
@@ -39,12 +41,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetWhileHigh"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Encoder.IndexingType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Encoder.IndexingType", "ENUM_VALUE": "kResetWhileLow"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Encoder",
     name:  "Encoder",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Encoder",
   };
+
   return category;
 }

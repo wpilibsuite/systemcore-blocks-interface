@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 61 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.PowerDistributionStickyFaults", "varType": "int", "importModule": "", "selfLabel": "powerDistributionStickyFaults", "selfType": "hal.PowerDistributionStickyFaults"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionStickyFaults", "VAR": "brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionStickyFaults"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.PowerDistributionStickyFaults", "varType": "int", "importModule": "", "selfLabel": "powerDistributionStickyFaults", "selfType": "hal.PowerDistributionStickyFaults"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionStickyFaults", "VAR": "brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionStickyFaults"}}}}}},
@@ -75,12 +77,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.PowerDistributionStickyFaults", "varType": "int", "importModule": "", "selfLabel": "powerDistributionStickyFaults", "selfType": "hal.PowerDistributionStickyFaults"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionStickyFaults", "VAR": "hasReset"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPowerDistributionStickyFaults"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPowerDistributionStickyFaults"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "hal._wpiHal.PowerDistributionStickyFaults", "args": [], "tooltip": "", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal.PowerDistributionStickyFaults"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.PowerDistributionStickyFaults",
     name:  "PowerDistributionStickyFaults",
-      contents: contents,
+    contents: contents,
+    className: "hal.PowerDistributionStickyFaults",
   };
+
   return category;
 }

@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 39 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.TimedRobot", "varType": "float", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.TimedRobot", "VAR": "kDefaultPeriod"}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTimedRobot"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.TimedRobot", "args": [{"name": "period", "type": "wpimath.units.seconds"}], "tooltip": "Constructor for TimedRobot.\n\n:param period: Period.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.TimedRobot"}}}}},
@@ -51,12 +53,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "tooltip": "Initialization code for test mode should go here.\n\nUsers should override this method for initialization code which will be\ncalled each time the robot enters test mode.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.IterativeRobotBase", "FUNC": "testInit"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "tooltip": "Periodic code for test mode should go here.\n\nUsers should override this method for code which will be called each time a\nnew packet is received from the driver station and the robot is in test\nmode.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.IterativeRobotBase", "FUNC": "testPeriodic"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.TimedRobot",
     name:  "TimedRobot",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.TimedRobot",
   };
+
   return category;
 }

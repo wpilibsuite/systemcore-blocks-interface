@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 8 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCoordinateSystem"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.geometry._geometry.CoordinateSystem", "args": [{"name": "positiveX", "type": "wpimath.geometry._geometry.CoordinateAxis"}, {"name": "positiveY", "type": "wpimath.geometry._geometry.CoordinateAxis"}, {"name": "positiveZ", "type": "wpimath.geometry._geometry.CoordinateAxis"}], "tooltip": "Constructs a coordinate system with the given cardinal directions for each\naxis.\n\n:param positiveX: The cardinal direction of the positive x-axis.\n:param positiveY: The cardinal direction of the positive y-axis.\n:param positiveZ: The cardinal direction of the positive z-axis.\n                  @throws std::domain_error if the coordinate system isn't special orthogonal", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.CoordinateSystem"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCoordinateAxis"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCoordinateAxis"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCoordinateAxis"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCoordinateSystem"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.geometry._geometry.CoordinateSystem", "args": [], "tooltip": "Returns an instance of the East-Down-North (EDN) coordinate system.\n\nThe +X axis is east, the +Y axis is down, and the +Z axis is north.", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.CoordinateSystem", "FUNC": "EDN"}}}}},
@@ -18,12 +20,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.geometry._geometry.Pose3d", "args": [{"name": "pose", "type": "wpimath.geometry._geometry.Pose3d"}, {"name": "from_", "type": "wpimath.geometry._geometry.CoordinateSystem"}, {"name": "to", "type": "wpimath.geometry._geometry.CoordinateSystem"}], "tooltip": "Converts the given pose from one coordinate system to another.\n\n:param pose:  The pose to convert.\n:param from_: The coordinate system the pose starts in.\n:param to:    The coordinate system to which to convert.\n\n:returns: The given pose in the desired coordinate system.", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.CoordinateSystem", "FUNC": "convert"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose3d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCoordinateSystem"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCoordinateSystem"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTransform3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.geometry._geometry.Transform3d", "args": [{"name": "transform", "type": "wpimath.geometry._geometry.Transform3d"}, {"name": "from_", "type": "wpimath.geometry._geometry.CoordinateSystem"}, {"name": "to", "type": "wpimath.geometry._geometry.CoordinateSystem"}], "tooltip": "Converts the given transform from one coordinate system to another.\n\n:param transform: The transform to convert.\n:param from_:     The coordinate system the transform starts in.\n:param to:        The coordinate system to which to convert.\n\n:returns: The given transform in the desired coordinate system.", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.CoordinateSystem", "FUNC": "convert"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform3d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCoordinateSystem"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCoordinateSystem"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.CoordinateSystem",
     name:  "CoordinateSystem",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.CoordinateSystem",
   };
+
   return category;
 }

@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 12 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDigitalGlitchFilter"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.DigitalGlitchFilter", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DigitalGlitchFilter"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "digitalGlitchFilter", "type": "wpilib._wpilib.DigitalGlitchFilter"}, {"name": "input", "type": "wpilib._wpilib.DigitalSource"}], "tooltip": "Assigns the DigitalSource to this glitch filter.\n\n:param input: The DigitalSource to add.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DigitalGlitchFilter", "FUNC": "add"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalGlitchFilter"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}}},
@@ -22,12 +24,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "digitalGlitchFilter", "type": "wpilib._wpilib.DigitalGlitchFilter"}, {"name": "fpgaCycles", "type": "int"}], "tooltip": "Sets the number of cycles that the input must not change state for.\n\n:param fpgaCycles: The number of FPGA cycles.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DigitalGlitchFilter", "FUNC": "setPeriodCycles"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalGlitchFilter"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "digitalGlitchFilter", "type": "wpilib._wpilib.DigitalGlitchFilter"}, {"name": "nanoseconds", "type": "int"}], "tooltip": "Sets the number of nanoseconds that the input must not change state for.\n\n:param nanoseconds: The number of nanoseconds.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DigitalGlitchFilter", "FUNC": "setPeriodNanoSeconds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalGlitchFilter"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.DigitalGlitchFilter",
     name:  "DigitalGlitchFilter",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.DigitalGlitchFilter",
   };
+
   return category;
 }

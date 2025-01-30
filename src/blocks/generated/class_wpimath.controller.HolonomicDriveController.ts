@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myHolonomicDriveController"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.HolonomicDriveController", "args": [{"name": "xController", "type": "wpimath._controls._controls.controller.PIDController"}, {"name": "yController", "type": "wpimath._controls._controls.controller.PIDController"}, {"name": "thetaController", "type": "wpimath._controls._controls.controller.ProfiledPIDControllerRadians"}], "tooltip": "Constructs a holonomic drive controller.\n\n:param xController:     A PID Controller to respond to error in the\n                        field-relative x direction.\n:param yController:     A PID Controller to respond to error in the\n                        field-relative y direction.\n:param thetaController: A profiled PID controller to respond to error in\n                        angle.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.HolonomicDriveController"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPIDController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPIDController"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myProfiledPIDControllerRadians"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "holonomicDriveController", "type": "wpimath._controls._controls.controller.HolonomicDriveController"}], "tooltip": "Returns true if the pose error is within tolerance of the reference.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.HolonomicDriveController", "FUNC": "atReference"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myHolonomicDriveController"}}}}}},
@@ -19,12 +21,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "holonomicDriveController", "type": "wpimath._controls._controls.controller.HolonomicDriveController"}, {"name": "enabled", "type": "bool"}], "tooltip": "Enables and disables the controller for troubleshooting purposes. When\nCalculate() is called on a disabled controller, only feedforward values\nare returned.\n\n:param enabled: If the controller is enabled or not.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.HolonomicDriveController", "FUNC": "setEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myHolonomicDriveController"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "holonomicDriveController", "type": "wpimath._controls._controls.controller.HolonomicDriveController"}, {"name": "tolerance", "type": "wpimath.geometry._geometry.Pose2d"}], "tooltip": "Sets the pose error which is considered tolerable for use with\nAtReference().\n\n:param tolerance: Pose error which is tolerable.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.HolonomicDriveController", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myHolonomicDriveController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.controller.HolonomicDriveController",
     name:  "HolonomicDriveController",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.controller.HolonomicDriveController",
   };
+
   return category;
 }

@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMotorLog"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog", "args": [{"name": "motorLog", "type": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog"}, {"name": "acceleration", "type": "wpimath.units.meters_per_second_squared"}], "tooltip": "Log the linear acceleration of the motor.\n\nThis is optional; SysId can perform an accurate fit without it.\n\n:param acceleration: The linear acceleration to record.\n\n:returns: The motor log (for call chaining).", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.sysid.SysIdRoutineLog.MotorLog", "FUNC": "acceleration"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorLog"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMotorLog"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog", "args": [{"name": "motorLog", "type": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog"}, {"name": "acceleration", "type": "wpimath.units.turns_per_second_squared"}], "tooltip": "Log the angular acceleration of the motor.\n\nThis is optional; SysId can perform an accurate fit without it.\n\n:param acceleration: The angular acceleration to record.\n\n:returns: The motor log (for call chaining).", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.sysid.SysIdRoutineLog.MotorLog", "FUNC": "angularAcceleration"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorLog"}}}}}}}}},
@@ -19,12 +21,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMotorLog"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog", "args": [{"name": "motorLog", "type": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog"}, {"name": "velocity", "type": "wpimath.units.meters_per_second"}], "tooltip": "Log the linear velocity of the motor.\n\n:param velocity: The linear velocity to record.\n\n:returns: The motor log (for call chaining).", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.sysid.SysIdRoutineLog.MotorLog", "FUNC": "velocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorLog"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMotorLog"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog", "args": [{"name": "motorLog", "type": "wpilib._wpilib.sysid.SysIdRoutineLog.MotorLog"}, {"name": "voltage", "type": "wpimath.units.volts"}], "tooltip": "Log the voltage applied to the motor.\n\n:param voltage: The voltage to record.\n\n:returns: The motor log (for call chaining).", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.sysid.SysIdRoutineLog.MotorLog", "FUNC": "voltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorLog"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.sysid.SysIdRoutineLog.MotorLog",
     name:  "MotorLog",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.sysid.SysIdRoutineLog.MotorLog",
   };
+
   return category;
 }

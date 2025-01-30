@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 16 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Ellipse2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "ellipse2d", "selfType": "wpimath.geometry.Ellipse2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Ellipse2d", "VAR": "xsemiaxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEllipse2d"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Ellipse2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "ellipse2d", "selfType": "wpimath.geometry.Ellipse2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Ellipse2d", "VAR": "ysemiaxis"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEllipse2d"}}}}}},
@@ -29,12 +31,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRotation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Rotation2d", "args": [{"name": "ellipse2d", "type": "wpimath.geometry._geometry.Ellipse2d"}], "tooltip": "Returns the rotational component of the ellipse.\n\n:returns: The rotational component of the ellipse.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Ellipse2d", "FUNC": "rotation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEllipse2d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myEllipse2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Ellipse2d", "args": [{"name": "ellipse2d", "type": "wpimath.geometry._geometry.Ellipse2d"}, {"name": "other", "type": "wpimath.geometry._geometry.Transform2d"}], "tooltip": "Transforms the center of the ellipse and returns the new ellipse.\n\n:param other: The transform to transform by.\n\n:returns: The transformed ellipse.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Ellipse2d", "FUNC": "transformBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEllipse2d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Ellipse2d",
     name:  "Ellipse2d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Ellipse2d",
   };
+
   return category;
 }

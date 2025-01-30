@@ -14,6 +14,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 24 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTuple"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "tuple[int, bool]", "args": [], "tooltip": "Get the thread priority for the current thread.\n\n:param isRealTime: Set to true if thread is real-time, otherwise false.\n\n:returns: The current thread priority. For real-time, this is 1-99\n          with 99 being highest. For non-real-time, this is 0. See\n          \"man 7 sched\" for details.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib", "FUNC": "getCurrentThreadPriority"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "str", "args": [], "tooltip": "Obtains the deploy directory of the program, which is the remote location\nthe deploy directory is deployed to by default. On the roboRIO, this is\n/home/lvuser/py/deploy. In simulation, it is where the simulation was launched\nfrom, in the subdirectory \"deploy\" (`dirname(robot.py)`/deploy).\n\n:returns: The result of the operating directory lookup", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib", "FUNC": "getDeployDirectory"}},
@@ -40,12 +42,16 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kRoboRIO2"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.RuntimeType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.RuntimeType", "ENUM_VALUE": "kSimulation"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonModuleCategory = {
     kind: "category",
-    moduleName: "wpilib",
     name:  "wpilib",
-      contents: contents,
+    contents: contents,
+    moduleName: "wpilib",
+    packageName: "wpilib",
   };
+
   return category;
 }

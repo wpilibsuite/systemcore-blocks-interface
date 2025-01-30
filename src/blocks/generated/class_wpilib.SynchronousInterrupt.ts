@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 12 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySynchronousInterrupt"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.SynchronousInterrupt", "args": [{"name": "source", "type": "wpilib._wpilib.DigitalSource"}], "tooltip": "Construct a Synchronous Interrupt from a Digital Source.\n\n:param source: the DigitalSource the interrupts are triggered from", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SynchronousInterrupt"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySynchronousInterrupt"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.SynchronousInterrupt", "args": [{"name": "source", "type": "wpilib._wpilib.DigitalSource"}], "tooltip": "Construct a Synchronous Interrupt from a Digital Source.\n\n:param source: the DigitalSource the interrupts are triggered from", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SynchronousInterrupt"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalSource"}}}}}}}}},
@@ -24,12 +26,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SynchronousInterrupt.WaitResult", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SynchronousInterrupt.WaitResult", "ENUM_VALUE": "kRisingEdge"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SynchronousInterrupt.WaitResult", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SynchronousInterrupt.WaitResult", "ENUM_VALUE": "kTimeout"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.SynchronousInterrupt",
     name:  "SynchronousInterrupt",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.SynchronousInterrupt",
   };
+
   return category;
 }

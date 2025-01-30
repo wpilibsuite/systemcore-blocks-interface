@@ -31,6 +31,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 768 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "None", "args": [{"name": "sessionHandle", "type": "int"}], "tooltip": "Closes a CAN stream.\n\n:param sessionHandle: the session to close", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal", "FUNC": "CAN_CloseStreamSession"}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTuple"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "tuple[float, int, int, int, int, int]", "args": [], "tooltip": "Gets CAN status information.\n\n:param out: percentBusUtilization the bus utilization\n:param out: busOffCount           the number of bus off errors\n:param out: txFullCount           the number of tx full errors\n:param out: receiveErrorCount     the number of receive errors\n:param out: transmitErrorCount    the number of transmit errors\n:param out: status                Error status variable. 0 on success.", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal", "FUNC": "CAN_GetCANStatus"}}}}},
@@ -801,12 +803,16 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.tResourceType", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.tResourceType", "ENUM_VALUE": "kResourceType_VictorSP"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.tResourceType", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.tResourceType", "ENUM_VALUE": "kResourceType_XboxController"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonModuleCategory = {
     kind: "category",
-    moduleName: "hal",
     name:  "hal",
-      contents: contents,
+    contents: contents,
+    moduleName: "hal",
+    packageName: "hal",
   };
+
   return category;
 }

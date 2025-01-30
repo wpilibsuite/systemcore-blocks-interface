@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 46 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADIS16448_IMU"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADIS16448_IMU", "args": [], "tooltip": "IMU constructor on onboard MXP CS0, Z-up orientation, and complementary\nAHRS computation.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADIS16448_IMU"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADIS16448_IMU"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADIS16448_IMU", "args": [{"name": "yaw_axis", "type": "wpilib._wpilib.ADIS16448_IMU.IMUAxis"}, {"name": "port", "type": "wpilib._wpilib.SPI.Port"}, {"name": "cal_time", "type": "wpilib._wpilib.ADIS16448_IMU.CalibrationTime"}], "tooltip": "IMU constructor on the specified MXP port and orientation.\n\n:param yaw_axis: The axis where gravity is present. Valid options are kX,\n                 kY, and kZ\n:param port:     The SPI port where the IMU is connected.\n:param cal_time: The calibration time that should be used on start-up.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADIS16448_IMU"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIMUAxis"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPort"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCalibrationTime"}}}}}}}}},
@@ -59,12 +61,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADIS16448_IMU.IMUAxis", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADIS16448_IMU.IMUAxis", "ENUM_VALUE": "kY"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADIS16448_IMU.IMUAxis", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADIS16448_IMU.IMUAxis", "ENUM_VALUE": "kZ"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.ADIS16448_IMU",
     name:  "ADIS16448_IMU",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.ADIS16448_IMU",
   };
+
   return category;
 }

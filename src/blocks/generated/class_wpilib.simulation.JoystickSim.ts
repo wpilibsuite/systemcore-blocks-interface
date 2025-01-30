@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 23 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myJoystickSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.JoystickSim", "args": [{"name": "joystick", "type": "wpilib._wpilib.Joystick"}], "tooltip": "Constructs from a Joystick object.\n\n:param joystick: joystick to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.JoystickSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myJoystick"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myJoystickSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.JoystickSim", "args": [{"name": "port", "type": "int"}], "tooltip": "Constructs from a joystick port number.\n\n:param port: port number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.JoystickSim"}}}}},
@@ -33,12 +35,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "joystickSim", "type": "wpilib.simulation._simulation.JoystickSim"}, {"name": "value", "type": "float"}], "tooltip": "Set the Y value of the joystick.\n\n:param value: the new Y value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.JoystickSim", "FUNC": "setY"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myJoystickSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "joystickSim", "type": "wpilib.simulation._simulation.JoystickSim"}, {"name": "value", "type": "float"}], "tooltip": "Set the Z value of the joystick.\n\n:param value: the new Z value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.JoystickSim", "FUNC": "setZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myJoystickSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.JoystickSim",
     name:  "JoystickSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.JoystickSim",
   };
+
   return category;
 }

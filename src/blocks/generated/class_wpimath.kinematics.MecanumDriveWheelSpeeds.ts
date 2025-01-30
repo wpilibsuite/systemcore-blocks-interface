@@ -14,6 +14,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 19 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.MecanumDriveWheelSpeeds", "varType": "wpimath.units.meters_per_second", "importModule": "", "selfLabel": "mecanumDriveWheelSpeeds", "selfType": "wpimath.kinematics.MecanumDriveWheelSpeeds"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.MecanumDriveWheelSpeeds", "VAR": "frontLeft"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelSpeeds"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.MecanumDriveWheelSpeeds", "varType": "wpimath.units.meters_per_second", "importModule": "", "selfLabel": "mecanumDriveWheelSpeeds", "selfType": "wpimath.kinematics.MecanumDriveWheelSpeeds"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.MecanumDriveWheelSpeeds", "VAR": "frontLeft"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelSpeeds"}}}}}},
@@ -35,12 +37,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "mecanumDriveWheelSpeeds", "type": "wpimath.kinematics._kinematics.MecanumDriveWheelSpeeds"}, {"name": "attainableMaxSpeed", "type": "wpimath.units.meters_per_second"}], "tooltip": "Renormalizes the wheel speeds if any individual speed is above the\nspecified maximum.\n\nSometimes, after inverse kinematics, the requested speed from one or\nmore wheels may be above the max attainable speed for the driving motor on\nthat wheel. To fix this issue, one can reduce all the wheel speeds to make\nsure that all requested module speeds are at-or-below the absolute\nthreshold, while maintaining the ratio of speeds between wheels.\n\n:param attainableMaxSpeed: The absolute max speed that a wheel can reach.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.MecanumDriveWheelSpeeds", "FUNC": "desaturate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelSpeeds"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelSpeeds", "args": [{"name": "frontLeft", "type": "wpimath.units.feet_per_second"}, {"name": "frontRight", "type": "wpimath.units.feet_per_second"}, {"name": "rearLeft", "type": "wpimath.units.feet_per_second"}, {"name": "rearRight", "type": "wpimath.units.feet_per_second"}], "tooltip": "", "importModule": "wpimath.kinematics"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.MecanumDriveWheelSpeeds", "FUNC": "fromFeet"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.kinematics.MecanumDriveWheelSpeeds",
     name:  "MecanumDriveWheelSpeeds",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.kinematics.MecanumDriveWheelSpeeds",
   };
+
   return category;
 }

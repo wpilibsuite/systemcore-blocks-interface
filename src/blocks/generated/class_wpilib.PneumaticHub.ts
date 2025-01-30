@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 36 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPneumaticHub"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PneumaticHub", "args": [], "tooltip": "Constructs a PneumaticHub with the default ID (1).", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPneumaticHub"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PneumaticHub", "args": [{"name": "module", "type": "int"}], "tooltip": "Constructs a PneumaticHub.\n\n:param module: module number to construct", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub"}}}}},
@@ -46,12 +48,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pneumaticHub", "type": "wpilib._wpilib.PneumaticHub"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub", "FUNC": "unreserveCompressor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticHub"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pneumaticHub", "type": "wpilib._wpilib.PneumaticHub"}, {"name": "mask", "type": "int"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub", "FUNC": "unreserveSolenoids"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticHub"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PneumaticHub",
     name:  "PneumaticHub",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PneumaticHub",
   };
+
   return category;
 }

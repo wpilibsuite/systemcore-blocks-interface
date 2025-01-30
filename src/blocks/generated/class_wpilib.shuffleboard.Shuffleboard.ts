@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.shuffleboard.Shuffleboard", "varType": "str", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.Shuffleboard", "VAR": "kBaseTableName"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "name", "type": "str"}, {"name": "description", "type": "str"}, {"name": "importance", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardEventImportance"}], "tooltip": "Notifies Shuffleboard of an event. Events can range from as trivial as a\nchange in a command state to as critical as a total power loss or component\nfailure. If Shuffleboard is recording, the event will also be recorded.\n\nIf ``name`` is ``null`` or empty, no event will be sent and an\nerror will be printed to the driver station.\n\n:param name:        the name of the event\n:param description: a description of the event\n:param importance:  the importance of the event", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.Shuffleboard", "FUNC": "addEventMarker"}, "inputs": {"ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardEventImportance"}}}}}},
@@ -25,12 +27,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [], "tooltip": "Stops data recording on the dashboard. Has no effect if no recording is in\nprogress.", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.Shuffleboard", "FUNC": "stopRecording"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [], "tooltip": "Updates all the values in Shuffleboard. Iterative and timed robots are\npre-configured to call this method in the main robot loop; teams using\ncustom robot base classes, or subclass SampleRobot, should make sure to\ncall this repeatedly to keep data on the dashboard up to date.", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.Shuffleboard", "FUNC": "update"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.shuffleboard.Shuffleboard",
     name:  "Shuffleboard",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.shuffleboard.Shuffleboard",
   };
+
   return category;
 }

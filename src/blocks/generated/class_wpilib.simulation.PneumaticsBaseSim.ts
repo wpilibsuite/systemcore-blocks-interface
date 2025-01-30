@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 21 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPneumaticsBaseSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.PneumaticsBaseSim", "args": [{"name": "index", "type": "int"}], "tooltip": "Constructs a PneumaticsBaseSim with the given index.\n\n:param index: The index.", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PneumaticsBaseSim"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPneumaticsBaseSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.PneumaticsBaseSim", "args": [{"name": "module", "type": "wpilib._wpilib.PneumaticsBase"}], "tooltip": "Constructs a PneumaticsBaseSim for the given module.\n\n:param module: The module.", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PneumaticsBaseSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsBase"}}}}}}}}},
@@ -31,12 +33,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pneumaticsBaseSim", "type": "wpilib.simulation._simulation.PneumaticsBaseSim"}, {"name": "pressureSwitch", "type": "bool"}], "tooltip": "Set the value of the pressure switch.\n\n:param pressureSwitch: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PneumaticsBaseSim", "FUNC": "setPressureSwitch"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsBaseSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pneumaticsBaseSim", "type": "wpilib.simulation._simulation.PneumaticsBaseSim"}, {"name": "channel", "type": "int"}, {"name": "solenoidOutput", "type": "bool"}], "tooltip": "Change the solenoid output on a specific channel.\n\n:param channel:        the channel to check\n:param solenoidOutput: the new solenoid output", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PneumaticsBaseSim", "FUNC": "setSolenoidOutput"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsBaseSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.PneumaticsBaseSim",
     name:  "PneumaticsBaseSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.PneumaticsBaseSim",
   };
+
   return category;
 }

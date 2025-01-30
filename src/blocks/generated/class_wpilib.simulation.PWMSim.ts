@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 22 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPWMSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.PWMSim", "args": [{"name": "pwm", "type": "wpilib._wpilib.PWM"}], "tooltip": "Constructs from a PWM object.\n\n:param pwm: PWM to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PWMSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWM"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPWMSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.PWMSim", "args": [{"name": "motorctrl", "type": "wpilib._wpilib.PWMMotorController"}], "tooltip": "Constructs from a PWMMotorController object.\n\n:param motorctrl: PWMMotorController to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PWMSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWMMotorController"}}}}}}}}},
@@ -32,12 +34,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pWMSim", "type": "wpilib.simulation._simulation.PWMSim"}, {"name": "speed", "type": "float"}], "tooltip": "Set the PWM speed.\n\n:param speed: the PWM speed (-1.0 to 1.0)", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PWMSim", "FUNC": "setSpeed"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWMSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pWMSim", "type": "wpilib.simulation._simulation.PWMSim"}, {"name": "zeroLatch", "type": "bool"}], "tooltip": "Define whether the PWM has been zero latched.\n\n:param zeroLatch: true to indicate zero latched", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.PWMSim", "FUNC": "setZeroLatch"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWMSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.PWMSim",
     name:  "PWMSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.PWMSim",
   };
+
   return category;
 }

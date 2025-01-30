@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 10 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "bool", "args": [], "tooltip": "", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation", "FUNC": "getProgramStarted"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "bool", "args": [], "tooltip": "Check if the simulator time is paused.\n\n:returns: true if paused", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation", "FUNC": "isTimingPaused"}},
@@ -20,12 +22,16 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "None", "args": [{"name": "delta", "type": "wpimath.units.seconds"}], "tooltip": "Advance the simulator time and return immediately.\n\n:param delta: the amount to advance (in seconds)", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation", "FUNC": "stepTimingAsync"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "None", "args": [], "tooltip": "", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation", "FUNC": "waitForProgramStart"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonModuleCategory = {
     kind: "category",
-    moduleName: "wpilib.simulation",
     name:  "simulation",
-      contents: contents,
+    contents: contents,
+    moduleName: "wpilib.simulation",
+    packageName: "wpilib.simulation",
   };
+
   return category;
 }

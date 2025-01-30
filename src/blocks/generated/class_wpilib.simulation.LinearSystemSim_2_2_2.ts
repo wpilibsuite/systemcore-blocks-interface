@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearSystemSim_2_2_2"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.LinearSystemSim_2_2_2", "args": [{"name": "system", "type": "wpimath._controls._controls.system.LinearSystem_2_2_2"}, {"name": "measurementStdDevs", "type": "Annotated[list[float], FixedSize(2)]"}], "tooltip": "Creates a simulated generic linear system.\n\n:param system:             The system to simulate.\n:param measurementStdDevs: The standard deviations of the measurements.", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.LinearSystemSim_2_2_2"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystem_2_2_2"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[2, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[2, 1]]", "args": [{"name": "linearSystemSim_2_2_2", "type": "wpilib.simulation._simulation.LinearSystemSim_2_2_2"}], "tooltip": "Returns the current input of the plant.\n\n:returns: The current input of the plant.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.LinearSystemSim_2_2_2", "FUNC": "getInput"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystemSim_2_2_2"}}}}}}}}},
@@ -19,12 +21,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "linearSystemSim_2_2_2", "type": "wpilib.simulation._simulation.LinearSystemSim_2_2_2"}, {"name": "state", "type": "numpy.ndarray[numpy.float64[2, 1]]"}], "tooltip": "Sets the system state.\n\n:param state: The new state.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.LinearSystemSim_2_2_2", "FUNC": "setState"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystemSim_2_2_2"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[2, 1]]"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "linearSystemSim_2_2_2", "type": "wpilib.simulation._simulation.LinearSystemSim_2_2_2"}, {"name": "dt", "type": "wpimath.units.seconds"}], "tooltip": "Updates the simulation.\n\n:param dt: The time between updates.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.LinearSystemSim_2_2_2", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystemSim_2_2_2"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.LinearSystemSim_2_2_2",
     name:  "LinearSystemSim_2_2_2",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.LinearSystemSim_2_2_2",
   };
+
   return category;
 }

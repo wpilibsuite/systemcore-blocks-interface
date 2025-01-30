@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 8 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTrajectoryGenerator"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.trajectory.TrajectoryGenerator", "args": [], "tooltip": "", "importModule": "wpimath.trajectory"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.TrajectoryGenerator"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTrajectory"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath._controls._controls.trajectory.Trajectory", "args": [{"name": "initial", "type": "wpimath.spline._spline.Spline3.ControlVector"}, {"name": "interiorWaypoints", "type": "list[wpimath.geometry._geometry.Translation2d]"}, {"name": "end", "type": "wpimath.spline._spline.Spline3.ControlVector"}, {"name": "config", "type": "wpimath._controls._controls.trajectory.TrajectoryConfig"}], "tooltip": "Generates a trajectory from the given control vectors and config. This\nmethod uses clamped cubic splines -- a method in which the exterior control\nvectors and interior waypoints are provided. The headings are automatically\ndetermined at the interior points to ensure continuous curvature.\n\n:param initial:           The initial control vector.\n:param interiorWaypoints: The interior waypoints.\n:param end:               The ending control vector.\n:param config:            The configuration for the trajectory.\n\n:returns: The generated trajectory.", "importModule": "wpimath.trajectory"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.TrajectoryGenerator", "FUNC": "generateTrajectory"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myControlVector"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myList"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myControlVector"}}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectoryConfig"}}}}}}}}},
@@ -18,12 +20,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myList"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "list[tuple[wpimath.geometry._geometry.Pose2d, wpimath.units.radians_per_meter]]", "args": [{"name": "splines", "type": "list[wpimath.spline._spline.CubicHermiteSpline]"}], "tooltip": "Generate spline points from a vector of splines by parameterizing the\nsplines.\n\n:param splines: The splines to parameterize.\n\n:returns: The spline points for use in time parameterization of a trajectory.", "importModule": "wpimath.trajectory"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.TrajectoryGenerator", "FUNC": "splinePointsFromSplines"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myList"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myList"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "list[tuple[wpimath.geometry._geometry.Pose2d, wpimath.units.radians_per_meter]]", "args": [{"name": "splines", "type": "list[wpimath.spline._spline.QuinticHermiteSpline]"}], "tooltip": "Generate spline points from a vector of splines by parameterizing the\nsplines.\n\n:param splines: The splines to parameterize.\n\n:returns: The spline points for use in time parameterization of a trajectory.", "importModule": "wpimath.trajectory"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.TrajectoryGenerator", "FUNC": "splinePointsFromSplines"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myList"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.trajectory.TrajectoryGenerator",
     name:  "TrajectoryGenerator",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.trajectory.TrajectoryGenerator",
   };
+
   return category;
 }

@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 10 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.Color8Bit", "varType": "int", "importModule": "", "selfLabel": "color8Bit", "selfType": "wpilib.Color8Bit"}, "fields": {"MODULE_OR_CLASS": "wpilib.Color8Bit", "VAR": "blue"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myColor8Bit"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.Color8Bit", "varType": "int", "importModule": "", "selfLabel": "color8Bit", "selfType": "wpilib.Color8Bit"}, "fields": {"MODULE_OR_CLASS": "wpilib.Color8Bit", "VAR": "green"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myColor8Bit"}}}}}},
@@ -22,12 +24,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "str", "args": [{"name": "color8Bit", "type": "wpilib._wpilib.Color8Bit"}], "tooltip": "Return this color represented as a hex string.\n\n:returns: a string of the format <tt>\\#RRGGBB</tt>", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Color8Bit", "FUNC": "hexString"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myColor8Bit"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myColor"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib._wpilib.Color", "args": [{"name": "color8Bit", "type": "wpilib._wpilib.Color8Bit"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Color8Bit", "FUNC": "toColor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myColor8Bit"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Color8Bit",
     name:  "Color8Bit",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Color8Bit",
   };
+
   return category;
 }

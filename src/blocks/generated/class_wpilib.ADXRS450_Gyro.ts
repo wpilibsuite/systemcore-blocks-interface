@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 10 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADXRS450_Gyro"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADXRS450_Gyro", "args": [], "tooltip": "%Gyro constructor on onboard CS0.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXRS450_Gyro"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADXRS450_Gyro"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADXRS450_Gyro", "args": [{"name": "port", "type": "wpilib._wpilib.SPI.Port"}], "tooltip": "%Gyro constructor on the specified SPI port.\n\n:param port: The SPI port the gyro is attached to.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXRS450_Gyro"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPort"}}}}}}}}},
@@ -20,12 +22,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "aDXRS450_Gyro", "type": "wpilib._wpilib.ADXRS450_Gyro"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXRS450_Gyro", "FUNC": "isConnected"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXRS450_Gyro"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "aDXRS450_Gyro", "type": "wpilib._wpilib.ADXRS450_Gyro"}], "tooltip": "Reset the gyro.\n\nResets the gyro to a heading of zero. This can be used if there is\nsignificant drift in the gyro and it needs to be recalibrated after it has\nbeen running.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXRS450_Gyro", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXRS450_Gyro"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.ADXRS450_Gyro",
     name:  "ADXRS450_Gyro",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.ADXRS450_Gyro",
   };
+
   return category;
 }

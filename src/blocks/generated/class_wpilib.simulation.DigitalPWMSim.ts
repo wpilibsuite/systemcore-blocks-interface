@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDigitalPWMSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.DigitalPWMSim", "args": [{"name": "digitalOutput", "type": "wpilib._wpilib.DigitalOutput"}], "tooltip": "Constructs from a DigitalOutput object.\n\n:param digitalOutput: DigitalOutput to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DigitalPWMSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalOutput"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDigitalPWMSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpilib.simulation._simulation.DigitalPWMSim", "args": [{"name": "channel", "type": "int"}], "tooltip": "Creates an DigitalPWMSim for a digital I/O channel.\n\n:param channel: DIO channel\n\n:returns: Simulated object\n          @throws std::out_of_range if no Digital PWM is configured for that channel", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DigitalPWMSim", "FUNC": "createForChannel"}}}}},
@@ -23,12 +25,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "digitalPWMSim", "type": "wpilib.simulation._simulation.DigitalPWMSim"}, {"name": "initialized", "type": "bool"}], "tooltip": "Define whether this PWM output has been initialized.\n\n:param initialized: whether this object is initialized", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DigitalPWMSim", "FUNC": "setInitialized"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalPWMSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "digitalPWMSim", "type": "wpilib.simulation._simulation.DigitalPWMSim"}, {"name": "pin", "type": "int"}], "tooltip": "Change the pin number.\n\n:param pin: the new pin number", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DigitalPWMSim", "FUNC": "setPin"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalPWMSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.DigitalPWMSim",
     name:  "DigitalPWMSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.DigitalPWMSim",
   };
+
   return category;
 }

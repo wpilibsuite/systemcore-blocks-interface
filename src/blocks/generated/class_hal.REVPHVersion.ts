@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.REVPHVersion", "varType": "int", "importModule": "", "selfLabel": "rEVPHVersion", "selfType": "hal.REVPHVersion"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHVersion", "VAR": "firmwareFix"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHVersion"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.REVPHVersion", "varType": "int", "importModule": "", "selfLabel": "rEVPHVersion", "selfType": "hal.REVPHVersion"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHVersion", "VAR": "firmwareFix"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHVersion"}}}}}},
@@ -27,12 +29,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.REVPHVersion", "varType": "int", "importModule": "", "selfLabel": "rEVPHVersion", "selfType": "hal.REVPHVersion"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHVersion", "VAR": "uniqueId"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHVersion"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myREVPHVersion"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "hal._wpiHal.REVPHVersion", "args": [], "tooltip": "", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHVersion"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.REVPHVersion",
     name:  "REVPHVersion",
-      contents: contents,
+    contents: contents,
+    className: "hal.REVPHVersion",
   };
+
   return category;
 }

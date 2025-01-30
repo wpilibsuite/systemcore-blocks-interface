@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.DifferentialDriveKinematics", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "differentialDriveKinematics", "selfType": "wpimath.kinematics.DifferentialDriveKinematics"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveKinematics", "VAR": "trackWidth"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveKinematics"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDriveKinematics"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.kinematics._kinematics.DifferentialDriveKinematics", "args": [{"name": "trackWidth", "type": "wpimath.units.meters"}], "tooltip": "Constructs a differential drive kinematics object.\n\n:param trackWidth: The track width of the drivetrain. Theoretically, this is\n                   the distance between the left wheels and right wheels. However, the\n                   empirical value may be larger than the physical measured value due to\n                   scrubbing effects.", "importModule": "wpimath.kinematics"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveKinematics"}}}}},
@@ -19,12 +21,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Twist2d", "args": [{"name": "differentialDriveKinematics", "type": "wpimath.kinematics._kinematics.DifferentialDriveKinematics"}, {"name": "start", "type": "wpimath.kinematics._kinematics.DifferentialDriveWheelPositions"}, {"name": "end", "type": "wpimath.kinematics._kinematics.DifferentialDriveWheelPositions"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveKinematics", "FUNC": "toTwist2d"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveKinematics"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveWheelPositions"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveWheelPositions"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDriveWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.kinematics._kinematics.DifferentialDriveWheelSpeeds", "args": [{"name": "differentialDriveKinematics", "type": "wpimath.kinematics._kinematics.DifferentialDriveKinematics"}, {"name": "chassisSpeeds", "type": "wpimath.kinematics._kinematics.ChassisSpeeds"}], "tooltip": "Returns left and right component velocities from a chassis speed using\ninverse kinematics.\n\n:param chassisSpeeds: The linear and angular (dx and dtheta) components that\n                      represent the chassis' speed.\n\n:returns: The left and right velocities.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveKinematics", "FUNC": "toWheelSpeeds"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveKinematics"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myChassisSpeeds"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.kinematics.DifferentialDriveKinematics",
     name:  "DifferentialDriveKinematics",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.kinematics.DifferentialDriveKinematics",
   };
+
   return category;
 }

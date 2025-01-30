@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 152 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.Color", "varType": "wpilib.Color", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Color", "VAR": "kAliceBlue"}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.Color", "varType": "wpilib.Color", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Color", "VAR": "kAntiqueWhite"}},
@@ -165,12 +167,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myColor"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpilib._wpilib.Color", "args": [{"name": "h", "type": "int"}, {"name": "s", "type": "int"}, {"name": "v", "type": "int"}], "tooltip": "Creates a Color from HSV values.\n\n:param h: The h value [0-180)\n:param s: The s value [0-255]\n:param v: The v value [0-255]\n\n:returns: The color", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Color", "FUNC": "fromHSV"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "str", "args": [{"name": "color", "type": "wpilib._wpilib.Color"}], "tooltip": "Return this color represented as a hex string.\n\n:returns: a string of the format <tt>\\#RRGGBB</tt>", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Color", "FUNC": "hexString"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myColor"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Color",
     name:  "Color",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Color",
   };
+
   return category;
 }

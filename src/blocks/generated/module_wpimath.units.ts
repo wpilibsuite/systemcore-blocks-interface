@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 5 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "module", "moduleOrClassName": "wpimath.units", "varType": "float", "importModule": "wpimath.units"}, "fields": {"MODULE_OR_CLASS": "wpimath.units", "VAR": "kInchesPerFoot"}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "module", "moduleOrClassName": "wpimath.units", "varType": "float", "importModule": "wpimath.units"}, "fields": {"MODULE_OR_CLASS": "wpimath.units", "VAR": "kKilogramsPerLb"}},
@@ -18,12 +20,16 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "module", "moduleOrClassName": "wpimath.units", "varType": "int", "importModule": "wpimath.units"}, "fields": {"MODULE_OR_CLASS": "wpimath.units", "VAR": "kMillisecondsPerSecond"}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "module", "moduleOrClassName": "wpimath.units", "varType": "int", "importModule": "wpimath.units"}, "fields": {"MODULE_OR_CLASS": "wpimath.units", "VAR": "kSecondsPerMinute"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonModuleCategory = {
     kind: "category",
-    moduleName: "wpimath.units",
     name:  "units",
-      contents: contents,
+    contents: contents,
+    moduleName: "wpimath.units",
+    packageName: "wpimath",
   };
+
   return category;
 }

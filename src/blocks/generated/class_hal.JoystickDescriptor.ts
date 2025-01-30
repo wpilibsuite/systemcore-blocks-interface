@@ -13,6 +13,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.JoystickDescriptor", "varType": "int", "importModule": "", "selfLabel": "joystickDescriptor", "selfType": "hal.JoystickDescriptor"}, "fields": {"MODULE_OR_CLASS": "hal.JoystickDescriptor", "VAR": "axisCount"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myJoystickDescriptor"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.JoystickDescriptor", "varType": "int", "importModule": "", "selfLabel": "joystickDescriptor", "selfType": "hal.JoystickDescriptor"}, "fields": {"MODULE_OR_CLASS": "hal.JoystickDescriptor", "VAR": "axisCount"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myJoystickDescriptor"}}}}}},
@@ -28,12 +30,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.JoystickDescriptor", "varType": "memoryview", "importModule": "", "selfLabel": "joystickDescriptor", "selfType": "hal.JoystickDescriptor"}, "fields": {"MODULE_OR_CLASS": "hal.JoystickDescriptor", "VAR": "name"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myJoystickDescriptor"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myJoystickDescriptor"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "hal._wpiHal.JoystickDescriptor", "args": [], "tooltip": "", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal.JoystickDescriptor"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.JoystickDescriptor",
     name:  "JoystickDescriptor",
-      contents: contents,
+    contents: contents,
+    className: "hal.JoystickDescriptor",
   };
+
   return category;
 }

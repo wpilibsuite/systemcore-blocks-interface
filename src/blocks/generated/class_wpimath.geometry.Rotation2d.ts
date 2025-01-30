@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRotation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.geometry._geometry.Rotation2d", "args": [], "tooltip": "Constructs a Rotation2d with a default angle of 0 degrees.", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rotation2d"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRotation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.geometry._geometry.Rotation2d", "args": [{"name": "value", "type": "wpimath.units.radians"}], "tooltip": "Constructs a Rotation2d with the given radian value.\n:param value: The value of the angle in radians.", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rotation2d"}}}}},
@@ -23,12 +25,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "float", "args": [{"name": "rotation2d", "type": "wpimath.geometry._geometry.Rotation2d"}], "tooltip": "Returns the tangent of the rotation.\n\n:returns: The tangent of the rotation.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rotation2d", "FUNC": "tan"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[2, 2]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[2, 2]]", "args": [{"name": "rotation2d", "type": "wpimath.geometry._geometry.Rotation2d"}], "tooltip": "Returns matrix representation of this rotation.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Rotation2d", "FUNC": "toMatrix"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Rotation2d",
     name:  "Rotation2d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Rotation2d",
   };
+
   return category;
 }

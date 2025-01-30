@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 23 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.PowerDistribution", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PowerDistribution", "VAR": "kDefaultModule"}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPowerDistribution"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PowerDistribution", "args": [], "tooltip": "Constructs a PowerDistribution object.\n\nDetects the connected PDP/PDH using the default CAN ID (0 for CTRE and 1\nfor REV).", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PowerDistribution"}}}}},
@@ -37,12 +39,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PowerDistribution.ModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PowerDistribution.ModuleType", "ENUM_VALUE": "kCTRE"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.PowerDistribution.ModuleType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.PowerDistribution.ModuleType", "ENUM_VALUE": "kRev"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PowerDistribution",
     name:  "PowerDistribution",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PowerDistribution",
   };
+
   return category;
 }
