@@ -22,6 +22,8 @@
 import { PythonGenerator } from 'blockly/python';
 import * as pythonUtils from './generated/python';
 
+export const RETURN_TYPE_NONE = 'None';
+
 // Functions used in multiple python block definitions.
 
 export function getAllowedTypesForSetCheck(type: string): string[] {
@@ -97,4 +99,26 @@ export function getOutputCheck(type: string): string {
 export function addImport(generator: PythonGenerator, importModule: string): void {
   (generator as any).definitions_['import_' + importModule] =
       'import ' + importModule;
+}
+
+// Function to return a legal name based off of proposed names and making sure it doesn't conflict
+// This is a legal name for python methods and variables. 
+export function getLegalName(proposedName: string, existingNames: string[]){
+  let newName = proposedName.trim().replace(' ', '_');
+  
+  if (!/^[A-Za-z_]/.test(newName)){
+      newName = "_" + newName;
+  }
+      
+  while (existingNames.includes(newName)){
+      const match = /(.*?)(\d+)$/.exec(newName)
+
+      if(match){
+          let lastNumber  = +match[2]
+          newName = match[1] + (lastNumber + 1)
+      }else{
+          newName += "2"
+      }
+  }
+  return newName;
 }

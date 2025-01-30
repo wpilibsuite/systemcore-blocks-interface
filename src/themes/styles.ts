@@ -26,6 +26,7 @@ export const MRC_STYLE_ENUM = 'mrc_style_enum';
 export const MRC_STYLE_VARIABLES = 'mrc_style_variables';
 export const MRC_STYLE_COMMENTS = 'mrc_style_comments';
 export const MRC_STYLE_MISC = 'mrc_style_misc';
+export const MRC_STYLE_CLASS_BLOCKS = 'mrc_style_class_blocks'
 
 export const add_mrc_styles = function(theme : Blockly.Theme) : Blockly.Theme {
     theme.setBlockStyle(MRC_STYLE_FUNCTIONS,{
@@ -44,6 +45,12 @@ export const add_mrc_styles = function(theme : Blockly.Theme) : Blockly.Theme {
         colourPrimary: "#5ba55b",
         colourSecondary: "#deedde",
         colourTertiary: "#498449",
+        hat:""
+    });
+    theme.setBlockStyle(MRC_STYLE_CLASS_BLOCKS, {
+        colourPrimary: "#4a148c",
+        colourSecondary:"#AD7BE9",
+        colourTertiary:"#CDB6E9",
         hat:""
     });
     theme.setBlockStyle(MRC_STYLE_COMMENTS,{
