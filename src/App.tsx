@@ -753,7 +753,7 @@ const App: React.FC = () => {
               if (success) {
                 setTriggerListModules(!triggerListModules);
               } else if (errorMessage) {
-                setAlertErrorMessage('Failed to rename the Workspace: ' + errorMessage);
+                setAlertErrorMessage('Failed to delete the Workspace: ' + errorMessage);
                 setAlertErrorVisible(true);
               }
             });
@@ -766,7 +766,7 @@ const App: React.FC = () => {
               if (success) {
                 setTriggerListModules(!triggerListModules);
               } else if (errorMessage) {
-                setAlertErrorMessage('Failed to rename the Workspace: ' + errorMessage);
+                setAlertErrorMessage('Failed to delete the OpMode: ' + errorMessage);
                 setAlertErrorVisible(true);
               }
             });
