@@ -46,17 +46,21 @@ export const MODULE_TYPE_MECHANISM = 'mechanism';
 export const MODULE_NAME_PLACEHOLDER = '%module_name%';
 
 /**
- * This will return the current module
- * TODO: Make this for real, now this is placeholder to see if I can get this to work
+ * Returns the module with the given module path, or null if it is not found.
  */
-export function getCurrentModule(): Module{
-  return {
-    modulePath : 'auto.py',
-    moduleType : 'OpMode',
-    workspaceName: 'Workspace',
-    moduleName: 'TeleOp',
-    dateModifiedMillis : 0
+export function findModule(modules: Workspace[], modulePath: string): Module | null {
+  for (const workspace of modules) {
+    if (workspace.modulePath === modulePath) {
+      return workspace;
+    }
+    for (const opMode of workspace.opModes) {
+      if (opMode.modulePath === modulePath) {
+        return opMode;
+      }
+    }
   }
+
+  return null;
 }
 
 /**
@@ -74,6 +78,13 @@ export function isValidPythonModuleName(name: string): boolean {
  */
 export function makeModulePath(workspaceName: string, moduleName: string): string {
   return workspaceName + '/' + moduleName + '.py';
+}
+
+/**
+ * Returns the workspace path for the given workspace names.
+ */
+export function makeWorkspacePath(workspaceName: string): string {
+  return makeModulePath(workspaceName, workspaceName);
 }
 
 /**
@@ -120,10 +131,32 @@ export function makeUploadWorkspaceName(uploadFileName: string): string {
 /**
  * Returns the module content for a new module.
  */
-export function newModuleContent(): string {
-  const pythonCode = '';
-  const exportedBlocks = '[]';
-  const blocksContent = '{}';
+export function newModuleContent(moduleType: string): string {
+  let pythonCode;
+  let blocksContent;
+  let exportedBlocks;
+
+  switch (moduleType) {
+    case MODULE_TYPE_WORKSPACE:
+      pythonCode = '';
+      blocksContent = '{}';
+      exportedBlocks = '[]';
+      break;
+    case MODULE_TYPE_OPMODE:
+      // TODO: Update the python code and blocks content here to be an OpMode.
+      pythonCode = '';
+      blocksContent = '{}';
+      exportedBlocks = '[]';
+      break;
+    case MODULE_TYPE_MECHANISM:
+      pythonCode = '';
+      blocksContent = '{}';
+      exportedBlocks = '[]';
+      break;
+    default:
+      throw new Error('Unexpected module type: ' + moduleType);
+  }
+
   return makeModuleContent(pythonCode, exportedBlocks, blocksContent);
 }
 

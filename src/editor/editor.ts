@@ -34,6 +34,7 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
 
 export class Editor {
   private blocklyWorkspace: Blockly.WorkspaceSvg;
+  private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
   private workspacePath: string = '';
   private moduleContent: string = '';
@@ -101,14 +102,21 @@ export class Editor {
     // TODO(lizlooney): do we need to do anything here?
   }
 
-  public loadModuleBlocks(modulePath: string, workspacePath: string) {
-    this.modulePath = modulePath;
-    this.workspacePath = workspacePath;
+  public loadModuleBlocks(currentModule: commonStorage.Module | null) {
+    this.currentModule = currentModule;
+    extendedPythonGenerator.setCurrentModule(currentModule);
+    if (currentModule) {
+      this.modulePath = currentModule.modulePath;
+      this.workspacePath = commonStorage.makeWorkspacePath(currentModule.workspaceName);
+    } else {
+      this.modulePath = '';
+      this.workspacePath = '';
+    }
     this.moduleContent = '';
     this.workspaceContent = '';
     this.clearBlocklyWorkspace();
 
-    if (modulePath) {
+    if (currentModule) {
       storage.fetchModuleContent(
         this.modulePath,
         (moduleContent: string | null, errorMessage: string) => {
@@ -180,8 +188,8 @@ export class Editor {
   }
 
   public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
-    if (this.modulePath) {
-      if (this.modulePath === this.workspacePath) {
+    if (this.currentModule) {
+      if (this.currentModule.moduleType === commonStorage.MODULE_TYPE_WORKSPACE) {
         // If we are editing a Workspace, we don't add any additional blocks to
         // the toolbox.
         this.setToolbox(getToolboxJSON([], shownPythonToolboxCategories));
@@ -195,9 +203,8 @@ export class Editor {
         }, 50);
         return;
       }
-      const workspaceName = commonStorage.getWorkspaceName(this.modulePath);
       const exportedBlocks = commonStorage.extractExportedBlocks(
-         workspaceName, this.workspaceContent);
+         this.currentModule.workspaceName, this.workspaceContent);
       this.setToolbox(getToolboxJSON(exportedBlocks, shownPythonToolboxCategories));
     }
   }
