@@ -29,10 +29,15 @@ import * as commonStorage from '../storage/common_storage';
 // variables that have been defined so they can be used in other modules.
 
 export class ExtendedPythonGenerator extends PythonGenerator {
+  private currentModule: commonStorage.Module | null = null;
   private mapWorkspaceIdToExportedBlocks: { [key: string]: Block[] } = Object.create(null);
 
   constructor() {
     super('Python');
+  }
+
+  setCurrentModule(module: commonStorage.Module | null) {
+    this.currentModule = module;
   }
 
   init(workspace: Blockly.Workspace) {
@@ -155,24 +160,27 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   workspaceToCode(workspace?: Blockly.Workspace): string {
-    let module = commonStorage.getCurrentModule();
-    let className = module.moduleName;
-    let classType = module.moduleType;
+    let code = super.workspaceToCode(workspace);
+    if (!this.currentModule) {
+      return code;
+    }
+
+    let className = this.currentModule.moduleName;
+    let classType = this.currentModule.moduleType;
 
     this.addImport(classType);
 
-    let prefix = ""
-    for (let key in this.definitions_){
-      prefix += this.definitions_[key] + "\n"
+    let prefix = "";
+    for (let key in this.definitions_) {
+      prefix += this.definitions_[key] + "\n";
     }
-    if(prefix){
-      prefix += "\n"
+    if (prefix) {
+      prefix += "\n";
     }
 
-    let class_def = "class " + className + "(" + classType + "):\n"
-    let code = super.workspaceToCode(workspace);
-    if(!code){
-      code = "pass"
+    let class_def = "class " + className + "(" + classType + "):\n";
+    if (!code) {
+      code = "pass";
     }
     return prefix + class_def + this.prefixLines(code, this.INDENT);
   }
