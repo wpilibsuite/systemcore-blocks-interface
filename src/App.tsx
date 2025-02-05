@@ -57,6 +57,8 @@ import * as commonStorage from './storage/common_storage';
 import * as ChangeFramework from './blocks/utils/change_framework'
 import {mutatorOpenListener}  from './blocks/mrc_class_method_def'
 
+import {create as createOpMode} from './modules/mrc_module_opmode'
+
 
 type NewWorkspaceNameModalProps = {
   isOpen: boolean;
@@ -458,7 +460,7 @@ const App: React.FC = () => {
         blocklyWorkspace.addChangeListener(mutatorOpenListener);
 
         // Show generated python code.
-        blocklyWorkspace.addChangeListener(handleBlocksChanged);
+        blocklyWorkspace.addChangeListener(handleBlocksChanged);    
       }
 
       blocksEditor.current = new editor.Editor(blocklyWorkspace);
@@ -624,7 +626,14 @@ const App: React.FC = () => {
               setAlertErrorMessage('Failed to create a new OpMode: ' + errorMessage);
               setAlertErrorVisible(true);
             }
-          });
+          });            
+      // TODO: This needs to be changed based off the type
+      if (blocklyComponent.current){
+        const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
+        if(blocklyComponent){
+          createOpMode(blocklyWorkspace);        
+        }
+      }
     } else if (newOpModeNameModalPurpose === 'RenameOpMode') {
       const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
       const oldOpModeName = commonStorage.getModuleName(currentModulePath);
