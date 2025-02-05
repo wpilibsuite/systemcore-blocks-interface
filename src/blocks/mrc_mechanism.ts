@@ -24,6 +24,8 @@ import { Order, PythonGenerator } from 'blockly/python';
 
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import { createFieldNonEditableText } from 'src/fields/FieldNonEditableText';
+import { addImport } from './utils/python';
+
 
 export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';
@@ -56,9 +58,8 @@ const MECHANISM_FUNCTION = {
               .appendField(new Blockly.FieldTextInput('my_mech'), 'NAME')
               .appendField('of type')
               .appendField(createFieldNonEditableText(''), 'TYPE');
-    this.setPreviousStatement(false);
-    this.setNextStatement(false);
-    this.setOutput(true, OUTPUT_NAME);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
  },
 }
 
@@ -67,9 +68,14 @@ export const setup = function() {
 }
 
 export const pythonFromBlock = function(
-    block: Blockly.Block,
+    mechanismBlock: MechanismBlock,
     generator: PythonGenerator,
 ) {
-    // TODO: Make this!!
-    return ''
+  if (mechanismBlock.mrcImportModule) {
+      addImport(generator, mechanismBlock.mrcImportModule);
+  }
+  let code = 'self.mechanisms["' + mechanismBlock.getFieldValue('NAME') + '"] = ' 
+          + mechanismBlock.getFieldValue('TYPE') + '()' + "\n"
+   
+  return code
 }
