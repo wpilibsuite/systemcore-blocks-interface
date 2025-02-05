@@ -32,15 +32,32 @@ export type Module = {
 };
 
 export type OpMode = Module;
+export type Mechanism = Module;
 
 export type Workspace = Module & {
   opModes: OpMode[],
+  mechanisms: Mechanism[]
 };
 
 export const MODULE_TYPE_WORKSPACE = 'workspace';
 export const MODULE_TYPE_OPMODE = 'opmode';
+export const MODULE_TYPE_MECHANISM = 'mechanism';
 
 export const MODULE_NAME_PLACEHOLDER = '%module_name%';
+
+/**
+ * This will return the current module
+ * TODO: Make this for real, now this is placeholder to see if I can get this to work
+ */
+export function getCurrentModule(): Module{
+  return {
+    modulePath : 'auto.py',
+    moduleType : 'OpMode',
+    workspaceName: 'Workspace',
+    moduleName: 'TeleOp',
+    dateModifiedMillis : 0
+  }
+}
 
 /**
  * Returns true if the given name is a valid python module name.

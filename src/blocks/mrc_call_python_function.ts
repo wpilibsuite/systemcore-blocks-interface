@@ -25,7 +25,8 @@ import { Order, PythonGenerator } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
-import { getAllowedTypesForSetCheck, getOutputCheck, addImport } from './utils/python';
+import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 
 // A block to call a python function.
@@ -258,11 +259,11 @@ export const setup = function() {
 
 export const pythonFromBlock = function(
     block: Blockly.Block,
-    generator: PythonGenerator,
+    generator: ExtendedPythonGenerator,
 ) {
   const callPythonFunctionBlock = block as CallPythonFunctionBlock;
   if (callPythonFunctionBlock.mrcImportModule) {
-    addImport(generator, callPythonFunctionBlock.mrcImportModule);
+    generator.addImport(callPythonFunctionBlock.mrcImportModule);
   }
   let code;
   let argStartIndex = 0;
@@ -311,7 +312,7 @@ export const pythonFromBlock = function(
 
 function generateCodeForArguments(
     block: CallPythonFunctionBlock,
-    generator: PythonGenerator,
+    generator: ExtendedPythonGenerator,
     startIndex: number) {
   let code = '';
   if (block.mrcArgs.length - startIndex === 1) {
