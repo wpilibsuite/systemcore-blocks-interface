@@ -91,6 +91,7 @@ const CLASS_METHOD_DEF = {
         this.setOutput(false);
         this.setStyle(MRC_STYLE_CLASS_BLOCKS);
         this.appendStatementInput('STACK').appendField('');
+        this.mrcParameters = [];
     },
     /**
        * Returns the state of this block as a JSON serializable object.
