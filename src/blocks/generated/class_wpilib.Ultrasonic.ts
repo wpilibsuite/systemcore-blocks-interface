@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 12 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myUltrasonic"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Ultrasonic", "args": [{"name": "pingChannel", "type": "int"}, {"name": "echoChannel", "type": "int"}], "tooltip": "Create an instance of the Ultrasonic Sensor.\n\nThis is designed to support the Daventech SRF04 and Vex ultrasonic sensors.\n\n:param pingChannel: The digital output channel that sends the pulse to\n                    initiate the sensor sending the ping.\n:param echoChannel: The digital input channel that receives the echo. The\n                    length of time that the echo is high represents the\n                    round trip time of the ping, and the distance.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Ultrasonic"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myUltrasonic"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Ultrasonic", "args": [{"name": "pingChannel", "type": "wpilib._wpilib.DigitalOutput"}, {"name": "echoChannel", "type": "wpilib._wpilib.DigitalInput"}], "tooltip": "Create an instance of an Ultrasonic Sensor from a DigitalInput for the echo\nchannel and a DigitalOutput for the ping channel.\n\n:param pingChannel: The digital output object that starts the sensor doing a\n                    ping. Requires a 10uS pulse to start.\n:param echoChannel: The digital input object that times the return pulse to\n                    determine the range.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Ultrasonic"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalOutput"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDigitalInput"}}}}}}}}},
@@ -22,12 +24,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "enabling", "type": "bool"}], "tooltip": "Turn Automatic mode on/off.\n\nWhen in Automatic mode, all sensors will fire in round robin, waiting a set\ntime between each sensor.\n\n:param enabling: Set to true if round robin scheduling should start for all\n                 the ultrasonic sensors. This scheduling method assures that\n                 the sensors are non-interfering because no two sensors fire\n                 at the same time. If another scheduling algorithm is\n                 preferred, it can be implemented by pinging the sensors\n                 manually and waiting for the results to come back.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Ultrasonic", "FUNC": "setAutomaticMode"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "ultrasonic", "type": "wpilib._wpilib.Ultrasonic"}, {"name": "enable", "type": "bool"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.Ultrasonic", "FUNC": "setEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myUltrasonic"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Ultrasonic",
     name:  "Ultrasonic",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Ultrasonic",
   };
+
   return category;
 }

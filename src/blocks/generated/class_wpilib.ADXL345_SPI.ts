@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 16 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADXL345_SPI"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADXL345_SPI", "args": [{"name": "port", "type": "wpilib._wpilib.SPI.Port"}, {"name": "range", "type": "wpilib._wpilib.ADXL345_SPI.Range"}], "tooltip": "Constructor.\n\n:param port:  The SPI port the accelerometer is attached to\n:param range: The range (+ or -) that the accelerometer will measure", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL345_SPI"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPort"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRange"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "float", "args": [{"name": "aDXL345_SPI", "type": "wpilib._wpilib.ADXL345_SPI"}, {"name": "axis", "type": "wpilib._wpilib.ADXL345_SPI.Axes"}], "tooltip": "Get the acceleration of one axis in Gs.\n\n:param axis: The axis to read from.\n\n:returns: Acceleration of the ADXL345 in Gs.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL345_SPI", "FUNC": "getAcceleration"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADXL345_SPI"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAxes"}}}}}},
@@ -29,12 +31,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_SPI.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_SPI.Range", "ENUM_VALUE": "kRange_4G"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_SPI.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_SPI.Range", "ENUM_VALUE": "kRange_8G"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.ADXL345_SPI",
     name:  "ADXL345_SPI",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.ADXL345_SPI",
   };
+
   return category;
 }

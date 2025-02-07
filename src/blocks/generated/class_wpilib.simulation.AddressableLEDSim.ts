@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 19 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAddressableLEDSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.AddressableLEDSim", "args": [], "tooltip": "Constructs for the first addressable LED.", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AddressableLEDSim"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAddressableLEDSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.AddressableLEDSim", "args": [{"name": "addressableLED", "type": "wpilib._wpilib.AddressableLED"}], "tooltip": "Constructs from an AddressableLED object.\n\n:param addressableLED: AddressableLED to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AddressableLEDSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLED"}}}}}}}}},
@@ -29,12 +31,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "addressableLEDSim", "type": "wpilib.simulation._simulation.AddressableLEDSim"}, {"name": "outputPort", "type": "int"}], "tooltip": "Change the output port.\n\n:param outputPort: the new output port", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AddressableLEDSim", "FUNC": "setOutputPort"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLEDSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "addressableLEDSim", "type": "wpilib.simulation._simulation.AddressableLEDSim"}, {"name": "running", "type": "bool"}], "tooltip": "Change whether the LEDs are active.\n\n:param running: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AddressableLEDSim", "FUNC": "setRunning"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAddressableLEDSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.AddressableLEDSim",
     name:  "AddressableLEDSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.AddressableLEDSim",
   };
+
   return category;
 }

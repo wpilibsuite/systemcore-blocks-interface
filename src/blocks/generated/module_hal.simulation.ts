@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 432 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "None", "args": [{"name": "index", "type": "int"}, {"name": "uid", "type": "int"}], "tooltip": "", "importModule": "hal.simulation"}, "fields": {"MODULE_OR_CLASS": "hal.simulation", "FUNC": "cancelAccelerometerActiveCallback"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "module", "returnType": "None", "args": [{"name": "index", "type": "int"}, {"name": "uid", "type": "int"}], "tooltip": "", "importModule": "hal.simulation"}, "fields": {"MODULE_OR_CLASS": "hal.simulation", "FUNC": "cancelAccelerometerRangeCallback"}},
@@ -444,12 +446,16 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerFiltered"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.simulation.AnalogTriggerMode", "importModule": "hal.simulation"}, "fields": {"ENUM_TYPE": "hal.simulation.AnalogTriggerMode", "ENUM_VALUE": "HALSIM_AnalogTriggerUnassigned"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonModuleCategory = {
     kind: "category",
-    moduleName: "hal.simulation",
     name:  "simulation",
-      contents: contents,
+    contents: contents,
+    moduleName: "hal.simulation",
+    packageName: "hal.simulation",
   };
+
   return category;
 }

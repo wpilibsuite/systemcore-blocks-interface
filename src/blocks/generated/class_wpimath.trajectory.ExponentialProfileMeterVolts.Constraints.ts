@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 6 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "varType": "wpimath.units.units_per_second", "importModule": "", "selfLabel": "constraints", "selfType": "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "VAR": "A"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myConstraints"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "varType": "wpimath.units.meters_per_second_squared_per_volt", "importModule": "", "selfLabel": "constraints", "selfType": "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "VAR": "B"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myConstraints"}}}}}},
@@ -20,12 +22,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myConstraints"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath._controls._controls.trajectory.ExponentialProfileMeterVolts.Constraints", "args": [{"name": "maxInput", "type": "wpimath.units.volts"}, {"name": "a", "type": "wpimath.units.units_per_second"}, {"name": "b", "type": "wpimath.units.meters_per_second_squared_per_volt"}], "tooltip": "", "importModule": "wpimath.trajectory"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "FUNC": "fromStateSpace"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.meters_per_second", "args": [{"name": "constraints", "type": "wpimath._controls._controls.trajectory.ExponentialProfileMeterVolts.Constraints"}], "tooltip": "Computes the max achievable velocity for an Exponential Profile.\n\n:returns: The steady-state velocity achieved by this profile.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints", "FUNC": "maxVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myConstraints"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints",
     name:  "Constraints",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.trajectory.ExponentialProfileMeterVolts.Constraints",
   };
+
   return category;
 }

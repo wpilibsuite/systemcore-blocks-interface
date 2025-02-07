@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogTriggerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.AnalogTriggerSim", "args": [{"name": "analogTrigger", "type": "wpilib._wpilib.AnalogTrigger"}], "tooltip": "Constructs from an AnalogTrigger object.\n\n:param analogTrigger: AnalogTrigger to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogTriggerSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogTrigger"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogTriggerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpilib.simulation._simulation.AnalogTriggerSim", "args": [{"name": "channel", "type": "int"}], "tooltip": "Creates an AnalogTriggerSim for an analog input channel.\n\n:param channel: analog input channel\n\n:returns: Simulated object\n          @throws std::out_of_range if no AnalogTrigger is configured for that\n          channel", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogTriggerSim", "FUNC": "createForChannel"}}}}},
@@ -23,12 +25,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogTriggerSim", "type": "wpilib.simulation._simulation.AnalogTriggerSim"}, {"name": "triggerLowerBound", "type": "float"}], "tooltip": "Change the lower bound.\n\n:param triggerLowerBound: the new lower bound", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogTriggerSim", "FUNC": "setTriggerLowerBound"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogTriggerSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogTriggerSim", "type": "wpilib.simulation._simulation.AnalogTriggerSim"}, {"name": "triggerUpperBound", "type": "float"}], "tooltip": "Change the upper bound.\n\n:param triggerUpperBound: the new upper bound", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogTriggerSim", "FUNC": "setTriggerUpperBound"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogTriggerSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.AnalogTriggerSim",
     name:  "AnalogTriggerSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.AnalogTriggerSim",
   };
+
   return category;
 }

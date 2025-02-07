@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 18 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myQuaternion"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.geometry._geometry.Quaternion", "args": [], "tooltip": "Constructs a quaternion with a default angle of 0 degrees.", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Quaternion"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myQuaternion"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.geometry._geometry.Quaternion", "args": [{"name": "w", "type": "float"}, {"name": "x", "type": "float"}, {"name": "y", "type": "float"}, {"name": "z", "type": "float"}], "tooltip": "Constructs a quaternion with the given components.\n\n:param w: W component of the quaternion.\n:param x: X component of the quaternion.\n:param y: Y component of the quaternion.\n:param z: Z component of the quaternion.", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Quaternion"}}}}},
@@ -28,12 +30,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myQuaternion"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Quaternion", "args": [{"name": "quaternion", "type": "wpimath.geometry._geometry.Quaternion"}, {"name": "t", "type": "float"}], "tooltip": "Calculates this quaternion raised to a power.\n\n:param t: the power to raise this quaternion to.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Quaternion", "FUNC": "pow"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myQuaternion"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[3, 1]]", "args": [{"name": "quaternion", "type": "wpimath.geometry._geometry.Quaternion"}], "tooltip": "Returns the rotation vector representation of this quaternion.\n\nThis is also the log operator of SO(3).", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Quaternion", "FUNC": "toRotationVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myQuaternion"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Quaternion",
     name:  "Quaternion",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Quaternion",
   };
+
   return category;
 }

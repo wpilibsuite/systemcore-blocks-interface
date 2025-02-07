@@ -14,6 +14,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.REVPHCompressorConfig", "varType": "int", "importModule": "", "selfLabel": "rEVPHCompressorConfig", "selfType": "hal.REVPHCompressorConfig"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHCompressorConfig", "VAR": "forceDisable"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHCompressorConfig"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.REVPHCompressorConfig", "varType": "int", "importModule": "", "selfLabel": "rEVPHCompressorConfig", "selfType": "hal.REVPHCompressorConfig"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHCompressorConfig", "VAR": "forceDisable"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHCompressorConfig"}}}}}},
@@ -25,12 +27,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.REVPHCompressorConfig", "varType": "float", "importModule": "", "selfLabel": "rEVPHCompressorConfig", "selfType": "hal.REVPHCompressorConfig"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHCompressorConfig", "VAR": "minAnalogVoltage"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHCompressorConfig"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myREVPHCompressorConfig"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "hal._wpiHal.REVPHCompressorConfig", "args": [], "tooltip": "", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHCompressorConfig"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.REVPHCompressorConfig",
     name:  "REVPHCompressorConfig",
-      contents: contents,
+    contents: contents,
+    className: "hal.REVPHCompressorConfig",
   };
+
   return category;
 }

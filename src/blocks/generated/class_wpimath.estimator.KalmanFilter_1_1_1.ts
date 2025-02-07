@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 12 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myKalmanFilter_1_1_1"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.estimator.KalmanFilter_1_1_1", "args": [{"name": "plant", "type": "wpimath._controls._controls.system.LinearSystem_1_1_1"}, {"name": "stateStdDevs", "type": "Tuple[float]"}, {"name": "measurementStdDevs", "type": "Tuple[float]"}, {"name": "dt", "type": "wpimath.units.seconds"}], "tooltip": "Constructs a Kalman filter with the given plant.\n\nSee\nhttps://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-observers.html#process-and-measurement-noise-covariance-matrices\nfor how to select the standard deviations.\n\n:param plant:              The plant used for the prediction step.\n:param stateStdDevs:       Standard deviations of model states.\n:param measurementStdDevs: Standard deviations of measurements.\n:param dt:                 Nominal discretization timestep.\n                           @throws std::invalid_argument If the system is undetectable.", "importModule": "wpimath.estimator"}, "fields": {"MODULE_OR_CLASS": "wpimath.estimator.KalmanFilter_1_1_1"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystem_1_1_1"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[1, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[1, 1]]", "args": [{"name": "kalmanFilter_1_1_1", "type": "wpimath._controls._controls.estimator.KalmanFilter_1_1_1"}], "tooltip": "Returns the error covariance matrix P.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.estimator.KalmanFilter_1_1_1", "FUNC": "P"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myKalmanFilter_1_1_1"}}}}}}}}},
@@ -22,12 +24,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[1, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[1, 1]]", "args": [{"name": "kalmanFilter_1_1_1", "type": "wpimath._controls._controls.estimator.KalmanFilter_1_1_1"}], "tooltip": "Returns the state estimate x-hat.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.estimator.KalmanFilter_1_1_1", "FUNC": "xhat"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myKalmanFilter_1_1_1"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "float", "args": [{"name": "kalmanFilter_1_1_1", "type": "wpimath._controls._controls.estimator.KalmanFilter_1_1_1"}, {"name": "i", "type": "int"}], "tooltip": "Returns an element of the state estimate x-hat.\n\n:param i: Row of x-hat.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.estimator.KalmanFilter_1_1_1", "FUNC": "xhat"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myKalmanFilter_1_1_1"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.estimator.KalmanFilter_1_1_1",
     name:  "KalmanFilter_1_1_1",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.estimator.KalmanFilter_1_1_1",
   };
+
   return category;
 }

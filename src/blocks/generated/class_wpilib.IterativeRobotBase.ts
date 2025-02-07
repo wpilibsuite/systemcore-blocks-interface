@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 36 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myIterativeRobotBase"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.IterativeRobotBase", "args": [{"name": "period", "type": "wpimath.units.seconds"}], "tooltip": "Constructor for IterativeRobotBase.\n\n:param period: Period.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.IterativeRobotBase"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "tooltip": "Exit code for autonomous mode should go here.\n\nUsers should override this method for code which will be called each time\nthe robot exits autonomous mode.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.IterativeRobotBase", "FUNC": "autonomousExit"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},
@@ -46,12 +48,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "tooltip": "Initialization code for test mode should go here.\n\nUsers should override this method for initialization code which will be\ncalled each time the robot enters test mode.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.IterativeRobotBase", "FUNC": "testInit"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "iterativeRobotBase", "type": "wpilib._wpilib.IterativeRobotBase"}], "tooltip": "Periodic code for test mode should go here.\n\nUsers should override this method for code which will be called each time a\nnew packet is received from the driver station and the robot is in test\nmode.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.IterativeRobotBase", "FUNC": "testPeriodic"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myIterativeRobotBase"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.IterativeRobotBase",
     name:  "IterativeRobotBase",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.IterativeRobotBase",
   };
+
   return category;
 }

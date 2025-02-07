@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 11 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBangBangController"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.BangBangController", "args": [{"name": "tolerance", "type": "float"}], "tooltip": "Creates a new bang-bang controller.\n\nAlways ensure that your motor controllers are set to \"coast\" before\nattempting to control them with a bang-bang controller.\n\n:param tolerance: Tolerance for atSetpoint.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.BangBangController"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "bangBangController", "type": "wpimath._controls._controls.controller.BangBangController"}], "tooltip": "Returns true if the error is within the tolerance of the setpoint.\n\n:returns: Whether the error is within the acceptable bounds.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.BangBangController", "FUNC": "atSetpoint"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBangBangController"}}}}}},
@@ -21,12 +23,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "bangBangController", "type": "wpimath._controls._controls.controller.BangBangController"}, {"name": "setpoint", "type": "float"}], "tooltip": "Sets the setpoint for the bang-bang controller.\n\n:param setpoint: The desired setpoint.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.BangBangController", "FUNC": "setSetpoint"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBangBangController"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "bangBangController", "type": "wpimath._controls._controls.controller.BangBangController"}, {"name": "tolerance", "type": "float"}], "tooltip": "Sets the error within which AtSetpoint will return true.\n\n:param tolerance: Position error which is tolerable.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.BangBangController", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBangBangController"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.controller.BangBangController",
     name:  "BangBangController",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.controller.BangBangController",
   };
+
   return category;
 }

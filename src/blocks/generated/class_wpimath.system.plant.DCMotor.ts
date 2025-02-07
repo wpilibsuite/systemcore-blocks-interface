@@ -16,6 +16,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 31 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.system.plant.DCMotor", "varType": "wpimath.units.volt_seconds", "importModule": "", "selfLabel": "dCMotor", "selfType": "wpimath.system.plant.DCMotor"}, "fields": {"MODULE_OR_CLASS": "wpimath.system.plant.DCMotor", "VAR": "Kt"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.system.plant.DCMotor", "varType": "wpimath.units.radians_per_second_per_volt", "importModule": "", "selfLabel": "dCMotor", "selfType": "wpimath.system.plant.DCMotor"}, "fields": {"MODULE_OR_CLASS": "wpimath.system.plant.DCMotor", "VAR": "Kv"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}},
@@ -49,12 +51,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.volts", "args": [{"name": "dCMotor", "type": "wpimath._controls._controls.plant.DCMotor"}, {"name": "torque", "type": "wpimath.units.newton_meters"}, {"name": "speed", "type": "wpimath.units.radians_per_second"}], "tooltip": "Returns the voltage provided to the motor for a given torque and\nangular velocity.\n\n:param torque: The torque produced by the motor.\n:param speed:  The current angular velocity of the motor.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.system.plant.DCMotor", "FUNC": "voltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDCMotor"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath._controls._controls.plant.DCMotor", "args": [{"name": "dCMotor", "type": "wpimath._controls._controls.plant.DCMotor"}, {"name": "gearboxReduction", "type": "float"}], "tooltip": "Returns a copy of this motor with the given gearbox reduction applied.\n\n:param gearboxReduction: The gearbox reduction.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.system.plant.DCMotor", "FUNC": "withReduction"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.system.plant.DCMotor",
     name:  "DCMotor",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.system.plant.DCMotor",
   };
+
   return category;
 }

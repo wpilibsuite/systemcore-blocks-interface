@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 6 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySendableChooser"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.SendableChooser", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SendableChooser"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sendableChooser", "type": "wpilib._wpilib.SendableChooser"}, {"name": "name", "type": "str"}, {"name": "object", "type": "object"}], "tooltip": "Adds the given object to the list of options.\n\nOn the SmartDashboard on the desktop, the object will appear as the given\nname.\n\n:param name:   the name of the option\n:param object: the option", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.SendableChooser", "FUNC": "addOption"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableChooser"}}}}}},
@@ -16,12 +18,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sendableChooser", "type": "wpilib._wpilib.SendableChooser"}, {"name": "listener", "type": "Callable[[object], None]"}], "tooltip": "Bind a listener that's called when the selected value changes.\nOnly one listener can be bound. Calling this function will replace the\nprevious listener.\n\n:param listener: The function to call that accepts the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.SendableChooser", "FUNC": "onChange"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableChooser"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sendableChooser", "type": "wpilib._wpilib.SendableChooser"}, {"name": "name", "type": "str"}, {"name": "object", "type": "object"}], "tooltip": "Add the given object to the list of options and marks it as the default.\n\nFunctionally, this is very close to AddOption() except that it will use\nthis as the default option if none other is explicitly selected.\n\n:param name:   the name of the option\n:param object: the option", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.SendableChooser", "FUNC": "setDefaultOption"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableChooser"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.SendableChooser",
     name:  "SendableChooser",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.SendableChooser",
   };
+
   return category;
 }

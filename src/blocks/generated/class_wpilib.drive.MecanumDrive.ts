@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 19 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDrive"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.drive._drive.MecanumDrive", "args": [{"name": "frontLeftMotor", "type": "wpilib.interfaces._interfaces.MotorController"}, {"name": "rearLeftMotor", "type": "wpilib.interfaces._interfaces.MotorController"}, {"name": "frontRightMotor", "type": "wpilib.interfaces._interfaces.MotorController"}, {"name": "rearRightMotor", "type": "wpilib.interfaces._interfaces.MotorController"}], "tooltip": "Construct a MecanumDrive.\n\nIf a motor needs to be inverted, do so before passing it in.\n\n:param frontLeftMotor:  Front-left motor.\n:param rearLeftMotor:   Rear-left motor.\n:param frontRightMotor: Front-right motor.\n:param rearRightMotor:  Rear-right motor.", "importModule": "wpilib.drive"}, "fields": {"MODULE_OR_CLASS": "wpilib.drive.MecanumDrive"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorController"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorController"}}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorController"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDrive"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.drive._drive.MecanumDrive", "args": [{"name": "frontLeftMotor", "type": "Callable[[float], None]"}, {"name": "rearLeftMotor", "type": "Callable[[float], None]"}, {"name": "frontRightMotor", "type": "Callable[[float], None]"}, {"name": "rearRightMotor", "type": "Callable[[float], None]"}], "tooltip": "Construct a MecanumDrive.\n\nIf a motor needs to be inverted, do so before passing it in.\n\n:param frontLeftMotor:  Front-left motor setter.\n:param rearLeftMotor:   Rear-left motor setter.\n:param frontRightMotor: Front-right motor setter.\n:param rearRightMotor:  Rear-right motor setter.", "importModule": "wpilib.drive"}, "fields": {"MODULE_OR_CLASS": "wpilib.drive.MecanumDrive"}}}}},
@@ -29,12 +31,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "motorSafety", "type": "wpilib._wpilib.MotorSafety"}, {"name": "enabled", "type": "bool"}], "tooltip": "Enable/disable motor safety for this device.\n\nTurn on and off the motor safety option for this PWM object.\n\n:param enabled: True if motor safety is enforced for this object.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.MotorSafety", "FUNC": "setSafetyEnabled"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorSafety"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "mecanumDrive", "type": "wpilib.drive._drive.MecanumDrive"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.drive.MecanumDrive", "FUNC": "stopMotor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDrive"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.drive.MecanumDrive",
     name:  "MecanumDrive",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.drive.MecanumDrive",
   };
+
   return category;
 }

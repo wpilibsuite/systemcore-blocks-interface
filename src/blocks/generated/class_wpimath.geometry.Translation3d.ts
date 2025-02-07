@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 22 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Translation3d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "translation3d", "selfType": "wpimath.geometry.Translation3d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Translation3d", "VAR": "x"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation3d"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Translation3d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "translation3d", "selfType": "wpimath.geometry.Translation3d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Translation3d", "VAR": "y"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation3d"}}}}}},
@@ -35,12 +37,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTranslation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Translation2d", "args": [{"name": "translation3d", "type": "wpimath.geometry._geometry.Translation3d"}], "tooltip": "Returns a Translation2d representing this Translation3d projected into the\nX-Y plane.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Translation3d", "FUNC": "toTranslation2d"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation3d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[3, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[3, 1]]", "args": [{"name": "translation3d", "type": "wpimath.geometry._geometry.Translation3d"}], "tooltip": "Returns a 3D translation vector representation of this translation.\n\n:returns: A 3D translation vector representation of this translation.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Translation3d", "FUNC": "toVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation3d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Translation3d",
     name:  "Translation3d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Translation3d",
   };
+
   return category;
 }

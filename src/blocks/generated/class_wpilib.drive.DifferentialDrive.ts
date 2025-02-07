@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 22 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDrive"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.drive._drive.DifferentialDrive", "args": [{"name": "leftMotor", "type": "wpilib.interfaces._interfaces.MotorController"}, {"name": "rightMotor", "type": "wpilib.interfaces._interfaces.MotorController"}], "tooltip": "Construct a DifferentialDrive.\n\nTo pass multiple motors per side, use CAN motor controller followers or\nPWMSpeedController::AddFollower(). If a motor needs to be inverted, do so\nbefore passing it in.\n\n:param leftMotor:  Left motor.\n:param rightMotor: Right motor.", "importModule": "wpilib.drive"}, "fields": {"MODULE_OR_CLASS": "wpilib.drive.DifferentialDrive"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorController"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDrive"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.drive._drive.DifferentialDrive", "args": [{"name": "leftMotor", "type": "Callable[[float], None]"}, {"name": "rightMotor", "type": "Callable[[float], None]"}], "tooltip": "Construct a DifferentialDrive.\n\nTo pass multiple motors per side, use CAN motor controller followers or\nPWMSpeedController::AddFollower(). If a motor needs to be inverted, do so\nbefore passing it in.\n\n:param leftMotor:  Left motor setter.\n:param rightMotor: Right motor setter.", "importModule": "wpilib.drive"}, "fields": {"MODULE_OR_CLASS": "wpilib.drive.DifferentialDrive"}}}}},
@@ -32,12 +34,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "differentialDrive", "type": "wpilib.drive._drive.DifferentialDrive"}, {"name": "leftSpeed", "type": "float"}, {"name": "rightSpeed", "type": "float"}, {"name": "squareInputs", "type": "bool"}], "tooltip": "Tank drive method for differential drive platform.\n\n:param leftSpeed:    The robot left side's speed along the X axis\n                     [-1.0..1.0]. Forward is positive.\n:param rightSpeed:   The robot right side's speed along the X axis\n                     [-1.0..1.0]. Forward is positive.\n:param squareInputs: If set, decreases the input sensitivity at low speeds.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.drive.DifferentialDrive", "FUNC": "tankDrive"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDrive"}}}}, "ARG3": {"shadow": {"type": "logic_boolean", "fields": {"BOOL": "TRUE"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myWheelSpeeds"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpilib.drive._drive.DifferentialDrive.WheelSpeeds", "args": [{"name": "leftSpeed", "type": "float"}, {"name": "rightSpeed", "type": "float"}, {"name": "squareInputs", "type": "bool"}], "tooltip": "Tank drive inverse kinematics for differential drive platform.\n\n:param leftSpeed:    The robot left side's speed along the X axis\n                     [-1.0..1.0]. Forward is positive.\n:param rightSpeed:   The robot right side's speed along the X axis\n                     [-1.0..1.0]. Forward is positive.\n:param squareInputs: If set, decreases the input sensitivity at low speeds.\n\n:returns: Wheel speeds [-1.0..1.0].", "importModule": "wpilib.drive"}, "fields": {"MODULE_OR_CLASS": "wpilib.drive.DifferentialDrive", "FUNC": "tankDriveIK"}, "inputs": {"ARG2": {"shadow": {"type": "logic_boolean", "fields": {"BOOL": "TRUE"}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.drive.DifferentialDrive",
     name:  "DifferentialDrive",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.drive.DifferentialDrive",
   };
+
   return category;
 }

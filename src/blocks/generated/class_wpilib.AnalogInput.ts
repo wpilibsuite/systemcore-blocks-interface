@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 27 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogInput", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogInput", "VAR": "kAccumulatorModuleNumber"}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogInput", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogInput", "VAR": "kAccumulatorNumChannels"}},
@@ -39,12 +41,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "samplesPerSecond", "type": "float"}], "tooltip": "Set the sample rate per channel for all analog channels.\n\nThe maximum rate is 500kS/s divided by the number of channels in use.\nThis is 62500 samples/s per channel.\n\n:param samplesPerSecond: The number of samples per second.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogInput", "FUNC": "setSampleRate"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogInput", "type": "wpilib._wpilib.AnalogInput"}, {"name": "device", "type": "int"}], "tooltip": "Indicates this input is used by a simulated device.\n\n:param device: simulated device handle", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogInput", "FUNC": "setSimDevice"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInput"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.AnalogInput",
     name:  "AnalogInput",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.AnalogInput",
   };
+
   return category;
 }

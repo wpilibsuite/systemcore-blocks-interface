@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 5 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myEllipticalRegionConstraint"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.constraint.EllipticalRegionConstraint", "args": [{"name": "center", "type": "wpimath.geometry._geometry.Translation2d"}, {"name": "xWidth", "type": "wpimath.units.meters"}, {"name": "yWidth", "type": "wpimath.units.meters"}, {"name": "rotation", "type": "wpimath.geometry._geometry.Rotation2d"}, {"name": "constraint", "type": "wpimath._controls._controls.constraint.TrajectoryConstraint"}], "tooltip": "Constructs a new EllipticalRegionConstraint.\n\n:deprecated: Use constructor taking Ellipse2d instead.\n\n:param center:     The center of the ellipse in which to enforce the constraint.\n:param xWidth:     The width of the ellipse in which to enforce the constraint.\n:param yWidth:     The height of the ellipse in which to enforce the constraint.\n:param rotation:   The rotation to apply to all radii around the origin.\n:param constraint: The constraint to enforce when the robot is within the\n                   region.", "importModule": "wpimath.trajectory.constraint"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.constraint.EllipticalRegionConstraint"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation2d"}}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}, "ARG4": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectoryConstraint"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myEllipticalRegionConstraint"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.constraint.EllipticalRegionConstraint", "args": [{"name": "ellipse", "type": "wpimath.geometry._geometry.Ellipse2d"}, {"name": "constraint", "type": "wpimath._controls._controls.constraint.TrajectoryConstraint"}], "tooltip": "Constructs a new EllipticalRegionConstraint.\n\n:param ellipse:    The ellipse in which to enforce the constraint.\n:param constraint: The constraint to enforce when the robot is within the\n                   region.", "importModule": "wpimath.trajectory.constraint"}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.constraint.EllipticalRegionConstraint"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEllipse2d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTrajectoryConstraint"}}}}}}}}},
@@ -15,12 +17,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.meters_per_second", "args": [{"name": "ellipticalRegionConstraint", "type": "wpimath._controls._controls.constraint.EllipticalRegionConstraint"}, {"name": "pose", "type": "wpimath.geometry._geometry.Pose2d"}, {"name": "curvature", "type": "wpimath.units.radians_per_meter"}, {"name": "velocity", "type": "wpimath.units.meters_per_second"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.constraint.EllipticalRegionConstraint", "FUNC": "maxVelocity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEllipticalRegionConstraint"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMinMax"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath._controls._controls.constraint.TrajectoryConstraint.MinMax", "args": [{"name": "ellipticalRegionConstraint", "type": "wpimath._controls._controls.constraint.EllipticalRegionConstraint"}, {"name": "pose", "type": "wpimath.geometry._geometry.Pose2d"}, {"name": "curvature", "type": "wpimath.units.radians_per_meter"}, {"name": "speed", "type": "wpimath.units.meters_per_second"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.trajectory.constraint.EllipticalRegionConstraint", "FUNC": "minMaxAcceleration"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEllipticalRegionConstraint"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.trajectory.constraint.EllipticalRegionConstraint",
     name:  "EllipticalRegionConstraint",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.trajectory.constraint.EllipticalRegionConstraint",
   };
+
   return category;
 }

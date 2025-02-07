@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 16 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDutyCycleEncoder"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.DutyCycleEncoder", "args": [{"name": "channel", "type": "int"}], "tooltip": "Construct a new DutyCycleEncoder on a specific channel.\n\nThis has a fullRange of 1 and an expectedZero of 0.\n\n:param channel: the channel to attach to", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DutyCycleEncoder"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDutyCycleEncoder"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.DutyCycleEncoder", "args": [{"name": "dutyCycle", "type": "wpilib._wpilib.DutyCycle"}], "tooltip": "Construct a new DutyCycleEncoder attached to an existing DutyCycle object.\n\nThis has a fullRange of 1 and an expectedZero of 0.\n\n:param dutyCycle: the duty cycle to attach to", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DutyCycleEncoder"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycle"}}}}}}}}},
@@ -26,12 +28,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "dutyCycleEncoder", "type": "wpilib._wpilib.DutyCycleEncoder"}, {"name": "min", "type": "float"}, {"name": "max", "type": "float"}], "tooltip": "Set the encoder duty cycle range. As the encoder needs to maintain a duty\ncycle, the duty cycle cannot go all the way to 0% or all the way to 100%.\nFor example, an encoder with a 4096 us period might have a minimum duty\ncycle of 1 us / 4096 us and a maximum duty cycle of 4095 / 4096 us. Setting\nthe range will result in an encoder duty cycle less than or equal to the\nminimum being output as 0 rotation, the duty cycle greater than or equal to\nthe maximum being output as 1 rotation, and values in between linearly\nscaled from 0 to 1.\n\n:param min: minimum duty cycle (0-1 range)\n:param max: maximum duty cycle (0-1 range)", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DutyCycleEncoder", "FUNC": "setDutyCycleRange"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoder"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "dutyCycleEncoder", "type": "wpilib._wpilib.DutyCycleEncoder"}, {"name": "inverted", "type": "bool"}], "tooltip": "Set if this encoder is inverted.\n\n:param inverted: true to invert the encoder, false otherwise", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.DutyCycleEncoder", "FUNC": "setInverted"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDutyCycleEncoder"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.DutyCycleEncoder",
     name:  "DutyCycleEncoder",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.DutyCycleEncoder",
   };
+
   return category;
 }

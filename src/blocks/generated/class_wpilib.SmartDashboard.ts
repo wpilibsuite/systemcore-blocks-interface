@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 36 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "key", "type": "str"}], "tooltip": "Stop making a key's value persistent through program restarts.\nThe key cannot be null.\n\n:param key: the key name", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SmartDashboard", "FUNC": "clearPersistent"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "bool", "args": [{"name": "key", "type": "str"}], "tooltip": "Determines whether the given key is in this table.\n\n:param key: the key to search for\n\n:returns: true if the table as a value assigned to the given key", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SmartDashboard", "FUNC": "containsKey"}},
@@ -46,12 +48,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "key", "type": "str"}], "tooltip": "Makes a key's value persistent through program restarts.\n\n:param key: the key to make persistent", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SmartDashboard", "FUNC": "setPersistent"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [], "tooltip": "Puts all sendable data to the dashboard.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SmartDashboard", "FUNC": "updateValues"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.SmartDashboard",
     name:  "SmartDashboard",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.SmartDashboard",
   };
+
   return category;
 }

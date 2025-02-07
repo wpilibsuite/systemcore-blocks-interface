@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 41 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySPI"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.SPI", "args": [{"name": "port", "type": "wpilib._wpilib.SPI.Port"}], "tooltip": "Constructor\n\n:param port: the physical SPI port", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SPI"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPort"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sPI", "type": "wpilib._wpilib.SPI"}, {"name": "port", "type": "hal._wpiHal.SPIPort"}, {"name": "csToSclkTicks", "type": "int"}, {"name": "stallTicks", "type": "int"}, {"name": "pow2BytesPerRead", "type": "int"}], "tooltip": "Configure the Auto SPI Stall time between reads.\n\n:param port:             The number of the port to use. 0-3 for Onboard CS0-CS2, 4 for\n                         MXP.\n:param csToSclkTicks:    the number of ticks to wait before asserting the cs\n                         pin\n:param stallTicks:       the number of ticks to stall for\n:param pow2BytesPerRead: the number of bytes to read before stalling", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.SPI", "FUNC": "configureAutoStall"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySPI"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySPIPort"}}}}}},
@@ -54,12 +56,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS2"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SPI.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SPI.Port", "ENUM_VALUE": "kOnboardCS3"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.SPI",
     name:  "SPI",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.SPI",
   };
+
   return category;
 }

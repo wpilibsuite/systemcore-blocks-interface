@@ -8,14 +8,19 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 0 blocks.
   const contents: toolboxItems.ContentsType[] = [
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.exceptions.HALError",
     name:  "HALError",
-      contents: contents,
+    contents: contents,
+    className: "hal.exceptions.HALError",
   };
+
   return category;
 }

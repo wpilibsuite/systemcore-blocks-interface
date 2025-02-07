@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 25 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCTREPCMSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.CTREPCMSim", "args": [], "tooltip": "Constructs with the default PCM module number (CAN ID).", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.CTREPCMSim"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCTREPCMSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.CTREPCMSim", "args": [{"name": "module", "type": "int"}], "tooltip": "Constructs from a PCM module number (CAN ID).\n\n:param module: module number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.CTREPCMSim"}}}}},
@@ -35,12 +37,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "cTREPCMSim", "type": "wpilib.simulation._simulation.CTREPCMSim"}, {"name": "pressureSwitch", "type": "bool"}], "tooltip": "Set the value of the pressure switch.\n\n:param pressureSwitch: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.CTREPCMSim", "FUNC": "setPressureSwitch"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCTREPCMSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "cTREPCMSim", "type": "wpilib.simulation._simulation.CTREPCMSim"}, {"name": "channel", "type": "int"}, {"name": "solenoidOutput", "type": "bool"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.CTREPCMSim", "FUNC": "setSolenoidOutput"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCTREPCMSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.CTREPCMSim",
     name:  "CTREPCMSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.CTREPCMSim",
   };
+
   return category;
 }

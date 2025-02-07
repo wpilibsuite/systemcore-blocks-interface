@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDriveOdometry3dBase"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.kinematics._kinematics.DifferentialDriveOdometry3dBase", "args": [{"name": "kinematics", "type": "wpimath.kinematics._kinematics.DifferentialDriveKinematicsBase"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation3d"}, {"name": "wheelPositions", "type": "wpimath.kinematics._kinematics.DifferentialDriveWheelPositions"}, {"name": "initialPose", "type": "wpimath.geometry._geometry.Pose3d"}], "tooltip": "Constructs an Odometry3d object.\n\n:param kinematics:     The kinematics for your drivetrain.\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param initialPose:    The starting position of the robot on the field.", "importModule": "wpimath.kinematics"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveOdometry3dBase"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveKinematicsBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveWheelPositions"}}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose3d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Pose3d", "args": [{"name": "differentialDriveOdometry3dBase", "type": "wpimath.kinematics._kinematics.DifferentialDriveOdometry3dBase"}], "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveOdometry3dBase", "FUNC": "getPose"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveOdometry3dBase"}}}}}}}}},
@@ -17,12 +19,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "differentialDriveOdometry3dBase", "type": "wpimath.kinematics._kinematics.DifferentialDriveOdometry3dBase"}, {"name": "translation", "type": "wpimath.geometry._geometry.Translation3d"}], "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveOdometry3dBase", "FUNC": "resetTranslation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveOdometry3dBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation3d"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Pose3d", "args": [{"name": "differentialDriveOdometry3dBase", "type": "wpimath.kinematics._kinematics.DifferentialDriveOdometry3dBase"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation3d"}, {"name": "wheelPositions", "type": "wpimath.kinematics._kinematics.DifferentialDriveWheelPositions"}], "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveOdometry3dBase", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveOdometry3dBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation3d"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveWheelPositions"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.kinematics.DifferentialDriveOdometry3dBase",
     name:  "DifferentialDriveOdometry3dBase",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.kinematics.DifferentialDriveOdometry3dBase",
   };
+
   return category;
 }

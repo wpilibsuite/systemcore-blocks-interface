@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 18 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBuiltInAccelerometerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.BuiltInAccelerometerSim", "args": [], "tooltip": "Constructs for the first built-in accelerometer.", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.BuiltInAccelerometerSim"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBuiltInAccelerometerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.BuiltInAccelerometerSim", "args": [{"name": "accel", "type": "wpilib._wpilib.BuiltInAccelerometer"}], "tooltip": "Constructs from a BuiltInAccelerometer object.\n\n:param accel: BuiltInAccelerometer to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.BuiltInAccelerometerSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBuiltInAccelerometer"}}}}}}}}},
@@ -28,12 +30,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "builtInAccelerometerSim", "type": "wpilib.simulation._simulation.BuiltInAccelerometerSim"}, {"name": "y", "type": "float"}], "tooltip": "Change the Y axis value of the accelerometer.\n\n:param y: the new reading of the Y axis", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.BuiltInAccelerometerSim", "FUNC": "setY"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBuiltInAccelerometerSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "builtInAccelerometerSim", "type": "wpilib.simulation._simulation.BuiltInAccelerometerSim"}, {"name": "z", "type": "float"}], "tooltip": "Change the Z axis value of the accelerometer.\n\n:param z: the new reading of the Z axis", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.BuiltInAccelerometerSim", "FUNC": "setZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myBuiltInAccelerometerSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.BuiltInAccelerometerSim",
     name:  "BuiltInAccelerometerSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.BuiltInAccelerometerSim",
   };
+
   return category;
 }

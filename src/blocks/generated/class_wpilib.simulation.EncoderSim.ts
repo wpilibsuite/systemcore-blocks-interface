@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 35 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myEncoderSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.EncoderSim", "args": [{"name": "encoder", "type": "wpilib._wpilib.Encoder"}], "tooltip": "Constructs from an Encoder object.\n\n:param encoder: Encoder to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.EncoderSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEncoder"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myEncoderSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpilib.simulation._simulation.EncoderSim", "args": [{"name": "channel", "type": "int"}], "tooltip": "Creates an EncoderSim for a digital input channel.  Encoders take two\nchannels, so either one may be specified.\n\n:param channel: digital input channel\n\n:returns: Simulated object\n          @throws NoSuchElementException if no Encoder is configured for that channel", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.EncoderSim", "FUNC": "createForChannel"}}}}},
@@ -45,12 +47,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "encoderSim", "type": "wpilib.simulation._simulation.EncoderSim"}, {"name": "reverseDirection", "type": "bool"}], "tooltip": "Set the reverse direction.\n\n:param reverseDirection: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.EncoderSim", "FUNC": "setReverseDirection"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEncoderSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "encoderSim", "type": "wpilib.simulation._simulation.EncoderSim"}, {"name": "samplesToAverage", "type": "int"}], "tooltip": "Set the samples-to-average value.\n\n:param samplesToAverage: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.EncoderSim", "FUNC": "setSamplesToAverage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEncoderSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.EncoderSim",
     name:  "EncoderSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.EncoderSim",
   };
+
   return category;
 }

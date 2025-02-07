@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogOutputSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.AnalogOutputSim", "args": [{"name": "analogOutput", "type": "wpilib._wpilib.AnalogOutput"}], "tooltip": "Constructs from an AnalogOutput object.\n\n:param analogOutput: AnalogOutput to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogOutputSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogOutput"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogOutputSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.AnalogOutputSim", "args": [{"name": "channel", "type": "int"}], "tooltip": "Constructs from an analog output channel number.\n\n:param channel: Channel number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogOutputSim"}}}}},
@@ -19,12 +21,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogOutputSim", "type": "wpilib.simulation._simulation.AnalogOutputSim"}, {"name": "initialized", "type": "bool"}], "tooltip": "Define whether this analog output has been initialized.\n\n:param initialized: whether this object is initialized", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogOutputSim", "FUNC": "setInitialized"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogOutputSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogOutputSim", "type": "wpilib.simulation._simulation.AnalogOutputSim"}, {"name": "voltage", "type": "float"}], "tooltip": "Set the analog output voltage.\n\n:param voltage: the new voltage on this analog output", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogOutputSim", "FUNC": "setVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogOutputSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.AnalogOutputSim",
     name:  "AnalogOutputSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.AnalogOutputSim",
   };
+
   return category;
 }

@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 6 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySplineHelper"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.spline._spline.SplineHelper", "args": [], "tooltip": "", "importModule": "wpimath.spline"}, "fields": {"MODULE_OR_CLASS": "wpimath.spline.SplineHelper"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myControlVector]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "Tuple[wpimath.spline._spline.Spline3.ControlVector, wpimath.spline._spline.Spline3.ControlVector]", "args": [{"name": "start", "type": "wpimath.geometry._geometry.Pose2d"}, {"name": "interiorWaypoints", "type": "list[wpimath.geometry._geometry.Translation2d]"}, {"name": "end", "type": "wpimath.geometry._geometry.Pose2d"}], "tooltip": "Returns 2 cubic control vectors from a set of exterior waypoints and\ninterior translations.\n\n:param start:             The starting pose.\n:param interiorWaypoints: The interior waypoints.\n:param end:               The ending pose.\n\n:returns: 2 cubic control vectors.", "importModule": "wpimath.spline"}, "fields": {"MODULE_OR_CLASS": "wpimath.spline.SplineHelper", "FUNC": "cubicControlVectorsFromWaypoints"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myList"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}}}}},
@@ -16,12 +18,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myList"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "list[wpimath.spline._spline.QuinticHermiteSpline]", "args": [{"name": "controlVectors", "type": "list[wpimath.spline._spline.Spline5.ControlVector]"}], "tooltip": "Returns a set of quintic splines corresponding to the provided control\nvectors. The user is free to set the direction of all waypoints. Continuous\ncurvature is guaranteed throughout the path.\n\n:param controlVectors: The control vectors.\n\n:returns: A vector of quintic hermite splines that interpolate through the\n          provided waypoints.", "importModule": "wpimath.spline"}, "fields": {"MODULE_OR_CLASS": "wpimath.spline.SplineHelper", "FUNC": "quinticSplinesFromControlVectors"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myList"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myList"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "list[wpimath.spline._spline.QuinticHermiteSpline]", "args": [{"name": "waypoints", "type": "list[wpimath.geometry._geometry.Pose2d]"}], "tooltip": "Returns quintic splines from a set of waypoints.\n\n:param waypoints: The waypoints\n\n:returns: List of quintic splines.", "importModule": "wpimath.spline"}, "fields": {"MODULE_OR_CLASS": "wpimath.spline.SplineHelper", "FUNC": "quinticSplinesFromWaypoints"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myList"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.spline.SplineHelper",
     name:  "SplineHelper",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.spline.SplineHelper",
   };
+
   return category;
 }

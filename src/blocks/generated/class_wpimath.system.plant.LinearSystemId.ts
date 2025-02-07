@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 14 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearSystemId"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.plant.LinearSystemId", "args": [], "tooltip": "", "importModule": "wpimath.system.plant"}, "fields": {"MODULE_OR_CLASS": "wpimath.system.plant.LinearSystemId"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearSystem_2_1_2"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath._controls._controls.system.LinearSystem_2_1_2", "args": [{"name": "motor", "type": "wpimath._controls._controls.plant.DCMotor"}, {"name": "J", "type": "wpimath.units.kilogram_square_meters"}, {"name": "gearing", "type": "float"}], "tooltip": "Create a state-space model of a DC motor system. The states of the system\nare [angular position, angular velocity], inputs are [voltage], and outputs\nare [angular position, angular velocity].\n\n:param motor:   The motor (or gearbox) attached to the system.\n:param J:       the moment of inertia J of the DC motor.\n:param gearing: Gear ratio from motor to output.\n                @throws std::domain_error if J <= 0 or gearing <= 0.\n                @see <a\n                href=\"https://github.com/wpilibsuite/sysid\">https://github.com/wpilibsuite/sysid</a>", "importModule": "wpimath.system.plant"}, "fields": {"MODULE_OR_CLASS": "wpimath.system.plant.LinearSystemId", "FUNC": "DCMotorSystem"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}}}}},
@@ -24,12 +26,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearSystem_1_1_1"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath._controls._controls.system.LinearSystem_1_1_1", "args": [{"name": "kV", "type": "wpimath.units.volt_seconds_per_radian"}, {"name": "kA", "type": "wpimath.units.volt_seconds_squared_per_radian"}], "tooltip": "", "importModule": "wpimath.system.plant"}, "fields": {"MODULE_OR_CLASS": "wpimath.system.plant.LinearSystemId", "FUNC": "identifyVelocitySystemRadians"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearSystem_2_1_2"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath._controls._controls.system.LinearSystem_2_1_2", "args": [{"name": "motor", "type": "wpimath._controls._controls.plant.DCMotor"}, {"name": "J", "type": "wpimath.units.kilogram_square_meters"}, {"name": "gearing", "type": "float"}], "tooltip": "Create a state-space model of a single-jointed arm system.The states of the\nsystem are [angle, angular velocity], inputs are [voltage], and outputs are\n[angle].\n\n:param motor:   The motor (or gearbox) attached to the arm.\n:param J:       The moment of inertia J of the arm.\n:param gearing: Gear ratio from motor to arm.\n                @throws std::domain_error if J <= 0 or gearing <= 0.", "importModule": "wpimath.system.plant"}, "fields": {"MODULE_OR_CLASS": "wpimath.system.plant.LinearSystemId", "FUNC": "singleJointedArmSystem"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.system.plant.LinearSystemId",
     name:  "LinearSystemId",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.system.plant.LinearSystemId",
   };
+
   return category;
 }

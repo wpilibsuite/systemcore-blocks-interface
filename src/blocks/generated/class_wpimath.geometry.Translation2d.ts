@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 21 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Translation2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "translation2d", "selfType": "wpimath.geometry.Translation2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Translation2d", "VAR": "x"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation2d"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Translation2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "translation2d", "selfType": "wpimath.geometry.Translation2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Translation2d", "VAR": "y"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation2d"}}}}}},
@@ -34,12 +36,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTranslation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Translation2d", "args": [{"name": "translation2d", "type": "wpimath.geometry._geometry.Translation2d"}, {"name": "other", "type": "wpimath.geometry._geometry.Rotation2d"}], "tooltip": "Applies a rotation to the translation in 2D space.\n\nThis multiplies the translation vector by a counterclockwise rotation\nmatrix of the given angle.\n\n::\n\n  [x_new]   [other.cos, -other.sin][x]\n  [y_new] = [other.sin,  other.cos][y]\n\nFor example, rotating a Translation2d of &lt;2, 0&gt; by 90 degrees will\nreturn a Translation2d of &lt;0, 2&gt;.\n\n:param other: The rotation to rotate the translation by.\n\n:returns: The new rotated translation.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Translation2d", "FUNC": "rotateBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation2d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[2, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[2, 1]]", "args": [{"name": "translation2d", "type": "wpimath.geometry._geometry.Translation2d"}], "tooltip": "Returns a 2D translation vector representation of this translation.\n\n:returns: A 2D translation vector representation of this translation.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Translation2d", "FUNC": "toVector"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation2d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Translation2d",
     name:  "Translation2d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Translation2d",
   };
+
   return category;
 }

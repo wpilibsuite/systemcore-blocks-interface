@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 32 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myXboxControllerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.XboxControllerSim", "args": [{"name": "joystick", "type": "wpilib._wpilib.XboxController"}], "tooltip": "Constructs from a XboxController object.\n\n:param joystick: controller to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.XboxControllerSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myXboxController"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myXboxControllerSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.XboxControllerSim", "args": [{"name": "port", "type": "int"}], "tooltip": "Constructs from a joystick port number.\n\n:param port: port number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.XboxControllerSim"}}}}},
@@ -42,12 +44,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "xboxControllerSim", "type": "wpilib.simulation._simulation.XboxControllerSim"}, {"name": "value", "type": "bool"}], "tooltip": "Change the value of the X button on the controller.\n\n:param value: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.XboxControllerSim", "FUNC": "setXButton"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myXboxControllerSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "xboxControllerSim", "type": "wpilib.simulation._simulation.XboxControllerSim"}, {"name": "value", "type": "bool"}], "tooltip": "Change the value of the Y button on the controller.\n\n:param value: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.XboxControllerSim", "FUNC": "setYButton"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myXboxControllerSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.XboxControllerSim",
     name:  "XboxControllerSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.XboxControllerSim",
   };
+
   return category;
 }

@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 102 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myStadiaController"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.StadiaController", "args": [{"name": "port", "type": "int"}], "tooltip": "Construct an instance of a controller.\n\nThe controller index is the USB port on the Driver Station.\n\n:param port: The port on the Driver Station that the controller is plugged\n             into (0-5).", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.StadiaController"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBooleanEvent"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.event._event.BooleanEvent", "args": [{"name": "stadiaController", "type": "wpilib._wpilib.StadiaController"}, {"name": "loop", "type": "wpilib.event._event.EventLoop"}], "tooltip": "Constructs an event instance around the A button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the A button's\n          digital signal attached to the given loop.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.StadiaController", "FUNC": "A"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStadiaController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEventLoop"}}}}}}}}},
@@ -112,12 +114,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "genericHID", "type": "wpilib.interfaces._interfaces.GenericHID"}, {"name": "type", "type": "wpilib.interfaces._interfaces.GenericHID.RumbleType"}, {"name": "value", "type": "float"}], "tooltip": "Set the rumble output for the HID.\n\nThe DS currently supports 2 rumble values, left rumble and right rumble.\n\n:param type:  Which rumble value to set\n:param value: The normalized value (0 to 1) to set the rumble to", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.interfaces.GenericHID", "FUNC": "setRumble"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myGenericHID"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRumbleType"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBooleanEvent"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.event._event.BooleanEvent", "args": [{"name": "stadiaController", "type": "wpilib._wpilib.StadiaController"}, {"name": "loop", "type": "wpilib.event._event.EventLoop"}], "tooltip": "Constructs an event instance around the stadia button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the stadia button's\n          digital signal attached to the given loop.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.StadiaController", "FUNC": "stadia"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStadiaController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEventLoop"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.StadiaController",
     name:  "StadiaController",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.StadiaController",
   };
+
   return category;
 }

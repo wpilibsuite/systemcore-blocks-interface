@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 10 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.MecanumDriveWheelPositions", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "frontLeft"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.MecanumDriveWheelPositions", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "mecanumDriveWheelPositions", "selfType": "wpimath.kinematics.MecanumDriveWheelPositions"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "VAR": "frontLeft"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}},
@@ -24,12 +26,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions", "args": [], "tooltip": "", "importModule": "wpimath.kinematics"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.MecanumDriveWheelPositions"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions", "args": [{"name": "mecanumDriveWheelPositions", "type": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions"}, {"name": "endValue", "type": "wpimath.kinematics._kinematics.MecanumDriveWheelPositions"}, {"name": "t", "type": "float"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.MecanumDriveWheelPositions", "FUNC": "interpolate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMecanumDriveWheelPositions"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.kinematics.MecanumDriveWheelPositions",
     name:  "MecanumDriveWheelPositions",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.kinematics.MecanumDriveWheelPositions",
   };
+
   return category;
 }

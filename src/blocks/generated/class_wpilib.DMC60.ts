@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 22 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDMC60"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.DMC60", "args": [{"name": "channel", "type": "int"}], "tooltip": "Constructor for a DMC 60 connected via PWM.\n\n:param channel: The PWM channel that the DMC 60 is attached to. 0-9 are\n                on-board, 10-19 are on the MXP port", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DMC60"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pWMMotorController", "type": "wpilib._wpilib.PWMMotorController"}, {"name": "follower", "type": "wpilib._wpilib.PWMMotorController"}], "tooltip": "Make the given PWM motor controller follow the output of this one.\n\n:param follower: The motor controller follower.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PWMMotorController", "FUNC": "addFollower"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWMMotorController"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWMMotorController"}}}}}},
@@ -32,12 +34,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pWMMotorController", "type": "wpilib._wpilib.PWMMotorController"}, {"name": "output", "type": "wpimath.units.volts"}], "tooltip": "Sets the voltage output of the PWMMotorController. Compensates for\nthe current bus voltage to ensure that the desired voltage is output even\nif the battery voltage is below 12V - highly useful when the voltage\noutputs are \"meaningful\" (e.g. they come from a feedforward calculation).\n\nNOTE: This function *must* be called regularly in order for voltage\ncompensation to work properly - unlike the ordinary set function, it is not\n\"set it and forget it.\"\n\n:param output: The voltage to output.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PWMMotorController", "FUNC": "setVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWMMotorController"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pWMMotorController", "type": "wpilib._wpilib.PWMMotorController"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PWMMotorController", "FUNC": "stopMotor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPWMMotorController"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.DMC60",
     name:  "DMC60",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.DMC60",
   };
+
   return category;
 }

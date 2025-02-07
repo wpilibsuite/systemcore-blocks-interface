@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDifferentialDriveOdometry"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.kinematics._kinematics.DifferentialDriveOdometry", "args": [{"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation2d"}, {"name": "leftDistance", "type": "wpimath.units.meters"}, {"name": "rightDistance", "type": "wpimath.units.meters"}, {"name": "initialPose", "type": "wpimath.geometry._geometry.Pose2d"}], "tooltip": "Constructs a DifferentialDriveOdometry object.\n\nIF leftDistance and rightDistance are unspecified,\nYou NEED to reset your encoders (to zero).\n\n:param gyroAngle:     The angle reported by the gyroscope.\n:param leftDistance:  The distance traveled by the left encoder.\n:param rightDistance: The distance traveled by the right encoder.\n:param initialPose:   The starting position of the robot on the field.", "importModule": "wpimath.kinematics"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveOdometry"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Pose2d", "args": [{"name": "differentialDriveOdometryBase", "type": "wpimath.kinematics._kinematics.DifferentialDriveOdometryBase"}], "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveOdometryBase", "FUNC": "getPose"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveOdometryBase"}}}}}}}}},
@@ -17,12 +19,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "differentialDriveOdometryBase", "type": "wpimath.kinematics._kinematics.DifferentialDriveOdometryBase"}, {"name": "translation", "type": "wpimath.geometry._geometry.Translation2d"}], "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveOdometryBase", "FUNC": "resetTranslation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveOdometryBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation2d"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Pose2d", "args": [{"name": "differentialDriveOdometry", "type": "wpimath.kinematics._kinematics.DifferentialDriveOdometry"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation2d"}, {"name": "leftDistance", "type": "wpimath.units.meters"}, {"name": "rightDistance", "type": "wpimath.units.meters"}], "tooltip": "Updates the robot position on the field using distance measurements from\nencoders. This method is more numerically accurate than using velocities to\nintegrate the pose and is also advantageous for teams that are using lower\nCPR encoders.\n\n:param gyroAngle:     The angle reported by the gyroscope.\n:param leftDistance:  The distance traveled by the left encoder.\n:param rightDistance: The distance traveled by the right encoder.\n\n:returns: The new pose of the robot.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.DifferentialDriveOdometry", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDifferentialDriveOdometry"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.kinematics.DifferentialDriveOdometry",
     name:  "DifferentialDriveOdometry",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.kinematics.DifferentialDriveOdometry",
   };
+
   return category;
 }

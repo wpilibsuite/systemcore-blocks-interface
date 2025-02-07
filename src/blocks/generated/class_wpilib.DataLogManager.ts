@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDataLog"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpiutil._wpiutil.log.DataLog", "args": [], "tooltip": "Get the managed data log (for custom logging). Starts the data log manager\nif not already started.\n\n:returns: data log", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DataLogManager", "FUNC": "getLog"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "str", "args": [], "tooltip": "Get the log directory.\n\n:returns: log directory", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DataLogManager", "FUNC": "getLogDir"}},
@@ -17,12 +19,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "dir", "type": "str"}, {"name": "filename", "type": "str"}, {"name": "period", "type": "float"}], "tooltip": "Start data log manager. The parameters have no effect if the data log\nmanager was already started (e.g. by calling another static function).\n\n:param dir:      if not empty, directory to use for data log storage\n:param filename: filename to use; if none provided, the filename is\n                 automatically generated\n:param period:   time between automatic flushes to disk, in seconds;\n                 this is a time/storage tradeoff", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DataLogManager", "FUNC": "start"}, "inputs": {"ARG0": {"shadow": {"type": "text", "fields": {"TEXT": ""}}}, "ARG1": {"shadow": {"type": "text", "fields": {"TEXT": ""}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [], "tooltip": "Stop data log manager.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DataLogManager", "FUNC": "stop"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.DataLogManager",
     name:  "DataLogManager",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.DataLogManager",
   };
+
   return category;
 }

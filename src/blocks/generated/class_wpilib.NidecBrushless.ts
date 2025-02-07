@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 20 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myNidecBrushless"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.NidecBrushless", "args": [{"name": "pwmChannel", "type": "int"}, {"name": "dioChannel", "type": "int"}], "tooltip": "Constructor.\n\n:param pwmChannel: The PWM channel that the Nidec Brushless controller is\n                   attached to. 0-9 are on-board, 10-19 are on the MXP port.\n:param dioChannel: The DIO channel that the Nidec Brushless controller is\n                   attached to. 0-9 are on-board, 10-25 are on the MXP port.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.NidecBrushless"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "motorSafety", "type": "wpilib._wpilib.MotorSafety"}], "tooltip": "Check if this motor has exceeded its timeout.\n\nThis method is called periodically to determine if this motor has exceeded\nits timeout value. If it has, the stop method is called, and the motor is\nshut down until its value is updated again.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.MotorSafety", "FUNC": "check"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorSafety"}}}}}},
@@ -30,12 +32,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "motorController", "type": "wpilib.interfaces._interfaces.MotorController"}, {"name": "output", "type": "wpimath.units.volts"}], "tooltip": "Sets the voltage output of the MotorController.  Compensates for\nthe current bus voltage to ensure that the desired voltage is output even\nif the battery voltage is below 12V - highly useful when the voltage\noutputs are \"meaningful\" (e.g. they come from a feedforward calculation).\n\nNOTE: This function *must* be called regularly in order for voltage\ncompensation to work properly - unlike the ordinary set function, it is not\n\"set it and forget it.\"\n\n:param output: The voltage to output.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.interfaces.MotorController", "FUNC": "setVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorController"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "nidecBrushless", "type": "wpilib._wpilib.NidecBrushless"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.NidecBrushless", "FUNC": "stopMotor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNidecBrushless"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.NidecBrushless",
     name:  "NidecBrushless",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.NidecBrushless",
   };
+
   return category;
 }

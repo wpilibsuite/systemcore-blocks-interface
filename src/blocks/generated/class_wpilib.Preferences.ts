@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 22 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "bool", "args": [{"name": "key", "type": "str"}], "tooltip": "Returns whether or not there is a key with the given name.\n\n:param key: the key\n\n:returns: if there is a value at the given key", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Preferences", "FUNC": "containsKey"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "bool", "args": [{"name": "key", "type": "str"}, {"name": "defaultValue", "type": "bool"}], "tooltip": "Returns the boolean at the given key.  If this table does not have a value\nfor that position, then the given defaultValue value will be returned.\n\n:param key:          the key\n:param defaultValue: the value to return if none exists in the table\n\n:returns: either the value in the table, or the defaultValue", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Preferences", "FUNC": "getBoolean"}, "inputs": {"ARG1": {"shadow": {"type": "logic_boolean", "fields": {"BOOL": "FALSE"}}}}},
@@ -32,12 +34,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "key", "type": "str"}, {"name": "value", "type": "int"}], "tooltip": "Puts the given long (int64_t) into the preferences table.\n\nThe key may not have any whitespace nor an equals sign.\n\n:param key:   the key\n:param value: the value", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Preferences", "FUNC": "setLong"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "key", "type": "str"}, {"name": "value", "type": "str"}], "tooltip": "Puts the given string into the preferences table.\n\nThe value may not have quotation marks, nor may the key have any whitespace\nnor an equals sign.\n\n:param key:   the key\n:param value: the value", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Preferences", "FUNC": "setString"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Preferences",
     name:  "Preferences",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Preferences",
   };
+
   return category;
 }

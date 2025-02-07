@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 27 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPneumaticsBase"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PneumaticsBase", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticsBase"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "int", "args": [{"name": "pneumaticsBase", "type": "wpilib._wpilib.PneumaticsBase"}, {"name": "mask", "type": "int"}], "tooltip": "Check to see if the solenoids marked in the bitmask can be reserved, and if\nso, reserve them.\n\n:param mask: The bitmask of solenoids to reserve. The LSB represents\n             solenoid 0.\n\n:returns: 0 if successful; mask of solenoids that couldn't be allocated\n          otherwise", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticsBase", "FUNC": "checkAndReserveSolenoids"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsBase"}}}}}},
@@ -37,12 +39,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pneumaticsBase", "type": "wpilib._wpilib.PneumaticsBase"}], "tooltip": "Unreserve the compressor.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticsBase", "FUNC": "unreserveCompressor"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsBase"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pneumaticsBase", "type": "wpilib._wpilib.PneumaticsBase"}, {"name": "mask", "type": "int"}], "tooltip": "Unreserve the solenoids marked in the bitmask.\n\n:param mask: The bitmask of solenoids to unreserve. The LSB represents\n             solenoid 0.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticsBase", "FUNC": "unreserveSolenoids"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsBase"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PneumaticsBase",
     name:  "PneumaticsBase",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PneumaticsBase",
   };
+
   return category;
 }
