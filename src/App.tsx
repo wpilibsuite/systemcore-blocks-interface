@@ -250,9 +250,11 @@ const App: React.FC = () => {
   const [newOpModeNameModalInitialValue, setNewOpModeNameModalInitialValue] = useState('');
   const [newOpModeNameModalIsOpen, setNewOpModeNameModalIsOpen] = useState(false);
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = useState(false);
-  const [openAskToSave, setOpenAskToSave] = useState(false);
-  const afterAskToSaveOk = useRef<() => void>(() => {});
-  const [askToSaveSaving, setAskToSaveSaving] = useState(false);
+  const [popconfirmTitle, setPopconfirmTitle] = useState('');
+  const [popconfirmDescription, setPopconfirmDescription] = useState('');
+  const [openPopconfirm, setOpenPopconfirm] = useState(false);
+  const afterPopconfirmOk = useRef<() => void>(() => {});
+  const [popconfirmLoading, setPopconfirmLoading] = useState(false);
 
   const ignoreEffect = () => {
     if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
@@ -486,9 +488,9 @@ const App: React.FC = () => {
     setGeneratedCode(code);
   };
 
-  const handleAskToSaveOk = () => {
-    const callback = afterAskToSaveOk.current;
-    afterAskToSaveOk.current = () => {};
+  const handlePopconfirmOk = () => {
+    const callback = afterPopconfirmOk.current;
+    afterPopconfirmOk.current = () => {};
     callback();
   };
 
@@ -504,18 +506,20 @@ const App: React.FC = () => {
       }
 
       // Show a bubble confirmation box to ask the user if they want to save the blocks.
-      // Set the function to be executed if the user clicks "ok".
-      afterAskToSaveOk.current = () => {
-        setAskToSaveSaving(true);
+      setPopconfirmTitle('Blocks have been modified!');
+      setPopconfirmDescription('Press ok to save and continue');
+      // Set the function to be executed if the user clicks 'ok'.
+      afterPopconfirmOk.current = () => {
+        setPopconfirmLoading(true);
         saveModule((success) => {
-          setOpenAskToSave(false);
-          setAskToSaveSaving(false);
+          setOpenPopconfirm(false);
+          setPopconfirmLoading(false);
           if (success) {
             callback();
           }
         });
       };
-      setOpenAskToSave(true);
+      setOpenPopconfirm(true);
     }
   };
 
@@ -704,59 +708,72 @@ const App: React.FC = () => {
       if (workspaceName === moduleName) {
         // This is a workspace.
         setNewWorkspaceNameModalPurpose('CopyWorkspace');
-        setNewWorkspaceNameModalInitialValue(workspaceName + "_copy");
+        setNewWorkspaceNameModalInitialValue(workspaceName + '_copy');
         setNewWorkspaceNameModalIsOpen(true);
       } else {
         // This is an OpMode.
         setNewOpModeNameModalPurpose('CopyOpMode');
-        setNewOpModeNameModalInitialValue(moduleName + "_copy");
+        setNewOpModeNameModalInitialValue(moduleName + '_copy');
         setNewOpModeNameModalIsOpen(true);
       }
     });
   };
 
   const handleDeleteClicked = () => {
-    checkIfBlocksWereModified(() => {
-      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
-      const moduleName = commonStorage.getModuleName(currentModulePath);
-      if (workspaceName === moduleName) {
-        // This is a workspace.
-        // Before deleting it, select another workspace, if there is one.
-        let foundAnotherWorkspace = false;
-        for (const workspace of modules) {
-          if (workspace.workspaceName !== workspaceName) {
-            setCurrentModulePath(workspace.modulePath);
-            foundAnotherWorkspace = true;
-            break;
+    const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
+    const moduleName = commonStorage.getModuleName(currentModulePath);
+
+    // Show a bubble confirmation box to ask the user if they are sure.
+    setPopconfirmTitle('Are you sure?');
+    if (workspaceName === moduleName) {
+      setPopconfirmDescription('Press ok to delete this Workspace');
+    } else {
+      setPopconfirmDescription('Press ok to delete this OpMode');
+    }
+    // Set the function to be executed if the user clicks 'ok'.
+    afterPopconfirmOk.current = () => {
+      setOpenPopconfirm(false);
+      checkIfBlocksWereModified(() => {
+        if (workspaceName === moduleName) {
+          // This is a workspace.
+          // Before deleting it, select another workspace, if there is one.
+          let foundAnotherWorkspace = false;
+          for (const workspace of modules) {
+            if (workspace.workspaceName !== workspaceName) {
+              setCurrentModulePath(workspace.modulePath);
+              foundAnotherWorkspace = true;
+              break;
+            }
           }
+          if (!foundAnotherWorkspace) {
+            setCurrentModulePath('');
+          }
+          storage.deleteWorkspace(workspaceName,
+            (success: boolean, errorMessage: string) => {
+              if (success) {
+                setTriggerListModules(!triggerListModules);
+              } else if (errorMessage) {
+                setAlertErrorMessage('Failed to delete the Workspace: ' + errorMessage);
+                setAlertErrorVisible(true);
+              }
+            });
+        } else {
+          // This is an OpMode.
+          const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
+          setCurrentModulePath(workspacePath);
+          storage.deleteOpMode(currentModulePath,
+            (success: boolean, errorMessage: string) => {
+              if (success) {
+                setTriggerListModules(!triggerListModules);
+              } else if (errorMessage) {
+                setAlertErrorMessage('Failed to delete the OpMode: ' + errorMessage);
+                setAlertErrorVisible(true);
+              }
+            });
         }
-        if (!foundAnotherWorkspace) {
-          setCurrentModulePath('');
-        }
-        storage.deleteWorkspace(workspaceName, 
-          (success: boolean, errorMessage: string) => {
-            if (success) {
-              setTriggerListModules(!triggerListModules);
-            } else if (errorMessage) {
-              setAlertErrorMessage('Failed to rename the Workspace: ' + errorMessage);
-              setAlertErrorVisible(true);
-            }
-          });
-      } else {
-        // This is an OpMode.
-        const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
-        setCurrentModulePath(workspacePath);
-        storage.deleteOpMode(currentModulePath, 
-          (success: boolean, errorMessage: string) => {
-            if (success) {
-              setTriggerListModules(!triggerListModules);
-            } else if (errorMessage) {
-              setAlertErrorMessage('Failed to rename the Workspace: ' + errorMessage);
-              setAlertErrorVisible(true);
-            }
-          });
-      }
-    });
+      });
+    };
+    setOpenPopconfirm(true);
   };
 
   const handleUploadClicked = () => {
@@ -873,9 +890,11 @@ const App: React.FC = () => {
             >
               <Flex vertical gap="small">
                 <Space>
-                  <Tooltip title="New Workspace">
+                  <Tooltip title="New Workspace"
+                      placement="bottomRight"
+                  >
                     <Button
-                      icon={<FolderAddOutlined />} 
+                      icon={<FolderAddOutlined />}
                       size="small"
                       onClick={handleNewWorkspaceClicked}
                       style={{ color: 'white' }}
@@ -884,7 +903,7 @@ const App: React.FC = () => {
                   </Tooltip>
                   <Tooltip title="New OpMode">
                     <Button
-                      icon={<FileAddOutlined />} 
+                      icon={<FileAddOutlined />}
                       size="small"
                       disabled={!currentModulePath}
                       onClick={handleNewOpModeClicked}
@@ -894,7 +913,7 @@ const App: React.FC = () => {
                   </Tooltip>
                   <Tooltip title="Save">
                     <Button
-                      icon={<SaveOutlined />} 
+                      icon={<SaveOutlined />}
                       size="small"
                       disabled={!currentModulePath}
                       onClick={handleSaveClicked}
@@ -904,9 +923,11 @@ const App: React.FC = () => {
                   </Tooltip>
                 </Space>
                 <Space>
-                  <Tooltip title={renameTooltip}>
+                  <Tooltip title={renameTooltip}
+                      placement="topRight"
+                  >
                     <Button
-                      icon={<EditOutlined />} 
+                      icon={<EditOutlined />}
                       size="small"
                       disabled={!currentModulePath}
                       onClick={handleRenameClicked}
@@ -916,7 +937,7 @@ const App: React.FC = () => {
                   </Tooltip>
                   <Tooltip title={copyTooltip}>
                     <Button
-                      icon={<CopyOutlined />} 
+                      icon={<CopyOutlined />}
                       size="small"
                       disabled={!currentModulePath}
                       onClick={handleCopyClicked}
@@ -926,7 +947,7 @@ const App: React.FC = () => {
                   </Tooltip>
                   <Tooltip title={deleteTooltip}>
                     <Button
-                      icon={<DeleteOutlined />} 
+                      icon={<DeleteOutlined />}
                       size="small"
                       disabled={!currentModulePath}
                       onClick={handleDeleteClicked}
@@ -983,12 +1004,12 @@ const App: React.FC = () => {
                 </Tooltip>
               </Space>
               <Popconfirm
-                title="Blocks have been modified!"
-                description="Press ok to save and continue"
-                open={openAskToSave}
-                onConfirm={handleAskToSaveOk}
-                okButtonProps={{ loading: askToSaveSaving }}
-                onCancel={() => setOpenAskToSave(false)}
+                title={popconfirmTitle}
+                description={popconfirmDescription}
+                open={openPopconfirm}
+                onConfirm={handlePopconfirmOk}
+                okButtonProps={{ loading: popconfirmLoading }}
+                onCancel={() => setOpenPopconfirm(false)}
               >
                 <Flex
                   style={{
