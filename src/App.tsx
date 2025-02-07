@@ -57,8 +57,6 @@ import * as commonStorage from './storage/common_storage';
 import * as ChangeFramework from './blocks/utils/change_framework'
 import {mutatorOpenListener}  from './blocks/mrc_class_method_def'
 
-import {create as createOpMode} from './modules/mrc_module_opmode'
-
 
 type NewWorkspaceNameModalProps = {
   isOpen: boolean;
@@ -552,9 +550,9 @@ const App: React.FC = () => {
   };
 
   const handleNewWorkspaceNameOk = (newWorkspaceName: string) => {
-    const newWorkspacePath = commonStorage.makeModulePath(newWorkspaceName, newWorkspaceName);
+    const newWorkspacePath = commonStorage.makeWorkspacePath(newWorkspaceName);
     if (newWorkspaceNameModalPurpose === 'NewWorkspace') {
-      const workspaceContent = commonStorage.newModuleContent(commonStorage.MODULE_TYPE_WORKSPACE);
+      const workspaceContent = commonStorage.newWorkspaceContent(newWorkspaceName);
       storage.createModule(
           commonStorage.MODULE_TYPE_WORKSPACE, newWorkspacePath, workspaceContent,
           (success: boolean, errorMessage: string) => {
@@ -631,7 +629,7 @@ const App: React.FC = () => {
   const handleNewOpModeNameOk = (workspaceName: string, newOpModeName: string) => {
     const newOpModePath = commonStorage.makeModulePath(workspaceName, newOpModeName);
     if (newOpModeNameModalPurpose === 'NewOpMode') {
-      const opModeContent = commonStorage.newModuleContent(commonStorage.MODULE_TYPE_OPMODE);
+      const opModeContent = commonStorage.newOpModeContent(workspaceName, newOpModeName);
       storage.createModule(
           commonStorage.MODULE_TYPE_OPMODE, newOpModePath, opModeContent,
           (success: boolean, errorMessage: string) => {
@@ -645,13 +643,6 @@ const App: React.FC = () => {
               setAlertErrorVisible(true);
             }
           });
-      // TODO: This needs to be changed based off the type
-      if (blocklyComponent.current){
-        const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-        if(blocklyComponent){
-          createOpMode(blocklyWorkspace);        
-        }
-      }
     } else if (newOpModeNameModalPurpose === 'RenameOpMode') {
       const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
       const oldOpModeName = commonStorage.getModuleName(currentModulePath);
