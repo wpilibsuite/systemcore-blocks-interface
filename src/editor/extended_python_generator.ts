@@ -21,18 +21,23 @@
 
 import * as Blockly from 'blockly/core';
 import { PythonGenerator } from 'blockly/python';
-import {Block} from "../toolbox/items";
-import {FunctionArg} from '../blocks/mrc_call_python_function';
+import { Block } from "../toolbox/items";
+import { FunctionArg } from '../blocks/mrc_call_python_function';
 import * as commonStorage from '../storage/common_storage';
 
 // Extends the python generator to collect some information about functions and
 // variables that have been defined so they can be used in other modules.
 
-class ExtendedPythonGenerator extends PythonGenerator {
-  private mapWorkspaceIdToExportedBlocks: {[key: string]: Block[]} = Object.create(null);
+export class ExtendedPythonGenerator extends PythonGenerator {
+  private currentModule: commonStorage.Module | null = null;
+  private mapWorkspaceIdToExportedBlocks: { [key: string]: Block[] } = Object.create(null);
 
   constructor() {
     super('Python');
+  }
+
+  setCurrentModule(module: commonStorage.Module | null) {
+    this.currentModule = module;
   }
 
   init(workspace: Blockly.Workspace) {
@@ -95,12 +100,12 @@ class ExtendedPythonGenerator extends PythonGenerator {
       }
       variableUsesById.forEach((block) => {
         if (block.type === 'variables_get' ||
-            block.type === 'variables_set' ||
-            block.type === 'math_change' ||
-            block.type === 'text_append') {
+          block.type === 'variables_set' ||
+          block.type === 'math_change' ||
+          block.type === 'text_append') {
           const rootBlock = block.getRootBlock();
           if (rootBlock.type !== 'procedures_defnoreturn' &&
-              rootBlock.type !== 'procedures_defreturn') {
+            rootBlock.type !== 'procedures_defreturn') {
             exported = true;
           }
         }
@@ -147,6 +152,37 @@ class ExtendedPythonGenerator extends PythonGenerator {
 
   getExportedBlocks(workspace: Blockly.Workspace): Block[] {
     return this.mapWorkspaceIdToExportedBlocks[workspace.id];
+  }
+
+  // Functions used in python code generation for multiple python blocks.
+  addImport(importModule: string): void {
+    this.definitions_['import_' + importModule] = 'import ' + importModule;
+  }
+
+  workspaceToCode(workspace?: Blockly.Workspace): string {
+    let code = super.workspaceToCode(workspace);
+    if (!this.currentModule) {
+      return code;
+    }
+
+    let className = this.currentModule.moduleName;
+    let classType = this.currentModule.moduleType;
+
+    this.addImport(classType);
+
+    let prefix = "";
+    for (let key in this.definitions_) {
+      prefix += this.definitions_[key] + "\n";
+    }
+    if (prefix) {
+      prefix += "\n";
+    }
+
+    let class_def = "class " + className + "(" + classType + "):\n";
+    if (!code) {
+      code = "pass";
+    }
+    return prefix + class_def + this.prefixLines(code, this.INDENT);
   }
 }
 

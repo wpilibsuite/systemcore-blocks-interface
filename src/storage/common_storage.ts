@@ -19,7 +19,11 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
+import * as Blockly from 'blockly/core';
+
 import {Block} from "../toolbox/items";
+import {create as createOpMode} from '../modules/mrc_module_opmode'
+import {extendedPythonGenerator} from '../editor/extended_python_generator';
 
 // Types, constants, and functions related to modules, regardless of where the modules are stored.
 
@@ -32,15 +36,36 @@ export type Module = {
 };
 
 export type OpMode = Module;
+export type Mechanism = Module;
 
 export type Workspace = Module & {
   opModes: OpMode[],
+  mechanisms: Mechanism[]
 };
 
 export const MODULE_TYPE_WORKSPACE = 'workspace';
 export const MODULE_TYPE_OPMODE = 'opmode';
+export const MODULE_TYPE_MECHANISM = 'mechanism';
 
 export const MODULE_NAME_PLACEHOLDER = '%module_name%';
+
+/**
+ * Returns the module with the given module path, or null if it is not found.
+ */
+export function findModule(modules: Workspace[], modulePath: string): Module | null {
+  for (const workspace of modules) {
+    if (workspace.modulePath === modulePath) {
+      return workspace;
+    }
+    for (const opMode of workspace.opModes) {
+      if (opMode.modulePath === modulePath) {
+        return opMode;
+      }
+    }
+  }
+
+  return null;
+}
 
 /**
  * Returns true if the given name is a valid python module name.
@@ -57,6 +82,13 @@ export function isValidPythonModuleName(name: string): boolean {
  */
 export function makeModulePath(workspaceName: string, moduleName: string): string {
   return workspaceName + '/' + moduleName + '.py';
+}
+
+/**
+ * Returns the workspace path for the given workspace names.
+ */
+export function makeWorkspacePath(workspaceName: string): string {
+  return makeModulePath(workspaceName, workspaceName);
 }
 
 /**
@@ -101,12 +133,36 @@ export function makeUploadWorkspaceName(uploadFileName: string): string {
 }
 
 /**
- * Returns the module content for a new module.
+ * Returns the module content for a new Workspace.
  */
-export function newModuleContent(): string {
+export function newWorkspaceContent(workspaceName: string): string {
   const pythonCode = '';
   const exportedBlocks = '[]';
   const blocksContent = '{}';
+  return makeModuleContent(pythonCode, exportedBlocks, blocksContent);
+}
+
+/**
+ * Returns the module content for a new OpMode.
+ */
+export function newOpModeContent(workspaceName: string, opModeName: string): string {
+  const module: Module = {
+    modulePath: makeModulePath(workspaceName, opModeName),
+    moduleType: MODULE_TYPE_OPMODE,
+    workspaceName: workspaceName,
+    moduleName: opModeName,
+    dateModifiedMillis: 0,
+  };
+
+  // Create a headless blockly workspace.
+  const headlessBlocklyWorkspace = new Blockly.Workspace();
+  headlessBlocklyWorkspace.options.oneBasedIndex = false;
+  createOpMode(headlessBlocklyWorkspace, false);
+
+  extendedPythonGenerator.setCurrentModule(module);
+  const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
+  const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
+  const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
   return makeModuleContent(pythonCode, exportedBlocks, blocksContent);
 }
 

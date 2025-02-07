@@ -91,6 +91,7 @@ const CLASS_METHOD_DEF = {
         this.setOutput(false);
         this.setStyle(MRC_STYLE_CLASS_BLOCKS);
         this.appendStatementInput('STACK').appendField('');
+        this.mrcParameters = [];
     },
     /**
        * Returns the state of this block as a JSON serializable object.
@@ -153,8 +154,8 @@ const CLASS_METHOD_DEF = {
         }
         else {
             input.insertFieldAt(0, createFieldNonEditableText(name), 'NAME');
-            //TODO: This should turn it off, but I have an outstanding question on blockly mailing list on how to do that in typescript
-            // this.setMutator( null );
+            //Case because a current bug in blockly where it won't allow passing null to Blockly.Block.setMutator makes it necessary.
+            (this as Blockly.BlockSvg).setMutator( null );
         }
         this.setDeletable(this.mrcCanDelete);
         this.mrcUpdateParams();
@@ -345,7 +346,6 @@ export const setup = function() {
 };
 
 import { Order, PythonGenerator } from 'blockly/python';
-import { Block } from 'src/Blockly';
 
 export const pythonFromBlock = function (
     block: ClassMethodDefBlock,

@@ -175,6 +175,7 @@ export function listModules(callback: ModulesCallback): void {
         const workspace: commonStorage.Workspace = {
           ...module,
           opModes: [],
+          mechanisms: []
         };
         workspaces[workspace.workspaceName] = workspace;
         if (workspace.workspaceName in opModes) {

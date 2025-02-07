@@ -26,7 +26,9 @@ import { Order, PythonGenerator } from 'blockly/python';
 import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
-import { getAllowedTypesForSetCheck, getOutputCheck, addImport } from './utils/python';
+import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
 // A block to get a python variable.
 
@@ -255,7 +257,7 @@ export const setup = function() {
 
 export const pythonFromBlock = function(
     block: Blockly.Block,
-    generator: PythonGenerator,
+    generator: ExtendedPythonGenerator,
 ) {
   const getPythonVariableBlock = block as GetPythonVariableBlock;
   const varName = getPythonVariableBlock.mrcActualVariableName
@@ -265,7 +267,7 @@ export const pythonFromBlock = function(
     case VAR_KIND_MODULE: {
       const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
       if (getPythonVariableBlock.mrcImportModule) {
-        addImport(generator, getPythonVariableBlock.mrcImportModule);
+        generator.addImport(getPythonVariableBlock.mrcImportModule);
       }
       const code = moduleName + '.' + varName;
       return [code, Order.MEMBER];
@@ -273,7 +275,7 @@ export const pythonFromBlock = function(
     case VAR_KIND_CLASS: {
       const className = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
       if (getPythonVariableBlock.mrcImportModule) {
-        addImport(generator, getPythonVariableBlock.mrcImportModule);
+        generator.addImport(getPythonVariableBlock.mrcImportModule);        
       }
       const code = className + '.' + varName;
       return [code, Order.MEMBER];

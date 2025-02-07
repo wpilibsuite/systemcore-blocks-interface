@@ -237,6 +237,7 @@ const App: React.FC = () => {
   const [treeExpandedKeys, setTreeExpandedKeys] = useState<React.Key[]>([]);
   const [treeSelectedKey, setTreeSelectedKey] = useState<React.Key>('');
   const [currentModulePath, setCurrentModulePath] = useState('');
+  const [currentModule, setCurrentModule] = useState<commonStorage.Module | null>(null);
   const [renameTooltip, setRenameTooltip] = useState('Rename');
   const [copyTooltip, setCopyTooltip] = useState('Copy');
   const [deleteTooltip, setDeleteTooltip] = useState('Delete');
@@ -404,38 +405,47 @@ const App: React.FC = () => {
 
   // When a module path has become the current module path (either by fetching
   // the most recent module path (soon after the app is loaded) or by the user
-  // selecting it in the tree, set the current workspace, expend the
-  // workspace node in the tree.
+  // selecting it in the tree, set the current module, update some tooltips, and
+  // load the module into the blockly editor.
   useEffect(() => {
     if (ignoreEffect()) {
       return;
     }
-    if (currentModulePath && modules.length > 0) {
-      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
-      const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
 
-      if (currentModulePath === workspacePath) {
+    const module = (modules.length > 0 && currentModulePath)
+        ? commonStorage.findModule(modules, currentModulePath)
+        : null;
+    setCurrentModule(module);
+
+    if (module != null) {
+      if (module.moduleType == commonStorage.MODULE_TYPE_WORKSPACE) {
         setRenameTooltip('Rename Workspace');
         setCopyTooltip('Copy Workspace');
         setDeleteTooltip('Delete Workspace');
-      } else {
+      } else if (module.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
         setRenameTooltip('Rename OpMode');
         setCopyTooltip('Copy OpMode');
         setDeleteTooltip('Delete OpMode');
+      } else if (module.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
+        setRenameTooltip('Rename Mechanism');
+        setCopyTooltip('Copy Mechanism');
+        setDeleteTooltip('Delete Mechanism');
       }
 
       storage.saveEntry('mostRecentModulePath', currentModulePath);
       if (blocksEditor.current) {
-        blocksEditor.current.loadModuleBlocks(currentModulePath, workspacePath);
+        blocksEditor.current.loadModuleBlocks(module);
       }
     } else {
+      setCurrentModule(null);
+
       setRenameTooltip('Rename');
       setCopyTooltip('Copy');
       setDeleteTooltip('Delete');
 
       storage.saveEntry('mostRecentModulePath', '');
       if (blocksEditor.current) {
-        blocksEditor.current.loadModuleBlocks('', '');
+        blocksEditor.current.loadModuleBlocks(null);
       }
     }
   }, [currentModulePath]);
@@ -540,9 +550,9 @@ const App: React.FC = () => {
   };
 
   const handleNewWorkspaceNameOk = (newWorkspaceName: string) => {
-    const newWorkspacePath = commonStorage.makeModulePath(newWorkspaceName, newWorkspaceName);
+    const newWorkspacePath = commonStorage.makeWorkspacePath(newWorkspaceName);
     if (newWorkspaceNameModalPurpose === 'NewWorkspace') {
-      const workspaceContent = commonStorage.newModuleContent();
+      const workspaceContent = commonStorage.newWorkspaceContent(newWorkspaceName);
       storage.createModule(
           commonStorage.MODULE_TYPE_WORKSPACE, newWorkspacePath, workspaceContent,
           (success: boolean, errorMessage: string) => {
@@ -595,10 +605,14 @@ const App: React.FC = () => {
     });
   };
 
+  // Provide a callback so the NewOpModeNameModal will know what the current
+  // workspace name is.
   const getCurrentWorkspaceName = (): string => {
-    return commonStorage.getWorkspaceName(currentModulePath);
+    return currentModule ? currentModule.workspaceName : '';
   };
 
+  // Provide a callback so the NewOpModeNameModal will know what the existing
+  // OpMode names are in the current workspace.
   const getOpModeNames = (workspaceName: string): string[] => {
     const opModeNames: string[] = [];
     for (const workspace of modules) {
@@ -615,7 +629,7 @@ const App: React.FC = () => {
   const handleNewOpModeNameOk = (workspaceName: string, newOpModeName: string) => {
     const newOpModePath = commonStorage.makeModulePath(workspaceName, newOpModeName);
     if (newOpModeNameModalPurpose === 'NewOpMode') {
-      const opModeContent = commonStorage.newModuleContent();
+      const opModeContent = commonStorage.newOpModeContent(workspaceName, newOpModeName);
       storage.createModule(
           commonStorage.MODULE_TYPE_OPMODE, newOpModePath, opModeContent,
           (success: boolean, errorMessage: string) => {
@@ -685,17 +699,18 @@ const App: React.FC = () => {
 
   const handleRenameClicked = () => {
     checkIfBlocksWereModified(() => {
-      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
-      const moduleName = commonStorage.getModuleName(currentModulePath);
-      if (workspaceName === moduleName) {
+      if (!currentModule) {
+        return;
+      }
+      if (currentModule.moduleType == commonStorage.MODULE_TYPE_WORKSPACE) {
         // This is a workspace.
         setNewWorkspaceNameModalPurpose('RenameWorkspace');
-        setNewWorkspaceNameModalInitialValue(workspaceName);
+        setNewWorkspaceNameModalInitialValue(currentModule.workspaceName);
         setNewWorkspaceNameModalIsOpen(true);
-      } else {
+      } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
         // This is an OpMode.
         setNewOpModeNameModalPurpose('RenameOpMode');
-        setNewOpModeNameModalInitialValue(moduleName);
+        setNewOpModeNameModalInitialValue(currentModule.moduleName);
         setNewOpModeNameModalIsOpen(true);
       }
     });
@@ -703,43 +718,51 @@ const App: React.FC = () => {
 
   const handleCopyClicked = () => {
     checkIfBlocksWereModified(() => {
-      const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
-      const moduleName = commonStorage.getModuleName(currentModulePath);
-      if (workspaceName === moduleName) {
+      if (!currentModule) {
+        return;
+      }
+      if (currentModule.moduleType == commonStorage.MODULE_TYPE_WORKSPACE) {
         // This is a workspace.
         setNewWorkspaceNameModalPurpose('CopyWorkspace');
-        setNewWorkspaceNameModalInitialValue(workspaceName + '_copy');
+        setNewWorkspaceNameModalInitialValue(currentModule.workspaceName + '_copy');
         setNewWorkspaceNameModalIsOpen(true);
-      } else {
+      } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
         // This is an OpMode.
         setNewOpModeNameModalPurpose('CopyOpMode');
-        setNewOpModeNameModalInitialValue(moduleName + '_copy');
+        setNewOpModeNameModalInitialValue(currentModule.moduleName + '_copy');
         setNewOpModeNameModalIsOpen(true);
       }
     });
   };
 
   const handleDeleteClicked = () => {
-    const workspaceName = commonStorage.getWorkspaceName(currentModulePath);
-    const moduleName = commonStorage.getModuleName(currentModulePath);
-
+    if (!currentModule) {
+      return;
+    }
     // Show a bubble confirmation box to ask the user if they are sure.
     setPopconfirmTitle('Are you sure?');
-    if (workspaceName === moduleName) {
+    if (currentModule.moduleType == commonStorage.MODULE_TYPE_WORKSPACE) {
       setPopconfirmDescription('Press ok to delete this Workspace');
-    } else {
+    } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
       setPopconfirmDescription('Press ok to delete this OpMode');
+    } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
+      // TODO: delete the mechanism.
+      return;
     }
     // Set the function to be executed if the user clicks 'ok'.
     afterPopconfirmOk.current = () => {
       setOpenPopconfirm(false);
       checkIfBlocksWereModified(() => {
-        if (workspaceName === moduleName) {
+        if (!currentModule) {
+          return;
+        }
+        if (currentModule.moduleType == commonStorage.MODULE_TYPE_WORKSPACE) {
           // This is a workspace.
           // Before deleting it, select another workspace, if there is one.
+          const workspaceNameToDelete = currentModule.workspaceName;
           let foundAnotherWorkspace = false;
           for (const workspace of modules) {
-            if (workspace.workspaceName !== workspaceName) {
+            if (workspace.workspaceName !== workspaceNameToDelete) {
               setCurrentModulePath(workspace.modulePath);
               foundAnotherWorkspace = true;
               break;
@@ -748,7 +771,7 @@ const App: React.FC = () => {
           if (!foundAnotherWorkspace) {
             setCurrentModulePath('');
           }
-          storage.deleteWorkspace(workspaceName,
+          storage.deleteWorkspace(workspaceNameToDelete,
             (success: boolean, errorMessage: string) => {
               if (success) {
                 setTriggerListModules(!triggerListModules);
@@ -757,11 +780,12 @@ const App: React.FC = () => {
                 setAlertErrorVisible(true);
               }
             });
-        } else {
+        } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
           // This is an OpMode.
-          const workspacePath = commonStorage.makeModulePath(workspaceName, workspaceName);
+          const modulePathToDelete = currentModulePath;
+          const workspacePath = commonStorage.makeWorkspacePath(currentModule.workspaceName);
           setCurrentModulePath(workspacePath);
-          storage.deleteOpMode(currentModulePath,
+          storage.deleteOpMode(modulePathToDelete,
             (success: boolean, errorMessage: string) => {
               if (success) {
                 setTriggerListModules(!triggerListModules);

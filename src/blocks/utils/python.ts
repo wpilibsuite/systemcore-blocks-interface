@@ -19,7 +19,6 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { PythonGenerator } from 'blockly/python';
 import * as pythonUtils from './generated/python';
 
 export const RETURN_TYPE_NONE = 'None';
@@ -92,13 +91,6 @@ export function getOutputCheck(type: string): string {
   }
 
   return type;
-}
-
-// Functions used in python code generation for multiple python blocks.
-
-export function addImport(generator: PythonGenerator, importModule: string): void {
-  (generator as any).definitions_['import_' + importModule] =
-      'import ' + importModule;
 }
 
 // Function to return a legal name based off of proposed names and making sure it doesn't conflict

@@ -26,7 +26,8 @@ import { Order, PythonGenerator } from 'blockly/python';
 import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
-import { getOutputCheck, addImport } from './utils/python';
+import { getOutputCheck } from './utils/python';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MRC_STYLE_ENUM } from '../themes/styles'
 
 
@@ -137,13 +138,13 @@ export const setup = function() {
 
 export const pythonFromBlock = function(
     block: Blockly.Block,
-    generator: PythonGenerator,
+    generator: ExtendedPythonGenerator,
 ) {
   const getPythonEnumValueBlock = block as GetPythonEnumValueBlock;
   const enumClassName = block.getFieldValue(pythonUtils.FIELD_ENUM_CLASS_NAME);
   const enumValue = block.getFieldValue(pythonUtils.FIELD_ENUM_VALUE);
   if (getPythonEnumValueBlock.mrcImportModule) {
-    addImport(generator, getPythonEnumValueBlock.mrcImportModule);
+    generator.addImport(getPythonEnumValueBlock.mrcImportModule);
   }
   const code = enumClassName + '.' + enumValue;
   return [code, Order.MEMBER];
