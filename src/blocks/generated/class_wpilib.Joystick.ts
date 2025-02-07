@@ -13,6 +13,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 69 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.Joystick", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Joystick", "VAR": "kDefaultThrottleChannel"}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.Joystick", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Joystick", "VAR": "kDefaultTwistChannel"}},
@@ -84,12 +86,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Joystick.ButtonType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Joystick.ButtonType", "ENUM_VALUE": "kTopButton"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Joystick.ButtonType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Joystick.ButtonType", "ENUM_VALUE": "kTriggerButton"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Joystick",
     name:  "Joystick",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Joystick",
   };
+
   return category;
 }

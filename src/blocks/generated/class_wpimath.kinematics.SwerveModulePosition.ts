@@ -16,6 +16,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 8 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.SwerveModulePosition", "varType": "wpimath.geometry._geometry.Rotation2d", "importModule": "", "selfLabel": "swerveModulePosition", "selfType": "wpimath.kinematics.SwerveModulePosition"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveModulePosition", "VAR": "angle"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModulePosition"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.kinematics.SwerveModulePosition", "varType": "wpimath.geometry._geometry.Rotation2d", "importModule": "", "selfLabel": "swerveModulePosition", "selfType": "wpimath.kinematics.SwerveModulePosition"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveModulePosition", "VAR": "angle"}, "inputs": {"VALUE": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}, "SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModulePosition"}}}}}},
@@ -26,12 +28,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySwerveModulePosition"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.kinematics._kinematics.SwerveModulePosition", "args": [{"name": "distance", "type": "wpimath.units.meters"}, {"name": "angle", "type": "wpimath.geometry._geometry.Rotation2d"}], "tooltip": "", "importModule": "wpimath.kinematics"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveModulePosition"}, "inputs": {"ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySwerveModulePosition"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.kinematics._kinematics.SwerveModulePosition", "args": [{"name": "swerveModulePosition", "type": "wpimath.kinematics._kinematics.SwerveModulePosition"}, {"name": "endValue", "type": "wpimath.kinematics._kinematics.SwerveModulePosition"}, {"name": "t", "type": "float"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveModulePosition", "FUNC": "interpolate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModulePosition"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModulePosition"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.kinematics.SwerveModulePosition",
     name:  "SwerveModulePosition",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.kinematics.SwerveModulePosition",
   };
+
   return category;
 }

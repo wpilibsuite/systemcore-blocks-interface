@@ -13,6 +13,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 49 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.DriverStation", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DriverStation", "VAR": "kJoystickPorts"}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAlliance]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "Optional[wpilib._wpilib.DriverStation.Alliance]", "args": [], "tooltip": "Get the current alliance from the FMS.\n\nIf the FMS is not connected, it is set from the team alliance setting on\nthe driver station.\n\n:returns: The alliance (red or blue) or an empty optional if the alliance is\n          invalid", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DriverStation", "FUNC": "getAlliance"}}}}},
@@ -64,12 +66,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kPractice"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DriverStation.MatchType", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DriverStation.MatchType", "ENUM_VALUE": "kQualification"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.DriverStation",
     name:  "DriverStation",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.DriverStation",
   };
+
   return category;
 }

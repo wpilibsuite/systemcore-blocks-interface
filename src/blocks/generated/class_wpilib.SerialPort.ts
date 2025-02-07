@@ -14,6 +14,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 33 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySerialPort"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.SerialPort", "args": [{"name": "baudRate", "type": "int"}, {"name": "port", "type": "wpilib._wpilib.SerialPort.Port"}, {"name": "dataBits", "type": "int"}, {"name": "parity", "type": "wpilib._wpilib.SerialPort.Parity"}, {"name": "stopBits", "type": "wpilib._wpilib.SerialPort.StopBits"}], "tooltip": "Create an instance of a Serial Port class.\n\n:param baudRate: The baud rate to configure the serial port.\n:param port:     The physical port to use\n:param dataBits: The number of data bits per transfer.  Valid values are\n                 between 5 and 8 bits.\n:param parity:   Select the type of parity checking to use.\n:param stopBits: The number of stop bits to use as defined by the enum\n                 StopBits.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SerialPort"}, "inputs": {"ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPort"}}}}, "ARG2": {"shadow": {"type": "math_number", "fields": {"NUM": 8.0}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myParity"}}}}, "ARG4": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStopBits"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySerialPort"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.SerialPort", "args": [{"name": "baudRate", "type": "int"}, {"name": "portName", "type": "str"}, {"name": "port", "type": "wpilib._wpilib.SerialPort.Port"}, {"name": "dataBits", "type": "int"}, {"name": "parity", "type": "wpilib._wpilib.SerialPort.Parity"}, {"name": "stopBits", "type": "wpilib._wpilib.SerialPort.StopBits"}], "tooltip": "Create an instance of a Serial Port class.\n\nPrefer to use the constructor that doesn't take a port name, but in some\ncases the automatic detection might not work correctly.\n\n:param baudRate: The baud rate to configure the serial port.\n:param port:     The physical port to use\n:param portName: The direct port name to use\n:param dataBits: The number of data bits per transfer.  Valid values are\n                 between 5 and 8 bits.\n:param parity:   Select the type of parity checking to use.\n:param stopBits: The number of stop bits to use as defined by the enum\n                 StopBits.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SerialPort"}, "inputs": {"ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPort"}}}}, "ARG3": {"shadow": {"type": "math_number", "fields": {"NUM": 8.0}}}, "ARG4": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myParity"}}}}, "ARG5": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myStopBits"}}}}}}}}},
@@ -49,12 +51,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SerialPort.WriteBufferMode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SerialPort.WriteBufferMode", "ENUM_VALUE": "kFlushOnAccess"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.SerialPort.WriteBufferMode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.SerialPort.WriteBufferMode", "ENUM_VALUE": "kFlushWhenFull"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.SerialPort",
     name:  "SerialPort",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.SerialPort",
   };
+
   return category;
 }

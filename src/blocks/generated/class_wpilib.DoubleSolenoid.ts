@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDoubleSolenoid"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.DoubleSolenoid", "args": [{"name": "module", "type": "int"}, {"name": "moduleType", "type": "wpilib._wpilib.PneumaticsModuleType"}, {"name": "forwardChannel", "type": "int"}, {"name": "reverseChannel", "type": "int"}], "tooltip": "Constructs a double solenoid for a specified module of a specific module\ntype.\n\n:param module:         The module of the solenoid module to use.\n:param moduleType:     The module type to use.\n:param forwardChannel: The forward channel on the module to control.\n:param reverseChannel: The reverse channel on the module to control.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DoubleSolenoid"}, "inputs": {"ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsModuleType"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDoubleSolenoid"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.DoubleSolenoid", "args": [{"name": "moduleType", "type": "wpilib._wpilib.PneumaticsModuleType"}, {"name": "forwardChannel", "type": "int"}, {"name": "reverseChannel", "type": "int"}], "tooltip": "Constructs a double solenoid for a default module of a specific module\ntype.\n\n:param moduleType:     The module type to use.\n:param forwardChannel: The forward channel on the module to control.\n:param reverseChannel: The reverse channel on the module to control.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.DoubleSolenoid"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPneumaticsModuleType"}}}}}}}}},
@@ -25,12 +27,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kOff"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.DoubleSolenoid.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.DoubleSolenoid.Value", "ENUM_VALUE": "kReverse"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.DoubleSolenoid",
     name:  "DoubleSolenoid",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.DoubleSolenoid",
   };
+
   return category;
 }

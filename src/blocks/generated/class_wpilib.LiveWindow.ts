@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 9 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [], "tooltip": "Disable ALL telemetry.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.LiveWindow", "FUNC": "disableAllTelemetry"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "component", "type": "wpiutil._wpiutil.Sendable"}], "tooltip": "Disable telemetry for a single component.\n\n:param component: sendable", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.LiveWindow", "FUNC": "disableTelemetry"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendable"}}}}}},
@@ -19,12 +21,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "func", "type": "Callable[[], None]"}], "tooltip": "Sets function to be called when LiveWindow is enabled.\n\n:param func: function (or nullptr for none)", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.LiveWindow", "FUNC": "setEnabledCallback"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [], "tooltip": "Tell all the sensors to update (send) their values.\n\nActuators are handled through callbacks on their value changing from the\nSmartDashboard widgets.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.LiveWindow", "FUNC": "updateValues"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.LiveWindow",
     name:  "LiveWindow",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.LiveWindow",
   };
+
   return category;
 }

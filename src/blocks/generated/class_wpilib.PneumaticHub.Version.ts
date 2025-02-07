@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 13 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PneumaticHub.Version", "varType": "int", "importModule": "", "selfLabel": "version", "selfType": "wpilib.PneumaticHub.Version"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.Version", "VAR": "FirmwareFix"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myVersion"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PneumaticHub.Version", "varType": "int", "importModule": "", "selfLabel": "version", "selfType": "wpilib.PneumaticHub.Version"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.Version", "VAR": "FirmwareFix"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myVersion"}}}}}},
@@ -27,12 +29,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpilib.PneumaticHub.Version", "varType": "int", "importModule": "", "selfLabel": "version", "selfType": "wpilib.PneumaticHub.Version"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.Version", "VAR": "UniqueId"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myVersion"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myVersion"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.PneumaticHub.Version", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.PneumaticHub.Version"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.PneumaticHub.Version",
     name:  "Version",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.PneumaticHub.Version",
   };
+
   return category;
 }

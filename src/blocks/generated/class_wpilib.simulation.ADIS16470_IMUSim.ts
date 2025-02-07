@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 10 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADIS16470_IMUSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.ADIS16470_IMUSim", "args": [{"name": "imu", "type": "wpilib._wpilib.ADIS16470_IMU"}], "tooltip": "Constructs from a ADIS16470_IMU object.\n\n:param imu: ADIS16470_IMU to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.ADIS16470_IMUSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADIS16470_IMU"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "aDIS16470_IMUSim", "type": "wpilib.simulation._simulation.ADIS16470_IMUSim"}, {"name": "accel", "type": "wpimath.units.meters_per_second_squared"}], "tooltip": "Sets the X axis acceleration.\n\n:param accel: The acceleration.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.ADIS16470_IMUSim", "FUNC": "setAccelX"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADIS16470_IMUSim"}}}}}},
@@ -20,12 +22,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "aDIS16470_IMUSim", "type": "wpilib.simulation._simulation.ADIS16470_IMUSim"}, {"name": "angularRate", "type": "wpimath.units.degrees_per_second"}], "tooltip": "Sets the Y axis angular rate (CCW positive).\n\n:param angularRate: The angular rate.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.ADIS16470_IMUSim", "FUNC": "setGyroRateY"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADIS16470_IMUSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "aDIS16470_IMUSim", "type": "wpilib.simulation._simulation.ADIS16470_IMUSim"}, {"name": "angularRate", "type": "wpimath.units.degrees_per_second"}], "tooltip": "Sets the Z axis angular rate (CCW positive).\n\n:param angularRate: The angular rate.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.ADIS16470_IMUSim", "FUNC": "setGyroRateZ"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myADIS16470_IMUSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.ADIS16470_IMUSim",
     name:  "ADIS16470_IMUSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.ADIS16470_IMUSim",
   };
+
   return category;
 }

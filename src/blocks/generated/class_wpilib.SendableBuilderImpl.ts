@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 46 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySendableBuilderImpl"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.SendableBuilderImpl", "args": [], "tooltip": "", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.SendableBuilderImpl"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sendableBuilderImpl", "type": "wpilib._wpilib.SendableBuilderImpl"}, {"name": "key", "type": "str"}, {"name": "getter", "type": "Callable[[], list[int]]"}, {"name": "setter", "type": "Callable[[List[int]], None]"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.SendableBuilderImpl", "FUNC": "addBooleanArrayProperty"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableBuilderImpl"}}}}}},
@@ -56,12 +58,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sendableBuilderImpl", "type": "wpilib._wpilib.SendableBuilderImpl"}], "tooltip": "Stop LiveWindow mode by unhooking the setters for all properties.  Also\ncalls the SafeState function if one was provided.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.SendableBuilderImpl", "FUNC": "stopLiveWindowMode"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableBuilderImpl"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "sendableBuilderImpl", "type": "wpilib._wpilib.SendableBuilderImpl"}], "tooltip": "Synchronize with network table values by calling the getters for all\nproperties and setters when the network table value has changed.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.SendableBuilderImpl", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendableBuilderImpl"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.SendableBuilderImpl",
     name:  "SendableBuilderImpl",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.SendableBuilderImpl",
   };
+
   return category;
 }

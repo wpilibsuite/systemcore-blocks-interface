@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 24 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Pose3d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "pose3d", "selfType": "wpimath.geometry.Pose3d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Pose3d", "VAR": "x"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose3d"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Pose3d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "pose3d", "selfType": "wpimath.geometry.Pose3d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Pose3d", "VAR": "y"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose3d"}}}}}},
@@ -37,12 +39,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Pose3d", "args": [{"name": "pose3d", "type": "wpimath.geometry._geometry.Pose3d"}, {"name": "other", "type": "wpimath.geometry._geometry.Transform3d"}], "tooltip": "Transforms the pose by the given transformation and returns the new\ntransformed pose. The transform is applied relative to the pose's frame.\nNote that this differs from Pose3d::RotateBy(const Rotation3d&), which is\napplied relative to the global frame and around the origin.\n\n:param other: The transform to transform the pose by.\n\n:returns: The transformed pose.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Pose3d", "FUNC": "transformBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose3d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform3d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTranslation3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Translation3d", "args": [{"name": "pose3d", "type": "wpimath.geometry._geometry.Pose3d"}], "tooltip": "Returns the underlying translation.\n\n:returns: Reference to the translational component of the pose.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Pose3d", "FUNC": "translation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose3d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Pose3d",
     name:  "Pose3d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Pose3d",
   };
+
   return category;
 }

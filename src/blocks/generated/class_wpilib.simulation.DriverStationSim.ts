@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 47 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDriverStationSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.DriverStationSim", "args": [], "tooltip": "", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DriverStationSim"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAllianceStationID"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "hal._wpiHal.AllianceStationID", "args": [], "tooltip": "Get the alliance station ID (color + number).\n\n:returns: the alliance station color and number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DriverStationSim", "FUNC": "getAllianceStationId"}}}}},
@@ -57,12 +59,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "shouldSend", "type": "bool"}], "tooltip": "Sets suppression of DriverStation::ReportError and ReportWarning messages.\n\n:param shouldSend: If false then messages will be suppressed.", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DriverStationSim", "FUNC": "setSendError"}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "None", "args": [{"name": "test", "type": "bool"}], "tooltip": "Change whether the DS is in test.\n\n:param test: the new value", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DriverStationSim", "FUNC": "setTest"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.DriverStationSim",
     name:  "DriverStationSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.DriverStationSim",
   };
+
   return category;
 }

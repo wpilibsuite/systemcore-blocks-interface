@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 21 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myDCMotorSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.DCMotorSim", "args": [{"name": "plant", "type": "wpimath._controls._controls.system.LinearSystem_2_1_2"}, {"name": "gearbox", "type": "wpimath._controls._controls.plant.DCMotor"}, {"name": "measurementStdDevs", "type": "Annotated[list[float], FixedSize(2)]"}], "tooltip": "Creates a simulated DC motor mechanism.\n\n:param plant:              The linear system representing the DC motor. This\n                           system can be created with LinearSystemId::DCMotorSystem(). If\n                           LinearSystemId::DCMotorSystem(kV, kA) is used, the distance unit must be\n                           radians.\n:param gearbox:            The type of and number of motors in the DC motor\n                           gearbox.\n:param measurementStdDevs: The standard deviation of the measurement noise.", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DCMotorSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystem_2_1_2"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotor"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.units.radians_per_second_squared", "args": [{"name": "dCMotorSim", "type": "wpilib.simulation._simulation.DCMotorSim"}], "tooltip": "Returns the DC motor acceleration.\n\n:returns: The DC motor acceleration", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DCMotorSim", "FUNC": "getAngularAcceleration"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotorSim"}}}}}},
@@ -31,12 +33,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "dCMotorSim", "type": "wpilib.simulation._simulation.DCMotorSim"}, {"name": "angularPosition", "type": "wpimath.units.radians"}, {"name": "angularVelocity", "type": "wpimath.units.radians_per_second"}], "tooltip": "Sets the state of the DC motor.\n\n:param angularPosition: The new position\n:param angularVelocity: The new velocity", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.DCMotorSim", "FUNC": "setState"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDCMotorSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "linearSystemSim_2_1_2", "type": "wpilib.simulation._simulation.LinearSystemSim_2_1_2"}, {"name": "dt", "type": "wpimath.units.seconds"}], "tooltip": "Updates the simulation.\n\n:param dt: The time between updates.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.LinearSystemSim_2_1_2", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystemSim_2_1_2"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.DCMotorSim",
     name:  "DCMotorSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.DCMotorSim",
   };
+
   return category;
 }

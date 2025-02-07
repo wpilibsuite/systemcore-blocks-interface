@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 21 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogGyro", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogGyro", "VAR": "kAverageBits"}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.AnalogGyro", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogGyro", "VAR": "kOversampleBits"}},
@@ -34,12 +36,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogGyro", "type": "wpilib._wpilib.AnalogGyro"}, {"name": "volts", "type": "float"}], "tooltip": "Set the size of the neutral zone.\n\nAny voltage from the gyro less than this amount from the center is\nconsidered stationary.  Setting a deadband will decrease the amount of\ndrift when the gyro isn't rotating, but will make it less accurate.\n\n:param volts: The size of the deadband in volts", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogGyro", "FUNC": "setDeadband"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogGyro"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogGyro", "type": "wpilib._wpilib.AnalogGyro"}, {"name": "voltsPerDegreePerSecond", "type": "float"}], "tooltip": "Set the gyro sensitivity.\n\nThis takes the number of volts/degree/second sensitivity of the gyro and\nuses it in subsequent calculations to allow the code to work with multiple\ngyros. This value is typically found in the gyro datasheet.\n\n:param voltsPerDegreePerSecond: The sensitivity in Volts/degree/second", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.AnalogGyro", "FUNC": "setSensitivity"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogGyro"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.AnalogGyro",
     name:  "AnalogGyro",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.AnalogGyro",
   };
+
   return category;
 }

@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 22 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Pose2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "pose2d", "selfType": "wpimath.geometry.Pose2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Pose2d", "VAR": "x"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}},
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Pose2d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "pose2d", "selfType": "wpimath.geometry.Pose2d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Pose2d", "VAR": "y"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}},
@@ -35,12 +37,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Pose2d", "args": [{"name": "pose2d", "type": "wpimath.geometry._geometry.Pose2d"}, {"name": "other", "type": "wpimath.geometry._geometry.Transform2d"}], "tooltip": "Transforms the pose by the given transformation and returns the new pose.\nSee + operator for the matrix multiplication performed.\n\n:param other: The transform to transform the pose by.\n\n:returns: The transformed pose.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Pose2d", "FUNC": "transformBy"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTransform2d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTranslation2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Translation2d", "args": [{"name": "pose2d", "type": "wpimath.geometry._geometry.Pose2d"}], "tooltip": "Returns the underlying translation.\n\n:returns: Reference to the translational component of the pose.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Pose2d", "FUNC": "translation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Pose2d",
     name:  "Pose2d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Pose2d",
   };
+
   return category;
 }

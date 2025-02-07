@@ -19,7 +19,11 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
+import * as Blockly from 'blockly/core';
+
 import {Block} from "../toolbox/items";
+import {create as createOpMode} from '../modules/mrc_module_opmode'
+import {extendedPythonGenerator} from '../editor/extended_python_generator';
 
 // Types, constants, and functions related to modules, regardless of where the modules are stored.
 
@@ -129,34 +133,36 @@ export function makeUploadWorkspaceName(uploadFileName: string): string {
 }
 
 /**
- * Returns the module content for a new module.
+ * Returns the module content for a new Workspace.
  */
-export function newModuleContent(moduleType: string): string {
-  let pythonCode;
-  let blocksContent;
-  let exportedBlocks;
+export function newWorkspaceContent(workspaceName: string): string {
+  const pythonCode = '';
+  const exportedBlocks = '[]';
+  const blocksContent = '{}';
+  return makeModuleContent(pythonCode, exportedBlocks, blocksContent);
+}
 
-  switch (moduleType) {
-    case MODULE_TYPE_WORKSPACE:
-      pythonCode = '';
-      blocksContent = '{}';
-      exportedBlocks = '[]';
-      break;
-    case MODULE_TYPE_OPMODE:
-      // TODO: Update the python code and blocks content here to be an OpMode.
-      pythonCode = '';
-      blocksContent = '{}';
-      exportedBlocks = '[]';
-      break;
-    case MODULE_TYPE_MECHANISM:
-      pythonCode = '';
-      blocksContent = '{}';
-      exportedBlocks = '[]';
-      break;
-    default:
-      throw new Error('Unexpected module type: ' + moduleType);
-  }
+/**
+ * Returns the module content for a new OpMode.
+ */
+export function newOpModeContent(workspaceName: string, opModeName: string): string {
+  const module: Module = {
+    modulePath: makeModulePath(workspaceName, opModeName),
+    moduleType: MODULE_TYPE_OPMODE,
+    workspaceName: workspaceName,
+    moduleName: opModeName,
+    dateModifiedMillis: 0,
+  };
 
+  // Create a headless blockly workspace.
+  const headlessBlocklyWorkspace = new Blockly.Workspace();
+  headlessBlocklyWorkspace.options.oneBasedIndex = false;
+  createOpMode(headlessBlocklyWorkspace, false);
+
+  extendedPythonGenerator.setCurrentModule(module);
+  const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
+  const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
+  const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
   return makeModuleContent(pythonCode, exportedBlocks, blocksContent);
 }
 

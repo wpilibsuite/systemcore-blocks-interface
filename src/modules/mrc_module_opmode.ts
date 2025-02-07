@@ -1,7 +1,7 @@
 import * as Blockly from 'blockly';
 import { BLOCK_NAME as MRC_CLASS_METHOD_DEF } from '../blocks/mrc_class_method_def'
 
-export function create(workspace : Blockly.Workspace){
+export function create(workspace : Blockly.Workspace, render: boolean) {
     let initBlock = workspace.newBlock(MRC_CLASS_METHOD_DEF);
     initBlock.setFieldValue('init', 'NAME');
     const extra = {
@@ -14,6 +14,8 @@ export function create(workspace : Blockly.Workspace){
     if (initBlock.loadExtraState){
         initBlock.loadExtraState(extra);
     }
-    (initBlock as Blockly.BlockSvg).initSvg();
-    (initBlock as Blockly.BlockSvg).render();
+    if (render) {
+        (initBlock as Blockly.BlockSvg).initSvg();
+        (initBlock as Blockly.BlockSvg).render();
+    }
 }

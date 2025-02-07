@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 32 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPIDController"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.PIDController", "args": [{"name": "Kp", "type": "float"}, {"name": "Ki", "type": "float"}, {"name": "Kd", "type": "float"}, {"name": "period", "type": "wpimath.units.seconds"}], "tooltip": "Allocates a PIDController with the given constants for Kp, Ki, and Kd.\n\n:param Kp:     The proportional coefficient. Must be >= 0.\n:param Ki:     The integral coefficient. Must be >= 0.\n:param Kd:     The derivative coefficient. Must be >= 0.\n:param period: The period between controller updates in seconds. The\n               default is 20 milliseconds. Must be positive.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.PIDController"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "pIDController", "type": "wpimath._controls._controls.controller.PIDController"}], "tooltip": "Returns true if the error is within the tolerance of the setpoint.\nThe error tolerance defauls to 0.05, and the error derivative tolerance\ndefaults to \u221e.\n\nThis will return false until at least one input value has been computed.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.PIDController", "FUNC": "atSetpoint"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPIDController"}}}}}},
@@ -42,12 +44,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pIDController", "type": "wpimath._controls._controls.controller.PIDController"}, {"name": "setpoint", "type": "float"}], "tooltip": "Sets the setpoint for the PIDController.\n\n:param setpoint: The desired setpoint.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.PIDController", "FUNC": "setSetpoint"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPIDController"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "pIDController", "type": "wpimath._controls._controls.controller.PIDController"}, {"name": "errorTolerance", "type": "float"}, {"name": "errorDerivativeTolerance", "type": "float"}], "tooltip": "Sets the error which is considered tolerable for use with AtSetpoint().\n\n:param errorTolerance:           error which is tolerable.\n:param errorDerivativeTolerance: error derivative which is tolerable.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.PIDController", "FUNC": "setTolerance"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPIDController"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.controller.PIDController",
     name:  "PIDController",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.controller.PIDController",
   };
+
   return category;
 }

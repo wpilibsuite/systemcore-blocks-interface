@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 21 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRobotDriveBase"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.drive._drive.RobotDriveBase", "args": [], "tooltip": "", "importModule": "wpilib.drive"}, "fields": {"MODULE_OR_CLASS": "wpilib.drive.RobotDriveBase"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "motorSafety", "type": "wpilib._wpilib.MotorSafety"}], "tooltip": "Check if this motor has exceeded its timeout.\n\nThis method is called periodically to determine if this motor has exceeded\nits timeout value. If it has, the stop method is called, and the motor is\nshut down until its value is updated again.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.MotorSafety", "FUNC": "check"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorSafety"}}}}}},
@@ -33,12 +35,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kRearRight"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.drive.RobotDriveBase.MotorType", "importModule": "wpilib.drive"}, "fields": {"ENUM_TYPE": "wpilib.drive.RobotDriveBase.MotorType", "ENUM_VALUE": "kRight"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.drive.RobotDriveBase",
     name:  "RobotDriveBase",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.drive.RobotDriveBase",
   };
+
   return category;
 }

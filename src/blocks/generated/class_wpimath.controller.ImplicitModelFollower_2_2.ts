@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 8 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myImplicitModelFollower_2_2"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.ImplicitModelFollower_2_2", "args": [{"name": "A", "type": "numpy.ndarray[numpy.float64[2, 2]]"}, {"name": "B", "type": "numpy.ndarray[numpy.float64[2, 2]]"}, {"name": "Aref", "type": "numpy.ndarray[numpy.float64[2, 2]]"}, {"name": "Bref", "type": "numpy.ndarray[numpy.float64[2, 2]]"}], "tooltip": "Constructs a controller with the given coefficients and plant.\n\n:param A:    Continuous system matrix of the plant being controlled.\n:param B:    Continuous input matrix of the plant being controlled.\n:param Aref: Continuous system matrix whose dynamics should be followed.\n:param Bref: Continuous input matrix whose dynamics should be followed.", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.ImplicitModelFollower_2_2"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[2, 2]]"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[2, 2]]"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[2, 2]]"}}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[2, 2]]"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myImplicitModelFollower_2_2"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath._controls._controls.controller.ImplicitModelFollower_2_2", "args": [{"name": "plant", "type": "wpimath._controls._controls.system.LinearSystem_2_2_1"}, {"name": "plantRef", "type": "wpimath._controls._controls.system.LinearSystem_2_2_1"}], "tooltip": "", "importModule": "wpimath.controller"}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.ImplicitModelFollower_2_2"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystem_2_2_1"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearSystem_2_2_1"}}}}}}}}},
@@ -18,12 +20,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myfloat64[2, 1]]"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "numpy.ndarray[numpy.float64[2, 1]]", "args": [{"name": "implicitModelFollower_2_2", "type": "wpimath._controls._controls.controller.ImplicitModelFollower_2_2"}, {"name": "x", "type": "numpy.ndarray[numpy.float64[2, 1]]"}, {"name": "u", "type": "numpy.ndarray[numpy.float64[2, 1]]"}], "tooltip": "Returns the next output of the controller.\n\n:param x: The current state x.\n:param u: The current input for the original model.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.ImplicitModelFollower_2_2", "FUNC": "calculate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myImplicitModelFollower_2_2"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[2, 1]]"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myfloat64[2, 1]]"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "implicitModelFollower_2_2", "type": "wpimath._controls._controls.controller.ImplicitModelFollower_2_2"}], "tooltip": "Resets the controller.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.controller.ImplicitModelFollower_2_2", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myImplicitModelFollower_2_2"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.controller.ImplicitModelFollower_2_2",
     name:  "ImplicitModelFollower_2_2",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.controller.ImplicitModelFollower_2_2",
   };
+
   return category;
 }

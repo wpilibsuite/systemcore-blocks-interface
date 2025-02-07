@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 38 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCounter"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Counter", "args": [{"name": "mode", "type": "wpilib._wpilib.Counter.Mode"}], "tooltip": "Create an instance of a counter where no sources are selected.\n\nThey all must be selected by calling functions to specify the up source and\nthe down source independently.\n\nThis creates a ChipObject counter and initializes status variables\nappropriately.\n\nThe counter will start counting immediately.\n\n:param mode: The counter mode", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Counter"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMode"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myCounter"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Counter", "args": [{"name": "channel", "type": "int"}], "tooltip": "Create an instance of a Counter object.\n\nCreate an up-Counter instance given a channel.\n\nThe counter will start counting immediately.\n\n:param channel: The DIO channel to use as the up source. 0-9 are on-board,\n                10-25 are on the MXP", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Counter"}}}}},
@@ -50,12 +52,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Counter.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Counter.Mode", "ENUM_VALUE": "kSemiperiod"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Counter.Mode", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Counter.Mode", "ENUM_VALUE": "kTwoPulse"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Counter",
     name:  "Counter",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Counter",
   };
+
   return category;
 }

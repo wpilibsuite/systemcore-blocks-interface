@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 7 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySwerveDrive3OdometryBase"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.kinematics._kinematics.SwerveDrive3OdometryBase", "args": [{"name": "kinematics", "type": "wpimath.kinematics._kinematics.SwerveDrive3KinematicsBase"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation2d"}, {"name": "wheelPositions", "type": "Tuple[wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition]"}, {"name": "initialPose", "type": "wpimath.geometry._geometry.Pose2d"}], "tooltip": "Constructs an Odometry object.\n\n:param kinematics:     The kinematics for your drivetrain.\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param initialPose:    The starting position of the robot on the field.", "importModule": "wpimath.kinematics"}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveDrive3OdometryBase"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveDrive3KinematicsBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModulePosition]"}}}}, "ARG3": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPose2d"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Pose2d", "args": [{"name": "swerveDrive3OdometryBase", "type": "wpimath.kinematics._kinematics.SwerveDrive3OdometryBase"}], "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveDrive3OdometryBase", "FUNC": "getPose"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveDrive3OdometryBase"}}}}}}}}},
@@ -17,12 +19,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "swerveDrive3OdometryBase", "type": "wpimath.kinematics._kinematics.SwerveDrive3OdometryBase"}, {"name": "translation", "type": "wpimath.geometry._geometry.Translation2d"}], "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveDrive3OdometryBase", "FUNC": "resetTranslation"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveDrive3OdometryBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTranslation2d"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myPose2d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpimath.geometry._geometry.Pose2d", "args": [{"name": "swerveDrive3OdometryBase", "type": "wpimath.kinematics._kinematics.SwerveDrive3OdometryBase"}, {"name": "gyroAngle", "type": "wpimath.geometry._geometry.Rotation2d"}, {"name": "wheelPositions", "type": "Tuple[wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition, wpimath.kinematics._kinematics.SwerveModulePosition]"}], "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.kinematics.SwerveDrive3OdometryBase", "FUNC": "update"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveDrive3OdometryBase"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRotation2d"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySwerveModulePosition]"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.kinematics.SwerveDrive3OdometryBase",
     name:  "SwerveDrive3OdometryBase",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.kinematics.SwerveDrive3OdometryBase",
   };
+
   return category;
 }

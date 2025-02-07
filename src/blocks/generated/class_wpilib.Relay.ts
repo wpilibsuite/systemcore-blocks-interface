@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 22 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myRelay"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.Relay", "args": [{"name": "channel", "type": "int"}, {"name": "direction", "type": "wpilib._wpilib.Relay.Direction"}], "tooltip": "Relay constructor given a channel.\n\nThis code initializes the relay and reserves all resources that need to be\nlocked. Initially the relay is set to both lines at 0v.\n\n:param channel:   The channel number (0-3).\n:param direction: The direction that the Relay object will control.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.Relay"}, "inputs": {"ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myDirection"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "motorSafety", "type": "wpilib._wpilib.MotorSafety"}], "tooltip": "Check if this motor has exceeded its timeout.\n\nThis method is called periodically to determine if this motor has exceeded\nits timeout value. If it has, the stop method is called, and the motor is\nshut down until its value is updated again.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.MotorSafety", "FUNC": "check"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myMotorSafety"}}}}}},
@@ -35,12 +37,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kOn"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.Relay.Value", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.Relay.Value", "ENUM_VALUE": "kReverse"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.Relay",
     name:  "Relay",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.Relay",
   };
+
   return category;
 }

@@ -13,6 +13,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 18 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "class", "moduleOrClassName": "wpilib.ADXL345_I2C", "varType": "int", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL345_I2C", "VAR": "kAddress"}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADXL345_I2C"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADXL345_I2C", "args": [{"name": "port", "type": "wpilib._wpilib.I2C.Port"}, {"name": "range", "type": "wpilib._wpilib.ADXL345_I2C.Range"}, {"name": "deviceAddress", "type": "int"}], "tooltip": "Constructs the ADXL345 Accelerometer over I2C.\n\n:param port:          The I2C port the accelerometer is attached to\n:param range:         The range (+ or -) that the accelerometer will measure\n:param deviceAddress: The I2C address of the accelerometer (0x1D or 0x53)", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL345_I2C"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPort"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRange"}}}}, "ARG2": {"shadow": {"type": "math_number", "fields": {"NUM": 29.0}}}}}}}},
@@ -33,12 +35,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_4G"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL345_I2C.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL345_I2C.Range", "ENUM_VALUE": "kRange_8G"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.ADXL345_I2C",
     name:  "ADXL345_I2C",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.ADXL345_I2C",
   };
+
   return category;
 }

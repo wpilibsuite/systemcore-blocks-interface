@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 19 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.REVPHStickyFaults", "varType": "int", "importModule": "", "selfLabel": "rEVPHStickyFaults", "selfType": "hal.REVPHStickyFaults"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHStickyFaults", "VAR": "brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHStickyFaults"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.REVPHStickyFaults", "varType": "int", "importModule": "", "selfLabel": "rEVPHStickyFaults", "selfType": "hal.REVPHStickyFaults"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHStickyFaults", "VAR": "brownout"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHStickyFaults"}}}}}},
@@ -33,12 +35,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.REVPHStickyFaults", "varType": "int", "importModule": "", "selfLabel": "rEVPHStickyFaults", "selfType": "hal.REVPHStickyFaults"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHStickyFaults", "VAR": "solenoidOverCurrent"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myREVPHStickyFaults"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myREVPHStickyFaults"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "hal._wpiHal.REVPHStickyFaults", "args": [], "tooltip": "", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal.REVPHStickyFaults"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.REVPHStickyFaults",
     name:  "REVPHStickyFaults",
-      contents: contents,
+    contents: contents,
+    className: "hal.REVPHStickyFaults",
   };
+
   return category;
 }

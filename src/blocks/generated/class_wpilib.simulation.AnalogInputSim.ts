@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 30 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogInputSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.AnalogInputSim", "args": [{"name": "analogInput", "type": "wpilib._wpilib.AnalogInput"}], "tooltip": "Constructs from an AnalogInput object.\n\n:param analogInput: AnalogInput to simulate", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogInputSim"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInput"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myAnalogInputSim"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.simulation._simulation.AnalogInputSim", "args": [{"name": "channel", "type": "int"}], "tooltip": "Constructs from an analog input channel number.\n\n:param channel: Channel number", "importModule": "wpilib.simulation"}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogInputSim"}}}}},
@@ -40,12 +42,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogInputSim", "type": "wpilib.simulation._simulation.AnalogInputSim"}, {"name": "oversampleBits", "type": "int"}], "tooltip": "Change the amount of oversampling bits.\n\n:param oversampleBits: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogInputSim", "FUNC": "setOversampleBits"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInputSim"}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "analogInputSim", "type": "wpilib.simulation._simulation.AnalogInputSim"}, {"name": "voltage", "type": "float"}], "tooltip": "Change the voltage.\n\n:param voltage: the new value", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.AnalogInputSim", "FUNC": "setVoltage"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myAnalogInputSim"}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.simulation.AnalogInputSim",
     name:  "AnalogInputSim",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.simulation.AnalogInputSim",
   };
+
   return category;
 }

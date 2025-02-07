@@ -12,6 +12,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 14 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "hal.SimDevice", "varType": "str", "importModule": "", "selfLabel": "simDevice", "selfType": "hal.SimDevice"}, "fields": {"MODULE_OR_CLASS": "hal.SimDevice", "VAR": "name"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySimDevice"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "mySimDevice"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "hal._wpiHal.SimDevice", "args": [{"name": "name", "type": "str"}], "tooltip": "Creates a simulated device.\n\nThe device name must be unique.  Returns null if the device name\nalready exists.  If multiple instances of the same device are desired,\nrecommend appending the instance/unique identifier in brackets to the base\nname, e.g. \"device[1]\".\n\nUsing a device name of the form \"Type:Name\" will create a WebSockets node\nwith a type value of \"Type\" and a device value of \"Name\"\n\nIf not in simulation, results in an \"empty\" object that evaluates to false\nin a boolean context.\n\n:param name: device name", "importModule": "hal"}, "fields": {"MODULE_OR_CLASS": "hal.SimDevice"}}}}},
@@ -28,12 +30,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kInput"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "hal.SimDevice.Direction", "importModule": "hal"}, "fields": {"ENUM_TYPE": "hal.SimDevice.Direction", "ENUM_VALUE": "kOutput"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "hal.SimDevice",
     name:  "SimDevice",
-      contents: contents,
+    contents: contents,
+    className: "hal.SimDevice",
   };
+
   return category;
 }

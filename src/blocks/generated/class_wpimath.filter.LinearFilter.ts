@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 8 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearFilter"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.filter._filter.LinearFilter", "args": [{"name": "ffGains", "type": "List[float]"}, {"name": "fbGains", "type": "List[float]"}], "tooltip": "Create a linear FIR or IIR filter.\n\n:param ffGains: The \"feedforward\" or FIR gains.\n:param fbGains: The \"feedback\" or IIR gains.", "importModule": "wpimath.filter"}, "fields": {"MODULE_OR_CLASS": "wpimath.filter.LinearFilter"}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "float", "args": [{"name": "linearFilter", "type": "wpimath.filter._filter.LinearFilter"}, {"name": "input", "type": "float"}], "tooltip": "Calculates the next value of the filter.\n\n:param input: Current input value.\n\n:returns: The filtered value at this step", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.filter.LinearFilter", "FUNC": "calculate"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearFilter"}}}}}},
@@ -18,12 +20,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "linearFilter", "type": "wpimath.filter._filter.LinearFilter"}, {"name": "inputBuffer", "type": "List[float]"}, {"name": "outputBuffer", "type": "List[float]"}], "tooltip": "Resets the filter state, initializing internal buffers to the provided\nvalues.\n\nThese are the expected lengths of the buffers, depending on what type of\nlinear filter used:\n\n<table>\n<tr>\n<th>Type</th>\n<th>Input Buffer Size</th>\n<th>Output Buffer Size</th>\n</tr>\n<tr>\n<td>Unspecified</td>\n<td>size of ``ffGains``</td>\n<td>size of ``fbGains``</td>\n</tr>\n<tr>\n<td>Single Pole IIR</td>\n<td>1</td>\n<td>1</td>\n</tr>\n<tr>\n<td>High-Pass</td>\n<td>2</td>\n<td>1</td>\n</tr>\n<tr>\n<td>Moving Average</td>\n<td>``taps``</td>\n<td>0</td>\n</tr>\n<tr>\n<td>Finite Difference</td>\n<td>size of ``stencil``</td>\n<td>0</td>\n</tr>\n<tr>\n<td>Backward Finite Difference</td>\n<td>``Samples``</td>\n<td>0</td>\n</tr>\n</table>\n\n:param inputBuffer:  Values to initialize input buffer.\n:param outputBuffer: Values to initialize output buffer.\n                     @throws std::runtime_error if size of inputBuffer or outputBuffer does not\n                     match the size of ffGains and fbGains provided in the constructor.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpimath.filter.LinearFilter", "FUNC": "reset"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myLinearFilter"}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myLinearFilter"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.filter._filter.LinearFilter", "args": [{"name": "timeConstant", "type": "float"}, {"name": "period", "type": "wpimath.units.seconds"}], "tooltip": "Creates a one-pole IIR low-pass filter of the form:\ny[n] = (1 - gain) x[n] + gain y[n-1]\nwhere gain = e:sup:`-dt / T`, T is the time constant in seconds\n\nNote: T = 1 / (2\u03c0f) where f is the cutoff frequency in Hz, the frequency\nabove which the input starts to attenuate.\n\nThis filter is stable for time constants greater than zero.\n\n:param timeConstant: The discrete-time time constant in seconds.\n:param period:       The period in seconds between samples taken by the\n                     user.", "importModule": "wpimath.filter"}, "fields": {"MODULE_OR_CLASS": "wpimath.filter.LinearFilter", "FUNC": "singlePoleIIR"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.filter.LinearFilter",
     name:  "LinearFilter",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.filter.LinearFilter",
   };
+
   return category;
 }

@@ -18,6 +18,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 26 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "mrc_get_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Twist3d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "twist3d", "selfType": "wpimath.geometry.Twist3d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Twist3d", "VAR": "dx"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTwist3d"}}}}}},
     {"kind": "block", "type": "mrc_set_python_variable", "extraState": {"varKind": "instance", "moduleOrClassName": "wpimath.geometry.Twist3d", "varType": "wpimath.units.meters", "importModule": "", "selfLabel": "twist3d", "selfType": "wpimath.geometry.Twist3d"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Twist3d", "VAR": "dx"}, "inputs": {"SELF": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myTwist3d"}}}}}},
@@ -46,12 +48,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpimath.geometry._geometry.Twist3d", "args": [{"name": "dx", "type": "wpimath.units.meters"}, {"name": "dy", "type": "wpimath.units.meters"}, {"name": "dz", "type": "wpimath.units.meters"}, {"name": "rx", "type": "wpimath.units.radians"}, {"name": "ry", "type": "wpimath.units.radians"}, {"name": "rz", "type": "wpimath.units.radians"}], "tooltip": "", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Twist3d"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myTwist3d"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "static", "returnType": "wpimath.geometry._geometry.Twist3d", "args": [{"name": "dx", "type": "wpimath.units.feet"}, {"name": "dy", "type": "wpimath.units.feet"}, {"name": "dz", "type": "wpimath.units.feet"}, {"name": "rx", "type": "wpimath.units.radians"}, {"name": "ry", "type": "wpimath.units.radians"}, {"name": "rz", "type": "wpimath.units.radians"}], "tooltip": "", "importModule": "wpimath.geometry"}, "fields": {"MODULE_OR_CLASS": "wpimath.geometry.Twist3d", "FUNC": "fromFeet"}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpimath.geometry.Twist3d",
     name:  "Twist3d",
-      contents: contents,
+    contents: contents,
+    className: "wpimath.geometry.Twist3d",
   };
+
   return category;
 }

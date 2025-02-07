@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 51 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myGenericHID"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.interfaces._interfaces.GenericHID", "args": [{"name": "port", "type": "int"}], "tooltip": "", "importModule": "wpilib.interfaces"}, "fields": {"MODULE_OR_CLASS": "wpilib.interfaces.GenericHID"}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myBooleanEvent"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.event._event.BooleanEvent", "args": [{"name": "genericHID", "type": "wpilib.interfaces._interfaces.GenericHID"}, {"name": "angle", "type": "int"}, {"name": "loop", "type": "wpilib.event._event.EventLoop"}], "tooltip": "Constructs a BooleanEvent instance based around this angle of a POV on the\nHID.\n\nThe POV angles start at 0 in the up direction, and increase clockwise\n(eg right is 90, upper-left is 315).\n\n:param loop:  the event loop instance to attach the event to.\n:param angle: POV angle in degrees, or -1 for the center / not pressed.\n\n:returns: a BooleanEvent instance based around this angle of a POV on the\n          HID.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.interfaces.GenericHID", "FUNC": "POV"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myGenericHID"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myEventLoop"}}}}}}}}},
@@ -64,12 +66,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.interfaces.GenericHID.RumbleType", "importModule": "wpilib.interfaces"}, "fields": {"ENUM_TYPE": "wpilib.interfaces.GenericHID.RumbleType", "ENUM_VALUE": "kLeftRumble"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.interfaces.GenericHID.RumbleType", "importModule": "wpilib.interfaces"}, "fields": {"ENUM_TYPE": "wpilib.interfaces.GenericHID.RumbleType", "ENUM_VALUE": "kRightRumble"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.interfaces.GenericHID",
     name:  "GenericHID",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.interfaces.GenericHID",
   };
+
   return category;
 }

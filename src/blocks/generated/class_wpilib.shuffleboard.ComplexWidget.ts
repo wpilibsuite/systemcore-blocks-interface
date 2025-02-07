@@ -8,6 +8,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 15 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myComplexWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib.shuffleboard._shuffleboard.ComplexWidget", "args": [{"name": "parent", "type": "wpilib.shuffleboard._shuffleboard.ShuffleboardContainer"}, {"name": "title", "type": "str"}, {"name": "sendable", "type": "wpiutil._wpiutil.Sendable"}], "tooltip": "", "importModule": "wpilib.shuffleboard"}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.ComplexWidget"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myShuffleboardContainer"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "mySendable"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "complexWidget", "type": "wpilib.shuffleboard._shuffleboard.ComplexWidget"}, {"name": "parentTable", "type": "ntcore._ntcore.NetworkTable"}, {"name": "metaTable", "type": "ntcore._ntcore.NetworkTable"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard.ComplexWidget", "FUNC": "buildInto"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myComplexWidget"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNetworkTable"}}}}, "ARG2": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myNetworkTable"}}}}}},
@@ -25,12 +27,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myComplexWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.shuffleboard._shuffleboard.ComplexWidget", "args": [{"name": "_ComplexWidget", "type": "wpilib.shuffleboard._shuffleboard._ComplexWidget"}, {"name": "widgetType", "type": "wpilib.shuffleboard._shuffleboard.WidgetType"}], "tooltip": "Sets the type of widget used to display the data. If not set, the default\nwidget type will be used.\n\n:param widgetType: the type of the widget used to display the data\n\n:returns: this widget object", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard._ComplexWidget", "FUNC": "withWidget"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_ComplexWidget"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myWidgetType"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myComplexWidget"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "wpilib.shuffleboard._shuffleboard.ComplexWidget", "args": [{"name": "_ComplexWidget", "type": "wpilib.shuffleboard._shuffleboard._ComplexWidget"}, {"name": "widgetType", "type": "str"}], "tooltip": "Sets the type of widget used to display the data. If not set, the default\nwidget type will be used. This method should only be used to use a widget\nthat does not come built into Shuffleboard (i.e. one that comes with a\ncustom or third-party plugin). To use a widget that is built into\nShuffleboard, use WithWidget(WidgetType) and BuiltInWidgets.\n\n:param widgetType: the type of the widget used to display the data\n\n:returns: this widget object", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.shuffleboard._ComplexWidget", "FUNC": "withWidget"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "my_ComplexWidget"}}}}}}}}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.shuffleboard.ComplexWidget",
     name:  "ComplexWidget",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.shuffleboard.ComplexWidget",
   };
+
   return category;
 }

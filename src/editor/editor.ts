@@ -104,7 +104,6 @@ export class Editor {
 
   public loadModuleBlocks(currentModule: commonStorage.Module | null) {
     this.currentModule = currentModule;
-    extendedPythonGenerator.setCurrentModule(currentModule);
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
       this.workspacePath = commonStorage.makeWorkspacePath(currentModule.workspaceName);
@@ -214,6 +213,7 @@ export class Editor {
   }
 
   private getModuleContent(): string {
+    extendedPythonGenerator.setCurrentModule(this.currentModule);
     const pythonCode = extendedPythonGenerator.workspaceToCode(this.blocklyWorkspace);
     const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(this.blocklyWorkspace));
     const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(this.blocklyWorkspace));

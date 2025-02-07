@@ -10,6 +10,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 12 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myI2C"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.I2C", "args": [{"name": "port", "type": "wpilib._wpilib.I2C.Port"}, {"name": "deviceAddress", "type": "int"}], "tooltip": "Constructor.\n\n:param port:          The I2C port to which the device is connected.\n:param deviceAddress: The address of the device on the I2C bus.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.I2C"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPort"}}}}}}}}},
     {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "bool", "args": [{"name": "i2C", "type": "wpilib._wpilib.I2C"}], "tooltip": "Attempt to address a device on the I2C bus.\n\nThis allows you to figure out if there is a device on the I2C bus that\nresponds to the address specified in the constructor.\n\n:returns: Transfer Aborted... false for success, true for aborted.", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.I2C", "FUNC": "addressOnly"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myI2C"}}}}}},
@@ -24,12 +26,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.I2C.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.I2C.Port", "ENUM_VALUE": "kMXP"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.I2C.Port", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.I2C.Port", "ENUM_VALUE": "kOnboard"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.I2C",
     name:  "I2C",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.I2C",
   };
+
   return category;
 }

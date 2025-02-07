@@ -11,6 +11,8 @@ export function initialize() {
 }
 
 export function getToolboxCategory(subcategories: toolboxItems.Category[] = []): toolboxItems.Category {
+
+  // There are 16 blocks.
   const contents: toolboxItems.ContentsType[] = [
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADXL362"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADXL362", "args": [{"name": "range", "type": "wpilib._wpilib.ADXL362.Range"}], "tooltip": "Constructor.  Uses the onboard CS1.\n\n:param range: The range (+ or -) that the accelerometer will measure.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRange"}}}}}}}}},
     {"kind": "block", "type": "variables_set", "fields": {"VAR": {"name": "myADXL362"}}, "inputs": {"VALUE": {"block": {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "constructor", "returnType": "wpilib._wpilib.ADXL362", "args": [{"name": "port", "type": "wpilib._wpilib.SPI.Port"}, {"name": "range", "type": "wpilib._wpilib.ADXL362.Range"}], "tooltip": "Constructor.\n\n:param port:  The SPI port the accelerometer is attached to\n:param range: The range (+ or -) that the accelerometer will measure.", "importModule": "wpilib"}, "fields": {"MODULE_OR_CLASS": "wpilib.ADXL362"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myPort"}}}}, "ARG1": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myRange"}}}}}}}}},
@@ -29,12 +31,15 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Range", "ENUM_VALUE": "kRange_4G"}},
     {"kind": "block", "type": "mrc_get_python_enum_value", "extraState": {"enumType": "wpilib.ADXL362.Range", "importModule": "wpilib"}, "fields": {"ENUM_TYPE": "wpilib.ADXL362.Range", "ENUM_VALUE": "kRange_8G"}},
   ];
+
   contents.push(...subcategories);
+
   const category: toolboxItems.PythonClassCategory = {
     kind: "category",
-    className: "wpilib.ADXL362",
     name:  "ADXL362",
-      contents: contents,
+    contents: contents,
+    className: "wpilib.ADXL362",
   };
+
   return category;
 }
