@@ -6,11 +6,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
-  server: {
-    allowedHosts: [
-      "5173-wpilibsuite-systemcoreb-r536zqlysb3.ws-us117.gitpod.io",
-    ],
-  },
   test: {
    setupFiles: ['./tests/setupTests.ts'],
 
