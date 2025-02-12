@@ -1,7 +1,7 @@
 export const category =
 {
     kind: 'category',
-    name: 'Mechanims',
+    name: 'Mechanisms',
     contents: [
         {
             kind: 'block',
