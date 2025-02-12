@@ -24,7 +24,7 @@ import { Order, PythonGenerator } from 'blockly/python';
 
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import { createFieldNonEditableText } from 'src/fields/FieldNonEditableText';
-import { addImport } from './utils/python';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 
 
 export const BLOCK_NAME = 'mrc_mechanism';
@@ -67,12 +67,14 @@ export const setup = function() {
     Blockly.Blocks[BLOCK_NAME] = MECHANISM_FUNCTION;
 }
 
+//TODO: This needs to know about parameters needed by init
+//TODO: This needs to cause our own init to create the mechanisms line
 export const pythonFromBlock = function(
-    mechanismBlock: MechanismBlock,
-    generator: PythonGenerator,
+  mechanismBlock: MechanismBlock,
+  generator: ExtendedPythonGenerator,
 ) {
   if (mechanismBlock.mrcImportModule) {
-      addImport(generator, mechanismBlock.mrcImportModule);
+      generator.addImport(mechanismBlock.mrcImportModule);
   }
   let code = 'self.mechanisms["' + mechanismBlock.getFieldValue('NAME') + '"] = ' 
           + mechanismBlock.getFieldValue('TYPE') + '()' + "\n"
