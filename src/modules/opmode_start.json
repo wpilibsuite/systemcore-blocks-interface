@@ -1,0 +1,40 @@
+{
+    "blocks": {
+        "languageVersion": 0,
+        "blocks": [
+            {
+                "type": "mrc_class_method_def",
+                "id": "ElbONc{)s(,UprTW(|1C",
+                "x": 0,
+                "y": 10,
+                "deletable": false,
+                "extraState": {
+                    "canChangeSignature": false,
+                    "canDelete": false,
+                    "returnType": "None",
+                    "params": [],
+                    "pythonMethodName": "__init__"
+                },
+                "fields": {
+                    "NAME": "init"
+                }
+            },
+            {
+                "type": "mrc_class_method_def",
+                "id": "wxFAh6eaR1|3fTuV:UAd",
+                "x": 200,
+                "y": 10,
+                "deletable": false,
+                "extraState": {
+                    "canChangeSignature": false,
+                    "canDelete": false,
+                    "returnType": "None",
+                    "params": []
+                },
+                "fields": {
+                    "NAME": "loop"
+                }
+            }
+        ]
+    }
+}
