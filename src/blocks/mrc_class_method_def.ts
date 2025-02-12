@@ -347,6 +347,7 @@ export const setup = function() {
 
 import { Order, PythonGenerator } from 'blockly/python';
 
+
 export const pythonFromBlock = function (
     block: ClassMethodDefBlock,
     generator: PythonGenerator,
@@ -404,6 +405,11 @@ export const pythonFromBlock = function (
         '(' +
         paramString +
         '):\n';
+    
+    if(block.mrcPythonMethodName == '__init__'){
+        code +=  generator.INDENT + "self.mechanisms = [];\n"
+
+    }    
 
     code +=
         xfix1 +
