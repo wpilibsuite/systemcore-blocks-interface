@@ -10,6 +10,9 @@ export const category =
                 NAME: 'my_servo',
                 TYPE: 'Servo'
             },
+            extraState: {
+                importModule : 'Servo',
+            },              
         },
         {
             kind: 'block',
@@ -18,6 +21,9 @@ export const category =
                 NAME: 'my_motor',
                 TYPE: 'DcMotor'
             },
+            extraState: {
+                importModule : 'DcMotor',
+            },              
         },
     ],
 }
