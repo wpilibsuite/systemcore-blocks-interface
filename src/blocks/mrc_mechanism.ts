@@ -31,13 +31,13 @@ export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';
 
 export type ConstructorArg = {
-    name: string,
-    type: string,
-  };
+  name: string,
+  type: string,
+};
 
 type MechanismExtraState = {
-    importModule?: string,
-    params? : ConstructorArg[],
+  importModule?: string,
+  params?: ConstructorArg[],
 }
 
 type MechanismBlock = Blockly.Block & MechanismMixin;
@@ -49,35 +49,52 @@ interface MechanismMixin extends MechanismMixinType {
 type MechanismMixinType = typeof MECHANISM_FUNCTION;
 
 const MECHANISM_FUNCTION = {
- /**
-   * Block initialization.
-   */
- init: function(this: MechanismBlock): void {   
+  /**
+    * Block initialization.
+    */
+  init: function (this: MechanismBlock): void {
     this.setStyle(MRC_STYLE_FUNCTIONS);
     this.appendDummyInput()
-              .appendField(new Blockly.FieldTextInput('my_mech'), 'NAME')
-              .appendField('of type')
-              .appendField(createFieldNonEditableText(''), 'TYPE');
+      .appendField(new Blockly.FieldTextInput('my_mech'), 'NAME')
+      .appendField('of type')
+      .appendField(createFieldNonEditableText(''), 'TYPE');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
- },
+  },
+
+  /**
+    * Returns the state of this block as a JSON serializable object.
+    */
+  saveExtraState: function (this: MechanismBlock): MechanismExtraState {
+    let extraState: MechanismExtraState = {};
+    if (this.mrcImportModule) {
+      extraState.importModule = this.mrcImportModule;
+    }
+    return extraState;
+  },
+  /**
+  * Applies the given state to this block.
+  */
+  loadExtraState: function (this: MechanismBlock, extraState: MechanismExtraState): void {
+    this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
+  },
 }
 
-export const setup = function() {
-    Blockly.Blocks[BLOCK_NAME] = MECHANISM_FUNCTION;
+export const setup = function () {
+  Blockly.Blocks[BLOCK_NAME] = MECHANISM_FUNCTION;
 }
 
 //TODO: This needs to know about parameters needed by init
 //TODO: This needs to cause our own init to create the mechanisms line
-export const pythonFromBlock = function(
+export const pythonFromBlock = function (
   mechanismBlock: MechanismBlock,
   generator: ExtendedPythonGenerator,
 ) {
   if (mechanismBlock.mrcImportModule) {
-      generator.addImport(mechanismBlock.mrcImportModule);
+    generator.addImport(mechanismBlock.mrcImportModule);
   }
-  let code = 'self.mechanisms["' + mechanismBlock.getFieldValue('NAME') + '"] = ' 
-          + mechanismBlock.getFieldValue('TYPE') + '()' + "\n"
-   
+  let code = 'self.mechanisms["' + mechanismBlock.getFieldValue('NAME') + '"] = '
+    + mechanismBlock.getFieldValue('TYPE') + '()' + "\n"
+
   return code
 }
