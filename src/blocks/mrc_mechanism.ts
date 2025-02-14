@@ -23,7 +23,7 @@ import * as Blockly from 'blockly';
 import { Order, PythonGenerator } from 'blockly/python';
 
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
-import { createFieldNonEditableText } from 'src/fields/FieldNonEditableText';
+import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
 
