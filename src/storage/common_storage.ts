@@ -45,8 +45,8 @@ export type Workspace = Module & {
 };
 
 export const MODULE_TYPE_WORKSPACE = 'workspace';
-export const MODULE_TYPE_OPMODE = 'opmode';
-export const MODULE_TYPE_MECHANISM = 'mechanism';
+export const MODULE_TYPE_OPMODE = 'OpMode';
+export const MODULE_TYPE_MECHANISM = 'Mechanism';
 
 export const MODULE_NAME_PLACEHOLDER = '%module_name%';
 
