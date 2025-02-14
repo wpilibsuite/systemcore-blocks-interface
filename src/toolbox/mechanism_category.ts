@@ -12,7 +12,18 @@ export const category =
             },
             extraState: {
                 importModule : 'Servo',
+                params: [{name:'port',type:'int'}]
             },              
+            inputs: {
+                ARG0: {
+                  shadow: {
+                    type: 'math_number',
+                    fields: {
+                      NUM: 1,
+                    },
+                  },
+                },  
+            } 
         },
         {
             kind: 'block',
@@ -23,7 +34,18 @@ export const category =
             },
             extraState: {
                 importModule : 'DcMotor',
-            },              
+                params: [{name:'port',type:'int'}]
+            },    
+            inputs: {
+                ARG0: {
+                  shadow: {
+                    type: 'math_number',
+                    fields: {
+                      NUM: 1,
+                    },
+                  },
+                },  
+            } 
         },
     ],
 }

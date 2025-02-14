@@ -25,7 +25,7 @@ import { Order, PythonGenerator } from 'blockly/python';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import { createFieldNonEditableText } from 'src/fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-
+import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
 
 export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';
@@ -66,7 +66,15 @@ const MECHANISM_FUNCTION = {
     * Returns the state of this block as a JSON serializable object.
     */
   saveExtraState: function (this: MechanismBlock): MechanismExtraState {
-    let extraState: MechanismExtraState = {};
+    let extraState: MechanismExtraState = {
+    };
+    extraState.params = [];
+    this.mrcArgs.forEach((arg) => {
+      extraState.params!.push({
+        'name': arg.name,
+        'type': arg.type,
+      });
+    });    
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
     }
@@ -77,14 +85,39 @@ const MECHANISM_FUNCTION = {
   */
   loadExtraState: function (this: MechanismBlock, extraState: MechanismExtraState): void {
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
+    this.mrcArgs = [];
+
+    if(extraState.params){
+      extraState.params.forEach((arg) => {
+        this.mrcArgs.push({
+          'name': arg.name,
+          'type': arg.type,
+        });
+      });
+    }
+    this.mrcArgs = extraState.params ? extraState.params : [];
+    this.updateBlock_();
   },
+  /**
+     * Update the block to reflect the newly loaded extra state.
+     */
+    updateBlock_: function(this: MechanismBlock): void {
+      // Add input sockets for the arguments.
+      for (let i = 0; i < this.mrcArgs.length; i++) {
+        const input = this.appendValueInput('ARG' + i)
+            .setAlign(Blockly.inputs.Align.RIGHT)
+            .appendField(this.mrcArgs[i].name);
+        if (this.mrcArgs[i].type) {
+          input.setCheck(getAllowedTypesForSetCheck(this.mrcArgs[i].type));
+        }
+      }
+    }
 }
 
 export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = MECHANISM_FUNCTION;
 }
 
-//TODO: This needs to know about parameters needed by init
 //TODO: This needs to cause our own init to create the mechanisms line
 export const pythonFromBlock = function (
   mechanismBlock: MechanismBlock,
@@ -94,7 +127,17 @@ export const pythonFromBlock = function (
     generator.addImport(mechanismBlock.mrcImportModule);
   }
   let code = 'self.mechanisms["' + mechanismBlock.getFieldValue('NAME') + '"] = '
-    + mechanismBlock.getFieldValue('TYPE') + '()' + "\n"
+    + mechanismBlock.getFieldValue('TYPE') + '('
+
+  for (let i = 0; i < mechanismBlock.mrcArgs.length; i++) {
+      let fieldName = 'ARG' + i;
+      if(i != 0){
+        code += ', '
+      }
+      code += mechanismBlock.mrcArgs[i].name + ' = ' + generator.valueToCode(mechanismBlock, fieldName, Order.NONE);
+    }
+  
+  code += ')' + "\n"
 
   return code
 }
