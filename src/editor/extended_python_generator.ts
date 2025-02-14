@@ -159,30 +159,37 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.definitions_['import_' + importModule] = 'import ' + importModule;
   }
 
-  workspaceToCode(workspace?: Blockly.Workspace): string {
-    let code = super.workspaceToCode(workspace);
+  finish(code: string): string {
     if (!this.currentModule) {
-      return code;
-    }
-
+      return super.finish(code);
+    }    
     let className = this.currentModule.moduleName;
     let classType = this.currentModule.moduleType;
-
     this.addImport(classType);
 
-    let prefix = "";
-    for (let key in this.definitions_) {
-      prefix += this.definitions_[key] + "\n";
+    // Convert the definitions dictionary into a list.
+    const imports = [];
+    const definitions = [];
+    for (let name in this.definitions_) {
+      const def = this.definitions_[name];
+      if (def.match(/^(from\s+\S+\s+)?import\s+\S+/)) {
+        imports.push(def);
+      } else {
+        definitions.push(def);
+      }
     }
-    if (prefix) {
-      prefix += "\n";
-    }
+    // Call Blockly.CodeGenerator's finish.
+    code = Blockly.CodeGenerator.prototype.finish(code);
+    this.isInitialized = false;
 
     let class_def = "class " + className + "(" + classType + "):\n";
     if (!code) {
       code = "pass";
     }
-    return prefix + class_def + this.prefixLines(code, this.INDENT);
+
+    this.nameDB_!.reset();
+    const allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
+    return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + class_def + this.prefixLines(code, this.INDENT);
   }
 }
 
