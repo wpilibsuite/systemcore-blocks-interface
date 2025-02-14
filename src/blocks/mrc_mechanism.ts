@@ -66,7 +66,7 @@ const MECHANISM_FUNCTION = {
     * Returns the state of this block as a JSON serializable object.
     */
   saveExtraState: function (this: MechanismBlock): MechanismExtraState {
-    let extraState: MechanismExtraState = {
+    const extraState: MechanismExtraState = {
     };
     extraState.params = [];
     this.mrcArgs.forEach((arg) => {
@@ -103,7 +103,7 @@ const MECHANISM_FUNCTION = {
      */
     updateBlock_: function(this: MechanismBlock): void {
       // Add input sockets for the arguments.
-      for (let i = 0; i < this.mrcArgs.length; i++) {
+      for (const i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)
             .setAlign(Blockly.inputs.Align.RIGHT)
             .appendField(this.mrcArgs[i].name);
@@ -129,15 +129,15 @@ export const pythonFromBlock = function (
   let code = 'self.mechanisms["' + mechanismBlock.getFieldValue('NAME') + '"] = '
     + mechanismBlock.getFieldValue('TYPE') + '('
 
-  for (let i = 0; i < mechanismBlock.mrcArgs.length; i++) {
-      let fieldName = 'ARG' + i;
+  for (const i = 0; i < mechanismBlock.mrcArgs.length; i++) {
+      const fieldName = 'ARG' + i;
       if(i != 0){
         code += ', '
       }
       code += mechanismBlock.mrcArgs[i].name + ' = ' + generator.valueToCode(mechanismBlock, fieldName, Order.NONE);
     }
   
-  code += ')' + "\n"
+  code += ')' + "\n";
 
   return code
 }

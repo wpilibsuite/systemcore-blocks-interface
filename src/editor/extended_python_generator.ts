@@ -178,7 +178,11 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         definitions.push(def);
       }
     }
-    // Call Blockly.CodeGenerator's finish.
+    // Call Blockly.CodeGenerator's finish.  This is required to be done this way
+    // because we derive from PythonGenerator which dervies from CodeGenerator
+    // This section except for the class_def part is all copied from Blockly's
+    // PythonGenerator.  It can't be derived because it needs the class insertion
+    // in the middle.
     code = Blockly.CodeGenerator.prototype.finish(code);
     this.isInitialized = false;
 
@@ -189,7 +193,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     this.nameDB_!.reset();
     const allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
-    return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + class_def + this.prefixLines(code, this.INDENT);
+    return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + class_def + 
+            this.prefixLines(code, this.INDENT);
   }
 }
 
