@@ -159,13 +159,26 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.definitions_['import_' + importModule] = 'import ' + importModule;
   }
 
+  classParentFromModuleType(moduleType : string) : string{
+    if(moduleType == commonStorage.MODULE_TYPE_WORKSPACE){
+      return "Robot";
+    }
+    if(moduleType == commonStorage.MODULE_TYPE_OPMODE){
+      return "OpMode";
+    }
+    if(moduleType == commonStorage.MODULE_TYPE_MECHANISM){
+      return "OpMode";
+    }
+    return "";
+  }
+
   finish(code: string): string {
     if (!this.currentModule) {
       return super.finish(code);
     }    
     let className = this.currentModule.moduleName;
-    let classType = this.currentModule.moduleType;
-    this.addImport(classType);
+    let classParent = this.classParentFromModuleType(this.currentModule.moduleType);
+    this.addImport(classParent);
 
     // Convert the definitions dictionary into a list.
     const imports = [];
@@ -186,7 +199,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     code = Blockly.CodeGenerator.prototype.finish(code);
     this.isInitialized = false;
 
-    let class_def = "class " + className + "(" + classType + "):\n";
+    let class_def = "class " + className + "(" + classParent + "):\n";
     if (!code) {
       code = "pass";
     }
