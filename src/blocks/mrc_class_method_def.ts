@@ -45,7 +45,6 @@ export type Parameter = {
 type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin & Blockly.BlockSvg;
 interface ClassMethodDefMixin extends ClassMethodDefMixinType {
     mrcCanChangeSignature: boolean,
-    mrcCanDelete: boolean,
     mrcReturnType: string,
     mrcParameters: Parameter[],
     mrcPythonMethodName: string,
@@ -58,10 +57,6 @@ type ClassMethodDefExtraState = {
      * Can change name and parameters and return type
      */
     canChangeSignature: boolean,
-    /**
-     * Can delete from class
-     */
-    canDelete: boolean,
     /**
      * The return type of the function.
      * Use 'None' for no return value.
@@ -100,7 +95,6 @@ const CLASS_METHOD_DEF = {
         this: ClassMethodDefBlock): ClassMethodDefExtraState {
         const extraState: ClassMethodDefExtraState = {
             canChangeSignature: this.mrcCanChangeSignature,
-            canDelete: this.mrcCanDelete,
             returnType: this.mrcReturnType,
             params: [],
         };
@@ -124,7 +118,6 @@ const CLASS_METHOD_DEF = {
         extraState: ClassMethodDefExtraState
     ): void {
         this.mrcCanChangeSignature = extraState.canChangeSignature;
-        this.mrcCanDelete = extraState.canDelete;
         this.mrcPythonMethodName = extraState.pythonMethodName ? extraState.pythonMethodName : '';
         this.mrcReturnType = extraState.returnType;
         this.mrcParameters = [];
@@ -157,7 +150,6 @@ const CLASS_METHOD_DEF = {
             //Case because a current bug in blockly where it won't allow passing null to Blockly.Block.setMutator makes it necessary.
             (this as Blockly.BlockSvg).setMutator( null );
         }
-        this.setDeletable(this.mrcCanDelete);
         this.mrcUpdateParams();
     },
     compose: function (this: ClassMethodDefBlock, containerBlock: any) {

@@ -10,7 +10,6 @@
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
-                    "canDelete": false,
                     "returnType": "None",
                     "params": [],
                     "pythonMethodName": "__init__"
@@ -27,7 +26,6 @@
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
-                    "canDelete": false,
                     "returnType": "None",
                     "params": []
                 },
