@@ -35,19 +35,29 @@ export type Module = {
   dateModifiedMillis: number,
 };
 
-export type OpMode = Module;
 export type Mechanism = Module;
+export type OpMode = Module;
 
 export type Workspace = Module & {
-  opModes: OpMode[],
   mechanisms: Mechanism[]
+  opModes: OpMode[],
 };
 
+export const MODULE_TYPE_UNKNOWN = 'unknown';
 export const MODULE_TYPE_WORKSPACE = 'workspace';
-export const MODULE_TYPE_OPMODE = 'opmode';
 export const MODULE_TYPE_MECHANISM = 'mechanism';
+export const MODULE_TYPE_OPMODE = 'opmode';
 
 export const MODULE_NAME_PLACEHOLDER = '%module_name%';
+
+const DELIMITER_PREFIX = 'BlocksContent';
+const MARKER_MODULE_TYPE = 'moduleType: ';
+const MARKER_EXPORTED_BLOCKS = 'exportedBlocks: ';
+const MARKER_BLOCKS_CONTENT = 'blocksContent: ';
+const PARTS_INDEX_BLOCKS_CONTENT = 0;
+const PARTS_INDEX_EXPORTED_BLOCKS = 1;
+const PARTS_INDEX_MODULE_TYPE = 2;
+const NUMBER_OF_PARTS = 3;
 
 /**
  * Returns the module with the given module path, or null if it is not found.
@@ -56,6 +66,11 @@ export function findModule(modules: Workspace[], modulePath: string): Module | n
   for (const workspace of modules) {
     if (workspace.modulePath === modulePath) {
       return workspace;
+    }
+    for (const mechanism of workspace.mechanisms) {
+      if (mechanism.modulePath === modulePath) {
+        return mechanism;
+      }
     }
     for (const opMode of workspace.opModes) {
       if (opMode.modulePath === modulePath) {
@@ -136,10 +151,42 @@ export function makeUploadWorkspaceName(uploadFileName: string): string {
  * Returns the module content for a new Workspace.
  */
 export function newWorkspaceContent(workspaceName: string): string {
+  const module: Module = {
+    modulePath: makeWorkspacePath(workspaceName),
+    moduleType: MODULE_TYPE_WORKSPACE,
+    workspaceName: workspaceName,
+    moduleName: workspaceName,
+    dateModifiedMillis: 0,
+  };
+
   const pythonCode = '';
   const exportedBlocks = '[]';
   const blocksContent = '{}';
-  return makeModuleContent(pythonCode, exportedBlocks, blocksContent);
+  return makeModuleContent(module, pythonCode, exportedBlocks, blocksContent);
+}
+
+/**
+ * Returns the module content for a new Mechanism.
+ */
+export function newMechanismContent(workspaceName: string, mechanismName: string): string {
+  const module: Module = {
+    modulePath: makeModulePath(workspaceName, mechanismName),
+    moduleType: MODULE_TYPE_MECHANISM,
+    workspaceName: workspaceName,
+    moduleName: mechanismName,
+    dateModifiedMillis: 0,
+  };
+
+  // Create a headless blockly workspace.
+  const headlessBlocklyWorkspace = new Blockly.Workspace();
+  headlessBlocklyWorkspace.options.oneBasedIndex = false;
+  // TODO: Create the blocks for a new mechanism.
+
+  extendedPythonGenerator.setCurrentModule(module);
+  const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
+  const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
+  const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
+  return makeModuleContent(module, pythonCode, exportedBlocks, blocksContent);
 }
 
 /**
@@ -163,15 +210,15 @@ export function newOpModeContent(workspaceName: string, opModeName: string): str
   const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
   const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
   const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
-  return makeModuleContent(pythonCode, exportedBlocks, blocksContent);
+  return makeModuleContent(module, pythonCode, exportedBlocks, blocksContent);
 }
 
 /**
  * Make the module content from the given python code and blocks content.
  */
-export function makeModuleContent(pythonCode: string, exportedBlocks: string, blocksContent: string): string {
-  let delimiter = 'BlocksContent';
-  while (blocksContent.includes(delimiter) || exportedBlocks.includes(delimiter)) {
+export function makeModuleContent(module: Module, pythonCode: string, exportedBlocks: string, blocksContent: string): string {
+  let delimiter = DELIMITER_PREFIX;
+  while (blocksContent.includes(delimiter) || exportedBlocks.includes(delimiter) || module.moduleType.includes(delimiter)) {
     delimiter += '.';
   }
   return (
@@ -179,72 +226,72 @@ export function makeModuleContent(pythonCode: string, exportedBlocks: string, bl
       pythonCode + '\n\n\n' +
       '"""\n' +
       delimiter + '\n' +
-      exportedBlocks + '\n' +
+      MARKER_MODULE_TYPE + module.moduleType + '\n' +
       delimiter + '\n' +
-      blocksContent + '\n' +
+      MARKER_EXPORTED_BLOCKS + exportedBlocks + '\n' +
+      delimiter + '\n' +
+      MARKER_BLOCKS_CONTENT + blocksContent + '\n' +
       delimiter + '\n' +
       '"""\n');
+}
+
+function getParts(moduleContent: string): string {
+  // The last line is """.
+  const lastChars = '\n"""\n';
+  if (!moduleContent.endsWith(lastChars) || moduleContent.length <= lastChars.length) {
+    throw new Error('Unable to parse the module content.');
+  }
+  // The line before that is the delimiter.
+  const iEndOfDelimiter = moduleContent.length - lastChars.length;
+  const iPreviousNewLine = moduleContent.lastIndexOf('\n', iEndOfDelimiter - 1);
+  if (iPreviousNewLine === -1) {
+    throw new Error('Unable to parse the module content.');
+  }
+  const iStartOfDelimiter = iPreviousNewLine + 1;
+  const delimiter = moduleContent.substring(iStartOfDelimiter, iEndOfDelimiter);
+  const split = moduleContent.split(delimiter);
+  split.pop(); // The last element is the """ that closes the python comment.
+  const parts = [];
+  // Pop the elements off of the split array and push them onto the parts array
+  // so they end up in the reverse order that they were in the module content.
+  // Ignore the first (index 0) element of the split array, which is the python
+  // code.
+  while (split.length > 1 && parts.length < NUMBER_OF_PARTS) {
+    parts.push(split.pop().trim());
+  }
+  if (parts.length < 2) {
+    throw new Error('Unable to parse the module content.');
+  }
+  if (parts.length == 2) {
+    // This module was saved without the module type, which was added to the module content when we introduced mechanisms.
+    // This module is either a Workspace or an OpMode, but we don't know which from just the content.
+    parts.push(MODULE_TYPE_UNKNOWN);
+  }
+  return parts;
 }
 
 /**
  * Extract the blocks content from the given module content.
  */
 export function extractBlocksContent(moduleContent: string): string {
-  // The last line is """.
-  const lastChars = '\n"""\n';
-  if (!moduleContent.endsWith(lastChars) || moduleContent.length <= lastChars.length) {
-    throw new Error('Unable to extract the blocks content.');
+  const parts = getParts(moduleContent);
+  let blocksContent = parts[PARTS_INDEX_BLOCKS_CONTENT];
+  if (blocksContent.startsWith(MARKER_BLOCKS_CONTENT)) {
+    blocksContent = blocksContent.substring(MARKER_BLOCKS_CONTENT.length);
   }
-  // The line before that is the delimiter.
-  const iEndOfDelimiter = moduleContent.length - lastChars.length;
-  const iPreviousNewLine = moduleContent.lastIndexOf('\n', iEndOfDelimiter - 1);
-  if (iPreviousNewLine === -1) {
-    throw new Error('Unable to extract the blocks content.');
-  }
-  const iEndOfBlocksContent = iPreviousNewLine;
-  const iStartOfDelimiter = iPreviousNewLine + 1;
-  const delimiter = moduleContent.substring(iStartOfDelimiter, iEndOfDelimiter);
-  // Now, find the previous delimiter.
-  const iStartOfPreviousDelimiter = moduleContent.lastIndexOf(delimiter, iPreviousNewLine - 1);
-  if (iStartOfPreviousDelimiter === -1) {
-    throw new Error('Unable to extract the blocks content.');
-  }
-  // The blocks content is between the two delimiters.
-  const iStartOfBlocksContent = iStartOfPreviousDelimiter + delimiter.length + 1;
-  return moduleContent.substring(iStartOfBlocksContent, iEndOfBlocksContent);
+  return blocksContent;
 }
 
 /**
  * Extract the exportedBlocks from the given module content.
  */
 export function extractExportedBlocks(moduleName: string, moduleContent: string): Block[] {
-  // The last line is """.
-  const lastChars = '\n"""\n';
-  if (!moduleContent.endsWith(lastChars) || moduleContent.length <= lastChars.length) {
-    throw new Error('Unable to extract the exportedBlocks.');
+  const parts = getParts(moduleContent);
+  let exportedBlocksContent = parts[PARTS_INDEX_EXPORTED_BLOCKS];
+  if (exportedBlocksContent.startsWith(MARKER_EXPORTED_BLOCKS)) {
+    exportedBlocksContent = exportedBlocksContent.substring(MARKER_EXPORTED_BLOCKS.length);
   }
-  // The line before that is the delimiter.
-  const iEndOfDelimiter = moduleContent.length - lastChars.length;
-  const iPreviousNewLine = moduleContent.lastIndexOf('\n', iEndOfDelimiter - 1);
-  if (iPreviousNewLine === -1) {
-    throw new Error('Unable to extract the exportedBlocks.');
-  }
-  const iStartOfDelimiter = iPreviousNewLine + 1;
-  const delimiter = moduleContent.substring(iStartOfDelimiter, iEndOfDelimiter);
-  // Now, find the previous delimiter.
-  let iStartOfPreviousDelimiter = moduleContent.lastIndexOf(delimiter, iPreviousNewLine - 1);
-  if (iStartOfPreviousDelimiter === -1) {
-    throw new Error('Unable to extract the exportedBlocks.');
-  }
-  const iEndOfExportedBlocks = iStartOfPreviousDelimiter - 1;
-  // Now, find the previous delimiter before that.
-  iStartOfPreviousDelimiter = moduleContent.lastIndexOf(delimiter, iStartOfPreviousDelimiter - 1);
-  if (iStartOfPreviousDelimiter === -1) {
-    throw new Error('Unable to extract the exportedBlocks.');
-  }
-  // The exportedBlocks content is between the two delimiters.
-  const iStartOfExportedBlocks = iStartOfPreviousDelimiter + delimiter.length + 1;
-  const exportedBlocksContent = moduleContent.substring(iStartOfExportedBlocks, iEndOfExportedBlocks);
+
   const exportedBlocks: Block[] = JSON.parse(exportedBlocksContent);
   exportedBlocks.forEach((block) => {
     if (block.extraState?.importModule === MODULE_NAME_PLACEHOLDER) {
@@ -255,4 +302,16 @@ export function extractExportedBlocks(moduleName: string, moduleContent: string)
     }
   });
   return exportedBlocks;
+}
+
+/**
+ * Extract the moduleType from the given module content.
+ */
+export function extractModuleType(moduleName: string, moduleContent: string): Block[] {
+  const parts = getParts(moduleContent);
+  let moduleType = parts[PARTS_INDEX_MODULE_TYPE];
+  if (moduleType.startsWith(MARKER_MODULE_TYPE)) {
+    moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
+  }
+  return moduleType;
 }

@@ -129,8 +129,8 @@ export class Editor {
               this.workspaceContent = moduleContent
             }
 
-            // If both the workspace and the module have been loaded, load the
-            // blocks into the blockly workspace.
+            // If both the workspace content and the module content have been
+            // loaded, load the blocks into the blockly workspace.
             if (this.workspaceContent) {
               this.loadBlocksIntoBlocklyWorkspace();
             }
@@ -164,6 +164,7 @@ export class Editor {
     if (this.bindedOnChange) {
       this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
     }
+    this.blocklyWorkspace.hideChaff();
     this.blocklyWorkspace.clear();
     this.blocklyWorkspace.scroll(0, 0);
     this.setToolbox(EMPTY_TOOLBOX);
@@ -217,7 +218,7 @@ export class Editor {
     const pythonCode = extendedPythonGenerator.workspaceToCode(this.blocklyWorkspace);
     const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(this.blocklyWorkspace));
     const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(this.blocklyWorkspace));
-    return commonStorage.makeModuleContent(pythonCode, exportedBlocks, blocksContent);
+    return commonStorage.makeModuleContent(this.currentModule, pythonCode, exportedBlocks, blocksContent);
   }
 
   public saveModule(callback: storage.BooleanCallback): void {
