@@ -165,8 +165,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       return code;
     }
 
-    let className = this.currentModule.moduleName;
-    let classType = this.currentModule.moduleType;
+    const className = this.currentModule.moduleName;
+    const classType = this.currentModule.moduleType;
 
     this.addImport(classType);
 

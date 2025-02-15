@@ -31,7 +31,7 @@ export type ModulesCallback = (modules: commonStorage.Workspace[] | null, error:
 const databaseName = 'systemcore-blocks-interface';
 let db: IDBDatabase | null = null;
 
-function openDatabase(callback: BooleanCallback): void {
+function _openDatabase(callback: BooleanCallback): void {
   const openRequest = window.indexedDB.open(databaseName, 1);
   openRequest.onerror = (event: Event) => {
     console.log('IndexedDB open request failed:');
@@ -63,7 +63,7 @@ export function saveEntry(
     entryKey: string, entryValue: string,
     callback: BooleanCallback | null = null): void {
   if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
+    _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         saveEntry(entryKey, entryValue, callback);
       } else {
@@ -111,7 +111,7 @@ export function saveEntry(
 
 export function fetchEntry(entryKey: string, defaultValue: string, callback: StringCallback): void {
   if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
+    _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         fetchEntry(entryKey, defaultValue, callback);
       } else {
@@ -140,7 +140,7 @@ export function fetchEntry(entryKey: string, defaultValue: string, callback: Str
 
 export function listModules(callback: ModulesCallback): void {
   if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
+    _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         listModules(callback);
       } else {
@@ -150,6 +150,9 @@ export function listModules(callback: ModulesCallback): void {
     return;
   }
   const workspaces: {[key: string]: commonStorage.Workspace} = {}; // key is workspace name, value is Workspace
+  // The mechanisms and opModes variables hold any Mechanisms and OpModes that
+  // are read before the Workspace to which they belong is read.
+  const mechanisms: {[key: string]: commonStorage.Mechanism[]} = {}; // key is workspace name, value is list of Mechanisms
   const opModes: {[key: string]: commonStorage.OpMode[]} = {}; // key is workspace name, value is list of OpModes
   const openCursorRequest = db.transaction(['modules'], 'readonly')
       .objectStore('modules')
@@ -174,30 +177,58 @@ export function listModules(callback: ModulesCallback): void {
       if (value.type === commonStorage.MODULE_TYPE_WORKSPACE) {
         const workspace: commonStorage.Workspace = {
           ...module,
+          mechanisms: [],
           opModes: [],
-          mechanisms: []
         };
         workspaces[workspace.workspaceName] = workspace;
+        // Add any Mechanisms that belong to this workspace that have already
+        // been read.
+        if (workspace.workspaceName in mechanisms) {
+          workspace.mechanisms = mechanisms[workspace.workspaceName];
+          delete mechanisms[workspace.workspaceName];
+        }
+        // Add any OpModes that belong to this workspace that have already been
+        // read.
         if (workspace.workspaceName in opModes) {
           workspace.opModes = opModes[workspace.workspaceName];
           delete opModes[workspace.workspaceName];
+        }
+      } else if (value.type === commonStorage.MODULE_TYPE_MECHANISM) {
+        const mechanism: commonStorage.Mechanism = {
+          ...module,
+        };
+        if (mechanism.workspaceName in workspaces) {
+          // If the Workspace to which this Mechanism belongs has already been read,
+          // add this Mechanism to it.
+          workspaces[mechanism.workspaceName].mechanisms.push(mechanism);
         } else {
-          workspace.opModes = [];
+          // Otherwise, add this Mechanism to the mechanisms local variable.
+          if (mechanism.workspaceName in mechanisms) {
+            mechanisms[mechanism.workspaceName].push(mechanism);
+          } else {
+            mechanisms[mechanism.workspaceName] = [mechanism];
+          }
         }
       } else if (value.type === commonStorage.MODULE_TYPE_OPMODE) {
         const opMode: commonStorage.OpMode = {
           ...module,
         };
         if (opMode.workspaceName in workspaces) {
+          // If the Workspace to which this OpMode belongs has already been read,
+          // add this OpMode to it.
           workspaces[opMode.workspaceName].opModes.push(opMode);
-        } else if (opMode.workspaceName in opModes) {
-          opModes[opMode.workspaceName].push(opMode);
         } else {
-          opModes[opMode.workspaceName] = [opMode];
+          // Otherwise, add this OpMode to the opModes local variable.
+          if (opMode.workspaceName in opModes) {
+            opModes[opMode.workspaceName].push(opMode);
+          } else {
+            opModes[opMode.workspaceName] = [opMode];
+          }
         }
       }
       cursor.continue();
     } else {
+      // The cursor is done. We have finished reading all the modules.
       const modules: commonStorage.Workspace[] = [];
       const sortedWorkspaceNames = Object.keys(workspaces).sort();
       sortedWorkspaceNames.forEach((workspaceName) => {
@@ -212,7 +243,7 @@ export function fetchModuleContent(
     modulePath: string,
     callback : (content: string | null, error: string) => void): void {
   if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
+    _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         fetchModuleContent(modulePath, callback);
       } else {
@@ -257,7 +288,7 @@ function _saveModule(
   // When creating a new module, moduleType must be truthy.
   // When saving an existing module, the moduleType must be falsy.
   if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
+    _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         _saveModule(moduleType, modulePath, moduleContent, callback);
       } else {
@@ -307,26 +338,14 @@ function _saveModule(
   };
 }
 
-export function renameWorkspace(
-    oldWorkspaceName: string, newWorkspaceName: string,
-    callback: BooleanCallback): void {
-  _renameOrCopyWorkspace(oldWorkspaceName, newWorkspaceName, callback, false);
-}
-
-export function copyWorkspace(
-    oldWorkspaceName: string, newWorkspaceName: string,
-    callback: BooleanCallback): void {
-  _renameOrCopyWorkspace(oldWorkspaceName, newWorkspaceName, callback, true);
-}
-
-export function _renameOrCopyWorkspace(
+function _renameOrCopyWorkspace(
     oldWorkspaceName: string, newWorkspaceName: string,
     callback: BooleanCallback, copy: boolean): void {
   const errorMessage = copy
       ? 'Copy Workspace failed.'
       : 'Rename Workspace failed.'
   if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
+    _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         _renameOrCopyWorkspace(oldWorkspaceName, newWorkspaceName, callback, copy);
       } else {
@@ -406,30 +425,44 @@ export function _renameOrCopyWorkspace(
   };
 }
 
-export function renameOpMode(
-    workspaceName: string, oldOpModeName: string, newOpModeName: string,
+export function renameModule(
+    moduleType: string, workspaceName: string,
+    oldModuleName: string, newModuleName: string,
     callback: BooleanCallback): void {
-  _renameOrCopyOpMode(
-      workspaceName, oldOpModeName, newOpModeName, callback, false);
+  _renameOrCopyModule(
+      moduleType, workspaceName, oldModuleName, newModuleName,
+      callback, false);
 }
 
-export function copyOpMode(
-    workspaceName: string, oldOpModeName: string, newOpModeName: string,
+export function copyModule(
+    moduleType: string, workspaceName: string,
+    oldModuleName: string, newModuleName: string,
     callback: BooleanCallback): void {
-  _renameOrCopyOpMode(
-      workspaceName, oldOpModeName, newOpModeName, callback, true);
+  _renameOrCopyModule(
+      moduleType, workspaceName, oldModuleName, newModuleName,
+      callback, true);
 }
 
-export function _renameOrCopyOpMode(
-    workspaceName: string, oldOpModeName: string, newOpModeName: string,
+function _renameOrCopyModule(
+    moduleType: string, workspaceName: string,
+    oldModuleName: string, newModuleName: string,
     callback: BooleanCallback, copy: boolean): void {
+
+  if (moduleType == commonStorage.MODULE_TYPE_WORKSPACE) {
+    _renameOrCopyWorkspace(oldModuleName, newModuleName, callback, copy);
+    return;
+  }
+
   const errorMessage = copy
-      ? 'Copy OpMode failed.'
-      : 'Rename OpMode failed.'
+      ? 'Copy module failed.'
+      : 'Rename module failed.'
+
   if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
+    _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
-        _renameOrCopyOpMode(workspaceName, oldOpModeName, newOpModeName, callback, copy);
+        _renameOrCopyModule(
+            moduleType, workspaceName, oldModuleName, newModuleName,
+            callback, copy);
       } else {
         callback(false, errorMessage + '(' + errorReason + ')');
       }
@@ -442,8 +475,8 @@ export function _renameOrCopyOpMode(
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
-  const oldModulePath = commonStorage.makeModulePath(workspaceName, oldOpModeName);
-  const newModulePath = commonStorage.makeModulePath(workspaceName, newOpModeName);
+  const oldModulePath = commonStorage.makeModulePath(workspaceName, oldModuleName);
+  const newModulePath = commonStorage.makeModulePath(workspaceName, newModuleName);
   const getRequest = modulesObjectStore.get(oldModulePath);
   getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
@@ -452,7 +485,7 @@ export function _renameOrCopyOpMode(
   };
   getRequest.onsuccess = (event: Event) => {
     if (getRequest.result === undefined) {
-      callback(false, errorMessage + ' (OpMode not found)');
+      callback(false, errorMessage + ' (module not found)');
       return;
     }
     const value = getRequest.result;
@@ -479,11 +512,10 @@ export function _renameOrCopyOpMode(
   };
 }
 
-export function deleteWorkspace(
-    workspaceName: string,
-    callback: BooleanCallback): void {
+function _deleteWorkspace(
+    workspaceName: string, callback: BooleanCallback): void {
   if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
+    _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         deleteWorkspace(workspaceName, callback);
       } else {
@@ -531,15 +563,22 @@ export function deleteWorkspace(
   };
 }
 
-export function deleteOpMode(
-    opModePath: string,
+export function deleteModule(
+    moduleType: string, modulePath: string,
     callback: BooleanCallback): void {
+
+  if (moduleType == commonStorage.MODULE_TYPE_WORKSPACE) {
+    const workspaceName = commonStorage.getWorkspaceName(modulePath);
+    _deleteWorkspace(workspaceName, callback);
+    return;
+  }
+
   if (!db) {
-    openDatabase((success: boolean, errorReason: string) => {
+    _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
-        deleteOpMode(opModePath, callback);
+        deleteModule(modulePath, callback);
       } else {
-        callback(false, 'Delete OpMode failed. (' + errorReason + ')');
+        callback(false, 'Delete module failed. (' + errorReason + ')');
       }
     });
     return;
@@ -550,11 +589,11 @@ export function deleteOpMode(
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
-  const deleteRequest = modulesObjectStore.delete(opModePath);
+  const deleteRequest = modulesObjectStore.delete(modulePath);
   deleteRequest.onerror = (event: Event) => {
     console.log('IndexedDB delete request failed:');
     console.log(deleteRequest.error);
-    callback(false, 'Delete OpMode failed. (deleteRequest error)');
+    callback(false, 'Delete module failed. (deleteRequest error)');
   };
   deleteRequest.onsuccess = (event: Event) => {
   };
