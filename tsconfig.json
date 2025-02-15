@@ -11,7 +11,9 @@
     "jsx": "react",
     "allowJs": true,
     "strict": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
   }
 }
 */

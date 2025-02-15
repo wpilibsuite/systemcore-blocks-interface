@@ -22,7 +22,8 @@
 import * as Blockly from 'blockly/core';
 
 import {Block} from "../toolbox/items";
-import {create as createOpMode} from '../modules/mrc_module_opmode'
+import startingOpModeBlocks from '../modules/opmode_start.json'; 
+
 import {extendedPythonGenerator} from '../editor/extended_python_generator';
 
 // Types, constants, and functions related to modules, regardless of where the modules are stored.
@@ -204,8 +205,8 @@ export function newOpModeContent(workspaceName: string, opModeName: string): str
   // Create a headless blockly workspace.
   const headlessBlocklyWorkspace = new Blockly.Workspace();
   headlessBlocklyWorkspace.options.oneBasedIndex = false;
-  createOpMode(headlessBlocklyWorkspace, false);
-
+  Blockly.serialization.workspaces.load(startingOpModeBlocks, headlessBlocklyWorkspace);
+  
   extendedPythonGenerator.setCurrentModule(module);
   const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
   const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));

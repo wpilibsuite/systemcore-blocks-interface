@@ -159,30 +159,55 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.definitions_['import_' + importModule] = 'import ' + importModule;
   }
 
-  workspaceToCode(workspace?: Blockly.Workspace): string {
-    let code = super.workspaceToCode(workspace);
+  classParentFromModuleType(moduleType : string) : string{
+    if(moduleType == commonStorage.MODULE_TYPE_WORKSPACE){
+      return "Robot";
+    }
+    if(moduleType == commonStorage.MODULE_TYPE_OPMODE){
+      return "OpMode";
+    }
+    if(moduleType == commonStorage.MODULE_TYPE_MECHANISM){
+      return "OpMode";
+    }
+    return "";
+  }
+
+  finish(code: string): string {
     if (!this.currentModule) {
-      return code;
+      return super.finish(code);
+    }    
+    let className = this.currentModule.moduleName;
+    let classParent = this.classParentFromModuleType(this.currentModule.moduleType);
+    this.addImport(classParent);
+
+    // Convert the definitions dictionary into a list.
+    const imports = [];
+    const definitions = [];
+    for (let name in this.definitions_) {
+      const def = this.definitions_[name];
+      if (def.match(/^(from\s+\S+\s+)?import\s+\S+/)) {
+        imports.push(def);
+      } else {
+        definitions.push(def);
+      }
     }
+    // Call Blockly.CodeGenerator's finish.  This is required to be done this way
+    // because we derive from PythonGenerator which dervies from CodeGenerator
+    // This section except for the class_def part is all copied from Blockly's
+    // PythonGenerator.  It can't be derived because it needs the class insertion
+    // in the middle.
+    code = Blockly.CodeGenerator.prototype.finish(code);
+    this.isInitialized = false;
 
-    const className = this.currentModule.moduleName;
-    const classType = this.currentModule.moduleType;
-
-    this.addImport(classType);
-
-    let prefix = "";
-    for (let key in this.definitions_) {
-      prefix += this.definitions_[key] + "\n";
-    }
-    if (prefix) {
-      prefix += "\n";
-    }
-
-    let class_def = "class " + className + "(" + classType + "):\n";
+    let class_def = "class " + className + "(" + classParent + "):\n";
     if (!code) {
       code = "pass";
     }
-    return prefix + class_def + this.prefixLines(code, this.INDENT);
+
+    this.nameDB_!.reset();
+    const allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
+    return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + class_def + 
+            this.prefixLines(code, this.INDENT);
   }
 }
 
