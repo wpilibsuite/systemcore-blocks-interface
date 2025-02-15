@@ -167,7 +167,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       return "OpMode";
     }
     if(moduleType == commonStorage.MODULE_TYPE_MECHANISM){
-      return "OpMode";
+      return "Mechanism";
     }
     return "";
   }
