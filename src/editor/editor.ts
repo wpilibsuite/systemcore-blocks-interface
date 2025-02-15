@@ -36,9 +36,9 @@ export class Editor {
   private blocklyWorkspace: Blockly.WorkspaceSvg;
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
-  private workspacePath: string = '';
+  private projectPath: string = '';
   private moduleContent: string = '';
-  private workspaceContent: string = '';
+  private projectContent: string = '';
   private bindedOnChange: any = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
@@ -59,11 +59,11 @@ export class Editor {
 
     // TODO(lizlooney): As blocks are loaded, determine whether any blocks
     // are accessing variable or calling functions thar are defined in another
-    // blocks file (like a Workspace) and check whether the variable or function
+    // blocks file (like a Project) and check whether the variable or function
     // definition has changed. This might happen if the user defines a variable
-    // or function in the Workspace, uses the variable or function in the
+    // or function in the Project, uses the variable or function in the
     // OpMode, and then removes or changes the variable or function in the
-    // Workspace.
+    // Project.
 
     // TODO(lizlooney): We will need a way to identify which variable or
     // function, other than by the variable name or function name, because the
@@ -74,7 +74,7 @@ export class Editor {
     // TODO(lizlooney): Look at blocks with type 'mrc_get_python_variable' or
     // 'mrc_set_python_variable', and where block.mrcExportedVariable === true.
     // Look at block.mrcImportModule and get the exported blocks for that module.
-    // (It should be the workspace and we already have the workspace content.)
+    // (It should be the project and we already have the project content.)
     // Check whether block.mrcActualVariableName matches any exportedBlock's
     // extraState.actualVariableName. If there is no match, put a warning on the
     // block.
@@ -82,7 +82,7 @@ export class Editor {
     // TODO(lizlooney): Look at blocks with type 'mrc_call_python_function' and
     // where block.mrcExportedFunction === true.
     // Look at block.mrcImportModule and get the exported blocks for that module.
-    // (It should be the workspace and we already have the workspace content.)
+    // (It should be the project and we already have the project content.)
     // Check whether block.mrcActualFunctionName matches any exportedBlock's
     // extraState.actualFunctionName. If there is no match, put a warning on the block.
     // If there is a match, check whether
@@ -106,13 +106,13 @@ export class Editor {
     this.currentModule = currentModule;
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
-      this.workspacePath = commonStorage.makeWorkspacePath(currentModule.workspaceName);
+      this.projectPath = commonStorage.makeProjectPath(currentModule.projectName);
     } else {
       this.modulePath = '';
-      this.workspacePath = '';
+      this.projectPath = '';
     }
     this.moduleContent = '';
-    this.workspaceContent = '';
+    this.projectContent = '';
     this.clearBlocklyWorkspace();
 
     if (currentModule) {
@@ -125,30 +125,30 @@ export class Editor {
           }
           if (moduleContent) {
             this.moduleContent = moduleContent;
-            if (this.workspacePath === this.modulePath) {
-              this.workspaceContent = moduleContent
+            if (this.projectPath === this.modulePath) {
+              this.projectContent = moduleContent
             }
 
-            // If both the workspace content and the module content have been
+            // If both the project content and the module content have been
             // loaded, load the blocks into the blockly workspace.
-            if (this.workspaceContent) {
+            if (this.projectContent) {
               this.loadBlocksIntoBlocklyWorkspace();
             }
           }
         }
       );
-      if (this.workspacePath !== this.modulePath) {
+      if (this.projectPath !== this.modulePath) {
         storage.fetchModuleContent(
-          this.workspacePath,
-          (workspaceContent: string | null, errorMessage: string) => {
+          this.projectPath,
+          (projectContent: string | null, errorMessage: string) => {
             if (errorMessage) {
               alert(errorMessage);
               return;
             }
-            if (workspaceContent) {
-              this.workspaceContent = workspaceContent;
+            if (projectContent) {
+              this.projectContent = projectContent;
 
-              // If both the workspace and the module have been loaded, load the
+              // If both the project and the module have been loaded, load the
               // blocks into the blockly workspace.
               if (this.moduleContent) {
                 this.loadBlocksIntoBlocklyWorkspace();
@@ -189,22 +189,22 @@ export class Editor {
 
   public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
     if (this.currentModule) {
-      if (this.currentModule.moduleType === commonStorage.MODULE_TYPE_WORKSPACE) {
-        // If we are editing a Workspace, we don't add any additional blocks to
+      if (this.currentModule.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+        // If we are editing a Project, we don't add any additional blocks to
         // the toolbox.
         this.setToolbox(getToolboxJSON([], shownPythonToolboxCategories));
         return;
       }
-      // Otherwise, we add the exported blocks from the Workspace.
-      if (!this.workspaceContent) {
-        // The workspace content hasn't been fetched yet. Try again in a bit.
+      // Otherwise, we add the exported blocks from the Project.
+      if (!this.projectContent) {
+        // The Project content hasn't been fetched yet. Try again in a bit.
         setTimeout(() => {
           this.updateToolbox(shownPythonToolboxCategories)
         }, 50);
         return;
       }
       const exportedBlocks = commonStorage.extractExportedBlocks(
-         this.currentModule.workspaceName, this.workspaceContent);
+         this.currentModule.projectName, this.projectContent);
       this.setToolbox(getToolboxJSON(exportedBlocks, shownPythonToolboxCategories));
     }
   }

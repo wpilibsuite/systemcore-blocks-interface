@@ -160,7 +160,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   classParentFromModuleType(moduleType : string) : string{
-    if(moduleType == commonStorage.MODULE_TYPE_WORKSPACE){
+    if(moduleType == commonStorage.MODULE_TYPE_PROJECT){
       return "Robot";
     }
     if(moduleType == commonStorage.MODULE_TYPE_OPMODE){

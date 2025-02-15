@@ -31,12 +31,12 @@ import {category as mechanismCategory } from './mechanism_category';
 import {category as methodsCategory} from './opmode_methods_category';
 
 export function getToolboxJSON(
-    opt_includeExportedBlocksFromWorkspace: toolboxItems.ContentsType[],
+    opt_includeExportedBlocksFromProject: toolboxItems.ContentsType[],
     shownPythonToolboxCategories: Set<string>) {
   const contents: toolboxItems.ContentsType[] = generatedToolbox.getToolboxCategories();
   filterGeneratedCategories(contents, shownPythonToolboxCategories);
 
-  if (opt_includeExportedBlocksFromWorkspace.length) {
+  if (opt_includeExportedBlocksFromProject.length) {
     contents.push.apply(
       contents,
       [
@@ -45,8 +45,8 @@ export function getToolboxJSON(
         },
         {
           kind: 'category',
-          name: 'Workspace',
-          contents: opt_includeExportedBlocksFromWorkspace,
+          name: 'Project',
+          contents: opt_includeExportedBlocksFromProject,
         }
       ]);
   }

@@ -25,7 +25,7 @@ import * as commonStorage from './common_storage';
 
 export type BooleanCallback = (success: boolean, error: string) => void;
 export type StringCallback = (value: string | null, error: string) => void;
-export type ModulesCallback = (modules: commonStorage.Workspace[] | null, error: string) => void;
+export type ModulesCallback = (modules: commonStorage.Project[] | null, error: string) => void;
 
 
 const databaseName = 'systemcore-blocks-interface';
@@ -149,11 +149,11 @@ export function listModules(callback: ModulesCallback): void {
     });
     return;
   }
-  const workspaces: {[key: string]: commonStorage.Workspace} = {}; // key is workspace name, value is Workspace
+  const projects: {[key: string]: commonStorage.Project} = {}; // key is project name, value is Project
   // The mechanisms and opModes variables hold any Mechanisms and OpModes that
-  // are read before the Workspace to which they belong is read.
-  const mechanisms: {[key: string]: commonStorage.Mechanism[]} = {}; // key is workspace name, value is list of Mechanisms
-  const opModes: {[key: string]: commonStorage.OpMode[]} = {}; // key is workspace name, value is list of OpModes
+  // are read before the Project to which they belong is read.
+  const mechanisms: {[key: string]: commonStorage.Mechanism[]} = {}; // key is project name, value is list of Mechanisms
+  const opModes: {[key: string]: commonStorage.OpMode[]} = {}; // key is project name, value is list of OpModes
   const openCursorRequest = db.transaction(['modules'], 'readonly')
       .objectStore('modules')
       .openCursor();
@@ -167,76 +167,85 @@ export function listModules(callback: ModulesCallback): void {
     if (cursor) {
       const value = cursor.value;
       const path = value.path;
+      const moduleType = _convertValueTypeToModuleType(value.type);
       const module: commonStorage.Module = {
         modulePath: path,
-        moduleType: value.type,
-        workspaceName: commonStorage.getWorkspaceName(path),
+        moduleType: moduleType,
+        projectName: commonStorage.getProjectName(path),
         moduleName: commonStorage.getModuleName(path),
         dateModifiedMillis: value.dateModifiedMillis,
       }
-      if (value.type === commonStorage.MODULE_TYPE_WORKSPACE) {
-        const workspace: commonStorage.Workspace = {
+      if (moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+        const project: commonStorage.Project = {
           ...module,
           mechanisms: [],
           opModes: [],
         };
-        workspaces[workspace.workspaceName] = workspace;
-        // Add any Mechanisms that belong to this workspace that have already
+        projects[project.projectName] = project;
+        // Add any Mechanisms that belong to this project that have already
         // been read.
-        if (workspace.workspaceName in mechanisms) {
-          workspace.mechanisms = mechanisms[workspace.workspaceName];
-          delete mechanisms[workspace.workspaceName];
+        if (project.projectName in mechanisms) {
+          project.mechanisms = mechanisms[project.projectName];
+          delete mechanisms[project.projectName];
         }
-        // Add any OpModes that belong to this workspace that have already been
+        // Add any OpModes that belong to this project that have already been
         // read.
-        if (workspace.workspaceName in opModes) {
-          workspace.opModes = opModes[workspace.workspaceName];
-          delete opModes[workspace.workspaceName];
+        if (project.projectName in opModes) {
+          project.opModes = opModes[project.projectName];
+          delete opModes[project.projectName];
         }
-      } else if (value.type === commonStorage.MODULE_TYPE_MECHANISM) {
+      } else if (moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
         const mechanism: commonStorage.Mechanism = {
           ...module,
         };
-        if (mechanism.workspaceName in workspaces) {
-          // If the Workspace to which this Mechanism belongs has already been read,
+        if (mechanism.projectName in projects) {
+          // If the Project to which this Mechanism belongs has already been read,
           // add this Mechanism to it.
-          workspaces[mechanism.workspaceName].mechanisms.push(mechanism);
+          projects[mechanism.projectName].mechanisms.push(mechanism);
         } else {
           // Otherwise, add this Mechanism to the mechanisms local variable.
-          if (mechanism.workspaceName in mechanisms) {
-            mechanisms[mechanism.workspaceName].push(mechanism);
+          if (mechanism.projectName in mechanisms) {
+            mechanisms[mechanism.projectName].push(mechanism);
           } else {
-            mechanisms[mechanism.workspaceName] = [mechanism];
+            mechanisms[mechanism.projectName] = [mechanism];
           }
         }
-      } else if (value.type === commonStorage.MODULE_TYPE_OPMODE) {
+      } else if (moduleType === commonStorage.MODULE_TYPE_OPMODE) {
         const opMode: commonStorage.OpMode = {
           ...module,
         };
-        if (opMode.workspaceName in workspaces) {
-          // If the Workspace to which this OpMode belongs has already been read,
+        if (opMode.projectName in projects) {
+          // If the Project to which this OpMode belongs has already been read,
           // add this OpMode to it.
-          workspaces[opMode.workspaceName].opModes.push(opMode);
+          projects[opMode.projectName].opModes.push(opMode);
         } else {
           // Otherwise, add this OpMode to the opModes local variable.
-          if (opMode.workspaceName in opModes) {
-            opModes[opMode.workspaceName].push(opMode);
+          if (opMode.projectName in opModes) {
+            opModes[opMode.projectName].push(opMode);
           } else {
-            opModes[opMode.workspaceName] = [opMode];
+            opModes[opMode.projectName] = [opMode];
           }
         }
       }
       cursor.continue();
     } else {
       // The cursor is done. We have finished reading all the modules.
-      const modules: commonStorage.Workspace[] = [];
-      const sortedWorkspaceNames = Object.keys(workspaces).sort();
-      sortedWorkspaceNames.forEach((workspaceName) => {
-        modules.push(workspaces[workspaceName]);
+      const modules: commonStorage.Project[] = [];
+      const sortedProjectNames = Object.keys(projects).sort();
+      sortedProjectNames.forEach((projectName) => {
+        modules.push(projects[projectName]);
       });
       callback(modules, '');
     }
   };
+}
+
+function _convertValueTypeToModuleType(valueType: string): string {
+  // The module type for a project used to be 'workspace'.
+  if (valueType === 'workspace') {
+    return commonStorage.MODULE_TYPE_PROJECT;
+  }
+  return valueType;
 }
 
 export function fetchModuleContent(
@@ -338,16 +347,16 @@ function _saveModule(
   };
 }
 
-function _renameOrCopyWorkspace(
-    oldWorkspaceName: string, newWorkspaceName: string,
+function _renameOrCopyProject(
+    oldProjectName: string, newProjectName: string,
     callback: BooleanCallback, copy: boolean): void {
   const errorMessage = copy
-      ? 'Copy Workspace failed.'
-      : 'Rename Workspace failed.'
+      ? 'Copy Project failed.'
+      : 'Rename Project failed.'
   if (!db) {
     _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
-        _renameOrCopyWorkspace(oldWorkspaceName, newWorkspaceName, callback, copy);
+        _renameOrCopyProject(oldProjectName, newProjectName, callback, copy);
       } else {
         callback(false, errorMessage + ' (' + errorReason + ')');
       }
@@ -360,7 +369,7 @@ function _renameOrCopyWorkspace(
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
-  // First get the list of modules in the workspace.
+  // First get the list of modules in the project.
   const oldToNewModulePaths: {[key: string]: string} = {};
   const openCursorRequest = modulesObjectStore.openCursor();
   openCursorRequest.onerror = (event: Event) => {
@@ -373,19 +382,20 @@ function _renameOrCopyWorkspace(
     if (cursor) {
       const value = cursor.value;
       const path = value.path;
-      if (commonStorage.getWorkspaceName(path) === oldWorkspaceName) {
+      const moduleType = _convertValueTypeToModuleType(value.type);
+      if (commonStorage.getProjectName(path) === oldProjectName) {
         let newPath;
-        if (value.type === commonStorage.MODULE_TYPE_WORKSPACE) {
-          newPath = commonStorage.makeModulePath(newWorkspaceName, newWorkspaceName);
+        if (moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+          newPath = commonStorage.makeProjectPath(newProjectName);
         } else {
           const moduleName = commonStorage.getModuleName(path);
-          newPath = commonStorage.makeModulePath(newWorkspaceName, moduleName);
+          newPath = commonStorage.makeModulePath(newProjectName, moduleName);
         }
         oldToNewModulePaths[path] = newPath;
       }
       cursor.continue();
     } else {
-      // Now rename the workspace for each of the modules.
+      // Now rename the project for each of the modules.
       Object.entries(oldToNewModulePaths).forEach(([oldModulePath, newModulePath]) => {
         const getRequest = modulesObjectStore.get(oldModulePath);
         getRequest.onerror = (event: Event) => {
@@ -395,7 +405,7 @@ function _renameOrCopyWorkspace(
         };
         getRequest.onsuccess = (event: Event) => {
           if (getRequest.result === undefined) {
-            callback(false, errorMessage + ' (workspace not found)');
+            callback(false, errorMessage + ' (project not found)');
             return;
           }
           const value = getRequest.result;
@@ -426,30 +436,30 @@ function _renameOrCopyWorkspace(
 }
 
 export function renameModule(
-    moduleType: string, workspaceName: string,
+    moduleType: string, projectName: string,
     oldModuleName: string, newModuleName: string,
     callback: BooleanCallback): void {
   _renameOrCopyModule(
-      moduleType, workspaceName, oldModuleName, newModuleName,
+      moduleType, projectName, oldModuleName, newModuleName,
       callback, false);
 }
 
 export function copyModule(
-    moduleType: string, workspaceName: string,
+    moduleType: string, projectName: string,
     oldModuleName: string, newModuleName: string,
     callback: BooleanCallback): void {
   _renameOrCopyModule(
-      moduleType, workspaceName, oldModuleName, newModuleName,
+      moduleType, projectName, oldModuleName, newModuleName,
       callback, true);
 }
 
 function _renameOrCopyModule(
-    moduleType: string, workspaceName: string,
+    moduleType: string, projectName: string,
     oldModuleName: string, newModuleName: string,
     callback: BooleanCallback, copy: boolean): void {
 
-  if (moduleType == commonStorage.MODULE_TYPE_WORKSPACE) {
-    _renameOrCopyWorkspace(oldModuleName, newModuleName, callback, copy);
+  if (moduleType == commonStorage.MODULE_TYPE_PROJECT) {
+    _renameOrCopyProject(oldModuleName, newModuleName, callback, copy);
     return;
   }
 
@@ -461,7 +471,7 @@ function _renameOrCopyModule(
     _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
         _renameOrCopyModule(
-            moduleType, workspaceName, oldModuleName, newModuleName,
+            moduleType, projectName, oldModuleName, newModuleName,
             callback, copy);
       } else {
         callback(false, errorMessage + '(' + errorReason + ')');
@@ -475,8 +485,8 @@ function _renameOrCopyModule(
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
-  const oldModulePath = commonStorage.makeModulePath(workspaceName, oldModuleName);
-  const newModulePath = commonStorage.makeModulePath(workspaceName, newModuleName);
+  const oldModulePath = commonStorage.makeModulePath(projectName, oldModuleName);
+  const newModulePath = commonStorage.makeModulePath(projectName, newModuleName);
   const getRequest = modulesObjectStore.get(oldModulePath);
   getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
@@ -512,14 +522,14 @@ function _renameOrCopyModule(
   };
 }
 
-function _deleteWorkspace(
-    workspaceName: string, callback: BooleanCallback): void {
+function _deleteProject(
+    projectName: string, callback: BooleanCallback): void {
   if (!db) {
     _openDatabase((success: boolean, errorReason: string) => {
       if (success) {
-        deleteWorkspace(workspaceName, callback);
+        deleteProject(projectName, callback);
       } else {
-        callback(false, 'Delete workspace failed. (' + errorReason + ')');
+        callback(false, 'Delete project failed. (' + errorReason + ')');
       }
     });
     return;
@@ -530,20 +540,20 @@ function _deleteWorkspace(
     callback(true, '');
   };
   const modulesObjectStore = transaction.objectStore('modules');
-  // First get the list of modulePaths in the workspace.
+  // First get the list of modulePaths in the project.
   const modulePaths: string[] = [];
   const openCursorRequest = modulesObjectStore.openCursor();
   openCursorRequest.onerror = (event: Event) => {
     console.log('IndexedDB openCursor request failed:');
     console.log(openCursorRequest.error);
-    callback(false, 'Delete workspace failed. Could not open cursor.');
+    callback(false, 'Delete project failed. Could not open cursor.');
   };
   openCursorRequest.onsuccess = (event: Event) => {
     const cursor = openCursorRequest.result;
     if (cursor) {
       const value = cursor.value;
       const path = value.path;
-      if (commonStorage.getWorkspaceName(path) === workspaceName) {
+      if (commonStorage.getProjectName(path) === projectName) {
         modulePaths.push(path);
       }
       cursor.continue();
@@ -554,7 +564,7 @@ function _deleteWorkspace(
         deleteRequest.onerror = (event: Event) => {
           console.log('IndexedDB delete request failed:');
           console.log(deleteRequest.error);
-          callback(false, 'Delete workspace failed. (deleteRequest error)');
+          callback(false, 'Delete project failed. (deleteRequest error)');
         };
         deleteRequest.onsuccess = (event: Event) => {
         };
@@ -567,9 +577,9 @@ export function deleteModule(
     moduleType: string, modulePath: string,
     callback: BooleanCallback): void {
 
-  if (moduleType == commonStorage.MODULE_TYPE_WORKSPACE) {
-    const workspaceName = commonStorage.getWorkspaceName(modulePath);
-    _deleteWorkspace(workspaceName, callback);
+  if (moduleType == commonStorage.MODULE_TYPE_PROJECT) {
+    const projectName = commonStorage.getProjectName(modulePath);
+    _deleteProject(projectName, callback);
     return;
   }
 
