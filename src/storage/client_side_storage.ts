@@ -167,7 +167,7 @@ export function listModules(callback: ModulesCallback): void {
     if (cursor) {
       const value = cursor.value;
       const path = value.path;
-      const moduleType = _convertValueTypeToModuleType(value.type);
+      const moduleType = value.type;
       const module: commonStorage.Module = {
         modulePath: path,
         moduleType: moduleType,
@@ -238,14 +238,6 @@ export function listModules(callback: ModulesCallback): void {
       callback(modules, '');
     }
   };
-}
-
-function _convertValueTypeToModuleType(valueType: string): string {
-  // The module type for a project used to be 'workspace'.
-  if (valueType === 'workspace') {
-    return commonStorage.MODULE_TYPE_PROJECT;
-  }
-  return valueType;
 }
 
 export function fetchModuleContent(
@@ -382,7 +374,7 @@ function _renameOrCopyProject(
     if (cursor) {
       const value = cursor.value;
       const path = value.path;
-      const moduleType = _convertValueTypeToModuleType(value.type);
+      const moduleType = value.type;
       if (commonStorage.getProjectName(path) === oldProjectName) {
         let newPath;
         if (moduleType === commonStorage.MODULE_TYPE_PROJECT) {

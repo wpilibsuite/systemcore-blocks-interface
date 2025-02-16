@@ -19,4 +19,5 @@ WARNING! This is not ready for use and is under heavy development of basic featu
 5. Workspace can have blocks
 6. No Robot workspace yet
 7. No Mechanism workspace yet
-8. Something weird is going on with currentModule getting unset
+8. Something weird is going on with currentModule getting unset. This was likely fixed by PR #45!
+9. Since we renamed workspaces to projects, existing Workspaces are no longer supported. They can be deleted via the browser's Developer Tools - Application tab.
