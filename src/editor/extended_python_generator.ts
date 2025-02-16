@@ -161,13 +161,13 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   classParentFromModuleType(moduleType : string) : string{
     if(moduleType == commonStorage.MODULE_TYPE_WORKSPACE){
-      return "Robot";
+      return "RobotBase";
     }
     if(moduleType == commonStorage.MODULE_TYPE_OPMODE){
       return "OpMode";
     }
     if(moduleType == commonStorage.MODULE_TYPE_MECHANISM){
-      return "OpMode";
+      return "Mechanism";
     }
     return "";
   }
@@ -176,7 +176,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     if (!this.currentModule) {
       return super.finish(code);
     }    
-    let className = this.currentModule.moduleName;
+    let className = 'Robot';   // Default for Workspace
+    if (this.currentModule.moduleType != commonStorage.MODULE_TYPE_WORKSPACE){
+      className = this.currentModule.moduleName;
+    }
     let classParent = this.classParentFromModuleType(this.currentModule.moduleType);
     this.addImport(classParent);
 
