@@ -23,6 +23,8 @@ import * as Blockly from 'blockly/core';
 
 import {Block} from "../toolbox/items";
 import startingOpModeBlocks from '../modules/opmode_start.json'; 
+import startingMechanismBlocks from '../modules/mechanism_start.json';
+import startingRobotBlocks from '../modules/robot_start.json';
 
 import {extendedPythonGenerator} from '../editor/extended_python_generator';
 
@@ -160,9 +162,15 @@ export function newProjectContent(projectName: string): string {
     dateModifiedMillis: 0,
   };
 
-  const pythonCode = '';
-  const exportedBlocks = '[]';
-  const blocksContent = '{}';
+  // Create a headless blockly workspace.
+  const headlessBlocklyWorkspace = new Blockly.Workspace();
+  headlessBlocklyWorkspace.options.oneBasedIndex = false;
+  Blockly.serialization.workspaces.load(startingRobotBlocks, headlessBlocklyWorkspace);
+
+  extendedPythonGenerator.setCurrentModule(module);
+  const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
+  const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
+  const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
   return makeModuleContent(module, pythonCode, exportedBlocks, blocksContent);
 }
 
@@ -181,7 +189,7 @@ export function newMechanismContent(projectName: string, mechanismName: string):
   // Create a headless blockly workspace.
   const headlessBlocklyWorkspace = new Blockly.Workspace();
   headlessBlocklyWorkspace.options.oneBasedIndex = false;
-  // TODO: Create the blocks for a new mechanism.
+  Blockly.serialization.workspaces.load(startingMechanismBlocks, headlessBlocklyWorkspace);
 
   extendedPythonGenerator.setCurrentModule(module);
   const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
