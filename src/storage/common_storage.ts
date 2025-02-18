@@ -33,7 +33,7 @@ import {extendedPythonGenerator} from '../editor/extended_python_generator';
 export type Module = {
   modulePath: string,
   moduleType: string,
-  workspaceName: string,
+  projectName: string,
   moduleName: string,
   dateModifiedMillis: number,
 };
@@ -41,13 +41,13 @@ export type Module = {
 export type Mechanism = Module;
 export type OpMode = Module;
 
-export type Workspace = Module & {
+export type Project = Module & {
   mechanisms: Mechanism[]
   opModes: OpMode[],
 };
 
 export const MODULE_TYPE_UNKNOWN = 'unknown';
-export const MODULE_TYPE_WORKSPACE = 'workspace';
+export const MODULE_TYPE_PROJECT = 'project';
 export const MODULE_TYPE_MECHANISM = 'mechanism';
 export const MODULE_TYPE_OPMODE = 'opmode';
 
@@ -65,17 +65,17 @@ const NUMBER_OF_PARTS = 3;
 /**
  * Returns the module with the given module path, or null if it is not found.
  */
-export function findModule(modules: Workspace[], modulePath: string): Module | null {
-  for (const workspace of modules) {
-    if (workspace.modulePath === modulePath) {
-      return workspace;
+export function findModule(modules: Project[], modulePath: string): Module | null {
+  for (const project of modules) {
+    if (project.modulePath === modulePath) {
+      return project;
     }
-    for (const mechanism of workspace.mechanisms) {
+    for (const mechanism of project.mechanisms) {
       if (mechanism.modulePath === modulePath) {
         return mechanism;
       }
     }
-    for (const opMode of workspace.opModes) {
+    for (const opMode of project.opModes) {
       if (opMode.modulePath === modulePath) {
         return opMode;
       }
@@ -96,27 +96,27 @@ export function isValidPythonModuleName(name: string): boolean {
 }
 
 /**
- * Returns the module path for the given workspace and module names.
+ * Returns the module path for the given project and module names.
  */
-export function makeModulePath(workspaceName: string, moduleName: string): string {
-  return workspaceName + '/' + moduleName + '.py';
+export function makeModulePath(projectName: string, moduleName: string): string {
+  return projectName + '/' + moduleName + '.py';
 }
 
 /**
- * Returns the workspace path for the given workspace names.
+ * Returns the project path for the given project names.
  */
-export function makeWorkspacePath(workspaceName: string): string {
-  return makeModulePath(workspaceName, workspaceName);
+export function makeProjectPath(projectName: string): string {
+  return makeModulePath(projectName, projectName);
 }
 
 /**
- * Returns the workspace name for given module path.
+ * Returns the project name for given module path.
  */
-export function getWorkspaceName(modulePath: string): string {
+export function getProjectName(modulePath: string): string {
   const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
   const result = regex.exec(modulePath)
   if (!result) {
-    throw new Error('Unable to extract the workspace name.');
+    throw new Error('Unable to extract the project name.');
   }
   return result[1];
 }
@@ -137,28 +137,28 @@ export function getModuleName(modulePath: string): string {
  * Returns the download file name for the given module path.
  */
 export function makeDownloadFileName(modulePath: string): string {
-  return getWorkspaceName(modulePath) + '-' + getModuleName(modulePath) + '.wpilib_blocks';
+  return getProjectName(modulePath) + '-' + getModuleName(modulePath) + '.wpilib_blocks';
 }
 
-export function makeUploadWorkspaceName(uploadFileName: string): string {
-  // Check if the name is <workspace name>-<workspace name>.
+export function makeUploadProjectName(uploadFileName: string): string {
+  // Check if the name is <project name>-<project name>.
   const regex = new RegExp('^([a-z_][a-z0-9_]*)-([a-z_][a-z0-9_]*).wpilib_blocks$');
   const result = regex.exec(uploadFileName);
   if (!result || result[1] !== result[2]) {
-    throw new Error(uploadFileName + ' is not a valid file name for uploading as a workspace');
+    throw new Error(uploadFileName + ' is not a valid file name for uploading as a project');
   }
   return result[2];
 }
 
 /**
- * Returns the module content for a new Workspace.
+ * Returns the module content for a new Project.
  */
-export function newWorkspaceContent(workspaceName: string): string {
+export function newProjectContent(projectName: string): string {
   const module: Module = {
-    modulePath: makeWorkspacePath(workspaceName),
-    moduleType: MODULE_TYPE_WORKSPACE,
-    workspaceName: workspaceName,
-    moduleName: workspaceName,
+    modulePath: makeProjectPath(projectName),
+    moduleType: MODULE_TYPE_PROJECT,
+    projectName: projectName,
+    moduleName: projectName,
     dateModifiedMillis: 0,
   };
 
@@ -177,11 +177,11 @@ export function newWorkspaceContent(workspaceName: string): string {
 /**
  * Returns the module content for a new Mechanism.
  */
-export function newMechanismContent(workspaceName: string, mechanismName: string): string {
+export function newMechanismContent(projectName: string, mechanismName: string): string {
   const module: Module = {
-    modulePath: makeModulePath(workspaceName, mechanismName),
+    modulePath: makeModulePath(projectName, mechanismName),
     moduleType: MODULE_TYPE_MECHANISM,
-    workspaceName: workspaceName,
+    projectName: projectName,
     moduleName: mechanismName,
     dateModifiedMillis: 0,
   };
@@ -201,11 +201,11 @@ export function newMechanismContent(workspaceName: string, mechanismName: string
 /**
  * Returns the module content for a new OpMode.
  */
-export function newOpModeContent(workspaceName: string, opModeName: string): string {
+export function newOpModeContent(projectName: string, opModeName: string): string {
   const module: Module = {
-    modulePath: makeModulePath(workspaceName, opModeName),
+    modulePath: makeModulePath(projectName, opModeName),
     moduleType: MODULE_TYPE_OPMODE,
-    workspaceName: workspaceName,
+    projectName: projectName,
     moduleName: opModeName,
     dateModifiedMillis: 0,
   };
@@ -273,7 +273,7 @@ function getParts(moduleContent: string): string {
   }
   if (parts.length == 2) {
     // This module was saved without the module type, which was added to the module content when we introduced mechanisms.
-    // This module is either a Workspace or an OpMode, but we don't know which from just the content.
+    // This module is either a Project or an OpMode, but we don't know which from just the content.
     parts.push(MODULE_TYPE_UNKNOWN);
   }
   return parts;
