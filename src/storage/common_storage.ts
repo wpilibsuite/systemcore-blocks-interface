@@ -19,6 +19,8 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
+import JSZip from 'jszip';
+
 import * as Blockly from 'blockly/core';
 
 import {Block} from "../toolbox/items";
@@ -61,6 +63,8 @@ const PARTS_INDEX_BLOCKS_CONTENT = 0;
 const PARTS_INDEX_EXPORTED_BLOCKS = 1;
 const PARTS_INDEX_MODULE_TYPE = 2;
 const NUMBER_OF_PARTS = 3;
+
+export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 
 /**
  * Returns the module with the given module path, or null if it is not found.
@@ -129,23 +133,6 @@ export function getModuleName(modulePath: string): string {
   const result = regex.exec(modulePath)
   if (!result) {
     throw new Error('Unable to extract the module name.');
-  }
-  return result[2];
-}
-
-/**
- * Returns the download file name for the given module path.
- */
-export function makeDownloadFileName(modulePath: string): string {
-  return getProjectName(modulePath) + '-' + getModuleName(modulePath) + '.wpilib_blocks';
-}
-
-export function makeUploadProjectName(uploadFileName: string): string {
-  // Check if the name is <project name>-<project name>.
-  const regex = new RegExp('^([a-z_][a-z0-9_]*)-([a-z_][a-z0-9_]*).wpilib_blocks$');
-  const result = regex.exec(uploadFileName);
-  if (!result || result[1] !== result[2]) {
-    throw new Error(uploadFileName + ' is not a valid file name for uploading as a project');
   }
   return result[2];
 }
@@ -323,4 +310,159 @@ export function extractModuleType(moduleName: string, moduleContent: string): Bl
     moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
   }
   return moduleType;
+}
+
+/**
+ * Produce the blob for downloading a project.
+ */
+export async function produceDownloadProjectBlob(
+    projectName: string, moduleContents: {[key: string]: string}): string {
+  const zip = new JSZip();
+  for (let moduleName in moduleContents) {
+    const moduleContent = moduleContents[moduleName];
+    const moduleContentForDownload = _processModuleContentForDownload(
+        projectName, moduleName, moduleContent);
+    zip.file(moduleName, moduleContentForDownload);
+  }
+  const content = await zip.generateAsync({ type: "blob" });
+  const blobUrl = URL.createObjectURL(content);
+  return blobUrl;
+}
+
+/**
+ * Process the module content so it can be downloaded.
+ */
+function _processModuleContentForDownload(
+    projectName: string, moduleName: string, moduleContent: string): string {
+  const parts = getParts(moduleContent);
+  let blocksContent = parts[PARTS_INDEX_BLOCKS_CONTENT];
+  if (blocksContent.startsWith(MARKER_BLOCKS_CONTENT)) {
+    blocksContent = blocksContent.substring(MARKER_BLOCKS_CONTENT.length);
+  }
+  let moduleType = parts[PARTS_INDEX_MODULE_TYPE];
+  if (moduleType.startsWith(MARKER_MODULE_TYPE)) {
+    moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
+  }
+
+  const module: Module = {
+    modulePath: makeModulePath(projectName, moduleName),
+    moduleType: moduleType,
+    projectName: projectName,
+    moduleName: moduleName,
+    dateModifiedMillis: 0,
+  };
+
+  // Clear out the python content and exported blocks.
+  const pythonCode = '';
+  const exportedBlocks = '[]';
+  return makeModuleContent(module, pythonCode, exportedBlocks, blocksContent);
+}
+
+/**
+ * Make a unique project name for an uploaded project.
+ */
+export function makeUploadProjectName(
+    uploadFileName: string, existingProjectNames: string[]): string {
+  const preferredName = uploadFileName.substring(
+      0, uploadFileName.length - UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
+  let name = preferredName; // No suffix.
+  let suffix = 0;
+  while (true) {
+    var nameClash = false;
+    for (const existingProjectName of existingProjectNames) {
+      if (name == existingProjectName) {
+        nameClash = true;
+        break;
+      }
+    }
+    if (!nameClash) {
+      return name;
+    }
+    suffix++;
+    name = preferredName + suffix;
+  }
+}
+
+/**
+ * Process the uploaded blob to get the module types and contents.
+ */
+export async function processUploadedBlob(
+    projectName: string, blobUrl: string)
+    : [{[key: string]: string}, {[key: string]: string}] {
+  const prefix = 'data:application/octet-stream;base64,';
+  if (!blobUrl.startsWith(prefix)) {
+    throw new Error('blobUrl does not have the expected prefix.');
+  }
+  const data = blobUrl.substring(prefix.length);
+
+  const zip = await JSZip.loadAsync(data, {base64: true});
+  const promises = {};
+  zip.forEach((moduleName, zipEntry) => {
+    promises[moduleName] = zipEntry.async('text');
+  });
+
+  // Wait for all promises to resolve.
+  const files: {[key: string]: string} = {}; // key is file name, value is content
+  await Promise.all(
+    Object.entries(promises).map(async ([filename, promise]) => {
+      files[filename] = await promise;
+    })
+  );
+
+  // Process each module's content.
+  const moduleTypes: {[key: string]: string} = {}; // key is module name, value is module type
+  const moduleContents: {[key: string]: string} = {}; // key is module name, value is module content
+  for (let filename in files) {
+    const uploadedContent = files[filename];
+    let [moduleName, moduleType, moduleContent] = _processUploadedModule(
+        projectName, filename, uploadedContent);
+
+    moduleTypes[moduleName] = moduleType;
+    moduleContents[moduleName] = moduleContent;
+  }
+
+  return [moduleTypes, moduleContents];
+}
+
+/**
+ * Processes an uploaded module to get the module name, type, and content.
+ */
+export function _processUploadedModule(
+    projectName: string, filename: string, uploadedContent: string)
+    : [string, string, string] {
+  const parts = getParts(uploadedContent);
+  let blocksContent = parts[PARTS_INDEX_BLOCKS_CONTENT];
+  if (blocksContent.startsWith(MARKER_BLOCKS_CONTENT)) {
+    blocksContent = blocksContent.substring(MARKER_BLOCKS_CONTENT.length);
+  }
+  let moduleType = parts[PARTS_INDEX_MODULE_TYPE];
+  if (moduleType.startsWith(MARKER_MODULE_TYPE)) {
+    moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
+  }
+
+  const moduleName = (moduleType === MODULE_TYPE_PROJECT)
+      ? projectName : filename;
+
+  const module: Module = {
+    modulePath: makeModulePath(projectName, moduleName),
+    moduleType: moduleType,
+    projectName: projectName,
+    moduleName: moduleName,
+    dateModifiedMillis: 0,
+  };
+
+  // Generate the python content and exported blocks.
+  // Create a headless blockly workspace.
+  const headlessBlocklyWorkspace = new Blockly.Workspace();
+  headlessBlocklyWorkspace.options.oneBasedIndex = false;
+  Blockly.serialization.workspaces.load(
+      JSON.parse(blocksContent), headlessBlocklyWorkspace);
+  extendedPythonGenerator.setCurrentModule(module);
+  const pythonCode = extendedPythonGenerator.workspaceToCode(
+      headlessBlocklyWorkspace);
+  const exportedBlocks = JSON.stringify(
+      extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
+  const moduleContent = makeModuleContent(
+      module, pythonCode, exportedBlocks, blocksContent);
+  return [moduleName, moduleType, moduleContent];
 }
