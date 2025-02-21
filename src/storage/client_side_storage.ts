@@ -80,14 +80,17 @@ export function saveEntry(
       callback(true, '');
     }
   };
+  transaction.onabort = () => {
+    if (callback) {
+      callback(false, 'Save entry failed.');
+    }
+  };
   const entriesObjectStore = transaction.objectStore('entries');
   const getRequest = entriesObjectStore.get(entryKey);
   getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
-    if (callback) {
-      callback(false, 'Save entry failed. (getRequest error)');
-    }
+    throw new Error('getRequest error');
   };
   getRequest.onsuccess = (event: Event) => {
     let value;
@@ -102,9 +105,7 @@ export function saveEntry(
     putRequest.onerror = (event: Event) => {
       console.log('IndexedDB put request failed:');
       console.log(putRequest.error);
-      if (callback) {
-        callback(false, 'Save entry failed. (putRequest error)');
-      }
+      throw new Error('putRequest error');
     };
   };
 }
@@ -302,29 +303,36 @@ function _saveModule(
   transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
+  transaction.onabort = () => {
+    callback(false, 'Save module failed.');
+  };
   const modulesObjectStore = transaction.objectStore('modules');
   const getRequest = modulesObjectStore.get(modulePath);
   getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
-    callback(false, 'Save module failed. (getRequest error)');
+    throw new Error('getRequest error');
   };
   getRequest.onsuccess = (event: Event) => {
     let value;
     if (getRequest.result === undefined) {
+      // The module does not exist.
+      // Let's make sure that's what we expected.
       if (!moduleType) {
-        // Since moduleType is not truthy, we are trying to save an existing module.
-        // So it is unexpected that the getRequest.result is undefined.
-        throw new Error('Unable to save module ' + modulePath);
+        // If moduleType is not truthy, we are trying to save an existing module.
+        // It is unexpected that the module does not exist.
+        throw new Error('Unable to save module ' + modulePath + ' because the module does not exist.');
       }
       value = Object.create(null);
       value.path = modulePath;
       value.type = moduleType;
     } else {
+      // The module already exists.
+      // Let's make sure if that's what we expected.
       if (moduleType) {
-        // Since moduleType is truthy, we are trying to create an existing module.
-        // So it is unexpected that the getRequest.result is not undefined.
-        throw new Error('Unable to create module ' + modulePath);
+        // Since moduleType is truthy, we are trying to create a new module.
+        // It is unexpected that the module already exists.
+        throw new Error('Unable to create module ' + modulePath + ' because the module already exists.');
       }
       value = getRequest.result;
     }
@@ -334,7 +342,7 @@ function _saveModule(
     putRequest.onerror = (event: Event) => {
       console.log('IndexedDB put request failed:');
       console.log(putRequest.error);
-      callback(false, 'Save module failed. (putRequest error)');
+      throw new Error('putRequest error');
     };
   };
 }
@@ -360,6 +368,9 @@ function _renameOrCopyProject(
   transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
+  transaction.onabort = () => {
+    callback(false, errorMessage);
+  };
   const modulesObjectStore = transaction.objectStore('modules');
   // First get the list of modules in the project.
   const oldToNewModulePaths: {[key: string]: string} = {};
@@ -367,7 +378,7 @@ function _renameOrCopyProject(
   openCursorRequest.onerror = (event: Event) => {
     console.log('IndexedDB openCursor request failed:');
     console.log(openCursorRequest.error);
-    callback(false, errorMessage + ' Could not open cursor.');
+    throw new Error('openCursorRequest error');
   };
   openCursorRequest.onsuccess = (event: Event) => {
     const cursor = openCursorRequest.result;
@@ -393,12 +404,11 @@ function _renameOrCopyProject(
         getRequest.onerror = (event: Event) => {
           console.log('IndexedDB get request failed:');
           console.log(getRequest.error);
-          callback(false, errorMessage + ' (getRequest error)');
+          throw new Error('getRequest error');
         };
         getRequest.onsuccess = (event: Event) => {
           if (getRequest.result === undefined) {
-            callback(false, errorMessage + ' (project not found)');
-            return;
+            throw new Error('project not found');
           }
           const value = getRequest.result;
           value.path = newModulePath;
@@ -407,7 +417,7 @@ function _renameOrCopyProject(
           putRequest.onerror = (event: Event) => {
             console.log('IndexedDB put request failed:');
             console.log(putRequest.error);
-            callback(false, errorMessage + ' (putRequest error)');
+            throw new Error('putRequest error');
           };
           putRequest.onsuccess = (event: Event) => {
             if (!copy) {
@@ -415,7 +425,7 @@ function _renameOrCopyProject(
               deleteRequest.onerror = (event: Event) => {
                 console.log('IndexedDB delete request failed:');
                 console.log(deleteRequest.error);
-                callback(false, errorMessage + ' (deleteRequest error)');
+                throw new Error('deleteRequest error');
               };
               deleteRequest.onsuccess = (event: Event) => {
               };
@@ -476,6 +486,9 @@ function _renameOrCopyModule(
   transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
+  transaction.onabort = () => {
+    callback(false, errorMessage);
+  };
   const modulesObjectStore = transaction.objectStore('modules');
   const oldModulePath = commonStorage.makeModulePath(projectName, oldModuleName);
   const newModulePath = commonStorage.makeModulePath(projectName, newModuleName);
@@ -483,11 +496,11 @@ function _renameOrCopyModule(
   getRequest.onerror = (event: Event) => {
     console.log('IndexedDB get request failed:');
     console.log(getRequest.error);
-    callback(false, errorMessage + ' (getRequest error)');
+    throw new Error('getRequest error');
   };
   getRequest.onsuccess = (event: Event) => {
     if (getRequest.result === undefined) {
-      callback(false, errorMessage + ' (module not found)');
+      throw new Error('module not found');
       return;
     }
     const value = getRequest.result;
@@ -497,7 +510,7 @@ function _renameOrCopyModule(
     putRequest.onerror = (event: Event) => {
       console.log('IndexedDB put request failed:');
       console.log(putRequest.error);
-      callback(false, errorMessage + ' (putRequest error)');
+      throw new Error('putRequest error');
     };
     putRequest.onsuccess = (event: Event) => {
       if (!copy) {
@@ -505,7 +518,7 @@ function _renameOrCopyModule(
         deleteRequest.onerror = (event: Event) => {
           console.log('IndexedDB delete request failed:');
           console.log(deleteRequest.error);
-          callback(false, errorMessage + ' (deleteRequest error)');
+          throw new Error('deleteRequest error');
         };
         deleteRequest.onsuccess = (event: Event) => {
         };
@@ -531,6 +544,9 @@ function _deleteProject(
   transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
+  transaction.onabort = () => {
+    callback(false, 'Delete project failed.');
+  };
   const modulesObjectStore = transaction.objectStore('modules');
   // First get the list of modulePaths in the project.
   const modulePaths: string[] = [];
@@ -538,7 +554,7 @@ function _deleteProject(
   openCursorRequest.onerror = (event: Event) => {
     console.log('IndexedDB openCursor request failed:');
     console.log(openCursorRequest.error);
-    callback(false, 'Delete project failed. Could not open cursor.');
+    throw new Error('openCursorRequest error');
   };
   openCursorRequest.onsuccess = (event: Event) => {
     const cursor = openCursorRequest.result;
@@ -556,7 +572,7 @@ function _deleteProject(
         deleteRequest.onerror = (event: Event) => {
           console.log('IndexedDB delete request failed:');
           console.log(deleteRequest.error);
-          callback(false, 'Delete project failed. (deleteRequest error)');
+          throw new Error('deleteRequest error');
         };
         deleteRequest.onsuccess = (event: Event) => {
         };
@@ -590,13 +606,119 @@ export function deleteModule(
   transaction.oncomplete = (event: Event) => {
     callback(true, '');
   };
+  transaction.onabort = () => {
+    callback(false, 'Delete module failed.');
+  };
   const modulesObjectStore = transaction.objectStore('modules');
   const deleteRequest = modulesObjectStore.delete(modulePath);
   deleteRequest.onerror = (event: Event) => {
     console.log('IndexedDB delete request failed:');
     console.log(deleteRequest.error);
-    callback(false, 'Delete module failed. (deleteRequest error)');
+    throw new Error('deleteRequest error');
   };
   deleteRequest.onsuccess = (event: Event) => {
   };
+}
+
+export async function downloadProject(projectName: string, callback: StringCallback): void {
+  if (!db) {
+    _openDatabase((success: boolean, errorReason: string) => {
+      if (success) {
+        downloadProject(projectName, callback);
+      } else {
+        callback(null, 'Download project failed. (' + errorReason + ')');
+      }
+    });
+    return;
+  }
+
+  // Collect all the modules in the project.
+  const moduleContents: {[key: string]: string} = {}; // key is module name, value is module content
+  const openCursorRequest = db.transaction(['modules'], 'readonly')
+      .objectStore('modules')
+      .openCursor();
+  openCursorRequest.onerror = (event: Event) => {
+    console.log('IndexedDB openCursor request failed:');
+    console.log(openCursorRequest.error);
+    callback(null, 'Download project failed. Could not open cursor.');
+  };
+  openCursorRequest.onsuccess = async (event: Event) => {
+    const cursor = openCursorRequest.result;
+    if (cursor) {
+      const value = cursor.value;
+      if (commonStorage.getProjectName(value.path) === projectName) {
+        const moduleName = commonStorage.getModuleName(value.path);
+        moduleContents[moduleName] = value.content;
+      }
+      cursor.continue();
+    } else {
+      // The cursor is done. We have finished collecting all the modules in the project.
+      // Now create the blob for download.
+      const blobUrl = await commonStorage.produceDownloadProjectBlob(projectName, moduleContents);
+      callback(blobUrl, '');
+    }
+  };
+}
+
+export async function uploadProject(projectName: string, blobUrl: string, callback: BooleanCallback): void {
+  if (!db) {
+    _openDatabase((success: boolean, errorReason: string) => {
+      if (success) {
+        uploadProject(projectName, url, callback);
+      } else {
+        callback(false, 'Upload project failed. (' + errorReason + ')');
+      }
+    });
+    return;
+  }
+
+  // Process the uploaded blob to get the module types and contents.
+  let moduleTypes: {[key: string]: string}; // key is module name, value is module content
+  let moduleContents: {[key: string]: string}; // key is module name, value is module content
+  try {
+    [moduleTypes, moduleContents] = await commonStorage.processUploadedBlob(
+        projectName, blobUrl);
+  } catch (e) {
+    callback(false, 'Upload project failed. (' + e + ')');
+  }
+
+  // Save each module.
+  const transaction = db.transaction(['modules'], 'readwrite');
+  transaction.oncomplete = (event: Event) => {
+    callback(true, '');
+  };
+  transaction.onabort = () => {
+    callback(false, 'Upload project failed.');
+  };
+  const modulesObjectStore = transaction.objectStore('modules');
+
+  for (let moduleName in moduleTypes) {
+    const moduleType = moduleTypes[moduleName];
+    const moduleContent = moduleContents[moduleName];
+    const modulePath = commonStorage.makeModulePath(projectName, moduleName);
+    const getRequest = modulesObjectStore.get(modulePath);
+    getRequest.onerror = (event: Event) => {
+      console.log('IndexedDB get request failed:');
+      console.log(getRequest.error);
+      throw new Error('Unable to create module ' + modulePath
+          + '. (getRequest error)');
+    };
+    getRequest.onsuccess = (event: Event) => {
+      if (getRequest.result !== undefined) {
+        // The module already exists. That is not expected!
+        throw new Error('Unable to create module ' + modulePath + ' because the module already exists.');
+      }
+      const value = Object.create(null);
+      value.path = modulePath;
+      value.type = moduleType;
+      value.content = moduleContent;
+      value.dateModifiedMillis = Date.now();
+      const putRequest = modulesObjectStore.put(value);
+      putRequest.onerror = (event: Event) => {
+        console.log('IndexedDB put request failed:');
+        console.log(putRequest.error);
+        throw new Error('Unable to create module. (putRequest error)');
+      };
+    };
+  }
 }
