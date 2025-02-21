@@ -270,7 +270,7 @@ export const pythonFromBlock = function(
       if (setPythonVariableBlock.mrcImportModule) {
         generator.addImport(setPythonVariableBlock.mrcImportModule);
       }
-      const code = moduleName + '.' + varName + ' = ' + value + ';\n';
+      const code = moduleName + '.' + varName + ' = ' + value + '\n';
       return code;
     }
     case VAR_KIND_CLASS: {
@@ -279,13 +279,13 @@ export const pythonFromBlock = function(
       if (setPythonVariableBlock.mrcImportModule) {
         generator.addImport(setPythonVariableBlock.mrcImportModule);
       }
-      const code = className + '.' + varName + ' = ' + value + ';\n';
+      const code = className + '.' + varName + ' = ' + value + '\n';
       return code;
     }
     case VAR_KIND_INSTANCE: {
       const selfValue = generator.valueToCode(block, 'SELF', Order.MEMBER);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
-      const code = selfValue + '.' + varName + ' = ' + value + ';\n';
+      const code = selfValue + '.' + varName + ' = ' + value + '\n';
       return code;
     }
     default:
