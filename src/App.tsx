@@ -238,7 +238,7 @@ const App: React.FC = () => {
   const [alertErrorVisible, setAlertErrorVisible] = useState(false);
   const [mostRecentModulePath, setMostRecentModulePath] = useState<string | null>(null);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = useState<Set<string>>(new Set());
-  const [triggerListModules, setTriggerListModules] = useState(false);
+  const [triggerListModules, setTriggerListModules] = useState(0);
   const afterListModulesSuccess = useRef<() => void>(() => {});
   const [modules, setModules] = useState<commonStorage.Project[]>([]);
   const [treeData, setTreeData] = useState<TreeDataNode[]>([]);
@@ -250,7 +250,7 @@ const App: React.FC = () => {
   const [copyTooltip, setCopyTooltip] = useState('Copy');
   const [deleteTooltip, setDeleteTooltip] = useState('Delete');
   const blocklyComponent = useRef<BlocklyComponentType | null>(null);
-  const [triggerPythonRegeneration, setTriggerPythonRegeneration] = useState(false);
+  const [triggerPythonRegeneration, setTriggerPythonRegeneration] = useState(0);
   const blocksEditor = useRef<editor.Editor | null>(null);
   const [generatedCode, setGeneratedCode] = useState('');
   const [newProjectNameModalPurpose, setNewProjectNameModalPurpose] = useState('');
@@ -339,7 +339,7 @@ const App: React.FC = () => {
     // mostRecentModulePath hasn't been fetched yet. Try agagin in a bit.
     if (mostRecentModulePath == null) {
       setTimeout(() => {
-        setTriggerListModules(!triggerListModules);
+        setTriggerListModules(Date.now());
       }, 50);
       return;
     }
@@ -537,7 +537,7 @@ const App: React.FC = () => {
       // Don't regenerate python code mid-drag.
       return;
     }
-    setTriggerPythonRegeneration(!triggerPythonRegeneration);
+    setTriggerPythonRegeneration(Date.now());
   };
 
   const handlePopconfirmOk = () => {
@@ -603,7 +603,7 @@ const App: React.FC = () => {
               afterListModulesSuccess.current = () => {
                 setCurrentModulePath(newProjectPath);
               };
-              setTriggerListModules(!triggerListModules);
+              setTriggerListModules(Date.now());
             } else if (errorMessage) {
               setAlertErrorMessage('Failed to create a new Project: ' + errorMessage);
               setAlertErrorVisible(true);
@@ -618,7 +618,7 @@ const App: React.FC = () => {
               afterListModulesSuccess.current = () => {
                 setCurrentModulePath(newProjectPath);
               };
-              setTriggerListModules(!triggerListModules);
+              setTriggerListModules(Date.now());
             } else if (errorMessage) {
               setAlertErrorMessage('Failed to rename the Project: ' + errorMessage);
               setAlertErrorVisible(true);
@@ -633,7 +633,7 @@ const App: React.FC = () => {
               afterListModulesSuccess.current = () => {
                 setCurrentModulePath(newProjectPath);
               };
-              setTriggerListModules(!triggerListModules);
+              setTriggerListModules(Date.now());
             } else if (errorMessage) {
               setAlertErrorMessage('Failed to copy the Project: ' + errorMessage);
               setAlertErrorVisible(true);
@@ -695,7 +695,7 @@ const App: React.FC = () => {
               afterListModulesSuccess.current = () => {
                 setCurrentModulePath(newModulePath);
               };
-              setTriggerListModules(!triggerListModules);
+              setTriggerListModules(Date.now());
             } else if (errorMessage) {
               setAlertErrorMessage('Failed to create a new Mechanism: ' + errorMessage);
               setAlertErrorVisible(true);
@@ -710,7 +710,7 @@ const App: React.FC = () => {
               afterListModulesSuccess.current = () => {
                 setCurrentModulePath(newModulePath);
               };
-              setTriggerListModules(!triggerListModules);
+              setTriggerListModules(Date.now());
             } else if (errorMessage) {
               setAlertErrorMessage('Failed to create a new OpMode: ' + errorMessage);
               setAlertErrorVisible(true);
@@ -725,7 +725,7 @@ const App: React.FC = () => {
               afterListModulesSuccess.current = () => {
                 setCurrentModulePath(newModulePath);
               };
-              setTriggerListModules(!triggerListModules);
+              setTriggerListModules(Date.now());
             } else if (errorMessage) {
               setAlertErrorMessage('Failed to rename the module: ' + errorMessage);
               setAlertErrorVisible(true);
@@ -740,7 +740,7 @@ const App: React.FC = () => {
               afterListModulesSuccess.current = () => {
                 setCurrentModulePath(newModulePath);
               };
-              setTriggerListModules(!triggerListModules);
+              setTriggerListModules(Date.now());
             } else if (errorMessage) {
               setAlertErrorMessage('Failed to copy the module: ' + errorMessage);
               setAlertErrorVisible(true);
@@ -864,7 +864,7 @@ const App: React.FC = () => {
           storage.deleteModule(moduleTypeToDelete, modulePathToDelete,
             (success: boolean, errorMessage: string) => {
               if (success) {
-                setTriggerListModules(!triggerListModules);
+                setTriggerListModules(Date.now());
               } else if (errorMessage) {
                 setAlertErrorMessage('Failed to delete the Project: ' + errorMessage);
                 setAlertErrorVisible(true);
@@ -882,7 +882,7 @@ const App: React.FC = () => {
           storage.deleteModule(moduleTypeToDelete, modulePathToDelete,
             (success: boolean, errorMessage: string) => {
               if (success) {
-                setTriggerListModules(!triggerListModules);
+                setTriggerListModules(Date.now());
               } else if (errorMessage) {
                 setAlertErrorMessage('Failed to delete the module: ' + errorMessage);
                 setAlertErrorVisible(true);
