@@ -399,7 +399,7 @@ export const pythonFromBlock = function (
         '):\n';
     
     if(block.mrcPythonMethodName == '__init__'){
-        code +=  generator.INDENT + "self.mechanisms = [];\n"
+        code +=  generator.INDENT + "self.mechanisms = []\n";
 
     }    
 

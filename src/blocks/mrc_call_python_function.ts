@@ -306,7 +306,7 @@ export const pythonFromBlock = function(
   if (block.outputConnection) {
     return [code, Order.FUNCTION_CALL];
   } else {
-    return code + ';\n';
+    return code; + '\n';
   }
 };
 
