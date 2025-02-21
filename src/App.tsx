@@ -14,10 +14,12 @@ import {
   Tooltip,
   Tree,
   Typography,
-  theme
+  theme,
+  Upload
 } from 'antd';
 import type { InputRef } from 'antd';
 import type { TreeDataNode, TreeProps } from 'antd';
+import type { UploadProps } from 'antd';
 import {
   AppstoreAddOutlined as MechanismAddOutlined,
   AppstoreOutlined as MechanismOutlined,
@@ -348,7 +350,7 @@ const App: React.FC = () => {
       if (errorMessage) {
         setAlertErrorMessage('Unable to load the list of modules: ' + errorMessage);
         setAlertErrorVisible(true);
-        return
+        return;
       }
       if (array != null) {
         setModules(array)
@@ -894,17 +896,65 @@ const App: React.FC = () => {
     setOpenPopconfirm(true);
   };
 
-  const handleUploadClicked = () => {
-    messageApi.open({
-      type: 'success',
-      content: 'Not implemented yet .',
-    });
+  const uploadProps: UploadProps = {
+    accept: commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION,
+    beforeUpload: (file) => {
+      const isBlocks = file.name.endsWith(commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION)
+      if (!isBlocks) {
+        setAlertErrorMessage(file.name + ' is not a blocks file');
+        setAlertErrorVisible(true);
+        return false;
+      }
+      return isBlocks || Upload.LIST_IGNORE;
+    },
+    onChange: (info) => {
+    },
+    customRequest: ({ file, onSuccess, onError }) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        const uploadProjectName = commonStorage.makeUploadProjectName(file.name, getProjectNames());
+        storage.uploadProject(
+            uploadProjectName, dataUrl,
+            (success: boolean, errorMessage: string) => {
+              if (success) {
+                onSuccess('Upload successful');
+                afterListModulesSuccess.current = () => {
+                  const uploadProjectPath = commonStorage.makeProjectPath(uploadProjectName);
+                  setCurrentModulePath(uploadProjectPath);
+                };
+                setTriggerListModules(!triggerListModules);
+              } else {
+                onError(errorMessage);
+                setAlertErrorMessage('Unable to upload the project');
+                setAlertErrorVisible(true);
+              }
+            });
+      };
+      reader.onerror = (error) => {
+        onError(error);
+        setAlertErrorMessage('Unable to upload the project');
+        setAlertErrorVisible(true);
+      };
+      reader.readAsDataURL(file);
+    },
   };
 
   const handleDownloadClicked = () => {
-    messageApi.open({
-      type: 'success',
-      content: 'Not implemented yet .',
+    checkIfBlocksWereModified(() => {
+      storage.downloadProject(
+          currentModule.projectName,
+          (url: string | null, errorMessage: string) => {
+            if (errorMessage) {
+              setAlertErrorMessage('Unable to download the project: ' + errorMessage);
+              setAlertErrorVisible(true);
+              return;
+            }
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = currentModule.projectName + commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+            link.click();
+          });
     });
   };
 
@@ -1083,16 +1133,20 @@ const App: React.FC = () => {
                     >
                     </Button>
                   </Tooltip>
-                  <Tooltip title="Upload">
-                    <Button
-                      icon={<UploadOutlined />}
-                      size="small"
-                      onClick={handleUploadClicked}
-                      style={{ color: 'white' }}
+                  <Tooltip title="Upload Project">
+                    <Upload
+                      {...uploadProps}
+                      showUploadList={false}
                     >
-                    </Button>
+                      <Button
+                        icon={<UploadOutlined />}
+                        size="small"
+                        style={{ color: 'white' }}
+                      >
+                      </Button>
+                    </Upload>
                   </Tooltip>
-                  <Tooltip title="Download">
+                  <Tooltip title="Download Project">
                     <Button
                       icon={<DownloadOutlined />}
                       size="small"
