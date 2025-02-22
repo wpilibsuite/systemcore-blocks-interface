@@ -241,8 +241,6 @@ const App: React.FC = () => {
   const [storage, setStorage] = useState<commonStorage.Storage | null>(null);
   const [mostRecentModulePath, setMostRecentModulePath] = useState<string | null>(null);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = useState<Set<string>>(new Set());
-  const [triggerListModules, setTriggerListModules] = useState(0);
-  const afterListModulesSuccess = useRef<() => void>(() => {});
   const [modules, setModules] = useState<commonStorage.Project[]>([]);
   const [treeData, setTreeData] = useState<TreeDataNode[]>([]);
   const [treeExpandedKeys, setTreeExpandedKeys] = useState<React.Key[]>([]);
@@ -327,6 +325,7 @@ const App: React.FC = () => {
     }
     fetchMostRecentModulePath();
     initializeShownPythonToolboxCategories();
+    initializeModules();
   }, [storage]);
 
   const fetchMostRecentModulePath = async () => {
@@ -350,42 +349,30 @@ const App: React.FC = () => {
     }
   };
 
-  // Fetch the list of modules from storage.
-  useEffect(() => {
-    if (ignoreEffect()) {
-      return;
+  const initializeModules = async () => {
+    const array = await fetchListOfModules();
+    if (array.length === 0) {
+       setNewProjectNameModalPurpose(PURPOSE_NEW_PROJECT);
+       setNewProjectNameModalInitialValue('');
+       setNewProjectNameModalTitle('Welcome to WPILib Blocks!');
+       setNewProjectNameModalIsOpen(true);
     }
-    // mostRecentModulePath hasn't been fetched yet. Try again in a bit.
-    if (mostRecentModulePath == null) {
-      setTimeout(() => {
-        setTriggerListModules(Date.now());
-      }, 50);
-      return;
-    }
+  };
 
-    fetchListOfModules();
-  }, [triggerListModules]);
-
-  const fetchListOfModules = async () => {
-    try {
-      const array = await storage.listModules();
-      setModules(array)
-      const callback = afterListModulesSuccess.current;
-      afterListModulesSuccess.current = () => {};
-      callback();
-
-      if (array.length === 0) {
-        setNewProjectNameModalPurpose(PURPOSE_NEW_PROJECT);
-        setNewProjectNameModalInitialValue('');
-        setNewProjectNameModalTitle('Welcome to WPILib Blocks!');
-        setNewProjectNameModalIsOpen(true);
+  const fetchListOfModules = async (): Promise<commonStorage.Project[]> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const array = await storage.listModules();
+        setModules(array)
+        resolve(array);
+      } catch (e) {
+        console.log('Failed to load the list of modules. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to load the list of modules.');
+        setAlertErrorVisible(true);
+        reject(new Error('Failed to load the list of modules.'));
       }
-    } catch (e) {
-      console.log('Failed to load the list of modules. Caught the following error...');
-      console.log(e);
-      setAlertErrorMessage('Failed to load the list of modules.');
-      setAlertErrorVisible(true);
-    }
+    });
   };
 
   // When the list of modules is set, update the treeData and treeExpandedKeys.
@@ -621,10 +608,8 @@ const App: React.FC = () => {
       try {
         await storage.createModule(
             commonStorage.MODULE_TYPE_PROJECT, newProjectPath, projectContent);
-        afterListModulesSuccess.current = () => {
-          setCurrentModulePath(newProjectPath);
-        };
-        setTriggerListModules(Date.now());
+        await fetchListOfModules();
+        setCurrentModulePath(newProjectPath);
       } catch (e) {
         console.log('Failed to create a new project. Caught the following error...');
         console.log(e);
@@ -636,10 +621,8 @@ const App: React.FC = () => {
         await storage.renameModule(
             currentModule.moduleType, currentModule.projectName,
             currentModule.moduleName, newProjectName);
-        afterListModulesSuccess.current = () => {
-          setCurrentModulePath(newProjectPath);
-        };
-        setTriggerListModules(Date.now());
+        await fetchListOfModules();
+        setCurrentModulePath(newProjectPath);
       } catch (e) {
         console.log('Failed to rename the project. Caught the following error...');
         console.log(e);
@@ -651,10 +634,8 @@ const App: React.FC = () => {
         await storage.copyModule(
           currentModule.moduleType, currentModule.projectName,
           currentModule.moduleName, newProjectName);
-        afterListModulesSuccess.current = () => {
-          setCurrentModulePath(newProjectPath);
-        };
-        setTriggerListModules(Date.now());
+        await fetchListOfModules();
+        setCurrentModulePath(newProjectPath);
       } catch (e) {
         console.log('Failed to copy the project. Caught the following error...');
         console.log(e);
@@ -714,10 +695,8 @@ const App: React.FC = () => {
       try {
         await storage.createModule(
             commonStorage.MODULE_TYPE_MECHANISM, newModulePath, mechanismContent);
-        afterListModulesSuccess.current = () => {
-          setCurrentModulePath(newModulePath);
-        };
-        setTriggerListModules(Date.now());
+        await fetchListOfModules();
+        setCurrentModulePath(newModulePath);
       } catch (e) {
         console.log('Failed to create a new mechanism. Caught the following error...');
         console.log(e);
@@ -729,10 +708,8 @@ const App: React.FC = () => {
       try {
         await storage.createModule(
             commonStorage.MODULE_TYPE_OPMODE, newModulePath, opModeContent);
-        afterListModulesSuccess.current = () => {
-          setCurrentModulePath(newModulePath);
-        };
-        setTriggerListModules(Date.now());
+        await fetchListOfModules();
+        setCurrentModulePath(newModulePath);
       } catch (e) {
         console.log('Failed to create a new OpMode. Caught the following error...');
         console.log(e);
@@ -744,10 +721,8 @@ const App: React.FC = () => {
         await storage.renameModule(
             currentModule.moduleType, currentModule.projectName,
             currentModule.moduleName, newModuleName);
-        afterListModulesSuccess.current = () => {
-          setCurrentModulePath(newModulePath);
-        };
-        setTriggerListModules(Date.now());
+        await fetchListOfModules();
+        setCurrentModulePath(newModulePath);
       } catch (e) {
         console.log('Failed to rename the module. Caught the following error...');
         console.log(e);
@@ -759,10 +734,8 @@ const App: React.FC = () => {
         await storage.copyModule(
             currentModule.moduleType, currentModule.projectName,
             currentModule.moduleName, newModuleName);
-        afterListModulesSuccess.current = () => {
-          setCurrentModulePath(newModulePath);
-        };
-        setTriggerListModules(Date.now());
+        await fetchListOfModules();
+        setCurrentModulePath(newModulePath);
       } catch (e) {
         console.log('Failed to copy the module. Caught the following error...');
         console.log(e);
@@ -888,7 +861,7 @@ const App: React.FC = () => {
           }
           try {
             await storage.deleteModule(moduleTypeToDelete, modulePathToDelete);
-            setTriggerListModules(Date.now());
+            await fetchListOfModules();
           } catch (e) {
             console.log('Failed to delete the project. Caught the following error...');
             console.log(e);
@@ -906,7 +879,7 @@ const App: React.FC = () => {
           setCurrentModulePath(projectPath);
           try {
             await storage.deleteModule(moduleTypeToDelete, modulePathToDelete);
-            setTriggerListModules(Date.now());
+            await fetchListOfModules();
           } catch (e) {
             console.log('Failed to delete the module. Caught the following error...');
             console.log(e);
@@ -940,11 +913,9 @@ const App: React.FC = () => {
         try {
           await storage.uploadProject(uploadProjectName, dataUrl);
           onSuccess('Upload successful');
-          afterListModulesSuccess.current = () => {
-            const uploadProjectPath = commonStorage.makeProjectPath(uploadProjectName);
-            setCurrentModulePath(uploadProjectPath);
-          };
-          setTriggerListModules(Date.now());
+          await fetchListOfModules();
+          const uploadProjectPath = commonStorage.makeProjectPath(uploadProjectName);
+          setCurrentModulePath(uploadProjectPath);
         } catch (e) {
           console.log('Failed to upload the project. Caught the following error...');
           console.log(e);
