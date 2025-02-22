@@ -190,6 +190,15 @@ export class Editor {
   }
 
   public isModified(): boolean {
+    /*
+    // This code is helpful for debugging issues where the editor says
+    // 'Blocks have been modified!'.
+    if (this.getModuleContent() !== this.moduleContent) {
+      console.log('isModified will return true');
+      console.log('this.getModuleContent() is ' + this.getModuleContent());
+      console.log('this.moduleContent is ' + this.moduleContent);
+    }
+    */
     return this.getModuleContent() !== this.moduleContent;
   }
 
