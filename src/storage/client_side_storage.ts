@@ -680,6 +680,7 @@ export async function uploadProject(projectName: string, blobUrl: string, callba
         projectName, blobUrl);
   } catch (e) {
     callback(false, 'Upload project failed. (' + e + ')');
+    return;
   }
 
   // Save each module.
