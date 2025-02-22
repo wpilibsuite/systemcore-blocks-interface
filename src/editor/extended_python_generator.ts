@@ -31,6 +31,8 @@ import * as commonStorage from '../storage/common_storage';
 export class ExtendedPythonGenerator extends PythonGenerator {
   private currentModule: commonStorage.Module | null = null;
   private mapWorkspaceIdToExportedBlocks: { [key: string]: Block[] } = Object.create(null);
+  protected methods_: {[key: string]: string} = Object.create(null);
+
 
   constructor() {
     super('Python');
@@ -159,7 +161,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.definitions_['import_' + importModule] = 'import ' + importModule;
   }
   addMethod(methodName: string, code : string): void {
-    this.definitions_['%' + methodName] = code;
+    this.methods_[methodName] = code;
   }
 
   classParentFromModuleType(moduleType : string) : string{
@@ -189,19 +191,24 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     // Convert the definitions dictionary into a list.
     const imports = [];
     const definitions = [];
-    const methods = [];
+
     for (let name in this.definitions_) {
       const def = this.definitions_[name];
       if (def.match(/^(from\s+\S+\s+)?import\s+\S+/)) {
         imports.push(def);
-      } else if (name.match(/^%.*/)){
-        methods.push(def);
       } else{
         definitions.push(def);
       }
     }
+    const methods = [];
+    for (let name in this.methods_){
+      methods.push(this.methods_[name])
+    }
+
     this.definitions_ = Object.create(null);
     this.functionNames_ = Object.create(null);
+    this.methods_ = Object.create(null);
+    
     this.isInitialized = false;
 
     let class_def = "class " + className + "(" + classParent + "):\n";
