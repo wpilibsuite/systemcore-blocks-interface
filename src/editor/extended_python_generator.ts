@@ -158,6 +158,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   addImport(importModule: string): void {
     this.definitions_['import_' + importModule] = 'import ' + importModule;
   }
+  addMethod(methodName: string, code : string): void {
+    this.definitions_['%' + methodName] = code;
+  }
 
   classParentFromModuleType(moduleType : string) : string{
     if(moduleType == commonStorage.MODULE_TYPE_PROJECT){
@@ -186,31 +189,27 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     // Convert the definitions dictionary into a list.
     const imports = [];
     const definitions = [];
+    const methods = [];
     for (let name in this.definitions_) {
       const def = this.definitions_[name];
       if (def.match(/^(from\s+\S+\s+)?import\s+\S+/)) {
         imports.push(def);
-      } else {
+      } else if (name.match(/^%.*/)){
+        methods.push(def);
+      } else{
         definitions.push(def);
       }
     }
-    // Call Blockly.CodeGenerator's finish.  This is required to be done this way
-    // because we derive from PythonGenerator which dervies from CodeGenerator
-    // This section except for the class_def part is all copied from Blockly's
-    // PythonGenerator.  It can't be derived because it needs the class insertion
-    // in the middle.
-    code = Blockly.CodeGenerator.prototype.finish(code);
+    this.definitions_ = Object.create(null);
+    this.functionNames_ = Object.create(null);
     this.isInitialized = false;
 
     let class_def = "class " + className + "(" + classParent + "):\n";
-    if (!code) {
-      code = "pass";
-    }
 
     this.nameDB_!.reset();
     const allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
     return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + class_def + 
-            this.prefixLines(code, this.INDENT);
+            this.prefixLines(methods.join('\n\n'), this.INDENT);
   }
 }
 
