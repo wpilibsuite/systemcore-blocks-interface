@@ -22,7 +22,6 @@
 import * as Blockly from 'blockly/core';
 
 import { extendedPythonGenerator } from './extended_python_generator';
-import * as storage from '../storage/client_side_storage';
 import * as commonStorage from '../storage/common_storage';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
@@ -34,6 +33,7 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
 
 export class Editor {
   private blocklyWorkspace: Blockly.WorkspaceSvg;
+  private storage: commonStorage.Storage;
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
   private projectPath: string = '';
@@ -42,8 +42,9 @@ export class Editor {
   private bindedOnChange: any = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
+  constructor(blocklyWorkspace: Blockly.WorkspaceSvg, storage: commonStorage.Storage) {
     this.blocklyWorkspace = blocklyWorkspace;
+    this.storage = storage;
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -102,7 +103,7 @@ export class Editor {
     // TODO(lizlooney): do we need to do anything here?
   }
 
-  public loadModuleBlocks(currentModule: commonStorage.Module | null) {
+  public async loadModuleBlocks(currentModule: commonStorage.Module | null) {
     this.currentModule = currentModule;
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
@@ -116,47 +117,26 @@ export class Editor {
     this.clearBlocklyWorkspace();
 
     if (currentModule) {
-      storage.fetchModuleContent(
-        this.modulePath,
-        (moduleContent: string | null, errorMessage: string) => {
-          if (errorMessage) {
-            alert(errorMessage);
-            return;
-          }
-          if (moduleContent) {
-            this.moduleContent = moduleContent;
-            if (this.projectPath === this.modulePath) {
-              this.projectContent = moduleContent
-            }
-
-            // If both the project content and the module content have been
-            // loaded, load the blocks into the blockly workspace.
-            if (this.projectContent) {
-              this.loadBlocksIntoBlocklyWorkspace();
-            }
-          }
-        }
-      );
+      const promises: {[key: string]: Promise<string>} = {}; // key is module path, value is promise of module content.
+      promises[this.modulePath] = this.storage.fetchModuleContent(this.modulePath);
       if (this.projectPath !== this.modulePath) {
-        storage.fetchModuleContent(
-          this.projectPath,
-          (projectContent: string | null, errorMessage: string) => {
-            if (errorMessage) {
-              alert(errorMessage);
-              return;
-            }
-            if (projectContent) {
-              this.projectContent = projectContent;
-
-              // If both the project and the module have been loaded, load the
-              // blocks into the blockly workspace.
-              if (this.moduleContent) {
-                this.loadBlocksIntoBlocklyWorkspace();
-              }
-            }
-          }
-        );
+        // Also fetch the project module content. It contains exported blocks that can be used.
+        promises[this.projectPath] = this.storage.fetchModuleContent(this.projectPath)
       }
+
+      const moduleContents: {[key: string]: string} = {}; // key is module path, value is module content
+      await Promise.all(
+        Object.entries(promises).map(async ([modulePath, promise]) => {
+          moduleContents[modulePath] = await promise;
+        })
+      );
+      this.moduleContent = moduleContents[this.modulePath];
+      if (this.projectPath === this.modulePath) {
+        this.projectContent = this.moduleContent
+      } else {
+        this.projectContent = moduleContents[this.projectPath];
+      }
+      this.loadBlocksIntoBlocklyWorkspace();
     }
   }
 
@@ -221,13 +201,13 @@ export class Editor {
     return commonStorage.makeModuleContent(this.currentModule, pythonCode, exportedBlocks, blocksContent);
   }
 
-  public saveModule(callback: storage.BooleanCallback): void {
+  public async saveBlocks(): void {
     const moduleContent = this.getModuleContent();
-    storage.saveModule(this.modulePath, moduleContent, (success, errorMessage) => {
-      if (success) {
-        this.moduleContent = moduleContent;
-      }
-      callback(success, errorMessage);
-    });
+    try {
+      await this.storage.saveModule(this.modulePath, moduleContent);
+      this.moduleContent = moduleContent;
+    } catch (e: Error) {
+      throw e;
+    }
   }
 }
