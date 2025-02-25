@@ -37,6 +37,7 @@ const FUNCTION_KIND_MODULE = 'module';
 const FUNCTION_KIND_STATIC = 'static';
 const FUNCTION_KIND_CONSTRUCTOR = 'constructor';
 const FUNCTION_KIND_INSTANCE = 'instance';
+const FUNCTION_KIND_INSTANCE_WITHIN = 'instance_within';
 
 const RETURN_TYPE_NONE = 'None';
 
@@ -125,6 +126,11 @@ const CALL_PYTHON_FUNCTION = {
           const className = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
           const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
           tooltip = 'Calls the function ' + className + '.' + functionName + '.';
+          break;
+        }
+        case FUNCTION_KIND_INSTANCE_WITHIN: {
+          const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          tooltip = 'Calls the method ' + functionName + '.';
           break;
         }
         default:
@@ -238,6 +244,11 @@ const CALL_PYTHON_FUNCTION = {
             .appendField('.')
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
         break;
+      case FUNCTION_KIND_INSTANCE_WITHIN:
+        this.appendDummyInput()
+            .appendField('call')
+            .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
+        break;
       default:
         throw new Error('mrcVarKind must be "module", "static", "constructor", or "instance".')
     }
@@ -299,6 +310,14 @@ export const pythonFromBlock = function(
           : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
       code = selfValue + '.' + functionName;
       argStartIndex = 1; // Skip the self argument.
+      break;
+    }
+    case FUNCTION_KIND_INSTANCE_WITHIN: {
+      const callPythonFunctionBlock = block as CallPythonFunctionBlock;
+      const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
+          ? callPythonFunctionBlock.mrcActualFunctionName
+          : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+      code = 'self.' + functionName;
       break;
     }
   }
