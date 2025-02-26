@@ -10,6 +10,8 @@
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
+                    "canBeCalledWithinClass": false,
+                    "canBeCalledOutsideClass": false,
                     "returnType": "None",
                     "params": [],
                     "pythonMethodName": "__init__"
@@ -26,6 +28,8 @@
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
+                    "canBeCalledWithinClass": false,
+                    "canBeCalledOutsideClass": false,
                     "returnType": "None",
                     "params": []
                 },
