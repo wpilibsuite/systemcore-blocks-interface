@@ -33,11 +33,13 @@ import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 
 export const BLOCK_NAME = 'mrc_call_python_function';
 
-const FUNCTION_KIND_MODULE = 'module';
-const FUNCTION_KIND_STATIC = 'static';
-const FUNCTION_KIND_CONSTRUCTOR = 'constructor';
-const FUNCTION_KIND_INSTANCE = 'instance';
-const FUNCTION_KIND_INSTANCE_WITHIN = 'instance_within';
+enum FunctionKind {
+  MODULE = 'module',
+  STATIC = 'static',
+  CONSTRUCTOR = 'constructor',
+  INSTANCE = 'instance',
+  INSTANCE_WITHIN = 'instance_within',
+}
 
 const RETURN_TYPE_NONE = 'None';
 
@@ -48,7 +50,7 @@ export type FunctionArg = {
 
 type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin;
 interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
-  mrcFunctionKind: string, // module, static, constructor, instance, or instance_within.
+  mrcFunctionKind: FunctionKind,
   mrcReturnType: string,
   mrcArgs: FunctionArg[],
   mrcTooltip: string,
@@ -61,7 +63,7 @@ type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
 /** Extra state for serialising call_python_* blocks. */
 type CallPythonFunctionExtraState = {
   /**
-   * The kind of function: module, static, constructor, instance, or instance_within.
+   * The kind of function. Must be one of the FunctionKind enum values as a string.
    */
   functionKind: string,
   /**
@@ -105,36 +107,36 @@ const CALL_PYTHON_FUNCTION = {
     this.setTooltip(() => {
       let tooltip: string;
       switch (this.mrcFunctionKind) {
-        case FUNCTION_KIND_MODULE: {
+        case FunctionKind.MODULE: {
           const moduleName = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
           const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
           tooltip = 'Calls the function ' + moduleName + '.' + functionName + '.';
           break;
         }
-        case FUNCTION_KIND_STATIC: {
+        case FunctionKind.STATIC: {
           const className = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
           const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
           tooltip = 'Calls the function ' + className + '.' + functionName + '.';
           break;
         }
-        case FUNCTION_KIND_CONSTRUCTOR: {
+        case FunctionKind.CONSTRUCTOR: {
           const className = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
           tooltip = 'Constructs an instance of the class ' + className + '.';
           break;
         }
-        case FUNCTION_KIND_INSTANCE: {
+        case FunctionKind.INSTANCE: {
           const className = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
           const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
           tooltip = 'Calls the function ' + className + '.' + functionName + '.';
           break;
         }
-        case FUNCTION_KIND_INSTANCE_WITHIN: {
+        case FunctionKind.INSTANCE_WITHIN: {
           const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
           tooltip = 'Calls the method ' + functionName + '.';
           break;
         }
         default:
-          throw new Error('mrcVarKind must be "module", "static", "constructor", "instance", or "instance_within".')
+          throw new Error('mrcFunctionKind has unexpected value: ' + mrcFunctionKind)
       }
       const funcTooltip = this.mrcTooltip;
       if (funcTooltip) {
@@ -178,7 +180,7 @@ const CALL_PYTHON_FUNCTION = {
       this: CallPythonFunctionBlock,
       extraState: CallPythonFunctionExtraState
   ): void {
-    this.mrcFunctionKind = extraState.functionKind;
+    this.mrcFunctionKind = extraState.functionKind as FunctionKind;
     this.mrcReturnType = extraState.returnType;
     this.mrcArgs = [];
     extraState.args.forEach((arg) => {
@@ -218,39 +220,39 @@ const CALL_PYTHON_FUNCTION = {
     }
     // Add the dummy input.
     switch (this.mrcFunctionKind) {
-      case FUNCTION_KIND_MODULE:
+      case FunctionKind.MODULE:
         this.appendDummyInput()
             .appendField('call')
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
             .appendField('.')
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
         break;
-      case FUNCTION_KIND_STATIC:
+      case FunctionKind.STATIC:
         this.appendDummyInput()
             .appendField('call')
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
             .appendField('.')
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
         break;
-      case FUNCTION_KIND_CONSTRUCTOR:
+      case FunctionKind.CONSTRUCTOR:
         this.appendDummyInput()
             .appendField('create')
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
         break;
-      case FUNCTION_KIND_INSTANCE:
+      case FunctionKind.INSTANCE:
         this.appendDummyInput()
             .appendField('call')
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
             .appendField('.')
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
         break;
-      case FUNCTION_KIND_INSTANCE_WITHIN:
+      case FunctionKind.INSTANCE_WITHIN:
         this.appendDummyInput()
             .appendField('call')
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
         break;
       default:
-        throw new Error('mrcVarKind must be "module", "static", "constructor", "instance", or "instance_within".')
+        throw new Error('mrcFunctionKind has unexpected value: ' + mrcFunctionKind)
     }
     // Add input sockets for the arguments.
     for (let i = 0; i < this.mrcArgs.length; i++) {
@@ -279,7 +281,7 @@ export const pythonFromBlock = function(
   let code;
   let argStartIndex = 0;
   switch (callPythonFunctionBlock.mrcFunctionKind) {
-    case FUNCTION_KIND_MODULE: {
+    case FunctionKind.MODULE: {
       const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
       const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
           ? callPythonFunctionBlock.mrcActualFunctionName
@@ -287,7 +289,7 @@ export const pythonFromBlock = function(
       code = moduleName + '.' + functionName;
       break;
     }
-    case FUNCTION_KIND_STATIC: {
+    case FunctionKind.STATIC: {
       const callPythonFunctionBlock = block as CallPythonFunctionBlock;
       const className = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
       const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
@@ -296,13 +298,13 @@ export const pythonFromBlock = function(
       code = className + '.' + functionName;
       break;
     }
-    case FUNCTION_KIND_CONSTRUCTOR: {
+    case FunctionKind.CONSTRUCTOR: {
       const callPythonFunctionBlock = block as CallPythonFunctionBlock;
       const className = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
       code = className;
       break;
     }
-    case FUNCTION_KIND_INSTANCE: {
+    case FunctionKind.INSTANCE: {
       const callPythonFunctionBlock = block as CallPythonFunctionBlock;
       const selfValue = generator.valueToCode(block, 'ARG0', Order.MEMBER);
       const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
@@ -312,7 +314,7 @@ export const pythonFromBlock = function(
       argStartIndex = 1; // Skip the self argument.
       break;
     }
-    case FUNCTION_KIND_INSTANCE_WITHIN: {
+    case FunctionKind.INSTANCE_WITHIN: {
       const callPythonFunctionBlock = block as CallPythonFunctionBlock;
       const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
           ? callPythonFunctionBlock.mrcActualFunctionName
@@ -321,7 +323,7 @@ export const pythonFromBlock = function(
       break;
     }
     default:
-      throw new Error('mrcVarKind must be "module", "static", "constructor", "instance", or "instance_within".')
+      throw new Error('mrcFunctionKind has unexpected value: ' + mrcFunctionKind)
   }
   code += '(' + generateCodeForArguments(callPythonFunctionBlock, generator, argStartIndex) + ')';
   if (block.outputConnection) {
