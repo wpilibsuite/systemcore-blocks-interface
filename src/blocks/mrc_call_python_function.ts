@@ -48,7 +48,7 @@ export type FunctionArg = {
 
 type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin;
 interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
-  mrcFunctionKind: string, // module, static, constructor, or instance
+  mrcFunctionKind: string, // module, static, constructor, instance, or instance_within.
   mrcReturnType: string,
   mrcArgs: FunctionArg[],
   mrcTooltip: string,
@@ -61,7 +61,7 @@ type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
 /** Extra state for serialising call_python_* blocks. */
 type CallPythonFunctionExtraState = {
   /**
-   * The kind of function: module, static, constructor, or instance.
+   * The kind of function: module, static, constructor, instance, or instance_within.
    */
   functionKind: string,
   /**
@@ -134,7 +134,7 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         default:
-          throw new Error('mrcVarKind must be "module", "static", "constructor", or "instance".')
+          throw new Error('mrcVarKind must be "module", "static", "constructor", "instance", or "instance_within".')
       }
       const funcTooltip = this.mrcTooltip;
       if (funcTooltip) {
@@ -250,7 +250,7 @@ const CALL_PYTHON_FUNCTION = {
             .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
         break;
       default:
-        throw new Error('mrcVarKind must be "module", "static", "constructor", or "instance".')
+        throw new Error('mrcVarKind must be "module", "static", "constructor", "instance", or "instance_within".')
     }
     // Add input sockets for the arguments.
     for (let i = 0; i < this.mrcArgs.length; i++) {
@@ -320,6 +320,8 @@ export const pythonFromBlock = function(
       code = 'self.' + functionName;
       break;
     }
+    default:
+      throw new Error('mrcVarKind must be "module", "static", "constructor", "instance", or "instance_within".')
   }
   code += '(' + generateCodeForArguments(callPythonFunctionBlock, generator, argStartIndex) + ')';
   if (block.outputConnection) {
