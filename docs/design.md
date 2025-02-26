@@ -19,12 +19,16 @@
 ## OpModes
 * An OpMode can be either Autonomous or Teleop
 * An OpMode can be marked as Disabled or Enabled
-* An OpMode has access to the Robot class
+* An OpMode has access to a singleton instance of the Robot class
 ## Robot
 * There should be one robot class that is shared between all OpModes
 * A robot has zero or more mechanisms 
+* A Robot has zero or more components
+
 ## Mechanisms
-* Every actuator is a mechanism
-* Every sensor is a mechanism
-* A mechansim can be created by the student and can have zero or more submechanisms
+* A mechansim can be created by the student and can have zero or more submechanisms and zero or more components
 * Example:  A claw could have a servo (to open and close) and a range sensor (to determine when something is in the claw)
+
+## Components
+* Every actuator is a component
+* Every sensor is a component
