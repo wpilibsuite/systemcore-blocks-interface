@@ -55,7 +55,7 @@ import * as toolbox from './toolbox/toolbox';
 //import { testAllBlocksInToolbox } from './toolbox/toolbox_tests';
 import ToolboxSettingsModal from './toolbox/settings';
 
-import * as storage from './storage/client_side_storage';
+import * as clientSideStorage from './storage/client_side_storage';
 import * as commonStorage from './storage/common_storage';
 
 import * as ChangeFramework from './blocks/utils/change_framework'
@@ -238,10 +238,9 @@ const App: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [alertErrorMessage, setAlertErrorMessage] = useState('');
   const [alertErrorVisible, setAlertErrorVisible] = useState(false);
+  const [storage, setStorage] = useState<commonStorage.Storage | null>(null);
   const [mostRecentModulePath, setMostRecentModulePath] = useState<string | null>(null);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = useState<Set<string>>(new Set());
-  const [triggerListModules, setTriggerListModules] = useState(0);
-  const afterListModulesSuccess = useRef<() => void>(() => {});
   const [modules, setModules] = useState<commonStorage.Project[]>([]);
   const [treeData, setTreeData] = useState<TreeDataNode[]>([]);
   const [treeExpandedKeys, setTreeExpandedKeys] = useState<React.Key[]>([]);
@@ -286,42 +285,26 @@ const App: React.FC = () => {
     return false;
   }
 
-  // When the app is loaded, initialize the blocks we provide.
+  // When the app is loaded, open storage and initialize the blocks we provide.
   useEffect(() => {
     renderCounter.current = renderCounter.current + 1;
-
     if (ignoreEffect()) {
       return;
     }
 
-    fetchMostRecentModulePath();
-    initializeShownPythonToolboxCategories();
+    openStorage();
     initializeBlocks();
     //testAllBlocksInToolbox(toolbox.getToolboxJSON([], []).contents);
   }, []);
 
-  const fetchMostRecentModulePath = () => {
-    storage.fetchEntry(
-        'mostRecentModulePath', '',
-        (value: string | null, errorMessage: string) => {
-      if (value) {
-        setMostRecentModulePath(value);
-      } else {
-        // There is no most recent module path.
-        setMostRecentModulePath('');
-      }
-    });
-  };
-
-  const initializeShownPythonToolboxCategories = () => {
-    storage.fetchEntry(
-        'shownPythonToolboxCategories', '[]',
-        (value: string | null, errorMessage: string) => {
-      if (value) {
-        const shownCategories: string[] = JSON.parse(value);
-        setShownPythonToolboxCategories(new Set(shownCategories));
-      }
-    });
+  const openStorage = async () => {
+    try {
+      const c = await clientSideStorage.openClientSideStorage();
+      setStorage(c);
+    } catch (e) {
+      console.log('Failed to open client side storage. Caught the following error...');
+      console.log(e);
+    }
   };
 
   const initializeBlocks = () => {
@@ -333,40 +316,64 @@ const App: React.FC = () => {
     initializeGeneratedBlocks();
   };
 
-  // Fetch the list of modules from storage.
   useEffect(() => {
     if (ignoreEffect()) {
       return;
     }
-    // mostRecentModulePath hasn't been fetched yet. Try agagin in a bit.
-    if (mostRecentModulePath == null) {
-      setTimeout(() => {
-        setTriggerListModules(Date.now());
-      }, 50);
+    if (!storage) {
       return;
     }
+    fetchMostRecentModulePath();
+    initializeShownPythonToolboxCategories();
+    initializeModules();
+  }, [storage]);
 
-    storage.listModules((array: commonStorage.Project[] | null, errorMessage: string) => {
-      if (errorMessage) {
-        setAlertErrorMessage('Unable to load the list of modules: ' + errorMessage);
-        setAlertErrorVisible(true);
-        return;
-      }
-      if (array != null) {
+  const fetchMostRecentModulePath = async () => {
+    try {
+      const value = await storage.fetchEntry('mostRecentModulePath', '');
+      setMostRecentModulePath(value);
+    } catch (e) {
+      console.log('Failed to fetch mostRecentModulePath. Caught the following error...');
+      console.log(e);
+    }
+  };
+
+  const initializeShownPythonToolboxCategories = async () => {
+    try {
+      const value = await storage.fetchEntry('shownPythonToolboxCategories', '[]');
+      const shownCategories: string[] = JSON.parse(value);
+      setShownPythonToolboxCategories(new Set(shownCategories));
+    } catch (e) {
+      console.log('Failed to fetch shownPythonToolboxCategories. Caught the following error...');
+      console.log(e);
+    }
+  };
+
+  const initializeModules = async () => {
+    const array = await fetchListOfModules();
+    if (array.length === 0) {
+       setNewProjectNameModalPurpose(PURPOSE_NEW_PROJECT);
+       setNewProjectNameModalInitialValue('');
+       setNewProjectNameModalTitle('Welcome to WPILib Blocks!');
+       setNewProjectNameModalIsOpen(true);
+    }
+  };
+
+  const fetchListOfModules = async (): Promise<commonStorage.Project[]> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const array = await storage.listModules();
         setModules(array)
-        const callback = afterListModulesSuccess.current;
-        afterListModulesSuccess.current = () => {};
-        callback();
-
-        if (array.length === 0) {
-          setNewProjectNameModalPurpose(PURPOSE_NEW_PROJECT);
-          setNewProjectNameModalInitialValue('');
-          setNewProjectNameModalTitle('Welcome to WPILib Blocks!');
-          setNewProjectNameModalIsOpen(true);
-        }
+        resolve(array);
+      } catch (e) {
+        console.log('Failed to load the list of modules. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to load the list of modules.');
+        setAlertErrorVisible(true);
+        reject(new Error('Failed to load the list of modules.'));
       }
     });
-  }, [triggerListModules]);
+  };
 
   // When the list of modules is set, update the treeData and treeExpandedKeys.
   useEffect(() => {
@@ -447,6 +454,9 @@ const App: React.FC = () => {
     if (ignoreEffect()) {
       return;
     }
+    if (!storage) {
+      return;
+    }
     const module = (modules.length > 0 && currentModulePath)
         ? commonStorage.findModule(modules, currentModulePath)
         : null;
@@ -508,19 +518,17 @@ const App: React.FC = () => {
     if (ignoreEffect()) {
       return;
     }
-    if (blocklyComponent.current) {
-      const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-      if (blocklyWorkspace) {
-        ChangeFramework.setup(blocklyWorkspace);
-        blocklyWorkspace.addChangeListener(mutatorOpenListener);
-
-        // Show generated python code.
-        blocklyWorkspace.addChangeListener(handleBlocksChanged);
-      }
-
-      blocksEditor.current = new editor.Editor(blocklyWorkspace);
+    if (!blocklyComponent.current || !storage) {
+      return;
     }
-  }, [blocklyComponent]);
+    const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
+    if (blocklyWorkspace) {
+      ChangeFramework.setup(blocklyWorkspace);
+      blocklyWorkspace.addChangeListener(mutatorOpenListener);
+      blocklyWorkspace.addChangeListener(handleBlocksChanged);
+    }
+    blocksEditor.current = new editor.Editor(blocklyWorkspace, storage);
+  }, [blocklyComponent, storage]);
 
   const handleBlocksChanged = (event: Blockly.Events.Abstract) => {
     if (event.isUiEvent) {
@@ -565,13 +573,12 @@ const App: React.FC = () => {
       // Set the function to be executed if the user clicks 'ok'.
       afterPopconfirmOk.current = () => {
         setPopconfirmLoading(true);
-        saveModule((success) => {
-          setOpenPopconfirm(false);
-          setPopconfirmLoading(false);
-          if (success) {
-            callback();
-          }
-        });
+        const success = saveBlocks();
+        setOpenPopconfirm(false);
+        setPopconfirmLoading(false);
+        if (success) {
+          callback();
+        }
       };
       setOpenPopconfirm(true);
     }
@@ -594,53 +601,47 @@ const App: React.FC = () => {
     return projectNames;
   };
 
-  const handleNewProjectNameOk = (newProjectName: string) => {
+  const handleNewProjectNameOk = async (newProjectName: string) => {
     const newProjectPath = commonStorage.makeProjectPath(newProjectName);
     if (newProjectNameModalPurpose === PURPOSE_NEW_PROJECT) {
       const projectContent = commonStorage.newProjectContent(newProjectName);
-      storage.createModule(
-          commonStorage.MODULE_TYPE_PROJECT, newProjectPath, projectContent,
-          (success: boolean, errorMessage: string) => {
-            if (success) {
-              afterListModulesSuccess.current = () => {
-                setCurrentModulePath(newProjectPath);
-              };
-              setTriggerListModules(Date.now());
-            } else if (errorMessage) {
-              setAlertErrorMessage('Failed to create a new Project: ' + errorMessage);
-              setAlertErrorVisible(true);
-            }
-          });
+      try {
+        await storage.createModule(
+            commonStorage.MODULE_TYPE_PROJECT, newProjectPath, projectContent);
+        await fetchListOfModules();
+        setCurrentModulePath(newProjectPath);
+      } catch (e) {
+        console.log('Failed to create a new project. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to create a new project.');
+        setAlertErrorVisible(true);
+      }
     } else if (newProjectNameModalPurpose === PURPOSE_RENAME_PROJECT) {
-      storage.renameModule(
-          currentModule.moduleType, currentModule.projectName,
-          currentModule.moduleName, newProjectName,
-          (success: boolean, errorMessage: string) => {
-            if (success) {
-              afterListModulesSuccess.current = () => {
-                setCurrentModulePath(newProjectPath);
-              };
-              setTriggerListModules(Date.now());
-            } else if (errorMessage) {
-              setAlertErrorMessage('Failed to rename the Project: ' + errorMessage);
-              setAlertErrorVisible(true);
-            }
-          });
+      try {
+        await storage.renameModule(
+            currentModule.moduleType, currentModule.projectName,
+            currentModule.moduleName, newProjectName);
+        await fetchListOfModules();
+        setCurrentModulePath(newProjectPath);
+      } catch (e) {
+        console.log('Failed to rename the project. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to rename the project.');
+        setAlertErrorVisible(true);
+      }
     } else if (newProjectNameModalPurpose === PURPOSE_COPY_PROJECT) {
-      storage.copyModule(
+      try {
+        await storage.copyModule(
           currentModule.moduleType, currentModule.projectName,
-          currentModule.moduleName, newProjectName,
-          (success: boolean, errorMessage: string) => {
-            if (success) {
-              afterListModulesSuccess.current = () => {
-                setCurrentModulePath(newProjectPath);
-              };
-              setTriggerListModules(Date.now());
-            } else if (errorMessage) {
-              setAlertErrorMessage('Failed to copy the Project: ' + errorMessage);
-              setAlertErrorVisible(true);
-            }
-          });
+          currentModule.moduleName, newProjectName);
+        await fetchListOfModules();
+        setCurrentModulePath(newProjectPath);
+      } catch (e) {
+        console.log('Failed to copy the project. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to copy the project.');
+        setAlertErrorVisible(true);
+      }
     }
   };
 
@@ -686,90 +687,85 @@ const App: React.FC = () => {
     return moduleNames;
   };
 
-  const handleNewModuleNameOk = (newModuleName: string) => {
+  const handleNewModuleNameOk = async (newModuleName: string) => {
     const newModulePath = commonStorage.makeModulePath(currentModule.projectName, newModuleName);
     if (newModuleNameModalPurpose === PURPOSE_NEW_MECHANISM) {
-      const mechanismContent = commonStorage.newMechanismContent(currentModule.projectName, newModuleName);
-      storage.createModule(
-          commonStorage.MODULE_TYPE_MECHANISM, newModulePath, mechanismContent,
-          (success: boolean, errorMessage: string) => {
-            if (success) {
-              afterListModulesSuccess.current = () => {
-                setCurrentModulePath(newModulePath);
-              };
-              setTriggerListModules(Date.now());
-            } else if (errorMessage) {
-              setAlertErrorMessage('Failed to create a new Mechanism: ' + errorMessage);
-              setAlertErrorVisible(true);
-            }
-          });
+      const mechanismContent = commonStorage.newMechanismContent(
+          currentModule.projectName, newModuleName);
+      try {
+        await storage.createModule(
+            commonStorage.MODULE_TYPE_MECHANISM, newModulePath, mechanismContent);
+        await fetchListOfModules();
+        setCurrentModulePath(newModulePath);
+      } catch (e) {
+        console.log('Failed to create a new mechanism. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to create a new mechanism.');
+        setAlertErrorVisible(true);
+      }
     } else if (newModuleNameModalPurpose === PURPOSE_NEW_OPMODE) {
       const opModeContent = commonStorage.newOpModeContent(currentModule.projectName, newModuleName);
-      storage.createModule(
-          commonStorage.MODULE_TYPE_OPMODE, newModulePath, opModeContent,
-          (success: boolean, errorMessage: string) => {
-            if (success) {
-              afterListModulesSuccess.current = () => {
-                setCurrentModulePath(newModulePath);
-              };
-              setTriggerListModules(Date.now());
-            } else if (errorMessage) {
-              setAlertErrorMessage('Failed to create a new OpMode: ' + errorMessage);
-              setAlertErrorVisible(true);
-            }
-          });
+      try {
+        await storage.createModule(
+            commonStorage.MODULE_TYPE_OPMODE, newModulePath, opModeContent);
+        await fetchListOfModules();
+        setCurrentModulePath(newModulePath);
+      } catch (e) {
+        console.log('Failed to create a new OpMode. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to create a new OpMode');
+        setAlertErrorVisible(true);
+      }
     } else if (newModuleNameModalPurpose === PURPOSE_RENAME_MODULE) {
-      storage.renameModule(
-          currentModule.moduleType, currentModule.projectName,
-          currentModule.moduleName, newModuleName,
-          (success: boolean, errorMessage: string) => {
-            if (success) {
-              afterListModulesSuccess.current = () => {
-                setCurrentModulePath(newModulePath);
-              };
-              setTriggerListModules(Date.now());
-            } else if (errorMessage) {
-              setAlertErrorMessage('Failed to rename the module: ' + errorMessage);
-              setAlertErrorVisible(true);
-            }
-          });
+      try {
+        await storage.renameModule(
+            currentModule.moduleType, currentModule.projectName,
+            currentModule.moduleName, newModuleName);
+        await fetchListOfModules();
+        setCurrentModulePath(newModulePath);
+      } catch (e) {
+        console.log('Failed to rename the module. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to rename the module.');
+        setAlertErrorVisible(true);
+      }
     } else if (newModuleNameModalPurpose === PURPOSE_COPY_MODULE) {
-      storage.copyModule(
-          currentModule.moduleType, currentModule.projectName,
-          currentModule.moduleName, newModuleName,
-          (success: boolean, errorMessage: string) => {
-            if (success) {
-              afterListModulesSuccess.current = () => {
-                setCurrentModulePath(newModulePath);
-              };
-              setTriggerListModules(Date.now());
-            } else if (errorMessage) {
-              setAlertErrorMessage('Failed to copy the module: ' + errorMessage);
-              setAlertErrorVisible(true);
-            }
-          });
+      try {
+        await storage.copyModule(
+            currentModule.moduleType, currentModule.projectName,
+            currentModule.moduleName, newModuleName);
+        await fetchListOfModules();
+        setCurrentModulePath(newModulePath);
+      } catch (e) {
+        console.log('Failed to copy the module. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to copy the module.');
+        setAlertErrorVisible(true);
+      }
     }
   };
 
-  const handleSaveClicked = () => {
-    saveModule((success) => {});
+  const handleSaveClicked = async () => {
+    saveBlocks((success) => {});
   };
 
-  const saveModule = (callback: (success: boolean) => void) => {
+  const saveBlocks = async (): boolean => {
     if (blocksEditor.current && currentModulePath) {
-      blocksEditor.current.saveModule((success, errorMessage) => {
-        if (errorMessage) {
-          setAlertErrorMessage(errorMessage);
-          setAlertErrorVisible(true);
-        } else {
-          messageApi.open({
-            type: 'success',
-            content: 'Save completed successfully.',
-          });
-        }
-        callback(success);
-      });
+      try {
+        await blocksEditor.current.saveBlocks();
+        messageApi.open({
+          type: 'success',
+          content: 'Save completed successfully.',
+        });
+        return true;
+      } catch (e: Error) {
+        console.log('Failed to save the blocks. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to save the blocks.');
+        setAlertErrorVisible(true);
+      }
     }
+    return false;
   };
 
   const handleRenameClicked = () => {
@@ -842,7 +838,7 @@ const App: React.FC = () => {
     // Set the function to be executed if the user clicks 'ok'.
     afterPopconfirmOk.current = () => {
       setOpenPopconfirm(false);
-      checkIfBlocksWereModified(() => {
+      checkIfBlocksWereModified(async () => {
         if (!currentModule) {
           return;
         }
@@ -863,15 +859,15 @@ const App: React.FC = () => {
           if (!foundAnotherProject) {
             setCurrentModulePath('');
           }
-          storage.deleteModule(moduleTypeToDelete, modulePathToDelete,
-            (success: boolean, errorMessage: string) => {
-              if (success) {
-                setTriggerListModules(Date.now());
-              } else if (errorMessage) {
-                setAlertErrorMessage('Failed to delete the Project: ' + errorMessage);
-                setAlertErrorVisible(true);
-              }
-            });
+          try {
+            await storage.deleteModule(moduleTypeToDelete, modulePathToDelete);
+            await fetchListOfModules();
+          } catch (e) {
+            console.log('Failed to delete the project. Caught the following error...');
+            console.log(e);
+            setAlertErrorMessage('Failed to delete the project.');
+            setAlertErrorVisible(true);
+          }
         } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM
             || currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
           // This is a Mechanism or an OpMode.
@@ -881,15 +877,15 @@ const App: React.FC = () => {
           const modulePathToDelete = currentModulePath;
           const projectPath = commonStorage.makeProjectPath(currentModule.projectName);
           setCurrentModulePath(projectPath);
-          storage.deleteModule(moduleTypeToDelete, modulePathToDelete,
-            (success: boolean, errorMessage: string) => {
-              if (success) {
-                setTriggerListModules(Date.now());
-              } else if (errorMessage) {
-                setAlertErrorMessage('Failed to delete the module: ' + errorMessage);
-                setAlertErrorVisible(true);
-              }
-            });
+          try {
+            await storage.deleteModule(moduleTypeToDelete, modulePathToDelete);
+            await fetchListOfModules();
+          } catch (e) {
+            console.log('Failed to delete the module. Caught the following error...');
+            console.log(e);
+            setAlertErrorMessage('Failed to delete the module.');
+            setAlertErrorVisible(true);
+          }
         }
       });
     };
@@ -911,29 +907,28 @@ const App: React.FC = () => {
     },
     customRequest: ({ file, onSuccess, onError }) => {
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const dataUrl = event.target.result;
         const uploadProjectName = commonStorage.makeUploadProjectName(file.name, getProjectNames());
-        storage.uploadProject(
-            uploadProjectName, dataUrl,
-            (success: boolean, errorMessage: string) => {
-              if (success) {
-                onSuccess('Upload successful');
-                afterListModulesSuccess.current = () => {
-                  const uploadProjectPath = commonStorage.makeProjectPath(uploadProjectName);
-                  setCurrentModulePath(uploadProjectPath);
-                };
-                setTriggerListModules(!triggerListModules);
-              } else {
-                onError(errorMessage);
-                setAlertErrorMessage('Unable to upload the project');
-                setAlertErrorVisible(true);
-              }
-            });
+        try {
+          await storage.uploadProject(uploadProjectName, dataUrl);
+          onSuccess('Upload successful');
+          await fetchListOfModules();
+          const uploadProjectPath = commonStorage.makeProjectPath(uploadProjectName);
+          setCurrentModulePath(uploadProjectPath);
+        } catch (e) {
+          console.log('Failed to upload the project. Caught the following error...');
+          console.log(e);
+          onError('Failed to upload the project.');
+          setAlertErrorMessage('Failed to upload the project');
+          setAlertErrorVisible(true);
+        }
       };
       reader.onerror = (error) => {
-        onError(error);
-        setAlertErrorMessage('Unable to upload the project');
+        console.log('Failed to upload the project. reader.onerror called with the following error...');
+        console.log(error);
+        onError('Failed to upload the project.');
+        setAlertErrorMessage('Failed to upload the project');
         setAlertErrorVisible(true);
       };
       reader.readAsDataURL(file);
@@ -941,20 +936,19 @@ const App: React.FC = () => {
   };
 
   const handleDownloadClicked = () => {
-    checkIfBlocksWereModified(() => {
-      storage.downloadProject(
-          currentModule.projectName,
-          (url: string | null, errorMessage: string) => {
-            if (errorMessage) {
-              setAlertErrorMessage('Unable to download the project: ' + errorMessage);
-              setAlertErrorVisible(true);
-              return;
-            }
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = currentModule.projectName + commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION;
-            link.click();
-          });
+    checkIfBlocksWereModified(async () => {
+      try {
+        const url = await storage.downloadProject(currentModule.projectName);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = currentModule.projectName + commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+        link.click();
+      } catch (e) {
+        console.log('Failed to download the project. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to download the project.');
+        setAlertErrorVisible(true);
+      }
     });
   };
 
@@ -962,7 +956,7 @@ const App: React.FC = () => {
     setToolboxSettingsModalIsOpen(true);
   };
 
-  const handleToolboxSettingsOk = (updatedShownCategories: Set<string>) => {
+  const handleToolboxSettingsOk = async (updatedShownCategories: Set<string>) => {
     setShownPythonToolboxCategories(updatedShownCategories);
     const array = Array.from(updatedShownCategories);
     array.sort();

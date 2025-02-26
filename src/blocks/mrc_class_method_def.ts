@@ -337,12 +337,13 @@ export const setup = function() {
   Blockly.Blocks[PARAM_CONTAINER_BLOCK_NAME] = METHOD_PARAM_CONTAINER;
 };
 
-import { Order, PythonGenerator } from 'blockly/python';
+import { Order } from 'blockly/python';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 
 
 export const pythonFromBlock = function (
     block: ClassMethodDefBlock,
-    generator: PythonGenerator,
+    generator: ExtendedPythonGenerator,
 ) {
     const blocklyName = block.mrcPythonMethodName ? block.mrcPythonMethodName : block.getFieldValue('NAME');
 
@@ -378,6 +379,9 @@ export const pythonFromBlock = function (
         // After executing the function body, revisit this block for the return.
         xfix2 = xfix1;
     }
+    if(block.mrcPythonMethodName == '__init__'){
+        branch = generator.INDENT + "self.mechanisms = []\n" + branch;
+    }    
     if (returnValue) {
         returnValue = generator.INDENT + 'return ' + returnValue + '\n';
     } else if (!branch) {
@@ -397,11 +401,6 @@ export const pythonFromBlock = function (
         '(' +
         paramString +
         '):\n';
-    
-    if(block.mrcPythonMethodName == '__init__'){
-        code +=  generator.INDENT + "self.mechanisms = []\n";
-
-    }    
 
     code +=
         xfix1 +
@@ -410,6 +409,7 @@ export const pythonFromBlock = function (
         xfix2 +
         returnValue;
     code = generator.scrub_(block, code);
+    generator.addMethod(funcName, code);
 
     return code;
 }

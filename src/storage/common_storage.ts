@@ -66,6 +66,20 @@ const NUMBER_OF_PARTS = 3;
 
 export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 
+export interface Storage {
+  async saveEntry(entryKey: string, entryValue: string): Promise<void>;
+  async fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
+  async listModules(): Promise<Project[]>;
+  async fetchModuleContent(modulePath: string): Promise<string>;
+  async createModule(moduleType: string, modulePath: string, moduleContent: string): Promise<void>;
+  async saveModule(modulePath: string, moduleContent: string): Promise<void>;
+  async renameModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
+  async copyModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
+  async deleteModule(moduleType: string, modulePath: string): Promise<void>;
+  async downloadProject(projectName: string): Promise<string>;
+  async uploadProject(projectName: string, blobUrl: string): Promise<void>;
+}
+
 /**
  * Returns the module with the given module path, or null if it is not found.
  */
