@@ -45,6 +45,8 @@ export type Parameter = {
 type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin & Blockly.BlockSvg;
 interface ClassMethodDefMixin extends ClassMethodDefMixinType {
     mrcCanChangeSignature: boolean,
+    mrcCanBeCalledWithinClass: boolean,
+    mrcCanBeCalledOutsideClass: boolean,
     mrcReturnType: string,
     mrcParameters: Parameter[],
     mrcPythonMethodName: string,
@@ -57,6 +59,14 @@ type ClassMethodDefExtraState = {
      * Can change name and parameters and return type
      */
     canChangeSignature: boolean,
+    /**
+     * Can be called from within the class.
+     */
+    canBeCalledWithinClass: boolean,
+    /**
+     * Can be called from outside the class.
+     */
+    canBeCalledOutsideClass: boolean,
     /**
      * The return type of the function.
      * Use 'None' for no return value.
@@ -95,6 +105,8 @@ const CLASS_METHOD_DEF = {
         this: ClassMethodDefBlock): ClassMethodDefExtraState {
         const extraState: ClassMethodDefExtraState = {
             canChangeSignature: this.mrcCanChangeSignature,
+            canBeCalledWithinClass: this.mrcCanBeCalledWithinClass,
+            canBeCalledOutsideClass: this.mrcCanBeCalledOutsideClass,
             returnType: this.mrcReturnType,
             params: [],
         };
@@ -118,6 +130,8 @@ const CLASS_METHOD_DEF = {
         extraState: ClassMethodDefExtraState
     ): void {
         this.mrcCanChangeSignature = extraState.canChangeSignature;
+        this.mrcCanBeCalledWithinClass = extraState.canBeCalledWithinClass;
+        this.mrcCanBeCalledOutsideClass = extraState.canBeCalledOutsideClass;
         this.mrcPythonMethodName = extraState.pythonMethodName ? extraState.pythonMethodName : '';
         this.mrcReturnType = extraState.returnType;
         this.mrcParameters = [];

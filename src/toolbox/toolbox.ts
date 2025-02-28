@@ -27,8 +27,7 @@ import {category as mathCategory} from './math_category';
 import {category as textCategory} from './text_category';
 import {category as listsCategory} from './lists_category';
 import {category as miscCategory} from './misc_category';
-import {category as mechanismCategory } from './mechanism_category';
-import {category as methodsCategory} from './opmode_methods_category';
+import {category as methodsCategory} from './methods_category';
 
 export function getToolboxJSON(
     opt_includeExportedBlocksFromProject: toolboxItems.ContentsType[],
@@ -47,9 +46,10 @@ export function getToolboxJSON(
           kind: 'category',
           name: 'Project',
           contents: opt_includeExportedBlocksFromProject,
-        }
+        },
       ]);
   }
+
   contents.push.apply(
     contents,
     [
@@ -71,8 +71,7 @@ export function getToolboxJSON(
         categorystyle: 'variable_category',
         custom: 'VARIABLE',
       },
-      mechanismCategory,
-      methodsCategory
+      methodsCategory,
     ]);
 
   return {

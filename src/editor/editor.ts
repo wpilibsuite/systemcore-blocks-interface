@@ -25,6 +25,7 @@ import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import { getToolboxJSON } from '../toolbox/toolbox';
+import { MethodsCategory} from '../toolbox/methods_category';
 
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
@@ -36,6 +37,7 @@ export class Editor {
   private blocklyWorkspace: Blockly.WorkspaceSvg;
   private generatorContext: GeneratorContext;
   private storage: commonStorage.Storage;
+  private methodsCategory: MethodsCategory;
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
   private projectPath: string = '';
@@ -48,6 +50,7 @@ export class Editor {
     this.blocklyWorkspace = blocklyWorkspace;
     this.generatorContext = generatorContext;
     this.storage = storage;
+    this.methodsCategory = new MethodsCategory(blocklyWorkspace);
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -109,6 +112,7 @@ export class Editor {
   public async loadModuleBlocks(currentModule: commonStorage.Module | null) {
     this.generatorContext.setModule(currentModule);
     this.currentModule = currentModule;
+    this.methodsCategory.setCurrentModule(currentModule);
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
       this.projectPath = commonStorage.makeProjectPath(currentModule.projectName);
@@ -222,4 +226,5 @@ export class Editor {
       throw e;
     }
   }
+
 }
