@@ -50,7 +50,7 @@ export class Editor {
     this.blocklyWorkspace = blocklyWorkspace;
     this.generatorContext = generatorContext;
     this.storage = storage;
-    this.methodsCategory = new MethodsCategory(blocklyWorkspace);
+    this.methodsCategory = new MethodsCategory(blocklyWorkspace, generatorContext);
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -112,7 +112,6 @@ export class Editor {
   public async loadModuleBlocks(currentModule: commonStorage.Module | null) {
     this.generatorContext.setModule(currentModule);
     this.currentModule = currentModule;
-    this.methodsCategory.setCurrentModule(currentModule);
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
       this.projectPath = commonStorage.makeProjectPath(currentModule.projectName);
@@ -226,5 +225,4 @@ export class Editor {
       throw e;
     }
   }
-
 }

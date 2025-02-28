@@ -21,6 +21,7 @@
 
 import * as Blockly from 'blockly/core';
 
+import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles'
 import { mechanism_class_blocks } from './mechanism_class_methods';
@@ -38,14 +39,11 @@ export const category = {
 };
 
 export class MethodsCategory {
-  private currentModule: commonStorage.Module | null = null;
+  private generatorContext: GeneratorContext;
 
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
+  constructor(blocklyWorkspace: Blockly.WorkspaceSvg, generatorContext: GeneratorContext) {
+    this.generatorContext = generatorContext;
     blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS, this.methodsFlyout.bind(this));
-  }
-
-  public setCurrentModule(currentModule: commonStorage.Module | null) {
-    this.currentModule = currentModule;
   }
 
   public methodsFlyout(workspace: Blockly.WorkspaceSvg): ToolboxInfo {
@@ -110,6 +108,8 @@ export class MethodsCategory {
     // mrc_call_python_function block.
     workspace.getBlocksByType('mrc_class_method_def', false).forEach((classMethodDefBlock) => {
       if (classMethodDefBlock.mrcCanBeCalledWithinClass) {
+        const nameFieldValue = classMethodDefBlock.getFieldValue('NAME');
+        const classMethodName = this.generatorContext.getClassMethodName(nameFieldValue);
         const callPythonFunctionBlock = {
           kind: 'block',
           type: 'mrc_call_python_function',
@@ -118,10 +118,10 @@ export class MethodsCategory {
             functionKind: 'instance_within',
             returnType: classMethodDefBlock.mrcReturnType,
             args: [],
-            actualFunctionName: classMethodDefBlock.mrcPythonMethodName,
+            actualFunctionName: classMethodName,
           },
           fields: {
-            FUNC: classMethodDefBlock.getFieldValue('NAME'),
+            FUNC: nameFieldValue,
           },
         };
         classMethodDefBlock.mrcParameters.forEach((param) => {

@@ -16,3 +16,4 @@ WARNING! This is not ready for use and is under heavy development of basic featu
 2. Mechanisms aren't limited to only Robot or Mechanism class
 3. No way to specify whether an opmode is auto or teleop
 4. Since we changed the "Workspace" terminology to "Project", existing Workspaces are no longer supported. They can be deleted via the browser's Developer Tools - Application tab.
+5. When a method definition block's name or parameters are changed, the call blocks don't update automatically.
