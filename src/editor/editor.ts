@@ -22,6 +22,7 @@
 import * as Blockly from 'blockly/core';
 
 import { extendedPythonGenerator } from './extended_python_generator';
+import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
@@ -33,6 +34,7 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
 
 export class Editor {
   private blocklyWorkspace: Blockly.WorkspaceSvg;
+  private generatorContext: GeneratorContext;
   private storage: commonStorage.Storage;
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
@@ -42,8 +44,9 @@ export class Editor {
   private bindedOnChange: any = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg, storage: commonStorage.Storage) {
+  constructor(blocklyWorkspace: Blockly.WorkspaceSvg, generatorContext: GeneratorContext, storage: commonStorage.Storage) {
     this.blocklyWorkspace = blocklyWorkspace;
+    this.generatorContext = generatorContext;
     this.storage = storage;
   }
 
@@ -104,6 +107,7 @@ export class Editor {
   }
 
   public async loadModuleBlocks(currentModule: commonStorage.Module | null) {
+    this.generatorContext.setModule(currentModule);
     this.currentModule = currentModule;
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
@@ -203,9 +207,8 @@ export class Editor {
   }
 
   private getModuleContent(): string {
-    extendedPythonGenerator.setCurrentModule(this.currentModule);
-    const pythonCode = extendedPythonGenerator.workspaceToCode(this.blocklyWorkspace);
-    const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(this.blocklyWorkspace));
+    const pythonCode = extendedPythonGenerator.workspaceToCode(this.blocklyWorkspace, this.generatorContext);
+    const exportedBlocks = JSON.stringify(this.generatorContext.getExportedBlocks());
     const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(this.blocklyWorkspace));
     return commonStorage.makeModuleContent(this.currentModule, pythonCode, exportedBlocks, blocksContent);
   }

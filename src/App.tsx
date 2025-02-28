@@ -49,6 +49,7 @@ import { initialize as initializeGeneratedBlocks } from './blocks/utils/generate
 
 import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
+import { createGeneratorContext, GeneratorContext } from './editor/generator_context';
 
 import * as toolboxItems from './toolbox/items';
 import * as toolbox from './toolbox/toolbox';
@@ -252,6 +253,7 @@ const App: React.FC = () => {
   const [deleteTooltip, setDeleteTooltip] = useState('Delete');
   const blocklyComponent = useRef<BlocklyComponentType | null>(null);
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = useState(0);
+  const generatorContext = useRef<GeneratorContext | null>(null);
   const blocksEditor = useRef<editor.Editor | null>(null);
   const [generatedCode, setGeneratedCode] = useState('');
   const [newProjectNameModalPurpose, setNewProjectNameModalPurpose] = useState('');
@@ -461,6 +463,9 @@ const App: React.FC = () => {
         ? commonStorage.findModule(modules, currentModulePath)
         : null;
     setCurrentModule(module);
+    if (generatorContext.current) {
+      generatorContext.current.setModule(module);
+    }
 
     if (module != null) {
       if (module.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
@@ -498,10 +503,12 @@ const App: React.FC = () => {
     if (ignoreEffect()) {
       return;
     }
-    if (blocklyComponent.current) {
+    if (currentModule && blocklyComponent.current && generatorContext.current) {
       const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-      extendedPythonGenerator.setCurrentModule(currentModule);
-      setGeneratedCode(extendedPythonGenerator.workspaceToCode(blocklyWorkspace));
+      setGeneratedCode(extendedPythonGenerator.workspaceToCode(
+          blocklyWorkspace, generatorContext.current));
+    } else {
+      setGeneratedCode('');
     }
   }, [currentModule, triggerPythonRegeneration, blocklyComponent]);
 
@@ -527,7 +534,8 @@ const App: React.FC = () => {
       blocklyWorkspace.addChangeListener(mutatorOpenListener);
       blocklyWorkspace.addChangeListener(handleBlocksChanged);
     }
-    blocksEditor.current = new editor.Editor(blocklyWorkspace, storage);
+    generatorContext.current = createGeneratorContext();
+    blocksEditor.current = new editor.Editor(blocklyWorkspace, generatorContext.current, storage);
   }, [blocklyComponent, storage]);
 
   const handleBlocksChanged = (event: Blockly.Events.Abstract) => {

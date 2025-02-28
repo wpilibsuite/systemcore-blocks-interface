@@ -21,7 +21,8 @@
 
 import * as Blockly from 'blockly/core';
 import { PythonGenerator } from 'blockly/python';
-import { Block } from "../toolbox/items";
+import { GeneratorContext } from './generator_context';
+import { Block } from '../toolbox/items';
 import { FunctionArg } from '../blocks/mrc_call_python_function';
 import * as commonStorage from '../storage/common_storage';
 
@@ -29,22 +30,62 @@ import * as commonStorage from '../storage/common_storage';
 // variables that have been defined so they can be used in other modules.
 
 export class ExtendedPythonGenerator extends PythonGenerator {
-  private currentModule: commonStorage.Module | null = null;
-  private mapWorkspaceIdToExportedBlocks: { [key: string]: Block[] } = Object.create(null);
-  protected methods_: {[key: string]: string} = Object.create(null);
+  private workspace: Blockly.Workspace | null = null;
+  private context: GeneratorContext | null = null;
 
+  private classMethods: {[key: string]: string} = Object.create(null);
 
   constructor() {
     super('Python');
   }
 
-  setCurrentModule(module: commonStorage.Module | null) {
-    this.currentModule = module;
+  workspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
+    this.workspace = workspace;
+    this.context = context;
+    this.context.clear();
+
+    const code = super.workspaceToCode(workspace);
+
+    this.workspace = workspace;
+    this.context = null;
+    return code;
   }
 
-  init(workspace: Blockly.Workspace) {
-    super.init(workspace);
+  /**
+   * Add an import statement for a python module.
+   */
+  addImport(importModule: string): void {
+    this.definitions_['import_' + importModule] = 'import ' + importModule;
+  }
 
+  /**
+   * Add a class method definition.
+   */
+  addClassMethodDefinition(nameFieldValue: string, methodName: string, code: string): void {
+    this.context.addClassMethodName(nameFieldValue, methodName);
+    this.classMethods[methodName] = code;
+  }
+
+  finish(code: string): string {
+    if (this.context) {
+      const className = this.context.getClassName();
+      const classParent = this.context.getClassParent();
+      this.addImport(classParent);
+      const classDef = 'class ' + className + '(' + classParent + '):\n';
+      const classMethods = [];
+      for (let name in this.classMethods) {
+        classMethods.push(this.classMethods[name])
+      }
+      this.classMethods = Object.create(null);
+      code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
+
+      this.context.setExportedBlocks(this.produceExportedBlocks(this.workspace));
+    }
+
+    return super.finish(code);
+  }
+
+  private produceExportedBlocks(workspace: Blockly.Workspace): Block[] {
     // The exported blocks produced here have the extraState.importModule and fields.MODULE values
     // set to the MODULE_NAME_PLACEHOLDER. This is so blocks modules can be renamed and copied
     // without having to change the contents of the modules.
@@ -54,6 +95,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     const exportedBlocks = [];
 
     // All functions are exported.
+    // TODO(lizlooney): instead of looking at procedure blocks, this code needs
+    // to look at mrc_class_method_def blocks.
     const allProcedures = Blockly.Procedures.allProcedures(workspace);
     const procedureTuples = allProcedures[0].concat(allProcedures[1]);
     for (const procedureTuple of procedureTuples) {
@@ -149,74 +192,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         exportedBlocks.push(setPythonModuleVariableBlock);
       }
     }
-    this.mapWorkspaceIdToExportedBlocks[workspace.id] = exportedBlocks;
-  }
-
-  getExportedBlocks(workspace: Blockly.Workspace): Block[] {
-    return this.mapWorkspaceIdToExportedBlocks[workspace.id];
-  }
-
-  // Functions used in python code generation for multiple python blocks.
-  addImport(importModule: string): void {
-    this.definitions_['import_' + importModule] = 'import ' + importModule;
-  }
-  addMethod(methodName: string, code : string): void {
-    this.methods_[methodName] = code;
-  }
-
-  classParentFromModuleType(moduleType : string) : string{
-    if(moduleType == commonStorage.MODULE_TYPE_PROJECT){
-      return "RobotBase";
-    }
-    if(moduleType == commonStorage.MODULE_TYPE_OPMODE){
-      return "OpMode";
-    }
-    if(moduleType == commonStorage.MODULE_TYPE_MECHANISM){
-      return "Mechanism";
-    }
-    return "";
-  }
-
-  finish(code: string): string {
-    if (!this.currentModule) {
-      return super.finish(code);
-    }    
-    let className = 'Robot';   // Default for Workspace
-    if (this.currentModule.moduleType != commonStorage.MODULE_TYPE_WORKSPACE){
-      className = this.currentModule.moduleName;
-    }
-    let classParent = this.classParentFromModuleType(this.currentModule.moduleType);
-    this.addImport(classParent);
-
-    // Convert the definitions dictionary into a list.
-    const imports = [];
-    const definitions = [];
-
-    for (let name in this.definitions_) {
-      const def = this.definitions_[name];
-      if (def.match(/^(from\s+\S+\s+)?import\s+\S+/)) {
-        imports.push(def);
-      } else{
-        definitions.push(def);
-      }
-    }
-    const methods = [];
-    for (let name in this.methods_){
-      methods.push(this.methods_[name])
-    }
-
-    this.definitions_ = Object.create(null);
-    this.functionNames_ = Object.create(null);
-    this.methods_ = Object.create(null);
-    
-    this.isInitialized = false;
-
-    let class_def = "class " + className + "(" + classParent + "):\n";
-
-    this.nameDB_!.reset();
-    const allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
-    return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + class_def + 
-            this.prefixLines(methods.join('\n\n'), this.INDENT);
+    return exportedBlocks;
   }
 }
 
