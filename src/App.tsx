@@ -571,9 +571,9 @@ const App: React.FC = () => {
       setPopconfirmTitle('Blocks have been modified!');
       setPopconfirmDescription('Press ok to save and continue');
       // Set the function to be executed if the user clicks 'ok'.
-      afterPopconfirmOk.current = () => {
+      afterPopconfirmOk.current = async () => {
         setPopconfirmLoading(true);
-        const success = saveBlocks();
+        const success = await saveBlocks();
         setOpenPopconfirm(false);
         setPopconfirmLoading(false);
         if (success) {
