@@ -97,13 +97,15 @@ export class GeneratorContext {
   }
 
   addClassMethodName(nameFieldValue: string, methodName: string) {
-    this.classMethodNames[nameFieldValue] = methodName;
+    if (nameFieldValue !== methodName) {
+      this.classMethodNames[nameFieldValue] = methodName;
+    }
   }
 
   getClassMethodName(nameFieldValue: string): string | null {
-    if (nameFieldValue in this.classMethodNames) {
+    if (this.classMethodNames[nameFieldValue]) {
       return this.classMethodNames[nameFieldValue];
     }
-    return null;
+    return nameFieldValue;
   }
 }

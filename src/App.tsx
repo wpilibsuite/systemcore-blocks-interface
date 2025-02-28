@@ -253,7 +253,7 @@ const App: React.FC = () => {
   const [deleteTooltip, setDeleteTooltip] = useState('Delete');
   const blocklyComponent = useRef<BlocklyComponentType | null>(null);
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = useState(0);
-  const generatorContext = useRef(createGeneratorContext());
+  const generatorContext = useRef<GeneratorContext | null>(null);
   const blocksEditor = useRef<editor.Editor | null>(null);
   const [generatedCode, setGeneratedCode] = useState('');
   const [newProjectNameModalPurpose, setNewProjectNameModalPurpose] = useState('');
@@ -534,7 +534,8 @@ const App: React.FC = () => {
       blocklyWorkspace.addChangeListener(mutatorOpenListener);
       blocklyWorkspace.addChangeListener(handleBlocksChanged);
     }
-    blocksEditor.current = new editor.Editor(blocklyWorkspace, storage);
+    generatorContext.current = createGeneratorContext();
+    blocksEditor.current = new editor.Editor(blocklyWorkspace, generatorContext.current, storage);
   }, [blocklyComponent, storage]);
 
   const handleBlocksChanged = (event: Blockly.Events.Abstract) => {

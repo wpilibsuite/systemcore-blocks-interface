@@ -22,7 +22,7 @@
 import * as Blockly from 'blockly/core';
 
 import { extendedPythonGenerator } from './extended_python_generator';
-import { createGeneratorContext, GeneratorContext } from './generator_context';
+import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
@@ -33,8 +33,8 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
 };
 
 export class Editor {
-  private generatorContext = createGeneratorContext();
   private blocklyWorkspace: Blockly.WorkspaceSvg;
+  private generatorContext: GeneratorContext;
   private storage: commonStorage.Storage;
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
@@ -44,8 +44,9 @@ export class Editor {
   private bindedOnChange: any = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg, storage: commonStorage.Storage) {
+  constructor(blocklyWorkspace: Blockly.WorkspaceSvg, generatorContext: GeneratorContext, storage: commonStorage.Storage) {
     this.blocklyWorkspace = blocklyWorkspace;
+    this.generatorContext = generatorContext;
     this.storage = storage;
   }
 
