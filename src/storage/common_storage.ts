@@ -29,6 +29,7 @@ import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
 
 import {extendedPythonGenerator} from '../editor/extended_python_generator';
+import { createGeneratorContext, GeneratorContext } from '../editor/generator_context';
 
 // Types, constants, and functions related to modules, regardless of where the modules are stored.
 
@@ -151,6 +152,24 @@ export function getModuleName(modulePath: string): string {
   return result[2];
 }
 
+function startingBlocksToModuleContent(
+    module: Module, startingBlocks: {[key: string]: any}) {
+  // Create a headless blockly workspace.
+  const headlessBlocklyWorkspace = new Blockly.Workspace();
+  headlessBlocklyWorkspace.options.oneBasedIndex = false;
+  Blockly.serialization.workspaces.load(startingBlocks, headlessBlocklyWorkspace);
+
+  const generatorContext = createGeneratorContext();
+  generatorContext.setModule(module);
+
+  const pythonCode = extendedPythonGenerator.workspaceToCode(
+      headlessBlocklyWorkspace, generatorContext);
+  const exportedBlocks = JSON.stringify(generatorContext.getExportedBlocks());
+  const blocksContent = JSON.stringify(
+      Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
+  return makeModuleContent(module, pythonCode, exportedBlocks, blocksContent);
+}
+
 /**
  * Returns the module content for a new Project.
  */
@@ -163,16 +182,7 @@ export function newProjectContent(projectName: string): string {
     dateModifiedMillis: 0,
   };
 
-  // Create a headless blockly workspace.
-  const headlessBlocklyWorkspace = new Blockly.Workspace();
-  headlessBlocklyWorkspace.options.oneBasedIndex = false;
-  Blockly.serialization.workspaces.load(startingRobotBlocks, headlessBlocklyWorkspace);
-
-  extendedPythonGenerator.setCurrentModule(module);
-  const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
-  const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
-  const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
-  return makeModuleContent(module, pythonCode, exportedBlocks, blocksContent);
+  return startingBlocksToModuleContent(module, startingRobotBlocks);
 }
 
 /**
@@ -187,16 +197,7 @@ export function newMechanismContent(projectName: string, mechanismName: string):
     dateModifiedMillis: 0,
   };
 
-  // Create a headless blockly workspace.
-  const headlessBlocklyWorkspace = new Blockly.Workspace();
-  headlessBlocklyWorkspace.options.oneBasedIndex = false;
-  Blockly.serialization.workspaces.load(startingMechanismBlocks, headlessBlocklyWorkspace);
-
-  extendedPythonGenerator.setCurrentModule(module);
-  const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
-  const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
-  const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
-  return makeModuleContent(module, pythonCode, exportedBlocks, blocksContent);
+  return startingBlocksToModuleContent(module, startingMechanismBlocks);
 }
 
 /**
@@ -211,16 +212,7 @@ export function newOpModeContent(projectName: string, opModeName: string): strin
     dateModifiedMillis: 0,
   };
 
-  // Create a headless blockly workspace.
-  const headlessBlocklyWorkspace = new Blockly.Workspace();
-  headlessBlocklyWorkspace.options.oneBasedIndex = false;
-  Blockly.serialization.workspaces.load(startingOpModeBlocks, headlessBlocklyWorkspace);
-  
-  extendedPythonGenerator.setCurrentModule(module);
-  const pythonCode = extendedPythonGenerator.workspaceToCode(headlessBlocklyWorkspace);
-  const exportedBlocks = JSON.stringify(extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
-  const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
-  return makeModuleContent(module, pythonCode, exportedBlocks, blocksContent);
+  return startingBlocksToModuleContent(module, startingOpModeBlocks);
 }
 
 /**
@@ -471,11 +463,13 @@ export function _processUploadedModule(
   headlessBlocklyWorkspace.options.oneBasedIndex = false;
   Blockly.serialization.workspaces.load(
       JSON.parse(blocksContent), headlessBlocklyWorkspace);
-  extendedPythonGenerator.setCurrentModule(module);
+
+  const generatorContext = createGeneratorContext();
+  generatorContext.setModule(module);
+
   const pythonCode = extendedPythonGenerator.workspaceToCode(
-      headlessBlocklyWorkspace);
-  const exportedBlocks = JSON.stringify(
-      extendedPythonGenerator.getExportedBlocks(headlessBlocklyWorkspace));
+      headlessBlocklyWorkspace, generatorContext);
+  const exportedBlocks = JSON.stringify(generatorContext.getExportedBlocks());
   const moduleContent = makeModuleContent(
       module, pythonCode, exportedBlocks, blocksContent);
   return [moduleName, moduleType, moduleContent];

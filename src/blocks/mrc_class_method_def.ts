@@ -389,7 +389,7 @@ export const pythonFromBlock = function (
     }
 
     let params = block.mrcParameters;
-    let paramString = "self"
+    let paramString = "self";
     if (params.length != 0) {
         block.mrcParameters.forEach((param) => {
             paramString += ', ' + param.name;
@@ -409,7 +409,7 @@ export const pythonFromBlock = function (
         xfix2 +
         returnValue;
     code = generator.scrub_(block, code);
-    generator.addMethod(funcName, code);
+    generator.addClassMethodDefinition(block.getFieldValue('NAME'), funcName, code);
 
-    return code;
+    return '';
 }
