@@ -23,7 +23,7 @@ import JSZip from 'jszip';
 
 import * as Blockly from 'blockly/core';
 
-import {Block} from "../toolbox/items";
+import {Block} from '../toolbox/items';
 import startingOpModeBlocks from '../modules/opmode_start.json'; 
 import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
@@ -39,6 +39,7 @@ export type Module = {
   projectName: string,
   moduleName: string,
   dateModifiedMillis: number,
+  className: string,
 };
 
 export type Mechanism = Module;
@@ -102,6 +103,84 @@ export function findModule(modules: Project[], modulePath: string): Module | nul
   }
 
   return null;
+}
+
+/**
+ * Makes the given name a valid class name.
+ */
+export function onChangeClassName(name: string): string {
+  let newName = '';
+
+  // Force the first character to be an upper case letter
+  let i = 0;
+  for (; i < name.length; i++) {
+    const firstChar = name.charAt(0);
+    if (firstChar >= 'A' && firstChar <= 'Z') {
+      newName += firstChar;
+      i++;
+      break;
+    } else if (firstChar >= 'a' && firstChar <= 'z') {
+      newName += firstChar.toUpperCase();
+      i++;
+      break;
+    }
+  }
+
+  for (; i < name.length; i++) {
+    const char = name.charAt(i);
+    if ((char >= 'A' && char <= 'Z') ||
+        (char >= 'a' && char <= 'z') ||
+        (char >= '0' && char <= '9')) {
+      newName += char;
+    }
+  }
+
+  return newName;
+}
+
+/**
+ * Returns true if the given name is a valid class name.
+ */
+export function isValidClassName(name: string): boolean {
+  if (name) {
+    return /^[A-Z][A-Za-z0-9]*$/.test(name);
+  }
+  return false;
+}
+
+/**
+ * Returns the module name for the given class name.
+ */
+export function classNameToModuleName(className: string): boolean {
+  let moduleName = '';
+  for (let i = 0; i < className.length; i++) {
+    const char = className.charAt(i);
+    if (char >= 'A' && char <= 'Z') {
+      if (i > 0) {
+        moduleName += '_';
+      }
+      moduleName += char.toLowerCase();
+    } else {
+      moduleName += char;
+    }
+  }
+  return moduleName;
+}
+
+/**
+ * Returns the class name for the given module name.
+ */
+export function moduleNameToClassName(moduleName: string): boolean {
+  let className = '';
+  let nextCharUpper = true;
+  for (let i = 0; i < moduleName.length; i++) {
+    const char = moduleName.charAt(i);
+    if (char !== '_') {
+      className += nextCharUpper ? char.toUpperCase() : char;
+    }
+    nextCharUpper = (char === '_');
+  }
+  return className;
 }
 
 /**
@@ -180,6 +259,7 @@ export function newProjectContent(projectName: string): string {
     projectName: projectName,
     moduleName: projectName,
     dateModifiedMillis: 0,
+    className: moduleNameToClassName(projectName),
   };
 
   return startingBlocksToModuleContent(module, startingRobotBlocks);
@@ -195,6 +275,7 @@ export function newMechanismContent(projectName: string, mechanismName: string):
     projectName: projectName,
     moduleName: mechanismName,
     dateModifiedMillis: 0,
+    className: moduleNameToClassName(mechanismName),
   };
 
   return startingBlocksToModuleContent(module, startingMechanismBlocks);
@@ -210,6 +291,7 @@ export function newOpModeContent(projectName: string, opModeName: string): strin
     projectName: projectName,
     moduleName: opModeName,
     dateModifiedMillis: 0,
+    className: moduleNameToClassName(opModeName),
   };
 
   return startingBlocksToModuleContent(module, startingOpModeBlocks);
@@ -356,6 +438,7 @@ function _processModuleContentForDownload(
     projectName: projectName,
     moduleName: moduleName,
     dateModifiedMillis: 0,
+    className: moduleNameToClassName(moduleName),
   };
 
   // Clear out the python content and exported blocks.
@@ -455,6 +538,7 @@ export function _processUploadedModule(
     projectName: projectName,
     moduleName: moduleName,
     dateModifiedMillis: 0,
+    className: moduleNameToClassName(moduleName),
   };
 
   // Generate the python content and exported blocks.

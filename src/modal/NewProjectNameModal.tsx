@@ -33,17 +33,20 @@ import type { InputRef } from 'antd';
 
 import * as commonStorage from '../storage/common_storage';
 
+const DESCRIPTION = 'No spaces are allowed in the project name. Each word in the project should start with a capital letter.';
+const EXAMPLE = 'For example, MyAwesomeRobot';
+
 
 export type NewProjectNameModalProps = {
   title: string;
   isOpen: boolean;
   initialValue: string;
-  getProjectNames: () => string[];
+  getProjectClassNames: () => string[];
   onOk: (newName: string) => void;
   onCancel: () => void;
 }
 
-export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title, isOpen, initialValue, getProjectNames, onOk, onCancel }) => {
+export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title, isOpen, initialValue, getProjectClassNames, onOk, onCancel }) => {
   const inputRef = useRef<InputRef>(null);
   const [message, setMessage] = useState('');
   const [value, setValue] = useState('');
@@ -54,7 +57,7 @@ export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title,
   const afterOpenChange = (open: boolean) => {
     if (open) {
       setValue(initialValue);
-      const w = getProjectNames();
+      const w = getProjectClassNames();
       if (w.length === 0) {
         setMessage('Let\'s create your first project. You just need to give it a name.');
       }
@@ -68,9 +71,13 @@ export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title,
     }
   };
 
+  const onChange = (e) => {
+    setValue(commonStorage.onChangeClassName(e.target.value));
+  };
+
   const handleOk = () => {
-    if (!commonStorage.isValidPythonModuleName(value)) {
-      setAlertErrorMessage(value + ' is not a valid blocks module name');
+    if (!commonStorage.isValidClassName(value)) {
+      setAlertErrorMessage(value + ' is not a valid blocks project name');
       setAlertErrorVisible(true);
       return;
     }
@@ -98,11 +105,13 @@ export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title,
           style={message.length === 0 ? { display: 'none' } : { }}
         >{message}</Typography.Paragraph>
         <Typography.Paragraph> Project Name </Typography.Paragraph>
+        <Typography.Paragraph>{DESCRIPTION}</Typography.Paragraph>
+        <Typography.Paragraph>{EXAMPLE}</Typography.Paragraph>
         <Input
           ref={inputRef}
           value={value}
           onPressEnter={handleOk}
-          onChange={(e) => setValue(e.target.value.toLowerCase())}
+          onChange={onChange}
         />
         {alertErrorVisible && (
           <Alert

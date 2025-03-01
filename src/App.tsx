@@ -263,7 +263,7 @@ const App: React.FC = () => {
       });
       const parent: TreeDataNode = {
         key: project.modulePath,
-        title: project.projectName,
+        title: project.className,
         children: children,
         icon: <ProjectOutlined />,
       };
@@ -437,6 +437,14 @@ const App: React.FC = () => {
     });
   };
 
+  const getProjectClassNames = (): string[] => {
+    const projectClassNames: string[] = [];
+    modules.forEach((project) => {
+      projectClassNames.push(project.className);
+    });
+    return projectClassNames;
+  };
+
   const getProjectNames = (): string[] => {
     const projectNames: string[] = [];
     modules.forEach((project) => {
@@ -445,10 +453,12 @@ const App: React.FC = () => {
     return projectNames;
   };
 
-  const handleNewProjectNameOk = async (newProjectName: string) => {
+  const handleNewProjectNameOk = async (newProjectClassName: string) => {
+    const newProjectName = commonStorage.classNameToModuleName(newProjectClassName);
     const newProjectPath = commonStorage.makeProjectPath(newProjectName);
     if (newProjectNameModalPurpose === PURPOSE_NEW_PROJECT) {
-      const projectContent = commonStorage.newProjectContent(newProjectName);
+      const projectContent = commonStorage.newProjectContent(
+          newProjectClassName, newProjectName, newProjectPath);
       try {
         await storage.createModule(
             commonStorage.MODULE_TYPE_PROJECT, newProjectPath, projectContent);
@@ -1078,7 +1088,7 @@ const App: React.FC = () => {
         title={newProjectNameModalTitle}
         isOpen={newProjectNameModalIsOpen}
         initialValue={newProjectNameModalInitialValue}
-        getProjectNames={getProjectNames}
+        getProjectClassNames={getProjectClassNames}
         onOk={(newName) => {
           setNewProjectNameModalIsOpen(false);
           handleNewProjectNameOk(newName);
