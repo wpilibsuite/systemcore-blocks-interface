@@ -40,9 +40,10 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import * as Blockly from 'blockly/core';
-import {pythonGenerator} from 'blockly/python'
+import {pythonGenerator} from 'blockly/python';
 
 import BlocklyComponent from './Blockly';
+import { NewProjectNameModalProps, NewProjectNameModal } from './modal/NewProjectNameModal';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 import { initialize as initializeGeneratedBlocks } from './blocks/utils/generated/initialize';
@@ -61,90 +62,6 @@ import * as commonStorage from './storage/common_storage';
 
 import * as ChangeFramework from './blocks/utils/change_framework'
 import {mutatorOpenListener}  from './blocks/mrc_class_method_def'
-
-
-type NewProjectNameModalProps = {
-  title: string;
-  isOpen: boolean;
-  initialValue: string;
-  getProjectNames: () => string[];
-  onOk: (newName: string) => void;
-  onCancel: () => void;
-}
-
-const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title, isOpen, initialValue, getProjectNames, onOk, onCancel }) => {
-  const inputRef = useRef<InputRef>(null);
-  const [message, setMessage] = useState('');
-  const [value, setValue] = useState('');
-  const [projectNames, setProjectNames] = useState<string[]>([]);
-  const [alertErrorMessage, setAlertErrorMessage] = useState('');
-  const [alertErrorVisible, setAlertErrorVisible] = useState(false);
-
-  const afterOpenChange = (open: boolean) => {
-    if (open) {
-      setValue(initialValue);
-      const w = getProjectNames();
-      if (w.length === 0) {
-        setMessage('Let\'s create your first project. You just need to give it a name.');
-      }
-      setProjectNames(w);
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    } else {
-      setValue('');
-      setMessage('');
-    }
-  };
-
-  const handleOk = () => {
-    if (!commonStorage.isValidPythonModuleName(value)) {
-      setAlertErrorMessage(value + ' is not a valid blocks module name');
-      setAlertErrorVisible(true);
-      return;
-    }
-    if (projectNames.includes(value)) {
-      setAlertErrorMessage('There is already a project named ' +  value);
-      setAlertErrorVisible(true);
-      return;
-    }
-    onOk(value);
-  };
-
-  return (
-    <Modal
-      title={title}
-      open={isOpen}
-      afterOpenChange={afterOpenChange}
-      onCancel={onCancel}
-      footer={[
-        <Button key="cancel" onClick={onCancel}> Cancel </Button>,
-        <Button key="ok" onClick={handleOk}> OK </Button>
-      ]}
-    >
-      <Flex vertical gap="small">
-        <Typography.Paragraph
-          style={message.length === 0 ? { display: 'none' } : { }}
-        >{message}</Typography.Paragraph>
-        <Typography.Paragraph> Project Name </Typography.Paragraph>
-        <Input
-          ref={inputRef}
-          value={value}
-          onPressEnter={handleOk}
-          onChange={(e) => setValue(e.target.value.toLowerCase())}
-        />
-        {alertErrorVisible && (
-          <Alert
-            type="error"
-            message={alertErrorMessage}
-            closable
-            afterClose={() => setAlertErrorVisible(false)}
-          />
-        )}
-      </Flex>
-    </Modal>
-  );
-};
 
 
 type NewModuleNameModalProps = {
