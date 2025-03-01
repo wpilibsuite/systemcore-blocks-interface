@@ -43,7 +43,9 @@ import * as Blockly from 'blockly/core';
 import {pythonGenerator} from 'blockly/python';
 
 import BlocklyComponent from './Blockly';
+
 import { NewProjectNameModalProps, NewProjectNameModal } from './modal/NewProjectNameModal';
+import { NewModuleNameModalProps, NewModuleNameModal } from './modal/NewModuleNameModal';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 import { initialize as initializeGeneratedBlocks } from './blocks/utils/generated/initialize';
@@ -63,89 +65,6 @@ import * as commonStorage from './storage/common_storage';
 import * as ChangeFramework from './blocks/utils/change_framework'
 import {mutatorOpenListener}  from './blocks/mrc_class_method_def'
 
-
-type NewModuleNameModalProps = {
-  title: string;
-  isOpen: boolean;
-  initialValue: string;
-  getCurrentProjectName: () => string;
-  getModuleNames: (projectName: string) => string[];
-  onOk: (newName: string) => void;
-  onCancel: () => void;
-}
-
-const NewModuleNameModal: React.FC<NewModuleNameModalProps> = ({ title, isOpen, initialValue, getCurrentProjectName, getModuleNames, onOk, onCancel }) => {
-  const inputRef = useRef<InputRef>(null);
-  const [value, setValue] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [moduleNames, setModuleNames] = useState<string[]>([]);
-  const [alertErrorMessage, setAlertErrorMessage] = useState('');
-  const [alertErrorVisible, setAlertErrorVisible] = useState(false);
-
-  const afterOpenChange = (open: boolean) => {
-    if (open) {
-      setValue(initialValue);
-      const currentProjectName = getCurrentProjectName();
-      setProjectName(currentProjectName);
-      setModuleNames(getModuleNames(currentProjectName));
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    } else {
-      setValue('');
-    }
-  };
-
-  const handleOk = () => {
-    if (!commonStorage.isValidPythonModuleName(value)) {
-      setAlertErrorMessage(value + ' is not a valid blocks module name');
-      setAlertErrorVisible(true);
-      return;
-    }
-    if (projectName === value) {
-      setAlertErrorMessage('The project is already named ' + value);
-      setAlertErrorVisible(true);
-      return;
-    }
-    if (moduleNames.includes(value)) {
-      setAlertErrorMessage('Another module is already named ' +  value);
-      setAlertErrorVisible(true);
-      return;
-    }
-    onOk(value);
-  };
-
-  return (
-    <Modal
-      title={title}
-      open={isOpen}
-      afterOpenChange={afterOpenChange}
-      onCancel={onCancel}
-      footer={[
-        <Button key="cancel" onClick={onCancel}> Cancel </Button>,
-        <Button key="ok" onClick={handleOk}> OK </Button>
-      ]}
-    >
-      <Flex vertical gap="small">
-        <Typography.Paragraph> Name </Typography.Paragraph>
-        <Input
-          ref={inputRef}
-          value={value}
-          onPressEnter={handleOk}
-          onChange={(e) => setValue(e.target.value.toLowerCase())}
-        />
-        {alertErrorVisible && (
-          <Alert
-            type="error"
-            message={alertErrorMessage}
-            closable
-            afterClose={() => setAlertErrorVisible(false)}
-          />
-        )}
-      </Flex>
-    </Modal>
-  );
-};
 
 type BlocklyComponentType = {
   getBlocklyWorkspace: () => Blockly.WorkspaceSvg,
