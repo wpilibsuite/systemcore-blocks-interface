@@ -1,4 +1,3 @@
-import * as Blockly from 'blockly';
 
 import * as CallPythonFunction from './mrc_call_python_function';
 import * as GetPythonEnumValue from './mrc_get_python_enum_value';

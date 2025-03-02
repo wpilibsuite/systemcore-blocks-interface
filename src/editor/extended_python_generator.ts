@@ -39,6 +39,38 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     super('Python');
   }
 
+  init(workspace: Blockly.Workspace){
+    super.init(workspace);
+    // This will have all variables in the defintion 'variables' so we will need to destroy it and make our own
+    delete this.definitions_['variables'];
+
+    const defvars = [];
+    // Add developer variables (not created or named by the user).
+    const devVarList = Blockly.Variables.allDeveloperVariables(workspace);
+    for (let i = 0; i < devVarList.length; i++) {
+      defvars.push(
+        this.nameDB_!.getName(devVarList[i], Blockly.Names.DEVELOPER_VARIABLE_TYPE) + ' = None',
+      );
+    }
+    this.definitions_['variables'] = defvars.join('\n');     
+    // user variables are dealt with in init code generation
+  }
+
+  defineClassVariables(workspace: Blockly.Workspace) : string{
+      const classVars = Blockly.Variables.allUsedVarModels(workspace);
+
+      let variableDefinitions = '';
+      
+      for (let i = 0; i < classVars.length; i++) {
+          variableDefinitions += this.INDENT + this.getVariableName(classVars[i].getId()) + ' = None\n';
+      }
+      return variableDefinitions;
+  }
+  getVariableName(name : string) : string{
+    const varName = super.getVariableName(name);
+    return "self." + varName;
+  }
+
   workspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
     this.workspace = workspace;
     this.context = context;
