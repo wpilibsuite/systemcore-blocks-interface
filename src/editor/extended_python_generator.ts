@@ -64,13 +64,19 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       for (let i = 0; i < classVars.length; i++) {
           variableDefinitions += this.INDENT + this.getVariableName(classVars[i].getId()) + ' = None\n';
       }
+      if (this.context?.getHasMechanisms()){
+        variableDefinitions += this.INDENT + "self.mechanisms = []\n";
+      }
       return variableDefinitions;
   }
   getVariableName(name : string) : string{
     const varName = super.getVariableName(name);
     return "self." + varName;
   }
-
+  setHasMechanism() : void{
+    this.context?.setHasMechanism();
+  }
+  
   workspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
     this.workspace = workspace;
     this.context = context;

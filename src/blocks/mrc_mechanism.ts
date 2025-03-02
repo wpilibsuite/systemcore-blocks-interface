@@ -118,7 +118,6 @@ export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = MECHANISM_FUNCTION;
 }
 
-//TODO: This needs to cause our own init to create the mechanisms line
 export const pythonFromBlock = function (
   mechanismBlock: MechanismBlock,
   generator: ExtendedPythonGenerator,
@@ -126,9 +125,9 @@ export const pythonFromBlock = function (
   if (mechanismBlock.mrcImportModule) {
     generator.addImport(mechanismBlock.mrcImportModule);
   }
+  generator.setHasMechanism();
   let code = 'self.mechanisms["' + mechanismBlock.getFieldValue('NAME') + '"] = '
     + mechanismBlock.getFieldValue('TYPE') + '('
-
   for (let i = 0; i < mechanismBlock.mrcArgs.length; i++) {
       const fieldName = 'ARG' + i;
       if(i != 0){
