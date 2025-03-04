@@ -26,6 +26,7 @@ import * as ChangeFramework from './utils/change_framework'
 import { getLegalName } from './utils/python';
 import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { CallPythonFunctionBlock } from './mrc_call_python_function'
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
@@ -158,8 +159,10 @@ const CLASS_METHOD_DEF = {
         input.removeField('NAME');
             
         if (this.mrcCanChangeSignature) {
-            input.insertFieldAt(0, new Blockly.FieldTextInput(name), 'NAME');
+            const nameField = new Blockly.FieldTextInput(name);
+            input.insertFieldAt(0, nameField, 'NAME');
             this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
+            nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
         }
         else {
             input.insertFieldAt(0, createFieldNonEditableText(name), 'NAME');
@@ -224,7 +227,78 @@ const CLASS_METHOD_DEF = {
             Blockly.Events.enable();
         }
     },
+    mrcNameFieldValidator(this: ClassMethodDefBlock, nameField: Blockly.FieldTextInput, name: string): string {
+      // When the user changes the method name on the block, clear the mrcPythonMethodName field.
+      this.mrcPythonMethodName = '';
+
+      // Strip leading and trailing whitespace.
+      name = name.trim();
+
+      const legalName = findLegalMethodName(name, this);
+      const oldName = nameField.getValue();
+      if (oldName !== name && oldName !== legalName) {
+        // Rename any callers.
+        for (const block of this.workspace.getBlocksByType('mrc_call_python_function')) {
+          (block as CallPythonFunctionBlock).maybeRenameProcedure(oldName, legalName);
+        }
+      }
+      return legalName;
+    },
 };
+
+/**
+ * Ensure two identically-named methods don't exist.
+ * Take the proposed method name, and return a legal name i.e. one that
+ * is not empty and doesn't collide with other methods.
+ *
+ * @param name Proposed method name.
+ * @param block Block to disambiguate.
+ * @returns Non-colliding name.
+ */
+function findLegalMethodName(name: string, block: ClassMethodDefBlock): string {
+  if (block.isInFlyout) {
+    // Flyouts can have multiple methods called 'my_method'.
+    return name;
+  }
+  name = name || 'unnamed';
+  while (isMethodNameUsed(name, block.workspace, block)) {
+    // Collision with another method.
+    const r = name.match(/^(.*?)(\d+)$/);
+    if (!r) {
+      name += '2';
+    } else {
+      name = r[1] + (parseInt(r[2]) + 1);
+    }
+  }
+  return name;
+}
+
+/**
+ * Return if the given name is already a method name.
+ *
+ * @param name The questionable name.
+ * @param workspace The workspace to scan for collisions.
+ * @param opt_exclude Optional block to exclude from comparisons (one doesn't
+ *     want to collide with oneself).
+ * @returns True if the name is used, otherwise return false.
+ */
+function isMethodNameUsed(
+    name: string, workspace: Workspace, opt_exclude?: Block): boolean {
+  const nameLowerCase = name.toLowerCase();
+  for (const block of workspace.getBlocksByType('mrc_class_method_def')) {
+    if (block === opt_exclude) {
+      continue;
+    }
+    if (nameLowerCase === block.getFieldValue('NAME').toLowerCase()) {
+      return true;
+    }
+    if (block.mrcPythonMethodName &&
+        nameLowerCase === block.mrcPythonMethodName.toLowerCase()) {
+      return true;
+    }
+  }
+  return false;
+}
 
 const METHOD_PARAM_CONTAINER = {
     init: function (this : Blockly.Block) {

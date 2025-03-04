@@ -49,8 +49,10 @@ export class GeneratorContext {
   setHasMechanism():void{
     this.hasMechanisms = true;
   }
+
   getHasMechanisms():boolean{
     return this.hasMechanisms;
+  }
 
   getClassName(): string {
     if (this.module.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
