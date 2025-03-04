@@ -421,7 +421,7 @@ export const pythonFromBlock = function (
         xfix2 +
         returnValue;
     code = generator.scrub_(block, code);
-    generator.addClassMethodDefinition(block.getFieldValue('NAME'), funcName, code);
+    generator.addClassMethodDefinition(funcName, code);
 
     return '';
 }
