@@ -33,12 +33,21 @@ import type { InputRef } from 'antd';
 
 import * as commonStorage from '../storage/common_storage';
 
-const DESCRIPTION = 'No spaces are allowed in the project name. Each word in the project should start with a capital letter.';
-const EXAMPLE = 'For example, MyAwesomeRobot';
 
+export const TITLE_WELCOME = 'Welcome to WPILib Blocks!';
+export const TITLE_NEW_PROJECT = 'New Project';
+export const TITLE_RENAME_PROJECT = 'Rename Project';
+export const TITLE_COPY_PROJECT = 'Copy Project';
 
-export type NewProjectNameModalProps = {
+export const MESSAGE_WELCOME = 'Let\'s create your first project. You just need to give it a name.';
+
+const DESCRIPTION = 'No spaces are allowed in the name. Each word in the name should start with a capital letter.';
+const EXAMPLE = 'For example, RachelTheRobot';
+const LABEL = 'Project Name:';
+
+type NewProjectNameModalProps = {
   title: string;
+  message: string;
   isOpen: boolean;
   initialValue: string;
   getProjectClassNames: () => string[];
@@ -46,9 +55,8 @@ export type NewProjectNameModalProps = {
   onCancel: () => void;
 }
 
-export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title, isOpen, initialValue, getProjectClassNames, onOk, onCancel }) => {
+export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title, message, isOpen, initialValue, getProjectClassNames, onOk, onCancel }) => {
   const inputRef = useRef<InputRef>(null);
-  const [message, setMessage] = useState('');
   const [value, setValue] = useState('');
   const [projectNames, setProjectNames] = useState<string[]>([]);
   const [alertErrorMessage, setAlertErrorMessage] = useState('');
@@ -58,16 +66,13 @@ export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title,
     if (open) {
       setValue(initialValue);
       const w = getProjectClassNames();
-      if (w.length === 0) {
-        setMessage('Let\'s create your first project. You just need to give it a name.');
-      }
       setProjectNames(w);
       if (inputRef.current) {
         inputRef.current.focus();
       }
     } else {
       setValue('');
-      setMessage('');
+      setAlertErrorVisible(false);
     }
   };
 
@@ -77,12 +82,12 @@ export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title,
 
   const handleOk = () => {
     if (!commonStorage.isValidClassName(value)) {
-      setAlertErrorMessage(value + ' is not a valid blocks project name');
+      setAlertErrorMessage(value + ' is not a valid project name. Please enter a different name.');
       setAlertErrorVisible(true);
       return;
     }
     if (projectNames.includes(value)) {
-      setAlertErrorMessage('There is already a project named ' +  value);
+      setAlertErrorMessage('There is already a project named ' +  value + '. Please enter a different name.');
       setAlertErrorVisible(true);
       return;
     }
@@ -104,15 +109,17 @@ export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title,
         <Typography.Paragraph
           style={message.length === 0 ? { display: 'none' } : { }}
         >{message}</Typography.Paragraph>
-        <Typography.Paragraph> Project Name </Typography.Paragraph>
         <Typography.Paragraph>{DESCRIPTION}</Typography.Paragraph>
         <Typography.Paragraph>{EXAMPLE}</Typography.Paragraph>
-        <Input
-          ref={inputRef}
-          value={value}
-          onPressEnter={handleOk}
-          onChange={onChange}
-        />
+        <Flex vertical gap="0">
+          <Typography.Paragraph>{LABEL}</Typography.Paragraph>
+          <Input
+            ref={inputRef}
+            value={value}
+            onPressEnter={handleOk}
+            onChange={onChange}
+          />
+        </Flex>
         {alertErrorVisible && (
           <Alert
             type="error"
