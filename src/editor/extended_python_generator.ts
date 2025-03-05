@@ -41,7 +41,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   init(workspace: Blockly.Workspace){
     super.init(workspace);
-    // This will have all variables in the defintion 'variables' so we will need to destroy it and make our own
+    // This will have all variables in the definition 'variables' so we will need to make it contain only the developer variables
     delete this.definitions_['variables'];
 
     const defvars = [];
@@ -53,9 +53,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       );
     }
     this.definitions_['variables'] = defvars.join('\n');     
-    // user variables are dealt with in init code generation
   }
 
+  /* 
+   * This is called from the python generator for the mrc_class_method_def for the
+   * init method
+   */
   defineClassVariables(workspace: Blockly.Workspace) : string{
       let variableDefinitions = '';
 
@@ -64,7 +67,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       }
       return variableDefinitions;
   }
-  getVariableName(name : string) : string{
+  getVariableName(nameOrId : string) : string{
     const varName = super.getVariableName(name);
     return "self." + varName;
   }
