@@ -39,6 +39,42 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     super('Python');
   }
 
+  init(workspace: Blockly.Workspace){
+    super.init(workspace);
+    // This will have all variables in the definition 'variables' so we will need to make it contain only the developer variables
+    delete this.definitions_['variables'];
+
+    const defvars = [];
+    // Add developer variables (not created or named by the user).
+    const devVarList = Blockly.Variables.allDeveloperVariables(workspace);
+    for (let i = 0; i < devVarList.length; i++) {
+      defvars.push(
+        this.nameDB_!.getName(devVarList[i], Blockly.Names.DEVELOPER_VARIABLE_TYPE) + ' = None',
+      );
+    }
+    this.definitions_['variables'] = defvars.join('\n');     
+  }
+
+  /* 
+   * This is called from the python generator for the mrc_class_method_def for the
+   * init method
+   */
+  defineClassVariables(workspace: Blockly.Workspace) : string{
+      let variableDefinitions = '';
+
+      if (this.context?.getHasMechanisms()){
+        variableDefinitions += this.INDENT + "self.mechanisms = []\n";
+      }
+      return variableDefinitions;
+  }
+  getVariableName(nameOrId : string) : string{
+    const varName = super.getVariableName(name);
+    return "self." + varName;
+  }
+  setHasMechanism() : void{
+    this.context?.setHasMechanism();
+  }
+  
   workspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
     this.workspace = workspace;
     this.context = context;

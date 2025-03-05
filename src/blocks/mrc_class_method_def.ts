@@ -24,6 +24,8 @@ import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
 import * as ChangeFramework from './utils/change_framework'
 import { getLegalName } from './utils/python';
+import { Order } from 'blockly/python';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
@@ -351,10 +353,6 @@ export const setup = function() {
   Blockly.Blocks[PARAM_CONTAINER_BLOCK_NAME] = METHOD_PARAM_CONTAINER;
 };
 
-import { Order } from 'blockly/python';
-import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-
-
 export const pythonFromBlock = function (
     block: ClassMethodDefBlock,
     generator: ExtendedPythonGenerator,
@@ -394,7 +392,7 @@ export const pythonFromBlock = function (
         xfix2 = xfix1;
     }
     if(block.mrcPythonMethodName == '__init__'){
-        branch = generator.INDENT + "self.mechanisms = []\n" + branch;
+        branch = generator.defineClassVariables(block.workspace) + branch;
     }    
     if (returnValue) {
         returnValue = generator.INDENT + 'return ' + returnValue + '\n';
