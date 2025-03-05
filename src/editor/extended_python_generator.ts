@@ -57,13 +57,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   defineClassVariables(workspace: Blockly.Workspace) : string{
-      const classVars = Blockly.Variables.allUsedVarModels(workspace);
-
       let variableDefinitions = '';
-      
-      for (let i = 0; i < classVars.length; i++) {
-          variableDefinitions += this.INDENT + this.getVariableName(classVars[i].getId()) + ' = None\n';
-      }
+
       if (this.context?.getHasMechanisms()){
         variableDefinitions += this.INDENT + "self.mechanisms = []\n";
       }
