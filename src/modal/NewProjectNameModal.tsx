@@ -42,7 +42,7 @@ export const TITLE_COPY_PROJECT = 'Copy Project';
 export const MESSAGE_WELCOME = 'Let\'s create your first project. You just need to give it a name.';
 
 const DESCRIPTION = 'No spaces are allowed in the name. Each word in the name should start with a capital letter.';
-const EXAMPLE = 'For example, RachelTheRobot';
+const EXAMPLE = 'For example, WackyWheelerRobot';
 const LABEL = 'Project Name:';
 
 type NewProjectNameModalProps = {
