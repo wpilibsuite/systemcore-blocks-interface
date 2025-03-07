@@ -135,12 +135,14 @@ class ClientSideStorage implements commonStorage.Storage {
           const value = cursor.value;
           const path = value.path;
           const moduleType = value.type;
+          const moduleName = commonStorage.getModuleName(path);
           const module: commonStorage.Module = {
             modulePath: path,
             moduleType: moduleType,
             projectName: commonStorage.getProjectName(path),
-            moduleName: commonStorage.getModuleName(path),
+            moduleName: moduleName,
             dateModifiedMillis: value.dateModifiedMillis,
+            className: commonStorage.moduleNameToClassName(moduleName),
           }
           if (moduleType === commonStorage.MODULE_TYPE_PROJECT) {
             const project: commonStorage.Project = {

@@ -7,7 +7,6 @@ import {
   Flex,
   Input,
   message,
-  Modal,
   Popconfirm,
   Space,
   Splitter,
@@ -40,9 +39,12 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import * as Blockly from 'blockly/core';
-import {pythonGenerator} from 'blockly/python'
+import {pythonGenerator} from 'blockly/python';
 
 import BlocklyComponent from './Blockly';
+
+import * as NewProjectNameModal from './modal/NewProjectNameModal';
+import * as NewModuleNameModal from './modal/NewModuleNameModal';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 import { initialize as initializeGeneratedBlocks } from './blocks/utils/generated/initialize';
@@ -62,173 +64,6 @@ import * as commonStorage from './storage/common_storage';
 import * as ChangeFramework from './blocks/utils/change_framework'
 import {mutatorOpenListener}  from './blocks/mrc_class_method_def'
 
-
-type NewProjectNameModalProps = {
-  title: string;
-  isOpen: boolean;
-  initialValue: string;
-  getProjectNames: () => string[];
-  onOk: (newName: string) => void;
-  onCancel: () => void;
-}
-
-const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title, isOpen, initialValue, getProjectNames, onOk, onCancel }) => {
-  const inputRef = useRef<InputRef>(null);
-  const [message, setMessage] = useState('');
-  const [value, setValue] = useState('');
-  const [projectNames, setProjectNames] = useState<string[]>([]);
-  const [alertErrorMessage, setAlertErrorMessage] = useState('');
-  const [alertErrorVisible, setAlertErrorVisible] = useState(false);
-
-  const afterOpenChange = (open: boolean) => {
-    if (open) {
-      setValue(initialValue);
-      const w = getProjectNames();
-      if (w.length === 0) {
-        setMessage('Let\'s create your first project. You just need to give it a name.');
-      }
-      setProjectNames(w);
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    } else {
-      setValue('');
-      setMessage('');
-    }
-  };
-
-  const handleOk = () => {
-    if (!commonStorage.isValidPythonModuleName(value)) {
-      setAlertErrorMessage(value + ' is not a valid blocks module name');
-      setAlertErrorVisible(true);
-      return;
-    }
-    if (projectNames.includes(value)) {
-      setAlertErrorMessage('There is already a project named ' +  value);
-      setAlertErrorVisible(true);
-      return;
-    }
-    onOk(value);
-  };
-
-  return (
-    <Modal
-      title={title}
-      open={isOpen}
-      afterOpenChange={afterOpenChange}
-      onCancel={onCancel}
-      footer={[
-        <Button key="cancel" onClick={onCancel}> Cancel </Button>,
-        <Button key="ok" onClick={handleOk}> OK </Button>
-      ]}
-    >
-      <Flex vertical gap="small">
-        <Typography.Paragraph
-          style={message.length === 0 ? { display: 'none' } : { }}
-        >{message}</Typography.Paragraph>
-        <Typography.Paragraph> Project Name </Typography.Paragraph>
-        <Input
-          ref={inputRef}
-          value={value}
-          onPressEnter={handleOk}
-          onChange={(e) => setValue(e.target.value.toLowerCase())}
-        />
-        {alertErrorVisible && (
-          <Alert
-            type="error"
-            message={alertErrorMessage}
-            closable
-            afterClose={() => setAlertErrorVisible(false)}
-          />
-        )}
-      </Flex>
-    </Modal>
-  );
-};
-
-
-type NewModuleNameModalProps = {
-  title: string;
-  isOpen: boolean;
-  initialValue: string;
-  getCurrentProjectName: () => string;
-  getModuleNames: (projectName: string) => string[];
-  onOk: (newName: string) => void;
-  onCancel: () => void;
-}
-
-const NewModuleNameModal: React.FC<NewModuleNameModalProps> = ({ title, isOpen, initialValue, getCurrentProjectName, getModuleNames, onOk, onCancel }) => {
-  const inputRef = useRef<InputRef>(null);
-  const [value, setValue] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [moduleNames, setModuleNames] = useState<string[]>([]);
-  const [alertErrorMessage, setAlertErrorMessage] = useState('');
-  const [alertErrorVisible, setAlertErrorVisible] = useState(false);
-
-  const afterOpenChange = (open: boolean) => {
-    if (open) {
-      setValue(initialValue);
-      const currentProjectName = getCurrentProjectName();
-      setProjectName(currentProjectName);
-      setModuleNames(getModuleNames(currentProjectName));
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    } else {
-      setValue('');
-    }
-  };
-
-  const handleOk = () => {
-    if (!commonStorage.isValidPythonModuleName(value)) {
-      setAlertErrorMessage(value + ' is not a valid blocks module name');
-      setAlertErrorVisible(true);
-      return;
-    }
-    if (projectName === value) {
-      setAlertErrorMessage('The project is already named ' + value);
-      setAlertErrorVisible(true);
-      return;
-    }
-    if (moduleNames.includes(value)) {
-      setAlertErrorMessage('Another module is already named ' +  value);
-      setAlertErrorVisible(true);
-      return;
-    }
-    onOk(value);
-  };
-
-  return (
-    <Modal
-      title={title}
-      open={isOpen}
-      afterOpenChange={afterOpenChange}
-      onCancel={onCancel}
-      footer={[
-        <Button key="cancel" onClick={onCancel}> Cancel </Button>,
-        <Button key="ok" onClick={handleOk}> OK </Button>
-      ]}
-    >
-      <Flex vertical gap="small">
-        <Typography.Paragraph> Name </Typography.Paragraph>
-        <Input
-          ref={inputRef}
-          value={value}
-          onPressEnter={handleOk}
-          onChange={(e) => setValue(e.target.value.toLowerCase())}
-        />
-        {alertErrorVisible && (
-          <Alert
-            type="error"
-            message={alertErrorMessage}
-            closable
-            afterClose={() => setAlertErrorVisible(false)}
-          />
-        )}
-      </Flex>
-    </Modal>
-  );
-};
 
 type BlocklyComponentType = {
   getBlocklyWorkspace: () => Blockly.WorkspaceSvg,
@@ -259,10 +94,13 @@ const App: React.FC = () => {
   const [newProjectNameModalPurpose, setNewProjectNameModalPurpose] = useState('');
   const [newProjectNameModalInitialValue, setNewProjectNameModalInitialValue] = useState('');
   const [newProjectNameModalTitle, setNewProjectNameModalTitle] = useState('');
+  const [newProjectNameModalMessage, setNewProjectNameModalMessage] = useState('');
   const [newProjectNameModalIsOpen, setNewProjectNameModalIsOpen] = useState(false);
   const [newModuleNameModalPurpose, setNewModuleNameModalPurpose] = useState('');
   const [newModuleNameModalInitialValue, setNewModuleNameModalInitialValue] = useState('');
   const [newModuleNameModalTitle, setNewModuleNameModalTitle] = useState('');
+  const [newModuleNameModalExample, setNewModuleNameModalExample] = useState('');
+  const [newModuleNameModalLabel, setNewModuleNameModalLabel] = useState('');
   const [newModuleNameModalIsOpen, setNewModuleNameModalIsOpen] = useState(false);
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = useState(false);
   const [popconfirmTitle, setPopconfirmTitle] = useState('');
@@ -356,7 +194,8 @@ const App: React.FC = () => {
     if (array.length === 0) {
        setNewProjectNameModalPurpose(PURPOSE_NEW_PROJECT);
        setNewProjectNameModalInitialValue('');
-       setNewProjectNameModalTitle('Welcome to WPILib Blocks!');
+       setNewProjectNameModalTitle(NewProjectNameModal.TITLE_WELCOME);
+       setNewProjectNameModalMessage(NewProjectNameModal.MESSAGE_WELCOME);
        setNewProjectNameModalIsOpen(true);
     }
   };
@@ -406,7 +245,7 @@ const App: React.FC = () => {
         }
         const child: TreeDataNode = {
           key: mechanism.modulePath,
-          title: mechanism.moduleName,
+          title: mechanism.className,
           icon: <MechanismOutlined />,
         };
         children.push(child);
@@ -420,14 +259,14 @@ const App: React.FC = () => {
         }
         const child: TreeDataNode = {
           key: opMode.modulePath,
-          title: opMode.moduleName,
+          title: opMode.className,
           icon: <OpModeOutlined />,
         };
         children.push(child);
       });
       const parent: TreeDataNode = {
         key: project.modulePath,
-        title: project.projectName,
+        title: project.className,
         children: children,
         icon: <ProjectOutlined />,
       };
@@ -596,9 +435,18 @@ const App: React.FC = () => {
     checkIfBlocksWereModified(() => {
       setNewProjectNameModalPurpose(PURPOSE_NEW_PROJECT);
       setNewProjectNameModalInitialValue('');
-      setNewProjectNameModalTitle('New Project');
+      setNewProjectNameModalTitle(NewProjectNameModal.TITLE_NEW_PROJECT);
+      setNewProjectNameModalMessage('');
       setNewProjectNameModalIsOpen(true);
     });
+  };
+
+  const getProjectClassNames = (): string[] => {
+    const projectClassNames: string[] = [];
+    modules.forEach((project) => {
+      projectClassNames.push(project.className);
+    });
+    return projectClassNames;
   };
 
   const getProjectNames = (): string[] => {
@@ -609,7 +457,8 @@ const App: React.FC = () => {
     return projectNames;
   };
 
-  const handleNewProjectNameOk = async (newProjectName: string) => {
+  const handleNewProjectNameOk = async (newProjectClassName: string) => {
+    const newProjectName = commonStorage.classNameToModuleName(newProjectClassName);
     const newProjectPath = commonStorage.makeProjectPath(newProjectName);
     if (newProjectNameModalPurpose === PURPOSE_NEW_PROJECT) {
       const projectContent = commonStorage.newProjectContent(newProjectName);
@@ -657,7 +506,9 @@ const App: React.FC = () => {
     checkIfBlocksWereModified(() => {
       setNewModuleNameModalPurpose(PURPOSE_NEW_MECHANISM);
       setNewModuleNameModalInitialValue('');
-      setNewModuleNameModalTitle('New Mechanism');
+      setNewModuleNameModalTitle(NewModuleNameModal.TITLE_NEW_MECHANISM);
+      setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_MECHANISM);
+      setNewModuleNameModalLabel(NewModuleNameModal.LABEL_MECHANISM);
       setNewModuleNameModalIsOpen(true);
     });
   };
@@ -666,7 +517,9 @@ const App: React.FC = () => {
     checkIfBlocksWereModified(() => {
       setNewModuleNameModalPurpose(PURPOSE_NEW_OPMODE);
       setNewModuleNameModalInitialValue('');
-      setNewModuleNameModalTitle('New OpMode');
+      setNewModuleNameModalTitle(NewModuleNameModal.TITLE_NEW_OPMODE);
+      setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_OPMODE);
+      setNewModuleNameModalLabel(NewModuleNameModal.LABEL_OPMODE);
       setNewModuleNameModalIsOpen(true);
     });
   };
@@ -678,24 +531,25 @@ const App: React.FC = () => {
   };
 
   // Provide a callback so the NewModuleNameModal will know what the existing
-  // module names are in the current project.
-  const getModuleNames = (projectName: string): string[] => {
-    const moduleNames: string[] = [];
+  // module class names are in the current project.
+  const getModuleClassNames = (projectName: string): string[] => {
+    const moduleClassNames: string[] = [];
     for (const project of modules) {
       if (project.projectName === projectName) {
         project.mechanisms.forEach((mechanism) => {
-          moduleNames.push(mechanism.moduleName);
+          moduleClassNames.push(mechanism.className);
         });
         project.opModes.forEach((opMode) => {
-          moduleNames.push(opMode.moduleName);
+          moduleClassNames.push(opMode.className);
         });
         break;
       }
     }
-    return moduleNames;
+    return moduleClassNames;
   };
 
-  const handleNewModuleNameOk = async (newModuleName: string) => {
+  const handleNewModuleNameOk = async (newModuleClassName: string) => {
+    const newModuleName = commonStorage.classNameToModuleName(newModuleClassName);
     const newModulePath = commonStorage.makeModulePath(currentModule.projectName, newModuleName);
     if (newModuleNameModalPurpose === PURPOSE_NEW_MECHANISM) {
       const mechanismContent = commonStorage.newMechanismContent(
@@ -784,20 +638,25 @@ const App: React.FC = () => {
       if (currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
         // This is a Project.
         setNewProjectNameModalPurpose(PURPOSE_RENAME_PROJECT);
-        setNewProjectNameModalInitialValue(currentModule.projectName);
-        setNewProjectNameModalTitle('Rename Project');
+        setNewProjectNameModalInitialValue(commonStorage.moduleNameToClassName(currentModule.projectName));
+        setNewProjectNameModalTitle(NewProjectNameModal.TITLE_RENAME_PROJECT);
+        setNewProjectNameModalMessage('');
         setNewProjectNameModalIsOpen(true);
       } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
         // This is a Mechanism.
         setNewModuleNameModalPurpose(PURPOSE_RENAME_MODULE);
-        setNewModuleNameModalInitialValue(currentModule.moduleName);
-        setNewModuleNameModalTitle('Rename Mechanism');
+        setNewModuleNameModalInitialValue(currentModule.className);
+        setNewModuleNameModalTitle(NewModuleNameModal.TITLE_RENAME_MECHANISM);
+        setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_MECHANISM);
+        setNewModuleNameModalLabel(NewModuleNameModal.LABEL_MECHANISM);
         setNewModuleNameModalIsOpen(true);
       } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
         // This is an OpMode.
         setNewModuleNameModalPurpose(PURPOSE_RENAME_MODULE);
-        setNewModuleNameModalInitialValue(currentModule.moduleName);
-        setNewModuleNameModalTitle('Rename OpMode');
+        setNewModuleNameModalInitialValue(currentModule.className);
+        setNewModuleNameModalTitle(NewModuleNameModal.TITLE_RENAME_OPMODE);
+        setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_OPMODE);
+        setNewModuleNameModalLabel(NewModuleNameModal.LABEL_OPMODE);
         setNewModuleNameModalIsOpen(true);
       }
     });
@@ -811,20 +670,25 @@ const App: React.FC = () => {
       if (currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
         // This is a Project.
         setNewProjectNameModalPurpose(PURPOSE_COPY_PROJECT);
-        setNewProjectNameModalInitialValue(currentModule.projectName + '_copy');
-        setNewProjectNameModalTitle('Copy Project');
+        setNewProjectNameModalInitialValue(commonStorage.moduleNameToClassName(currentModule.projectName) + 'Copy');
+        setNewProjectNameModalTitle(NewProjectNameModal.TITLE_COPY_PROJECT);
+        setNewProjectNameModalMessage('');
         setNewProjectNameModalIsOpen(true);
       } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
         // This is a Mechanism.
         setNewModuleNameModalPurpose(PURPOSE_COPY_MODULE);
-        setNewModuleNameModalInitialValue(currentModule.moduleName + '_copy');
-        setNewModuleNameModalTitle('Copy Mechanism');
+        setNewModuleNameModalInitialValue(currentModule.className + 'Copy');
+        setNewModuleNameModalTitle(NewModuleNameModal.TITLE_COPY_MECHANISM);
+        setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_MECHANISM);
+        setNewModuleNameModalLabel(NewModuleNameModal.LABEL_MECHANISM);
         setNewModuleNameModalIsOpen(true);
       } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
         // This is an OpMode.
         setNewModuleNameModalPurpose(PURPOSE_COPY_MODULE);
-        setNewModuleNameModalInitialValue(currentModule.moduleName + '_copy');
-        setNewModuleNameModalTitle('Copy OpMode');
+        setNewModuleNameModalInitialValue(currentModule.className + 'Copy');
+        setNewModuleNameModalTitle(NewModuleNameModal.TITLE_COPY_OPMODE);
+        setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_OPMODE);
+        setNewModuleNameModalLabel(NewModuleNameModal.LABEL_OPMODE);
         setNewModuleNameModalIsOpen(true);
       }
     });
@@ -1238,23 +1102,26 @@ const App: React.FC = () => {
         </Splitter>
       </Flex>
 
-      <NewProjectNameModal
+      <NewProjectNameModal.NewProjectNameModal
         title={newProjectNameModalTitle}
+        message={newProjectNameModalMessage}
         isOpen={newProjectNameModalIsOpen}
         initialValue={newProjectNameModalInitialValue}
-        getProjectNames={getProjectNames}
+        getProjectClassNames={getProjectClassNames}
         onOk={(newName) => {
           setNewProjectNameModalIsOpen(false);
           handleNewProjectNameOk(newName);
         }}
         onCancel={() => setNewProjectNameModalIsOpen(false)}
       />
-      <NewModuleNameModal
+      <NewModuleNameModal.NewModuleNameModal
         title={newModuleNameModalTitle}
+        example={newModuleNameModalExample}
+        label={newModuleNameModalLabel}
         isOpen={newModuleNameModalIsOpen}
         initialValue={newModuleNameModalInitialValue}
         getCurrentProjectName={getCurrentProjectName}
-        getModuleNames={getModuleNames}
+        getModuleClassNames={getModuleClassNames}
         onOk={(newName) => {
           setNewModuleNameModalIsOpen(false);
           handleNewModuleNameOk(newName);
