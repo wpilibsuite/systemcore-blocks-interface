@@ -97,8 +97,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   /**
    * Add a class method definition.
    */
-  addClassMethodDefinition(nameFieldValue: string, methodName: string, code: string): void {
-    this.context.addClassMethodName(nameFieldValue, methodName);
+  addClassMethodDefinition(methodName: string, code: string): void {
     this.classMethods[methodName] = code;
   }
 

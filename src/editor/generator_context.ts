@@ -33,9 +33,6 @@ export class GeneratorContext {
   // The exported blocks for the current module.
   private exportedBlocks: Block[] = [];
 
-  // Key is the mrc_class_method_def block's NAME field, value is the python method name.
-  private classMethodNames: {[key: string]: string} = Object.create(null);
-
   // Has mechanisms (ie, needs in init)
   private hasMechanisms = false;
 
@@ -46,12 +43,13 @@ export class GeneratorContext {
 
   clear(): void {
     this.clearExportedBlocks();
-    this.clearClassMethodNames();
     this.hasMechanisms = false;
   }
+
   setHasMechanism():void{
     this.hasMechanisms = true;
   }
+
   getHasMechanisms():boolean{
     return this.hasMechanisms;
   }
@@ -100,22 +98,5 @@ export class GeneratorContext {
 
   getExportedBlocks(): Block[] {
     return this.exportedBlocks;
-  }
-
-  clearClassMethodNames() {
-    this.classMethodNames = Object.create(null);
-  }
-
-  addClassMethodName(nameFieldValue: string, methodName: string) {
-    if (nameFieldValue !== methodName) {
-      this.classMethodNames[nameFieldValue] = methodName;
-    }
-  }
-
-  getClassMethodName(nameFieldValue: string): string | null {
-    if (this.classMethodNames[nameFieldValue]) {
-      return this.classMethodNames[nameFieldValue];
-    }
-    return nameFieldValue;
   }
 }

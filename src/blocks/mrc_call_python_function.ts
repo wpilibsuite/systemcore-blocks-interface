@@ -48,7 +48,7 @@ export type FunctionArg = {
   type: string,
 };
 
-type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin;
+export type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin;
 interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcFunctionKind: FunctionKind,
   mrcReturnType: string,
@@ -57,6 +57,7 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcImportModule: string,
   mrcActualFunctionName: string,
   mrcExportedFunction: boolean,
+  maybeRenameProcedure(this: CallPythonFunctionBlock, oldName: string, legalName: string): void;
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
 
@@ -263,6 +264,13 @@ const CALL_PYTHON_FUNCTION = {
         input.setCheck(getAllowedTypesForSetCheck(this.mrcArgs[i].type));
       }
     }
+  },
+  maybeRenameProcedure: function(this: CallPythonFunctionBlock, oldName: string, newName: string): void {
+    if (this.mrcFunctionKind === FunctionKind.INSTANCE_WITHIN) {
+      if (this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME) == oldName) {
+        this.setFieldValue(newName, pythonUtils.FIELD_FUNCTION_NAME);
+      }
+    }
   }
 };
 
@@ -315,10 +323,8 @@ export const pythonFromBlock = function(
       break;
     }
     case FunctionKind.INSTANCE_WITHIN: {
-      const callPythonFunctionBlock = block as CallPythonFunctionBlock;
-      const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
-          ? callPythonFunctionBlock.mrcActualFunctionName
-          : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+      const blocklyName = block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+      const functionName = generator.getProcedureName(blocklyName);
       code = 'self.' + functionName;
       break;
     }
