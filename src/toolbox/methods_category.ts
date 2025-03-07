@@ -118,7 +118,6 @@ export class MethodsCategory {
             functionKind: 'instance_within',
             returnType: classMethodDefBlock.mrcReturnType,
             args: [],
-            actualFunctionName: classMethodDefBlock.mrcPythonMethodName,
           },
           fields: {
             FUNC: classMethodDefBlock.getFieldValue('NAME'),
