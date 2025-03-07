@@ -43,8 +43,8 @@ export const TITLE_COPY_OPMODE = 'Copy OpMode';
 
 const DESCRIPTION = 'No spaces are allowed in the name. Each word in the name should start with a capital letter.';
 
-export const EXAMPLE_MECHANISM = 'For example, GamePieceShooter';
-export const EXAMPLE_OPMODE = 'For example, AutoParkAndShoot';
+export const EXAMPLE_MECHANISM = 'For example: GamePieceShooter';
+export const EXAMPLE_OPMODE = 'For example: AutoParkAndShoot';
 export const LABEL_MECHANISM = 'Mechanism Name:';
 export const LABEL_OPMODE = 'OpMode Name:';
 
