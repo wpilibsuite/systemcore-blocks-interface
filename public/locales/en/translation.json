@@ -1,6 +1,12 @@
 {
-    "project_delete": "i18n: Delete Project",
-    "project_rename": "i18n: Rename Project",
-    "project_copy": "i18n: Copy Project"
+    "mechanism_delete": "Delete Project",
+    "mechanism_rename": "Rename Project",
+    "mechanism_copy": "Copy Project",
+    "opmode_delete": "Delete Project",
+    "opmode_rename": "Rename Project",
+    "opmode_copy": "Copy Project",
+    "project_delete": "Delete Project",
+    "project_rename": "Rename Project",
+    "project_copy": "Copy Project",
+    "fail_list_modules": "Failed to load the list of modules."
 }
- 
