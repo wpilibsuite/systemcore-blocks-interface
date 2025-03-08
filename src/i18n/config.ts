@@ -1,38 +1,49 @@
-// src/i18n/config.ts
+/**
+ * @license
+ * Copyright 2025 Porpoiseful LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-// Core i18next library.
+/**
+ * @fileoverview Configuration for i18n
+ * @author alan@porpoiseful.com (Alan Smith)
+ * 
+ * This is mostly borrowed with a few adaptations from 
+ * https://phrase.com/blog/posts/localizing-react-apps-with-i18next/
+ */
 import i18n from "i18next";      
 import HttpApi from "i18next-http-backend";                
-// Bindings for React: allow components to
-// re-render when language changes.
 import { initReactI18next } from "react-i18next";
 
 i18n
-  // Wire up the backend as a plugin.
+  // Add backend as a plugin so we can load the needed translation at runtime
   .use(HttpApi)
-  // Add React bindings as a plugin.
+  // Add React bindings as a plugin so it will re-render when language changes
   .use(initReactI18next)
-  // Initialize the i18next instance.
   .init({
     // Config options
 
     // Specifies the default language (locale) used
     // when a user visits our site for the first time.
-    // We use English here, but feel free to use
-    // whichever locale you want.                   
     lng: "en",
 
-    // Fallback locale used when a translation is
-    // missing in the active locale. Again, use your
-    // preferred locale here. 
+    // Fallback locale used when a translation is missing.
     fallbackLng: "en",
 
-    // Normally, we want `escapeValue: true` as it
-    // ensures that i18next escapes any code in
-    // translation messages, safeguarding against
-    // XSS (cross-site scripting) attacks. However,
-    // React does this escaping itself, so we turn 
-    // it off in i18next.
+    // Normally, we want `escapeValue: true` as it ensures that i18next escapes any code in
+    // translation messages, safeguarding against XSS (cross-site scripting) attacks. However,
+    // React does this escaping itself, so we turn it off in i18next.
     interpolation: {
       escapeValue: false,
     },
