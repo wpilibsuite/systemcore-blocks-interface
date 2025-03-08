@@ -35,6 +35,8 @@ import {
   UploadOutlined,
 } from '@ant-design/icons';
 
+import { useTranslation } from "react-i18next";
+
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -116,6 +118,8 @@ const App: React.FC = () => {
   const PURPOSE_COPY_PROJECT = 'CopyProject';
   const PURPOSE_RENAME_MODULE = 'RenameModule';
   const PURPOSE_COPY_MODULE = 'CopyModule';
+
+  const { t } = useTranslation();
 
   const ignoreEffect = () => {
     if (!import.meta.env.MODE || import.meta.env.MODE === 'development') {
@@ -308,9 +312,9 @@ const App: React.FC = () => {
 
     if (module != null) {
       if (module.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
-        setRenameTooltip('Rename Project');
-        setCopyTooltip('Copy Project');
-        setDeleteTooltip('Delete Project');
+        setRenameTooltip(t('project_rename'));
+        setCopyTooltip(t('project_copy'));
+        setDeleteTooltip(t('project_delete'));
       } else if (module.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
         setRenameTooltip('Rename Mechanism');
         setCopyTooltip('Copy Mechanism');
