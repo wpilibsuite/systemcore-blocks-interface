@@ -12,6 +12,7 @@
 # Intentional Limitations (for simplicity)
 * Each blockly workspace goes to one Python file (module) and can only contain one class
 * The only type of methods that can be created are class instance methods
+* We don't allow multiple methods to be created with the same name (even though Python does)
 * All variables created in blockly will be class instance variables
 
 # Design thoughts
