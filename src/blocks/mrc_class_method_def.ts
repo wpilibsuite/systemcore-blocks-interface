@@ -26,7 +26,7 @@ import * as ChangeFramework from './utils/change_framework'
 import { getLegalName } from './utils/python';
 import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { CallPythonFunctionBlock } from './mrc_call_python_function'
+import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
@@ -146,6 +146,7 @@ const CLASS_METHOD_DEF = {
             });
         });
         this.updateBlock_();
+        mutateMethodCallers(this.workspace, this.getFieldValue('NAME'), this.saveExtraState());
     },
     /**
      * Update the block to reflect the newly loaded extra state.
@@ -186,7 +187,7 @@ const CLASS_METHOD_DEF = {
                 paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
         }
         this.mrcUpdateParams();
-        //Blockly.Procedures.mutateCallers(this);
+        mutateMethodCallers(this.workspace, this.getFieldValue('NAME'), this.saveExtraState());
     },
     decompose: function (this: ClassMethodDefBlock, workspace: Blockly.Workspace) {
         // This is a special sub-block that only gets created in the mutator UI.
@@ -238,9 +239,7 @@ const CLASS_METHOD_DEF = {
       const oldName = nameField.getValue();
       if (oldName !== name && oldName !== legalName) {
         // Rename any callers.
-        for (const block of this.workspace.getBlocksByType('mrc_call_python_function')) {
-          (block as CallPythonFunctionBlock).maybeRenameProcedure(oldName, legalName);
-        }
+        renameMethodCallers(this.workspace, oldName, legalName);
       }
       return legalName;
     },
