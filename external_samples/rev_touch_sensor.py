@@ -26,9 +26,9 @@ class RevTouchSensor(Component):
         return True
     
     # Events
-    def whenPressedRegister(callback: Callable[[None, None]]) -> None:
+    def when_pressed_register(callback: Callable[[None, None]]) -> None:
         # Code to register callback here
         pass
-    def whenReleasedRegister(callback: Callable[[None, None]]) -> None:
+    def when_released_register(callback: Callable[[None, None]]) -> None:
         # Code to register callback here
         pass
