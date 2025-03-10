@@ -33,3 +33,6 @@
 ## Components
 * Every actuator is a component
 * Every sensor is a component
+
+# Localization 
+* This page describes easy ways to use the i18n support that I added: https://phrase.com/blog/posts/localizing-react-apps-with-i18next/
