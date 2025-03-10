@@ -39,7 +39,8 @@ class Component:
     def stop(self) -> None:
         pass
 
-    # any reset required (if any) after it has stopped before it can be used
+    # any reset required (if any) at the beginning of each opmode
+    # This might remove any registered callbacks
     @abstractmethod
     def reset(self) -> None:
         pass
@@ -48,4 +49,9 @@ class Component:
     # of the PortType enumeration
     @abstractmethod
     def get_connection_port_type(self) -> list[PortType]:
+        pass
+
+    # This is called periodically when an opmode is running
+    @abstractmethod
+    def periodic(self) -> None:
         pass

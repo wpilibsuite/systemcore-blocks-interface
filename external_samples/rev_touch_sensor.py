@@ -19,6 +19,9 @@ class RevTouchSensor(Component):
         pass
     def get_connection_port_type(self) -> list[PortType]:
         return [PortType.SMART_IO_PORT]
+    def periodic(self) -> None:
+        # This would poll the hardware and see if it needs to fire any events
+        pass
 
     # Methods
     def is_pressed(self) -> bool:
