@@ -21,7 +21,7 @@
 
 
 import * as Blockly from 'blockly';
-import { Order, PythonGenerator } from 'blockly/python';
+import { Order } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
@@ -58,7 +58,7 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcImportModule: string,
   mrcActualFunctionName: string,
   mrcExportedFunction: boolean,
-  renameMethod(this: CallPythonFunctionBlock, oldName: string, newName: string): void;
+  renameMethod(this: CallPythonFunctionBlock, newName: string): void;
   mutateMethod(this: CallPythonFunctionBlock, defBlockExtraState: ClassMethodDefExtraState): void;
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
@@ -139,7 +139,7 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         default:
-          throw new Error('mrcFunctionKind has unexpected value: ' + mrcFunctionKind)
+          throw new Error('mrcFunctionKind has unexpected value: ' + this.mrcFunctionKind)
       }
       const funcTooltip = this.mrcTooltip;
       if (funcTooltip) {
@@ -261,7 +261,7 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         default:
-          throw new Error('mrcFunctionKind has unexpected value: ' + mrcFunctionKind)
+          throw new Error('mrcFunctionKind has unexpected value: ' + this.mrcFunctionKind)
       }
     }
 
@@ -305,7 +305,7 @@ const CALL_PYTHON_FUNCTION = {
     defBlockExtraState.params.forEach((param) => {
       this.mrcArgs.push({
         'name': param.name,
-        'type': param.type,
+        'type': param.type ?? '',
       });
     });
     this.updateBlock_();
@@ -345,7 +345,6 @@ export const pythonFromBlock = function(
       break;
     }
     case FunctionKind.CONSTRUCTOR: {
-      const callPythonFunctionBlock = block as CallPythonFunctionBlock;
       const className = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
       code = className;
       break;
@@ -367,7 +366,7 @@ export const pythonFromBlock = function(
       break;
     }
     default:
-      throw new Error('mrcFunctionKind has unexpected value: ' + mrcFunctionKind)
+      throw new Error('mrcFunctionKind has unexpected value: ' + callPythonFunctionBlock.mrcFunctionKind)
   }
   code += '(' + generateCodeForArguments(callPythonFunctionBlock, generator, argStartIndex) + ')';
   if (block.outputConnection) {

@@ -42,7 +42,7 @@ export const setup = function() {
 
 export const pythonFromBlock = function(
     block: Blockly.Block,
-    generator: PythonGenerator,
+    _: PythonGenerator,
 ) {
   return '# ' + block.getFieldValue('COMMENT') + '\n';
 };

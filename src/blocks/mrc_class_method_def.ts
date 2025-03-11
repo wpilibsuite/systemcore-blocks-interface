@@ -33,19 +33,12 @@ export const BLOCK_NAME = 'mrc_class_method_def';
 const MUTATOR_BLOCK_NAME = 'methods_mutatorarg';
 const PARAM_CONTAINER_BLOCK_NAME    = 'method_param_container';
 
-class MethodInput extends Blockly.inputs.Input {
-    readonly type = Blockly.inputs.inputTypes.CUSTOM;
-    constructor(name: string, block: Blockly.Block) {
-        super(name, block);
-    }
-}
-
 export type Parameter = {
     name: string,
     type?: string,
 };
 
-type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin & Blockly.BlockSvg;
+export type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin & Blockly.BlockSvg;
 interface ClassMethodDefMixin extends ClassMethodDefMixinType {
     mrcCanChangeSignature: boolean,
     mrcCanBeCalledWithinClass: boolean,
@@ -57,7 +50,7 @@ interface ClassMethodDefMixin extends ClassMethodDefMixinType {
 type ClassMethodDefMixinType = typeof CLASS_METHOD_DEF;
 
 /** Extra state for serialising call_python_* blocks. */
-type ClassMethodDefExtraState = {
+export type ClassMethodDefExtraState = {
     /**
      * Can change name and parameters and return type
      */
@@ -178,7 +171,7 @@ const CLASS_METHOD_DEF = {
 
         let paramBlock = containerBlock.getInputTargetBlock('STACK');
         while (paramBlock && !paramBlock.isInsertionMarker()) {
-            let param : Parameter = {
+            const param : Parameter = {
                 name : paramBlock.getFieldValue('NAME'),
                 type : ''
             }
@@ -192,13 +185,13 @@ const CLASS_METHOD_DEF = {
     decompose: function (this: ClassMethodDefBlock, workspace: Blockly.Workspace) {
         // This is a special sub-block that only gets created in the mutator UI.
         // It acts as our "top block"
-        let topBlock = workspace.newBlock(PARAM_CONTAINER_BLOCK_NAME);
+        const topBlock = workspace.newBlock(PARAM_CONTAINER_BLOCK_NAME);
         (topBlock as Blockly.BlockSvg).initSvg();
 
         // Then we add one sub-block for each item in the list.
-        var connection = topBlock!.getInput('STACK')!.connection;
+        let connection = topBlock!.getInput('STACK')!.connection;
 
-        for (var i = 0; i < this.mrcParameters.length; i++) {
+        for (let i = 0; i < this.mrcParameters.length; i++) {
             let itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME);
             (itemBlock as Blockly.BlockSvg).initSvg();
             itemBlock.setFieldValue(this.mrcParameters[i].name, 'NAME')
@@ -237,7 +230,7 @@ const CLASS_METHOD_DEF = {
 
       const legalName = findLegalMethodName(name, this);
       const oldName = nameField.getValue();
-      if (oldName !== name && oldName !== legalName) {
+      if (oldName && oldName !== name && oldName !== legalName) {
         // Rename any callers.
         renameMethodCallers(this.workspace, oldName, legalName);
       }
@@ -282,7 +275,7 @@ function findLegalMethodName(name: string, block: ClassMethodDefBlock): string {
  * @returns True if the name is used, otherwise return false.
  */
 function isMethodNameUsed(
-    name: string, workspace: Workspace, opt_exclude?: Block): boolean {
+    name: string, workspace: Blockly.Workspace, opt_exclude?: Blockly.Block): boolean {
   const nameLowerCase = name.toLowerCase();
   for (const block of workspace.getBlocksByType('mrc_class_method_def')) {
     if (block === opt_exclude) {
@@ -291,8 +284,9 @@ function isMethodNameUsed(
     if (nameLowerCase === block.getFieldValue('NAME').toLowerCase()) {
       return true;
     }
-    if (block.mrcPythonMethodName &&
-        nameLowerCase === block.mrcPythonMethodName.toLowerCase()) {
+    const classMethodDefBlock = block as ClassMethodDefBlock;
+    if (classMethodDefBlock.mrcPythonMethodName &&
+        nameLowerCase === classMethodDefBlock.mrcPythonMethodName.toLowerCase()) {
       return true;
     }
   }
@@ -315,11 +309,10 @@ interface MethodMutatorArgMixin extends MethodMutatorArgMixinType{
 type MethodMutatorArgMixinType = typeof METHODS_MUTATORARG;
 
 function setName(block: Blockly.BlockSvg){
-    let parentBlock = ChangeFramework.getParentOfType(block, PARAM_CONTAINER_BLOCK_NAME);
+    const parentBlock = ChangeFramework.getParentOfType(block, PARAM_CONTAINER_BLOCK_NAME);
     if (parentBlock) {
-        let done = false;
-        let variableBlocks = parentBlock!.getDescendants(true)
-        let otherNames: string[] = []
+        const variableBlocks = parentBlock!.getDescendants(true)
+        const otherNames: string[] = []
         variableBlocks?.forEach(function (variableBlock) {
             if (variableBlock != block) {
                 otherNames.push(variableBlock.getFieldValue('NAME'));
@@ -465,7 +458,7 @@ export const pythonFromBlock = function (
         xfix2 = xfix1;
     }
     if(block.mrcPythonMethodName == '__init__'){
-        branch = generator.defineClassVariables(block.workspace) + branch;
+        branch = generator.defineClassVariables() + branch;
     }    
     if (returnValue) {
         returnValue = generator.INDENT + 'return ' + returnValue + '\n';

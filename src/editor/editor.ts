@@ -211,18 +211,24 @@ export class Editor {
   }
 
   private getModuleContent(): string {
-    const pythonCode = extendedPythonGenerator.workspaceToCode(this.blocklyWorkspace, this.generatorContext);
+    if (!this.currentModule) {
+      throw new Error('getModuleContent: this.currentModule is null.');
+    }
+    const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
+        this.blocklyWorkspace, this.generatorContext);
     const exportedBlocks = JSON.stringify(this.generatorContext.getExportedBlocks());
-    const blocksContent = JSON.stringify(Blockly.serialization.workspaces.save(this.blocklyWorkspace));
-    return commonStorage.makeModuleContent(this.currentModule, pythonCode, exportedBlocks, blocksContent);
+    const blocksContent = JSON.stringify(
+        Blockly.serialization.workspaces.save(this.blocklyWorkspace));
+    return commonStorage.makeModuleContent(
+        this.currentModule, pythonCode, exportedBlocks, blocksContent);
   }
 
-  public async saveBlocks(): void {
+  public async saveBlocks() {
     const moduleContent = this.getModuleContent();
     try {
       await this.storage.saveModule(this.modulePath, moduleContent);
       this.moduleContent = moduleContent;
-    } catch (e: Error) {
+    } catch (e) {
       throw e;
     }
   }

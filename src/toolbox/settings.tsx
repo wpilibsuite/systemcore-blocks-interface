@@ -3,7 +3,6 @@ import { Button, Flex, Modal, Splitter, Tree, Typography } from 'antd';
 import type { TreeDataNode, TreeProps } from 'antd';
 
 import * as toolboxItems from './items';
-import * as toolbox from './toolbox';
 import * as generatedToolbox from './generated/toolbox';
 
 
@@ -177,7 +176,7 @@ const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, sho
     }
   };
 
-  const handleModuleTreeSelected: TreeProps['onSelect'] = (a: React.Key[], e) => {
+  const handleModuleTreeSelected: TreeProps['onSelect'] = (a: React.Key[]) => {
     if (a.length === 1) {
       setModuleTreeSelectedKey(a[0]);
     }

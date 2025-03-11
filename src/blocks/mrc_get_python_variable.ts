@@ -21,7 +21,7 @@
 
 
 import * as Blockly from 'blockly';
-import { Order, PythonGenerator } from 'blockly/python';
+import { Order } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown } from '../fields/FieldDropdown';
