@@ -45,13 +45,14 @@ class Component:
     def reset(self) -> None:
         pass
 
-    # This returns a list (can be empty, one, or multipe) of the ports this connects to
+    # This returns a list (can be empty, one, or multiple) of the ports this connects to
     # of the PortType enumeration
     @abstractmethod
     def get_connection_port_type(self) -> list[PortType]:
         pass
 
-    # This is called periodically when an opmode is running
+    # This is called periodically when an opmode is running.   The component might use this
+    # to talk to hardware and then call callbacks
     @abstractmethod
     def periodic(self) -> None:
         pass
