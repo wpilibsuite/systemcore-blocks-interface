@@ -1,5 +1,5 @@
 from component import Component, PortType
-from _collections_abc import Callable
+from collections.abc import Callable
 
 class RevTouchSensor(Component):
     def __init__(self):
