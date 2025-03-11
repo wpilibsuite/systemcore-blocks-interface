@@ -9,8 +9,14 @@ class PortType(Enum):
     I2C_PORT = 5
     USB_PORT = 6
 
+class InvalidPortException(Exception):
+    pass
+
 # This is an abstract class
 class Component:
+    @abstractmethod
+    def __init__(self, ports : list[tuple[PortType, int]]):
+        pass
     # This is the manufacturer of the component
     @abstractmethod
     def get_manufacturer(self) -> str:   
