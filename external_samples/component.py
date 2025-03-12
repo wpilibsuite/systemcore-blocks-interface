@@ -3,7 +3,7 @@ from enum import Enum
 from collections.abc import Callable, Protocol
 
 class EmptyCallable(Protocol):
-    def __call__(self) -> bool:
+    def __call__(self) -> None:
         pass
 class PortType(Enum):
     CAN_PORT = 1
