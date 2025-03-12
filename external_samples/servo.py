@@ -34,7 +34,7 @@ class Servo(Component):
         '''Set the servo to a position between 0 and 1'''
         # sends to the hardware the position of the servo
         pass
-    def set_angle(self, angle: float) -> None:
+    def set_angle_degrees(self, angle: float) -> None:
         '''Set the servo to an angle between 0 and 270'''
         self.set_position(angle / 270.0)
     
