@@ -1,5 +1,4 @@
 from component import Component, PortType, InvalidPortException
-from collections.abc import Callable
 
 class SmartMotor(Component):    
     # Required methods
