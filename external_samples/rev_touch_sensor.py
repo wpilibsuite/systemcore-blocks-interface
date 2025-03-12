@@ -1,5 +1,4 @@
-from component import Component, PortType, InvalidPortException
-from collections.abc import Callable
+from component import Component, PortType, InvalidPortException, EmptyCallable
 
 class RevTouchSensor(Component):
     def __init__(self, ports : list[tuple[PortType, int]]):
@@ -44,11 +43,11 @@ class RevTouchSensor(Component):
         return self.is_pressed
     
     # Events
-    def register_when_pressed(self, callback: Callable[[], None]) -> None:
+    def register_when_pressed(self, callback: EmptyCallable) -> None:
         '''Event when touch sensor is first pressed'''
         self.pressed_callback = callback
 
 
-    def register_when_released(self, callback: Callable[[], None]) -> None:
+    def register_when_released(self, callback: EmptyCallable) -> None:
         '''Event when touch sensor is first released'''
         self.released_callback = callback

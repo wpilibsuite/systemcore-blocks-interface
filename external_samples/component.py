@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+from collections.abc import Callable, Protocol
 
+class EmptyCallable(Protocol):
+    def __call__(self) -> bool:
+        pass
 class PortType(Enum):
     CAN_PORT = 1
     SMART_IO_PORT = 2
