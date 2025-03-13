@@ -76,7 +76,7 @@ export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title,
     }
   };
 
-  const onChange = (e) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(commonStorage.onChangeClassName(e.target.value));
   };
 

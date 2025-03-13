@@ -5,7 +5,6 @@ import {
   Button,
   ConfigProvider,
   Flex,
-  Input,
   message,
   Popconfirm,
   Space,
@@ -16,7 +15,6 @@ import {
   theme,
   Upload
 } from 'antd';
-import type { InputRef } from 'antd';
 import type { TreeDataNode, TreeProps } from 'antd';
 import type { UploadProps } from 'antd';
 import {
@@ -55,8 +53,6 @@ import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
 import { createGeneratorContext, GeneratorContext } from './editor/generator_context';
 
-import * as toolboxItems from './toolbox/items';
-import * as toolbox from './toolbox/toolbox';
 //import { testAllBlocksInToolbox } from './toolbox/toolbox_tests';
 import ToolboxSettingsModal from './toolbox/settings';
 
@@ -173,6 +169,9 @@ const App: React.FC = () => {
   }, [storage]);
 
   const fetchMostRecentModulePath = async () => {
+    if (!storage) {
+      return;
+    }
     try {
       const value = await storage.fetchEntry('mostRecentModulePath', '');
       setMostRecentModulePath(value);
@@ -183,6 +182,9 @@ const App: React.FC = () => {
   };
 
   const initializeShownPythonToolboxCategories = async () => {
+    if (!storage) {
+      return;
+    }
     try {
       const value = await storage.fetchEntry('shownPythonToolboxCategories', '[]');
       const shownCategories: string[] = JSON.parse(value);
@@ -206,6 +208,10 @@ const App: React.FC = () => {
 
   const fetchListOfModules = async (): Promise<commonStorage.Project[]> => {
     return new Promise(async (resolve, reject) => {
+      if (!storage) {
+        reject(new Error());
+        return;
+      }
       try {
         const array = await storage.listModules();
         setModules(array)
@@ -348,7 +354,7 @@ const App: React.FC = () => {
     }
     if (currentModule && blocklyComponent.current && generatorContext.current) {
       const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-      setGeneratedCode(extendedPythonGenerator.workspaceToCode(
+      setGeneratedCode(extendedPythonGenerator.mrcWorkspaceToCode(
           blocklyWorkspace, generatorContext.current));
     } else {
       setGeneratedCode('');
@@ -462,6 +468,9 @@ const App: React.FC = () => {
   };
 
   const handleNewProjectNameOk = async (newProjectClassName: string) => {
+    if (!storage || !currentModule) {
+      return;
+    }
     const newProjectName = commonStorage.classNameToModuleName(newProjectClassName);
     const newProjectPath = commonStorage.makeProjectPath(newProjectName);
     if (newProjectNameModalPurpose === PURPOSE_NEW_PROJECT) {
@@ -553,7 +562,10 @@ const App: React.FC = () => {
   };
 
   const handleNewModuleNameOk = async (newModuleClassName: string) => {
-    const newModuleName = commonStorage.classNameToModuleName(newModuleClassName);
+    if (!storage || !currentModule) {
+    return;
+  }
+  const newModuleName = commonStorage.classNameToModuleName(newModuleClassName);
     const newModulePath = commonStorage.makeModulePath(currentModule.projectName, newModuleName);
     if (newModuleNameModalPurpose === PURPOSE_NEW_MECHANISM) {
       const mechanismContent = commonStorage.newMechanismContent(
@@ -612,26 +624,30 @@ const App: React.FC = () => {
   };
 
   const handleSaveClicked = async () => {
-    saveBlocks((success) => {});
+    saveBlocks();
   };
 
-  const saveBlocks = async (): boolean => {
-    if (blocksEditor.current && currentModulePath) {
+  const saveBlocks = async (): Promise<boolean> => {
+    return new Promise(async (resolve, reject) => {
+      if (!blocksEditor.current || !currentModulePath) {
+        reject(new Error());
+        return;
+      }
       try {
         await blocksEditor.current.saveBlocks();
         messageApi.open({
           type: 'success',
           content: 'Save completed successfully.',
         });
-        return true;
-      } catch (e: Error) {
+        resolve(true);
+      } catch (e) {
         console.log('Failed to save the blocks. Caught the following error...');
         console.log(e);
         setAlertErrorMessage('Failed to save the blocks.');
         setAlertErrorVisible(true);
+        reject(new Error('Failed to save the blocks.'));
       }
-    }
-    return false;
+    });
   };
 
   const handleRenameClicked = () => {
@@ -715,7 +731,7 @@ const App: React.FC = () => {
     afterPopconfirmOk.current = () => {
       setOpenPopconfirm(false);
       checkIfBlocksWereModified(async () => {
-        if (!currentModule) {
+        if (!storage || !currentModule) {
           return;
         }
         if (currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
@@ -779,15 +795,20 @@ const App: React.FC = () => {
       }
       return isBlocks || Upload.LIST_IGNORE;
     },
-    onChange: (info) => {
-    },
     customRequest: ({ file, onSuccess, onError }) => {
+      if (!onSuccess || !onError) {
+        return;
+      }
+      const fileObject = file as File;
       const reader = new FileReader();
       reader.onload = async (event) => {
-        const dataUrl = event.target.result;
-        const uploadProjectName = commonStorage.makeUploadProjectName(file.name, getProjectNames());
+        const dataUrl = event.target?.result;
+        if (!storage || !dataUrl) {
+          return;
+        }
+        const uploadProjectName = commonStorage.makeUploadProjectName(fileObject.name, getProjectNames());
         try {
-          await storage.uploadProject(uploadProjectName, dataUrl);
+          await storage.uploadProject(uploadProjectName, dataUrl as string);
           onSuccess('Upload successful');
           await fetchListOfModules();
           const uploadProjectPath = commonStorage.makeProjectPath(uploadProjectName);
@@ -795,7 +816,7 @@ const App: React.FC = () => {
         } catch (e) {
           console.log('Failed to upload the project. Caught the following error...');
           console.log(e);
-          onError('Failed to upload the project.');
+          onError(new Error('Failed to upload the project.'));
           setAlertErrorMessage('Failed to upload the project');
           setAlertErrorVisible(true);
         }
@@ -803,16 +824,19 @@ const App: React.FC = () => {
       reader.onerror = (error) => {
         console.log('Failed to upload the project. reader.onerror called with the following error...');
         console.log(error);
-        onError('Failed to upload the project.');
+        onError(new Error('Failed to upload the project.'));
         setAlertErrorMessage('Failed to upload the project');
         setAlertErrorVisible(true);
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(fileObject);
     },
   };
 
   const handleDownloadClicked = () => {
     checkIfBlocksWereModified(async () => {
+      if (!storage || !currentModule) {
+        return;
+      }
       try {
         const url = await storage.downloadProject(currentModule.projectName);
         const link = document.createElement('a');
@@ -833,13 +857,16 @@ const App: React.FC = () => {
   };
 
   const handleToolboxSettingsOk = async (updatedShownCategories: Set<string>) => {
+    if (!storage) {
+      return;
+    }
     setShownPythonToolboxCategories(updatedShownCategories);
     const array = Array.from(updatedShownCategories);
     array.sort();
     storage.saveEntry('shownPythonToolboxCategories', JSON.stringify(array));
   };
 
-  const handleModuleSelected: TreeProps['onSelect'] = (a: React.Key[], e) => {
+  const handleModuleSelected: TreeProps['onSelect'] = (a: React.Key[]) => {
     if (a.length === 1) {
       checkIfBlocksWereModified(() => {
         setTreeSelectedKey(a[0]);

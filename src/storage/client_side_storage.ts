@@ -28,15 +28,15 @@ const DATABASE_NAME = 'systemcore-blocks-interface';
 export async function openClientSideStorage(): Promise<commonStorage.Storage> {
   return new Promise((resolve, reject) => {
     const openRequest = window.indexedDB.open(DATABASE_NAME, 1);
-    openRequest.onerror = (event: Event) => {
+    openRequest.onerror = () => {
       console.log('IndexedDB open request failed. openRequest.error is...');
       console.log(openRequest.error);
       reject(new Error('IndexedDB open request failed.'));
     };
-    openRequest.onupgradeneeded = (event: Event) => {
+    openRequest.onupgradeneeded = () => {
       const db = openRequest.result;
 
-      var stores = db.objectStoreNames;
+      const stores = db.objectStoreNames;
 
       if (!stores.contains('entries')) {
         // Create an object store for key/value entries.
@@ -48,15 +48,19 @@ export async function openClientSideStorage(): Promise<commonStorage.Storage> {
         db.createObjectStore('modules', { keyPath: 'path' });
       }
     };
-    openRequest.onsuccess = (event: Event) => {
+    openRequest.onsuccess = () => {
       const db = openRequest.result;
-      resolve(new ClientSideStorage(db));
+      resolve(ClientSideStorage.create(db));
     };
   });
 }
 
 class ClientSideStorage implements commonStorage.Storage {
   db: IDBDatabase;
+
+  static create(db: IDBDatabase) {
+    return new ClientSideStorage(db)
+  }
 
   private constructor(db: IDBDatabase) {
     this.db = db;
@@ -65,7 +69,7 @@ class ClientSideStorage implements commonStorage.Storage {
   async saveEntry(entryKey: string, entryValue: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(['entries'], 'readwrite');
-      transaction.oncomplete = (event: Event) => {
+      transaction.oncomplete = () => {
         resolve();
       };
       transaction.onabort = () => {
@@ -74,12 +78,12 @@ class ClientSideStorage implements commonStorage.Storage {
       };
       const entriesObjectStore = transaction.objectStore('entries');
       const getRequest = entriesObjectStore.get(entryKey);
-      getRequest.onerror = (event: Event) => {
+      getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
         console.log(getRequest.error);
         throw new Error('IndexedDB get request failed.');
       };
-      getRequest.onsuccess = (event: Event) => {
+      getRequest.onsuccess = () => {
         let value;
         if (getRequest.result === undefined) {
           value = Object.create(null);
@@ -89,7 +93,7 @@ class ClientSideStorage implements commonStorage.Storage {
         }
         value.value = entryValue;
         const putRequest = entriesObjectStore.put(value);
-        putRequest.onerror = (event: Event) => {
+        putRequest.onerror = () => {
           console.log('IndexedDB put request failed. putRequest.error is...');
           console.log(putRequest.error);
           throw new Error('IndexedDB put request failed.');
@@ -102,12 +106,12 @@ class ClientSideStorage implements commonStorage.Storage {
     return new Promise((resolve, reject) => {
       const getRequest = this.db.transaction(['entries'], 'readonly')
           .objectStore('entries').get(entryKey);
-      getRequest.onerror = (event: Event) => {
+      getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
         console.log(getRequest.error);
         reject(new Error('IndexedDB get request failed.'));
       };
-      getRequest.onsuccess = (event: Event) => {
+      getRequest.onsuccess = () => {
         const value = (getRequest.result === undefined) ? defaultValue : getRequest.result.value;
         resolve(value);
       };
@@ -124,12 +128,12 @@ class ClientSideStorage implements commonStorage.Storage {
       const openCursorRequest = this.db.transaction(['modules'], 'readonly')
           .objectStore('modules')
           .openCursor();
-      openCursorRequest.onerror = (event: Event) => {
+      openCursorRequest.onerror = () => {
         console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
         console.log(openCursorRequest.error);
         reject(new Error('IndexedDB openCursor request failed.'));
       };
-      openCursorRequest.onsuccess = (event: Event) => {
+      openCursorRequest.onsuccess = () => {
         const cursor = openCursorRequest.result;
         if (cursor) {
           const value = cursor.value;
@@ -214,12 +218,12 @@ class ClientSideStorage implements commonStorage.Storage {
     return new Promise((resolve, reject) => {
       const getRequest = this.db.transaction(['modules'], 'readonly')
           .objectStore('modules').get(modulePath);
-      getRequest.onerror = (event: Event) => {
+      getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
         console.log(getRequest.error);
         reject(new Error('IndexedDB get request failed.'));
       };
-      getRequest.onsuccess = (event: Event) => {
+      getRequest.onsuccess = () => {
         if (getRequest.result === undefined) {
           // Module does not exist.
           reject(new Error('IndexedDB get request succeeded, but the module does not exist.'));
@@ -244,7 +248,7 @@ class ClientSideStorage implements commonStorage.Storage {
     // When saving an existing module, the moduleType must be falsy.
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(['modules'], 'readwrite');
-      transaction.oncomplete = (event: Event) => {
+      transaction.oncomplete = () => {
         resolve();
       };
       transaction.onabort = () => {
@@ -253,12 +257,12 @@ class ClientSideStorage implements commonStorage.Storage {
       };
       const modulesObjectStore = transaction.objectStore('modules');
       const getRequest = modulesObjectStore.get(modulePath);
-      getRequest.onerror = (event: Event) => {
+      getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
         console.log(getRequest.error);
         throw new Error('IndexedDB get request failed.');
       };
-      getRequest.onsuccess = (event: Event) => {
+      getRequest.onsuccess = () => {
         let value;
         if (getRequest.result === undefined) {
           // The module does not exist.
@@ -286,7 +290,7 @@ class ClientSideStorage implements commonStorage.Storage {
         value.content = moduleContent;
         value.dateModifiedMillis = Date.now();
         const putRequest = modulesObjectStore.put(value);
-        putRequest.onerror = (event: Event) => {
+        putRequest.onerror = () => {
           console.log('IndexedDB put request failed. putRequest.error is...');
           console.log(putRequest.error);
           throw new Error('IndexedDB put request failed.');
@@ -297,12 +301,8 @@ class ClientSideStorage implements commonStorage.Storage {
 
   private async _renameOrCopyProject(oldProjectName: string, newProjectName: string, copy: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
-      const errorMessage = copy
-          ? 'Copy Project failed.'
-          : 'Rename Project failed.'
-
       const transaction = this.db.transaction(['modules'], 'readwrite');
-      transaction.oncomplete = (event: Event) => {
+      transaction.oncomplete = () => {
         resolve();
       };
       transaction.onabort = () => {
@@ -313,12 +313,12 @@ class ClientSideStorage implements commonStorage.Storage {
       // First get the list of modules in the project.
       const oldToNewModulePaths: {[key: string]: string} = {};
       const openCursorRequest = modulesObjectStore.openCursor();
-      openCursorRequest.onerror = (event: Event) => {
+      openCursorRequest.onerror = () => {
         console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
         console.log(openCursorRequest.error);
         throw new Error('IndexedDB openCursor request failed.');
       };
-      openCursorRequest.onsuccess = (event: Event) => {
+      openCursorRequest.onsuccess = () => {
         const cursor = openCursorRequest.result;
         if (cursor) {
           const value = cursor.value;
@@ -339,12 +339,12 @@ class ClientSideStorage implements commonStorage.Storage {
           // Now rename the project for each of the modules.
           Object.entries(oldToNewModulePaths).forEach(([oldModulePath, newModulePath]) => {
             const getRequest = modulesObjectStore.get(oldModulePath);
-            getRequest.onerror = (event: Event) => {
+            getRequest.onerror = () => {
               console.log('IndexedDB get request failed. getRequest.error is...');
               console.log(getRequest.error);
               throw new Error('IndexedDB get request failed.');
             };
-            getRequest.onsuccess = (event: Event) => {
+            getRequest.onsuccess = () => {
               if (getRequest.result === undefined) {
                 console.log('IndexedDB get request succeeded, but the module does not exist.');
                 throw new Error('IndexedDB get request succeeded, but the module does not exist.');
@@ -353,20 +353,18 @@ class ClientSideStorage implements commonStorage.Storage {
               value.path = newModulePath;
               value.dateModifiedMillis = Date.now();
               const putRequest = modulesObjectStore.put(value);
-              putRequest.onerror = (event: Event) => {
+              putRequest.onerror = () => {
                 console.log('IndexedDB put request failed. putRequest.error is...');
                 console.log(putRequest.error);
                 throw new Error('IndexedDB put request failed.');
               };
-              putRequest.onsuccess = (event: Event) => {
+              putRequest.onsuccess = () => {
                 if (!copy) {
                   const deleteRequest = modulesObjectStore.delete(oldModulePath);
-                  deleteRequest.onerror = (event: Event) => {
+                  deleteRequest.onerror = () => {
                     console.log('IndexedDB delete request failed. deleteRequest.error is...');
                     console.log(deleteRequest.error);
                     throw new Error('IndexedDB delete request failed.');
-                  };
-                  deleteRequest.onsuccess = (event: Event) => {
                   };
                 }
               };
@@ -400,12 +398,8 @@ class ClientSideStorage implements commonStorage.Storage {
     }
 
     return new Promise((resolve, reject) => {
-      const errorMessage = copy
-          ? 'Copy module failed.'
-          : 'Rename module failed.'
-
       const transaction = this.db.transaction(['modules'], 'readwrite');
-      transaction.oncomplete = (event: Event) => {
+      transaction.oncomplete = () => {
         resolve();
       };
       transaction.onabort = () => {
@@ -416,12 +410,12 @@ class ClientSideStorage implements commonStorage.Storage {
       const oldModulePath = commonStorage.makeModulePath(projectName, oldModuleName);
       const newModulePath = commonStorage.makeModulePath(projectName, newModuleName);
       const getRequest = modulesObjectStore.get(oldModulePath);
-      getRequest.onerror = (event: Event) => {
+      getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
         console.log(getRequest.error);
         throw new Error('IndexedDB get request failed.');
       };
-      getRequest.onsuccess = (event: Event) => {
+      getRequest.onsuccess = () => {
         if (getRequest.result === undefined) {
           console.log('IndexedDB get request succeeded, but the module does not exist.');
           throw new Error('IndexedDB get request succeeded, but the module does not exist.');
@@ -431,20 +425,20 @@ class ClientSideStorage implements commonStorage.Storage {
         value.path = newModulePath;
         value.dateModifiedMillis = Date.now();
         const putRequest = modulesObjectStore.put(value);
-        putRequest.onerror = (event: Event) => {
+        putRequest.onerror = () => {
           console.log('IndexedDB put request failed. putRequest.error is...');
           console.log(putRequest.error);
           throw new Error('IndexedDB put request failed.');
         };
-        putRequest.onsuccess = (event: Event) => {
+        putRequest.onsuccess = () => {
           if (!copy) {
             const deleteRequest = modulesObjectStore.delete(oldModulePath);
-            deleteRequest.onerror = (event: Event) => {
+            deleteRequest.onerror = () => {
               console.log('IndexedDB delete request failed. deleteRequest.error is...');
               console.log(deleteRequest.error);
               throw new Error('IndexedDB delete request failed.');
             };
-            deleteRequest.onsuccess = (event: Event) => {
+            deleteRequest.onsuccess = () => {
             };
           }
         };
@@ -455,7 +449,7 @@ class ClientSideStorage implements commonStorage.Storage {
   private async _deleteProject(projectName: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(['modules'], 'readwrite');
-      transaction.oncomplete = (event: Event) => {
+      transaction.oncomplete = () => {
         resolve();
       };
       transaction.onabort = () => {
@@ -466,12 +460,12 @@ class ClientSideStorage implements commonStorage.Storage {
       // First get the list of modulePaths in the project.
       const modulePaths: string[] = [];
       const openCursorRequest = modulesObjectStore.openCursor();
-      openCursorRequest.onerror = (event: Event) => {
+      openCursorRequest.onerror = () => {
         console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
         console.log(openCursorRequest.error);
         throw new Error('IndexedDB openCursor request failed.');
       };
-      openCursorRequest.onsuccess = (event: Event) => {
+      openCursorRequest.onsuccess = () => {
         const cursor = openCursorRequest.result;
         if (cursor) {
           const value = cursor.value;
@@ -484,12 +478,12 @@ class ClientSideStorage implements commonStorage.Storage {
           // Now delete each of the modules.
           modulePaths.forEach((modulePath) => {
             const deleteRequest = modulesObjectStore.delete(modulePath);
-            deleteRequest.onerror = (event: Event) => {
+            deleteRequest.onerror = () => {
               console.log('IndexedDB delete request failed. deleteRequest.error is...');
               console.log(deleteRequest.error);
               throw new Error('IndexedDB delete request failed.');
             };
-            deleteRequest.onsuccess = (event: Event) => {
+            deleteRequest.onsuccess = () => {
             };
           });
         }
@@ -505,7 +499,7 @@ class ClientSideStorage implements commonStorage.Storage {
 
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(['modules'], 'readwrite');
-      transaction.oncomplete = (event: Event) => {
+      transaction.oncomplete = () => {
         resolve();
       };
       transaction.onabort = () => {
@@ -514,12 +508,12 @@ class ClientSideStorage implements commonStorage.Storage {
       };
       const modulesObjectStore = transaction.objectStore('modules');
       const deleteRequest = modulesObjectStore.delete(modulePath);
-      deleteRequest.onerror = (event: Event) => {
+      deleteRequest.onerror = () => {
         console.log('IndexedDB delete request failed. deleteRequest.error is...');
         console.log(deleteRequest.error);
         throw new Error('IndexedDB delete request failed.');
       };
-      deleteRequest.onsuccess = (event: Event) => {
+      deleteRequest.onsuccess = () => {
       };
     });
   }
@@ -531,12 +525,12 @@ class ClientSideStorage implements commonStorage.Storage {
       const openCursorRequest = this.db.transaction(['modules'], 'readonly')
           .objectStore('modules')
           .openCursor();
-      openCursorRequest.onerror = (event: Event) => {
+      openCursorRequest.onerror = () => {
         console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
         console.log(openCursorRequest.error);
         reject(new Error('IndexedDB openCursor request failed.'));
       };
-      openCursorRequest.onsuccess = async (event: Event) => {
+      openCursorRequest.onsuccess = async () => {
         const cursor = openCursorRequest.result;
         if (cursor) {
           const value = cursor.value;
@@ -571,7 +565,7 @@ class ClientSideStorage implements commonStorage.Storage {
   
       // Save each module.
       const transaction = this.db.transaction(['modules'], 'readwrite');
-      transaction.oncomplete = (event: Event) => {
+      transaction.oncomplete = () => {
         resolve();
       };
       transaction.onabort = () => {
@@ -585,12 +579,12 @@ class ClientSideStorage implements commonStorage.Storage {
         const moduleContent = moduleContents[moduleName];
         const modulePath = commonStorage.makeModulePath(projectName, moduleName);
         const getRequest = modulesObjectStore.get(modulePath);
-        getRequest.onerror = (event: Event) => {
+        getRequest.onerror = () => {
           console.log('IndexedDB get request failed. getRequest.error is...');
           console.log(getRequest.error);
           throw new Error('IndexedDB get request failed.');
         };
-        getRequest.onsuccess = (event: Event) => {
+        getRequest.onsuccess = () => {
           if (getRequest.result !== undefined) {
             // The module already exists. That is not expected!
             console.log('IndexedDB get request succeeded, but the module already exists.');
@@ -602,7 +596,7 @@ class ClientSideStorage implements commonStorage.Storage {
           value.content = moduleContent;
           value.dateModifiedMillis = Date.now();
           const putRequest = modulesObjectStore.put(value);
-          putRequest.onerror = (event: Event) => {
+          putRequest.onerror = () => {
             console.log('IndexedDB put request failed. putRequest.error is...');
             console.log(putRequest.error);
             throw new Error('IndexedDB put request failed.');

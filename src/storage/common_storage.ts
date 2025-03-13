@@ -29,7 +29,7 @@ import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
 
 import {extendedPythonGenerator} from '../editor/extended_python_generator';
-import { createGeneratorContext, GeneratorContext } from '../editor/generator_context';
+import { createGeneratorContext } from '../editor/generator_context';
 
 // Types, constants, and functions related to modules, regardless of where the modules are stored.
 
@@ -69,17 +69,17 @@ const NUMBER_OF_PARTS = 3;
 export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 
 export interface Storage {
-  async saveEntry(entryKey: string, entryValue: string): Promise<void>;
-  async fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
-  async listModules(): Promise<Project[]>;
-  async fetchModuleContent(modulePath: string): Promise<string>;
-  async createModule(moduleType: string, modulePath: string, moduleContent: string): Promise<void>;
-  async saveModule(modulePath: string, moduleContent: string): Promise<void>;
-  async renameModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
-  async copyModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
-  async deleteModule(moduleType: string, modulePath: string): Promise<void>;
-  async downloadProject(projectName: string): Promise<string>;
-  async uploadProject(projectName: string, blobUrl: string): Promise<void>;
+  saveEntry(entryKey: string, entryValue: string): Promise<void>;
+  fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
+  listModules(): Promise<Project[]>;
+  fetchModuleContent(modulePath: string): Promise<string>;
+  createModule(moduleType: string, modulePath: string, moduleContent: string): Promise<void>;
+  saveModule(modulePath: string, moduleContent: string): Promise<void>;
+  renameModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
+  copyModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
+  deleteModule(moduleType: string, modulePath: string): Promise<void>;
+  downloadProject(projectName: string): Promise<string>;
+  uploadProject(projectName: string, blobUrl: string): Promise<void>;
 }
 
 /**
@@ -151,7 +151,7 @@ export function isValidClassName(name: string): boolean {
 /**
  * Returns the module name for the given class name.
  */
-export function classNameToModuleName(className: string): boolean {
+export function classNameToModuleName(className: string): string {
   let moduleName = '';
   for (let i = 0; i < className.length; i++) {
     const char = className.charAt(i);
@@ -170,7 +170,7 @@ export function classNameToModuleName(className: string): boolean {
 /**
  * Returns the class name for the given module name.
  */
-export function moduleNameToClassName(moduleName: string): boolean {
+export function moduleNameToClassName(moduleName: string): string {
   let className = '';
   let nextCharUpper = true;
   for (let i = 0; i < moduleName.length; i++) {
@@ -241,7 +241,7 @@ function startingBlocksToModuleContent(
   const generatorContext = createGeneratorContext();
   generatorContext.setModule(module);
 
-  const pythonCode = extendedPythonGenerator.workspaceToCode(
+  const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
       headlessBlocklyWorkspace, generatorContext);
   const exportedBlocks = JSON.stringify(generatorContext.getExportedBlocks());
   const blocksContent = JSON.stringify(
@@ -319,7 +319,7 @@ export function makeModuleContent(module: Module, pythonCode: string, exportedBl
       '"""\n');
 }
 
-function getParts(moduleContent: string): string {
+function getParts(moduleContent: string): string[] {
   // The last line is """.
   const lastChars = '\n"""\n';
   if (!moduleContent.endsWith(lastChars) || moduleContent.length <= lastChars.length) {
@@ -341,7 +341,10 @@ function getParts(moduleContent: string): string {
   // Ignore the first (index 0) element of the split array, which is the python
   // code.
   while (split.length > 1 && parts.length < NUMBER_OF_PARTS) {
-    parts.push(split.pop().trim());
+    const s = split.pop();
+    if (s) {
+      parts.push(s.trim());
+    }
   }
   if (parts.length < 2) {
     throw new Error('Unable to parse the module content.');
@@ -391,7 +394,7 @@ export function extractExportedBlocks(moduleName: string, moduleContent: string)
 /**
  * Extract the moduleType from the given module content.
  */
-export function extractModuleType(moduleName: string, moduleContent: string): Block[] {
+export function extractModuleType(moduleContent: string): string {
   const parts = getParts(moduleContent);
   let moduleType = parts[PARTS_INDEX_MODULE_TYPE];
   if (moduleType.startsWith(MARKER_MODULE_TYPE)) {
@@ -404,7 +407,7 @@ export function extractModuleType(moduleName: string, moduleContent: string): Bl
  * Produce the blob for downloading a project.
  */
 export async function produceDownloadProjectBlob(
-    projectName: string, moduleContents: {[key: string]: string}): string {
+    projectName: string, moduleContents: {[key: string]: string}): Promise<string> {
   const zip = new JSZip();
   for (let moduleName in moduleContents) {
     const moduleContent = moduleContents[moduleName];
@@ -457,7 +460,7 @@ export function makeUploadProjectName(
   let name = preferredName; // No suffix.
   let suffix = 0;
   while (true) {
-    var nameClash = false;
+    let nameClash = false;
     for (const existingProjectName of existingProjectNames) {
       if (name == existingProjectName) {
         nameClash = true;
@@ -477,7 +480,7 @@ export function makeUploadProjectName(
  */
 export async function processUploadedBlob(
     projectName: string, blobUrl: string)
-    : [{[key: string]: string}, {[key: string]: string}] {
+    : Promise<[{[key: string]: string}, {[key: string]: string}]> {
   const prefix = 'data:application/octet-stream;base64,';
   if (!blobUrl.startsWith(prefix)) {
     throw new Error('blobUrl does not have the expected prefix.');
@@ -485,9 +488,10 @@ export async function processUploadedBlob(
   const data = blobUrl.substring(prefix.length);
 
   const zip = await JSZip.loadAsync(data, {base64: true});
-  const promises = {};
+  const promises: {[key: string]: Promise<string>} = {};
   zip.forEach((moduleName, zipEntry) => {
     promises[moduleName] = zipEntry.async('text');
+    console.log("HeyLiz - promises[moduleName] is ..."); console.log(promises[moduleName]);
   });
 
   // Wait for all promises to resolve.
@@ -551,7 +555,7 @@ export function _processUploadedModule(
   const generatorContext = createGeneratorContext();
   generatorContext.setModule(module);
 
-  const pythonCode = extendedPythonGenerator.workspaceToCode(
+  const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
       headlessBlocklyWorkspace, generatorContext);
   const exportedBlocks = JSON.stringify(generatorContext.getExportedBlocks());
   const moduleContent = makeModuleContent(

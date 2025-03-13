@@ -21,7 +21,7 @@
 
 import * as Blockly from 'blockly/core';
 import { pythonGenerator } from 'blockly/python';
-import * as toolboxItems from '../toolbox/items';
+import * as toolboxItems from './items';
 
 
 // Tests

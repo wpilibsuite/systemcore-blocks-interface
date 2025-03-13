@@ -31,6 +31,15 @@ export class Sep extends Item {
   }
 }
 
+export class Label extends Item {
+  text: string;
+
+  constructor(text: string) {
+    super('label');
+    this.text = text;
+  }
+}
+
 export class Block extends Item {
   /** The block type. */
   type: string;
@@ -53,7 +62,7 @@ export class Block extends Item {
   }
 }
 
-export type ContentsType = Sep | Block | Category;
+export type ContentsType = Sep | Label | Block | Category;
 
 export class Category extends Item  {
   /** The category name. */

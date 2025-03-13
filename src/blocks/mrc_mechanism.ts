@@ -20,12 +20,12 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
-import { Order, PythonGenerator } from 'blockly/python';
+import { Order } from 'blockly/python';
 
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
+import { getAllowedTypesForSetCheck } from './utils/python';
 
 export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';

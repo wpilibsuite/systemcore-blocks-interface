@@ -19,7 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import * as toolboxItems from '../toolbox/items';
+import * as toolboxItems from './items';
 
 
 /**

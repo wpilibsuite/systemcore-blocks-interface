@@ -55,26 +55,20 @@ export class GeneratorContext {
   }
 
   getClassName(): string {
+    if (!this.module) {
+      throw new Error('getClassName: this.module is null.');
+    }
     if (this.module.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
       return 'Robot';
     }
 
-    // TODO(lizlooney): className should be a field in commonStorage.Module.
-    // Until that happens, we'll figure it out now from the module name.
-
-    let className = '';
-    let nextCharUpper = true;
-    for (let i = 0; i < this.module.moduleName.length; i++) {
-      const char = this.module.moduleName.charAt(i);
-      if (char !== '_') {
-        className += nextCharUpper ? char.toUpperCase() : char;
-      }
-      nextCharUpper = (char === '_');
-    }
-    return className;
+    return this.module.className;
   }
 
   getClassParent(): string {
+    if (!this.module) {
+      throw new Error('getClassParent: this.module is null.');
+    }
     if (this.module.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
       return 'RobotBase';
     }
@@ -91,7 +85,7 @@ export class GeneratorContext {
     this.exportedBlocks.length = 0;
   }
 
-  setExportedBlocks(exportedBlocks: Blocks[]) {
+  setExportedBlocks(exportedBlocks: Block[]) {
     this.exportedBlocks.length = 0;
     this.exportedBlocks.push(...exportedBlocks);
   }
