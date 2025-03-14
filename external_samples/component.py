@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from collections.abc import Callable, Protocol
+from collections.abc import Protocol
 
 class EmptyCallable(Protocol):
     def __call__(self) -> None:
@@ -17,7 +17,7 @@ class InvalidPortException(Exception):
     pass
 
 # This is an abstract class
-class Component:
+class Component(ABC):
     @abstractmethod
     def __init__(self, ports : list[tuple[PortType, int]]):
         pass
@@ -39,7 +39,8 @@ class Component:
         pass
     # This is the version of the software (returned as a (major, minor, revision) tuple where 
     # major and minor are positive integers
-    # revision is an optional string
+    # revision can be an empty string or specify small changes that are less than a
+    # minor revision
     @abstractmethod
     def get_version(self) -> tuple[int, int, str]: 
         pass
@@ -49,7 +50,7 @@ class Component:
     def stop(self) -> None:
         pass
 
-    # any reset required (if any) at the beginning of each opmode
+    # This performs any reset required (if any) at the beginning of each opmode
     # This might remove any registered callbacks
     @abstractmethod
     def reset(self) -> None:

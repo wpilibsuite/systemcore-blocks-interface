@@ -1,10 +1,8 @@
 from component import Component, PortType, InvalidPortException
-from collections.abc import Callable
 
 class Servo(Component):    
     # Required methods
     def __init__(self, ports : list[tuple[PortType, int]]):
-        self.is_pressed = None
         portType, port = ports[0]
         if portType != PortType.SERVO_PORT:
             raise InvalidPortException

@@ -44,10 +44,10 @@ class RevTouchSensor(Component):
     
     # Events
     def register_when_pressed(self, callback: EmptyCallable) -> None:
-        '''Event when touch sensor is first pressed'''
+        '''Event when touch sensor is pressed (after being not pressed)'''
         self.pressed_callback = callback
 
 
     def register_when_released(self, callback: EmptyCallable) -> None:
-        '''Event when touch sensor is first released'''
+        '''Event when touch sensor is released (after being pressed)'''
         self.released_callback = callback

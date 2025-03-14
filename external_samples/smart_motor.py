@@ -3,7 +3,6 @@ from component import Component, PortType, InvalidPortException
 class SmartMotor(Component):    
     # Required methods
     def __init__(self, ports : list[tuple[PortType, int]]):
-        self.is_pressed = None
         portType, port = ports[0]
         if portType != PortType.SMART_MOTOR_PORT:
             raise InvalidPortException

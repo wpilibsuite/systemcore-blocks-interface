@@ -1,5 +1,5 @@
 from component import Component, PortType, InvalidPortException
-from collections.abc import Callable, Protocol
+from collections.abc import Protocol
 
 class DistanceCallable(Protocol):
     def __call__(self, distance : float) -> None:
@@ -11,7 +11,6 @@ class ColorCallable(Protocol):
 class ColorRangeSensor(Component):    
     # Required methods
     def __init__(self, ports : list[tuple[PortType, int]]):
-        self.is_pressed = None
         portType, port = ports[0]
         if portType != PortType.I2C_PORT:
             raise InvalidPortException
@@ -37,27 +36,29 @@ class ColorRangeSensor(Component):
         pass
 
     # Component specific methods
-    def get_color_rgb(self) -> list[int, int, int]:
+    def get_color_rgb(self) -> tuple[int, int, int]:
         '''gets the color in rgb (red, green, blue)'''
         pass
-    def get_color_hsv(self) -> list[int, int, int]:
+    def get_color_hsv(self) -> tuple[int, int, int]:
         '''gets the color in hsv (hue, saturation, value)'''
         pass
     def get_distance_mm(self) -> float:
         '''gets the distance of the object seen'''
         pass
 
-    def register_when_less_than_distance(self, distance : float, callback: DistanceCallable) -> None:
+    def register_when_less_than_distance(self, distance : float, 
+                                               callback: DistanceCallable) -> None:
         '''Event when item is seen closer than a distance'''
         self.less_than_distance_callback = callback
 
-    def register_when_hue_in_range(self, min_hue : int, max_hue : int, callback: ColorCallable) -> None:
+    def register_when_hue_in_range(self, min_hue : int, 
+                                         max_hue : int, 
+                                         callback: ColorCallable) -> None:
         '''Event when hue is in range'''
         self.hue_in_range_callback = callback
 
-    def register_when_saturation_in_range(self, min_saturation : int, max_saturation : int, callback : ColorCallable) -> None:
+    def register_when_saturation_in_range(self, min_saturation : int, 
+                                                max_saturation : int, 
+                                                callback : ColorCallable) -> None:
         '''Event when saturation is in range'''
         self.saturation_in_range_callback = callback
-
-    
-    
