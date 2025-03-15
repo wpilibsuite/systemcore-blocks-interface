@@ -134,7 +134,7 @@ const App: React.FC = () => {
 
     openStorage();
     initializeBlocks();
-    //testAllBlocksInToolbox(toolbox.getToolboxJSON([], []).contents);
+    //testAllBlocksInToolbox();
   }, []);
 
   const openStorage = async () => {
