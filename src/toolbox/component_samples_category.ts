@@ -85,7 +85,7 @@ export const category =
                             },
                             {
                                 name: "color",
-                                type: ""
+                                type: "wpilib.Color"
                             }
                         ],
                         tooltip: "Change the color of an individual LED.",
@@ -150,7 +150,7 @@ export const category =
                         },
                         {
                             name: "color",
-                            type: ""
+                            type: "wpilib.Color"
                         }],
                         tooltip: "Change the color of all LEDs to a single color.",
                         importModule: ""
