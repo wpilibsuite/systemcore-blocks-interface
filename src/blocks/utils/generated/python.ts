@@ -1315,5 +1315,5 @@ export function getAllowedTypes(type: string): string[] {
     return ['wpiutil.log._StringLogEntryImpl', 'wpiutil.log.StringLogEntry'];
   }
 
-  return [""];
+  return [type];
 }
