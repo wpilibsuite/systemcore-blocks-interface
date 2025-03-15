@@ -27,12 +27,14 @@
 * A Robot has zero or more components
 
 ## Mechanisms
-* A mechansim can be created by the student and can have zero or more submechanisms and zero or more components
+* A mechansim can be created by the student and can have zero or more components
+* A mechanism cannot have submechanisms
 * Example:  A claw could have a servo (to open and close) and a range sensor (to determine when something is in the claw)
 
 ## Components
 * Every actuator is a component
 * Every sensor is a component
+* Components are not created by the student.   They are provided either by the vendor or by FIRST.
 
 # Localization 
 * This page describes easy ways to use the i18n support that I added: https://phrase.com/blog/posts/localizing-react-apps-with-i18next/

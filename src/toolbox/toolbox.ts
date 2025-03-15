@@ -20,7 +20,7 @@
  */
 
 import * as generatedToolbox from './generated/toolbox';
-import * as toolboxItems from '../toolbox/items';
+import * as toolboxItems from './items';
 import {category as logicCategory} from './logic_category';
 import {category as loopCategory} from './loop_category';
 import {category as mathCategory} from './math_category';

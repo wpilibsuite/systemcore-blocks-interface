@@ -21,12 +21,12 @@
 
 
 import * as Blockly from 'blockly';
-import { Order, PythonGenerator } from 'blockly/python';
+import { Order } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
-import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
+import { getAllowedTypesForSetCheck } from './utils/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
 

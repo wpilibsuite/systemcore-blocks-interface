@@ -59,23 +59,23 @@ export class ExtendedPythonGenerator extends PythonGenerator {
    * This is called from the python generator for the mrc_class_method_def for the
    * init method
    */
-  defineClassVariables(workspace: Blockly.Workspace) : string{
+  defineClassVariables() : string {
       let variableDefinitions = '';
 
-      if (this.context?.getHasMechanisms()){
+      if (this.context?.getHasMechanisms()) {
         variableDefinitions += this.INDENT + "self.mechanisms = []\n";
       }
       return variableDefinitions;
   }
-  getVariableName(nameOrId : string) : string{
-    const varName = super.getVariableName(name);
+  getVariableName(nameOrId: string): string {
+    const varName = super.getVariableName(nameOrId);
     return "self." + varName;
   }
   setHasMechanism() : void{
     this.context?.setHasMechanism();
   }
   
-  workspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
+  mrcWorkspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
     this.workspace = workspace;
     this.context = context;
     this.context.clear();
@@ -102,7 +102,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   finish(code: string): string {
-    if (this.context) {
+    if (this.context && this.workspace) {
       const className = this.context.getClassName();
       const classParent = this.context.getClassParent();
       this.addImport(classParent);

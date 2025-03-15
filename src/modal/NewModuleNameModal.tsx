@@ -83,7 +83,7 @@ export const NewModuleNameModal: React.FC<NewModuleNameModalProps> = ({ title, e
     }
   };
 
-  const onChange = (e) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(commonStorage.onChangeClassName(e.target.value));
   };
 
