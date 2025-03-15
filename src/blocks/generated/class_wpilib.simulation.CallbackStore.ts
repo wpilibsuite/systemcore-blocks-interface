@@ -11,7 +11,7 @@ export function getToolboxCategory(subcategories: toolboxItems.Category[] = []):
 
   // There are 1 blocks.
   const contents: toolboxItems.ContentsType[] = [
-    {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "callbackStore", "type": "wpilib.simulation._simulation.CallbackStore"}, {"name": "uid", "type": "int"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.CallbackStore", "FUNC": "setUid"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCallbackStore"}}}}}},
+    {"kind": "block", "type": "mrc_call_python_function", "extraState": {"functionKind": "instance", "returnType": "None", "args": [{"name": "callbackStore", "type": "wpilib.simulation.CallbackStore"}, {"name": "uid", "type": "int"}], "tooltip": "", "importModule": ""}, "fields": {"MODULE_OR_CLASS": "wpilib.simulation.CallbackStore", "FUNC": "setUid"}, "inputs": {"ARG0": {"block": {"type": "variables_get", "fields": {"VAR": {"name": "myCallbackStore"}}}}}},
   ];
 
   contents.push(...subcategories);
