@@ -63,7 +63,10 @@ const App: React.FC = () => {
             <BlocklyComponent ref={blocklyComponent} />
           </Antd.Splitter.Panel>
           <Antd.Splitter.Panel min='2%'>
-            <CodeDisplay generatedCode="" messageApi={messageApi}/>
+            <CodeDisplay generatedCode="" 
+                         messageApi={messageApi} 
+                         setAlertErrorMessage={setAlertErrorMessage}
+            />
           </Antd.Splitter.Panel>
         </Antd.Splitter>
       </Antd.Flex>
