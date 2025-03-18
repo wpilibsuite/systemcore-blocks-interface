@@ -73,7 +73,6 @@ export function getToolboxJSON(
         custom: 'VARIABLE',
       },
       methodsCategory,
-      componentSampleCategory,
     ]);
 
   return {
