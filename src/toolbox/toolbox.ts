@@ -28,7 +28,6 @@ import {category as textCategory} from './text_category';
 import {category as listsCategory} from './lists_category';
 import {category as miscCategory} from './misc_category';
 import {category as methodsCategory} from './methods_category';
-import {category as componentSampleCategory} from './component_samples_category';
 
 export function getToolboxJSON(
     opt_includeExportedBlocksFromProject: toolboxItems.ContentsType[],
