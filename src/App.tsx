@@ -2,19 +2,15 @@ import React from 'react';
 
 import * as Antd from 'antd';
 import * as I18Next from "react-i18next";
-import * as Blockly from 'blockly/core';
 
 import Header from './reactComponents/Header';
 import Footer from './reactComponents/Footer';
 import ModuleOutline from './reactComponents/ModuleOutline';
 import CodeDisplay from './reactComponents/CodeDisplay';
+import NewProjectNameModal from './reactComponents/NewProjectNameModal';
+import NewModuleNameModal from './reactComponents/NewModuleNameModal';
 
-// TODO: ALAN - Move this to reactComponents, and fix to be typescript
-import BlocklyComponent from './Blockly/BlocklyComponent';
-type BlocklyComponentType = {
-  getBlocklyWorkspace: () => Blockly.WorkspaceSvg,
-};
-
+import BlocklyComponent, { BlocklyComponentType } from './reactComponents/BlocklyComponent';
 
 const App: React.FC = () => {
   const { t } = I18Next.useTranslation();
@@ -40,10 +36,10 @@ const App: React.FC = () => {
         },
       }}
     >
-      { contextHolder }
-      <Header 
-          alertErrorMessage={alertErrorMessage}
-          setAlertErrorMessage={setAlertErrorMessage}
+      {contextHolder}
+      <Header
+        alertErrorMessage={alertErrorMessage}
+        setAlertErrorMessage={setAlertErrorMessage}
       />
       <Antd.Flex vertical
         style={{
@@ -63,14 +59,40 @@ const App: React.FC = () => {
             <BlocklyComponent ref={blocklyComponent} />
           </Antd.Splitter.Panel>
           <Antd.Splitter.Panel min='2%'>
-            <CodeDisplay generatedCode="" 
-                         messageApi={messageApi} 
-                         setAlertErrorMessage={setAlertErrorMessage}
+            <CodeDisplay generatedCode=""
+              messageApi={messageApi}
+              setAlertErrorMessage={setAlertErrorMessage}
             />
           </Antd.Splitter.Panel>
         </Antd.Splitter>
       </Antd.Flex>
       <Footer />
+      <NewProjectNameModal.NewProjectNameModal
+        title={newProjectNameModalTitle}
+        message={newProjectNameModalMessage}
+        isOpen={newProjectNameModalIsOpen}
+        initialValue={newProjectNameModalInitialValue}
+        getProjectClassNames={getProjectClassNames}
+        onOk={(newName) => {
+          setNewProjectNameModalIsOpen(false);
+          handleNewProjectNameOk(newName);
+        }}
+        onCancel={() => setNewProjectNameModalIsOpen(false)}
+      />
+      <NewModuleNameModal.NewModuleNameModal
+        title={newModuleNameModalTitle}
+        example={newModuleNameModalExample}
+        label={newModuleNameModalLabel}
+        isOpen={newModuleNameModalIsOpen}
+        initialValue={newModuleNameModalInitialValue}
+        getCurrentProjectName={getCurrentProjectName}
+        getModuleClassNames={getModuleClassNames}
+        onOk={(newName) => {
+          setNewModuleNameModalIsOpen(false);
+          handleNewModuleNameOk(newName);
+        }}
+        onCancel={() => setNewModuleNameModalIsOpen(false)}
+      />
     </Antd.ConfigProvider>
   );
 };
