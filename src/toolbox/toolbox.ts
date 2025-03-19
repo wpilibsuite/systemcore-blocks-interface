@@ -32,7 +32,7 @@ import {category as componentSampleCategory} from './component_samples_category'
 
 export function getToolboxJSON(
     opt_includeExportedBlocksFromProject: toolboxItems.ContentsType[],
-    shownPythonToolboxCategories: Set<string>) {
+    shownPythonToolboxCategories: Set<string> | null) {
   const contents: toolboxItems.ContentsType[] = generatedToolbox.getToolboxCategories();
   filterGeneratedCategories(contents, shownPythonToolboxCategories);
 
@@ -83,7 +83,7 @@ export function getToolboxJSON(
 }
 
 function filterGeneratedCategories(
-    contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string>) {
+    contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string> | null) {
   contents.forEach((item) => {
     if (item.kind === 'category') {
       const category = item as toolboxItems.Category;
@@ -93,7 +93,7 @@ function filterGeneratedCategories(
       }
       if ((category as toolboxItems.PythonModuleCategory).moduleName) {
         const moduleName = (item as toolboxItems.PythonModuleCategory).moduleName;
-        if (!shownPythonToolboxCategories.has(moduleName)) {
+        if (shownPythonToolboxCategories != null && !shownPythonToolboxCategories.has(moduleName)) {
           if (category.contents) {
             removeBlocksAndSeparators(category.contents);
           }
@@ -101,7 +101,7 @@ function filterGeneratedCategories(
       }
       if ((category as toolboxItems.PythonClassCategory).className) {
         const className = (item as toolboxItems.PythonClassCategory).className;
-        if (!shownPythonToolboxCategories.has(className)) {
+        if (shownPythonToolboxCategories != null && !shownPythonToolboxCategories.has(className)) {
           if (category.contents) {
             removeBlocksAndSeparators(category.contents);
           }
@@ -125,7 +125,7 @@ function removeBlocksAndSeparators(contents: toolboxItems.ContentsType[]) {
 }
 
 function removeEmptyCategories(
-    contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string>) {
+    contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string> | null) {
   let i = 0;
   while (i < contents.length) {
     let remove = false;
@@ -139,7 +139,7 @@ function removeEmptyCategories(
       }
       if (category.contents &&
           category.contents.length == 0 &&
-          !shownPythonToolboxCategories.has(fullCategoryName)) {
+          shownPythonToolboxCategories != null && !shownPythonToolboxCategories.has(fullCategoryName)) {
         remove = true;
       }
     }
