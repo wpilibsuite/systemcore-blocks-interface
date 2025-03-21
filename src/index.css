@@ -15,3 +15,50 @@ code {
   color: white;
 }
 
+.blocklyToolboxDiv {
+  /* Enable smooth scrolling behavior */
+  scroll-behavior: smooth !important;
+  
+  /* Hide default scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+  }
+  
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: transparent !important;
+    margin: 3px !important;
+  }
+  
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 3px !important;
+    transition: background 0.2s ease !important;
+  }
+  
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  /* Handle on active */
+  &::-webkit-scrollbar-thumb:active {
+    background: rgba(255, 255, 255, 0.4) !important;
+  }
+  
+  /* For Firefox */
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent !important;
+  
+  /* Hide scrollbar when not in use */
+  &:not(:hover)::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+/* Ensure smooth scrolling for the entire toolbox content */
+.blocklyToolboxContents {
+  scroll-behavior: smooth !important;
+}
