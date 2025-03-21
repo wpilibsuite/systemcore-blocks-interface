@@ -4,14 +4,29 @@ import ModuleButtons from './ModuleButtons';
 import * as commonStorage from '../storage/common_storage';
 import * as I18Next from "react-i18next";
 import * as NewProjectNameModal from './NewProjectNameModal';
-import * as NewModuleNameModal from './/NewModuleNameModal';
+import * as NewModuleNameModal from './NewModuleNameModal';
 import * as editor from '../editor/editor';
+import { createGeneratorContext, GeneratorContext } from '../editor/generator_context';
 import type { MessageInstance } from 'antd/es/message/interface';
+import { BlocklyComponentType } from './BlocklyComponent';
+import * as ChangeFramework from '../blocks/utils/change_framework'
+import { mutatorOpenListener } from '../blocks/mrc_class_method_def'
+import * as Blockly from 'blockly/core';
+import { extendedPythonGenerator } from '../editor/extended_python_generator';
+
+
+import {
+  AppstoreOutlined as MechanismOutlined,
+  FileOutlined as OpModeOutlined,
+  FolderOutlined as ProjectOutlined,
+} from '@ant-design/icons';
 
 interface ModuleOutlineProps {
   setAlertErrorMessage: (message: string) => void;
+  setGeneratedCode: (newCode: string) => void;
   storage: commonStorage.Storage | null;
-  messageApi : MessageInstance;
+  messageApi: MessageInstance;
+  blocklyComponent: BlocklyComponentType | null;
 }
 
 export default function ModuleOutline(props: ModuleOutlineProps) {
@@ -27,6 +42,9 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
   const [currentModule, setCurrentModule] = React.useState<commonStorage.Module | null>(null);
   const blocksEditor = React.useRef<editor.Editor | null>(null);
+  const generatorContext = React.useRef<GeneratorContext | null>(null);
+  const [mostRecentModulePath, setMostRecentModulePath] = React.useState<string>('');
+  const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
 
   // TODO(Alan): Clean this up
   const [newProjectNameModalPurpose, setNewProjectNameModalPurpose] = React.useState('');
@@ -60,7 +78,165 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   const afterPopconfirmOk = React.useRef<() => void>(() => { });
   const [popconfirmLoading, setPopconfirmLoading] = React.useState(false);
 
+  React.useEffect(() => {
+    if (currentModule && props.blocklyComponent && generatorContext.current) {
+      const blocklyWorkspace = props.blocklyComponent?.getBlocklyWorkspace();
+      props.setGeneratedCode(extendedPythonGenerator.mrcWorkspaceToCode(
+        blocklyWorkspace, generatorContext.current));
+    } else {
+      props.setGeneratedCode('');
+    }
+  }, [currentModule, triggerPythonRegeneration, props.blocklyComponent]);
+  // When the list of modules is set, update the treeData and treeExpandedKeys.
+  React.useEffect(() => {
 
+    if (modules.length === 0 && treeData.length === 0) {
+      return;
+    }
+    let foundCurrentModulePath = false;
+    let foundMostRecentModulePath = false;
+    const data: Antd.TreeDataNode[] = [];
+    const expandedKeys: React.Key[] = []
+    modules.forEach((project) => {
+      if (project.modulePath === currentModulePath) {
+        foundCurrentModulePath = true;
+      }
+      if (project.modulePath === mostRecentModulePath) {
+        foundMostRecentModulePath = true;
+      }
+      const children: Antd.TreeDataNode[] = [];
+      project.mechanisms.forEach((mechanism) => {
+        if (mechanism.modulePath === currentModulePath) {
+          foundCurrentModulePath = true;
+        }
+        if (mechanism.modulePath === mostRecentModulePath) {
+          foundMostRecentModulePath = true;
+        }
+        const child: Antd.TreeDataNode = {
+          key: mechanism.modulePath,
+          title: mechanism.className,
+          icon: <MechanismOutlined />,
+        };
+        children.push(child);
+      });
+      project.opModes.forEach((opMode) => {
+        if (opMode.modulePath === currentModulePath) {
+          foundCurrentModulePath = true;
+        }
+        if (opMode.modulePath === mostRecentModulePath) {
+          foundMostRecentModulePath = true;
+        }
+        const child: Antd.TreeDataNode = {
+          key: opMode.modulePath,
+          title: opMode.className,
+          icon: <OpModeOutlined />,
+        };
+        children.push(child);
+      });
+      const parent: Antd.TreeDataNode = {
+        key: project.modulePath,
+        title: project.className,
+        children: children,
+        icon: <ProjectOutlined />,
+      };
+      data.push(parent);
+      expandedKeys.push(parent.key);
+    });
+    setTreeData(data);
+    setTreeExpandedKeys([...expandedKeys]);
+
+    if (foundCurrentModulePath) {
+      setTreeSelectedKey(currentModulePath as React.Key);
+    } else if (foundMostRecentModulePath) {
+      setTreeSelectedKey(mostRecentModulePath as React.Key);
+    } else if (modules.length) {
+      setTreeSelectedKey(modules[0].modulePath as React.Key);
+    } else {
+      setTreeSelectedKey('' as React.Key);
+    }
+  }, [modules]);
+
+  React.useEffect(() => {
+    if (!props.blocklyComponent || !props.storage) {
+      return;
+    }
+    const blocklyWorkspace = props.blocklyComponent?.getBlocklyWorkspace();
+    if (blocklyWorkspace) {
+      ChangeFramework.setup(blocklyWorkspace);
+      blocklyWorkspace.addChangeListener(mutatorOpenListener);
+      blocklyWorkspace.addChangeListener(handleBlocksChanged);
+    }
+    generatorContext.current = createGeneratorContext();
+    blocksEditor.current = new editor.Editor(blocklyWorkspace, generatorContext.current, props.storage);
+  }, [props.blocklyComponent, props.storage]);
+
+  const handleBlocksChanged = (event: Blockly.Events.Abstract) => {
+    if (event.isUiEvent) {
+      // UI events are things like scrolling, zooming, etc.
+      // No need to regenerate python code after one of these.
+      return;
+    }
+    if (!event.workspaceId) {
+      return;
+    }
+    const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
+    if (!blocklyWorkspace) {
+      return;
+    }
+    if ((blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
+      // Don't regenerate python code mid-drag.
+      return;
+    }
+    setTriggerPythonRegeneration(Date.now());
+  };
+
+  // When a module path has become the current module path (either by fetching
+  // the most recent module path (soon after the app is loaded) or by the user
+  // selecting it in the tree, set the current module, update some tooltips, and
+  // load the module into the blockly editor.
+  React.useEffect(() => {
+    if (!props.storage) {
+      return;
+    }
+    const module = (modules.length > 0 && currentModulePath)
+      ? commonStorage.findModule(modules, currentModulePath)
+      : null;
+    setCurrentModule(module);
+    if (generatorContext.current) {
+      generatorContext.current.setModule(module);
+    }
+
+    if (module != null) {
+      if (module.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
+        setRenameTooltip(t("project_rename"));
+        setCopyTooltip(t("project_copy"));
+        setDeleteTooltip(t("project_delete"));
+      } else if (module.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
+        setRenameTooltip(t("mechanism_rename"));
+        setCopyTooltip(t("mechanism_copy"));
+        setDeleteTooltip(t("mechanism_delete"));
+      } else if (module.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
+        setRenameTooltip(t("opmode_rename"));
+        setCopyTooltip(t("opmode_copy"));
+        setDeleteTooltip(t("opmode_delete"));
+      }
+
+      props.storage.saveEntry('mostRecentModulePath', currentModulePath);
+      if (blocksEditor.current) {
+        blocksEditor.current.loadModuleBlocks(module);
+      }
+    } else {
+
+      setRenameTooltip('Rename');
+      setCopyTooltip('Copy');
+      setDeleteTooltip('Delete');
+
+      props.storage.saveEntry('mostRecentModulePath', '');
+      if (blocksEditor.current) {
+        blocksEditor.current.loadModuleBlocks(null);
+      }
+    }
+  }, [currentModulePath]);
   // Provide a callback so the NewModuleNameModal will know what the current
   // project name is.
   const getCurrentProjectName = (): string => {

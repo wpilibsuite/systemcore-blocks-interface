@@ -23,6 +23,7 @@ const App: React.FC = () => {
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [storage, setStorage] = React.useState<commonStorage.Storage | null>(null);
   const [messageApi, contextHolder] = Antd.message.useMessage();
+  const [generatedCode, setGeneratedCode] = React.useState<string>('');
 
   const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
 
@@ -89,13 +90,15 @@ const App: React.FC = () => {
               storage={storage}
               messageApi={messageApi}
               setAlertErrorMessage={setAlertErrorMessage}
+              setGeneratedCode={setGeneratedCode}
+              blocklyComponent={blocklyComponent.current}
             />
           </Antd.Splitter.Panel>
           <Antd.Splitter.Panel min='2%' defaultSize='50%'>
             <BlocklyComponent ref={blocklyComponent} />
           </Antd.Splitter.Panel>
           <Antd.Splitter.Panel min='2%'>
-            <CodeDisplay generatedCode=""
+            <CodeDisplay generatedCode={generatedCode}
               messageApi={messageApi}
               setAlertErrorMessage={setAlertErrorMessage}
             />
