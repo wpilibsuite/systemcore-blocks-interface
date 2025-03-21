@@ -73,6 +73,9 @@ const App: React.FC = () => {
     if (generatorContext.current) {
       generatorContext.current.setModule(currentModule);
     }
+    if(blocksEditor.current){
+      blocksEditor.current.loadModuleBlocks(currentModule);
+    }
   }, [currentModule]);
 
   React.useEffect(() => {

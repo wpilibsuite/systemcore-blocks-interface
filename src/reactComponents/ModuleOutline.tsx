@@ -206,9 +206,6 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       }
 
       props.storage.saveEntry('mostRecentModulePath', currentModulePath);
-      if (props.blocksEditor) {
-        props.blocksEditor.loadModuleBlocks(module);
-      }
     } else {
 
       setRenameTooltip('Rename');
@@ -216,9 +213,6 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       setDeleteTooltip('Delete');
 
       props.storage.saveEntry('mostRecentModulePath', '');
-      if (props.blocksEditor) {
-        props.blocksEditor.loadModuleBlocks(null);
-      }
     }
   }, [currentModulePath]);
 
