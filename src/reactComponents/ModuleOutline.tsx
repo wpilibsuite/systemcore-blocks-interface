@@ -45,6 +45,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   const generatorContext = React.useRef<GeneratorContext | null>(null);
   const [mostRecentModulePath, setMostRecentModulePath] = React.useState<string>('');
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
+  const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
+
 
   // TODO(Alan): Clean this up
   const [newProjectNameModalPurpose, setNewProjectNameModalPurpose] = React.useState('');
@@ -87,6 +89,73 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       props.setGeneratedCode('');
     }
   }, [currentModule, triggerPythonRegeneration, props.blocklyComponent]);
+
+  React.useEffect(() => {
+    if (!props.storage) {
+      return;
+    }
+    fetchMostRecentModulePath();
+    initializeShownPythonToolboxCategories();
+    initializeModules();
+  }, [props.storage]);
+
+  React.useEffect(() => {
+    // When a module is selected in the tree, make it the current module.
+    const modulePath = treeSelectedKey as string;
+    if (modulePath !== currentModulePath) {
+      checkIfBlocksWereModified(() => {
+        setCurrentModulePath(modulePath);
+      });
+    }
+  }, [treeSelectedKey]);
+
+
+  React.useEffect(() => {
+    if (blocksEditor.current) {
+      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+    }
+  }, [currentModulePath, shownPythonToolboxCategories]);
+
+  const initializeShownPythonToolboxCategories = async () => {
+    if (!props.storage) {
+      return;
+    }
+    try {
+      const value = await props.storage.fetchEntry('shownPythonToolboxCategories', '[]');
+      const shownCategories: string[] = JSON.parse(value);
+      setShownPythonToolboxCategories(new Set(shownCategories));
+    } catch (e) {
+      console.log('Failed to fetch shownPythonToolboxCategories. Caught the following error...');
+      console.log(e);
+    }
+  };
+
+  const initializeModules = async () => {
+    const array = await fetchListOfModules();
+    if (array.length === 0) {
+      setNewProjectNameModalPurpose(PURPOSE_NEW_PROJECT);
+      setNewProjectNameModalInitialValue('');
+      setNewProjectNameModalTitle(NewProjectNameModal.TITLE_WELCOME);
+      setNewProjectNameModalMessage(NewProjectNameModal.MESSAGE_WELCOME);
+      setNewProjectNameModalIsOpen(true);
+    }
+  };
+
+  const fetchMostRecentModulePath = async () => {
+    if (!props.storage) {
+      return;
+    }
+    try {
+      const value = await props.storage.fetchEntry('mostRecentModulePath', '');
+      setMostRecentModulePath(value);
+    } catch (e) {
+      console.log('Failed to fetch mostRecentModulePath. Caught the following error...');
+      console.log(e);
+    }
+  };
+
+
+
   // When the list of modules is set, update the treeData and treeExpandedKeys.
   React.useEffect(() => {
 
@@ -155,20 +224,6 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       setTreeSelectedKey('' as React.Key);
     }
   }, [modules]);
-
-  React.useEffect(() => {
-    if (!props.blocklyComponent || !props.storage) {
-      return;
-    }
-    const blocklyWorkspace = props.blocklyComponent?.getBlocklyWorkspace();
-    if (blocklyWorkspace) {
-      ChangeFramework.setup(blocklyWorkspace);
-      blocklyWorkspace.addChangeListener(mutatorOpenListener);
-      blocklyWorkspace.addChangeListener(handleBlocksChanged);
-    }
-    generatorContext.current = createGeneratorContext();
-    blocksEditor.current = new editor.Editor(blocklyWorkspace, generatorContext.current, props.storage);
-  }, [props.blocklyComponent, props.storage]);
 
   const handleBlocksChanged = (event: Blockly.Events.Abstract) => {
     if (event.isUiEvent) {
@@ -689,6 +744,22 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
 
     });
   };
+  React.useEffect(() => {
+    if (!props.blocklyComponent || !props.storage) {
+      return;
+    }
+    const blocklyWorkspace = props.blocklyComponent?.getBlocklyWorkspace();
+    if (blocklyWorkspace) {
+      ChangeFramework.setup(blocklyWorkspace);
+      blocklyWorkspace.addChangeListener(mutatorOpenListener);
+      blocklyWorkspace.addChangeListener(handleBlocksChanged);
+    }
+    generatorContext.current = createGeneratorContext();
+    if(currentModule){
+      generatorContext.current.setModule(currentModule);
+    }
+    blocksEditor.current = new editor.Editor(blocklyWorkspace, generatorContext.current, props.storage);
+  }, [props.blocklyComponent, props.storage]);
 
   return (
     <Antd.Flex vertical gap="small"
