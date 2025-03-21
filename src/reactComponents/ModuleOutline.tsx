@@ -25,7 +25,6 @@ import * as commonStorage from '../storage/common_storage';
 import * as I18Next from "react-i18next";
 import * as NewProjectNameModal from './NewProjectNameModal';
 import * as NewModuleNameModal from './NewModuleNameModal';
-import * as editor from '../editor/editor';
 import type { MessageInstance } from 'antd/es/message/interface';
 
 import {
@@ -39,10 +38,10 @@ interface ModuleOutlineProps {
   initializeShownPythonToolboxCategories: () => void;
   storage: commonStorage.Storage | null;
   messageApi: MessageInstance;
-  blocksEditor: editor.Editor | null;
   currentModule: commonStorage.Module | null;
   setCurrentModule: (module: commonStorage.Module | null) => void;
   saveBlocks: () => Promise<boolean>;
+  areBlocksModified: () => boolean;
 }
 
 export default function ModuleOutline(props: ModuleOutlineProps) {
@@ -259,32 +258,30 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   };
 
   const checkIfBlocksWereModified = (callback: () => void) => {
-    if (props.blocksEditor) {
-      if (!currentModulePath) {
-        callback();
-        return;
-      }
-      if (!props.blocksEditor.isModified()) {
-        callback();
-        return;
-      }
-
-      // Show a bubble confirmation box to ask the user if they want to save the blocks.
-      setPopconfirmTitle('Blocks have been modified!');
-      setPopconfirmDescription('Press ok to save and continue');
-      // Set the function to be executed if the user clicks 'ok'.
-      afterPopconfirmOk.current = async () => {
-        setPopconfirmLoading(true);
-        const success = await props.saveBlocks();
-        setOpenPopconfirm(false);
-        setPopconfirmLoading(false);
-        if (success) {
-          callback();
-        }
-      };
-      setOpenPopconfirm(true);
+    if (!currentModulePath) {
+      callback();
+      return;
     }
-  };
+    if (!props.areBlocksModified()) {
+      callback();
+      return;
+    }
+
+    // Show a bubble confirmation box to ask the user if they want to save the blocks.
+    setPopconfirmTitle('Blocks have been modified!');
+    setPopconfirmDescription('Press ok to save and continue');
+    // Set the function to be executed if the user clicks 'ok'.
+    afterPopconfirmOk.current = async () => {
+      setPopconfirmLoading(true);
+      const success = await props.saveBlocks();
+      setOpenPopconfirm(false);
+      setPopconfirmLoading(false);
+      if (success) {
+        callback();
+      }
+    };
+    setOpenPopconfirm(true);
+  }
 
   const handleNewModuleNameOk = async (newModuleClassName: string) => {
     if (!props.storage || !props.currentModule) {

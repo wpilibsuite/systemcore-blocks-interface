@@ -205,6 +205,12 @@ const App: React.FC = () => {
     array.sort();
     storage.saveEntry('shownPythonToolboxCategories', JSON.stringify(array));
   };
+  const areBlocksModified = () : boolean => {
+    if(blocksEditor.current){
+      return blocksEditor.current.isModified();
+    }
+    return false;
+  }
 
   return (
     <Antd.ConfigProvider
@@ -244,7 +250,7 @@ const App: React.FC = () => {
               messageApi={messageApi}
               setAlertErrorMessage={setAlertErrorMessage}
               saveBlocks={saveBlocks}
-              blocksEditor={blocksEditor.current}
+              areBlocksModified={areBlocksModified}
               initializeShownPythonToolboxCategories={initializeShownPythonToolboxCategories}
               currentModule={currentModule}
               setCurrentModule={setCurrentModule}
