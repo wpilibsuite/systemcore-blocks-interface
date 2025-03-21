@@ -1,11 +1,13 @@
 import React from 'react';
-
 import * as Antd from 'antd';
-import * as I18Next from "react-i18next";
+
+import {
+  SettingOutlined,
+} from '@ant-design/icons';
+
 
 import * as Blockly from 'blockly/core';
-
-import { createGeneratorContext, GeneratorContext } from './editor/generator_context';
+import { pythonGenerator } from 'blockly/python';
 
 import Header from './reactComponents/Header';
 import Footer from './reactComponents/Footer';
@@ -14,38 +16,30 @@ import CodeDisplay from './reactComponents/CodeDisplay';
 import BlocklyComponent, { BlocklyComponentType } from './reactComponents/BlocklyComponent';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 
+import { createGeneratorContext, GeneratorContext } from './editor/generator_context';
+import * as editor from './editor/editor';
+import { extendedPythonGenerator } from './editor/extended_python_generator'
+
 import * as commonStorage from './storage/common_storage';
 import * as clientSideStorage from './storage/client_side_storage';
-import * as editor from './editor/editor';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 import { initialize as initializeGeneratedBlocks } from './blocks/utils/generated/initialize';
-
-import { pythonGenerator } from 'blockly/python';
-import { extendedPythonGenerator } from './editor/extended_python_generator'
-
 import * as ChangeFramework from './blocks/utils/change_framework'
 import { mutatorOpenListener } from './blocks/mrc_class_method_def'
 
-import {
-  SettingOutlined,
-} from '@ant-design/icons';
-
 const App: React.FC = () => {
-  const { t } = I18Next.useTranslation();
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [storage, setStorage] = React.useState<commonStorage.Storage | null>(null);
   const [currentModule, setCurrentModule] = React.useState<commonStorage.Module | null>(null);
-
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const blocksEditor = React.useRef<editor.Editor | null>(null);
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const generatorContext = React.useRef<GeneratorContext | null>(null);
-
-
   const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
 
   // When the app is loaded, open storage and initialize the blocks we provide.
@@ -60,39 +54,6 @@ const App: React.FC = () => {
       generatorContext.current.setModule(currentModule);
     }
   }, [currentModule]);
-
-  const openStorage = async () => {
-    try {
-      const c = await clientSideStorage.openClientSideStorage();
-      setStorage(c);
-    } catch (e) {
-      console.log('Failed to open client side storage. Caught the following error...');
-      console.log(e);
-    }
-  };
-
-  const initializeBlocks = () => {
-    // Initialize blocks and extended python generator.
-    const forBlock = Object.create(null);
-    CustomBlocks.setup(forBlock);
-    Object.assign(pythonGenerator.forBlock, forBlock);
-    Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
-    initializeGeneratedBlocks();
-  };
-
-  const initializeShownPythonToolboxCategories = async () => {
-    if (!storage) {
-      return;
-    }
-    try {
-      const value = await storage.fetchEntry('shownPythonToolboxCategories', '[]');
-      const shownCategories: string[] = JSON.parse(value);
-      setShownPythonToolboxCategories(new Set(shownCategories));
-    } catch (e) {
-      console.log('Failed to fetch shownPythonToolboxCategories. Caught the following error...');
-      console.log(e);
-    }
-  };
 
   React.useEffect(() => {
     if (blocksEditor.current) {
@@ -127,6 +88,45 @@ const App: React.FC = () => {
     }
   }, [currentModule, triggerPythonRegeneration, blocklyComponent]);
 
+  React.useEffect(() => {
+    if (blocksEditor.current) {
+      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+    }
+  }, [currentModule, shownPythonToolboxCategories]);
+
+  const openStorage = async () => {
+    try {
+      const c = await clientSideStorage.openClientSideStorage();
+      setStorage(c);
+    } catch (e) {
+      console.log('Failed to open client side storage. Caught the following error...');
+      console.log(e);
+    }
+  };
+
+  const initializeBlocks = () => {
+    // Initialize blocks and extended python generator.
+    const forBlock = Object.create(null);
+    CustomBlocks.setup(forBlock);
+    Object.assign(pythonGenerator.forBlock, forBlock);
+    Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
+    initializeGeneratedBlocks();
+  };
+
+  const initializeShownPythonToolboxCategories = async () => {
+    if (!storage) {
+      return;
+    }
+    try {
+      const value = await storage.fetchEntry('shownPythonToolboxCategories', '[]');
+      const shownCategories: string[] = JSON.parse(value);
+      setShownPythonToolboxCategories(new Set(shownCategories));
+    } catch (e) {
+      console.log('Failed to fetch shownPythonToolboxCategories. Caught the following error...');
+      console.log(e);
+    }
+  };
+
   const handleBlocksChanged = (event: Blockly.Events.Abstract) => {
     if (event.isUiEvent) {
       // UI events are things like scrolling, zooming, etc.
@@ -146,12 +146,6 @@ const App: React.FC = () => {
     }
     setTriggerPythonRegeneration(Date.now());
   };
-  
-  React.useEffect(() => {
-    if (blocksEditor.current) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
-    }
-  }, [currentModule, shownPythonToolboxCategories]);
 
   const handleToolboxSettingsClicked = () => {
     setToolboxSettingsModalIsOpen(true);
@@ -214,16 +208,16 @@ const App: React.FC = () => {
           </Antd.Splitter.Panel>
           <Antd.Splitter.Panel min='2%' defaultSize='50%'>
             <Antd.Space>
-                <Antd.Tooltip title="Toolbox Settings">
-                  <Antd.Button className="smallButton"
-                    icon={<SettingOutlined />}
-                    size="small"
-                    onClick={handleToolboxSettingsClicked}
-                  >
-                  </Antd.Button>
-                </Antd.Tooltip>
-              </Antd.Space>            
-            <BlocklyComponent ref={blocklyComponent}/>
+              <Antd.Tooltip title="Toolbox Settings">
+                <Antd.Button className="smallButton"
+                  icon={<SettingOutlined />}
+                  size="small"
+                  onClick={handleToolboxSettingsClicked}
+                >
+                </Antd.Button>
+              </Antd.Tooltip>
+            </Antd.Space>
+            <BlocklyComponent ref={blocklyComponent} />
           </Antd.Splitter.Panel>
           <Antd.Splitter.Panel min='2%'>
             <CodeDisplay generatedCode={generatedCode}
