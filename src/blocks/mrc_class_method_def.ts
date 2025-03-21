@@ -458,7 +458,8 @@ export const pythonFromBlock = function (
         xfix2 = xfix1;
     }
     if(block.mrcPythonMethodName == '__init__'){
-        branch = generator.defineClassVariables() + branch;
+        branch = generator.INDENT + 'super().__init__()\n' +
+            generator.defineClassVariables() + branch;
     }    
     if (returnValue) {
         returnValue = generator.INDENT + 'return ' + returnValue + '\n';

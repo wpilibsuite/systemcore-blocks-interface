@@ -34,6 +34,8 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
 };
 
 export class Editor {
+  private static workspaceIdToEditor: {[key: string]: Editor} = {};
+
   private blocklyWorkspace: Blockly.WorkspaceSvg;
   private generatorContext: GeneratorContext;
   private storage: commonStorage.Storage;
@@ -47,6 +49,7 @@ export class Editor {
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
   constructor(blocklyWorkspace: Blockly.WorkspaceSvg, generatorContext: GeneratorContext, storage: commonStorage.Storage) {
+    Editor.workspaceIdToEditor[blocklyWorkspace.id] = this;
     this.blocklyWorkspace = blocklyWorkspace;
     this.generatorContext = generatorContext;
     this.storage = storage;
@@ -219,8 +222,17 @@ export class Editor {
     const exportedBlocks = JSON.stringify(this.generatorContext.getExportedBlocks());
     const blocksContent = JSON.stringify(
         Blockly.serialization.workspaces.save(this.blocklyWorkspace));
+    const componentsContent = JSON.stringify(this.getComponents());
     return commonStorage.makeModuleContent(
-        this.currentModule, pythonCode, exportedBlocks, blocksContent);
+        this.currentModule, pythonCode, blocksContent, exportedBlocks, componentsContent);
+  }
+
+  private getComponents(): commonStorage.Component[] {
+    const components: commonStorage.Component[] = [];
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+      // TODO(lizlooney): Fill the components array.
+    }
+    return components;
   }
 
   public async saveBlocks() {
@@ -233,4 +245,45 @@ export class Editor {
     }
   }
 
+  private getComponentNamesImpl(componentClassName: string): string[] {
+    if (!this.projectContent) {
+      throw new Error('getComponentNames: this.projectContent is null.');
+    }
+    const components = commonStorage.extractComponents(this.projectContent);
+
+    // TODO(lizlooney): Remove this fake code after getComponents (above) has been implemented.
+    components.push({name: 'frontTouch', className: 'wpilib.RevTouchSensor'});
+    components.push({name: 'backTouch', className: 'wpilib.RevTouchSensor'});
+    components.push({name: 'leftMotor', className: 'wpilib.SmartMotor'});
+    components.push({name: 'rightMotor', className: 'wpilib.SmartMotor'});
+    components.push({name: 'claw', className: 'wpilib.Servo'});
+    components.push({name: 'colorSensor', className: 'wpilib.ColorRangeSensor'});
+    components.push({name: 'ledStick', className: 'wpilib.SparkFunLEDStick'});
+    // End of fake code
+
+    const componentNames: string[] = [];
+    components.forEach((component) => {
+      if (component.className === componentClassName) {
+        componentNames.push(component.name);
+      }
+    });
+    return componentNames;
+  }
+
+  public static getComponentNames(
+      workspace: Blockly.Workspace, componentClassName: string): string[] {
+
+    let editor: Editor | null = null;
+    if (workspace.id in Editor.workspaceIdToEditor) {
+      editor = Editor.workspaceIdToEditor[workspace.id];
+    } else {
+      // If the workspace id was not found, it might be because the workspace is associated with the
+      // toolbox flyout, not a real workspace. In that case, use the first editor.
+      const allEditors = Object.values(Editor.workspaceIdToEditor);
+      if (allEditors.length) {
+        editor =  allEditors[0];
+      }
+    }
+    return editor ? editor.getComponentNamesImpl(componentClassName) : [];
+  }
 }

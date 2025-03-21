@@ -23,7 +23,7 @@ import * as Blockly from 'blockly/core';
 import { PythonGenerator } from 'blockly/python';
 import { GeneratorContext } from './generator_context';
 import { Block } from '../toolbox/items';
-import { FunctionArg } from '../blocks/mrc_call_python_function';
+import { CallPythonFunctionBlock, FunctionArg } from '../blocks/mrc_call_python_function';
 import * as commonStorage from '../storage/common_storage';
 
 // Extends the python generator to collect some information about functions and
@@ -34,6 +34,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private context: GeneratorContext | null = null;
 
   private classMethods: {[key: string]: string} = Object.create(null);
+  private mapComponentNameToVarName: {[key: string]: string} = Object.create(null);
 
   constructor() {
     super('Python');
@@ -41,9 +42,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   init(workspace: Blockly.Workspace){
     super.init(workspace);
-    // This will have all variables in the definition 'variables' so we will need to make it contain only the developer variables
-    delete this.definitions_['variables'];
 
+    // super.init will have put all variables in this.definitions_['variables'] but we need to make
+    // it contain only the developer variables.
+    delete this.definitions_['variables'];
     const defvars = [];
     // Add developer variables (not created or named by the user).
     const devVarList = Blockly.Variables.allDeveloperVariables(workspace);
@@ -52,20 +54,37 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         this.nameDB_!.getName(devVarList[i], Blockly.Names.DEVELOPER_VARIABLE_TYPE) + ' = None',
       );
     }
-    this.definitions_['variables'] = defvars.join('\n');     
+    this.definitions_['variables'] = defvars.join('\n');
+
+    // Collect the components used in all mrc_call_python_function blocks.
+    workspace.getBlocksByType('mrc_call_python_function', false).forEach((block) => {
+      const callPythonFunctionBlock = block as CallPythonFunctionBlock;
+      const componentName = callPythonFunctionBlock.getComponentName();
+      if (componentName) {
+        if (!(componentName in this.mapComponentNameToVarName)) {
+          const varName = this.nameDB_!.getDistinctName(componentName, 'VARIABLE');
+          this.mapComponentNameToVarName[componentName] = varName;
+        }
+      }
+    });
   }
 
-  /* 
+  /*
    * This is called from the python generator for the mrc_class_method_def for the
    * init method
    */
   defineClassVariables() : string {
-      let variableDefinitions = '';
+    let variableDefinitions = '';
 
-      if (this.context?.getHasMechanisms()) {
-        variableDefinitions += this.INDENT + "self.mechanisms = []\n";
-      }
-      return variableDefinitions;
+    if (this.context?.getHasMechanisms()) {
+      variableDefinitions += this.INDENT + "self.mechanisms = []\n";
+    }
+
+    Object.entries(this.mapComponentNameToVarName).forEach(([componentName, varName]) => {
+      variableDefinitions += this.INDENT + 'self.' + varName + ' = robot.' + componentName + '\n';
+    });
+
+    return variableDefinitions;
   }
   getVariableName(nameOrId: string): string {
     const varName = super.getVariableName(nameOrId);
@@ -74,7 +93,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   setHasMechanism() : void{
     this.context?.setHasMechanism();
   }
-  
+
   mrcWorkspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
     this.workspace = workspace;
     this.context = context;
@@ -101,6 +120,13 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.classMethods[methodName] = code;
   }
 
+  /**
+   * Get the variable name to use for a component.
+   */
+  componentNameToVarName(componentName: string): string {
+    return this.mapComponentNameToVarName[componentName];
+  }
+
   finish(code: string): string {
     if (this.context && this.workspace) {
       const className = this.context.getClassName();
@@ -108,7 +134,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       this.addImport(classParent);
       const classDef = 'class ' + className + '(' + classParent + '):\n';
       const classMethods = [];
-      for (let name in this.classMethods) {
+      for (const name in this.classMethods) {
         classMethods.push(this.classMethods[name])
       }
       this.classMethods = Object.create(null);
@@ -116,6 +142,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
       this.context.setExportedBlocks(this.produceExportedBlocks(this.workspace));
     }
+
+    this.mapComponentNameToVarName = Object.create(null);
 
     return super.finish(code);
   }
