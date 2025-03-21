@@ -73,7 +73,7 @@ const App: React.FC = () => {
     if (generatorContext.current) {
       generatorContext.current.setModule(currentModule);
     }
-    if(blocksEditor.current){
+    if (blocksEditor.current) {
       blocksEditor.current.loadModuleBlocks(currentModule);
     }
   }, [currentModule]);
@@ -170,6 +170,28 @@ const App: React.FC = () => {
     setTriggerPythonRegeneration(Date.now());
   };
 
+  const saveBlocks = async (): Promise<boolean> => {
+    return new Promise(async (resolve, reject) => {
+      if (!blocksEditor.current) {
+        reject(new Error());
+        return;
+      }
+      try {
+        await blocksEditor.current.saveBlocks();
+        messageApi.open({
+          type: 'success',
+          content: 'Save completed successfully.',
+        });
+        resolve(true);
+      } catch (e) {
+        console.log('Failed to save the blocks. Caught the following error...');
+        console.log(e);
+        setAlertErrorMessage('Failed to save the blocks.');
+        reject(new Error('Failed to save the blocks.'));
+      }
+    });
+  };
+
   const handleToolboxSettingsClicked = () => {
     setToolboxSettingsModalIsOpen(true);
   };
@@ -221,6 +243,7 @@ const App: React.FC = () => {
               storage={storage}
               messageApi={messageApi}
               setAlertErrorMessage={setAlertErrorMessage}
+              saveBlocks={saveBlocks}
               blocksEditor={blocksEditor.current}
               initializeShownPythonToolboxCategories={initializeShownPythonToolboxCategories}
               currentModule={currentModule}

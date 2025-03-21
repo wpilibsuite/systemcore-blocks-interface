@@ -42,6 +42,7 @@ interface ModuleOutlineProps {
   blocksEditor: editor.Editor | null;
   currentModule: commonStorage.Module | null;
   setCurrentModule: (module: commonStorage.Module | null) => void;
+  saveBlocks: () => Promise<boolean>;
 }
 
 export default function ModuleOutline(props: ModuleOutlineProps) {
@@ -274,7 +275,7 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       // Set the function to be executed if the user clicks 'ok'.
       afterPopconfirmOk.current = async () => {
         setPopconfirmLoading(true);
-        const success = await saveBlocks();
+        const success = await props.saveBlocks();
         setOpenPopconfirm(false);
         setPopconfirmLoading(false);
         if (success) {
@@ -644,30 +645,7 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     }
   };
   const handleSaveClicked = async () => {
-    saveBlocks();
-  };
-
-  const saveBlocks = async (): Promise<boolean> => {
-    return new Promise(async (resolve, reject) => {
-      if (!props.blocksEditor || !currentModulePath) {
-        reject(new Error());
-        return;
-      }
-      try {
-        await props.blocksEditor.saveBlocks();
-        props.messageApi.open({
-          type: 'success',
-          content: 'Save completed successfully.',
-        });
-        resolve(true);
-      } catch (e) {
-        console.log('Failed to save the blocks. Caught the following error...');
-        console.log(e);
-        props.setAlertErrorMessage('Failed to save the blocks.');
-        reject(new Error('Failed to save the blocks.'));
-      }
-
-    });
+    props.saveBlocks();
   };
 
   const initializeModules = async () => {
