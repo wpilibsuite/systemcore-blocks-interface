@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Button, Flex, Modal, Splitter, Tree, Typography } from 'antd';
 import type { TreeDataNode, TreeProps } from 'antd';
 
-import * as toolboxItems from './items';
-import * as generatedToolbox from './generated/toolbox';
+import * as toolboxItems from '../toolbox/items';
+import * as generatedToolbox from '../toolbox/generated/toolbox';
 
 
 // Throughout this file the term module refers to a python module that appears
