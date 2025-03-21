@@ -236,7 +236,7 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   // Provide a callback so the NewModuleNameModal will know what the current
   // project name is.
   const getCurrentProjectName = (): string => {
-    return currentModule ? currentModule.projectName : '';
+    return props.currentModule ? props.currentModule.projectName : '';
   };
 
   // Provide a callback so the NewModuleNameModal will know what the existing
@@ -441,7 +441,7 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
         // This is a Project.
         setNewProjectNameModalPurpose(PURPOSE_RENAME_PROJECT);
-        setNewProjectNameModalInitialValue(commonStorage.moduleNameToClassName(currentModule.projectName));
+        setNewProjectNameModalInitialValue(commonStorage.moduleNameToClassName(props.currentModule.projectName));
         setNewProjectNameModalTitle(NewProjectNameModal.TITLE_RENAME_PROJECT);
         setNewProjectNameModalMessage('');
         setNewProjectNameModalIsOpen(true);
