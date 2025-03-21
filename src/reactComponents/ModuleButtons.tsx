@@ -39,41 +39,37 @@ export default function ModuleButtons(props : ModuleButtonProps){
             <Antd.Tooltip title="New Project"
                 placement="bottomRight"
             >
-                <Antd.Button
+                <Antd.Button className="smallButton"
                     icon={<ProjectAddOutlined />}
                     size="small"
                     onClick={props.handleNewProjectClicked}
-                    style={{ color: 'white' }}
                 >
                 </Antd.Button>
             </Antd.Tooltip>
             <Antd.Tooltip title="New Mechanism">
-                <Antd.Button
+                <Antd.Button className="smallButton"
                     icon={<MechanismAddOutlined />}
                     size="small"
                     disabled={!props.currentModulePath}
                     onClick={props.handleNewMechanismClicked}
-                    style={{ color: 'white' }}
                 >
                 </Antd.Button>
             </Antd.Tooltip>
             <Antd.Tooltip title="New OpMode">
-                <Antd.Button
+                <Antd.Button className="smallButton"
                     icon={<OpModeAddOutlined />}
                     size="small"
                     disabled={!props.currentModulePath}
                     onClick={props.handleNewOpModeClicked}
-                    style={{ color: 'white' }}
                 >
                 </Antd.Button>
             </Antd.Tooltip>
             <Antd.Tooltip title="Save">
-                <Antd.Button
+                <Antd.Button className="smallButton"
                     icon={<SaveOutlined />}
                     size="small"
                     disabled={!props.currentModulePath}
                     onClick={props.handleSaveClicked}
-                    style={{ color: 'white' }}
                 >
                 </Antd.Button>
             </Antd.Tooltip>
@@ -82,32 +78,29 @@ export default function ModuleButtons(props : ModuleButtonProps){
             <Antd.Tooltip title={props.renameTooltip}
                 placement="topRight"
             >
-                <Antd.Button
+                <Antd.Button className="smallButton"
                     icon={<EditOutlined />}
                     size="small"
                     disabled={!props.currentModulePath}
                     onClick={props.handleRenameClicked}
-                    style={{ color: 'white' }}
                 >
                 </Antd.Button>
             </Antd.Tooltip>
             <Antd.Tooltip title={props.copyTooltip}>
-                <Antd.Button
+                <Antd.Button className="smallButton"
                     icon={<CopyOutlined />}
                     size="small"
                     disabled={!props.currentModulePath}
                     onClick={props.handleCopyClicked}
-                    style={{ color: 'white' }}
                 >
                 </Antd.Button>
             </Antd.Tooltip>
             <Antd.Tooltip title={props.deleteTooltip}>
-                <Antd.Button
+                <Antd.Button className="smallButton"
                     icon={<DeleteOutlined />}
                     size="small"
                     disabled={!props.currentModulePath}
                     onClick={props.handleDeleteClicked}
-                    style={{ color: 'white' }}
                 >
                 </Antd.Button>
             </Antd.Tooltip>
@@ -116,21 +109,19 @@ export default function ModuleButtons(props : ModuleButtonProps){
                     {...props.uploadProps}
                     showUploadList={false}
                 >
-                    <Antd.Button
+                    <Antd.Button className="smallButton"
                         icon={<UploadOutlined />}
                         size="small"
-                        style={{ color: 'white' }}
                     >
                     </Antd.Button>
                 </Antd.Upload>
             </Antd.Tooltip>
             <Antd.Tooltip title="Download Project">
-                <Antd.Button
+                <Antd.Button className="smallButton"
                     icon={<DownloadOutlined />}
                     size="small"
                     disabled={!props.currentModulePath}
                     onClick={props.handleDownloadClicked}
-                    style={{ color: 'white' }}
                 >
                 </Antd.Button>
             </Antd.Tooltip>

@@ -215,11 +215,10 @@ const App: React.FC = () => {
           <Antd.Splitter.Panel min='2%' defaultSize='50%'>
             <Antd.Space>
                 <Antd.Tooltip title="Toolbox Settings">
-                  <Antd.Button
+                  <Antd.Button className="smallButton"
                     icon={<SettingOutlined />}
                     size="small"
                     onClick={handleToolboxSettingsClicked}
-                    style={{ color: 'white' }}
                   >
                   </Antd.Button>
                 </Antd.Tooltip>
