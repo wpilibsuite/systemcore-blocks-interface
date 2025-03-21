@@ -6,13 +6,8 @@ import * as I18Next from "react-i18next";
 import * as NewProjectNameModal from './NewProjectNameModal';
 import * as NewModuleNameModal from './NewModuleNameModal';
 import * as editor from '../editor/editor';
-import { createGeneratorContext, GeneratorContext } from '../editor/generator_context';
 import type { MessageInstance } from 'antd/es/message/interface';
 import { BlocklyComponentType } from './BlocklyComponent';
-import * as ChangeFramework from '../blocks/utils/change_framework'
-import { mutatorOpenListener } from '../blocks/mrc_class_method_def'
-import * as Blockly from 'blockly/core';
-import { extendedPythonGenerator } from '../editor/extended_python_generator';
 
 
 import {
@@ -24,9 +19,13 @@ import {
 interface ModuleOutlineProps {
   setAlertErrorMessage: (message: string) => void;
   setGeneratedCode: (newCode: string) => void;
+  initializeShownPythonToolboxCategories: () => void;
   storage: commonStorage.Storage | null;
   messageApi: MessageInstance;
   blocklyComponent: BlocklyComponentType | null;
+  blocksEditor: editor.Editor | null;
+  currentModule: commonStorage.Module | null;
+  setCurrentModule : (module : commonStorage.Module | null) => void;
 }
 
 export default function ModuleOutline(props: ModuleOutlineProps) {
@@ -40,13 +39,7 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   const [copyTooltip, setCopyTooltip] = React.useState('Copy');
   const [deleteTooltip, setDeleteTooltip] = React.useState('Delete');
   const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
-  const [currentModule, setCurrentModule] = React.useState<commonStorage.Module | null>(null);
-  const blocksEditor = React.useRef<editor.Editor | null>(null);
-  const generatorContext = React.useRef<GeneratorContext | null>(null);
   const [mostRecentModulePath, setMostRecentModulePath] = React.useState<string>('');
-  const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
-  const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
-
 
   // TODO(Alan): Clean this up
   const [newProjectNameModalPurpose, setNewProjectNameModalPurpose] = React.useState('');
@@ -81,21 +74,11 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   const [popconfirmLoading, setPopconfirmLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (currentModule && props.blocklyComponent && generatorContext.current) {
-      const blocklyWorkspace = props.blocklyComponent?.getBlocklyWorkspace();
-      props.setGeneratedCode(extendedPythonGenerator.mrcWorkspaceToCode(
-        blocklyWorkspace, generatorContext.current));
-    } else {
-      props.setGeneratedCode('');
-    }
-  }, [currentModule, triggerPythonRegeneration, props.blocklyComponent]);
-
-  React.useEffect(() => {
     if (!props.storage) {
       return;
     }
     fetchMostRecentModulePath();
-    initializeShownPythonToolboxCategories();
+    props.initializeShownPythonToolboxCategories();
     initializeModules();
   }, [props.storage]);
 
@@ -109,26 +92,6 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     }
   }, [treeSelectedKey]);
 
-
-  React.useEffect(() => {
-    if (blocksEditor.current) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
-    }
-  }, [currentModulePath, shownPythonToolboxCategories]);
-
-  const initializeShownPythonToolboxCategories = async () => {
-    if (!props.storage) {
-      return;
-    }
-    try {
-      const value = await props.storage.fetchEntry('shownPythonToolboxCategories', '[]');
-      const shownCategories: string[] = JSON.parse(value);
-      setShownPythonToolboxCategories(new Set(shownCategories));
-    } catch (e) {
-      console.log('Failed to fetch shownPythonToolboxCategories. Caught the following error...');
-      console.log(e);
-    }
-  };
 
   const initializeModules = async () => {
     const array = await fetchListOfModules();
@@ -225,26 +188,6 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     }
   }, [modules]);
 
-  const handleBlocksChanged = (event: Blockly.Events.Abstract) => {
-    if (event.isUiEvent) {
-      // UI events are things like scrolling, zooming, etc.
-      // No need to regenerate python code after one of these.
-      return;
-    }
-    if (!event.workspaceId) {
-      return;
-    }
-    const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
-    if (!blocklyWorkspace) {
-      return;
-    }
-    if ((blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
-      // Don't regenerate python code mid-drag.
-      return;
-    }
-    setTriggerPythonRegeneration(Date.now());
-  };
-
   // When a module path has become the current module path (either by fetching
   // the most recent module path (soon after the app is loaded) or by the user
   // selecting it in the tree, set the current module, update some tooltips, and
@@ -256,10 +199,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     const module = (modules.length > 0 && currentModulePath)
       ? commonStorage.findModule(modules, currentModulePath)
       : null;
-    setCurrentModule(module);
-    if (generatorContext.current) {
-      generatorContext.current.setModule(module);
-    }
+    props.setCurrentModule(module);
+
 
     if (module != null) {
       if (module.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
@@ -277,8 +218,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       }
 
       props.storage.saveEntry('mostRecentModulePath', currentModulePath);
-      if (blocksEditor.current) {
-        blocksEditor.current.loadModuleBlocks(module);
+      if (props.blocksEditor) {
+        props.blocksEditor.loadModuleBlocks(module);
       }
     } else {
 
@@ -287,8 +228,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       setDeleteTooltip('Delete');
 
       props.storage.saveEntry('mostRecentModulePath', '');
-      if (blocksEditor.current) {
-        blocksEditor.current.loadModuleBlocks(null);
+      if (props.blocksEditor) {
+        props.blocksEditor.loadModuleBlocks(null);
       }
     }
   }, [currentModulePath]);
@@ -333,12 +274,12 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   };
 
   const checkIfBlocksWereModified = (callback: () => void) => {
-    if (blocksEditor.current) {
+    if (props.blocksEditor) {
       if (!currentModulePath) {
         callback();
         return;
       }
-      if (!blocksEditor.current.isModified()) {
+      if (!props.blocksEditor.isModified()) {
         callback();
         return;
       }
@@ -361,14 +302,14 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   };
 
   const handleNewModuleNameOk = async (newModuleClassName: string) => {
-    if (!props.storage || !currentModule) {
+    if (!props.storage || !props.currentModule) {
       return;
     }
     const newModuleName = commonStorage.classNameToModuleName(newModuleClassName);
-    const newModulePath = commonStorage.makeModulePath(currentModule.projectName, newModuleName);
+    const newModulePath = commonStorage.makeModulePath(props.currentModule.projectName, newModuleName);
     if (newModuleNameModalPurpose === PURPOSE_NEW_MECHANISM) {
       const mechanismContent = commonStorage.newMechanismContent(
-        currentModule.projectName, newModuleName);
+        props.currentModule.projectName, newModuleName);
       try {
         await props.storage.createModule(
           commonStorage.MODULE_TYPE_MECHANISM, newModulePath, mechanismContent);
@@ -380,7 +321,7 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
         props.setAlertErrorMessage('Failed to create a new mechanism.');
       }
     } else if (newModuleNameModalPurpose === PURPOSE_NEW_OPMODE) {
-      const opModeContent = commonStorage.newOpModeContent(currentModule.projectName, newModuleName);
+      const opModeContent = commonStorage.newOpModeContent(props.currentModule.projectName, newModuleName);
       try {
         await props.storage.createModule(
           commonStorage.MODULE_TYPE_OPMODE, newModulePath, opModeContent);
@@ -394,8 +335,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     } else if (newModuleNameModalPurpose === PURPOSE_RENAME_MODULE) {
       try {
         await props.storage.renameModule(
-          currentModule.moduleType, currentModule.projectName,
-          currentModule.moduleName, newModuleName);
+          props.currentModule.moduleType, props.currentModule.projectName,
+          props.currentModule.moduleName, newModuleName);
         await fetchListOfModules();
         setCurrentModulePath(newModulePath);
       } catch (e) {
@@ -406,8 +347,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     } else if (newModuleNameModalPurpose === PURPOSE_COPY_MODULE) {
       try {
         await props.storage.copyModule(
-          currentModule.moduleType, currentModule.projectName,
-          currentModule.moduleName, newModuleName);
+          props.currentModule.moduleType, props.currentModule.projectName,
+          props.currentModule.moduleName, newModuleName);
         await fetchListOfModules();
         setCurrentModulePath(newModulePath);
       } catch (e) {
@@ -418,7 +359,7 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     }
   }
   const handleNewProjectNameOk = async (newProjectClassName: string) => {
-    if (!props.storage || !currentModule) {
+    if (!props.storage || !props.currentModule) {
       return;
     }
     const newProjectName = commonStorage.classNameToModuleName(newProjectClassName);
@@ -438,8 +379,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     } else if (newProjectNameModalPurpose === PURPOSE_RENAME_PROJECT) {
       try {
         await props.storage.renameModule(
-          currentModule.moduleType, currentModule.projectName,
-          currentModule.moduleName, newProjectName);
+          props.currentModule.moduleType, props.currentModule.projectName,
+          props.currentModule.moduleName, newProjectName);
         await fetchListOfModules();
         setCurrentModulePath(newProjectPath);
       } catch (e) {
@@ -450,8 +391,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     } else if (newProjectNameModalPurpose === PURPOSE_COPY_PROJECT) {
       try {
         await props.storage.copyModule(
-          currentModule.moduleType, currentModule.projectName,
-          currentModule.moduleName, newProjectName);
+          props.currentModule.moduleType, props.currentModule.projectName,
+          props.currentModule.moduleName, newProjectName);
         await fetchListOfModules();
         setCurrentModulePath(newProjectPath);
       } catch (e) {
@@ -494,28 +435,28 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   };
   const handleRenameClicked = () => {
     checkIfBlocksWereModified(() => {
-      if (!currentModule) {
+      if (!props.currentModule) {
         return;
       }
-      if (currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
+      if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
         // This is a Project.
         setNewProjectNameModalPurpose(PURPOSE_RENAME_PROJECT);
         setNewProjectNameModalInitialValue(commonStorage.moduleNameToClassName(currentModule.projectName));
         setNewProjectNameModalTitle(NewProjectNameModal.TITLE_RENAME_PROJECT);
         setNewProjectNameModalMessage('');
         setNewProjectNameModalIsOpen(true);
-      } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
+      } else if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
         // This is a Mechanism.
         setNewModuleNameModalPurpose(PURPOSE_RENAME_MODULE);
-        setNewModuleNameModalInitialValue(currentModule.className);
+        setNewModuleNameModalInitialValue(props.currentModule.className);
         setNewModuleNameModalTitle(NewModuleNameModal.TITLE_RENAME_MECHANISM);
         setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_MECHANISM);
         setNewModuleNameModalLabel(NewModuleNameModal.LABEL_MECHANISM);
         setNewModuleNameModalIsOpen(true);
-      } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
+      } else if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
         // This is an OpMode.
         setNewModuleNameModalPurpose(PURPOSE_RENAME_MODULE);
-        setNewModuleNameModalInitialValue(currentModule.className);
+        setNewModuleNameModalInitialValue(props.currentModule.className);
         setNewModuleNameModalTitle(NewModuleNameModal.TITLE_RENAME_OPMODE);
         setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_OPMODE);
         setNewModuleNameModalLabel(NewModuleNameModal.LABEL_OPMODE);
@@ -525,28 +466,28 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   };
   const handleCopyClicked = () => {
     checkIfBlocksWereModified(() => {
-      if (!currentModule) {
+      if (!props.currentModule) {
         return;
       }
-      if (currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
+      if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
         // This is a Project.
         setNewProjectNameModalPurpose(PURPOSE_COPY_PROJECT);
-        setNewProjectNameModalInitialValue(commonStorage.moduleNameToClassName(currentModule.projectName) + 'Copy');
+        setNewProjectNameModalInitialValue(commonStorage.moduleNameToClassName(props.currentModule.projectName) + 'Copy');
         setNewProjectNameModalTitle(NewProjectNameModal.TITLE_COPY_PROJECT);
         setNewProjectNameModalMessage('');
         setNewProjectNameModalIsOpen(true);
-      } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
+      } else if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
         // This is a Mechanism.
         setNewModuleNameModalPurpose(PURPOSE_COPY_MODULE);
-        setNewModuleNameModalInitialValue(currentModule.className + 'Copy');
+        setNewModuleNameModalInitialValue(props.currentModule.className + 'Copy');
         setNewModuleNameModalTitle(NewModuleNameModal.TITLE_COPY_MECHANISM);
         setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_MECHANISM);
         setNewModuleNameModalLabel(NewModuleNameModal.LABEL_MECHANISM);
         setNewModuleNameModalIsOpen(true);
-      } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
+      } else if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
         // This is an OpMode.
         setNewModuleNameModalPurpose(PURPOSE_COPY_MODULE);
-        setNewModuleNameModalInitialValue(currentModule.className + 'Copy');
+        setNewModuleNameModalInitialValue(props.currentModule.className + 'Copy');
         setNewModuleNameModalTitle(NewModuleNameModal.TITLE_COPY_OPMODE);
         setNewModuleNameModalExample(NewModuleNameModal.EXAMPLE_OPMODE);
         setNewModuleNameModalLabel(NewModuleNameModal.LABEL_OPMODE);
@@ -556,30 +497,30 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
   };
 
   const handleDeleteClicked = () => {
-    if (!currentModule) {
+    if (!props.currentModule) {
       return;
     }
     // Show a bubble confirmation box to ask the user if they are sure.
     setPopconfirmTitle('Are you sure?');
-    if (currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
+    if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
       setPopconfirmDescription('Press ok to delete this Project');
-    } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
+    } else if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
       setPopconfirmDescription('Press ok to delete this Mechanism');
-    } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
+    } else if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
       setPopconfirmDescription('Press ok to delete this OpMode');
     }
     // Set the function to be executed if the user clicks 'ok'.
     afterPopconfirmOk.current = () => {
       setOpenPopconfirm(false);
       checkIfBlocksWereModified(async () => {
-        if (!props.storage || !currentModule) {
+        if (!props.storage || !props.currentModule) {
           return;
         }
-        if (currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
+        if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
           // This is a Project.
           // Before deleting it, select another project, if there is one.
           // Put the module type and path into local variables before we select another project.
-          const moduleTypeToDelete = currentModule.moduleType;
+          const moduleTypeToDelete = props.currentModule.moduleType;
           const modulePathToDelete = currentModulePath;
           let foundAnotherProject = false;
           for (const project of modules) {
@@ -600,14 +541,14 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
             console.log(e);
             props.setAlertErrorMessage('Failed to delete the project.');
           }
-        } else if (currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM
-          || currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
+        } else if (props.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM
+          || props.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
           // This is a Mechanism or an OpMode.
           // Before deleting it, select its project.
           // Put the module type and path into local variables before we select its project.
-          const moduleTypeToDelete = currentModule.moduleType;
+          const moduleTypeToDelete = props.currentModule.moduleType;
           const modulePathToDelete = currentModulePath;
-          const projectPath = commonStorage.makeProjectPath(currentModule.projectName);
+          const projectPath = commonStorage.makeProjectPath(props.currentModule.projectName);
           setCurrentModulePath(projectPath);
           try {
             await props.storage.deleteModule(moduleTypeToDelete, modulePathToDelete);
@@ -695,14 +636,14 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
 
   const handleDownloadClicked = () => {
     checkIfBlocksWereModified(async () => {
-      if (!props.storage || !currentModule) {
+      if (!props.storage || !props.currentModule) {
         return;
       }
       try {
-        const url = await props.storage.downloadProject(currentModule.projectName);
+        const url = await props.storage.downloadProject(props.currentModule.projectName);
         const link = document.createElement('a');
         link.href = url;
-        link.download = currentModule.projectName + commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+        link.download = props.currentModule.projectName + commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION;
         link.click();
       } catch (e) {
         console.log('Failed to download the project. Caught the following error...');
@@ -724,12 +665,12 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
 
   const saveBlocks = async (): Promise<boolean> => {
     return new Promise(async (resolve, reject) => {
-      if (!blocksEditor.current || !currentModulePath) {
+      if (!props.blocksEditor || !currentModulePath) {
         reject(new Error());
         return;
       }
       try {
-        await blocksEditor.current.saveBlocks();
+        await props.blocksEditor.saveBlocks();
         props.messageApi.open({
           type: 'success',
           content: 'Save completed successfully.',
@@ -744,22 +685,6 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
 
     });
   };
-  React.useEffect(() => {
-    if (!props.blocklyComponent || !props.storage) {
-      return;
-    }
-    const blocklyWorkspace = props.blocklyComponent?.getBlocklyWorkspace();
-    if (blocklyWorkspace) {
-      ChangeFramework.setup(blocklyWorkspace);
-      blocklyWorkspace.addChangeListener(mutatorOpenListener);
-      blocklyWorkspace.addChangeListener(handleBlocksChanged);
-    }
-    generatorContext.current = createGeneratorContext();
-    if(currentModule){
-      generatorContext.current.setModule(currentModule);
-    }
-    blocksEditor.current = new editor.Editor(blocklyWorkspace, generatorContext.current, props.storage);
-  }, [props.blocklyComponent, props.storage]);
 
   return (
     <Antd.Flex vertical gap="small"
