@@ -24,11 +24,13 @@ import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
 import * as pythonUtils from './utils/generated/python';
+import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import { ClassMethodDefExtraState } from './mrc_class_method_def'
+import { Editor } from '../editor/editor';
 
 // A block to call a python function.
 
@@ -40,9 +42,12 @@ enum FunctionKind {
   CONSTRUCTOR = 'constructor',
   INSTANCE = 'instance',
   INSTANCE_WITHIN = 'instance_within',
+  INSTANCE_COMPONENT = 'instance_component'
 }
 
 const RETURN_TYPE_NONE = 'None';
+
+const FIELD_COMPONENT_NAME = 'COMPONENT_NAME';
 
 export type FunctionArg = {
   name: string,
@@ -58,6 +63,8 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcImportModule: string,
   mrcActualFunctionName: string,
   mrcExportedFunction: boolean,
+  mrcComponentClassName: string,
+  mrcComponentName: string, // Do not access directly. Call getComponentName.
   renameMethod(this: CallPythonFunctionBlock, newName: string): void;
   mutateMethod(this: CallPythonFunctionBlock, defBlockExtraState: ClassMethodDefExtraState): void;
 }
@@ -99,6 +106,14 @@ type CallPythonFunctionExtraState = {
    * user's Project).
    */
   exportedFunction: boolean,
+  /**
+   * The component name. Specified only if the function kind is INSTANCE_COMPONENT.
+   */
+  componentName?: string,
+  /**
+   * The component class name. Specified only if the function kind is INSTANCE_COMPONENT.
+   */
+  componentClassName?: string,
 };
 
 const CALL_PYTHON_FUNCTION = {
@@ -138,6 +153,12 @@ const CALL_PYTHON_FUNCTION = {
           tooltip = 'Calls the method ' + functionName + '.';
           break;
         }
+        case FunctionKind.INSTANCE_COMPONENT: {
+          const className = this.mrcComponentClassName;
+          const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          tooltip = 'Calls the function ' + className + '.' + functionName + '.';
+          break;
+        }
         default:
           throw new Error('mrcFunctionKind has unexpected value: ' + this.mrcFunctionKind)
       }
@@ -174,6 +195,12 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcActualFunctionName) {
       extraState.actualFunctionName = this.mrcActualFunctionName;
     }
+    if (this.mrcComponentClassName) {
+      extraState.componentClassName = this.mrcComponentClassName;
+    }
+    if (this.getField(FIELD_COMPONENT_NAME)) {
+      extraState.componentName = this.getComponentName();
+    }
     return extraState;
   },
   /**
@@ -199,6 +226,10 @@ const CALL_PYTHON_FUNCTION = {
         ? extraState.actualFunctionName : '';
     this.mrcExportedFunction = extraState.exportedFunction
         ? extraState.exportedFunction : false;
+    this.mrcComponentClassName = extraState.componentClassName
+        ? extraState.componentClassName : '';
+    this.mrcComponentName = extraState.componentName
+        ? extraState.componentName : '';
     this.updateBlock_();
   },
   /**
@@ -260,6 +291,19 @@ const CALL_PYTHON_FUNCTION = {
           }
           break;
         }
+        case FunctionKind.INSTANCE_COMPONENT: {
+          const componentNames = Editor.getComponentNames(this.workspace, this.mrcComponentClassName);
+          const componentName = this.getComponentName();
+          if (!componentNames.includes(componentName)) {
+            componentNames.push(componentName);
+          }
+          this.appendDummyInput('TITLE')
+              .appendField('call')
+              .appendField(createFieldDropdown(componentNames), FIELD_COMPONENT_NAME)
+              .appendField('.')
+              .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
+          break;
+        }
         default:
           throw new Error('mrcFunctionKind has unexpected value: ' + this.mrcFunctionKind)
       }
@@ -292,6 +336,15 @@ const CALL_PYTHON_FUNCTION = {
     for (let i = this.mrcArgs.length; this.getInput('ARG' + i); i++) {
       this.removeInput('ARG' + i);
     }
+  },
+  getComponentName(this: CallPythonFunctionBlock): string {
+    // If the COMPONENT_NAME field has been created, get the field value, which the user may have changed.
+    // If the COMPONENT_NAME field has not been created, get the component name from this.mrcComponentName.
+    return (this.getField(FIELD_COMPONENT_NAME))
+      ? this.getFieldValue(FIELD_COMPONENT_NAME) : this.mrcComponentName;
+  },
+  getComponentClassName(this: CallPythonFunctionBlock): string {
+    return this.mrcComponentClassName;
   },
   renameMethod: function(this: CallPythonFunctionBlock, newName: string): void {
     this.setFieldValue(newName, pythonUtils.FIELD_FUNCTION_NAME);
@@ -363,6 +416,15 @@ export const pythonFromBlock = function(
       const blocklyName = block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
       const functionName = generator.getProcedureName(blocklyName);
       code = 'self.' + functionName;
+      break;
+    }
+    case FunctionKind.INSTANCE_COMPONENT: {
+      const componentName = callPythonFunctionBlock.getComponentName();
+      const varName = generator.componentNameToVarName(componentName);
+      const functionName = callPythonFunctionBlock.mrcActualFunctionName
+          ? callPythonFunctionBlock.mrcActualFunctionName
+          : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+      code = 'self.' + varName + '.' + functionName;
       break;
     }
     default:

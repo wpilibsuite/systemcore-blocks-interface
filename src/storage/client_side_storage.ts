@@ -574,7 +574,7 @@ class ClientSideStorage implements commonStorage.Storage {
       };
       const modulesObjectStore = transaction.objectStore('modules');
   
-      for (let moduleName in moduleTypes) {
+      for (const moduleName in moduleTypes) {
         const moduleType = moduleTypes[moduleName];
         const moduleContent = moduleContents[moduleName];
         const modulePath = commonStorage.makeModulePath(projectName, moduleName);

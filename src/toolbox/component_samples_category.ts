@@ -9,59 +9,288 @@ export const category =
             contents: [ 
                 // def is_pressed(self) -> bool:
                 {
-                    kind: "block",
-                    type: "mrc_call_python_function",
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
                     extraState: {
-                        functionKind: "instance",
-                        returnType: "bool",
-                        args: [
-                            {
-                                name: "revTouchSensor",
-                                type: "wpilib.RevTouchSensor"
-                            }
-                        ],
-                        tooltip: "Returns if the touch sensor is pressed or not",
-                        importModule: ""
+                        functionKind: 'instance_component',
+                        returnType: 'bool',
+                        args: [],
+                        tooltip: 'Returns if the touch sensor is pressed or not',
+                        importModule: '',
+                        componentClassName: 'wpilib.RevTouchSensor',
+                        componentName: 'frontTouch',
                     },
                     fields: {
-                        MODULE_OR_CLASS: "wpilib.RevTouchSensor",
+                        COMPONENT_NAME: 'frontTouch',
                         FUNC: 'is_pressed',
                     },
-                    inputs: {
-                        ARG0: {
-                            block: {
-                                type: "mrc_get_python_variable",
-                                extraState: {
-                                    varKind: "module",
-                                    moduleOrClassName: "wacky_wheeler",
-                                    exportedVariable: true,
-                                    importModule: "wacky_wheeler",
-                                    actualVariableName: "myRevTouchSensor"
-                                },
-                                fields: {
-                                    MODULE_OR_CLASS: "wacky_wheeler",
-                                    VAR: "myRevTouchSensor"
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
+                    inputs: {},
+                },
+            ],
         },
         {
             kind: 'category',
             name: 'Smart Motor',
-            contents: [ ]
+            contents: [
+                // def set_speed(self, speed: float) -> None:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'None',
+                        args: [
+                            {
+                                name: 'speed',
+                                type: 'float',
+                            },
+                        ],
+                        tooltip: 'Set the motor to a speed between -1 and 1',
+                        importModule: '',
+                        componentClassName: 'wpilib.SmartMotor',
+                        componentName: 'leftMotor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'leftMotor',
+                        FUNC: 'set_speed',
+                    },
+                    inputs: {
+                        ARG0: {
+                            block: {
+                                type: 'math_number',
+                                fields: {
+                                    NUM: 0.8,
+                                },
+                            },
+                        },
+                    },
+                },
+                // def set_angle_degrees(self, angle: float) -> None:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'None',
+                        args: [
+                            {
+                                name: 'angle',
+                                type: 'float',
+                            },
+                        ],
+                        tooltip: 'Set the motor to an angle between 0 and 360',
+                        importModule: '',
+                        componentClassName: 'wpilib.SmartMotor',
+                        componentName: 'leftMotor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'leftMotor',
+                        FUNC: 'set_angle_degrees',
+                    },
+                    inputs: {
+                        ARG0: {
+                            block: {
+                                type: 'math_number',
+                                fields: {
+                                    NUM: 180,
+                                },
+                            },
+                        },
+                    },
+                },
+                // def get_num_relative_encoder_ticks(self) -> int:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'int',
+                        args: [],
+                        tooltip: 'Get the number of relative motor ticks since reset of encoder',
+                        importModule: '',
+                        componentClassName: 'wpilib.SmartMotor',
+                        componentName: 'leftMotor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'leftMotor',
+                        FUNC: 'get_num_relative_encoder_ticks',
+                    },
+                    inputs: {},
+                },
+                // def get_angle_degrees(self) -> float:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'float',
+                        args: [],
+                        tooltip: 'Get the angle position of the motor',
+                        importModule: '',
+                        componentClassName: 'wpilib.SmartMotor',
+                        componentName: 'leftMotor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'leftMotor',
+                        FUNC: 'get_angle_degrees',
+                    },
+                    inputs: {},
+                },
+                // def reset_relative_encoder(self) -> None:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'None',
+                        args: [],
+                        tooltip: 'Reset the relative encoder value to 0',
+                        importModule: '',
+                        componentClassName: 'wpilib.SmartMotor',
+                        componentName: 'leftMotor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'leftMotor',
+                        FUNC: 'reset_relative_encoder',
+                    },
+                    inputs: {},
+                },
+            ]
         },
         {
             kind: 'category',
             name: 'Servo',
-            contents: [ ]
+            contents: [
+                // def set_position(self, pos: float) -> None:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'None',
+                        args: [
+                            {
+                                name: 'pos',
+                                type: 'float',
+                            },
+                        ],
+                        tooltip: 'Set the servo to a position between 0 and 1',
+                        importModule: '',
+                        componentClassName: 'wpilib.Servo',
+                        componentName: 'claw',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'claw',
+                        FUNC: 'set_position',
+                    },
+                    inputs: {
+                        ARG0: {
+                            block: {
+                                type: 'math_number',
+                                fields: {
+                                    NUM: 0.5,
+                                },
+                            },
+                        },
+                    },
+                },
+                // def set_angle_degrees(self, angle: float) -> None:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'None',
+                        args: [
+                            {
+                                name: 'angle',
+                                type: 'float',
+                            },
+                        ],
+                        tooltip: 'Set the servo to an angle between 0 and 270',
+                        importModule: '',
+                        componentClassName: 'wpilib.Servo',
+                        componentName: 'claw',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'claw',
+                        FUNC: 'set_angle_degrees',
+                    },
+                    inputs: {
+                        ARG0: {
+                            block: {
+                                type: 'math_number',
+                                fields: {
+                                    NUM: 180,
+                                },
+                            },
+                        },
+                    },
+                },
+            ],
         },
         {
             kind: 'category',
             name: 'Color Range Sensor',
-            contents: [ ]
+            contents: [
+                // def get_color_rgb(self) -> tuple[int, int, int]:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'tuple[int, int, int]',
+                        args: [],
+                        tooltip: 'gets the color in rgb (red, green, blue)',
+                        importModule: '',
+                        componentClassName: 'wpilib.ColorRangeSensor',
+                        componentName: 'colorSensor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'colorSensor',
+                        FUNC: 'get_color_rgb',
+                    },
+                    inputs: {},
+                },
+                // def get_color_hsv(self) -> tuple[int, int, int]:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'tuple[int, int, int]',
+                        args: [],
+                        tooltip: 'gets the color in hsv (hue, saturation, value)',
+                        importModule: '',
+                        componentClassName: 'wpilib.ColorRangeSensor',
+                        componentName: 'colorSensor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'colorSensor',
+                        FUNC: 'get_color_hsv',
+                    },
+                    inputs: {},
+                },
+                // def get_distance_mm(self) -> float:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'float',
+                        args: [],
+                        tooltip: 'gets the distance of the object seen',
+                        importModule: '',
+                        componentClassName: 'wpilib.ColorRangeSensor',
+                        componentName: 'colorSensor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'colorSensor',
+                        FUNC: 'get_distance_mm',
+                    },
+                    inputs: {},
+                },
+            ],
         },
         {
             kind: 'category',
@@ -69,335 +298,227 @@ export const category =
             contents: [
                 // def set_color(self, position: int, color: wpilib.Color) -> None:
                 {
-                    kind: "block",
-                    type: "mrc_call_python_function",
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
                     extraState: {
-                        functionKind: "instance",
-                        returnType: "None",
+                        functionKind: 'instance_component',
+                        returnType: 'None',
                         args: [
                             {
-                                name: "sparkFunLEDStick",
-                                type: "wpilib.SparkFunLEDStick"
+                                name: 'position',
+                                type: 'int',
                             },
                             {
-                                name: "position",
-                                type: "int"
+                                name: 'color',
+                                type: 'wpilib.Color',
                             },
-                            {
-                                name: "color",
-                                type: "wpilib.Color"
-                            }
                         ],
-                        tooltip: "Change the color of an individual LED.",
-                        importModule: ""
+                        tooltip: 'Change the color of an individual LED.',
+                        importModule: '',
+                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentName: 'ledStick',
                     },
                     fields: {
-                        MODULE_OR_CLASS: "wpilib.SparkFunLEDStick",
-                        FUNC: "set_color"
+                        COMPONENT_NAME: 'ledStick',
+                        FUNC: 'set_color',
                     },
                     inputs: {
                         ARG0: {
                             block: {
-                                type: "mrc_get_python_variable",
-                                extraState: {
-                                    varKind: "module",
-                                    moduleOrClassName: "wacky_wheeler",
-                                    exportedVariable: true,
-                                    importModule: "wacky_wheeler",
-                                    actualVariableName: "mySparkFunLEDStick"
-                                },
+                                type: 'math_number',
                                 fields: {
-                                    MODULE_OR_CLASS: "wacky_wheeler",
-                                    VAR: "mySparkFunLEDStick"
-                                }
-                            }
+                                    NUM: 1,
+                                },
+                            },
                         },
                         ARG1: {
                             block: {
-                                type: "math_number",
-                                fields: {
-                                    NUM: 1
-                                }
-                            }
-                        },
-                        ARG2: {
-                            block: {
-                                type: "mrc_get_python_variable",
+                                type: 'mrc_get_python_variable',
                                 extraState: {
-                                    varKind: "class",
-                                    moduleOrClassName: "wpilib.Color",
-                                    varType: "wpilib.Color",
-                                    importModule: "wpilib"
+                                    varKind: 'class',
+                                    moduleOrClassName: 'wpilib.Color',
+                                    varType: 'wpilib.Color',
+                                    importModule: 'wpilib',
                                 },
                                 fields: {
-                                    MODULE_OR_CLASS: "wpilib.Color",
-                                    VAR: "kWhite"
-                                }
-                            }
-                        }
-                    }
+                                    MODULE_OR_CLASS: 'wpilib.Color',
+                                    VAR: 'kWhite',
+                                },
+                            },
+                        },
+                    },
                 },
                 // def set_color(self, color: wpilib.Color) -> None:
                 {
-                    kind: "block",
-                    type: "mrc_call_python_function",
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
                     extraState: {
-                        functionKind: "instance",
-                        returnType: "None",
-                        args: [{
-                            name: "sparkFunLEDStick",
-                            type: "wpilib.SparkFunLEDStick"
-                        },
-                        {
-                            name: "color",
-                            type: "wpilib.Color"
-                        }],
-                        tooltip: "Change the color of all LEDs to a single color.",
-                        importModule: ""
+                        functionKind: 'instance_component',
+                        returnType: 'None',
+                        args: [
+                            {
+                                name: 'color',
+                                type: 'wpilib.Color',
+                            },
+                        ],
+                        tooltip: 'Change the color of all LEDs to a single color.',
+                        importModule: '',
+                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentName: 'ledStick',
                     },
                     fields: {
-                        MODULE_OR_CLASS: "wpilib.SparkFunLEDStick",
-                        FUNC: "set_color"
+                        COMPONENT_NAME: 'ledStick',
+                        FUNC: 'set_color',
                     },
                     inputs: {
                         ARG0: {
                             block: {
-                                type: "mrc_get_python_variable",
+                                type: 'mrc_get_python_variable',
                                 extraState: {
-                                    varKind: "module",
-                                    moduleOrClassName: "wacky_wheeler",
-                                    exportedVariable: true,
-                                    importModule: "wacky_wheeler",
-                                    actualVariableName: "mySparkFunLEDStick"
+                                    varKind: 'class',
+                                    moduleOrClassName: 'wpilib.Color',
+                                    varType: 'wpilib.Color',
+                                    importModule: 'wpilib',
                                 },
                                 fields: {
-                                    MODULE_OR_CLASS: "wacky_wheeler",
-                                    VAR: "mySparkFunLEDStick"
-                                }
-                            }
+                                    MODULE_OR_CLASS: 'wpilib.Color',
+                                    VAR: 'kWhite',
+                                },
+                            },
                         },
-                        ARG1: {
-                            block: {
-                                type: "mrc_get_python_variable",
-                                extraState: {
-                                    varKind: "class",
-                                    moduleOrClassName: "wpilib.Color",
-                                    varType: "wpilib.Color",
-                                    importModule: "wpilib"
-                                },
-                                fields: {
-                                    MODULE_OR_CLASS: "wpilib.Color",
-                                    VAR: "kWhite"
-                                }
-                            }
-                        }
-                    }
+                    },
                 },
                 // def set_colors(self, colors: list[int]) -> None:
                 {
-                    kind: "block",
-                    type: "mrc_call_python_function",
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
                     extraState: {
-                        functionKind: "instance",
-                        returnType: "None",
+                        functionKind: 'instance_component',
+                        returnType: 'None',
                         args: [
                             {
-                                name: "sparkFunLEDStick",
-                                type: "wpilib.SparkFunLEDStick"
+                                name: 'colors',
+                                type: 'list[int]',
                             },
-                            {
-                                name: "colors",
-                                type: "list[int]"
-                            }
                         ],
-                        tooltip: "Change the color of all LEDs using a list.",
-                        importModule: ""
+                        tooltip: 'Change the color of all LEDs using a list.',
+                        importModule: '',
+                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentName: 'ledStick',
                     },
                     fields: {
-                        MODULE_OR_CLASS: "wpilib.SparkFunLEDStick",
-                        FUNC: "set_colors"
+                        COMPONENT_NAME: 'ledStick',
+                        FUNC: 'set_colors',
                     },
                     inputs: {
                         ARG0: {
                             block: {
-                                type: "mrc_get_python_variable",
-                                extraState: {
-                                    varKind: "module",
-                                    moduleOrClassName: "wacky_wheeler",
-                                    exportedVariable: true,
-                                    importModule: "wacky_wheeler",
-                                    actualVariableName: "mySparkFunLEDStick"
-                                },
-                                fields: {
-                                    MODULE_OR_CLASS: "wacky_wheeler",
-                                    VAR: "mySparkFunLEDStick"
-                                }
-                            }
-                        },
-                        ARG1: {
-                            block: {
-                                type: "variables_get",
+                                type: 'variables_get',
                                 fields: {
                                     VAR: {
-                                        name: "myListOfColors"
-                                    }
-                                }
-                            }
-                        }
-                    }
+                                        name: 'myListOfColors',
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
                 // def set_brightness(self, position: int, brightness: int) -> None:
                 {
-                    kind: "block",
-                    type: "mrc_call_python_function",
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
                     extraState: {
-                        functionKind: "instance",
-                        returnType: "None",
+                        functionKind: 'instance_component',
+                        returnType: 'None',
                         args: [
                             {
-                                name: "sparkFunLEDStick",
-                                type: "wpilib.SparkFunLEDStick"
+                                name: 'position',
+                                type: 'int',
                             },
                             {
-                                name: "position",
-                                type: "int"
+                                name: 'brightness',
+                                type: 'int',
                             },
-                            {
-                                name: "brightness",
-                                type: "int"
-                            }
                         ],
-                        tooltip: "Set the brightness of an individual LED.",
-                        importModule: ""
+                        tooltip: 'Set the brightness of an individual LED.',
+                        importModule: '',
+                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentName: 'ledStick',
                     },
                     fields: {
-                        MODULE_OR_CLASS: "wpilib.SparkFunLEDStick",
-                        FUNC: "set_brightness"
+                        COMPONENT_NAME: 'ledStick',
+                        FUNC: 'set_brightness',
                     },
                     inputs: {
                         ARG0: {
                             block: {
-                                type: "mrc_get_python_variable",
-                                extraState: {
-                                    varKind: "module",
-                                    moduleOrClassName: "wacky_wheeler",
-                                    exportedVariable: true,
-                                    importModule: "wacky_wheeler",
-                                    actualVariableName: "mySparkFunLEDStick"
-                                },
+                                type: 'math_number',
                                 fields: {
-                                    MODULE_OR_CLASS: "wacky_wheeler",
-                                    VAR: "mySparkFunLEDStick"
-                                }
-                            }
+                                    NUM: 1,
+                                },
+                            },
                         },
                         ARG1: {
                             block: {
-                                type: "math_number",
+                                type: 'math_number',
                                 fields: {
-                                    NUM: 1
-                                }
-                            }
+                                    NUM: 16,
+                                },
+                            },
                         },
-                        ARG2: {
-                            block: {
-                                type: "math_number",
-                                fields: {
-                                    NUM: 16
-                                }
-                            }
-                        }
-                    }
+                    },
                 },
                 // def set_brightness(self, brightness: int) -> None:
                 {
-                    kind: "block",
-                    type: "mrc_call_python_function",
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
                     extraState: {
-                        functionKind: "instance",
-                        returnType: "None",
+                        functionKind: 'instance_component',
+                        returnType: 'None',
                         args: [
                             {
-                                name: "sparkFunLEDStick",
-                                type: "wpilib.SparkFunLEDStick"
-                            },
-                            {
-                                name: "brightness",
-                                type: "int"
+                                name: 'brightness',
+                                type: 'int',
                             }
                         ],
-                        tooltip: "Set the brightness of all LEDs.",
-                        importModule: ""
+                        tooltip: 'Set the brightness of all LEDs.',
+                        importModule: '',
+                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentName: 'ledStick',
                     },
                     fields: {
-                        MODULE_OR_CLASS: "wpilib.SparkFunLEDStick",
-                        FUNC: "set_brightness"
+                        COMPONENT_NAME: 'ledStick',
+                        FUNC: 'set_brightness',
                     },
                     inputs: {
                         ARG0: {
                             block: {
-                                type: "mrc_get_python_variable",
-                                extraState: {
-                                    varKind: "module",
-                                    moduleOrClassName: "wacky_wheeler",
-                                    exportedVariable: true,
-                                    importModule: "wacky_wheeler",
-                                    actualVariableName: "mySparkFunLEDStick"
+                                type: 'math_number',
+                                fields: {
+                                    NUM: 16,
                                 },
-                                fields: {
-                                    MODULE_OR_CLASS: "wacky_wheeler",
-                                    VAR: "mySparkFunLEDStick"
-                                }
-                            }
+                            },
                         },
-                        ARG1: {
-                            block: {
-                                type: "math_number",
-                                fields: {
-                                    NUM: 16
-                                }
-                            }
-                        }
-                    }
+                    },
                 },
                 // def turn_all_off(self) -> None:
                 {
-                    kind: "block",
-                    type: "mrc_call_python_function",
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
                     extraState: {
-                        functionKind: "instance",
-                        returnType: "None",
-                        args: [
-                            {
-                                name: "sparkFunLEDStick",
-                                type: "wpilib.SparkFunLEDStick"
-                            }
-                        ],
-                        tooltip: "Turn all LEDs off.",
-                        importModule: ""
+                        functionKind: 'instance_component',
+                        returnType: 'None',
+                        args: [],
+                        tooltip: 'Turn all LEDs off.',
+                        importModule: '',
+                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentName: 'ledStick',
                     },
                     fields: {
-                        MODULE_OR_CLASS: "wpilib.SparkFunLEDStick",
-                        FUNC: "turn_all_off"
+                        COMPONENT_NAME: 'ledStick',
+                        FUNC: 'turn_all_off',
                     },
-                    inputs: {
-                        ARG0: {
-                            block: {
-                                type: "mrc_get_python_variable",
-                                extraState: {
-                                    varKind: "module",
-                                    moduleOrClassName: "wacky_wheeler",
-                                    exportedVariable: true,
-                                    importModule: "wacky_wheeler",
-                                    actualVariableName: "mySparkFunLEDStick"
-                                },
-                                fields: {
-                                    MODULE_OR_CLASS: "wacky_wheeler",
-                                    VAR: "mySparkFunLEDStick"
-                                }
-                            }
-                        }
-                    }
+                    inputs: {},
                 },
             ],
         }
