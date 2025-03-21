@@ -27,6 +27,10 @@ import { extendedPythonGenerator } from './editor/extended_python_generator'
 import * as ChangeFramework from './blocks/utils/change_framework'
 import { mutatorOpenListener } from './blocks/mrc_class_method_def'
 
+import {
+  SettingOutlined,
+} from '@ant-design/icons';
+
 const App: React.FC = () => {
   const { t } = I18Next.useTranslation();
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
@@ -96,16 +100,6 @@ const App: React.FC = () => {
     }
   }, [shownPythonToolboxCategories]);
 
-  const handleToolboxSettingsOk = async (updatedShownCategories: Set<string>) => {
-    if (!storage) {
-      return;
-    }
-    setShownPythonToolboxCategories(updatedShownCategories);
-    const array = Array.from(updatedShownCategories);
-    array.sort();
-    storage.saveEntry('shownPythonToolboxCategories', JSON.stringify(array));
-  };
-
   React.useEffect(() => {
     if (!blocklyComponent.current || !storage) {
       return;
@@ -159,6 +153,20 @@ const App: React.FC = () => {
     }
   }, [currentModule, shownPythonToolboxCategories]);
 
+  const handleToolboxSettingsClicked = () => {
+    setToolboxSettingsModalIsOpen(true);
+  };
+
+  const handleToolboxSettingsOk = async (updatedShownCategories: Set<string>) => {
+    if (!storage) {
+      return;
+    }
+    setShownPythonToolboxCategories(updatedShownCategories);
+    const array = Array.from(updatedShownCategories);
+    array.sort();
+    storage.saveEntry('shownPythonToolboxCategories', JSON.stringify(array));
+  };
+
   return (
     <Antd.ConfigProvider
       theme={{
@@ -205,7 +213,18 @@ const App: React.FC = () => {
             />
           </Antd.Splitter.Panel>
           <Antd.Splitter.Panel min='2%' defaultSize='50%'>
-            <BlocklyComponent ref={blocklyComponent} />
+            <Antd.Space>
+                <Antd.Tooltip title="Toolbox Settings">
+                  <Antd.Button
+                    icon={<SettingOutlined />}
+                    size="small"
+                    onClick={handleToolboxSettingsClicked}
+                    style={{ color: 'white' }}
+                  >
+                  </Antd.Button>
+                </Antd.Tooltip>
+              </Antd.Space>            
+            <BlocklyComponent ref={blocklyComponent}/>
           </Antd.Splitter.Panel>
           <Antd.Splitter.Panel min='2%'>
             <CodeDisplay generatedCode={generatedCode}
