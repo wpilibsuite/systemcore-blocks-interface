@@ -27,8 +27,6 @@ import * as NewProjectNameModal from './NewProjectNameModal';
 import * as NewModuleNameModal from './NewModuleNameModal';
 import * as editor from '../editor/editor';
 import type { MessageInstance } from 'antd/es/message/interface';
-import { BlocklyComponentType } from './BlocklyComponent';
-
 
 import {
   AppstoreOutlined as MechanismOutlined,
@@ -38,14 +36,12 @@ import {
 
 interface ModuleOutlineProps {
   setAlertErrorMessage: (message: string) => void;
-  setGeneratedCode: (newCode: string) => void;
   initializeShownPythonToolboxCategories: () => void;
   storage: commonStorage.Storage | null;
   messageApi: MessageInstance;
-  blocklyComponent: BlocklyComponentType | null;
   blocksEditor: editor.Editor | null;
   currentModule: commonStorage.Module | null;
-  setCurrentModule : (module : commonStorage.Module | null) => void;
+  setCurrentModule: (module: commonStorage.Module | null) => void;
 }
 
 export default function ModuleOutline(props: ModuleOutlineProps) {
@@ -112,36 +108,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     }
   }, [treeSelectedKey]);
 
-
-  const initializeModules = async () => {
-    const array = await fetchListOfModules();
-    if (array.length === 0) {
-      setNewProjectNameModalPurpose(PURPOSE_NEW_PROJECT);
-      setNewProjectNameModalInitialValue('');
-      setNewProjectNameModalTitle(NewProjectNameModal.TITLE_WELCOME);
-      setNewProjectNameModalMessage(NewProjectNameModal.MESSAGE_WELCOME);
-      setNewProjectNameModalIsOpen(true);
-    }
-  };
-
-  const fetchMostRecentModulePath = async () => {
-    if (!props.storage) {
-      return;
-    }
-    try {
-      const value = await props.storage.fetchEntry('mostRecentModulePath', '');
-      setMostRecentModulePath(value);
-    } catch (e) {
-      console.log('Failed to fetch mostRecentModulePath. Caught the following error...');
-      console.log(e);
-    }
-  };
-
-
-
   // When the list of modules is set, update the treeData and treeExpandedKeys.
   React.useEffect(() => {
-
     if (modules.length === 0 && treeData.length === 0) {
       return;
     }
@@ -253,6 +221,8 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       }
     }
   }, [currentModulePath]);
+
+
   // Provide a callback so the NewModuleNameModal will know what the current
   // project name is.
   const getCurrentProjectName = (): string => {
@@ -704,6 +674,30 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
       }
 
     });
+  };
+
+  const initializeModules = async () => {
+    const array = await fetchListOfModules();
+    if (array.length === 0) {
+      setNewProjectNameModalPurpose(PURPOSE_NEW_PROJECT);
+      setNewProjectNameModalInitialValue('');
+      setNewProjectNameModalTitle(NewProjectNameModal.TITLE_WELCOME);
+      setNewProjectNameModalMessage(NewProjectNameModal.MESSAGE_WELCOME);
+      setNewProjectNameModalIsOpen(true);
+    }
+  };
+
+  const fetchMostRecentModulePath = async () => {
+    if (!props.storage) {
+      return;
+    }
+    try {
+      const value = await props.storage.fetchEntry('mostRecentModulePath', '');
+      setMostRecentModulePath(value);
+    } catch (e) {
+      console.log('Failed to fetch mostRecentModulePath. Caught the following error...');
+      console.log(e);
+    }
   };
 
   return (

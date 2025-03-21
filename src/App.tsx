@@ -218,8 +218,6 @@ const App: React.FC = () => {
               storage={storage}
               messageApi={messageApi}
               setAlertErrorMessage={setAlertErrorMessage}
-              setGeneratedCode={setGeneratedCode}
-              blocklyComponent={blocklyComponent.current}
               blocksEditor={blocksEditor.current}
               initializeShownPythonToolboxCategories={initializeShownPythonToolboxCategories}
               currentModule={currentModule}
