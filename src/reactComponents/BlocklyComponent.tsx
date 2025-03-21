@@ -1,17 +1,42 @@
-import React, { useEffect, useRef } from 'react';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @author liz@google.com (Liz Looney)
+ */
+import React from 'react';
+// import * as Antd from 'antd';
+
 import * as Blockly from 'blockly/core';
 import * as locale from 'blockly/msg/en';
 import * as MrcTheme from '../themes/mrc_theme_dark'
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
 
+export type BlocklyComponentType = {
+  getBlocklyWorkspace: () => Blockly.WorkspaceSvg,
+};
 
-function BlocklyComponent(props) {
-  const blocklyDiv = useRef();
-  const workspaceRef = useRef();
+const BlocklyComponent = React.forwardRef<BlocklyComponentType | null>((props, ref) => {
+  const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
+  const workspaceRef = React.useRef<Blockly.WorkspaceSvg>(null);
 
   // Initialize Blockly
-  useEffect(() => {
+  React.useEffect(() => {
     // Configure Blockly workspace
     const workspaceConfig = {
       theme: MrcTheme.theme,
@@ -47,11 +72,13 @@ function BlocklyComponent(props) {
     };
 
     // Set Blockly locale
-    Blockly.setLocale(locale);
+    Blockly.setLocale(locale as any);
 
     // Create workspace
-    const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
-    workspaceRef.current = workspace;
+    if (blocklyDiv.current) {
+      const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
+      workspaceRef.current = workspace;
+    }
 
     // Cleanup on unmount
     return () => {
@@ -62,7 +89,7 @@ function BlocklyComponent(props) {
   }, []);
 
   // Handle workspace resize
-  useEffect(() => {
+  React.useEffect(() => {
     const div = blocklyDiv.current;
     if (div) {
       const resizeObserver = new ResizeObserver(() => {
@@ -77,15 +104,13 @@ function BlocklyComponent(props) {
       };
     }
   }, [blocklyDiv]);
-
+  
   // Public methods exposed through ref
-
   const getBlocklyWorkspace = () => workspaceRef.current;
-
+  
   // Expose methods through ref
-  React.useImperativeHandle(props.innerRef, () => ({
-    getBlocklyWorkspace,
-  }));
+  // TODO(Alan) - figure out the real way to do this instead of any
+  React.useImperativeHandle(ref as any, () => ({getBlocklyWorkspace}));
 
   return (
     <div
@@ -105,11 +130,6 @@ function BlocklyComponent(props) {
       />
     </div>
   );
-}
+});
 
-// Create a forwarded ref version of the component
-const BlocklyComponentWithRef = React.forwardRef((props, ref) => (
-  <BlocklyComponent {...props} innerRef={ref} />
-));
-
-export default BlocklyComponentWithRef;
+export default BlocklyComponent;
