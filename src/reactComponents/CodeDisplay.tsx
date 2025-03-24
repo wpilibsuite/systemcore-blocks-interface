@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Google LLC
+ * Copyright 2025 Porpoiseful LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  */
 
 /**
- * @author liz@google.com (Liz Looney)
+ * @author alan@porpoiseful.com (Alan Smith)
  */
 import React from 'react';
 import * as Antd from 'antd';
