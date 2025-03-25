@@ -5,24 +5,62 @@ export const category =
     contents: [
         {
             kind: 'category',
-            name: 'Rev Touch Sensor',
-            contents: [ 
-                // def is_pressed(self) -> bool:
+            name: 'REV Color Range Sensor',
+            contents: [
+                // def get_color_rgb(self) -> tuple[int, int, int]:
                 {
                     kind: 'block',
                     type: 'mrc_call_python_function',
                     extraState: {
                         functionKind: 'instance_component',
-                        returnType: 'bool',
+                        returnType: 'tuple[int, int, int]',
                         args: [],
-                        tooltip: 'Returns if the touch sensor is pressed or not',
+                        tooltip: 'Get the color in rgb (red, green, blue).',
                         importModule: '',
-                        componentClassName: 'wpilib.RevTouchSensor',
-                        componentName: 'frontTouch',
+                        componentClassName: 'rev.ColorRangeSensor',
+                        componentName: 'colorSensor',
                     },
                     fields: {
-                        COMPONENT_NAME: 'frontTouch',
-                        FUNC: 'is_pressed',
+                        COMPONENT_NAME: 'colorSensor',
+                        FUNC: 'get_color_rgb',
+                    },
+                    inputs: {},
+                },
+                // def get_color_hsv(self) -> tuple[int, int, int]:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'tuple[int, int, int]',
+                        args: [],
+                        tooltip: 'Get the color in hsv (hue, saturation, value).',
+                        importModule: '',
+                        componentClassName: 'rev.ColorRangeSensor',
+                        componentName: 'colorSensor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'colorSensor',
+                        FUNC: 'get_color_hsv',
+                    },
+                    inputs: {},
+                },
+                // def get_distance_mm(self) -> float:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'float',
+                        args: [],
+                        tooltip: 'Get the distance of the object seen.',
+                        importModule: '',
+                        componentClassName: 'rev.ColorRangeSensor',
+                        componentName: 'colorSensor',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'colorSensor',
+                        FUNC: 'get_distance_mm',
                     },
                     inputs: {},
                 },
@@ -30,7 +68,79 @@ export const category =
         },
         {
             kind: 'category',
-            name: 'Smart Motor',
+            name: 'REV Servo',
+            contents: [
+                // def set_position(self, pos: float) -> None:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'None',
+                        args: [
+                            {
+                                name: 'pos',
+                                type: 'float',
+                            },
+                        ],
+                        tooltip: 'Set the servo to a position between 0 and 1.',
+                        importModule: '',
+                        componentClassName: 'rev.Servo',
+                        componentName: 'clawServo',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'clawServo',
+                        FUNC: 'set_position',
+                    },
+                    inputs: {
+                        ARG0: {
+                            block: {
+                                type: 'math_number',
+                                fields: {
+                                    NUM: 0.5,
+                                },
+                            },
+                        },
+                    },
+                },
+                // def set_angle_degrees(self, angle: float) -> None:
+                {
+                    kind: 'block',
+                    type: 'mrc_call_python_function',
+                    extraState: {
+                        functionKind: 'instance_component',
+                        returnType: 'None',
+                        args: [
+                            {
+                                name: 'angle',
+                                type: 'float',
+                            },
+                        ],
+                        tooltip: 'Set the servo to an angle between 0 and 270.',
+                        importModule: '',
+                        componentClassName: 'rev.Servo',
+                        componentName: 'clawServo',
+                    },
+                    fields: {
+                        COMPONENT_NAME: 'clawServo',
+                        FUNC: 'set_angle_degrees',
+                    },
+                    inputs: {
+                        ARG0: {
+                            block: {
+                                type: 'math_number',
+                                fields: {
+                                    NUM: 180,
+                                },
+                            },
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            kind: 'category',
+            name: 'REV Smart Motor',
             contents: [
                 // def set_speed(self, speed: float) -> None:
                 {
@@ -45,9 +155,9 @@ export const category =
                                 type: 'float',
                             },
                         ],
-                        tooltip: 'Set the motor to a speed between -1 and 1',
+                        tooltip: 'Set the motor to a speed between -1 and 1.',
                         importModule: '',
-                        componentClassName: 'wpilib.SmartMotor',
+                        componentClassName: 'rev.SmartMotor',
                         componentName: 'leftMotor',
                     },
                     fields: {
@@ -78,9 +188,9 @@ export const category =
                                 type: 'float',
                             },
                         ],
-                        tooltip: 'Set the motor to an angle between 0 and 360',
+                        tooltip: 'Set the motor to an angle between 0 and 360.',
                         importModule: '',
-                        componentClassName: 'wpilib.SmartMotor',
+                        componentClassName: 'rev.SmartMotor',
                         componentName: 'leftMotor',
                     },
                     fields: {
@@ -106,9 +216,9 @@ export const category =
                         functionKind: 'instance_component',
                         returnType: 'int',
                         args: [],
-                        tooltip: 'Get the number of relative motor ticks since reset of encoder',
+                        tooltip: 'Get the number of relative motor ticks since reset of encoder.',
                         importModule: '',
-                        componentClassName: 'wpilib.SmartMotor',
+                        componentClassName: 'rev.SmartMotor',
                         componentName: 'leftMotor',
                     },
                     fields: {
@@ -125,9 +235,9 @@ export const category =
                         functionKind: 'instance_component',
                         returnType: 'float',
                         args: [],
-                        tooltip: 'Get the angle position of the motor',
+                        tooltip: 'Get the angle position of the motor.',
                         importModule: '',
-                        componentClassName: 'wpilib.SmartMotor',
+                        componentClassName: 'rev.SmartMotor',
                         componentName: 'leftMotor',
                     },
                     fields: {
@@ -144,9 +254,9 @@ export const category =
                         functionKind: 'instance_component',
                         returnType: 'None',
                         args: [],
-                        tooltip: 'Reset the relative encoder value to 0',
+                        tooltip: 'Reset the relative encoder value to 0.',
                         importModule: '',
-                        componentClassName: 'wpilib.SmartMotor',
+                        componentClassName: 'rev.SmartMotor',
                         componentName: 'leftMotor',
                     },
                     fields: {
@@ -159,134 +269,24 @@ export const category =
         },
         {
             kind: 'category',
-            name: 'Servo',
-            contents: [
-                // def set_position(self, pos: float) -> None:
+            name: 'REV Touch Sensor',
+            contents: [ 
+                // def is_pressed(self) -> bool:
                 {
                     kind: 'block',
                     type: 'mrc_call_python_function',
                     extraState: {
                         functionKind: 'instance_component',
-                        returnType: 'None',
-                        args: [
-                            {
-                                name: 'pos',
-                                type: 'float',
-                            },
-                        ],
-                        tooltip: 'Set the servo to a position between 0 and 1',
-                        importModule: '',
-                        componentClassName: 'wpilib.Servo',
-                        componentName: 'claw',
-                    },
-                    fields: {
-                        COMPONENT_NAME: 'claw',
-                        FUNC: 'set_position',
-                    },
-                    inputs: {
-                        ARG0: {
-                            block: {
-                                type: 'math_number',
-                                fields: {
-                                    NUM: 0.5,
-                                },
-                            },
-                        },
-                    },
-                },
-                // def set_angle_degrees(self, angle: float) -> None:
-                {
-                    kind: 'block',
-                    type: 'mrc_call_python_function',
-                    extraState: {
-                        functionKind: 'instance_component',
-                        returnType: 'None',
-                        args: [
-                            {
-                                name: 'angle',
-                                type: 'float',
-                            },
-                        ],
-                        tooltip: 'Set the servo to an angle between 0 and 270',
-                        importModule: '',
-                        componentClassName: 'wpilib.Servo',
-                        componentName: 'claw',
-                    },
-                    fields: {
-                        COMPONENT_NAME: 'claw',
-                        FUNC: 'set_angle_degrees',
-                    },
-                    inputs: {
-                        ARG0: {
-                            block: {
-                                type: 'math_number',
-                                fields: {
-                                    NUM: 180,
-                                },
-                            },
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            kind: 'category',
-            name: 'Color Range Sensor',
-            contents: [
-                // def get_color_rgb(self) -> tuple[int, int, int]:
-                {
-                    kind: 'block',
-                    type: 'mrc_call_python_function',
-                    extraState: {
-                        functionKind: 'instance_component',
-                        returnType: 'tuple[int, int, int]',
+                        returnType: 'bool',
                         args: [],
-                        tooltip: 'gets the color in rgb (red, green, blue)',
+                        tooltip: 'Return whether the touch sensor is pressed.',
                         importModule: '',
-                        componentClassName: 'wpilib.ColorRangeSensor',
-                        componentName: 'colorSensor',
+                        componentClassName: 'rev.TouchSensor',
+                        componentName: 'frontTouch',
                     },
                     fields: {
-                        COMPONENT_NAME: 'colorSensor',
-                        FUNC: 'get_color_rgb',
-                    },
-                    inputs: {},
-                },
-                // def get_color_hsv(self) -> tuple[int, int, int]:
-                {
-                    kind: 'block',
-                    type: 'mrc_call_python_function',
-                    extraState: {
-                        functionKind: 'instance_component',
-                        returnType: 'tuple[int, int, int]',
-                        args: [],
-                        tooltip: 'gets the color in hsv (hue, saturation, value)',
-                        importModule: '',
-                        componentClassName: 'wpilib.ColorRangeSensor',
-                        componentName: 'colorSensor',
-                    },
-                    fields: {
-                        COMPONENT_NAME: 'colorSensor',
-                        FUNC: 'get_color_hsv',
-                    },
-                    inputs: {},
-                },
-                // def get_distance_mm(self) -> float:
-                {
-                    kind: 'block',
-                    type: 'mrc_call_python_function',
-                    extraState: {
-                        functionKind: 'instance_component',
-                        returnType: 'float',
-                        args: [],
-                        tooltip: 'gets the distance of the object seen',
-                        importModule: '',
-                        componentClassName: 'wpilib.ColorRangeSensor',
-                        componentName: 'colorSensor',
-                    },
-                    fields: {
-                        COMPONENT_NAME: 'colorSensor',
-                        FUNC: 'get_distance_mm',
+                        COMPONENT_NAME: 'frontTouch',
+                        FUNC: 'is_pressed',
                     },
                     inputs: {},
                 },
@@ -315,7 +315,7 @@ export const category =
                         ],
                         tooltip: 'Change the color of an individual LED.',
                         importModule: '',
-                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentClassName: 'sparkfun.LEDStick',
                         componentName: 'ledStick',
                     },
                     fields: {
@@ -363,7 +363,7 @@ export const category =
                         ],
                         tooltip: 'Change the color of all LEDs to a single color.',
                         importModule: '',
-                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentClassName: 'sparkfun.LEDStick',
                         componentName: 'ledStick',
                     },
                     fields: {
@@ -403,7 +403,7 @@ export const category =
                         ],
                         tooltip: 'Change the color of all LEDs using a list.',
                         importModule: '',
-                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentClassName: 'sparkfun.LEDStick',
                         componentName: 'ledStick',
                     },
                     fields: {
@@ -442,7 +442,7 @@ export const category =
                         ],
                         tooltip: 'Set the brightness of an individual LED.',
                         importModule: '',
-                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentClassName: 'sparkfun.LEDStick',
                         componentName: 'ledStick',
                     },
                     fields: {
@@ -483,7 +483,7 @@ export const category =
                         ],
                         tooltip: 'Set the brightness of all LEDs.',
                         importModule: '',
-                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentClassName: 'sparkfun.LEDStick',
                         componentName: 'ledStick',
                     },
                     fields: {
@@ -511,7 +511,7 @@ export const category =
                         args: [],
                         tooltip: 'Turn all LEDs off.',
                         importModule: '',
-                        componentClassName: 'wpilib.SparkFunLEDStick',
+                        componentClassName: 'sparkfun.LEDStick',
                         componentName: 'ledStick',
                     },
                     fields: {
