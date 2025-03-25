@@ -156,7 +156,7 @@ const CALL_PYTHON_FUNCTION = {
         case FunctionKind.INSTANCE_COMPONENT: {
           const className = this.mrcComponentClassName;
           const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
-          tooltip = 'Calls the function ' + className + '.' + functionName +
+          tooltip = 'Calls the method ' + className + '.' + functionName +
               ' on the component named ' + this.getComponentName() + '.';
           break;
         }

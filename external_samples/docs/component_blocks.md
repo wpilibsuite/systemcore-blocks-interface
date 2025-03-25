@@ -6,7 +6,7 @@
 
 <img src="BlockWithComponentDropdown.png">
 
-### Tooltip shows that this block calls a method on a component and details about what that method does.
+### Tooltip shows that the block calls a method on a component, followed by details about what that method does.
 
 <img src="BlockWithTooltip.png">
 
