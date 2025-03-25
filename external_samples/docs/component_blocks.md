@@ -2,7 +2,7 @@
 
 ## Block Details
 
-### Dropdown shows list of component of the specific type
+### Dropdown shows components of the specific type.
 
 <img src="BlockWithComponentDropdown.png">
 
