@@ -55,7 +55,7 @@ type NewProjectNameModalProps = {
   onCancel: () => void;
 }
 
-export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title, message, isOpen, initialValue, getProjectClassNames, onOk, onCancel }) => {
+const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title, message, isOpen, initialValue, getProjectClassNames, onOk, onCancel }) => {
   const inputRef = useRef<InputRef>(null);
   const [value, setValue] = useState('');
   const [projectNames, setProjectNames] = useState<string[]>([]);
@@ -132,3 +132,5 @@ export const NewProjectNameModal: React.FC<NewProjectNameModalProps> = ({ title,
     </Modal>
   );
 };
+
+export default NewProjectNameModal;
