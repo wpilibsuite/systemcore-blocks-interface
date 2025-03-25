@@ -34,7 +34,6 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private context: GeneratorContext | null = null;
 
   private classMethods: {[key: string]: string} = Object.create(null);
-  private mapComponentNameToVarName: {[key: string]: string} = Object.create(null);
 
   constructor() {
     super('Python');
@@ -55,18 +54,6 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       );
     }
     this.definitions_['variables'] = defvars.join('\n');
-
-    // Collect the components used in all mrc_call_python_function blocks.
-    workspace.getBlocksByType('mrc_call_python_function', false).forEach((block) => {
-      const callPythonFunctionBlock = block as CallPythonFunctionBlock;
-      const componentName = callPythonFunctionBlock.getComponentName();
-      if (componentName) {
-        if (!(componentName in this.mapComponentNameToVarName)) {
-          const varName = this.nameDB_!.getDistinctName(componentName, 'VARIABLE');
-          this.mapComponentNameToVarName[componentName] = varName;
-        }
-      }
-    });
   }
 
   /*
@@ -79,10 +66,6 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     if (this.context?.getHasMechanisms()) {
       variableDefinitions += this.INDENT + "self.mechanisms = []\n";
     }
-
-    Object.entries(this.mapComponentNameToVarName).forEach(([componentName, varName]) => {
-      variableDefinitions += this.INDENT + 'self.' + varName + ' = robot.' + componentName + '\n';
-    });
 
     return variableDefinitions;
   }
@@ -120,13 +103,6 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.classMethods[methodName] = code;
   }
 
-  /**
-   * Get the variable name to use for a component.
-   */
-  componentNameToVarName(componentName: string): string {
-    return this.mapComponentNameToVarName[componentName];
-  }
-
   finish(code: string): string {
     if (this.context && this.workspace) {
       const className = this.context.getClassName();
@@ -142,8 +118,6 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
       this.context.setExportedBlocks(this.produceExportedBlocks(this.workspace));
     }
-
-    this.mapComponentNameToVarName = Object.create(null);
 
     return super.finish(code);
   }

@@ -421,11 +421,10 @@ export const pythonFromBlock = function(
     }
     case FunctionKind.INSTANCE_COMPONENT: {
       const componentName = callPythonFunctionBlock.getComponentName();
-      const varName = generator.componentNameToVarName(componentName);
       const functionName = callPythonFunctionBlock.mrcActualFunctionName
           ? callPythonFunctionBlock.mrcActualFunctionName
           : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
-      code = 'self.' + varName + '.' + functionName;
+      code = 'self.robot.' + componentName + '.' + functionName;
       break;
     }
     default:
