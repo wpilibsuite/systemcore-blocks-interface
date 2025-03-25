@@ -252,13 +252,13 @@ export class Editor {
     const components = commonStorage.extractComponents(this.projectContent);
 
     // TODO(lizlooney): Remove this fake code after getComponents (above) has been implemented.
-    components.push({name: 'frontTouch', className: 'wpilib.RevTouchSensor'});
-    components.push({name: 'backTouch', className: 'wpilib.RevTouchSensor'});
-    components.push({name: 'leftMotor', className: 'wpilib.SmartMotor'});
-    components.push({name: 'rightMotor', className: 'wpilib.SmartMotor'});
-    components.push({name: 'claw', className: 'wpilib.Servo'});
-    components.push({name: 'colorSensor', className: 'wpilib.ColorRangeSensor'});
-    components.push({name: 'ledStick', className: 'wpilib.SparkFunLEDStick'});
+    components.push({name: 'frontTouch', className: 'rev.TouchSensor'});
+    components.push({name: 'backTouch', className: 'rev.TouchSensor'});
+    components.push({name: 'leftMotor', className: 'rev.SmartMotor'});
+    components.push({name: 'rightMotor', className: 'rev.SmartMotor'});
+    components.push({name: 'clawServo', className: 'rev.Servo'});
+    components.push({name: 'colorSensor', className: 'rev.ColorRangeSensor'});
+    components.push({name: 'ledStick', className: 'sparkfun.LEDStick'});
     // End of fake code
 
     const componentNames: string[] = [];
