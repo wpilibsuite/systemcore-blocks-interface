@@ -341,7 +341,7 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
     }
   }
   const handleNewProjectNameOk = async (newProjectClassName: string) => {
-    if (!props.storage || !props.currentModule) {
+    if (!props.storage) {
       return;
     }
     const newProjectName = commonStorage.classNameToModuleName(newProjectClassName);
