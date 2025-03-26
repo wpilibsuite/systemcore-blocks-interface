@@ -13,7 +13,12 @@
                     "canBeCalledWithinClass": false,
                     "canBeCalledOutsideClass": false,
                     "returnType": "None",
-                    "params": [],
+                    "params": [
+                        {
+                            "name": "robot",
+                            "type": "Robot"
+                        }
+                    ],
                     "pythonMethodName": "__init__"
                 },
                 "fields": {
