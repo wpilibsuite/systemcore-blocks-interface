@@ -23,7 +23,6 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
-import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
@@ -47,6 +46,8 @@ enum FunctionKind {
 
 const RETURN_TYPE_NONE = 'None';
 
+const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
+const FIELD_FUNCTION_NAME = 'FUNC';
 const FIELD_COMPONENT_NAME = 'COMPONENT_NAME';
 
 export type FunctionArg = {
@@ -126,36 +127,36 @@ const CALL_PYTHON_FUNCTION = {
       let tooltip: string;
       switch (this.mrcFunctionKind) {
         case FunctionKind.MODULE: {
-          const moduleName = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
-          const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = 'Calls the function ' + moduleName + '.' + functionName + '.';
           break;
         }
         case FunctionKind.STATIC: {
-          const className = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
-          const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = 'Calls the function ' + className + '.' + functionName + '.';
           break;
         }
         case FunctionKind.CONSTRUCTOR: {
-          const className = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           tooltip = 'Constructs an instance of the class ' + className + '.';
           break;
         }
         case FunctionKind.INSTANCE: {
-          const className = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
-          const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = 'Calls the function ' + className + '.' + functionName + '.';
           break;
         }
         case FunctionKind.INSTANCE_WITHIN: {
-          const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = 'Calls the method ' + functionName + '.';
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
           const className = this.mrcComponentClassName;
-          const functionName = this.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = 'Calls the method ' + className + '.' + functionName +
               ' on the component named ' + this.getComponentName() + '.';
           break;
@@ -260,35 +261,35 @@ const CALL_PYTHON_FUNCTION = {
         case FunctionKind.MODULE:
           this.appendDummyInput('TITLE')
               .appendField('call')
-              .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
+              .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
               .appendField('.')
-              .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
+              .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.STATIC:
           this.appendDummyInput('TITLE')
               .appendField('call')
-              .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
+              .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
               .appendField('.')
-              .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
+              .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.CONSTRUCTOR:
           this.appendDummyInput('TITLE')
               .appendField('create')
-              .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+              .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME);
           break;
         case FunctionKind.INSTANCE:
           this.appendDummyInput('TITLE')
               .appendField('call')
-              .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
+              .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
               .appendField('.')
-              .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
+              .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.INSTANCE_WITHIN: {
           const input = this.getInput('TITLE');
           if (!input) {
             this.appendDummyInput('TITLE')
                 .appendField('call')
-                .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
+                .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           }
           break;
         }
@@ -302,7 +303,7 @@ const CALL_PYTHON_FUNCTION = {
               .appendField('call')
               .appendField(createFieldDropdown(componentNames), FIELD_COMPONENT_NAME)
               .appendField('.')
-              .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_FUNCTION_NAME);
+              .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         }
         default:
@@ -348,7 +349,7 @@ const CALL_PYTHON_FUNCTION = {
     return this.mrcComponentClassName;
   },
   renameMethod: function(this: CallPythonFunctionBlock, newName: string): void {
-    this.setFieldValue(newName, pythonUtils.FIELD_FUNCTION_NAME);
+    this.setFieldValue(newName, FIELD_FUNCTION_NAME);
   },
   mutateMethod: function(
       this: CallPythonFunctionBlock,
@@ -382,24 +383,24 @@ export const pythonFromBlock = function(
   let argStartIndex = 0;
   switch (callPythonFunctionBlock.mrcFunctionKind) {
     case FunctionKind.MODULE: {
-      const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+      const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
           ? callPythonFunctionBlock.mrcActualFunctionName
-          : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = moduleName + '.' + functionName;
       break;
     }
     case FunctionKind.STATIC: {
       const callPythonFunctionBlock = block as CallPythonFunctionBlock;
-      const className = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+      const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
           ? callPythonFunctionBlock.mrcActualFunctionName
-          : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = className + '.' + functionName;
       break;
     }
     case FunctionKind.CONSTRUCTOR: {
-      const className = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+      const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       code = className;
       break;
     }
@@ -408,13 +409,13 @@ export const pythonFromBlock = function(
       const selfValue = generator.valueToCode(block, 'ARG0', Order.MEMBER);
       const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
           ? callPythonFunctionBlock.mrcActualFunctionName
-          : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = selfValue + '.' + functionName;
       argStartIndex = 1; // Skip the self argument.
       break;
     }
     case FunctionKind.INSTANCE_WITHIN: {
-      const blocklyName = block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+      const blocklyName = block.getFieldValue(FIELD_FUNCTION_NAME);
       const functionName = generator.getProcedureName(blocklyName);
       code = 'self.' + functionName;
       break;
@@ -423,7 +424,7 @@ export const pythonFromBlock = function(
       const componentName = callPythonFunctionBlock.getComponentName();
       const functionName = callPythonFunctionBlock.mrcActualFunctionName
           ? callPythonFunctionBlock.mrcActualFunctionName
-          : block.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME);
+          : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = 'self.robot.' + componentName + '.' + functionName;
       break;
     }
@@ -461,7 +462,7 @@ function getMethodCallers(workspace: Blockly.Workspace, name: string): Blockly.B
     const callBlock = block as CallPythonFunctionBlock;
     return (
       callBlock.mrcFunctionKind === FunctionKind.INSTANCE_WITHIN &&
-      callBlock.getFieldValue(pythonUtils.FIELD_FUNCTION_NAME) === name
+      callBlock.getFieldValue(FIELD_FUNCTION_NAME) === name
     );
   });
 }

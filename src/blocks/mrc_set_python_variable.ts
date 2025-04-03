@@ -23,7 +23,6 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
-import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { getAllowedTypesForSetCheck } from './utils/python';
@@ -34,10 +33,12 @@ import { MRC_STYLE_VARIABLES } from '../themes/styles';
 
 export const BLOCK_NAME = 'mrc_set_python_variable';
 
-
 const VAR_KIND_MODULE = 'module';
 const VAR_KIND_CLASS = 'class';
 const VAR_KIND_INSTANCE = 'instance';
+
+const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
+const FIELD_VARIABLE_NAME = 'VAR';
 
 // Variables and functions used for populating the drop down field for the variable names.
 
@@ -131,25 +132,25 @@ const SET_PYTHON_VARIABLE = {
   init: function(this: SetPythonVariableBlock): void {
     this.appendValueInput('VALUE')
         .appendField('set')
-        .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_MODULE_OR_CLASS_NAME)
+        .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
         .appendField('.');
     this.setStyle(MRC_STYLE_VARIABLES);
     this.setTooltip(() => {
-      const varName = this.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
+      const varName = this.getFieldValue(FIELD_VARIABLE_NAME);
       let tooltip: string;
       switch (this.mrcVarKind) {
         case VAR_KIND_MODULE: {
-          const moduleName = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+          const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           tooltip = 'Sets the variable ' + moduleName + '.' + varName + '.';
           break;
         }
         case VAR_KIND_CLASS: {
-          const className = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           tooltip = 'Sets the variable ' + className + '.' + varName + '.';
           break;
         }
         case VAR_KIND_INSTANCE: {
-          const className = this.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           tooltip = 'Sets the variable ' + varName + ' for the given ' + className + ' object.';
           break;
         }
@@ -232,9 +233,9 @@ const SET_PYTHON_VARIABLE = {
       const varNames = PythonVariableSetterNames[this.mrcKey];
       if (varNames) {
         // Create the drop-down with the variable names.
-        input.appendField(createFieldDropdown(varNames), pythonUtils.FIELD_VARIABLE_NAME);
+        input.appendField(createFieldDropdown(varNames), FIELD_VARIABLE_NAME);
       } else {
-        input.appendField(createFieldNonEditableText(''), pythonUtils.FIELD_VARIABLE_NAME);
+        input.appendField(createFieldNonEditableText(''), FIELD_VARIABLE_NAME);
       }
       input.appendField('to');
       if (this.mrcVarType) {
@@ -262,10 +263,10 @@ export const pythonFromBlock = function(
   const setPythonVariableBlock = block as SetPythonVariableBlock;
   const varName = setPythonVariableBlock.mrcActualVariableName
       ? setPythonVariableBlock.mrcActualVariableName
-      : block.getFieldValue(pythonUtils.FIELD_VARIABLE_NAME);
+      : block.getFieldValue(FIELD_VARIABLE_NAME);
   switch (setPythonVariableBlock.mrcVarKind) {
     case VAR_KIND_MODULE: {
-      const moduleName = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+      const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
       if (setPythonVariableBlock.mrcImportModule) {
         generator.addImport(setPythonVariableBlock.mrcImportModule);
@@ -274,7 +275,7 @@ export const pythonFromBlock = function(
       return code;
     }
     case VAR_KIND_CLASS: {
-      const className = block.getFieldValue(pythonUtils.FIELD_MODULE_OR_CLASS_NAME);
+      const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
       if (setPythonVariableBlock.mrcImportModule) {
         generator.addImport(setPythonVariableBlock.mrcImportModule);

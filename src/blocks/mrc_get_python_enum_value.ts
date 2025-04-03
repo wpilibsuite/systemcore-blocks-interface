@@ -23,7 +23,6 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
-import * as pythonUtils from './utils/generated/python';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { getOutputCheck } from './utils/python';
@@ -34,6 +33,9 @@ import { MRC_STYLE_ENUM } from '../themes/styles'
 // A block to access a python enum.
 
 export const BLOCK_NAME = 'mrc_get_python_enum_value';
+
+const FIELD_ENUM_CLASS_NAME = 'ENUM_TYPE';
+const FIELD_ENUM_VALUE = 'ENUM_VALUE';
 
 // Variables and functions used for populating the drop down field for the enum values.
 
@@ -67,12 +69,12 @@ const GET_PYTHON_ENUM_VALUE = {
    */
   init: function(this: GetPythonEnumValueBlock): void {
     this.appendDummyInput('ENUM')
-        .appendField(createFieldNonEditableText(''), pythonUtils.FIELD_ENUM_CLASS_NAME)
+        .appendField(createFieldNonEditableText(''), FIELD_ENUM_CLASS_NAME)
         .appendField('.');
     this.setStyle(MRC_STYLE_ENUM);
     this.setTooltip(() => {
-      const enumClassName = this.getFieldValue(pythonUtils.FIELD_ENUM_CLASS_NAME);
-      const enumValue = this.getFieldValue(pythonUtils.FIELD_ENUM_VALUE);
+      const enumClassName = this.getFieldValue(FIELD_ENUM_CLASS_NAME);
+      const enumValue = this.getFieldValue(FIELD_ENUM_VALUE);
       let tooltip = 'Gets the enum value ' + enumClassName + '.' + enumValue + '.';
       const enumTooltip = PythonEnumTooltips[enumClassName]
       if (enumTooltip) {
@@ -128,7 +130,7 @@ const GET_PYTHON_ENUM_VALUE = {
     // Create the drop-down with the enum values.
     const enumValues = PythonEnumValues[this.mrcEnumType];
     this.getInput('ENUM')!
-        .appendField(createFieldDropdown(enumValues), pythonUtils.FIELD_ENUM_VALUE);
+        .appendField(createFieldDropdown(enumValues), FIELD_ENUM_VALUE);
   }
 };
 
@@ -141,8 +143,8 @@ export const pythonFromBlock = function(
     generator: ExtendedPythonGenerator,
 ) {
   const getPythonEnumValueBlock = block as GetPythonEnumValueBlock;
-  const enumClassName = block.getFieldValue(pythonUtils.FIELD_ENUM_CLASS_NAME);
-  const enumValue = block.getFieldValue(pythonUtils.FIELD_ENUM_VALUE);
+  const enumClassName = block.getFieldValue(FIELD_ENUM_CLASS_NAME);
+  const enumValue = block.getFieldValue(FIELD_ENUM_VALUE);
   if (getPythonEnumValueBlock.mrcImportModule) {
     generator.addImport(getPythonEnumValueBlock.mrcImportModule);
   }
