@@ -44,7 +44,7 @@ import * as commonStorage from './storage/common_storage';
 import * as clientSideStorage from './storage/client_side_storage';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
-import { initialize as initializeGeneratedBlocks } from './blocks/utils/generated/initialize';
+import { initialize as initializeRobotPyBlocks } from './blocks/utils/robotpy_initialize';
 import * as ChangeFramework from './blocks/utils/change_framework'
 import { mutatorOpenListener } from './blocks/mrc_class_method_def'
 
@@ -133,7 +133,7 @@ const App: React.FC = () => {
     CustomBlocks.setup(forBlock);
     Object.assign(pythonGenerator.forBlock, forBlock);
     Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
-    initializeGeneratedBlocks();
+    initializeRobotPyBlocks();
   };
 
   const initializeShownPythonToolboxCategories = async () => {
