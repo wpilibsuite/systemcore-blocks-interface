@@ -32,8 +32,8 @@ class Servo(Component):
         return "REV-41-1097"
     def get_url(self) -> str:  
         return "https://www.revrobotics.com/rev-41-1097/"
-    def get_version(self) -> tuple[int, int, str]: 
-        return (1, 0, "")
+    def get_version(self) -> tuple[int, int, int]: 
+        return (1, 0, 0)
     def stop(self) -> None:
         # De-energize servo port
         pass
