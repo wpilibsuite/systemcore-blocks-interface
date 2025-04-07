@@ -23,19 +23,24 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
+import { getAllowedTypesForSetCheck } from './utils/python';
+import * as variable from './utils/variable';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
-import { getAllowedTypesForSetCheck } from './utils/python';
-import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
+import * as toolboxItems from '../toolbox/items';
+
 
 // A block to set a python variable.
 
 export const BLOCK_NAME = 'mrc_set_python_variable';
 
-const VAR_KIND_MODULE = 'module';
-const VAR_KIND_CLASS = 'class';
-const VAR_KIND_INSTANCE = 'instance';
+enum VariableKind {
+  MODULE = 'module',
+  CLASS = 'class',
+  INSTANCE = 'instance',
+}
 
 const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
 const FIELD_VARIABLE_NAME = 'VAR';
@@ -52,30 +57,82 @@ function createKey(
 
 export function initializeModuleVariableSetter(
     moduleName: string, varType: string, varNames: string[], tooltips: string[]): void {
-  const key = createKey(VAR_KIND_MODULE, moduleName, varType);
+  const key = createKey(VariableKind.MODULE, moduleName, varType);
   PythonVariableSetterNames[key] = varNames;
   PythonVariableSetterTooltips[key] = tooltips;
 }
 
 export function initializeClassVariableSetter(
     className: string, varType: string, varNames: string[], tooltips: string[]): void {
-  const key = createKey(VAR_KIND_CLASS, className, varType);
+  const key = createKey(VariableKind.CLASS, className, varType);
   PythonVariableSetterNames[key] = varNames;
   PythonVariableSetterTooltips[key] = tooltips;
 }
 
 export function initializeInstanceVariableSetter(
     className: string, varType: string, varNames: string[], tooltips: string[]): void {
-  const key = createKey(VAR_KIND_INSTANCE, className, varType);
+  const key = createKey(VariableKind.INSTANCE, className, varType);
   PythonVariableSetterNames[key] = varNames;
   PythonVariableSetterTooltips[key] = tooltips;
+}
+
+// Functions used for creating blocks for the toolbox.
+
+export function createModuleOrClassVariableSetterBlock(
+    varKind: VariableKind,
+    importModule: string,
+    moduleOrClassName: string,
+    varType: string,
+    varName: string): toolboxItems.Block {
+  const extraState: SetPythonVariableExtraState = {
+    varKind: varKind,
+    moduleOrClassName: moduleOrClassName,
+    varType: varType,
+    importModule: importModule,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
+  fields[FIELD_VARIABLE_NAME] = varName;
+  const inputs: {[key: string]: any} = {};
+  const valueVarName = variable.varNameForType(varType);
+  if (valueVarName) {
+    inputs['VALUE'] = variable.createVariableGetterBlockValue(valueVarName);
+  }
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+}
+
+export function createInstanceVariableSetterBlock(
+    className: string,
+    varType: string,
+    varName: string): toolboxItems.Block {
+  const selfLabel = variable.getSelfArgName(className);
+  const extraState: SetPythonVariableExtraState = {
+    varKind: VariableKind.INSTANCE,
+    moduleOrClassName: className,
+    varType: varType,
+    selfLabel: selfLabel,
+    selfType: className,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = className;
+  fields[FIELD_VARIABLE_NAME] = varName;
+  const inputs: {[key: string]: any} = {};
+  const valueVarName = variable.varNameForType(varType);
+  if (valueVarName) {
+    inputs['VALUE'] = variable.createVariableGetterBlockValue(valueVarName);
+  }
+  const selfVarName = variable.varNameForType(className);
+  if (selfVarName) {
+    inputs['SELF'] = variable.createVariableGetterBlockValue(selfVarName);
+  }
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
 }
 
 //..............................................................................
 
 type SetPythonVariableBlock = Blockly.Block & SetPythonVariableMixin;
 interface SetPythonVariableMixin extends SetPythonVariableMixinType {
-  mrcVarKind: string, // module, class, or instance
+  mrcVarKind: VariableKind,
   mrcModuleOrClassName: string,
   mrcVarType: string,
   mrcSelfLabel: string,
@@ -122,7 +179,7 @@ type SetPythonVariableExtraState = {
    * True if this blocks refers to an exported variable (for example, from a
    * user's Project).
    */
-  exportedVariable: boolean,
+  exportedVariable?: boolean,
 };
 
 const SET_PYTHON_VARIABLE = {
@@ -139,17 +196,17 @@ const SET_PYTHON_VARIABLE = {
       const varName = this.getFieldValue(FIELD_VARIABLE_NAME);
       let tooltip: string;
       switch (this.mrcVarKind) {
-        case VAR_KIND_MODULE: {
+        case VariableKind.MODULE: {
           const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           tooltip = 'Sets the variable ' + moduleName + '.' + varName + '.';
           break;
         }
-        case VAR_KIND_CLASS: {
+        case VariableKind.CLASS: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           tooltip = 'Sets the variable ' + className + '.' + varName + '.';
           break;
         }
-        case VAR_KIND_INSTANCE: {
+        case VariableKind.INSTANCE: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           tooltip = 'Sets the variable ' + varName + ' for the given ' + className + ' object.';
           break;
@@ -207,7 +264,7 @@ const SET_PYTHON_VARIABLE = {
       this: SetPythonVariableBlock,
       extraState: SetPythonVariableExtraState
   ): void {
-    this.mrcVarKind = extraState.varKind;
+    this.mrcVarKind = extraState.varKind as VariableKind;
     this.mrcModuleOrClassName = extraState.moduleOrClassName;
     this.mrcVarType = extraState.varType ? extraState.varType : '';
     this.mrcSelfLabel = extraState.selfLabel ? extraState.selfLabel : '';
@@ -265,7 +322,7 @@ export const pythonFromBlock = function(
       ? setPythonVariableBlock.mrcActualVariableName
       : block.getFieldValue(FIELD_VARIABLE_NAME);
   switch (setPythonVariableBlock.mrcVarKind) {
-    case VAR_KIND_MODULE: {
+    case VariableKind.MODULE: {
       const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
       if (setPythonVariableBlock.mrcImportModule) {
@@ -274,7 +331,7 @@ export const pythonFromBlock = function(
       const code = moduleName + '.' + varName + ' = ' + value + '\n';
       return code;
     }
-    case VAR_KIND_CLASS: {
+    case VariableKind.CLASS: {
       const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
       if (setPythonVariableBlock.mrcImportModule) {
@@ -283,7 +340,7 @@ export const pythonFromBlock = function(
       const code = className + '.' + varName + ' = ' + value + '\n';
       return code;
     }
-    case VAR_KIND_INSTANCE: {
+    case VariableKind.INSTANCE: {
       const selfValue = generator.valueToCode(block, 'SELF', Order.MEMBER);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
       const code = selfValue + '.' + varName + ' = ' + value + '\n';

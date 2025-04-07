@@ -19,18 +19,11 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { robotPyData, VarData } from './robotpy_data';
+import { robotPyData, organizeVarDataByType, VariableGettersAndSetters } from './robotpy_data';
 
 import * as pythonEnum from "../mrc_get_python_enum_value";
 import * as getPythonVariable from "../mrc_get_python_variable";
 import * as setPythonVariable from "../mrc_set_python_variable";
-
-class VariableGettersAndSetters {
-  varNamesForGetter: string[] = [];
-  tooltipsForGetter: string[] = [];
-  varNamesForSetter: string[] = [];
-  tooltipsForSetter: string[] = [];
-}
 
 export function initialize() {
   // Process RobotPy modules.
@@ -109,24 +102,4 @@ export function initialize() {
       }
     }
   }
-}
-
-function organizeVarDataByType(vars: VarData[]): {[key: string]: VariableGettersAndSetters} {
-  const varsByType: {[key: string]: VariableGettersAndSetters} = {}
-  for (const varData of vars) {
-    let variableGettersAndSetters: VariableGettersAndSetters;
-    if (varData.type in varsByType) {
-       variableGettersAndSetters = varsByType[varData.type];
-    } else {
-       variableGettersAndSetters = new VariableGettersAndSetters();
-       varsByType[varData.type] = variableGettersAndSetters;
-    }
-    variableGettersAndSetters.varNamesForGetter.push(varData.name);
-    variableGettersAndSetters.tooltipsForGetter.push(varData.tooltip);
-    if (varData.writable) {
-      variableGettersAndSetters.varNamesForSetter.push(varData.name);
-      variableGettersAndSetters.tooltipsForSetter.push(varData.tooltip);
-    }
-  }
-  return varsByType;
 }

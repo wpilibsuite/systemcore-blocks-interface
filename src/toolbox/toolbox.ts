@@ -19,7 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import * as generatedToolbox from './generated/toolbox';
+import * as robotPyToolbox from './robotpy_toolbox';
 import * as toolboxItems from './items';
 import {category as logicCategory} from './logic_category';
 import {category as loopCategory} from './loop_category';
@@ -33,8 +33,11 @@ import {category as componentSampleCategory} from './component_samples_category'
 export function getToolboxJSON(
     opt_includeExportedBlocksFromProject: toolboxItems.ContentsType[],
     shownPythonToolboxCategories: Set<string> | null) {
-  const contents: toolboxItems.ContentsType[] = generatedToolbox.getToolboxCategories();
-  filterGeneratedCategories(contents, shownPythonToolboxCategories);
+  const contents: toolboxItems.ContentsType[] = [];
+
+  const robotPyCategories: toolboxItems.ContentsType[] = robotPyToolbox.getToolboxCategories();
+  filterGeneratedCategories(robotPyCategories, shownPythonToolboxCategories);
+  contents.push.apply(contents, robotPyCategories);
 
   if (opt_includeExportedBlocksFromProject.length) {
     contents.push.apply(

@@ -24,7 +24,7 @@ import { Button, Flex, Modal, Splitter, Tree, Typography } from 'antd';
 import type { TreeDataNode, TreeProps } from 'antd';
 
 import * as toolboxItems from '../toolbox/items';
-import * as generatedToolbox from '../toolbox/generated/toolbox';
+import * as robotPyToolbox from '../toolbox/robotpy_toolbox';
 
 
 // Throughout this file the term module refers to a python module that appears
@@ -39,7 +39,7 @@ type ToolboxSettingsModalProps = {
 }
 
 const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, shownCategories, onOk, onCancel }) => {
-  const [generatedCategories, setGeneratedCategories] = useState<toolboxItems.ContentsType[]>([]);
+  const [robotPyCategories, setRobotPyCategories] = useState<toolboxItems.ContentsType[]>([]);
   const [shownModuleCategories, setShownModuleCategories] = useState<string[]>([]);
   const [moduleTreeData, setModuleTreeData] = useState<TreeDataNode[]>([]);
   const [moduleTreeKeys, setModuleTreeKeys] = useState<React.Key[]>([]);
@@ -53,19 +53,19 @@ const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, sho
   const [classTreeCheckedKeys, setClassTreeCheckedKeys] = useState<React.Key[]>([]);
 
   const afterOpenChange = (open: boolean) => {
-    // When the modal is opened, update the generatedCategories.
+    // When the modal is opened, update the robotPyCategories.
     if (open) {
-      setGeneratedCategories(generatedToolbox.getToolboxCategories());
+      setRobotPyCategories(robotPyToolbox.getToolboxCategories());
     }
   };
 
   useEffect(() => {
-    // When generatedCategories is set, update the moduleTreeData, moduleTreeKeys,
+    // When robotPyCategories is set, update the moduleTreeData, moduleTreeKeys,
     // moduleTreeExpandedKeys, and moduleTreeSelectedKey.
-    if (generatedCategories.length) {
+    if (robotPyCategories.length) {
       const nodes: TreeDataNode[] = [];
       const keys: React.Key[] = [];
-      collectTreeData(true, false, generatedCategories, nodes, keys);
+      collectTreeData(true, false, robotPyCategories, nodes, keys);
       setModuleTreeData(nodes);
       setModuleTreeKeys([...keys]);
       setModuleTreeExpandedKeys([...keys]);
@@ -75,7 +75,7 @@ const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, sho
         setModuleTreeSelectedKey('');
       }
     }
-  }, [generatedCategories]);
+  }, [robotPyCategories]);
 
   useEffect(() => {
     // When the moduleTreeKeys is set, figure out which shownCategories are
@@ -114,7 +114,7 @@ const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, sho
     const keys: React.Key[] = [];
     if (moduleTreeSelectedKey) {
       const found = getModuleCategory(
-          moduleTreeSelectedKey as string, generatedCategories);
+          moduleTreeSelectedKey as string, robotPyCategories);
       if (found) {
         const category = found as toolboxItems.Category;
         if (category.contents) {

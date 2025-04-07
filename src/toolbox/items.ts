@@ -51,14 +51,20 @@ export class Block extends Item {
 
   constructor(
       type: string,
-      extraState: {[key: string]: any},
-      fields: {[key: string]: any},
-      inputs: {[key: string]: any}) {
+      extraState: {[key: string]: any} | null,
+      fields: {[key: string]: any} | null,
+      inputs: {[key: string]: any} | null) {
     super('block');
     this.type = type;
-    this.extraState = extraState;
-    this.fields = fields;
-    this.inputs = inputs;
+    if (extraState) {
+      this.extraState = extraState;
+    }
+    if (fields) {
+      this.fields = fields;
+    }
+    if (inputs) {
+      this.inputs = inputs;
+    }
   }
 }
 
@@ -73,11 +79,12 @@ export class Category extends Item  {
   /** The blocks for this category. */
   contents?: ContentsType[];
 
-  constructor(name: string, contents: ContentsType[]);
   constructor(name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {
     super('category');
     this.name = name;
-    this.contents = contents;
+    if (contents) {
+      this.contents = contents;
+    }
     if (categorystyle) {
       this.categorystyle = categorystyle;
     }
@@ -87,13 +94,9 @@ export class Category extends Item  {
   }
 }
 
-// TODO(lizlooney): Figure out if PythonModuleCategory should actually be called PythonPackageCategory.
-
 export class PythonModuleCategory extends Category {
   moduleName: string;
-  packageName?: string
 
-  constructor(moduleName: string, name: string, contents: ContentsType[]);
   constructor(moduleName: string, name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {
     super(name, contents);
     if (categorystyle) {

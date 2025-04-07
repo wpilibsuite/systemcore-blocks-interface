@@ -21,6 +21,8 @@
 
 import generatedRobotPyData from './generated/robotpy_data.json';
 
+export const robotPyData = generatedRobotPyData as RobotPyData;
+
 export class RobotPyData {
   modules: ModuleData[] = [];
   classes: ClassData[] = [];
@@ -42,7 +44,6 @@ export class ClassData {
   instanceVariables: VarData[] = [];
   constructors: FunctionData[] = [];
   instanceMethods: FunctionData[] = [];
-  classMethods: FunctionData[] = [];
   staticMethods: FunctionData[] = [];
   enums: EnumData[] = [];
 }
@@ -70,8 +71,34 @@ export class ArgData {
 
 export class EnumData {
   enumClassName: string = '';
+  moduleName: string = '';
   enumValues: string[] = [];    
   tooltip: string = '';
 }
 
-export const robotPyData = generatedRobotPyData as RobotPyData
+export class VariableGettersAndSetters {
+  varNamesForGetter: string[] = [];
+  tooltipsForGetter: string[] = [];
+  varNamesForSetter: string[] = [];
+  tooltipsForSetter: string[] = [];
+}
+
+export function organizeVarDataByType(vars: VarData[]): {[key: string]: VariableGettersAndSetters} {
+  const varsByType: {[key: string]: VariableGettersAndSetters} = {}
+  for (const varData of vars) {
+    let variableGettersAndSetters: VariableGettersAndSetters;
+    if (varData.type in varsByType) {
+       variableGettersAndSetters = varsByType[varData.type];
+    } else {
+       variableGettersAndSetters = new VariableGettersAndSetters();
+       varsByType[varData.type] = variableGettersAndSetters;
+    }
+    variableGettersAndSetters.varNamesForGetter.push(varData.name);
+    variableGettersAndSetters.tooltipsForGetter.push(varData.tooltip);
+    if (varData.writable) {
+      variableGettersAndSetters.varNamesForSetter.push(varData.name);
+      variableGettersAndSetters.tooltipsForSetter.push(varData.tooltip);
+    }
+  }
+  return varsByType;
+}

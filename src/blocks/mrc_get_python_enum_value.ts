@@ -23,11 +23,13 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
+import { getOutputCheck } from './utils/python';
+import { EnumData } from './utils/robotpy_data';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
-import { getOutputCheck } from './utils/python';
-import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MRC_STYLE_ENUM } from '../themes/styles'
+import * as toolboxItems from '../toolbox/items';
 
 
 // A block to access a python enum.
@@ -46,6 +48,28 @@ export function initializeEnum(
     enumClassName: string, enumValues: string[], tooltips: string[] | string): void {
   PythonEnumValues[enumClassName] = enumValues;
   PythonEnumTooltips[enumClassName] = tooltips;
+}
+
+// Functions used for creating blocks for the toolbox.
+
+export function addEnumBlocks(enums: EnumData[], contents: toolboxItems.ContentsType[]) {
+  for (const enumData of enums) {
+    for (const enumValue of enumData.enumValues) {
+      const block = createEnumBlock(enumValue, enumData);
+      contents.push(block);
+    }
+  }
+}
+
+function createEnumBlock(enumValue: string, enumData: EnumData): toolboxItems.Block {
+  const extraState: GetPythonEnumValueExtraState = {
+    enumType: enumData.enumClassName,
+    importModule: enumData.moduleName,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_ENUM_CLASS_NAME] = enumData.enumClassName;
+  fields[FIELD_ENUM_VALUE] = enumValue;
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
 }
 
 //..............................................................................
