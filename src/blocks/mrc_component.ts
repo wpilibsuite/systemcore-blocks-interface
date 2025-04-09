@@ -16,43 +16,43 @@
  */
 
 /**
- * @fileoverview Create a mechanism with a name of a certain type
+ * @fileoverview Create a component with a name of a certain type
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
-import { MRC_STYLE_MECHANISMS } from '../themes/styles'
+import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck } from './utils/python';
 
-export const BLOCK_NAME = 'mrc_mechanism';
-export const OUTPUT_NAME = 'mrc_mechansim';
+export const BLOCK_NAME = 'mrc_component';
+export const OUTPUT_NAME = 'mrc_component';
 
 export type ConstructorArg = {
   name: string,
   type: string,
 };
 
-type MechanismExtraState = {
+type ComponentExtraState = {
   importModule?: string,
   params?: ConstructorArg[],
 }
 
-type MechanismBlock = Blockly.Block & MechanismMixin;
-interface MechanismMixin extends MechanismMixinType {
+type ComponentBlock = Blockly.Block & ComponentMixin;
+interface ComponentMixin extends ComponentMixinType {
   mrcArgs: ConstructorArg[],
   mrcImportModule: string,
 }
-type MechanismMixinType = typeof MECHANISM;
+type ComponentMixinType = typeof COMPONENT;
 
-const MECHANISM = {
+const COMPONENT = {
   /**
     * Block initialization.
     */
-  init: function (this: MechanismBlock): void {
-    this.setStyle(MRC_STYLE_MECHANISMS);
+  init: function (this: ComponentBlock): void {
+    this.setStyle(MRC_STYLE_COMPONENTS);
     this.appendDummyInput()
       .appendField(new Blockly.FieldTextInput('my_mech'), 'NAME')
       .appendField('of type')
@@ -65,8 +65,8 @@ const MECHANISM = {
   /**
     * Returns the state of this block as a JSON serializable object.
     */
-  saveExtraState: function (this: MechanismBlock): MechanismExtraState {
-    const extraState: MechanismExtraState = {
+  saveExtraState: function (this: ComponentBlock): ComponentExtraState {
+    const extraState: ComponentExtraState = {
     };
     extraState.params = [];
     this.mrcArgs.forEach((arg) => {
@@ -83,7 +83,7 @@ const MECHANISM = {
   /**
   * Applies the given state to this block.
   */
-  loadExtraState: function (this: MechanismBlock, extraState: MechanismExtraState): void {
+  loadExtraState: function (this: ComponentBlock, extraState: ComponentExtraState): void {
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
     this.mrcArgs = [];
 
@@ -101,7 +101,7 @@ const MECHANISM = {
   /**
      * Update the block to reflect the newly loaded extra state.
      */
-    updateBlock_: function(this: MechanismBlock): void {
+    updateBlock_: function(this: ComponentBlock): void {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)
@@ -115,28 +115,12 @@ const MECHANISM = {
 }
 
 export const setup = function () {
-  Blockly.Blocks[BLOCK_NAME] = MECHANISM;
+  Blockly.Blocks[BLOCK_NAME] = COMPONENT;
 }
 
 export const pythonFromBlock = function (
-  mechanismBlock: MechanismBlock,
+  componentBlock: ComponentBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  if (mechanismBlock.mrcImportModule) {
-    generator.addImport(mechanismBlock.mrcImportModule);
-  }
-  generator.setHasMechanism();
-  let code = 'self.mechanisms["' + mechanismBlock.getFieldValue('NAME') + '"] = '
-    + mechanismBlock.getFieldValue('TYPE') + '('
-  for (let i = 0; i < mechanismBlock.mrcArgs.length; i++) {
-      const fieldName = 'ARG' + i;
-      if(i != 0){
-        code += ', '
-      }
-      code += mechanismBlock.mrcArgs[i].name + ' = ' + generator.valueToCode(mechanismBlock, fieldName, Order.NONE);
-    }
-  
-  code += ')' + "\n";
-
-  return code
+  return '';
 }

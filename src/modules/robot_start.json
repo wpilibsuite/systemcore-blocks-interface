@@ -19,6 +19,13 @@
                 "fields": {
                     "NAME": "init"
                 }
+            },
+            {
+                "type": "mrc_mechanism_component_holder",
+                "id": "ElbOAb{)s(,UprTW(|1C",
+                "x": 210,
+                "y": 10,
+                "deletable": false
             }
         ]
     }
