@@ -23,7 +23,7 @@ import * as Blockly from 'blockly/core';
 import { PythonGenerator } from 'blockly/python';
 import { GeneratorContext } from './generator_context';
 import { Block } from '../toolbox/items';
-import { CallPythonFunctionBlock, FunctionArg } from '../blocks/mrc_call_python_function';
+import { FunctionArg } from '../blocks/mrc_call_python_function';
 import * as commonStorage from '../storage/common_storage';
 
 // Extends the python generator to collect some information about functions and
