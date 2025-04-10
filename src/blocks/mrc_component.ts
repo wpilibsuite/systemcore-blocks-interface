@@ -119,8 +119,21 @@ export const setup = function () {
 }
 
 export const pythonFromBlock = function (
-  componentBlock: ComponentBlock,
+  block: ComponentBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  return '';
+  if(this.mrcImportModule){
+    generator.addImport(this.mrcImportModule);
+  }
+  let code = 'self.' + this.getFieldValue('NAME') + ' = ' + this.getFieldValue('TYPE') + '(';
+  
+  for (let i = 0; i < block.mrcArgs.length; i++) {
+      const fieldName = 'ARG' + i;
+      if(i != 0){
+        code += ', '
+      }
+      code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
+    } 
+  code += ')';
+  return [code, Order.ATOMIC];
 }

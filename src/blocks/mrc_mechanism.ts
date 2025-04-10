@@ -119,24 +119,21 @@ export const setup = function () {
 }
 
 export const pythonFromBlock = function (
-  mechanismBlock: MechanismBlock,
+  block: MechanismBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  if (mechanismBlock.mrcImportModule) {
-    generator.addImport(mechanismBlock.mrcImportModule);
+  if (block.mrcImportModule) {
+    generator.addImport(block.mrcImportModule);
   }
-  generator.setHasMechanism();
-  let code = 'self.mechanisms["' + mechanismBlock.getFieldValue('NAME') + '"] = '
-    + mechanismBlock.getFieldValue('TYPE') + '('
-  for (let i = 0; i < mechanismBlock.mrcArgs.length; i++) {
+  let code = 'self.' + this.getFieldValue('NAME') + ' = ' + this.getFieldValue('TYPE') + '(';
+  
+  for (let i = 0; i < block.mrcArgs.length; i++) {
       const fieldName = 'ARG' + i;
       if(i != 0){
         code += ', '
       }
-      code += mechanismBlock.mrcArgs[i].name + ' = ' + generator.valueToCode(mechanismBlock, fieldName, Order.NONE);
-    }
-  
-  code += ')' + "\n";
-
-  return code
+      code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
+    } 
+  code += ')';
+  return [code, Order.ATOMIC];
 }

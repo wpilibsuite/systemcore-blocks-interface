@@ -63,8 +63,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   defineClassVariables() : string {
     let variableDefinitions = '';
 
-    if (this.context?.getHasMechanisms()) {
-      variableDefinitions += this.INDENT + "self.mechanisms = []\n";
+    if (this.context?.getHasHardware()) {
+      variableDefinitions += this.INDENT + "self.define_hardware()\n";
     }
 
     return variableDefinitions;
@@ -73,8 +73,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     const varName = super.getVariableName(nameOrId);
     return "self." + varName;
   }
-  setHasMechanism() : void{
-    this.context?.setHasMechanism();
+  setHasHardware() : void{
+    this.context?.setHasHardware();
   }
 
   mrcWorkspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {

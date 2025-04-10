@@ -27,6 +27,8 @@ import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
 import { createPlusField } from '../fields/field_plus';
 import { createMinusField } from '../fields/field_minus';
+import { Order } from 'blockly/python';
+
 
 export const BLOCK_NAME = 'mrc_mechanism_component_holder';
 
@@ -214,8 +216,38 @@ export const setup = function () {
 }
 
 export const pythonFromBlock = function (
-  MechanismComponentHolderBlock: MechanismComponentHolderBlock,
+  block: MechanismComponentHolderBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  return ''
+  generator.setHasHardware();
+  let code = 'def define_hardware(self):\n';
+
+  let body = '';
+  for(let i = 1; i <= this.mrcNumMechanismInputs; i++){
+    const name = 'MECHANISM_' + i;
+    if(block.getInput(name)){
+      let mechanismCode = generator.valueToCode(block, name, Order.NONE) || '';
+      if (mechanismCode != ''){
+        body += generator.INDENT + mechanismCode + "\n";
+      }
+    }
+  }
+  for(let i = 1; i <= this.mrcNumComponentInputs; i++){
+    const name = 'COMPONENT_' + i;
+    if(block.getInput(name)){
+      let componentCode = generator.valueToCode(block, name, Order.NONE) || '';
+      if (componentCode != ''){
+        body += generator.INDENT + componentCode + "\n";
+      }
+    }
+  }
+  
+  if(body != ''){
+    code += body;
+  }else{
+    code += generator.INDENT + 'pass';
+  }
+
+  generator.addClassMethodDefinition('define_hardware', code);
+  return '';
 }
