@@ -122,10 +122,10 @@ export const pythonFromBlock = function (
   block: ComponentBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  if(this.mrcImportModule){
-    generator.addImport(this.mrcImportModule);
+  if(block.mrcImportModule){
+    generator.addImport(block.mrcImportModule);
   }
-  let code = 'self.' + this.getFieldValue('NAME') + ' = ' + this.getFieldValue('TYPE') + '(';
+  let code = 'self.' + block.getFieldValue('NAME') + ' = ' + block.getFieldValue('TYPE') + '(';
   
   for (let i = 0; i < block.mrcArgs.length; i++) {
       const fieldName = 'ARG' + i;
