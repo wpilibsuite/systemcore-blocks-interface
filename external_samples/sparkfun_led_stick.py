@@ -23,8 +23,8 @@ class SparkFunLEDStick(Component):
     def get_url(self) -> str:  
         return "https://www.sparkfun.com/sparkfun-qwiic-led-stick-apa102c.html"
 
-    def get_version(self) -> tuple[int, int, str]: 
-        return (1, 0, "")
+    def get_version(self) -> tuple[int, int, int]: 
+        return (1, 0, 0)
 
     def stop(self) -> None:
         self.turn_all_off()

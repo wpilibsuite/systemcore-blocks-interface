@@ -40,8 +40,8 @@ class ColorRangeSensor(Component):
         return "REV-31-1557"
     def get_url(self) -> str:  
         return "https://www.revrobotics.com/rev-31-1557"
-    def get_version(self) -> tuple[int, int, str]: 
-        return (1, 0, "")
+    def get_version(self) -> tuple[int, int, int]: 
+        return (1, 0, 0)
     def stop(self) -> None:
         # send stop command to sensor
         pass
