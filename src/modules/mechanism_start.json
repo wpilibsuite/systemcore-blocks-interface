@@ -6,7 +6,7 @@
                 "type": "mrc_class_method_def",
                 "id": "ElbONc{)s(,UprTW(|1C",
                 "x": 10,
-                "y": 10,
+                "y": 210,
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
@@ -24,7 +24,7 @@
                 "type": "mrc_class_method_def",
                 "id": "wxFAh6eaR1|3fTuV:UAd",
                 "x": 10,
-                "y": 200,
+                "y": 410,
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
@@ -35,6 +35,16 @@
                 },
                 "fields": {
                     "NAME": "update"
+                }
+            },
+            {
+                "type": "mrc_mechanism_component_holder",
+                "id": "ElbOAb{)s(,UprTW(|1C",
+                "x": 10,
+                "y": 10,
+                "deletable": false,
+                "extraState":{
+                    "numMechanismInputs": 0
                 }
             }
         ]
