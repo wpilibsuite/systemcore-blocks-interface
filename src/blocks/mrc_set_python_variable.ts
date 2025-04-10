@@ -36,6 +36,8 @@ import * as toolboxItems from '../toolbox/items';
 
 export const BLOCK_NAME = 'mrc_set_python_variable';
 
+// TODO(lizlooney): Consider combining VariableKind here with VariableKind in
+// mrc_get_python_variable.ts. They are identical.
 enum VariableKind {
   MODULE = 'module',
   CLASS = 'class',

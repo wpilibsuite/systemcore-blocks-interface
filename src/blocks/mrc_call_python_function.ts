@@ -78,22 +78,11 @@ export function addStaticMethodBlocks(
     functions: FunctionData[],
     contents: toolboxItems.ContentsType[]) {
   for (const functionData of functions) {
-    const block = createModuleFunctionOrStaticMethodBlock(
-        FunctionKind.STATIC, importModule, functionData.declaringClassName, functionData);
-    contents.push(block);
-  }
-}
-
-function addModuleFunctionOrStaticMethodBlocks(
-    functionKind: FunctionKind,
-    importModule: string,
-    moduleOrClassName: string,
-    functions: FunctionData[],
-    contents: toolboxItems.ContentsType[]) {
-  for (const functionData of functions) {
-    const block = createModuleFunctionOrStaticMethodBlock(
-        functionKind, importModule, moduleOrClassName, functionData);
-    contents.push(block);
+    if (functionData.declaringClassName) {
+      const block = createModuleFunctionOrStaticMethodBlock(
+          FunctionKind.STATIC, importModule, functionData.declaringClassName, functionData);
+      contents.push(block);
+    }
   }
 }
 
