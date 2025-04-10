@@ -219,11 +219,10 @@ export const pythonFromBlock = function (
   block: MechanismComponentHolderBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  generator.setHasHardware();
   let code = 'def define_hardware(self):\n';
 
   let body = '';
-  for(let i = 1; i <= this.mrcNumMechanismInputs; i++){
+  for(let i = 1; i <= block.mrcNumMechanismInputs; i++){
     const name = 'MECHANISM_' + i;
     if(block.getInput(name)){
       let mechanismCode = generator.valueToCode(block, name, Order.NONE) || '';
@@ -232,7 +231,7 @@ export const pythonFromBlock = function (
       }
     }
   }
-  for(let i = 1; i <= this.mrcNumComponentInputs; i++){
+  for(let i = 1; i <= block.mrcNumComponentInputs; i++){
     const name = 'COMPONENT_' + i;
     if(block.getInput(name)){
       let componentCode = generator.valueToCode(block, name, Order.NONE) || '';
