@@ -10,7 +10,7 @@ export type BlocklyComponentType = {
   getBlocklyWorkspace: () => Blockly.WorkspaceSvg,
 };
 
-const BlocklyComponent = React.forwardRef<BlocklyComponentType | null>((props, ref) => {
+const BlocklyComponent = React.forwardRef<BlocklyComponentType | null>((_, ref) => {
   const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
   const workspaceRef = React.useRef<Blockly.WorkspaceSvg>(null);
 

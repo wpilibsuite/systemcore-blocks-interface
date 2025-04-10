@@ -18,7 +18,7 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-import React from 'react';
+//import React from 'react';
 import * as Antd from 'antd';
 import {CopyOutlined as CopyIcon} from '@ant-design/icons';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';

@@ -359,28 +359,32 @@ export default function ModuleOutline(props: ModuleOutlineProps) {
         props.setAlertErrorMessage('Failed to create a new project.');
       }
     } else if (newProjectNameModalPurpose === PURPOSE_RENAME_PROJECT) {
-      try {
-        await props.storage.renameModule(
-          props.currentModule.moduleType, props.currentModule.projectName,
-          props.currentModule.moduleName, newProjectName);
-        await fetchListOfModules();
-        setCurrentModulePath(newProjectPath);
-      } catch (e) {
-        console.log('Failed to rename the project. Caught the following error...');
-        console.log(e);
-        props.setAlertErrorMessage('Failed to rename the project.');
+      if (props.currentModule) {
+        try {
+          await props.storage.renameModule(
+            props.currentModule.moduleType, props.currentModule.projectName,
+            props.currentModule.moduleName, newProjectName);
+          await fetchListOfModules();
+          setCurrentModulePath(newProjectPath);
+        } catch (e) {
+          console.log('Failed to rename the project. Caught the following error...');
+          console.log(e);
+          props.setAlertErrorMessage('Failed to rename the project.');
+        }
       }
     } else if (newProjectNameModalPurpose === PURPOSE_COPY_PROJECT) {
-      try {
-        await props.storage.copyModule(
-          props.currentModule.moduleType, props.currentModule.projectName,
-          props.currentModule.moduleName, newProjectName);
-        await fetchListOfModules();
-        setCurrentModulePath(newProjectPath);
-      } catch (e) {
-        console.log('Failed to copy the project. Caught the following error...');
-        console.log(e);
-        props.setAlertErrorMessage('Failed to copy the project.');
+      if (props.currentModule) {
+        try {
+          await props.storage.copyModule(
+            props.currentModule.moduleType, props.currentModule.projectName,
+            props.currentModule.moduleName, newProjectName);
+          await fetchListOfModules();
+          setCurrentModulePath(newProjectPath);
+        } catch (e) {
+          console.log('Failed to copy the project. Caught the following error...');
+          console.log(e);
+          props.setAlertErrorMessage('Failed to copy the project.');
+        }
       }
     }
   };
