@@ -55,12 +55,11 @@ class Component(ABC):
     @abstractmethod
     def get_url(self) -> str:  
         pass
-    # This is the version of the software (returned as a (major, minor, revision) tuple where 
-    # major and minor are positive integers
-    # revision can be an empty string or specify small changes that are less than a
-    # minor revision
+    # This is the version of the software (returned as a (major, minor, patch) tuple where 
+    # major, minor and patch are all positive integers
+    # This MUST follow semantic versioning as described here: https://semver.org/
     @abstractmethod
-    def get_version(self) -> tuple[int, int, str]: 
+    def get_version(self) -> tuple[int, int, int]: 
         pass
     
     # This stops all movement (if any) for the component

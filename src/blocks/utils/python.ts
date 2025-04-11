@@ -19,9 +19,29 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import * as pythonUtils from './generated/python';
+import { robotPyData } from './robotpy_data';
 
-export const RETURN_TYPE_NONE = 'None';
+// Utilities related to RobotPy modules and classes.
+
+export function getAlias(type: string): string | null {
+  const aliases: {[key: string]: string} = robotPyData.aliases;
+  for (const className in aliases) {
+    if (type === className) {
+      return aliases[className];
+    }
+  }
+  return null;
+}
+
+function getSubclassNames(type: string): string[] | null {
+  const subclasses: {[key: string]: string[]} = robotPyData.subclasses;
+  for (const className in subclasses) {
+    if (type === className) {
+      return subclasses[className];
+    }
+  }
+  return null;
+}
 
 // Functions used in multiple python block definitions.
 
@@ -29,7 +49,7 @@ export function getAllowedTypesForSetCheck(type: string): string[] {
   // For the given python type, returns an array of compatible input types.
 
   // Type Aliases
-  const alias = pythonUtils.getAlias(type);
+  const alias = getAlias(type);
   if (alias) {
     return [type].concat(getAllowedTypesForSetCheck(alias));
   }
@@ -40,9 +60,9 @@ export function getAllowedTypesForSetCheck(type: string): string[] {
     return [check];
   }
 
-  const allowedTypes = pythonUtils.getAllowedTypes(type);
-  if (allowedTypes) {
-    return allowedTypes;
+  const subclassNames = getSubclassNames(type);
+  if (subclassNames) {
+    return subclassNames;
   }
 
   return [type];
@@ -79,7 +99,7 @@ export function getOutputCheck(type: string): string {
   }
 
   // Type Aliases
-  const alias = pythonUtils.getAlias(type);
+  const alias = getAlias(type);
   if (alias) {
     return getOutputCheck(alias);
   }
