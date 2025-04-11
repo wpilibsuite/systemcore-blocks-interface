@@ -57,9 +57,9 @@ const MECHANISM = {
       .appendField(new Blockly.FieldTextInput('my_mech'), 'NAME')
       .appendField('of type')
       .appendField(createFieldNonEditableText(''), 'TYPE');
-    this.setPreviousStatement(false);
-    this.setNextStatement(false);
-    this.setOutput(true, OUTPUT_NAME);
+    this.setPreviousStatement(true, OUTPUT_NAME);
+    this.setNextStatement(true, OUTPUT_NAME);
+    //this.setOutput(true, OUTPUT_NAME);
   },
 
   /**
@@ -74,7 +74,7 @@ const MECHANISM = {
         'name': arg.name,
         'type': arg.type,
       });
-    });    
+    });
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
     }
@@ -87,7 +87,7 @@ const MECHANISM = {
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
     this.mrcArgs = [];
 
-    if(extraState.params){
+    if (extraState.params) {
       extraState.params.forEach((arg) => {
         this.mrcArgs.push({
           'name': arg.name,
@@ -101,17 +101,17 @@ const MECHANISM = {
   /**
      * Update the block to reflect the newly loaded extra state.
      */
-    updateBlock_: function(this: MechanismBlock): void {
-      // Add input sockets for the arguments.
-      for (let i = 0; i < this.mrcArgs.length; i++) {
-        const input = this.appendValueInput('ARG' + i)
-            .setAlign(Blockly.inputs.Align.RIGHT)
-            .appendField(this.mrcArgs[i].name);
-        if (this.mrcArgs[i].type) {
-          input.setCheck(getAllowedTypesForSetCheck(this.mrcArgs[i].type));
-        }
+  updateBlock_: function (this: MechanismBlock): void {
+    // Add input sockets for the arguments.
+    for (let i = 0; i < this.mrcArgs.length; i++) {
+      const input = this.appendValueInput('ARG' + i)
+        .setAlign(Blockly.inputs.Align.RIGHT)
+        .appendField(this.mrcArgs[i].name);
+      if (this.mrcArgs[i].type) {
+        input.setCheck(getAllowedTypesForSetCheck(this.mrcArgs[i].type));
       }
     }
+  }
 }
 
 export const setup = function () {
@@ -126,14 +126,15 @@ export const pythonFromBlock = function (
     generator.addImport(block.mrcImportModule);
   }
   let code = 'self.' + block.getFieldValue('NAME') + ' = ' + block.getFieldValue('TYPE') + '(';
-  
+
   for (let i = 0; i < block.mrcArgs.length; i++) {
-      const fieldName = 'ARG' + i;
-      if(i != 0){
-        code += ', '
-      }
-      code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
-    } 
-  code += ')';
-  return [code, Order.ATOMIC];
+    const fieldName = 'ARG' + i;
+    if (i != 0) {
+      code += ', '
+    }
+    code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
+  }
+  code += ')\n' + "self.hardware.append(self." + block.getFieldValue('NAME') + ")\n";
+
+  return code;
 }

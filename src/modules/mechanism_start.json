@@ -44,7 +44,7 @@
                 "y": 10,
                 "deletable": false,
                 "extraState":{
-                    "numMechanismInputs": 0
+                    "hideMechanisms" : true
                 }
             }
         ]

@@ -57,9 +57,9 @@ const COMPONENT = {
       .appendField(new Blockly.FieldTextInput('my_mech'), 'NAME')
       .appendField('of type')
       .appendField(createFieldNonEditableText(''), 'TYPE');
-    this.setPreviousStatement(false);
-    this.setNextStatement(false);
-    this.setOutput(true, OUTPUT_NAME);
+    this.setPreviousStatement(true, OUTPUT_NAME);
+    this.setNextStatement(true, OUTPUT_NAME);
+    // this.setOutput(true, OUTPUT_NAME);
   },
 
   /**
@@ -134,6 +134,6 @@ export const pythonFromBlock = function (
       }
       code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
     } 
-  code += ')';
-  return [code, Order.ATOMIC];
+  code += ')\n' + "self.hardware.append(self." + block.getFieldValue('NAME') + ")\n";
+  return code;
 }
