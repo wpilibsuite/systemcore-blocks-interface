@@ -34,7 +34,7 @@ export class GeneratorContext {
   private exportedBlocks: Block[] = [];
 
   // Has mechanisms (ie, needs in init)
-  private hasMechanisms = false;
+  private hasHardware = false;
 
   setModule(module: commonStorage.Module | null) {
     this.module = module;
@@ -43,15 +43,15 @@ export class GeneratorContext {
 
   clear(): void {
     this.clearExportedBlocks();
-    this.hasMechanisms = false;
+    this.hasHardware= false;
   }
 
-  setHasMechanism():void{
-    this.hasMechanisms = true;
+  setHasHardware():void{
+    this.hasHardware = true;
   }
 
-  getHasMechanisms():boolean{
-    return this.hasMechanisms;
+  getHasHardware():boolean{
+    return this.hasHardware;
   }
 
   getClassName(): string {

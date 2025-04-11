@@ -9,6 +9,8 @@ import * as MiscEvaluateButIgnoreResult from './mrc_misc_evaluate_but_ignore_res
 import * as SetPythonVariable from './mrc_set_python_variable';
 import * as ClassMethodDef from './mrc_class_method_def';
 import * as Mechanism from './mrc_mechanism';
+import * as Component from './mrc_component';
+import * as MechanismContainerHolder from './mrc_mechanism_component_holder';
 
 const customBlocks = [
   CallPythonFunction,
@@ -21,6 +23,8 @@ const customBlocks = [
   MiscEvaluateButIgnoreResult,
   SetPythonVariable,
   Mechanism,
+  Component,
+  MechanismContainerHolder,
 ];
 
 export const setup = function(forBlock: any) {
