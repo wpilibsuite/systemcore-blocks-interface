@@ -66,11 +66,11 @@ export const category =
             type: 'mrc_component',
             fields: {
                 NAME: 'my_motor',
-                TYPE: 'DcMotor'
+                TYPE: 'SmartMotor'
             },
             extraState: {
-                importModule : 'DcMotor',
-                params: [{name:'port',type:'int'}]
+                importModule : 'smart_motor',
+                params: [{name:'Motor Port',type:'int'}]
             },    
             inputs: {
                 ARG0: {
@@ -83,5 +83,49 @@ export const category =
                 },  
             } 
         },
+        {
+          kind: 'block',
+          type: 'mrc_component',
+          fields: {
+              NAME: 'my_color_range_sensor',
+              TYPE: 'ColorRangeSensor'
+          },
+          extraState: {
+              importModule : 'color_range_sensor',
+              params: [{name:'I2C Port',type:'int'}]
+          },    
+          inputs: {
+              ARG0: {
+                shadow: {
+                  type: 'math_number',
+                  fields: {
+                    NUM: 1,
+                  },
+                },
+              },  
+          } 
+      },
+      {
+        kind: 'block',
+        type: 'mrc_component',
+        fields: {
+            NAME: 'my_touch_sensor',
+            TYPE: 'RevTouchSensor'
+        },
+        extraState: {
+            importModule : 'rev_touch_sensor',
+            params: [{name:'SmartIO port',type:'int'}]
+        },    
+        inputs: {
+            ARG0: {
+              shadow: {
+                type: 'math_number',
+                fields: {
+                  NUM: 1,
+                },
+              },
+            },  
+        } 
+    },
     ],
 }
