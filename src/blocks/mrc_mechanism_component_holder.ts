@@ -32,7 +32,7 @@ export const MECHANISM = 'mechanism';
 export const COMPONENT = 'component';
 
 type MechanismComponentHolderExtraState = {
-  hideMechanims?: boolean;
+  hideMechanisms?: boolean;
 }
 
 type MechanismComponentHolderBlock = Blockly.Block & MechanismComponentHolderMixin;
@@ -57,7 +57,7 @@ const MECHANISM_COMPONENT_HOLDER = {
     const extraState: MechanismComponentHolderExtraState = {
     };
     if (this.mrcHideMechanisms == true) {
-      extraState.hideMechanims = this.mrcHideMechanisms;
+      extraState.hideMechanisms = this.mrcHideMechanisms;
     }
     return extraState;
   },
@@ -65,7 +65,7 @@ const MECHANISM_COMPONENT_HOLDER = {
   * Applies the given state to this block.
   */
   loadExtraState: function (this: MechanismComponentHolderBlock, extraState: MechanismComponentHolderExtraState): void {
-    this.mrcHideMechanisms = (extraState.hideMechanims == undefined) ? 1 : extraState.hideMechanims;
+    this.mrcHideMechanisms = (extraState.hideMechanisms == undefined) ? false : extraState.hideMechanisms;
     this.updateBlock_();
   },
   /**
@@ -78,7 +78,7 @@ const MECHANISM_COMPONENT_HOLDER = {
       }    
     }
     else{
-      if(!this.getInput('MECHANISMS')){
+      if(this.getInput('MECHANISMS') == null){
         this.appendStatementInput('MECHANISMS').setCheck(MECHANISM_OUTPUT).appendField('Mechanisms');
         this.moveInputBefore('MECHANISMS', 'COMPONENTS')
       }
