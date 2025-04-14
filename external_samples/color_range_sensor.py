@@ -17,7 +17,7 @@
 # @author alan@porpoiseful.com (Alan Smith)
 
 from component import Component, PortType, InvalidPortException
-from collections.abc import Protocol
+from typing import Protocol
 
 class DistanceCallable(Protocol):
     def __call__(self, distance : float) -> None:
