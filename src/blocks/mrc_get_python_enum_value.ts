@@ -24,7 +24,7 @@ import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
 import { getOutputCheck } from './utils/python';
-import { EnumData } from './utils/robotpy_data';
+import { EnumData } from './utils/python_json_types';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
