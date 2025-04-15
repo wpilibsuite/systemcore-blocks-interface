@@ -18,7 +18,7 @@
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from collections.abc import Protocol
+from typing import Protocol
 
 class EmptyCallable(Protocol):
     def __call__(self) -> None:
