@@ -3,6 +3,8 @@ import React from 'react';
 import * as Blockly from 'blockly/core';
 import * as locale from 'blockly/msg/en';
 import * as MrcTheme from '../themes/mrc_theme_dark'
+import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
+
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
 
@@ -48,6 +50,9 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null>((_, ref) 
         wheel: true
       },
       oneBasedIndex: false,
+      plugins: {
+        ...HardwareConnectionsPluginInfo,
+      }
     };
 
     // Set Blockly locale
