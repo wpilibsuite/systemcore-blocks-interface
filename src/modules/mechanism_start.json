@@ -15,11 +15,11 @@
                     "returnType": "None",
                     "params": [
                         {
-                            "name": "port_my_motor",
+                            "name": "my_motor_port",
                             "type": "int"
                         },
                         {
-                            "name": "port_my_color_range_sensor",
+                            "name": "my_color_range_sensor_port",
                             "type": "int"                          
                         }
                     ],
