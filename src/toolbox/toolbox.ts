@@ -62,12 +62,16 @@ export function getToolboxJSON(
       {
         kind: 'sep',
       },
-      miscCategory,
+      robotCategory,
+      {
+        kind: 'sep',
+      },
       logicCategory,
       loopCategory,
       mathCategory,
       textCategory,
       listsCategory,
+      miscCategory,
       {
         kind: 'sep',
       },
@@ -78,9 +82,8 @@ export function getToolboxJSON(
         custom: 'VARIABLE',
       },
       methodsCategory,
-      mechanismCategory,
-      robotCategory,
-      componentSampleCategory,
+      //mechanismCategory,
+      //componentSampleCategory,
     ]);
 
   return {

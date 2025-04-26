@@ -5,7 +5,7 @@ export const category =
     contents: [
         {
             kind: 'category',
-            name: 'my_drive',
+            name: 'drive',
             contents: [
                 {
                     kind: 'block',
@@ -30,10 +30,10 @@ export const category =
                         tooltip: 'Drive (robot relative)',
                         importModule: '',
                         componentClassName: 'rev.ColorRangeSensor',
-                        componentName: 'robot.my_drive',
+                        componentName: 'robot.drive',
                     },
                     fields: {
-                        COMPONENT_NAME: 'robot.my_drive',
+                        COMPONENT_NAME: 'robot.drive',
                         FUNC: 'drive_field_relative',
                     },
                     inputs: {},
@@ -42,7 +42,7 @@ export const category =
         },
         {
             kind: 'category',
-            name: 'my_claw',
+            name: 'claw',
             contents: [
                 {
                     kind: 'category',
@@ -69,7 +69,7 @@ export const category =
                                 componentName: 'colorSensor',
                             },
                             fields: {
-                                COMPONENT_NAME: 'robot.my_claw.piece_sensor',
+                                COMPONENT_NAME: 'robot.claw.piece_sensor',
                                 FUNC: 'get_color_rgb',
                             },
                             inputs: {},
@@ -88,7 +88,7 @@ export const category =
                                 componentName: 'colorSensor',
                             },
                             fields: {
-                                COMPONENT_NAME: 'robot.my_claw.piece_sensor',
+                                COMPONENT_NAME: 'robot.claw.piece_sensor',
                                 FUNC: 'get_color_hsv',
                             },
                             inputs: {},
@@ -107,7 +107,7 @@ export const category =
                                 componentName: 'colorSensor',
                             },
                             fields: {
-                                COMPONENT_NAME: 'robot.my_claw.piece_sensor',
+                                COMPONENT_NAME: 'robot.claw.piece_sensor',
                                 FUNC: 'get_distance_mm',
                             },
                             inputs: {},

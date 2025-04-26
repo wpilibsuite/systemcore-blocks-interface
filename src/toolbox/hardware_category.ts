@@ -11,15 +11,49 @@ const category_robot =
       kind: 'block',
       type: 'mrc_mechanism',
       fields: {
-        NAME: 'my_drive',
+        NAME: 'claw',
+        TYPE: 'Claw'
+      },
+      extraState: {
+        importModule: 'claw',
+        params: [{ name: 'gripper_port', type: 'int' },
+        { name: 'piece_sensor_port', type: 'int' },
+        ]
+      },
+      inputs: {
+        ARG0: {
+          shadow: {
+            type: 'mrc_port',
+            fields: {
+              TYPE: 'SmartMotor',
+              PORT_NUM: 1
+            },
+          },
+        },
+        ARG1: {
+          shadow: {
+            type: 'mrc_port',
+            fields: {
+              TYPE: 'SmartIO',
+              PORT_NUM: 1
+            },
+          },
+        },
+      }
+    },
+    {
+      kind: 'block',
+      type: 'mrc_mechanism',
+      fields: {
+        NAME: 'drive',
         TYPE: 'DriveMecanum'
       },
       extraState: {
         importModule: 'DriveMecanum',
-        params: [{ name: 'front_left_drive', type: 'int' },
-        { name: 'front_right_drive', type: 'int' },
-        { name: 'back_left_drive', type: 'int' },
-        { name: 'back_right_drive', type: 'int' },
+        params: [{ name: 'front_left_drive_port', type: 'int' },
+        { name: 'front_right_drive_port', type: 'int' },
+        { name: 'back_left_drive_port', type: 'int' },
+        { name: 'back_right_drive_port', type: 'int' },
         ]
       },
       inputs: {
@@ -62,40 +96,6 @@ const category_robot =
       }
     },
     {
-      kind: 'block',
-      type: 'mrc_mechanism',
-      fields: {
-        NAME: 'my_claw',
-        TYPE: 'Claw'
-      },
-      extraState: {
-        importModule: 'claw',
-        params: [{ name: 'port_gripper', type: 'int' },
-        { name: 'port_piece_sensor', type: 'int' },
-        ]
-      },
-      inputs: {
-        ARG0: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartMotor',
-              PORT_NUM: 1
-            },
-          },
-        },
-        ARG1: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartIO',
-              PORT_NUM: 1
-            },
-          },
-        },
-      }
-    },
-    {
       kind: 'label',
       text: 'Components',
     },
@@ -108,7 +108,7 @@ const category_robot =
       },
       extraState: {
         importModule: 'smart_motor',
-        params: [{ name: 'motorPort', type: 'int' }]
+        params: [{ name: 'motor_port', type: 'int' }]
       },
       inputs: {
         ARG0: {
@@ -131,7 +131,7 @@ const category_robot =
       },
       extraState: {
         importModule: 'color_range_sensor',
-        params: [{ name: 'I2CPort', type: 'int' }]
+        params: [{ name: 'i2c_port', type: 'int' }]
       },
       inputs: {
         ARG0: {
@@ -154,7 +154,7 @@ const category_robot =
       },
       extraState: {
         importModule: 'rev_touch_sensor',
-        params: [{ name: 'SmartIOPort', type: 'int' }]
+        params: [{ name: 'smartIO_port', type: 'int' }]
       },
       inputs: {
         ARG0: {
@@ -189,7 +189,7 @@ const category_mechanism =
       },
       extraState: {
         importModule: 'smart_motor',
-        params: [{ name: 'motorPort', type: 'int' }],
+        params: [{ name: 'motor_port', type: 'int' }],
         hideParams: true
       },
     },
@@ -202,7 +202,7 @@ const category_mechanism =
       },
       extraState: {
         importModule: 'color_range_sensor',
-        params: [{ name: 'I2CPort', type: 'int' }],
+        params: [{ name: 'i2c_port', type: 'int' }],
         hideParams: true
       },
     },
@@ -215,7 +215,7 @@ const category_mechanism =
       },
       extraState: {
         importModule: 'rev_touch_sensor',
-        params: [{ name: 'SmartIOPort', type: 'int' }],
+        params: [{ name: 'smartIO_port', type: 'int' }],
         hideParams: true
       },
     },
