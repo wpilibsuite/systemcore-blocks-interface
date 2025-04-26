@@ -30,6 +30,7 @@ import {category as miscCategory} from './misc_category';
 import {category as methodsCategory} from './methods_category';
 import {category as componentSampleCategory} from './component_samples_category';
 import {category as mechanismCategory} from './hardware_category';
+import {category as robotCategory} from './robot_category';
 
 export function getToolboxJSON(
     opt_includeExportedBlocksFromProject: toolboxItems.ContentsType[],
@@ -78,6 +79,7 @@ export function getToolboxJSON(
       },
       methodsCategory,
       mechanismCategory,
+      robotCategory,
       componentSampleCategory,
     ]);
 

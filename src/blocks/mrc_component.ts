@@ -37,12 +37,14 @@ export type ConstructorArg = {
 
 type ComponentExtraState = {
   importModule?: string,
+  hideParams?: boolean,
   params?: ConstructorArg[],
 }
 
 type ComponentBlock = Blockly.Block & ComponentMixin;
 interface ComponentMixin extends ComponentMixinType {
   mrcArgs: ConstructorArg[],
+  hideParams: boolean,
   mrcImportModule: string,
 }
 type ComponentMixinType = typeof COMPONENT;
@@ -59,7 +61,6 @@ const COMPONENT = {
       .appendField(createFieldNonEditableText(''), 'TYPE');
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
-    // this.setOutput(true, OUTPUT_NAME);
   },
 
   /**
@@ -74,9 +75,12 @@ const COMPONENT = {
         'name': arg.name,
         'type': arg.type,
       });
-    });    
+    });
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
+    }
+    if (this.hideParams) {
+      extraState.hideParams = this.hideParams;
     }
     return extraState;
   },
@@ -85,9 +89,10 @@ const COMPONENT = {
   */
   loadExtraState: function (this: ComponentBlock, extraState: ComponentExtraState): void {
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
+    this.hideParams = extraState.hideParams ? extraState.hideParams : false;
     this.mrcArgs = [];
 
-    if(extraState.params){
+    if (extraState.params) {
       extraState.params.forEach((arg) => {
         this.mrcArgs.push({
           'name': arg.name,
@@ -101,17 +106,19 @@ const COMPONENT = {
   /**
      * Update the block to reflect the newly loaded extra state.
      */
-    updateBlock_: function(this: ComponentBlock): void {
+  updateBlock_: function (this: ComponentBlock): void {
+    if (this.hideParams == false) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)
-            .setAlign(Blockly.inputs.Align.RIGHT)
-            .appendField(this.mrcArgs[i].name);
+          .setAlign(Blockly.inputs.Align.RIGHT)
+          .appendField(this.mrcArgs[i].name);
         if (this.mrcArgs[i].type) {
           input.setCheck(getAllowedTypesForSetCheck(this.mrcArgs[i].type));
         }
       }
     }
+  }
 }
 
 export const setup = function () {
@@ -122,18 +129,26 @@ export const pythonFromBlock = function (
   block: ComponentBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  if(block.mrcImportModule){
+  if (block.mrcImportModule) {
     generator.addImport(block.mrcImportModule);
   }
   let code = 'self.' + block.getFieldValue('NAME') + ' = ' + block.getFieldValue('TYPE') + '(';
-  
+
   for (let i = 0; i < block.mrcArgs.length; i++) {
-      const fieldName = 'ARG' + i;
+    const fieldName = 'ARG' + i;
+    if (i != 0) {
+      code += ', '
+    }
+    if(block.hideParams){
+      let extension = '';
       if(i != 0){
-        code += ', '
+        extension = '_' + (i + 1).toString();
       }
+      code += block.mrcArgs[i].name + " = " + block.getFieldValue('NAME') + extension; 
+    }else{
       code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
-    } 
+    }
+  }
   code += ')\n' + "self.hardware.append(self." + block.getFieldValue('NAME') + ")\n";
   return code;
 }

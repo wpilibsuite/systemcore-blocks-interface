@@ -13,7 +13,16 @@
                     "canBeCalledWithinClass": false,
                     "canBeCalledOutsideClass": false,
                     "returnType": "None",
-                    "params": [],
+                    "params": [
+                        {
+                            "name": "port_my_motor",
+                            "type": "int"
+                        },
+                        {
+                            "name": "port_my_color_range_sensor",
+                            "type": "int"                          
+                        }
+                    ],
                     "pythonMethodName": "__init__"
                 },
                 "fields": {

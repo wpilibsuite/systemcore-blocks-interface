@@ -11,6 +11,7 @@ import * as ClassMethodDef from './mrc_class_method_def';
 import * as Mechanism from './mrc_mechanism';
 import * as Component from './mrc_component';
 import * as MechanismContainerHolder from './mrc_mechanism_component_holder';
+import * as Port from './mrc_port';
 
 const customBlocks = [
   CallPythonFunction,
@@ -25,6 +26,7 @@ const customBlocks = [
   Mechanism,
   Component,
   MechanismContainerHolder,
+  Port,
 ];
 
 export const setup = function(forBlock: any) {
