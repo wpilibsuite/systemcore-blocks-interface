@@ -34,9 +34,9 @@ export const OUTPUT_NAME = 'mrc_port';
 type PortBlock = Blockly.Block & PortMixin;
 interface PortMixin extends PortMixinType {
 }
-type PortMixinType = typeof COMPONENT;
+type PortMixinType = typeof PORT;
 
-const COMPONENT = {
+const PORT = {
   /**
     * Block initialization.
     */
@@ -52,7 +52,7 @@ const COMPONENT = {
 }
 
 export const setup = function () {
-  Blockly.Blocks[BLOCK_NAME] = COMPONENT;
+  Blockly.Blocks[BLOCK_NAME] = PORT;
 }
 
 export const pythonFromBlock = function (
