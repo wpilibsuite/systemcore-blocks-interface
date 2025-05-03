@@ -35,6 +35,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private context: GeneratorContext | null = null;
 
   private classMethods: {[key: string]: string} = Object.create(null);
+  private ports: {[key: string]: string} = Object.create(null);
 
   constructor() {
     super('Python');
@@ -65,7 +66,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     let variableDefinitions = '';
 
     if (this.context?.getHasHardware()) {
-      variableDefinitions += this.INDENT + "self.define_hardware()\n";
+      variableDefinitions += this.INDENT + "self.define_hardware(";
+      variableDefinitions += this.getListOfPorts(true);
+      variableDefinitions += ')';
     }
 
     return variableDefinitions;
@@ -106,6 +109,28 @@ export class ExtendedPythonGenerator extends PythonGenerator {
    */
   addClassMethodDefinition(methodName: string, code: string): void {
     this.classMethods[methodName] = code;
+  }
+
+  /**
+   * Add a Hardware Port
+   */
+  addHardwarePort(portName: string, type: string): void{
+    this.ports[portName] = type;
+  }
+
+  getListOfPorts(startWithFirst: boolean): string{
+    let returnString = ''
+    let firstPort = startWithFirst;
+    for (const port in this.ports) {
+      if(!firstPort){
+        returnString += ', ';
+      }
+      else{
+        firstPort = false;
+      }
+      returnString += port;
+    }
+    return returnString;
   }
 
   finish(code: string): string {

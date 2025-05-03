@@ -90,28 +90,49 @@ export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = MECHANISM_COMPONENT_HOLDER;
 }
 
-export const pythonFromBlock = function (
-  block: MechanismComponentHolderBlock,
-  generator: ExtendedPythonGenerator,
-) {
+function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator){
   let code = 'def define_hardware(self):\n' + generator.INDENT + 'self.hardware = []\n';
 
   let mechanisms = '';
   let components = '';
 
-  if (block.getInput('MECHANISMS')) {
-    mechanisms = generator.statementToCode(block, 'MECHANISMS');
-  }
-  if (block.getInput('COMPONENTS')) {
-    components = generator.statementToCode(block, 'COMPONENTS');
-  }
+  mechanisms = generator.statementToCode(block, 'MECHANISMS');
+  components = generator.statementToCode(block, 'COMPONENTS');
+
   const body = mechanisms + components;
   if(body != ''){
     code += body;
   }else{
     code += generator.INDENT + 'pass';
   }
-
   generator.addClassMethodDefinition('define_hardware', code);
-  return '';
+}
+
+function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator){
+  let components = '';
+
+  components = generator.statementToCode(block, 'COMPONENTS');
+
+  let code = 'def define_hardware(self' + generator.getListOfPorts(false) + '):\n' + 
+              generator.INDENT + 'self.hardware = []\n';
+
+  if(components != ''){
+    code += components;
+  }else{
+    code += generator.INDENT + 'pass';
+  }
+  generator.addClassMethodDefinition('define_hardware', code);
+}
+
+export const pythonFromBlock = function (
+  block: MechanismComponentHolderBlock,
+  generator: ExtendedPythonGenerator,
+) {
+  if(block.getInput('MECHANISMS')){
+    pythonFromBlockInRobot(block, generator);
+  }
+  else{
+    pythonFromBlockInMechanism(block, generator);
+  }
+  return ''
 }

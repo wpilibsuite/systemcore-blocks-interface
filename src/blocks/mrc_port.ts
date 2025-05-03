@@ -59,8 +59,8 @@ export const pythonFromBlock = function (
   block: PortBlock,
   generator: ExtendedPythonGenerator,
 ) {
-    let code = "";
-    //TODO(Alan) - Make this real
+    //TODO (Alan) : Specify the type here as well
+    let code = block.getFieldValue('PORT_NUM');
     
-  return [code, Order.ATOMIC];
+    return [code, Order.ATOMIC];
 }

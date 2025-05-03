@@ -144,7 +144,9 @@ export const pythonFromBlock = function (
       if(i != 0){
         extension = '_' + (i + 1).toString();
       }
-      code += block.mrcArgs[i].name + " = " + block.getFieldValue('NAME') + extension; 
+      const newPort = block.getFieldValue('NAME') + extension + '_port';
+      generator.addHardwarePort(newPort, block.mrcArgs[i].type);
+      code += block.mrcArgs[i].name + " = " + newPort; 
     }else{
       code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
     }

@@ -221,4 +221,4 @@ const category_mechanism =
     },
   ],
 }
-export const category = category_robot;
+export const category = category_mechanism;
