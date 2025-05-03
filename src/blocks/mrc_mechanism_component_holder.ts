@@ -22,8 +22,13 @@
 import * as Blockly from 'blockly';
 
 import { MRC_STYLE_MECHANISMS } from '../themes/styles';
+import * as ChangeFramework from './utils/change_framework';
+import { getLegalName } from './utils/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
+import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
+import { BLOCK_NAME as  MRC_COMPONENT_NAME } from './mrc_component';
+
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
 
 export const BLOCK_NAME = 'mrc_mechanism_component_holder';
@@ -37,9 +42,24 @@ type MechanismComponentHolderExtraState = {
 
 type MechanismComponentHolderBlock = Blockly.Block & MechanismComponentHolderMixin;
 interface MechanismComponentHolderMixin extends MechanismComponentHolderMixinType {
-  mrcHideMechanisms : boolean;
+  mrcHideMechanisms: boolean;
 }
 type MechanismComponentHolderMixinType = typeof MECHANISM_COMPONENT_HOLDER;
+
+function setName(block: Blockly.BlockSvg){
+    const parentBlock = ChangeFramework.getParentOfType(block, BLOCK_NAME);
+    if (parentBlock) {
+        const variableBlocks = parentBlock!.getDescendants(true)
+        const otherNames: string[] = []
+        variableBlocks?.forEach(function (variableBlock) {
+            if (variableBlock != block) {
+                otherNames.push(variableBlock.getFieldValue('NAME'));
+            }
+        });
+        const currentName = block.getFieldValue('NAME');       
+        block.setFieldValue(getLegalName(currentName, otherNames), 'NAME');
+    }
+}
 
 const MECHANISM_COMPONENT_HOLDER = {
   /**
@@ -52,6 +72,9 @@ const MECHANISM_COMPONENT_HOLDER = {
 
     this.setOutput(false);
     this.setStyle(MRC_STYLE_MECHANISMS);
+    ChangeFramework.registerCallback(MRC_COMPONENT_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
+    ChangeFramework.registerCallback(MRC_MECHANISM_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
+
   },
   saveExtraState: function (this: MechanismComponentHolderBlock): MechanismComponentHolderExtraState {
     const extraState: MechanismComponentHolderExtraState = {
@@ -72,25 +95,39 @@ const MECHANISM_COMPONENT_HOLDER = {
      * Update the block to reflect the newly loaded extra state.
      */
   updateBlock_: function (this: MechanismComponentHolderBlock): void {
-    if(this.mrcHideMechanisms){
-      if(this.getInput('MECHANISMS')){
+    if (this.mrcHideMechanisms) {
+      if (this.getInput('MECHANISMS')) {
         this.removeInput('MECHANISMS')
-      }    
+      }
     }
-    else{
-      if(this.getInput('MECHANISMS') == null){
+    else {
+      if (this.getInput('MECHANISMS') == null) {
         this.appendStatementInput('MECHANISMS').setCheck(MECHANISM_OUTPUT).appendField('Mechanisms');
         this.moveInputBefore('MECHANISMS', 'COMPONENTS')
       }
     }
-  }
+  },
+  onBlockChanged: function (block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase) {
+    if (blockEvent.type == Blockly.Events.BLOCK_MOVE) {
+      let blockMoveEvent = blockEvent as Blockly.Events.BlockMove;
+      if (blockMoveEvent.reason?.includes('connect')) {
+        setName(block);
+      }
+    }
+    else {
+      if (blockEvent.type == Blockly.Events.BLOCK_CHANGE) {
+        setName(block);
+      }
+    }
+  },
+
 }
 
 export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = MECHANISM_COMPONENT_HOLDER;
 }
 
-function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator){
+function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
   let code = 'def define_hardware(self):\n' + generator.INDENT + 'self.hardware = []\n';
 
   let mechanisms = '';
@@ -100,25 +137,25 @@ function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator:
   components = generator.statementToCode(block, 'COMPONENTS');
 
   const body = mechanisms + components;
-  if(body != ''){
+  if (body != '') {
     code += body;
-  }else{
+  } else {
     code += generator.INDENT + 'pass';
   }
   generator.addClassMethodDefinition('define_hardware', code);
 }
 
-function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator){
+function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
   let components = '';
 
   components = generator.statementToCode(block, 'COMPONENTS');
 
-  let code = 'def define_hardware(self' + generator.getListOfPorts(false) + '):\n' + 
-              generator.INDENT + 'self.hardware = []\n';
+  let code = 'def define_hardware(self' + generator.getListOfPorts(false) + '):\n' +
+    generator.INDENT + 'self.hardware = []\n';
 
-  if(components != ''){
+  if (components != '') {
     code += components;
-  }else{
+  } else {
     code += generator.INDENT + 'pass';
   }
   generator.addClassMethodDefinition('define_hardware', code);
@@ -128,10 +165,10 @@ export const pythonFromBlock = function (
   block: MechanismComponentHolderBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  if(block.getInput('MECHANISMS')){
+  if (block.getInput('MECHANISMS')) {
     pythonFromBlockInRobot(block, generator);
   }
-  else{
+  else {
     pythonFromBlockInMechanism(block, generator);
   }
   return ''
