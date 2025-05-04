@@ -291,9 +291,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   setOpModeDetails(details : OpModeDetails) {
     this.details = details;
   }
-  
-  getOpModeDetails() : OpModeDetails | null{
-    return this.details;
+  getClassSpecificForInit() : string{
+    let classParent = this.context?.getClassParent();
+    if (classParent == 'OpMode'){
+      return 'robot'
+    }
+    return ''
   }
 }
 
