@@ -167,7 +167,11 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       }
       this.classMethods = Object.create(null);
       this.ports = Object.create(null);
-      code = annotations + classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
+      code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
+      if(annotations){
+        code = annotations + code;
+      }
+      this.details = null;
 
       this.context.setExportedBlocks(this.produceExportedBlocks(this.workspace));
     }
