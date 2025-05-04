@@ -139,9 +139,8 @@ function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator:
   const body = mechanisms + components;
   if (body != '') {
     code += body;
-  } else {
-    code += generator.INDENT + 'pass';
-  }
+  } 
+  
   generator.addClassMethodDefinition('define_hardware', code);
 }
 
@@ -155,9 +154,8 @@ function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, genera
 
   if (components != '') {
     code += components;
-  } else {
-    code += generator.INDENT + 'pass';
-  }
+  } 
+
   generator.addClassMethodDefinition('define_hardware', code);
 }
 
