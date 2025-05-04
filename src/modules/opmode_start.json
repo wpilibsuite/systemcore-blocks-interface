@@ -3,10 +3,23 @@
         "languageVersion": 0,
         "blocks": [
             {
+                "type": "mrc_opmode_details",
+                "id": "ElbONc{)gh,UprTW(|1C",
+                "x": 10,
+                "y": 10,
+                "deletable": false,
+                "fields": {
+                    "NAME": "",
+                    "GROUP": "",
+                    "TYPE": "Auto",
+                    "ENABLED": true 
+                }
+            },
+            {
                 "type": "mrc_class_method_def",
                 "id": "ElbONc{)s(,UprTW(|1C",
                 "x": 10,
-                "y": 10,
+                "y": 120,
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
@@ -29,7 +42,7 @@
                 "type": "mrc_class_method_def",
                 "id": "wxFAh6eaR1|3fTuV:UAd",
                 "x": 10,
-                "y": 200,
+                "y": 300,
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,

@@ -27,6 +27,24 @@ import { FunctionArg } from '../blocks/mrc_call_python_function';
 import * as MechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
 import * as commonStorage from '../storage/common_storage';
 
+export class OpModeDetails {
+  constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
+  annotations() : string{
+    let code = '';
+
+    if(this.enabled){
+      code += '@' + this.type + "\n";
+      if(this.name){
+        code += '@name("' + this.name + '")\n';
+      }
+      if(this.group){
+        code += '@group("' + this.group + '")\n';
+      }
+    }
+    return code;
+  }
+}
+
 // Extends the python generator to collect some information about functions and
 // variables that have been defined so they can be used in other modules.
 
@@ -36,7 +54,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   private classMethods: {[key: string]: string} = Object.create(null);
   private ports: {[key: string]: string} = Object.create(null);
-
+    // Opmode details
+  private details : OpModeDetails | null  = null;
+  
   constructor() {
     super('Python');
   }
@@ -137,7 +157,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     if (this.context && this.workspace) {
       const className = this.context.getClassName();
       const classParent = this.context.getClassParent();
+      const annotations = this.details?.annotations();
       this.addImport(classParent);
+
       const classDef = 'class ' + className + '(' + classParent + '):\n';
       const classMethods = [];
       for (const name in this.classMethods) {
@@ -145,7 +167,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       }
       this.classMethods = Object.create(null);
       this.ports = Object.create(null);
-      code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
+      code = annotations + classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
 
       this.context.setExportedBlocks(this.produceExportedBlocks(this.workspace));
     }
@@ -261,6 +283,13 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       }
     }
     return exportedBlocks;
+  }
+  setOpModeDetails(details : OpModeDetails) {
+    this.details = details;
+  }
+  
+  getOpModeDetails() : OpModeDetails | null{
+    return this.details;
   }
 }
 
