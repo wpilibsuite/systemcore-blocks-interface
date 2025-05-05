@@ -458,7 +458,8 @@ export const pythonFromBlock = function (
         xfix2 = xfix1;
     }
     if(block.mrcPythonMethodName == '__init__'){
-        branch = generator.INDENT + 'super().__init__(robot)\n' +
+        let class_specific = generator.getClassSpecificForInit();
+        branch = generator.INDENT + 'super().__init__(' + class_specific + ')\n' +
             generator.defineClassVariables() + branch;
     }    
     if (returnValue) {
@@ -469,6 +470,10 @@ export const pythonFromBlock = function (
 
     let params = block.mrcParameters;
     let paramString = "self";
+    if (block.mrcPythonMethodName == '__init__') {
+        paramString += generator.getListOfPorts(false);
+    }
+
     if (params.length != 0) {
         block.mrcParameters.forEach((param) => {
             paramString += ', ' + param.name;

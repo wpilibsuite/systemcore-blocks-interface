@@ -29,6 +29,8 @@ import {category as listsCategory} from './lists_category';
 import {category as miscCategory} from './misc_category';
 import {category as methodsCategory} from './methods_category';
 import {category as componentSampleCategory} from './component_samples_category';
+import {category as hardwareCategory} from './hardware_category';
+import {category as robotCategory} from './robot_category';
 
 export function getToolboxJSON(
     opt_includeExportedBlocksFromProject: toolboxItems.ContentsType[],
@@ -60,12 +62,16 @@ export function getToolboxJSON(
       {
         kind: 'sep',
       },
-      miscCategory,
+      robotCategory,
+      {
+        kind: 'sep',
+      },
       logicCategory,
       loopCategory,
       mathCategory,
       textCategory,
       listsCategory,
+      miscCategory,
       {
         kind: 'sep',
       },
@@ -76,7 +82,8 @@ export function getToolboxJSON(
         custom: 'VARIABLE',
       },
       methodsCategory,
-      componentSampleCategory,
+      hardwareCategory,
+      //componentSampleCategory,
     ]);
 
   return {

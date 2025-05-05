@@ -88,6 +88,10 @@ export class MethodsCategory {
     // Add a block that lets the user define a new method.
     contents.push(
       {
+        kind: 'block',
+        type: 'mrc_mechanism_container_holder',
+      },
+      {
         kind: 'label',
         text: 'Custom Methods',
       },
