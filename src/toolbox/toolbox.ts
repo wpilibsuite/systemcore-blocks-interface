@@ -31,6 +31,7 @@ import {category as methodsCategory} from './methods_category';
 import {category as componentSampleCategory} from './component_samples_category';
 import {category as hardwareCategory} from './hardware_category';
 import {category as robotCategory} from './robot_category';
+import {category as eventCategory} from './event_category';
 
 export function getToolboxJSON(
     opt_includeExportedBlocksFromProject: toolboxItems.ContentsType[],
@@ -83,6 +84,7 @@ export function getToolboxJSON(
       },
       methodsCategory,
       hardwareCategory,
+      eventCategory,
       //componentSampleCategory,
     ]);
 

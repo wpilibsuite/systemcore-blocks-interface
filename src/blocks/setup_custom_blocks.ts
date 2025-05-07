@@ -13,6 +13,7 @@ import * as Component from './mrc_component';
 import * as MechanismContainerHolder from './mrc_mechanism_component_holder';
 import * as Port from './mrc_port';
 import * as OpModeDetails from './mrc_opmode_details';
+import * as Event from './mrc_event';
 
 const customBlocks = [
   CallPythonFunction,
@@ -28,7 +29,8 @@ const customBlocks = [
   Component,
   MechanismContainerHolder,
   Port,
-  OpModeDetails
+  OpModeDetails,
+  Event
 ];
 
 export const setup = function(forBlock: any) {

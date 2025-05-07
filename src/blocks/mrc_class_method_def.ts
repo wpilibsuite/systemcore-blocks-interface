@@ -30,7 +30,7 @@ import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_func
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
-const MUTATOR_BLOCK_NAME = 'methods_mutatorarg';
+export const MUTATOR_BLOCK_NAME = 'methods_mutatorarg';
 const PARAM_CONTAINER_BLOCK_NAME    = 'method_param_container';
 
 export type Parameter = {
