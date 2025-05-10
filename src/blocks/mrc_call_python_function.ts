@@ -25,7 +25,7 @@ import { Order } from 'blockly/python';
 
 import { ClassMethodDefExtraState } from './mrc_class_method_def'
 import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
-import { FunctionData } from './utils/robotpy_data';
+import { FunctionData } from './utils/python_json_types';
 import * as value from './utils/value';
 import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';

@@ -29,19 +29,21 @@ import {
     addInstanceMethodBlocks,
     addModuleFunctionBlocks,
     addStaticMethodBlocks } from '../blocks/mrc_call_python_function';
+import { robotPyData } from '../blocks/utils/robotpy_data';
 import {
-    robotPyData,
     ClassData,
     ModuleData,
     organizeVarDataByType,
-    VariableGettersAndSetters } from '../blocks/utils/robotpy_data';
+    VariableGettersAndSetters } from '../blocks/utils/python_json_types';
 import * as toolboxItems from './items';
 
 
 export function getToolboxCategories(): toolboxItems.Category[] {
   const contents: toolboxItems.Category[] = [];
 
-  const mapPathToCategory: {[key: string]: toolboxItems.Category} = {};
+  const allCategories: {[key: string]: toolboxItems.Category} = {};
+  const moduleCategories: {[key: string]: toolboxItems.Category} = {};
+  const classCategories: {[key: string]: toolboxItems.Category} = {};
 
   // Process RobotPy modules.
   for (const moduleData of robotPyData.modules) {
@@ -56,14 +58,14 @@ export function getToolboxCategories(): toolboxItems.Category[] {
     };
     moduleCategory.contents = [];
     addModuleBlocks(moduleData, moduleCategory.contents);
-    mapPathToCategory[path] = moduleCategory;
+    allCategories[path] = moduleCategory;
+    moduleCategories[path] = moduleCategory;
   }
 
   // Process RobotPy classes.
   for (const classData of robotPyData.classes) {
     const path = classData.className;
     const lastDot = path.lastIndexOf('.');
-    const parentPath = (lastDot != -1) ? path.substring(0, lastDot) : '';
     const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
 
     const classCategory: toolboxItems.PythonClassCategory = {
@@ -73,33 +75,17 @@ export function getToolboxCategories(): toolboxItems.Category[] {
     };
     classCategory.contents = [];
     addClassBlocks(classData, classCategory.contents);
-    mapPathToCategory[path] = classCategory;
-    if (parentPath) {
-      const parentCategory = mapPathToCategory[parentPath];
-      if (parentCategory.contents) {
-        parentCategory.contents.push(classCategory);
-      }
-    } else {
-      contents.push(classCategory);
-    }
+    allCategories[path] = classCategory;
+    classCategories[path] = classCategory;
   }
 
-  for (const path in mapPathToCategory) {
-    const category = mapPathToCategory[path];
-    if ('className' in category) {
-      continue;
-    }
-    const lastDot = path.lastIndexOf('.');
-    const parentPath = (lastDot != -1) ? path.substring(0, lastDot) : '';
-    if (parentPath) {
-      const parentCategory = mapPathToCategory[parentPath];
-      if (parentCategory.contents) {
-        parentCategory.contents.push(category);
-      }
-    } else {
-      contents.push(category);
-    }
-  }
+  // Build the tree.
+  // First add each class category to its parent.
+  addCategoriesToParents(classCategories, allCategories, contents);
+  // Then add module categories.
+  addCategoriesToParents(moduleCategories, allCategories, contents);
+
+  recursivelyRemoveEmptyCategories(contents);
 
   return contents;
 }
@@ -152,5 +138,40 @@ function addClassBlocks(classData: ClassData, contents: toolboxItems.ContentsTyp
   // Enum blocks
   if (classData.enums.length) {
     addEnumBlocks(classData.enums, contents);
+  }
+}
+
+function addCategoriesToParents(
+    categoriesToProcess: {[key: string]: toolboxItems.Category},
+    allCategories: {[key: string]: toolboxItems.Category},
+    contents: toolboxItems.Category[]) {
+  for (const path in categoriesToProcess) {
+    const category = categoriesToProcess[path];
+    const lastDot = path.lastIndexOf('.');
+    const parentPath = (lastDot != -1) ? path.substring(0, lastDot) : '';
+    if (parentPath) {
+      const parentCategory = allCategories[parentPath];
+      if (parentCategory.contents) {
+        parentCategory.contents.push(category);
+      }
+    } else {
+      contents.push(category);
+    }
+  }
+}
+
+function recursivelyRemoveEmptyCategories(contents: toolboxItems.ContentsType[]) {
+  for (let i = contents.length - 1; i >= 0; i--) {
+    if (contents[i].kind === 'category') {
+      const category = contents[i] as toolboxItems.Category;
+      if (category.contents) {
+        if (category.contents.length) {
+          recursivelyRemoveEmptyCategories(category.contents);
+        }
+        if (category.contents.length == 0) {
+          contents.splice(i, 1);
+        }
+      }
+    }
   }
 }
