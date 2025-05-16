@@ -23,6 +23,11 @@ import * as Antd from 'antd';
 
 import {
   SettingOutlined,
+  RobotOutlined,
+  CodeOutlined,
+  BlockOutlined,
+  FileOutlined,
+  ProjectOutlined
 } from '@ant-design/icons';
 
 
@@ -35,6 +40,7 @@ import ModuleOutline from './reactComponents/ModuleOutline';
 import CodeDisplay from './reactComponents/CodeDisplay';
 import BlocklyComponent, { BlocklyComponentType } from './reactComponents/BlocklyComponent';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
+import * as Tabs from "./reactComponents/Tabs";
 
 import { createGeneratorContext, GeneratorContext } from './editor/generator_context';
 import * as editor from './editor/editor';
@@ -61,6 +67,9 @@ const App: React.FC = () => {
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const generatorContext = React.useRef<GeneratorContext | null>(null);
   const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
+
+  const [leftCollapsed, setLeftCollapsed] = React.useState(false);
+  const [rightCollapsed, setRightCollapsed] = React.useState(false);
 
   // When the app is loaded, open storage and initialize the blocks we provide.
   React.useEffect(() => {
@@ -205,12 +214,69 @@ const App: React.FC = () => {
     array.sort();
     storage.saveEntry('shownPythonToolboxCategories', JSON.stringify(array));
   };
-  const areBlocksModified = () : boolean => {
-    if(blocksEditor.current){
+  const areBlocksModified = (): boolean => {
+    if (blocksEditor.current) {
       return blocksEditor.current.isModified();
     }
     return false;
   }
+
+  const myTabs: Tabs.TabItem[] = [
+    { key: 'tab1', title: 'Robot', type: Tabs.TabType.ROBOT },
+    { key: 'tab2', title: 'Claw', type: Tabs.TabType.MECHANISM },
+    { key: 'tab3', title: 'ThreeSpecimenAuto', type: Tabs.TabType.OPMODE },
+    { key: 'tab4', title: 'FieldRelativeTeleop', type: Tabs.TabType.OPMODE },
+  ];
+  type MenuItem = Required<Antd.MenuProps>['items'][number];
+
+  function getItem(
+    label: React.ReactNode,
+    key: React.Key,
+    icon?: React.ReactNode,
+    children?: MenuItem[],
+  ): MenuItem {
+    return {
+      key,
+      icon,
+      children,
+      label,
+    } as MenuItem;
+  }
+  function getDivider() : MenuItem {
+    return {
+        type: 'divider', // Must have
+      } as MenuItem;
+  }
+
+  const items: MenuItem[] = [
+    getItem('Files', 'files', <FileOutlined/>,[
+      getItem('Manage...', 'manage'),
+      getDivider(),
+      getItem('Robot', '1', <RobotOutlined/>),
+      getItem('Mechanisms', '2', <BlockOutlined/>, [
+        getItem('Arm', '10'),
+        getItem('Drive', '11'),
+      ]),
+      getItem('Opmodes', '3', <CodeOutlined/>, [
+        getItem('Auto', '40'),
+        getItem('Teleop', '41'),
+      ]),
+    ]),
+    getItem('Project', '100', <ProjectOutlined/>, [
+      getItem('New...', '14'),
+      getItem('Rename...', '100'),
+      getItem('Delete...', '101'),
+      getItem('Switch...', '102'),
+      getItem('Upload...', '103'),
+      getItem('Download...', '104')
+   ]),
+    
+    getItem('Settings', '4', <SettingOutlined/>,[
+      getItem('WPI toolbox', '41')
+    ]),
+  ];
+
+  const { Sider } = Antd.Layout;
 
   return (
     <Antd.ConfigProvider
@@ -233,50 +299,60 @@ const App: React.FC = () => {
         alertErrorMessage={alertErrorMessage}
         setAlertErrorMessage={setAlertErrorMessage}
       />
-      <Antd.Flex vertical
+      <Antd.Layout
         style={{
           background: '#000',
           height: '100vh',
         }}
       >
-        <Antd.Splitter
-          style={{
-            height: '100vh',
-          }}
-        >
-          <Antd.Splitter.Panel min='2%' defaultSize='15%'>
-            <ModuleOutline
-              storage={storage}
-              messageApi={messageApi}
-              setAlertErrorMessage={setAlertErrorMessage}
-              saveBlocks={saveBlocks}
-              areBlocksModified={areBlocksModified}
-              initializeShownPythonToolboxCategories={initializeShownPythonToolboxCategories}
-              currentModule={currentModule}
-              setCurrentModule={setCurrentModule}
-            />
-          </Antd.Splitter.Panel>
-          <Antd.Splitter.Panel min='2%' defaultSize='50%'>
-            <Antd.Space>
-              <Antd.Tooltip title="Toolbox Settings">
-                <Antd.Button className="smallButton"
-                  icon={<SettingOutlined />}
-                  size="small"
-                  onClick={handleToolboxSettingsClicked}
-                >
-                </Antd.Button>
-              </Antd.Tooltip>
-            </Antd.Space>
-            <BlocklyComponent ref={blocklyComponent} />
-          </Antd.Splitter.Panel>
-          <Antd.Splitter.Panel min='2%'>
-            <CodeDisplay generatedCode={generatedCode}
-              messageApi={messageApi}
-              setAlertErrorMessage={setAlertErrorMessage}
-            />
-          </Antd.Splitter.Panel>
-        </Antd.Splitter>
-      </Antd.Flex>
+        <Sider collapsible collapsed={leftCollapsed} onCollapse={(value: any) => setLeftCollapsed(value)}>
+          <Antd.Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+        </Sider>
+        <Antd.Layout>
+
+          <Tabs.Component tabList={myTabs} />
+
+          <Antd.Splitter
+            style={{
+              height: '100vh',
+            }}
+          >
+            <Antd.Splitter.Panel min='0%' defaultSize='15%'>
+              <ModuleOutline
+                storage={storage}
+                messageApi={messageApi}
+                setAlertErrorMessage={setAlertErrorMessage}
+                saveBlocks={saveBlocks}
+                areBlocksModified={areBlocksModified}
+                initializeShownPythonToolboxCategories={initializeShownPythonToolboxCategories}
+                currentModule={currentModule}
+                setCurrentModule={setCurrentModule}
+              />
+            </Antd.Splitter.Panel>
+            <Antd.Splitter.Panel min='2%' defaultSize='50%'>
+              {/*
+              <Antd.Space>
+                <Antd.Tooltip title="Toolbox Settings">
+                  <Antd.Button className="smallButton"
+                    icon={<SettingOutlined />}
+                    size="small"
+                    onClick={handleToolboxSettingsClicked}
+                  >
+                  </Antd.Button>
+                </Antd.Tooltip>
+              </Antd.Space>
+              */}
+              <BlocklyComponent ref={blocklyComponent} />
+            </Antd.Splitter.Panel>
+            <Antd.Splitter.Panel min='0%' collapsible={true}>
+              <CodeDisplay generatedCode={generatedCode}
+                messageApi={messageApi}
+                setAlertErrorMessage={setAlertErrorMessage}
+              />
+            </Antd.Splitter.Panel>
+          </Antd.Splitter>
+        </Antd.Layout>
+      </Antd.Layout>
       <Footer />
       <ToolboxSettingsModal
         isOpen={toolboxSettingsModalIsOpen}
