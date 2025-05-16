@@ -33,15 +33,15 @@ import {category as hardwareCategory} from './hardware_category';
 import {category as robotCategory} from './robot_category';
 
 export function getToolboxJSON(
-    opt_includeExportedBlocksFromProject: toolboxItems.ContentsType[],
+    opt_robotBlocks: toolboxItems.ContentsType[],
     shownPythonToolboxCategories: Set<string> | null) {
   const contents: toolboxItems.ContentsType[] = [];
 
   const robotPyCategories: toolboxItems.ContentsType[] = robotPyToolbox.getToolboxCategories();
-  filterGeneratedCategories(robotPyCategories, shownPythonToolboxCategories);
+  filterRobotPyCategories(robotPyCategories, shownPythonToolboxCategories);
   contents.push.apply(contents, robotPyCategories);
 
-  if (opt_includeExportedBlocksFromProject.length) {
+  if (opt_robotBlocks.length) {
     contents.push.apply(
       contents,
       [
@@ -51,7 +51,7 @@ export function getToolboxJSON(
         {
           kind: 'category',
           name: 'Project',
-          contents: opt_includeExportedBlocksFromProject,
+          contents: opt_robotBlocks,
         },
       ]);
   }
@@ -92,14 +92,14 @@ export function getToolboxJSON(
   };
 }
 
-function filterGeneratedCategories(
+function filterRobotPyCategories(
     contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string> | null) {
   contents.forEach((item) => {
     if (item.kind === 'category') {
       const category = item as toolboxItems.Category;
       // Traverse the tree depth-first so we can easily identify and remove empty categories.
       if (category.contents) {
-        filterGeneratedCategories(category.contents, shownPythonToolboxCategories);
+        filterRobotPyCategories(category.contents, shownPythonToolboxCategories);
       }
       if ((category as toolboxItems.PythonModuleCategory).moduleName) {
         const moduleName = (item as toolboxItems.PythonModuleCategory).moduleName;

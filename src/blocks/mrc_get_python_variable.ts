@@ -27,7 +27,7 @@ import {
     createModuleOrClassVariableSetterBlock,
     createInstanceVariableSetterBlock } from '../blocks/mrc_set_python_variable';
 import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
-import { VariableGettersAndSetters } from './utils/robotpy_data';
+import { VariableGettersAndSetters } from './utils/python_json_types';
 import * as variable from './utils/variable';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
