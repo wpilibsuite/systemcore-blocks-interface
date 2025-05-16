@@ -169,7 +169,7 @@ export class Editor {
     if (toolbox != this.toolbox) {
       this.toolbox = toolbox;
       this.blocklyWorkspace.updateToolbox(toolbox);
-      //testAllBlocksInToolbox();
+  //    testAllBlocksInToolbox(toolbox);
     }
   }
 

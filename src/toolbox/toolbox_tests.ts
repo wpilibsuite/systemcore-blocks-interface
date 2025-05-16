@@ -25,8 +25,8 @@ import * as toolboxItems from './items';
 
 // Tests
 
-export function testAllBlocksInToolbox(toolbox : toolboxItems.Category) {
-  const contents  = toolbox.contents;
+export function testAllBlocksInToolbox(toolbox : Blockly.utils.toolbox.ToolboxDefinition) {
+  const contents  = (toolbox as toolboxItems.Category).contents;
   alert('Press OK to run tests on all blocks from the toolbox.');
   const toolboxTestData = new ToolboxTestData(contents, () => {
     alert('Completed tests on all blocks in the toolbox. See console for any errors.');
@@ -55,7 +55,7 @@ class ToolboxTestData {
     contents.forEach((item) => {
       switch (item.kind) {
         default:
-          console.log('Error - item.kind is ' + item.kind + '. It must be block, category, or sep.');
+          console.log('Error - item.kind is ' + item.kind + '. It must be block, category, label, or sep.');
           break;
         case 'block':
           const block = item as toolboxItems.Block;
@@ -68,6 +68,7 @@ class ToolboxTestData {
           }
           break;
         case 'sep':
+        case 'label':
           break;
       }
     });
