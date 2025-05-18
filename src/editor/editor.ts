@@ -201,8 +201,10 @@ export class Editor {
           break;
         case commonStorage.MODULE_TYPE_OPMODE:
 /*
-      const robotBlocks = commonStorage.extractExportedBlocks(
-         this.currentModule.projectName, this.projectContent);
+ * TODO: When editing an opmode, we'll need to have blocks for all the methods that a robot has.
+ *      Not sure what this will be replaced with, but it will need something.
+ *     const robotBlocks = commonStorage.extractExportedBlocks(
+ *        this.currentModule.projectName, this.projectContent);
 */
           this.setToolbox(toolboxOpmode.getToolboxJSON(shownPythonToolboxCategories));
           break;

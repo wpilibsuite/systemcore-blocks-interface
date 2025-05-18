@@ -13,7 +13,11 @@
          ]
      };
  }
- 
+ /** TODO:
+  *     The opmode will need to have blocks for all the methods that are in the
+  *  robot.  This commented out code will have to be reworked in the future to 
+  * do this.
+  */
  /*if (opt_robotBlocks.length) {
     contents.push.apply(
       contents,

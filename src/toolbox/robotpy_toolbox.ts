@@ -178,6 +178,7 @@ function recursivelyRemoveEmptyCategories(contents: toolboxItems.ContentsType[])
     }
   }
 }
+
 function filterRobotPyCategories(
     contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string> | null) {
   contents.forEach((item) => {
