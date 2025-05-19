@@ -38,7 +38,7 @@ import {
 import * as toolboxItems from './items';
 
 
-export function getToolboxCategories(): toolboxItems.Category[] {
+export function getToolboxCategories(shownPythonToolboxCategories: Set<string> | null): toolboxItems.Category[] {
   const contents: toolboxItems.Category[] = [];
 
   const allCategories: {[key: string]: toolboxItems.Category} = {};
@@ -86,6 +86,9 @@ export function getToolboxCategories(): toolboxItems.Category[] {
   addCategoriesToParents(moduleCategories, allCategories, contents);
 
   recursivelyRemoveEmptyCategories(contents);
+
+  // TODO: Maybe later there is a better way to do this...
+  filterRobotPyCategories(contents, shownPythonToolboxCategories);
 
   return contents;
 }
@@ -173,5 +176,74 @@ function recursivelyRemoveEmptyCategories(contents: toolboxItems.ContentsType[])
         }
       }
     }
+  }
+}
+
+function filterRobotPyCategories(
+    contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string> | null) {
+  contents.forEach((item) => {
+    if (item.kind === 'category') {
+      const category = item as toolboxItems.Category;
+      // Traverse the tree depth-first so we can easily identify and remove empty categories.
+      if (category.contents) {
+        filterRobotPyCategories(category.contents, shownPythonToolboxCategories);
+      }
+      if ((category as toolboxItems.PythonModuleCategory).moduleName) {
+        const moduleName = (item as toolboxItems.PythonModuleCategory).moduleName;
+        if (shownPythonToolboxCategories != null && !shownPythonToolboxCategories.has(moduleName)) {
+          if (category.contents) {
+            removeBlocksAndSeparators(category.contents);
+          }
+        }
+      }
+      if ((category as toolboxItems.PythonClassCategory).className) {
+        const className = (item as toolboxItems.PythonClassCategory).className;
+        if (shownPythonToolboxCategories != null && !shownPythonToolboxCategories.has(className)) {
+          if (category.contents) {
+            removeBlocksAndSeparators(category.contents);
+          }
+        }
+      }
+    }
+  });
+  removeEmptyCategories(contents, shownPythonToolboxCategories);
+}
+
+function removeBlocksAndSeparators(contents: toolboxItems.ContentsType[]) {
+  let i = 0;
+  while (i < contents.length) {
+    const remove = (contents[i].kind === 'block' || contents[i].kind === 'sep');
+    if (remove) {
+      contents.splice(i, 1);
+      continue;
+    }
+    i++;
+  }
+}
+
+function removeEmptyCategories(
+    contents: toolboxItems.ContentsType[], shownPythonToolboxCategories: Set<string> | null) {
+  let i = 0;
+  while (i < contents.length) {
+    let remove = false;
+    if (contents[i].kind === 'category') {
+      const category = contents[i] as toolboxItems.Category;
+      let fullCategoryName = '';
+      if ((category as toolboxItems.PythonModuleCategory).moduleName) {
+        fullCategoryName = (category as toolboxItems.PythonModuleCategory).moduleName
+      } else if ((category as toolboxItems.PythonClassCategory).className) {
+        fullCategoryName = (category as toolboxItems.PythonClassCategory).className;
+      }
+      if (category.contents &&
+          category.contents.length == 0 &&
+          shownPythonToolboxCategories != null && !shownPythonToolboxCategories.has(fullCategoryName)) {
+        remove = true;
+      }
+    }
+    if (remove) {
+      contents.splice(i, 1);
+      continue;
+    }
+    i++;
   }
 }
