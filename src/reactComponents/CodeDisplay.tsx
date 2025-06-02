@@ -52,7 +52,7 @@ export default function CodeDisplay(props : CodeDisplayProps) {
             vertical gap="small"
         >
             <Antd.Space>
-                <h3 style={{ color: '#fff', margin: 0 }}>Python Code</h3>
+                <h3 style={{ color: '#fff', margin: 0 }}>Code</h3>
                 <Antd.Tooltip title="Copy">
                     <Antd.Button
                         icon={<CopyIcon />}
