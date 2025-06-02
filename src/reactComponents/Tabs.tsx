@@ -84,12 +84,14 @@ export function Component(props: TabsProps) {
       onChange={callback}
       onEdit={onEdit}
       defaultActiveKey={props.tabList[0].key}
+      tabBarStyle={{padding: 0, margin: 0}}
       hideAdd={false}
       items={props.tabList.map((tab) => {
         return {
           key: tab.key,
           label: tab.title,
-          icon: getIcon(tab.type)
+          icon: getIcon(tab.type),
+          closable: (tab.type == TabType.ROBOT) ? false : true,
         }
       })}
     />
