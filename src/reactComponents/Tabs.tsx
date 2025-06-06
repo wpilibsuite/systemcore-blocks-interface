@@ -20,8 +20,9 @@
  */
 import React from 'react';
 import * as Antd from 'antd';
-
-const { TabPane } = Antd.Tabs;
+import * as commonStorage from '../storage/common_storage';
+import type { MessageInstance } from 'antd/es/message/interface';
+import * as I18Next from "react-i18next";
 
 import {
   RobotOutlined,
@@ -43,9 +44,9 @@ export interface TabItem {
 
 export interface TabsProps {
   tabList: TabItem[];
-}
-function callback(key: string) {
-  console.log(key);
+  setAlertErrorMessage: (message: string) => void;
+  currentModule: commonStorage.Module | null; 
+  setCurrentModule: (module: commonStorage.Module | null) => void;
 }
 
 function getIcon(type: TabType) {
@@ -59,8 +60,14 @@ function getIcon(type: TabType) {
 }
 
 export function Component(props: TabsProps) {
+  const { t } = I18Next.useTranslation();
+  
   const [items, setItems] = React.useState<TabsProps['tabList']>(props.tabList);
   const [activeKey, setActiveKey] = React.useState('1');
+ 
+  const onChange = (key: string) => {
+    console.log(key);
+  }
 
   const onEdit = (targetKey: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
     if (action === 'remove') {
@@ -81,10 +88,10 @@ export function Component(props: TabsProps) {
 
   return (
     <Antd.Tabs type="editable-card"
-      onChange={callback}
+      onChange={onChange}
       onEdit={onEdit}
       defaultActiveKey={props.tabList[0].key}
-      tabBarStyle={{padding: 0, margin: 0}}
+      tabBarStyle={{ padding: 0, margin: 0 }}
       hideAdd={false}
       items={props.tabList.map((tab) => {
         return {
