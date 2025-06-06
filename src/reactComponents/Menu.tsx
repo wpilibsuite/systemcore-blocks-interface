@@ -152,24 +152,24 @@ export function Component(props: MenuProps) {
     const moduleFromPath = (key : string) : (commonStorage.Module | null) =>{
         let foundModule = null;
 
-        modules.forEach((module) => {
-            if (key == module.modulePath){
-                foundModule = module;
+        if(project){
+            if (key == project.modulePath){
+                foundModule = project;
                 return foundModule;
             }
-            module.mechanisms.forEach((mechanism) => {
+            project.mechanisms.forEach((mechanism) => {
                 if(key == mechanism.modulePath){
                     foundModule = mechanism;
                     return foundModule;
                 }
             });
-            module.opModes.forEach((opmode) => {
+            project.opModes.forEach((opmode) => {
                 if(key == opmode.modulePath){
                     foundModule = opmode;
                     return foundModule;
                 }
             });
-        });
+        }
 
         return foundModule;
     };
