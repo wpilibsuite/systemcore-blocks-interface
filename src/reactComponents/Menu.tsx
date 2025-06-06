@@ -10,8 +10,9 @@ import {
     CodeOutlined,
     BlockOutlined,
     FileOutlined,
-    ProjectOutlined,
+    FolderOutlined,
     RobotOutlined,
+    SaveOutlined
 } from '@ant-design/icons';
 import { Code } from 'lucide-react';
 
@@ -51,23 +52,32 @@ function getMenuItems(project: commonStorage.Project): MenuItem[] {
     project.mechanisms.forEach((mechanism) => {
         mechanisms.push(getItem(mechanism.className, mechanism.modulePath, <BlockOutlined/>));
     });
+    if(mechanisms.length){
+        mechanisms.push(getDivider());
+    }
+    mechanisms.push(getItem('Manage...', 'manageMechanisms'));
 
     project.opModes.forEach((opmode) => {
         opmodes.push(getItem(opmode.className, opmode.modulePath, <CodeOutlined/>));
     });
+    if(opmodes.length){
+        opmodes.push(getDivider());
+    }
+    opmodes.push(getItem('Manage...', 'manageOpmodes'));
+
 
     return [
-        getItem('Project', '100', <ProjectOutlined />, [
-            getItem('New...', '14'),
-            getItem('Rename...', '109'),
-            getItem('Delete...', '101'),
-            getItem('Switch...', '102'),
-            getItem('Upload...', '103'),
-            getItem('Download...', '104')
+        getItem('Project', '100', <FolderOutlined />, [
+            getItem('Save', 'save', <SaveOutlined/>),
+            getItem('Deploy', 'deploy'),
+            getDivider(),
+            getItem('Manage...', 'manageProjects')
         ]),        
-        getItem('Robot', project.modulePath, <RobotOutlined />),
-        getItem('Mechanisms', '2', <BlockOutlined />, mechanisms),
-        getItem('OpModes', '3', <CodeOutlined />, opmodes),
+        getItem('Explorer', 'explorer', <FileOutlined/>, [
+            getItem('Robot', project.modulePath, <RobotOutlined />),
+            getItem('Mechanisms', '2', <BlockOutlined />, mechanisms),
+            getItem('OpModes', '3', <CodeOutlined />, opmodes),
+        ]),
         getItem('Settings', '4', <SettingOutlined />,  [
             getItem('WPI toolbox', '42')
         ]),      
