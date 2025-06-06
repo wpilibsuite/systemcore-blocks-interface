@@ -73,8 +73,42 @@ export function Component(props: TabsProps) {
       setActiveKey(key);
     }
   }
+  const inTabs = (key: string): boolean => {
+    props.tabList.forEach(tab => {
+      if (tab.key === key) {
+        return true;
+      }
+    });
+    return false;
+  }
+
+  const addTab = (key: string) => {
+    const newTabs = [...props.tabList];
+    if (props.project) {
+      const module = commonStorage.findModuleInProject(props.project, key);
+      if (module) {
+        switch (module.moduleType) {
+          case commonStorage.MODULE_TYPE_MECHANISM:
+            newTabs.push({ key: key, title: module.className, type: TabType.MECHANISM });
+            break;
+          case commonStorage.MODULE_TYPE_OPMODE:
+            newTabs.push({ key: key, title: module.className, type: TabType.OPMODE });
+            break;
+          default:
+            console.log("Unknown module type", module.moduleType);
+            break;
+        }
+      }
+      props.setTabList(newTabs);
+    }
+  };
+
   React.useEffect(() => {
+    let found = false;
     if (activeKey != props.activeTab) {
+      if (!inTabs(props.activeTab)) {
+        addTab(props.activeTab);
+      }
       onChange(props.activeTab);
     }
   }, [props.activeTab]);
