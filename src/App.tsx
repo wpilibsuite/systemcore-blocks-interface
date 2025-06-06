@@ -53,12 +53,14 @@ const App: React.FC = () => {
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
   const [project, setProject] = React.useState<commonStorage.Project | null>(null);
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
+  const [activeTab, setActiveTab] = React.useState('');
 
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const blocksEditor = React.useRef<editor.Editor | null>(null);
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const generatorContext = React.useRef<GeneratorContext | null>(null);
   const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
+  
 
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
   const [rightCollapsed, setRightCollapsed] = React.useState(false);
@@ -136,10 +138,11 @@ const App: React.FC = () => {
           { key: opmode.modulePath, title: opmode.className, type: Tabs.TabType.OPMODE }
         );
       });
-      setTabItems(myTabs);      
+      setTabItems(myTabs);    
+      setActiveTab(project.modulePath);  
     }
     else{
-      setTabItems([]);
+      //setTabItems([]);
     }
   }, [project]);
 
@@ -237,6 +240,12 @@ const areBlocksModified = (): boolean => {
   }
   return false;
 }
+const changeModule = async (module : commonStorage.Module | null) =>{
+  if(currentModule && areBlocksModified()){
+    await saveBlocks();
+  }
+  setCurrentModule(module);
+}
 
 const { Sider } = Antd.Layout;
 
@@ -276,10 +285,7 @@ return (
           <Menu.Component
             storage={storage}
             setAlertErrorMessage={setAlertErrorMessage}
-            saveBlocks={saveBlocks}
-            areBlocksModified={areBlocksModified}
-            currentModule={currentModule}
-            setCurrentModule={setCurrentModule}
+            gotoTab={setActiveTab}
             project={project}
             setProject={setProject}
           />
@@ -287,9 +293,12 @@ return (
         <Antd.Layout>
           <Tabs.Component
             tabList={tabItems}
+            activeTab={activeTab}
+            setTabList={setTabItems}
             setAlertErrorMessage={setAlertErrorMessage}
             currentModule={currentModule}
-            setCurrentModule={setCurrentModule}
+            setCurrentModule={changeModule}
+            project={project}
           />
           <Antd.Splitter>
             {/*

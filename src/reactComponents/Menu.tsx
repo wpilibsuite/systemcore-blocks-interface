@@ -18,10 +18,7 @@ import {
 export interface MenuProps {
     setAlertErrorMessage: (message: string) => void;
     storage: commonStorage.Storage | null;
-    currentModule: commonStorage.Module | null;
-    setCurrentModule: (module: commonStorage.Module | null) => void;
-    saveBlocks: () => Promise<boolean>;
-    areBlocksModified: () => boolean;
+    gotoTab: (tabKey : string) => void;
     project: commonStorage.Project | null;
     setProject: (project: commonStorage.Project | null) => void;
 }
@@ -149,34 +146,11 @@ export function Component(props: MenuProps) {
             }
         });
     };
-    const moduleFromPath = (key : string) : (commonStorage.Module | null) =>{
-        let foundModule = null;
-
-        if(props.project){
-            if (key == props.project.modulePath){
-                foundModule = props.project;
-                return foundModule;
-            }
-            props.project.mechanisms.forEach((mechanism) => {
-                if(key == mechanism.modulePath){
-                    foundModule = mechanism;
-                    return foundModule;
-                }
-            });
-            props.project.opModes.forEach((opmode) => {
-                if(key == opmode.modulePath){
-                    foundModule = opmode;
-                    return foundModule;
-                }
-            });
-        }
-
-        return foundModule;
-    };
+    
     const handleSelect: Antd.MenuProps['onSelect'] = ({ key }) => {
-        let newModule = moduleFromPath(key);
+        let newModule = props.project ? commonStorage.findModuleInProject(props.project, key) : null;
         if(newModule){
-            props.setCurrentModule(newModule);
+            props.gotoTab(newModule.modulePath);
         }
         else{
             // TODO: It wasn't a module, so do the other thing...

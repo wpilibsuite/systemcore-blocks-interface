@@ -44,8 +44,11 @@ export interface TabItem {
 
 export interface TabsProps {
   tabList: TabItem[];
+  setTabList: (items: TabItem[]) => void;
+  activeTab: string;
+  project: commonStorage.Project | null;
   setAlertErrorMessage: (message: string) => void;
-  currentModule: commonStorage.Module | null; 
+  currentModule: commonStorage.Module | null;
   setCurrentModule: (module: commonStorage.Module | null) => void;
 }
 
@@ -61,15 +64,23 @@ function getIcon(type: TabType) {
 
 export function Component(props: TabsProps) {
   const { t } = I18Next.useTranslation();
-  
-  const [items, setItems] = React.useState<TabsProps['tabList']>(props.tabList);
-  const [activeKey, setActiveKey] = React.useState('1');
- 
+
+  const [activeKey, setActiveKey] = React.useState(props.activeTab);
+
   const onChange = (key: string) => {
-    console.log(key);
+    if (props.project) {
+      props.setCurrentModule(commonStorage.findModuleInProject(props.project, key));
+      setActiveKey(key);
+    }
   }
+  React.useEffect(() => {
+    if (activeKey != props.activeTab) {
+      onChange(props.activeTab);
+    }
+  }, [props.activeTab]);
 
   const onEdit = (targetKey: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
+    const items = props.tabList;
     if (action === 'remove') {
       if (!items) return;
       const targetIndex = items.findIndex((item) => item.key === targetKey);
@@ -81,16 +92,15 @@ export function Component(props: TabsProps) {
         setActiveKey(newActiveKey);
       }
 
-      setItems(newItems);
+      props.setTabList(newItems);
     };
   };
-
 
   return (
     <Antd.Tabs type="editable-card"
       onChange={onChange}
       onEdit={onEdit}
-      defaultActiveKey={props.tabList.length > 1 ? props.tabList[0].key : undefined}
+      activeKey={activeKey}
       tabBarStyle={{ padding: 0, margin: 0 }}
       hideAdd={false}
       items={props.tabList.map((tab) => {
