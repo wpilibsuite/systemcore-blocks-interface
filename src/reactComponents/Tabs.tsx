@@ -90,7 +90,7 @@ export function Component(props: TabsProps) {
     <Antd.Tabs type="editable-card"
       onChange={onChange}
       onEdit={onEdit}
-      defaultActiveKey={props.tabList[0].key}
+      defaultActiveKey={props.tabList.length > 1 ? props.tabList[0].key : undefined}
       tabBarStyle={{ padding: 0, margin: 0 }}
       hideAdd={false}
       items={props.tabList.map((tab) => {

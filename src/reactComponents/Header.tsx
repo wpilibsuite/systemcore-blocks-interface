@@ -20,12 +20,14 @@
  */
 //import React from 'react';
 import * as Antd from 'antd';
+import * as commonStorage from '../storage/common_storage';
 
 type StringFunctionVoid = (input: string) => void;
 
 interface HeaderProps {
   alertErrorMessage: string;
   setAlertErrorMessage: StringFunctionVoid;
+  project: commonStorage.Project | null;
 }
 
 export default function Header(props: HeaderProps) {
@@ -34,10 +36,15 @@ export default function Header(props: HeaderProps) {
       <Antd.Flex style={{alignItems: "center"}}>
         <img height="30px" style={{ objectFit: "contain" }} src="/FIRST_HorzRGB_reverse.png" />
         <Antd.Typography
-          style={{ color: 'white', paddingLeft: 20, fontWeight: "bolder"}}
+          style={{ color: 'white', paddingLeft: 20, fontSize: "20px", fontWeight: 1000}}
         >
           Blocks
         </Antd.Typography>
+        <Antd.Typography
+          style={{ color: 'white', paddingLeft: 20, fontSize: "20px", fontWeight: "normal"}}
+        >
+          Project: {props.project?.projectName}
+        </Antd.Typography>        
         {props.alertErrorMessage !== '' && (<Antd.Alert
           type="error"
           message={props.alertErrorMessage}

@@ -51,6 +51,8 @@ const App: React.FC = () => {
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+  const [project, setProject] = React.useState<commonStorage.Project | null>(null);
+  const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
 
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const blocksEditor = React.useRef<editor.Editor | null>(null);
@@ -115,160 +117,182 @@ const App: React.FC = () => {
     }
   }, [currentModule, shownPythonToolboxCategories]);
 
-  const openStorage = async () => {
-    try {
-      const c = await clientSideStorage.openClientSideStorage();
-      setStorage(c);
-    } catch (e) {
-      console.log('Failed to open client side storage. Caught the following error...');
-      console.log(e);
-    }
-  };
+  React.useEffect(() => {
+    if (project) {
+      const myTabs: Tabs.TabItem[] = [
+        {
+          key: project.modulePath,
+          title: 'Robot',
+          type: Tabs.TabType.ROBOT
+        }];
+      project.mechanisms.forEach(mechanism => {
+        myTabs.push(
+          { key: mechanism.modulePath, title: mechanism.className, type: Tabs.TabType.MECHANISM }
+        );
+      });
 
-  const initializeBlocks = () => {
-    // Initialize blocks and extended python generator.
-    const forBlock = Object.create(null);
-    CustomBlocks.setup(forBlock);
-    Object.assign(pythonGenerator.forBlock, forBlock);
-    Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
-    initializePythonBlocks();
-  };
+      project.opModes.forEach(opmode => {
+        myTabs.push(
+          { key: opmode.modulePath, title: opmode.className, type: Tabs.TabType.OPMODE }
+        );
+      });
+      setTabItems(myTabs);      
+    }
+    else{
+      setTabItems([]);
+    }
+  }, [project]);
 
-  const initializeShownPythonToolboxCategories = async () => {
-    if (!storage) {
-      return;
-    }
-    try {
-      const value = await storage.fetchEntry('shownPythonToolboxCategories', '[]');
-      const shownCategories: string[] = JSON.parse(value);
-      setShownPythonToolboxCategories(new Set(shownCategories));
-    } catch (e) {
-      console.log('Failed to fetch shownPythonToolboxCategories. Caught the following error...');
-      console.log(e);
-    }
-  };
-
-  const handleBlocksChanged = (event: Blockly.Events.Abstract) => {
-    if (event.isUiEvent) {
-      // UI events are things like scrolling, zooming, etc.
-      // No need to regenerate python code after one of these.
-      return;
-    }
-    if (!event.workspaceId) {
-      return;
-    }
-    const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
-    if (!blocklyWorkspace) {
-      return;
-    }
-    if ((blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
-      // Don't regenerate python code mid-drag.
-      return;
-    }
-    setTriggerPythonRegeneration(Date.now());
-  };
-
-  const saveBlocks = async (): Promise<boolean> => {
-    return new Promise(async (resolve, reject) => {
-      if (!blocksEditor.current) {
-        reject(new Error());
-        return;
-      }
-      try {
-        await blocksEditor.current.saveBlocks();
-        messageApi.open({
-          type: 'success',
-          content: 'Save completed successfully.',
-        });
-        resolve(true);
-      } catch (e) {
-        console.log('Failed to save the blocks. Caught the following error...');
-        console.log(e);
-        setAlertErrorMessage('Failed to save the blocks.');
-        reject(new Error('Failed to save the blocks.'));
-      }
-    });
-  };
-
-  const handleToolboxSettingsClicked = () => {
-    setToolboxSettingsModalIsOpen(true);
-  };
-
-  const handleToolboxSettingsOk = async (updatedShownCategories: Set<string>) => {
-    if (!storage) {
-      return;
-    }
-    setShownPythonToolboxCategories(updatedShownCategories);
-    const array = Array.from(updatedShownCategories);
-    array.sort();
-    storage.saveEntry('shownPythonToolboxCategories', JSON.stringify(array));
-  };
-  const areBlocksModified = (): boolean => {
-    if (blocksEditor.current) {
-      return blocksEditor.current.isModified();
-    }
-    return false;
+const openStorage = async () => {
+  try {
+    const c = await clientSideStorage.openClientSideStorage();
+    setStorage(c);
+  } catch (e) {
+    console.log('Failed to open client side storage. Caught the following error...');
+    console.log(e);
   }
+};
 
-  const myTabs: Tabs.TabItem[] = [
-    { key: 'tab1', title: 'Robot', type: Tabs.TabType.ROBOT },
-    { key: 'tab2', title: 'Claw', type: Tabs.TabType.MECHANISM },
-    { key: 'tab3', title: 'ThreeSpecimenAuto', type: Tabs.TabType.OPMODE },
-    { key: 'tab4', title: 'FieldRelativeTeleop', type: Tabs.TabType.OPMODE },
-  ];
-  
-  const { Sider } = Antd.Layout;
+const initializeBlocks = () => {
+  // Initialize blocks and extended python generator.
+  const forBlock = Object.create(null);
+  CustomBlocks.setup(forBlock);
+  Object.assign(pythonGenerator.forBlock, forBlock);
+  Object.assign(extendedPythonGenerator.forBlock, pythonGenerator.forBlock);
+  initializePythonBlocks();
+};
 
-  return (
-    <Antd.ConfigProvider
-      theme={{
-        algorithm: Antd.theme.darkAlgorithm,
-        components: {
-          Tree: {
-            directoryNodeSelectedBg: '#1677ff',
-            directoryNodeSelectedColor: '#fff',
-            nodeSelectedBg: '#1677ff',
-            nodeSelectedColor: '#fff',
-            nodeHoverBg: '#333',
-            nodeHoverColor: '#fff',
-          },
+const initializeShownPythonToolboxCategories = async () => {
+  if (!storage) {
+    return;
+  }
+  try {
+    const value = await storage.fetchEntry('shownPythonToolboxCategories', '[]');
+    const shownCategories: string[] = JSON.parse(value);
+    setShownPythonToolboxCategories(new Set(shownCategories));
+  } catch (e) {
+    console.log('Failed to fetch shownPythonToolboxCategories. Caught the following error...');
+    console.log(e);
+  }
+};
+
+const handleBlocksChanged = (event: Blockly.Events.Abstract) => {
+  if (event.isUiEvent) {
+    // UI events are things like scrolling, zooming, etc.
+    // No need to regenerate python code after one of these.
+    return;
+  }
+  if (!event.workspaceId) {
+    return;
+  }
+  const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
+  if (!blocklyWorkspace) {
+    return;
+  }
+  if ((blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
+    // Don't regenerate python code mid-drag.
+    return;
+  }
+  setTriggerPythonRegeneration(Date.now());
+};
+
+const saveBlocks = async (): Promise<boolean> => {
+  return new Promise(async (resolve, reject) => {
+    if (!blocksEditor.current) {
+      reject(new Error());
+      return;
+    }
+    try {
+      await blocksEditor.current.saveBlocks();
+      messageApi.open({
+        type: 'success',
+        content: 'Save completed successfully.',
+      });
+      resolve(true);
+    } catch (e) {
+      console.log('Failed to save the blocks. Caught the following error...');
+      console.log(e);
+      setAlertErrorMessage('Failed to save the blocks.');
+      reject(new Error('Failed to save the blocks.'));
+    }
+  });
+};
+
+const handleToolboxSettingsClicked = () => {
+  setToolboxSettingsModalIsOpen(true);
+};
+
+const handleToolboxSettingsOk = async (updatedShownCategories: Set<string>) => {
+  if (!storage) {
+    return;
+  }
+  setShownPythonToolboxCategories(updatedShownCategories);
+  const array = Array.from(updatedShownCategories);
+  array.sort();
+  storage.saveEntry('shownPythonToolboxCategories', JSON.stringify(array));
+};
+const areBlocksModified = (): boolean => {
+  if (blocksEditor.current) {
+    return blocksEditor.current.isModified();
+  }
+  return false;
+}
+
+const { Sider } = Antd.Layout;
+
+return (
+  <Antd.ConfigProvider
+    theme={{
+      algorithm: Antd.theme.darkAlgorithm,
+      components: {
+        Tree: {
+          directoryNodeSelectedBg: '#1677ff',
+          directoryNodeSelectedColor: '#fff',
+          nodeSelectedBg: '#1677ff',
+          nodeSelectedColor: '#fff',
+          nodeHoverBg: '#333',
+          nodeHoverColor: '#fff',
         },
-      }}
-    >
-      {contextHolder}
+      },
+    }}
+  >
+    {contextHolder}
+    <Antd.Layout
+      style={{
+        height: '100vh',
+      }}>
+      <Header
+        alertErrorMessage={alertErrorMessage}
+        setAlertErrorMessage={setAlertErrorMessage}
+        project={project}
+      />
       <Antd.Layout
         style={{
-          height: '100vh',
-        }}>
-        <Header
-          alertErrorMessage={alertErrorMessage}
-          setAlertErrorMessage={setAlertErrorMessage}
-        />
-        <Antd.Layout
-          style={{
-            background: '#0F0',
-            height: '100%',
-          }}
-        >
-          <Sider collapsible collapsed={leftCollapsed} onCollapse={(value: any) => setLeftCollapsed(value)}>   
-            <Menu.Component 
-                  storage={storage}
-                  setAlertErrorMessage={setAlertErrorMessage}
-                  saveBlocks={saveBlocks}
-                  areBlocksModified={areBlocksModified}
-                  currentModule={currentModule}
-                  setCurrentModule={setCurrentModule}
-            />
-          </Sider>
-          <Antd.Layout>
-            <Tabs.Component
-              tabList={myTabs}
-              setAlertErrorMessage={setAlertErrorMessage}
-              currentModule={currentModule}
-              setCurrentModule={setCurrentModule}
-            />
-            <Antd.Splitter>
-              {/*
+          background: '#0F0',
+          height: '100%',
+        }}
+      >
+        <Sider collapsible collapsed={leftCollapsed} onCollapse={(value: any) => setLeftCollapsed(value)}>
+          <Menu.Component
+            storage={storage}
+            setAlertErrorMessage={setAlertErrorMessage}
+            saveBlocks={saveBlocks}
+            areBlocksModified={areBlocksModified}
+            currentModule={currentModule}
+            setCurrentModule={setCurrentModule}
+            project={project}
+            setProject={setProject}
+          />
+        </Sider>
+        <Antd.Layout>
+          <Tabs.Component
+            tabList={tabItems}
+            setAlertErrorMessage={setAlertErrorMessage}
+            currentModule={currentModule}
+            setCurrentModule={setCurrentModule}
+          />
+          <Antd.Splitter>
+            {/*
               <Antd.Splitter.Panel collapsible={true}>
                 <ModuleOutline
                   storage={storage}
@@ -282,31 +306,31 @@ const App: React.FC = () => {
                 />
               </Antd.Splitter.Panel>
                 */}
-              <Antd.Splitter.Panel>
-                <BlocklyComponent ref={blocklyComponent} />
-              </Antd.Splitter.Panel>
-              <Antd.Splitter.Panel min={40} size={'25%'} collapsible={true}>
-                <CodeDisplay generatedCode={generatedCode}
-                  messageApi={messageApi}
-                  setAlertErrorMessage={setAlertErrorMessage}
-                />
-              </Antd.Splitter.Panel>
-            </Antd.Splitter>
-          </Antd.Layout>
+            <Antd.Splitter.Panel>
+              <BlocklyComponent ref={blocklyComponent} />
+            </Antd.Splitter.Panel>
+            <Antd.Splitter.Panel min={40} defaultSize={'25%'} collapsible={true}>
+              <CodeDisplay generatedCode={generatedCode}
+                messageApi={messageApi}
+                setAlertErrorMessage={setAlertErrorMessage}
+              />
+            </Antd.Splitter.Panel>
+          </Antd.Splitter>
         </Antd.Layout>
       </Antd.Layout>
+    </Antd.Layout>
 
-      <ToolboxSettingsModal
-        isOpen={toolboxSettingsModalIsOpen}
-        shownCategories={shownPythonToolboxCategories}
-        onOk={(updatedShownCategories: Set<string>) => {
-          setToolboxSettingsModalIsOpen(false);
-          handleToolboxSettingsOk(updatedShownCategories);
-        }}
-        onCancel={() => setToolboxSettingsModalIsOpen(false)}
-      />
-    </Antd.ConfigProvider>
-  );
+    <ToolboxSettingsModal
+      isOpen={toolboxSettingsModalIsOpen}
+      shownCategories={shownPythonToolboxCategories}
+      onOk={(updatedShownCategories: Set<string>) => {
+        setToolboxSettingsModalIsOpen(false);
+        handleToolboxSettingsOk(updatedShownCategories);
+      }}
+      onCancel={() => setToolboxSettingsModalIsOpen(false)}
+    />
+  </Antd.ConfigProvider>
+);
 };
 
 export default App;

@@ -14,7 +14,6 @@ import {
     RobotOutlined,
     SaveOutlined
 } from '@ant-design/icons';
-import { Code } from 'lucide-react';
 
 export interface MenuProps {
     setAlertErrorMessage: (message: string) => void;
@@ -23,6 +22,8 @@ export interface MenuProps {
     setCurrentModule: (module: commonStorage.Module | null) => void;
     saveBlocks: () => Promise<boolean>;
     areBlocksModified: () => boolean;
+    project: commonStorage.Project | null;
+    setProject: (project: commonStorage.Project | null) => void;
 }
 
 type MenuItem = Required<Antd.MenuProps>['items'][number];
@@ -89,7 +90,6 @@ export function Component(props: MenuProps) {
 
     const [mostRecentModulePath, setMostRecentModulePath] = React.useState<string>('');
     const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
-    const [project, setProject] = React.useState<commonStorage.Project>();
     const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
 
     React.useEffect(() => {
@@ -103,15 +103,15 @@ export function Component(props: MenuProps) {
     React.useEffect(() => {
         //TODO: this needs to be different somehow
         if (modules) {
-            setProject(modules[0]);
+            props.setProject(modules[0]);
         }
     }, [modules]);
 
     React.useEffect(() => {
-        if (project) {
-            setMenuItems(getMenuItems(project));
+        if (props.project) {
+            setMenuItems(getMenuItems(props.project));
         }
-    }, [project]);
+    }, [props.project]);
 
     const fetchMostRecentModulePath = async () => {
         if (!props.storage) {
@@ -152,18 +152,18 @@ export function Component(props: MenuProps) {
     const moduleFromPath = (key : string) : (commonStorage.Module | null) =>{
         let foundModule = null;
 
-        if(project){
-            if (key == project.modulePath){
-                foundModule = project;
+        if(props.project){
+            if (key == props.project.modulePath){
+                foundModule = props.project;
                 return foundModule;
             }
-            project.mechanisms.forEach((mechanism) => {
+            props.project.mechanisms.forEach((mechanism) => {
                 if(key == mechanism.modulePath){
                     foundModule = mechanism;
                     return foundModule;
                 }
             });
-            project.opModes.forEach((opmode) => {
+            props.project.opModes.forEach((opmode) => {
                 if(key == opmode.modulePath){
                     foundModule = opmode;
                     return foundModule;
