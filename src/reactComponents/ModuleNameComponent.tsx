@@ -47,7 +47,6 @@ export default function ModuleNameComponent(props: ModuleNameComponentProps) {
                 if (ok) {
                     setAlertErrorVisible(false);
                     setAlertErrorMessage('');
-                    // Create new item logic here if needed
                     props.onAddNewItem();
                 } else {
                     setAlertErrorMessage(error);
