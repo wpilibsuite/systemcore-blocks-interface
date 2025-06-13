@@ -350,10 +350,13 @@ export function Component(props: TabsProps) {
                             const newTabs = props.tabList.filter(t => t.key !== tab.key);
                             props.setTabList(newTabs);
                             if (props.storage && props.project) {
-                              commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
-                              props.setProject({ ...props.project, });
+                              await commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
+                              props.setProject({ ...props.project });
                             }
-                            setActiveKey(props.tabList[0].key);
+                            // Use newTabs instead of props.tabList since it's already filtered
+                            if (newTabs.length > 0) {
+                              setActiveKey(newTabs[0].key);
+                            }
                           },
                         });
                       }
