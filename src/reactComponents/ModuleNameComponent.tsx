@@ -24,12 +24,6 @@ import * as I18Next from "react-i18next";
 import * as React from "react";
 import * as commonStorage from "../storage/common_storage";
 
-type Module = {
-    path: string;
-    title: string;
-    type: TabType;
-}
-
 type ModuleNameComponentProps = {
     tabType: TabType;
     newItemName: string;
