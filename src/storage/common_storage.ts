@@ -142,9 +142,51 @@ export async function removeModuleFromProject(
   }
 }
 
-/*
-    * Returns true if the given class name is a valid class name and if not, why not.
-    */
+/**
+ * Renames a module in the project.
+ * @param storage The storage interface to use for renaming the module.
+ * @param project The project containing the module to rename.
+ * @param proposedName The new name for the module.
+ * @param oldModuleName The current name of the module.
+ * @returns A promise that resolves when the module has been renamed.
+ */
+export async function renameModuleInProject(
+  storage: Storage, project: Project, proposedName: string, oldModulePath: string): Promise<string> {
+  const module = findModuleInProject(project, oldModulePath);
+  if (module) {
+    const newModuleName = classNameToModuleName(proposedName);
+    const newModulePath = makeModulePath(project.projectName, newModuleName);
+    await storage.renameModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
+    module.modulePath = newModulePath;
+    module.moduleName = newModuleName;
+    module.className = proposedName;
+
+    if (module.moduleType === MODULE_TYPE_MECHANISM) {
+      const mechanism = project.mechanisms.find(m => m.modulePath === module.modulePath);
+      if (mechanism) {
+        mechanism.modulePath = newModulePath;
+        mechanism.moduleName = newModuleName;
+        mechanism.className = proposedName;
+      }
+    } else if (module.moduleType === MODULE_TYPE_OPMODE) {
+      const opMode = project.opModes.find(o => o.modulePath === module.modulePath);
+      if (opMode) {
+        opMode.modulePath = newModulePath;
+        opMode.moduleName = newModuleName;
+        opMode.className = proposedName;
+      }
+      return newModulePath
+    }
+  }
+  return '';
+}
+
+/**
+ * Checks if the proposed class name is valid and does not conflict with existing names in the project.
+ * @param project The project to check against.
+ * @param proposedName The proposed class name to validate.
+ * @returns An object containing a boolean `ok` indicating if the name is valid, and an `error` message if it is not.
+ */
 export function isClassNameOk(project: Project, proposedName: string) {
   let ok = true;
   let error = '';

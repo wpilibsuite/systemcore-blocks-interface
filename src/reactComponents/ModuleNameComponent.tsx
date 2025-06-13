@@ -62,7 +62,7 @@ export default function ModuleNameComponent(props: ModuleNameComponentProps) {
             <Antd.Typography.Paragraph>{(props.tabType == TabType.MECHANISM) ? t("example_mechanism") : t("example_opmode")}</Antd.Typography.Paragraph>
             <Antd.Space.Compact style={{ width: '100%' }}>
                 <Antd.Input
-                    style={{ width: 'calc(100% - 80px)' }}
+                    style={{ width: props.buttonLabel ? 'calc(100% - 80px)' : '100%' }}
                     placeholder={t("addTabDialog.newItemPlaceholder")}
                     value={props.newItemName}
                     onChange={(e) => {
@@ -78,12 +78,15 @@ export default function ModuleNameComponent(props: ModuleNameComponentProps) {
                     }}
                     onPressEnter={handleAddNewItem}
                 />
-                <Antd.Button
-                    type="primary"
-                    onClick={handleAddNewItem}
-                >
-                    {props.buttonLabel}
-                </Antd.Button>
+            
+                {props.buttonLabel && (
+                    <Antd.Button
+                        type="primary"
+                        onClick={handleAddNewItem}
+                    >
+                        {props.buttonLabel}
+                    </Antd.Button>
+                )}
             </Antd.Space.Compact>
             {alertErrorVisible && (
                 <Antd.Alert

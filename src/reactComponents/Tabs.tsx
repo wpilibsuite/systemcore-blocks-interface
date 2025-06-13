@@ -35,6 +35,7 @@ import {
   CloseCircleOutlined
 } from '@ant-design/icons';
 import AddTabDialog from './AddTabDialog';
+import ModuleNameComponent from './ModuleNameComponent';
 
 export enum TabType {
   ROBOT,
@@ -46,7 +47,7 @@ export namespace TabTypeUtils {
   export function toString(type: TabType): string {
     switch (type) {
       case TabType.ROBOT: return "Robot";
-      case TabType.MECHANISM: return "Mechanism"; 
+      case TabType.MECHANISM: return "Mechanism";
       case TabType.OPMODE: return "OpMode";
       default: return "";
     }
@@ -80,7 +81,7 @@ export interface TabsProps {
   setAlertErrorMessage: (message: string) => void;
   currentModule: commonStorage.Module | null;
   setCurrentModule: (module: commonStorage.Module | null) => void;
-  storage : commonStorage.Storage | null;
+  storage: commonStorage.Storage | null;
 }
 
 export function Component(props: TabsProps) {
@@ -89,6 +90,9 @@ export function Component(props: TabsProps) {
 
   const [activeKey, setActiveKey] = React.useState(props.activeTab);
   const [addTabDialogOpen, setAddTabDialogOpen] = React.useState(false);
+  const [name, setName] = React.useState('');
+  const [renameModalOpen, setRenameModalOpen] = React.useState(false);
+  const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
 
   const onChange = (key: string) => {
     if (props.project) {
@@ -149,24 +153,35 @@ export function Component(props: TabsProps) {
     }
   };
 
-  const handleAddTabOk = (newTabs : TabItem[]) => {
+  const handleAddTabOk = (newTabs: TabItem[]) => {
     props.setTabList([props.tabList[0], ...newTabs]);
     setActiveKey(props.tabList[0].key);
     setAddTabDialogOpen(false);
   };
 
-  const handleOk = (key: string) => {
-    const input = document.querySelector('input') as HTMLInputElement;
-    if (input && input.value.trim()) {
-      const newTabs = props.tabList.map(t => {
-        if (t.key === key) {
-          return { ...t, title: input.value.trim() };
-        }
-        return t;
-      });
-      props.setTabList(newTabs);
+  const handleRename = async (key: string, newName: string) => {
+    if (props.storage && props.project) {
+      try {
+        let newPath = await commonStorage.renameModuleInProject(
+          props.storage,
+          props.project,
+          newName,
+          key
+        );
+        const newTabs = props.tabList.map((tab) => {
+          if (tab.key === key) {
+            return { ...tab, title: newName, key: newPath };
+          }
+          return tab;
+        });
+        props.setTabList(newTabs);
+        setActiveKey(newPath); // Use newPath instead of key
+      } catch (error) {
+        console.error('Error renaming module:', error);
+        props.setAlertErrorMessage('Failed to rename module');
+      }
     }
-    Antd.Modal.destroyAll();
+    setRenameModalOpen(false);
   };
 
   return (
@@ -180,6 +195,36 @@ export function Component(props: TabsProps) {
         currentTabs={props.tabList}
         storage={props.storage}
       />
+
+      <Antd.Modal
+        title={`Rename ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${currentTab ? currentTab.title : ''}`}
+        open={renameModalOpen}
+        onCancel={() => setRenameModalOpen(false)}
+        onOk={() => {
+          if (currentTab) {
+            handleRename(currentTab.key, name);
+          }
+        }}
+        okText={t("Rename")}
+        cancelText={t("Cancel")}
+      >
+        {currentTab && (
+          <ModuleNameComponent
+            tabType={currentTab.type}
+            newItemName={name}
+            setNewItemName={setName}
+            onAddNewItem={() => {
+              if (currentTab) {
+                handleRename(currentTab.key, name);
+              }
+            }}
+            project={props.project}
+            storage={props.storage}
+            buttonLabel=""
+          />
+        )}
+      </Antd.Modal>
+
       <Antd.Tabs
         type="editable-card"
         onChange={onChange}
@@ -219,18 +264,9 @@ export function Component(props: TabsProps) {
                       label: t("Rename..."),
                       disabled: tab.type === TabType.ROBOT,
                       onClick: () => {
-                        modal.confirm({
-                          title: 'Rename ' + TabTypeUtils.toString(tab.type) + ': ' + tab.title,
-                          content: (
-                            <Antd.Input
-                              autoFocus
-                              defaultValue={tab.title}
-                              onPressEnter={e => { handleOk(tab.key) }}
-                            />
-                          ),
-                          icon: null,
-                          onOk: () => { handleOk(tab.key) }
-                        });
+                        setName(tab.title);
+                        setCurrentTab(tab);
+                        setRenameModalOpen(true);
                       },
                       icon: <EditOutlined />
                     },
@@ -249,8 +285,8 @@ export function Component(props: TabsProps) {
                           onOk: async () => {
                             const newTabs = props.tabList.filter(t => t.key !== tab.key);
                             props.setTabList(newTabs);
-                            if(props.storage && props.project) {
-                              commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);                              
+                            if (props.storage && props.project) {
+                              commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
                             }
                             setActiveKey(props.tabList[0].key);
                           },
