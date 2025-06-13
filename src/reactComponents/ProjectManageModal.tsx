@@ -138,7 +138,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
                             type="text"
                             size="small"
                             icon={<SelectOutlined />}
-                            onClick={(e) => {
+                            onClick={() => {
                                 props.setProject(record);
                                 props.onCancel(); // Close the modal after selecting
                             }}
@@ -149,7 +149,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
                             type="text"
                             size="small"
                             icon={<EditOutlined />}
-                            onClick={(e) => {
+                            onClick={() => {
                                 setCurrentRecord(record);
                                 setName(record.className);
                                 setRenameModalOpen(true);
@@ -161,7 +161,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
                             type="text"
                             size="small"
                             icon={<CopyOutlined />}
-                            onClick={(e) => {
+                            onClick={() => {
                                 setCurrentRecord(record);
                                 setName(record.className + 'Copy');
                                 setCopyModalOpen(true);
