@@ -33,7 +33,6 @@ import {
   CopyOutlined,
   EditOutlined,
   CloseCircleOutlined,
-  FileOutlined
 } from '@ant-design/icons';
 import AddTabDialog from './AddTabDialog';
 import ModuleNameComponent from './ModuleNameComponent';
@@ -42,7 +41,6 @@ export enum TabType {
   ROBOT,
   MECHANISM,
   OPMODE,
-  PROJECT
 }
 
 export namespace TabTypeUtils {
@@ -51,7 +49,6 @@ export namespace TabTypeUtils {
       case TabType.ROBOT: return "Robot";
       case TabType.MECHANISM: return "Mechanism";
       case TabType.OPMODE: return "OpMode";
-      case TabType.PROJECT: return "Project";
       default: return "";
     }
   }
@@ -63,8 +60,6 @@ export namespace TabTypeUtils {
         return (<BlockOutlined />);
       case TabType.OPMODE:
         return (<CodeOutlined />);
-      case TabType.PROJECT:
-        return (<FileOutlined />);
       default:
         return (<></>);
     }

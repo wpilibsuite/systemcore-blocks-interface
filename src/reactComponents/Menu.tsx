@@ -16,6 +16,7 @@ import {
     SaveOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
+import ProjectManageModal from './ProjectManageModal';
 
 export interface MenuProps {
     setAlertErrorMessage: (message: string) => void;
@@ -91,6 +92,7 @@ export function Component(props: MenuProps) {
     const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
     const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
     const [fileModalOpen, setFileModalOpen] = React.useState<boolean>(false);
+    const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
     const [moduleType, setModuleType] = React.useState<TabType>(TabType.MECHANISM);
 
     React.useEffect(() => {
@@ -151,18 +153,6 @@ export function Component(props: MenuProps) {
         });
     };
 
-    const openModal = React.useCallback((type: TabType) => {
-        console.log('openModal called with type:', type);
-        setFileModalOpen(false); // Always close first
-        setModuleType(type);
-
-        // Use setTimeout to ensure the close happens first
-        setTimeout(() => {
-            console.log('Setting fileModalOpen to true');
-            setFileModalOpen(true);
-        }, 0);
-    }, []);
-
     const handleClick: Antd.MenuProps['onClick'] = ({ key }) => {
         let newModule = props.project ? commonStorage.findModuleInProject(props.project, key) : null;
         if (newModule) {
@@ -176,8 +166,7 @@ export function Component(props: MenuProps) {
                 setModuleType(TabType.OPMODE);
                 setFileModalOpen(true);
             } else if (key === 'manageProjects') {
-                setModuleType(TabType.PROJECT);
-                setFileModalOpen(true);
+                setProjectModalOpen(true);
             }
             else {
                 // TODO: It wasn't a module, so do the other thing...
@@ -191,10 +180,20 @@ export function Component(props: MenuProps) {
             <FileManageModal
                 isOpen={fileModalOpen}
                 onCancel={() => {
-                    console.log('Modal onCancel called');
                     setFileModalOpen(false);
                 }}
                 project={props.project}
+                storage={props.storage}
+                moduleType={moduleType}
+                setProject={props.setProject}
+                setAlertErrorMessage={props.setAlertErrorMessage}
+                gotoTab={props.gotoTab}
+            />
+            <ProjectManageModal
+                isOpen={projectModalOpen}
+                onCancel={() => {
+                    setProjectModalOpen(false);
+                }}
                 storage={props.storage}
                 moduleType={moduleType}
                 setProject={props.setProject}

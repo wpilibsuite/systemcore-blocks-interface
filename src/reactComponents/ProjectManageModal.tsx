@@ -24,78 +24,46 @@ import * as I18Next from "react-i18next";
 import * as React from "react";
 import * as commonStorage from "../storage/common_storage";
 import { EditOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons';
-import ModuleNameComponent from "./ModuleNameComponent";
+import ProjectNameComponent from "./ProjectNameComponent";
 
-type Module = {
-    path: string;
-    title: string;
-    type: TabType;
-}
-
-type FileManageModalProps = {
+type ProjectManageModalProps = {
     isOpen: boolean;
     onCancel: () => void;
-    project: commonStorage.Project | null;
     setProject: (project: commonStorage.Project | null) => void;
-    gotoTab: (path: string) => void;
     setAlertErrorMessage: (message: string) => void;
     storage: commonStorage.Storage | null;
     moduleType: TabType;
 }
 
-export default function FileManageModal(props: FileManageModalProps) {
+export default function ProjectManageModal(props: ProjectManageModalProps) {
     const { t } = I18Next.useTranslation();
-    const [modules, setModules] = React.useState<Module[]>([]);
+    const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
     const [newItemName, setNewItemName] = React.useState('');
-    const [currentRecord, setCurrentRecord] = React.useState<Module | null>(null);
+    const [currentRecord, setCurrentRecord] = React.useState<commonStorage.Project | null>(null);
     const [renameModalOpen, setRenameModalOpen] = React.useState(false);
     const [name, setName] = React.useState('');
     const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
+    const loadModules = async (storage: commonStorage.Storage) => {
+        let projects = await storage.listModules();
+
+        // Sort modules alphabetically by title
+        projects.sort((a, b) => a.className.localeCompare(b.className));
+        setModules(projects);
+    };
+
     React.useEffect(() => {
-        if (props.project && props.moduleType !== null) {
-            let moduleList: Module[] = [];
-
-            if (props.moduleType === TabType.MECHANISM) {
-                moduleList = props.project.mechanisms.map(m => ({
-                    path: m.modulePath,
-                    title: m.className,
-                    type: TabType.MECHANISM
-                }));
-            } else if (props.moduleType === TabType.OPMODE) {
-                moduleList = props.project.opModes.map(o => ({
-                    path: o.modulePath,
-                    title: o.className,
-                    type: TabType.OPMODE
-                }));
-            }
-
-            // Sort modules alphabetically by title
-            moduleList.sort((a, b) => a.title.localeCompare(b.title));
-
-            setModules(moduleList);
-        } else {
-            setModules([]);
+        if (props.storage) {
+            loadModules(props.storage);
         }
-    }, [props.project, props.moduleType]);
+    }, [props.storage, props.isOpen]);
 
-    const handleRename = async (origModule: Module, newName: string) => {
-        if (props.storage && props.project) {
+    const handleRename = async (origModule: commonStorage.Project, newName: string) => {
+        if (props.storage) {
             try {
-                let newPath = await commonStorage.renameModuleInProject(
-                    props.storage,
-                    props.project,
-                    newName,
-                    origModule.path
-                );
-                const newModules = modules.map((module) => {
-                    if (module.path === origModule.path) {
-                        return { ...module, title: newName, path: newPath };
-                    }
-                    return module;
-                });
-                setModules(newModules);
-                props.setProject({ ...props.project });
+                await props.storage.renameModule(commonStorage.MODULE_TYPE_PROJECT,
+                    origModule.className, origModule.className, newName);
+                await loadModules(props.storage);
             } catch (error) {
                 console.error('Error renaming module:', error);
                 props.setAlertErrorMessage('Failed to rename module');
@@ -103,29 +71,13 @@ export default function FileManageModal(props: FileManageModalProps) {
         }
         setRenameModalOpen(false);
     };
-    const handleCopy = async (origModule: Module, newName: string) => {
-        if (props.storage && props.project) {
+
+    const handleCopy = async (origModule: commonStorage.Project, newName: string) => {
+        if (props.storage) {
             try {
-                let newPath = await commonStorage.copyModuleInProject(
-                    props.storage,
-                    props.project,
-                    newName,
-                    origModule.path
-                );
-                const newModules = [...modules];
-
-                // find the original module to copy its type
-                const originalModule = modules.find(module => module.path === origModule.path);
-                if (!originalModule) {
-                    console.error('Original module not found for copying:', origModule.path);
-                    props.setAlertErrorMessage('Original module not found for copying');
-                    return;
-                }
-                // Add the new module with the copied name and type
-                newModules.push({ path: newPath, title: newName, type: originalModule.type });
-
-                setModules(newModules);
-                props.setProject({ ...props.project, });
+                await props.storage.copyModule(commonStorage.MODULE_TYPE_PROJECT,
+                    origModule.className, origModule.className, newName);
+                await loadModules(props.storage);
             } catch (error) {
                 console.error('Error copying module:', error);
                 props.setAlertErrorMessage('Failed to copy module');
@@ -137,39 +89,36 @@ export default function FileManageModal(props: FileManageModalProps) {
     const handleAddNewItem = async () => {
         let trimmedName = newItemName.trim();
         if (trimmedName) {
-            if (props.storage && props.project) {
-                let storage_type = props.moduleType == TabType.MECHANISM ? commonStorage.MODULE_TYPE_MECHANISM : commonStorage.MODULE_TYPE_OPMODE;
-                await commonStorage.addModuleToProject(props.storage,
-                    props.project, storage_type, trimmedName);
-                let m = commonStorage.getClassInProject(props.project, trimmedName);
-                // add the new item to selected items
-                if (m) {
-                    const module: Module = {
-                        path: m.modulePath,
-                        title: m.className,
-                        type: props.moduleType
-                    };
-                    setModules([...modules, module]);
+            if (props.storage) {
+                const newProjectName = commonStorage.classNameToModuleName(trimmedName);
+                const newProjectPath = commonStorage.makeProjectPath(newProjectName);
+                    
+                const projectContent = commonStorage.newProjectContent(newProjectName);
+                try {
+                    await props.storage.createModule(
+                        commonStorage.MODULE_TYPE_PROJECT, newProjectPath, projectContent);
+                } catch (e) {
+                    console.log('Failed to create a new project. Caught the following error...');
+                    console.log(e);
+                    props.setAlertErrorMessage('Failed to create a new project.');
                 }
             }
             setNewItemName("");
-            if (props.project) {
-                props.setProject({ ...props.project });
-            }
+            await loadModules(props.storage!);
         }
     };
 
-    const columns: Antd.TableProps<Module>['columns'] = [
+    const columns: Antd.TableProps<commonStorage.Project>['columns'] = [
         {
             title: 'Name',
-            dataIndex: 'title',
-            key: 'title',
+            dataIndex: 'className',
+            key: 'className',
             ellipsis: {
                 showTitle: false,
             },
-            render: (title: string) => (
-                <Antd.Tooltip title={title}>
-                    {title}
+            render: (className: string) => (
+                <Antd.Tooltip title={className}>
+                    {className}
                 </Antd.Tooltip>
             ),
         },
@@ -177,7 +126,7 @@ export default function FileManageModal(props: FileManageModalProps) {
             title: 'Actions',
             key: 'actions',
             width: 120,
-            render: (_, record: Module) => (
+            render: (_, record: commonStorage.Project) => (
                 <Antd.Space size="small">
                     <Antd.Tooltip title={t("Rename")}>
                         <Antd.Button
@@ -186,7 +135,7 @@ export default function FileManageModal(props: FileManageModalProps) {
                             icon={<EditOutlined />}
                             onClick={() => {
                                 setCurrentRecord(record);
-                                setName(record.title);
+                                setName(record.className);
                                 setRenameModalOpen(true);
                             }}
                         />
@@ -198,29 +147,40 @@ export default function FileManageModal(props: FileManageModalProps) {
                             icon={<CopyOutlined />}
                             onClick={() => {
                                 setCurrentRecord(record);
-                                setName(record.title + 'Copy');
+                                setName(record.className + 'Copy');
                                 setCopyModalOpen(true);
                             }}
                         />
                     </Antd.Tooltip>
                     <Antd.Tooltip title={t("Delete")}>
                         <Antd.Popconfirm
-                            title={`Delete ${record.title}?`}
+                            title={`Delete ${record.className}?`}
                             description="This action cannot be undone."
                             onConfirm={async () => {
-                                const newModules = modules.filter(m => m.path !== record.path);
+                                const newModules = modules.filter(m => m.modulePath !== record.modulePath);
                                 setModules(newModules);
-
-                                if (props.storage && props.project) {
-                                    await commonStorage.removeModuleFromProject(props.storage, props.project, record.path);
-                                    props.setProject({ ...props.project });
+                                let foundAnotherProject = false;
+                                for (const project of modules) {
+                                    if (project.modulePath !== record.modulePath) {
+                                        props.setProject(project);
+                                        foundAnotherProject = true;
+                                        break;
+                                    }
+                                }
+                                if (!foundAnotherProject) {
+                                    props.setProject(null);
+                                }
+                                try {
+                                    await props.storage!.deleteModule(commonStorage.MODULE_TYPE_PROJECT, record.modulePath);
+                                } catch (e) {
+                                    console.log('Failed to delete the project. Caught the following error...');
+                                    console.log(e);
+                                    props.setAlertErrorMessage('Failed to delete the project.');
                                 }
                             }}
-
                             okText={t("Delete")}
                             cancelText={t("Cancel")}
                             okType="danger"
-
                         >
                             <Antd.Button
                                 type="text"
@@ -236,13 +196,13 @@ export default function FileManageModal(props: FileManageModalProps) {
     ];
 
     const getModalTitle = () => {
-        return `${TabTypeUtils.toString(props.moduleType)} Management`;
+        return 'Project Management';
     };
 
     return (
         <>
             <Antd.Modal
-                title={`Rename ${currentRecord ? TabTypeUtils.toString(currentRecord.type) : ''}: ${currentRecord ? currentRecord.title : ''}`}
+                title={`Rename Project: ${currentRecord ? currentRecord.className : ''}`}
                 open={renameModalOpen}
                 onCancel={() => setRenameModalOpen(false)}
                 onOk={() => {
@@ -254,8 +214,7 @@ export default function FileManageModal(props: FileManageModalProps) {
                 cancelText={t("Cancel")}
             >
                 {currentRecord && (
-                    <ModuleNameComponent
-                        tabType={currentRecord.type}
+                    <ProjectNameComponent
                         newItemName={name}
                         setNewItemName={setName}
                         onAddNewItem={() => {
@@ -263,14 +222,13 @@ export default function FileManageModal(props: FileManageModalProps) {
                                 handleRename(currentRecord, name);
                             }
                         }}
-                        project={props.project}
-                        storage={props.storage}
-                        buttonLabel=""
+                        projects={modules}
+                        setProjects={setModules}
                     />
                 )}
             </Antd.Modal>
             <Antd.Modal
-                title={`Copy ${currentRecord ? TabTypeUtils.toString(currentRecord.type) : ''}: ${currentRecord ? currentRecord.title : ''}`}
+                title={`Copy Project: ${currentRecord ? currentRecord.className : ''}`}
                 open={copyModalOpen}
                 onCancel={() => setCopyModalOpen(false)}
                 onOk={() => {
@@ -282,18 +240,16 @@ export default function FileManageModal(props: FileManageModalProps) {
                 cancelText={t("Cancel")}
             >
                 {currentRecord && (
-                    <ModuleNameComponent
-                        tabType={currentRecord.type}
+                    <ProjectNameComponent
                         newItemName={name}
                         setNewItemName={setName}
                         onAddNewItem={() => {
                             if (currentRecord) {
-                                handleCopy(currentRecord, name);
+                                handleRename(currentRecord, name);
                             }
                         }}
-                        project={props.project}
-                        storage={props.storage}
-                        buttonLabel=""
+                        projects={modules}
+                        setProjects={setModules}
                     />
                 )}
             </Antd.Modal>
@@ -315,20 +271,18 @@ export default function FileManageModal(props: FileManageModalProps) {
                     borderRadius: '6px',
                     padding: '12px'
                 }}>
-                    <ModuleNameComponent
-                        tabType={props.moduleType}
+                    <ProjectNameComponent
                         newItemName={newItemName}
                         setNewItemName={setNewItemName}
                         onAddNewItem={handleAddNewItem}
-                        project={props.project}
-                        storage={props.storage}
-                        buttonLabel={t("New")}
+                        projects={modules}
+                        setProjects={setModules}
                     />
                 </div>
-                <Antd.Table<Module>
+                <Antd.Table<commonStorage.Project>
                     columns={columns}
                     dataSource={modules}
-                    rowKey="path"
+                    rowKey="modulePath"
                     size="small"
                     pagination={modules.length > 5 ? {
                         pageSize: 5,
@@ -339,12 +293,12 @@ export default function FileManageModal(props: FileManageModalProps) {
                     } : false}
                     bordered
                     locale={{
-                        emptyText: `No ${TabTypeUtils.toString(props.moduleType || TabType.OPMODE).toLowerCase()} files found`
+                        emptyText: 'No projects found'
                     }}
                     onRow={(record) => ({
                         onDoubleClick: () => {
-                            props.gotoTab(record.path);
-                            props.onCancel(); // Close the modal after opening the tab
+                            props.setProject(record);
+                            props.onCancel(); // Close the modal after selecting
                         }
                     })}
                 />
