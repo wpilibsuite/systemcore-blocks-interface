@@ -51,7 +51,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
         // Sort modules alphabetically by title
         projects.sort((a, b) => a.className.localeCompare(b.className));
         setModules(projects);
-        if( (projects.length > 0) && props.noProjects) {
+        if ((projects.length > 0) && props.noProjects) {
             props.setProject(projects[0]); // Set the first project as the current project
             props.onCancel(); // Close the modal after selecting
         }
@@ -133,7 +133,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
             width: 160,
             render: (_, record: commonStorage.Project) => (
                 <Antd.Space size="small">
-                     <Antd.Tooltip title={t("Select")}>
+                    <Antd.Tooltip title={t("Select")}>
                         <Antd.Button
                             type="text"
                             size="small"
@@ -168,44 +168,46 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
                             }}
                         />
                     </Antd.Tooltip>
-                    <Antd.Tooltip title={t("Delete")}>
-                        <Antd.Popconfirm
-                            title={`Delete ${record.className}?`}
-                            description="This action cannot be undone."
-                            onConfirm={async () => {
-                                const newModules = modules.filter(m => m.modulePath !== record.modulePath);
-                                setModules(newModules);
-                                let foundAnotherProject = false;
-                                for (const project of modules) {
-                                    if (project.modulePath !== record.modulePath) {
-                                        props.setProject(project);
-                                        foundAnotherProject = true;
-                                        break;
+                    {modules.length > 1 && (
+                        <Antd.Tooltip title={t("Delete")}>
+                            <Antd.Popconfirm
+                                title={`Delete ${record.className}?`}
+                                description="This action cannot be undone."
+                                onConfirm={async () => {
+                                    const newModules = modules.filter(m => m.modulePath !== record.modulePath);
+                                    setModules(newModules);
+                                    let foundAnotherProject = false;
+                                    for (const project of modules) {
+                                        if (project.modulePath !== record.modulePath) {
+                                            props.setProject(project);
+                                            foundAnotherProject = true;
+                                            break;
+                                        }
                                     }
-                                }
-                                if (!foundAnotherProject) {
-                                    props.setProject(null);
-                                }
-                                try {
-                                    await props.storage!.deleteModule(commonStorage.MODULE_TYPE_PROJECT, record.modulePath);
-                                } catch (e) {
-                                    console.log('Failed to delete the project. Caught the following error...');
-                                    console.log(e);
-                                    props.setAlertErrorMessage('Failed to delete the project.');
-                                }
-                            }}
-                            okText={t("Delete")}
-                            cancelText={t("Cancel")}
-                            okType="danger"
-                        >
-                            <Antd.Button
-                                type="text"
-                                size="small"
-                                icon={<DeleteOutlined />}
-                                danger
-                            />
-                        </Antd.Popconfirm>
-                    </Antd.Tooltip>
+                                    if (!foundAnotherProject) {
+                                        props.setProject(null);
+                                    }
+                                    try {
+                                        await props.storage!.deleteModule(commonStorage.MODULE_TYPE_PROJECT, record.modulePath);
+                                    } catch (e) {
+                                        console.log('Failed to delete the project. Caught the following error...');
+                                        console.log(e);
+                                        props.setAlertErrorMessage('Failed to delete the project.');
+                                    }
+                                }}
+                                okText={t("Delete")}
+                                cancelText={t("Cancel")}
+                                okType="danger"
+                            >
+                                <Antd.Button
+                                    type="text"
+                                    size="small"
+                                    icon={<DeleteOutlined />}
+                                    danger
+                                />
+                            </Antd.Popconfirm>
+                        </Antd.Tooltip>
+                    )}
                 </Antd.Space>
             ),
         },
