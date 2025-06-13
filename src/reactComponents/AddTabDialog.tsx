@@ -24,7 +24,6 @@ import * as I18Next from "react-i18next";
 import * as React from "react";
 import * as commonStorage from "../storage/common_storage";
 import ModuleNameComponent from './ModuleNameComponent';
-import { MECHANISM } from "../blocks/mrc_mechanism_component_holder";
 
 type Module = {
     path: string;
@@ -125,21 +124,8 @@ export default function AddTabDialog(props: AddTabDialogProps) {
         setAvailableItems([...availableItems, item]);
     };
 
-    const handleDragEnd = (result: any) => {
-        if (!result.destination) {
-            return;
-        }
-
-        const items = Array.from(selectedItems);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
-
-        setSelectedItems(items);
-    };
-
     // Filter available items based on search text
     const filteredAvailableItems = availableItems
-        .filter(item => !selectedItems.includes(item))
         .filter(item => item.title.toLowerCase().includes(searchText.toLowerCase()));
 
     return (
