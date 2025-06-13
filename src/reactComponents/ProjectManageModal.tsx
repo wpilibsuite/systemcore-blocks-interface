@@ -18,16 +18,17 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-import { TabType, TabTypeUtils } from "./Tabs";
+import { TabType } from "./Tabs";
 import * as Antd from "antd";
 import * as I18Next from "react-i18next";
 import * as React from "react";
 import * as commonStorage from "../storage/common_storage";
-import { EditOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, CopyOutlined, SelectOutlined } from '@ant-design/icons';
 import ProjectNameComponent from "./ProjectNameComponent";
 
 type ProjectManageModalProps = {
     isOpen: boolean;
+    noProjects: boolean;
     onCancel: () => void;
     setProject: (project: commonStorage.Project | null) => void;
     setAlertErrorMessage: (message: string) => void;
@@ -50,6 +51,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
         // Sort modules alphabetically by title
         projects.sort((a, b) => a.className.localeCompare(b.className));
         setModules(projects);
+        if( (projects.length > 0) && props.noProjects) {
+            props.setProject(projects[0]); // Set the first project as the current project
+            props.onCancel(); // Close the modal after selecting
+        }
     };
 
     React.useEffect(() => {
@@ -92,7 +97,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
             if (props.storage) {
                 const newProjectName = commonStorage.classNameToModuleName(trimmedName);
                 const newProjectPath = commonStorage.makeProjectPath(newProjectName);
-                    
+
                 const projectContent = commonStorage.newProjectContent(newProjectName);
                 try {
                     await props.storage.createModule(
@@ -125,15 +130,26 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
         {
             title: 'Actions',
             key: 'actions',
-            width: 120,
+            width: 160,
             render: (_, record: commonStorage.Project) => (
                 <Antd.Space size="small">
+                     <Antd.Tooltip title={t("Select")}>
+                        <Antd.Button
+                            type="text"
+                            size="small"
+                            icon={<SelectOutlined />}
+                            onClick={(e) => {
+                                props.setProject(record);
+                                props.onCancel(); // Close the modal after selecting
+                            }}
+                        />
+                    </Antd.Tooltip>
                     <Antd.Tooltip title={t("Rename")}>
                         <Antd.Button
                             type="text"
                             size="small"
                             icon={<EditOutlined />}
-                            onClick={() => {
+                            onClick={(e) => {
                                 setCurrentRecord(record);
                                 setName(record.className);
                                 setRenameModalOpen(true);
@@ -145,7 +161,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
                             type="text"
                             size="small"
                             icon={<CopyOutlined />}
-                            onClick={() => {
+                            onClick={(e) => {
                                 setCurrentRecord(record);
                                 setName(record.className + 'Copy');
                                 setCopyModalOpen(true);
@@ -195,10 +211,6 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
         },
     ];
 
-    const getModalTitle = () => {
-        return 'Project Management';
-    };
-
     return (
         <>
             <Antd.Modal
@@ -245,7 +257,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
                         setNewItemName={setName}
                         onAddNewItem={() => {
                             if (currentRecord) {
-                                handleRename(currentRecord, name);
+                                handleCopy(currentRecord, name);
                             }
                         }}
                         projects={modules}
@@ -255,7 +267,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
             </Antd.Modal>
 
             <Antd.Modal
-                title={getModalTitle()}
+                title={t("Project Management")}
                 open={props.isOpen}
                 onCancel={props.onCancel}
                 footer={[
@@ -265,6 +277,15 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
                 ]}
                 width={800}
             >
+                {props.noProjects && (
+                    <Antd.Alert
+                        message="No projects found"
+                        description="Please create a new project to get started."
+                        type="info"
+                        showIcon
+                        style={{ marginBottom: 16 }}
+                    />
+                )}
                 <div style={{
                     marginBottom: 16,
                     border: '1px solid #d9d9d9',
@@ -279,29 +300,30 @@ export default function ProjectManageModal(props: ProjectManageModalProps) {
                         setProjects={setModules}
                     />
                 </div>
-                <Antd.Table<commonStorage.Project>
-                    columns={columns}
-                    dataSource={modules}
-                    rowKey="modulePath"
-                    size="small"
-                    pagination={modules.length > 5 ? {
-                        pageSize: 5,
-                        showSizeChanger: false,
-                        showQuickJumper: false,
-                        showTotal: (total, range) =>
-                            `${range[0]}-${range[1]} of ${total} items`,
-                    } : false}
-                    bordered
-                    locale={{
-                        emptyText: 'No projects found'
-                    }}
-                    onRow={(record) => ({
-                        onDoubleClick: () => {
-                            props.setProject(record);
-                            props.onCancel(); // Close the modal after selecting
-                        }
-                    })}
-                />
+                {!props.noProjects && (
+                    <Antd.Table<commonStorage.Project>
+                        columns={columns}
+                        dataSource={modules}
+                        rowKey="modulePath"
+                        size="small"
+                        pagination={modules.length > 5 ? {
+                            pageSize: 5,
+                            showSizeChanger: false,
+                            showQuickJumper: false,
+                            showTotal: (total, range) =>
+                                `${range[0]}-${range[1]} of ${total} items`,
+                        } : false}
+                        bordered
+                        locale={{
+                            emptyText: 'No projects found'
+                        }}
+                        onRow={(record) => ({
+                            onDoubleClick: () => {
+                                props.setProject(record);
+                                props.onCancel(); // Close the modal after selecting
+                            }
+                        })}
+                    />)}
             </Antd.Modal>
         </>
     );

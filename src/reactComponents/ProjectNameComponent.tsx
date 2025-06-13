@@ -75,6 +75,12 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps) {
                     }}
                     onPressEnter={handleAddNewItem}
                 />
+                <Antd.Button
+                    type="primary"
+                    onClick={handleAddNewItem}
+                >
+                    {t("New")}
+                </Antd.Button>
             </Antd.Space.Compact>
             {alertErrorVisible && (
                 <Antd.Alert

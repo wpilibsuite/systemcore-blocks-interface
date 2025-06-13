@@ -88,50 +88,59 @@ function getMenuItems(project: commonStorage.Project): MenuItem[] {
 export function Component(props: MenuProps) {
     const { t } = I18Next.useTranslation();
 
-    const [mostRecentModulePath, setMostRecentModulePath] = React.useState<string>('');
     const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
     const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
     const [fileModalOpen, setFileModalOpen] = React.useState<boolean>(false);
     const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
     const [moduleType, setModuleType] = React.useState<TabType>(TabType.MECHANISM);
+    const [noProjects, setNoProjects] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         if (!props.storage) {
             return;
         }
-        fetchMostRecentModulePath();
         initializeModules();
     }, [props.storage]);
 
-    React.useEffect(() => {
-        //TODO: this needs to be different somehow
-        if (modules) {
-            props.setProject(modules[0]);
+    const fetchMostRecentProject = async () => {
+        let found = false;
+
+        if (props.storage) {
+            let mostRecentProject = await props.storage.fetchEntry('mostRecentProject', '');
+            modules.forEach((module) => {
+                if (module.projectName === mostRecentProject) {
+                    props.setProject(module);
+                    found = true;
+                }
+            });
+            if (!found && modules.length > 0) {
+                props.setProject(modules[0]);
+            }
         }
-    }, [modules]);
+    };
 
     React.useEffect(() => {
+        fetchMostRecentProject();
+    }, [modules]);
+
+    React.useEffect(() => {            
+        const setMostRecentProject = async () => {
+            if (props.storage) {
+                props.storage.saveEntry('mostRecentProject', props.project?.projectName || '');
+            }
+        }
         if (props.project) {
+            setMostRecentProject();
             setMenuItems(getMenuItems(props.project));
+            setNoProjects(false);
         }
     }, [props.project]);
 
-    const fetchMostRecentModulePath = async () => {
-        if (!props.storage) {
-            return;
-        }
-        try {
-            const value = await props.storage.fetchEntry('mostRecentModulePath', '');
-            setMostRecentModulePath(value);
-        } catch (e) {
-            console.log('Failed to fetch mostRecentModulePath. Caught the following error...');
-            console.log(e);
-        }
-    };
     const initializeModules = async () => {
         const array = await fetchListOfModules();
         if (array.length === 0) {
-            //TODO: make new project
+            setNoProjects(true);
+            setProjectModalOpen(true);
         }
     };
     const fetchListOfModules = async (): Promise<commonStorage.Project[]> => {
@@ -190,6 +199,7 @@ export function Component(props: MenuProps) {
                 gotoTab={props.gotoTab}
             />
             <ProjectManageModal
+                noProjects={noProjects}
                 isOpen={projectModalOpen}
                 onCancel={() => {
                     setProjectModalOpen(false);
