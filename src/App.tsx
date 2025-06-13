@@ -299,6 +299,7 @@ return (
             currentModule={currentModule}
             setCurrentModule={changeModule}
             project={project}
+            storage={storage}
           />
           <Antd.Splitter>
             {/*
