@@ -43,7 +43,7 @@ export default function Header(props: HeaderProps) {
         <Antd.Typography
           style={{ color: 'white', paddingLeft: 20, fontSize: "20px", fontWeight: "normal"}}
         >
-          Project: {props.project?.projectName}
+          Project: {props.project?.className}
         </Antd.Typography>        
         {props.alertErrorMessage !== '' && (<Antd.Alert
           type="error"
