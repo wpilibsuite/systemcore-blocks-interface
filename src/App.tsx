@@ -26,7 +26,6 @@ import { pythonGenerator } from 'blockly/python';
 
 import Header from './reactComponents/Header';
 import * as Menu from './reactComponents/Menu'
-import ModuleOutline from './reactComponents/ModuleOutline';
 import CodeDisplay from './reactComponents/CodeDisplay';
 import BlocklyComponent, { BlocklyComponentType } from './reactComponents/BlocklyComponent';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
@@ -63,7 +62,6 @@ const App: React.FC = () => {
   
 
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
-  const [rightCollapsed, setRightCollapsed] = React.useState(false);
 
   // When the app is loaded, open storage and initialize the blocks we provide.
   React.useEffect(() => {
@@ -219,10 +217,6 @@ const saveBlocks = async (): Promise<boolean> => {
       reject(new Error('Failed to save the blocks.'));
     }
   });
-};
-
-const handleToolboxSettingsClicked = () => {
-  setToolboxSettingsModalIsOpen(true);
 };
 
 const handleToolboxSettingsOk = async (updatedShownCategories: Set<string>) => {
