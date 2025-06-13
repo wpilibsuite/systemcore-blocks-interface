@@ -178,8 +178,6 @@ export default function AddTabDialog(props: AddTabDialogProps) {
                         setNewItemName={setNewItemName}
                         onAddNewItem={handleAddNewItem}
                         project={props.project}
-                        availableItems={availableItems}
-                        handleSelectItem={handleSelectItem}
                         storage={props.storage}
                         buttonLabel={t("New")}
                     />

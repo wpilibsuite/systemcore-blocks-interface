@@ -36,8 +36,6 @@ type ModuleNameComponentProps = {
     setNewItemName: (name: string) => void;
     onAddNewItem: () => void;
     project: commonStorage.Project | null;
-    availableItems: Module[];
-    handleSelectItem: (item: Module) => void;
     storage: commonStorage.Storage | null;
     buttonLabel : string;
 };
@@ -48,34 +46,20 @@ export default function ModuleNameComponent(props: ModuleNameComponentProps) {
     const [alertErrorVisible, setAlertErrorVisible] = React.useState(false);
 
     const handleAddNewItem = () => {
-        if (props.newItemName.trim()) {
-            // Check if there's an exact match in available items
-            const matchingItem = props.availableItems.find(item =>
-                item.title.toLowerCase() === props.newItemName.trim().toLowerCase()
-            );
-
-            if (matchingItem) {
-                // Move the matching item to selected
-                props.handleSelectItem(matchingItem);
-                props.setNewItemName("");
-                setAlertErrorVisible(false);
-                setAlertErrorMessage('');
-            } else {
-                if (props.project) {
-                    const { ok, error } = commonStorage.isClassNameOk(props.project, props.newItemName.trim());                    
-                    if (ok) {
-                        setAlertErrorVisible(false);
-                        setAlertErrorMessage('');
-                        // Create new item logic here if needed
-                        props.onAddNewItem();
-                    }else {
-                        setAlertErrorMessage(error);
-                        setAlertErrorVisible(true);
-                    }
+        let trimmedName = props.newItemName.trim();
+        if (trimmedName) {
+            if (props.project) {
+                const { ok, error } = commonStorage.isClassNameOk(props.project, trimmedName);
+                if (ok) {
+                    setAlertErrorVisible(false);
+                    setAlertErrorMessage('');
+                    // Create new item logic here if needed
+                    props.onAddNewItem();
                 } else {
-                        props.onAddNewItem();
+                    setAlertErrorMessage(error);
+                    setAlertErrorVisible(true);
                 }
-            }
+            } 
         }
     };
 
