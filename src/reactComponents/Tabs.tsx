@@ -21,9 +21,8 @@
 import React from 'react';
 import * as Antd from 'antd';
 import * as commonStorage from '../storage/common_storage';
-import type { MessageInstance } from 'antd/es/message/interface';
 import * as I18Next from "react-i18next";
-import { Dropdown, Menu } from 'antd';
+import { Dropdown } from 'antd';
 
 import {
   RobotOutlined,
@@ -77,6 +76,7 @@ export interface TabsProps {
   setTabList: (items: TabItem[]) => void;
   activeTab: string;
   project: commonStorage.Project | null;
+  setProject: (project: commonStorage.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
   currentModule: commonStorage.Module | null;
   setCurrentModule: (module: commonStorage.Module | null) => void;
@@ -196,7 +196,7 @@ export function Component(props: TabsProps) {
                   items: [
                     {
                       key: 'close',
-                      label: 'Close Tab',
+                      label: t("Close Tab"),
                       onClick: () => {
                         onEdit(tab.key, 'remove');
                       },
@@ -205,7 +205,7 @@ export function Component(props: TabsProps) {
                     },
                     {
                       key: 'close-others',
-                      label: 'Close Other tabs',
+                      label: t("Close Other tabs"),
                       onClick: () => {
                         const newTabs = props.tabList.filter(t => (t.key === tab.key) || (t.type === TabType.ROBOT));
                         props.setTabList(newTabs);
@@ -216,7 +216,7 @@ export function Component(props: TabsProps) {
                     },
                     {
                       key: 'rename',
-                      label: 'Rename...',
+                      label: t("Rename..."),
                       disabled: tab.type === TabType.ROBOT,
                       onClick: () => {
                         modal.confirm({
@@ -236,20 +236,22 @@ export function Component(props: TabsProps) {
                     },
                     {
                       key: 'delete',
-                      label: 'Delete...',
+                      label: t("Delete..."),
                       disabled: tab.type === TabType.ROBOT,
                       icon: <DeleteOutlined />,
                       onClick: () => {
                         modal.confirm({
-                          title: `Delete ${TabTypeUtils.toString(tab.type)}: ${tab.title}`,
-                          content: `Are you sure you want to delete this? This action cannot be undone.`,
-                          okText: 'Delete',
+                          title: `${t("Delete")} ${TabTypeUtils.toString(tab.type)}: ${tab.title}`,
+                          content: t("Are you sure you want to delete this? This action cannot be undone."),
+                          okText: t("Delete"),
                           okType: 'danger',
-                          cancelText: 'Cancel',
-                          onOk: () => {
+                          cancelText: t("Cancel"),
+                          onOk: async () => {
                             const newTabs = props.tabList.filter(t => t.key !== tab.key);
                             props.setTabList(newTabs);
-                            // Delete for real here....
+                            if(props.storage && props.project) {
+                              commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);                              
+                            }
                             setActiveKey(props.tabList[0].key);
                           },
                         });
@@ -257,7 +259,7 @@ export function Component(props: TabsProps) {
                     },
                     {
                       key: 'copy',
-                      label: 'Copy...',
+                      label: t('Copy...'),
                       disabled: tab.type === TabType.ROBOT,
                       icon: <CopyOutlined />
                     },

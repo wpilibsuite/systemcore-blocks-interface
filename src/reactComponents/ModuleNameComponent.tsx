@@ -39,6 +39,7 @@ type ModuleNameComponentProps = {
     availableItems: Module[];
     handleSelectItem: (item: Module) => void;
     storage: commonStorage.Storage | null;
+    buttonLabel : string;
 };
 
 export default function ModuleNameComponent(props: ModuleNameComponentProps) {
@@ -104,7 +105,7 @@ export default function ModuleNameComponent(props: ModuleNameComponentProps) {
                     type="primary"
                     onClick={handleAddNewItem}
                 >
-                    {t("Add")}
+                    {props.buttonLabel}
                 </Antd.Button>
             </Antd.Space.Compact>
             {alertErrorVisible && (
