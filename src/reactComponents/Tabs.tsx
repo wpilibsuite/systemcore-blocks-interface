@@ -158,7 +158,7 @@ export function Component(props: TabsProps) {
     setActiveKey(props.tabList[0].key);
     setAddTabDialogOpen(false);
   };
-
+  
   const handleRename = async (key: string, newName: string) => {
     if (props.storage && props.project) {
       try {
@@ -176,6 +176,7 @@ export function Component(props: TabsProps) {
         });
         props.setTabList(newTabs);
         setActiveKey(newPath); // Use newPath instead of key
+        props.setProject({...props.project,});
       } catch (error) {
         console.error('Error renaming module:', error);
         props.setAlertErrorMessage('Failed to rename module');
@@ -264,8 +265,10 @@ export function Component(props: TabsProps) {
                       label: t("Rename..."),
                       disabled: tab.type === TabType.ROBOT,
                       onClick: () => {
-                        setName(tab.title);
-                        setCurrentTab(tab);
+                        // Find the current tab to get the latest title
+                        const currentTab = props.tabList.find(t => t.key === tab.key);
+                        setName(currentTab ? currentTab.title : tab.title);
+                        setCurrentTab(currentTab || tab);
                         setRenameModalOpen(true);
                       },
                       icon: <EditOutlined />
@@ -276,8 +279,11 @@ export function Component(props: TabsProps) {
                       disabled: tab.type === TabType.ROBOT,
                       icon: <DeleteOutlined />,
                       onClick: () => {
+                        // Find the current tab to get the latest title
+                        const currentTab = props.tabList.find(t => t.key === tab.key);
+                        const titleToShow = currentTab ? currentTab.title : tab.title;
                         modal.confirm({
-                          title: `${t("Delete")} ${TabTypeUtils.toString(tab.type)}: ${tab.title}`,
+                          title: `${t("Delete")} ${TabTypeUtils.toString(tab.type)}: ${titleToShow}`,
                           content: t("Are you sure you want to delete this? This action cannot be undone."),
                           okText: t("Delete"),
                           okType: 'danger',
@@ -287,6 +293,7 @@ export function Component(props: TabsProps) {
                             props.setTabList(newTabs);
                             if (props.storage && props.project) {
                               commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
+                              props.setProject({...props.project,});
                             }
                             setActiveKey(props.tabList[0].key);
                           },
@@ -299,7 +306,6 @@ export function Component(props: TabsProps) {
                       disabled: tab.type === TabType.ROBOT,
                       icon: <CopyOutlined />
                     },
-
                   ],
                 }}
                 trigger={['contextMenu']}

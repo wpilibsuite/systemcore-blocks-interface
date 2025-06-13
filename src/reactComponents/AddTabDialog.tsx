@@ -77,7 +77,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
             setAvailableItems(availableModules);
             setSelectedItems(selectedModules);
         }
-    }, [props.project, props.currentTabs, props.isOpen]);
+    }, [props.project, props.currentTabs]);
 
     const handleAddNewItem = async () => {
         let trimmedName = newItemName.trim();
