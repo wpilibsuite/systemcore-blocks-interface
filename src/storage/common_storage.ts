@@ -180,6 +180,43 @@ export async function renameModuleInProject(
   }
   return '';
 }
+/**
+ * Copies a module in the project.
+ * @param storage The storage interface to use for copying the module.
+ * @param project The project containing the module to copy.
+ * @param proposedName The new name for the module.
+ * @param oldModuleName The current name of the module.
+ * @returns A promise that resolves when the module has been copied.
+ */
+export async function copyModuleInProject(
+  storage: Storage, project: Project, proposedName: string, oldModulePath: string): Promise<string> {
+  const module = findModuleInProject(project, oldModulePath);
+  if (module) {
+    const newModuleName = classNameToModuleName(proposedName);
+    const newModulePath = makeModulePath(project.projectName, newModuleName);
+    await storage.copyModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
+
+    if (module.moduleType === MODULE_TYPE_MECHANISM) {
+      project.mechanisms.push({
+        modulePath: newModulePath,
+        moduleType: MODULE_TYPE_MECHANISM,
+        projectName: project.projectName,
+        moduleName: newModuleName,
+        className: proposedName
+      } as Mechanism);
+    } else if (module.moduleType === MODULE_TYPE_OPMODE) {
+      project.opModes.push({
+        modulePath: newModulePath,
+        moduleType: MODULE_TYPE_OPMODE,
+        projectName: project.projectName,
+        moduleName: newModuleName,
+        className: proposedName
+      } as OpMode);
+    }
+    return newModulePath;
+  }
+  return '';
+}
 
 /**
  * Checks if the proposed class name is valid and does not conflict with existing names in the project.

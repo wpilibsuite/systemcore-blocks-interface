@@ -92,6 +92,7 @@ export function Component(props: TabsProps) {
   const [addTabDialogOpen, setAddTabDialogOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
+  const [copyModalOpen, setCopyModalOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
 
   const onChange = (key: string) => {
@@ -184,7 +185,37 @@ export function Component(props: TabsProps) {
     }
     setRenameModalOpen(false);
   };
+  const handleCopy = async (key: string, newName: string) => {
+    if (props.storage && props.project) {
+      try {
+        let newPath = await commonStorage.copyModuleInProject(
+          props.storage,
+          props.project,
+          newName,
+          key
+        );
+        const newTabs = [...props.tabList];
 
+        // find the original tab to copy its type
+        const originalTab = props.tabList.find(tab => tab.key === key);
+        if (!originalTab) {
+          console.error('Original tab not found for copying:', key);
+          props.setAlertErrorMessage('Original tab not found for copying');
+          return;
+        }
+        // Add the new tab with the copied name and type
+        newTabs.push({ key: newPath, title: newName, type: originalTab.type });
+
+        props.setTabList(newTabs);
+        setActiveKey(newPath); // Use newPath instead of key
+        props.setProject({ ...props.project, });
+      } catch (error) {
+        console.error('Error copying module:', error);
+        props.setAlertErrorMessage('Failed to copy module');
+      }
+    }
+    setCopyModalOpen(false);
+  };
   return (
     <>
       {contextHolder}
@@ -225,7 +256,34 @@ export function Component(props: TabsProps) {
           />
         )}
       </Antd.Modal>
-
+      <Antd.Modal
+        title={`Copy ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${currentTab ? currentTab.title : ''}`}
+        open={copyModalOpen}
+        onCancel={() => setCopyModalOpen(false)}
+        onOk={() => {
+          if (currentTab) {
+            handleCopy(currentTab.key, name);
+          }
+        }}
+        okText={t("Copy")}
+        cancelText={t("Cancel")}
+      >
+        {currentTab && (
+          <ModuleNameComponent
+            tabType={currentTab.type}
+            newItemName={name}
+            setNewItemName={setName}
+            onAddNewItem={() => {
+              if (currentTab) {
+                handleCopy(currentTab.key, name);
+              }
+            }}
+            project={props.project}
+            storage={props.storage}
+            buttonLabel=""
+          />
+        )}
+      </Antd.Modal>
       <Antd.Tabs
         type="editable-card"
         onChange={onChange}
@@ -293,7 +351,7 @@ export function Component(props: TabsProps) {
                             props.setTabList(newTabs);
                             if (props.storage && props.project) {
                               commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
-                              props.setProject({...props.project,});
+                              props.setProject({ ...props.project, });
                             }
                             setActiveKey(props.tabList[0].key);
                           },
@@ -304,7 +362,14 @@ export function Component(props: TabsProps) {
                       key: 'copy',
                       label: t('Copy...'),
                       disabled: tab.type === TabType.ROBOT,
-                      icon: <CopyOutlined />
+                      icon: <CopyOutlined />,
+                      onClick: () => {
+                        // Find the current tab to get the latest title
+                        const currentTab = props.tabList.find(t => t.key === tab.key);
+                        setName((currentTab ? currentTab.title : tab.title) + "Copy");
+                        setCurrentTab(currentTab || tab);
+                        setCopyModalOpen(true);
+                      },
                     },
                   ],
                 }}
