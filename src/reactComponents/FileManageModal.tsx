@@ -45,7 +45,6 @@ type FileManageModalProps = {
 export default function FileManageModal(props: FileManageModalProps) {
     const { t } = I18Next.useTranslation();
     const [modules, setModules] = React.useState<Module[]>([]);
-    const [loading, setLoading] = React.useState(false);
     const [newItemName, setNewItemName] = React.useState('');
     const [currentRecord, setCurrentRecord] = React.useState<Module | null>(null);
     const [renameModalOpen, setRenameModalOpen] = React.useState(false);
@@ -53,7 +52,30 @@ export default function FileManageModal(props: FileManageModalProps) {
     const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
     React.useEffect(() => {
-        if (props.project && props.moduleType !== null) {
+        const loadModules = async (storage : commonStorage.Storage) => {
+            let moduleList: Module[] = [];
+            let projects = await storage.listModules()
+            projects.forEach((project) => {
+                if (project.className && project.modulePath) {
+                    moduleList.push({
+                        path: project.modulePath,
+                        title: project.className,
+                        type: TabType.PROJECT
+                    });
+                }
+            });
+            // Sort modules alphabetically by title
+            moduleList.sort((a, b) => a.title.localeCompare(b.title));            
+            setModules(moduleList);
+        }
+
+        if( props.moduleType === TabType.PROJECT ) {
+            let moduleList: Module[] = [];
+            if(props.storage){
+                loadModules(props.storage);
+            }
+        }
+        else if (props.project && props.moduleType !== null) {
             let moduleList: Module[] = [];
 
             if (props.moduleType === TabType.MECHANISM) {
@@ -78,22 +100,6 @@ export default function FileManageModal(props: FileManageModalProps) {
             setModules([]);
         }
     }, [props.project, props.moduleType]);
-
-    const handleDelete = async (module: Module) => {
-        if (props.storage && props.project) {
-            setLoading(true);
-            try {
-                await commonStorage.removeModuleFromProject(props.storage, props.project, module.path);
-                // Remove from local state
-                setModules(modules.filter(m => m.path !== module.path));
-            } catch (error) {
-                console.error('Error deleting module:', error);
-                Antd.message.error('Failed to delete module');
-            } finally {
-                setLoading(false);
-            }
-        }
-    };
 
     const handleRename = async (origModule: Module, newName: string) => {
         if (props.storage && props.project) {
@@ -347,7 +353,6 @@ export default function FileManageModal(props: FileManageModalProps) {
                     columns={columns}
                     dataSource={modules}
                     rowKey="path"
-                    loading={loading}
                     size="small"
                     pagination={modules.length > 5 ? {
                         pageSize: 5,

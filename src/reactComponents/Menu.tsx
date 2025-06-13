@@ -151,29 +151,35 @@ export function Component(props: MenuProps) {
         });
     };
 
-    const handleSelect: Antd.MenuProps['onSelect'] = ({ key }) => {
+    const openModal = React.useCallback((type: TabType) => {
+        console.log('openModal called with type:', type);
+        setFileModalOpen(false); // Always close first
+        setModuleType(type);
+
+        // Use setTimeout to ensure the close happens first
+        setTimeout(() => {
+            console.log('Setting fileModalOpen to true');
+            setFileModalOpen(true);
+        }, 0);
+    }, []);
+
+    const handleClick: Antd.MenuProps['onClick'] = ({ key }) => {
         let newModule = props.project ? commonStorage.findModuleInProject(props.project, key) : null;
         if (newModule) {
             props.gotoTab(newModule.modulePath);
         }
         else {
-            if(key === 'manageMechanisms'){
-                if (!fileModalOpen || moduleType !== TabType.MECHANISM) {
-                    setFileModalOpen(true);
-                    setModuleType(TabType.MECHANISM);
-                }
-            }else if(key === 'manageOpmodes'){
-                if (!fileModalOpen || moduleType !== TabType.OPMODE) {
-                    setFileModalOpen(true);
-                    setModuleType(TabType.OPMODE);
-                }
-            }else if(key === 'manageProjects'){ 
-                if (!fileModalOpen || moduleType !== TabType.PROJECT) {
-                    setFileModalOpen(true);
-                    setModuleType(TabType.PROJECT);
-                }
+            if (key === 'manageMechanisms') {
+                setModuleType(TabType.MECHANISM);
+                setFileModalOpen(true);
+            } else if (key === 'manageOpmodes') {
+                setModuleType(TabType.OPMODE);
+                setFileModalOpen(true);
+            } else if (key === 'manageProjects') {
+                setModuleType(TabType.PROJECT);
+                setFileModalOpen(true);
             }
-            else{
+            else {
                 // TODO: It wasn't a module, so do the other thing...
                 console.log(`Selected key that wasn't module: ${key}`);
             }
@@ -184,7 +190,10 @@ export function Component(props: MenuProps) {
         <>
             <FileManageModal
                 isOpen={fileModalOpen}
-                onCancel={() => setFileModalOpen(false)}
+                onCancel={() => {
+                    console.log('Modal onCancel called');
+                    setFileModalOpen(false);
+                }}
                 project={props.project}
                 storage={props.storage}
                 moduleType={moduleType}
@@ -196,7 +205,7 @@ export function Component(props: MenuProps) {
                 defaultSelectedKeys={['1']}
                 mode="inline"
                 items={menuItems}
-                onSelect={handleSelect}
+                onClick={handleClick}
             />
         </>
     );
