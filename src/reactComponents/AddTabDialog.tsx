@@ -69,14 +69,15 @@ export default function AddTabDialog(props: AddTabDialogProps) {
                 !props.currentTabs.some(tab => tab.key === item.path)
             );
 
-            const selectedModules = allItems.filter(item =>
-                props.currentTabs.some(tab => tab.key === item.path)
-            );
+            // Preserve the order from currentTabs for selectedModules
+            const selectedModules = props.currentTabs
+                .map(tab => allItems.find(item => item.path === tab.key))
+                .filter(item => item !== undefined) as Module[];
 
             setAvailableItems(availableModules);
             setSelectedItems(selectedModules);
         }
-    }, [props.project, props.currentTabs]);
+    }, [props.project, props.currentTabs, props.isOpen]);
 
     const handleAddNewItem = async () => {
         let trimmedName = newItemName.trim();
@@ -113,9 +114,10 @@ export default function AddTabDialog(props: AddTabDialogProps) {
     };
 
     const handleSelectItem = (item: Module) => {
-        if (!selectedItems.includes(item)) {
+        const existingItem = selectedItems.find(i => i.path === item.path);
+        if (!existingItem) {
             setSelectedItems([...selectedItems, item]);
-            setAvailableItems(availableItems.filter(i => i !== item));
+            setAvailableItems(availableItems.filter(i => i.path !== item.path));
         }
     };
 
@@ -179,6 +181,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
                         availableItems={availableItems}
                         handleSelectItem={handleSelectItem}
                         storage={props.storage}
+                        buttonLabel={t("New")}
                     />
                 </div>
 
@@ -218,6 +221,13 @@ export default function AddTabDialog(props: AddTabDialogProps) {
                             dataSource={filteredAvailableItems}
                             renderItem={(item) => (
                                 <Antd.List.Item
+                                    draggable
+                                    onDragStart={(e) => {
+                                        e.dataTransfer.setData('application/json', JSON.stringify({
+                                            type: 'available',
+                                            item: item
+                                        }));
+                                    }}
                                     actions={[
                                         <Antd.Button
                                             size="small"
@@ -226,6 +236,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
                                             →
                                         </Antd.Button>
                                     ]}
+                                    style={{ cursor: 'grab' }}
                                 >
                                     <Antd.List.Item.Meta
                                         avatar={TabTypeUtils.getIcon(item.type)}
@@ -256,7 +267,31 @@ export default function AddTabDialog(props: AddTabDialogProps) {
                             {t("Shown")}
                         </h4>
                         <div style={{ height: 32, marginBottom: 8 }}></div>
-                        <div style={{ height: 200, overflow: 'auto', border: '1px solid #d9d9d9' }}>
+                        <div 
+                            style={{ height: 200, overflow: 'auto', border: '1px solid #d9d9d9' }}
+                            onDragOver={(e) => {
+                                e.preventDefault();
+                            }}
+                            onDrop={(e) => {
+                                e.preventDefault();
+                                try {
+                                    const dragData = JSON.parse(e.dataTransfer.getData('application/json'));
+                                    if (dragData.type === 'available') {
+                                        handleSelectItem(dragData.item);
+                                    }
+                                } catch (error) {
+                                    // Handle reordering within shown list
+                                    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                                    if (!isNaN(fromIndex)) {
+                                        // This is a reorder operation within the shown list
+                                        const items = Array.from(selectedItems);
+                                        const [reorderedItem] = items.splice(fromIndex, 1);
+                                        items.push(reorderedItem); // Add to end
+                                        setSelectedItems(items);
+                                    }
+                                }
+                            }}
+                        >
                             {selectedItems.map((item, index) => (
                                 <div
                                     key={item.path}
@@ -269,10 +304,31 @@ export default function AddTabDialog(props: AddTabDialogProps) {
                                     }}
                                     onDrop={(e) => {
                                         e.preventDefault();
+                                        e.stopPropagation();
+                                        
+                                        // First check if it's an item from available list
+                                        try {
+                                            const dragData = JSON.parse(e.dataTransfer.getData('application/json'));
+                                            if (dragData.type === 'available') {
+                                                // Insert the available item at this position
+                                                const existingItem = selectedItems.find(i => i.path === dragData.item.path);
+                                                if (!existingItem) {
+                                                    const newItems = Array.from(selectedItems);
+                                                    newItems.splice(index, 0, dragData.item);
+                                                    setSelectedItems(newItems);
+                                                    setAvailableItems(availableItems.filter(i => i.path !== dragData.item.path));
+                                                }
+                                                return;
+                                            }
+                                        } catch (error) {
+                                            // Not JSON data, continue with reordering logic
+                                        }
+                                        
+                                        // Handle reordering within shown list
                                         const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
                                         const toIndex = index;
 
-                                        if (fromIndex !== toIndex) {
+                                        if (fromIndex !== toIndex && !isNaN(fromIndex)) {
                                             const items = Array.from(selectedItems);
                                             const [reorderedItem] = items.splice(fromIndex, 1);
                                             items.splice(toIndex, 0, reorderedItem);
