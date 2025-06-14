@@ -24,7 +24,7 @@ import * as Blockly from 'blockly/core';
 class FieldNonEditableText extends Blockly.FieldTextInput {
   constructor(value: string) {
     super(value);
-    this.CURSOR = '';
+    this.EDITABLE = false; // This field is not editable
   }
 
   protected override showEditor_() {
