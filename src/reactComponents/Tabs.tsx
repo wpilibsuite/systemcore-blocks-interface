@@ -18,12 +18,10 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-import React from 'react';
+import * as React from 'react';
 import * as Antd from 'antd';
 import * as commonStorage from '../storage/common_storage';
-import * as I18Next from "react-i18next";
-import { Dropdown } from 'antd';
-
+import * as I18Next from 'react-i18next';
 import {
   RobotOutlined,
   CodeOutlined,
@@ -37,41 +35,56 @@ import {
 import AddTabDialog from './AddTabDialog';
 import ModuleNameComponent from './ModuleNameComponent';
 
+/** Enumeration of tab types. */
 export enum TabType {
   ROBOT,
   MECHANISM,
   OPMODE,
 }
 
+/** Utility functions for working with TabType enum. */
 export namespace TabTypeUtils {
+  /**
+   * Converts a TabType to its string representation.
+   */
   export function toString(type: TabType): string {
     switch (type) {
-      case TabType.ROBOT: return "Robot";
-      case TabType.MECHANISM: return "Mechanism";
-      case TabType.OPMODE: return "OpMode";
-      default: return "";
+      case TabType.ROBOT:
+        return 'Robot';
+      case TabType.MECHANISM:
+        return 'Mechanism';
+      case TabType.OPMODE:
+        return 'OpMode';
+      default:
+        return '';
     }
   }
-  export function getIcon(type: TabType) {
+
+  /**
+   * Gets the appropriate icon for a given TabType.
+   */
+  export function getIcon(type: TabType): React.JSX.Element {
     switch (type) {
       case TabType.ROBOT:
-        return (<RobotOutlined />);
+        return <RobotOutlined />;
       case TabType.MECHANISM:
-        return (<BlockOutlined />);
+        return <BlockOutlined />;
       case TabType.OPMODE:
-        return (<CodeOutlined />);
+        return <CodeOutlined />;
       default:
-        return (<></>);
+        return <></>;
     }
   }
 }
 
+/** Represents a tab item in the tab bar. */
 export interface TabItem {
   key: string;
   title: string;
   type: TabType;
 }
 
+/** Props for the Tabs component. */
 export interface TabsProps {
   tabList: TabItem[];
   setTabList: (items: TabItem[]) => void;
@@ -84,8 +97,18 @@ export interface TabsProps {
   storage: commonStorage.Storage | null;
 }
 
-export function Component(props: TabsProps) {
-  const { t } = I18Next.useTranslation();
+/** Default copy suffix for tab names. */
+const COPY_SUFFIX = 'Copy';
+
+/** Minimum number of tabs required to show close others option. */
+const MIN_TABS_FOR_CLOSE_OTHERS = 2;
+
+/**
+ * Tab component that manages project module tabs with add, edit, delete, and rename functionality.
+ * Provides context menus for tab operations and modal dialogs for user input.
+ */
+export function Component(props: TabsProps): React.JSX.Element {
+  const {t} = I18Next.useTranslation();
   const [modal, contextHolder] = Antd.Modal.useModal();
 
   const [activeKey, setActiveKey] = React.useState(props.activeTab);
@@ -95,52 +118,59 @@ export function Component(props: TabsProps) {
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
 
-  const onChange = (key: string) => {
+  /** Handles tab change and updates current module. */
+  const handleTabChange = (key: string): void => {
     if (props.project) {
       props.setCurrentModule(commonStorage.findModuleInProject(props.project, key));
       setActiveKey(key);
     }
-  }
-  const inTabs = (key: string): boolean => {
-    return props.tabList.some((tab) => tab.key === key);
-  }
-
-  const addTab = (key: string) => {
-    const newTabs = [...props.tabList];
-    if (props.project) {
-      const module = commonStorage.findModuleInProject(props.project, key);
-      if (module) {
-        switch (module.moduleType) {
-          case commonStorage.MODULE_TYPE_MECHANISM:
-            newTabs.push({ key: key, title: module.className, type: TabType.MECHANISM });
-            break;
-          case commonStorage.MODULE_TYPE_OPMODE:
-            newTabs.push({ key: key, title: module.className, type: TabType.OPMODE });
-            break;
-          default:
-            console.log("Unknown module type", module.moduleType);
-            break;
-        }
-      }
-      props.setTabList(newTabs);
-    }
   };
 
-  React.useEffect(() => {
-    if (activeKey != props.activeTab) {
-      if (!inTabs(props.activeTab)) {
-        addTab(props.activeTab);
-      }
-      onChange(props.activeTab);
-    }
-  }, [props.activeTab]);
+  /** Checks if a key exists in the current tab list. */
+  const isTabOpen = (key: string): boolean => {
+    return props.tabList.some((tab) => tab.key === key);
+  };
 
-  const onEdit = (targetKey: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
+  /** Adds a new tab for the given module key. */
+  const addTab = (key: string): void => {
+    const newTabs = [...props.tabList];
+    if (!props.project) {
+      return;
+    }
+
+    const module = commonStorage.findModuleInProject(props.project, key);
+    if (!module) {
+      return;
+    }
+
+    switch (module.moduleType) {
+      case commonStorage.MODULE_TYPE_MECHANISM:
+        newTabs.push({key, title: module.className, type: TabType.MECHANISM});
+        break;
+      case commonStorage.MODULE_TYPE_OPMODE:
+        newTabs.push({key, title: module.className, type: TabType.OPMODE});
+        break;
+      default:
+        console.warn('Unknown module type:', module.moduleType);
+        break;
+    }
+
+    props.setTabList(newTabs);
+  };
+
+  /** Handles tab edit actions (add/remove). */
+  const handleTabEdit = (
+      targetKey: React.MouseEvent | React.KeyboardEvent | string,
+      action: 'add' | 'remove'
+  ): void => {
     const items = props.tabList;
     if (action === 'add') {
       setAddTabDialogOpen(true);
     } else if (action === 'remove') {
-      if (!items) return;
+      if (!items) {
+        return;
+      }
+
       const targetIndex = items.findIndex((item) => item.key === targetKey);
       const newItems = items.filter((item) => item.key !== targetKey);
 
@@ -154,68 +184,203 @@ export function Component(props: TabsProps) {
     }
   };
 
-  const handleAddTabOk = (newTabs: TabItem[]) => {
+  /** Handles successful addition of new tabs. */
+  const handleAddTabOk = (newTabs: TabItem[]): void => {
     props.setTabList([props.tabList[0], ...newTabs]);
     setActiveKey(props.tabList[0].key);
     setAddTabDialogOpen(false);
   };
-  
-  const handleRename = async (key: string, newName: string) => {
-    if (props.storage && props.project) {
-      try {
-        let newPath = await commonStorage.renameModuleInProject(
+
+  /** Handles renaming a module tab. */
+  const handleRename = async (key: string, newName: string): Promise<void> => {
+    if (!props.storage || !props.project) {
+      return;
+    }
+
+    try {
+      const newPath = await commonStorage.renameModuleInProject(
           props.storage,
           props.project,
           newName,
           key
-        );
-        const newTabs = props.tabList.map((tab) => {
-          if (tab.key === key) {
-            return { ...tab, title: newName, key: newPath };
-          }
-          return tab;
-        });
-        props.setTabList(newTabs);
-        setActiveKey(newPath); // Use newPath instead of key
-        props.setProject({...props.project,});
-      } catch (error) {
-        console.error('Error renaming module:', error);
-        props.setAlertErrorMessage('Failed to rename module');
-      }
+      );
+
+      const newTabs = props.tabList.map((tab) => {
+        if (tab.key === key) {
+          return {...tab, title: newName, key: newPath};
+        }
+        return tab;
+      });
+
+      props.setTabList(newTabs);
+      setActiveKey(newPath);
+      props.setProject({...props.project});
+    } catch (error) {
+      console.error('Error renaming module:', error);
+      props.setAlertErrorMessage('Failed to rename module');
     }
+
     setRenameModalOpen(false);
   };
-  const handleCopy = async (key: string, newName: string) => {
-    if (props.storage && props.project) {
-      try {
-        let newPath = await commonStorage.copyModuleInProject(
+
+  /** Handles copying a module tab. */
+  const handleCopy = async (key: string, newName: string): Promise<void> => {
+    if (!props.storage || !props.project) {
+      return;
+    }
+
+    try {
+      const newPath = await commonStorage.copyModuleInProject(
           props.storage,
           props.project,
           newName,
           key
-        );
-        const newTabs = [...props.tabList];
+      );
 
-        // find the original tab to copy its type
-        const originalTab = props.tabList.find(tab => tab.key === key);
-        if (!originalTab) {
-          console.error('Original tab not found for copying:', key);
-          props.setAlertErrorMessage('Original tab not found for copying');
-          return;
-        }
-        // Add the new tab with the copied name and type
-        newTabs.push({ key: newPath, title: newName, type: originalTab.type });
+      const newTabs = [...props.tabList];
+      const originalTab = props.tabList.find((tab) => tab.key === key);
 
-        props.setTabList(newTabs);
-        setActiveKey(newPath); // Use newPath instead of key
-        props.setProject({ ...props.project, });
-      } catch (error) {
-        console.error('Error copying module:', error);
-        props.setAlertErrorMessage('Failed to copy module');
+      if (!originalTab) {
+        console.error('Original tab not found for copying:', key);
+        props.setAlertErrorMessage('Original tab not found for copying');
+        return;
       }
+
+      newTabs.push({key: newPath, title: newName, type: originalTab.type});
+      props.setTabList(newTabs);
+      setActiveKey(newPath);
+      props.setProject({...props.project});
+    } catch (error) {
+      console.error('Error copying module:', error);
+      props.setAlertErrorMessage('Failed to copy module');
     }
+
     setCopyModalOpen(false);
   };
+
+  /** Handles closing other tabs except the current one. */
+  const handleCloseOtherTabs = (currentTabKey: string): void => {
+    const newTabs = props.tabList.filter(
+        (tab) => tab.key === currentTabKey || tab.type === TabType.ROBOT
+    );
+    props.setTabList(newTabs);
+    setActiveKey(currentTabKey);
+  };
+
+  /** Handles opening the rename modal. */
+  const handleOpenRenameModal = (tab: TabItem): void => {
+    const currentTab = props.tabList.find((t) => t.key === tab.key);
+    setName(currentTab ? currentTab.title : tab.title);
+    setCurrentTab(currentTab || tab);
+    setRenameModalOpen(true);
+  };
+
+  /** Handles opening the copy modal. */
+  const handleOpenCopyModal = (tab: TabItem): void => {
+    const currentTab = props.tabList.find((t) => t.key === tab.key);
+    setName((currentTab ? currentTab.title : tab.title) + COPY_SUFFIX);
+    setCurrentTab(currentTab || tab);
+    setCopyModalOpen(true);
+  };
+
+  /** Handles deleting a module tab with confirmation. */
+  const handleDeleteTab = (tab: TabItem): void => {
+    const currentTab = props.tabList.find((t) => t.key === tab.key);
+    const titleToShow = currentTab ? currentTab.title : tab.title;
+
+    modal.confirm({
+      title: `${t('Delete')} ${TabTypeUtils.toString(tab.type)}: ${titleToShow}`,
+      content: t('Are you sure you want to delete this? This action cannot be undone.'),
+      okText: t('Delete'),
+      okType: 'danger',
+      cancelText: t('Cancel'),
+      onOk: async (): Promise<void> => {
+        const newTabs = props.tabList.filter((t) => t.key !== tab.key);
+        props.setTabList(newTabs);
+
+        if (props.storage && props.project) {
+          await commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
+          props.setProject({...props.project});
+        }
+
+        if (newTabs.length > 0) {
+          setActiveKey(newTabs[0].key);
+        }
+      },
+    });
+  };
+
+  /** Gets the minimum tabs count for close others functionality. */
+  const getMinTabsForCloseOthers = (tabType: TabType): number => {
+    return tabType === TabType.ROBOT ? 1 : MIN_TABS_FOR_CLOSE_OTHERS;
+  };
+
+  /** Creates context menu items for a tab. */
+  const createTabContextMenuItems = (tab: TabItem): any[] => [
+    {
+      key: 'close',
+      label: t('Close Tab'),
+      onClick: () => handleTabEdit(tab.key, 'remove'),
+      disabled: tab.type === TabType.ROBOT,
+      icon: <CloseOutlined />,
+    },
+    {
+      key: 'close-others',
+      label: t('Close Other tabs'),
+      onClick: () => handleCloseOtherTabs(tab.key),
+      disabled: props.tabList.length <= getMinTabsForCloseOthers(tab.type),
+      icon: <CloseCircleOutlined />,
+    },
+    {
+      key: 'rename',
+      label: t('Rename...'),
+      disabled: tab.type === TabType.ROBOT,
+      onClick: () => handleOpenRenameModal(tab),
+      icon: <EditOutlined />,
+    },
+    {
+      key: 'delete',
+      label: t('Delete...'),
+      disabled: tab.type === TabType.ROBOT,
+      icon: <DeleteOutlined />,
+      onClick: () => handleDeleteTab(tab),
+    },
+    {
+      key: 'copy',
+      label: t('Copy...'),
+      disabled: tab.type === TabType.ROBOT,
+      icon: <CopyOutlined />,
+      onClick: () => handleOpenCopyModal(tab),
+    },
+  ];
+
+  /** Creates tab items for the Antd.Tabs component. */
+  const createTabItems = (): any[] => {
+    return props.tabList.map((tab) => ({
+      key: tab.key,
+      label: (
+        <Antd.Dropdown
+          menu={{items: createTabContextMenuItems(tab)}}
+          trigger={['contextMenu']}
+        >
+          <span>{tab.title}</span>
+        </Antd.Dropdown>
+      ),
+      icon: TabTypeUtils.getIcon(tab.type),
+      closable: tab.type !== TabType.ROBOT,
+    }));
+  };
+
+  // Effect to handle active tab changes
+  React.useEffect(() => {
+    if (activeKey !== props.activeTab) {
+      if (!isTabOpen(props.activeTab)) {
+        addTab(props.activeTab);
+      }
+      handleTabChange(props.activeTab);
+    }
+  }, [props.activeTab]);
+
   return (
     <>
       {contextHolder}
@@ -229,7 +394,9 @@ export function Component(props: TabsProps) {
       />
 
       <Antd.Modal
-        title={`Rename ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${currentTab ? currentTab.title : ''}`}
+        title={`Rename ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${
+          currentTab ? currentTab.title : ''
+        }`}
         open={renameModalOpen}
         onCancel={() => setRenameModalOpen(false)}
         onOk={() => {
@@ -237,8 +404,8 @@ export function Component(props: TabsProps) {
             handleRename(currentTab.key, name);
           }
         }}
-        okText={t("Rename")}
-        cancelText={t("Cancel")}
+        okText={t('Rename')}
+        cancelText={t('Cancel')}
       >
         {currentTab && (
           <ModuleNameComponent
@@ -256,8 +423,11 @@ export function Component(props: TabsProps) {
           />
         )}
       </Antd.Modal>
+
       <Antd.Modal
-        title={`Copy ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${currentTab ? currentTab.title : ''}`}
+        title={`Copy ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${
+          currentTab ? currentTab.title : ''
+        }`}
         open={copyModalOpen}
         onCancel={() => setCopyModalOpen(false)}
         onOk={() => {
@@ -265,8 +435,8 @@ export function Component(props: TabsProps) {
             handleCopy(currentTab.key, name);
           }
         }}
-        okText={t("Copy")}
-        cancelText={t("Cancel")}
+        okText={t('Copy')}
+        cancelText={t('Cancel')}
       >
         {currentTab && (
           <ModuleNameComponent
@@ -284,110 +454,16 @@ export function Component(props: TabsProps) {
           />
         )}
       </Antd.Modal>
+
       <Antd.Tabs
         type="editable-card"
-        onChange={onChange}
-        onEdit={onEdit}
+        onChange={handleTabChange}
+        onEdit={handleTabEdit}
         activeKey={activeKey}
-        tabBarStyle={{ padding: 0, margin: 0 }}
+        tabBarStyle={{padding: 0, margin: 0}}
         hideAdd={false}
-        items={props.tabList.map((tab) => {
-          return {
-            key: tab.key,
-            label: (
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: 'close',
-                      label: t("Close Tab"),
-                      onClick: () => {
-                        onEdit(tab.key, 'remove');
-                      },
-                      disabled: tab.type === TabType.ROBOT,
-                      icon: <CloseOutlined />
-                    },
-                    {
-                      key: 'close-others',
-                      label: t("Close Other tabs"),
-                      onClick: () => {
-                        const newTabs = props.tabList.filter(t => (t.key === tab.key) || (t.type === TabType.ROBOT));
-                        props.setTabList(newTabs);
-                        setActiveKey(tab.key);
-                      },
-                      disabled: props.tabList.length <= ((tab.type === TabType.ROBOT) ? 1 : 2),
-                      icon: <CloseCircleOutlined />
-                    },
-                    {
-                      key: 'rename',
-                      label: t("Rename..."),
-                      disabled: tab.type === TabType.ROBOT,
-                      onClick: () => {
-                        // Find the current tab to get the latest title
-                        const currentTab = props.tabList.find(t => t.key === tab.key);
-                        setName(currentTab ? currentTab.title : tab.title);
-                        setCurrentTab(currentTab || tab);
-                        setRenameModalOpen(true);
-                      },
-                      icon: <EditOutlined />
-                    },
-                    {
-                      key: 'delete',
-                      label: t("Delete..."),
-                      disabled: tab.type === TabType.ROBOT,
-                      icon: <DeleteOutlined />,
-                      onClick: () => {
-                        // Find the current tab to get the latest title
-                        const currentTab = props.tabList.find(t => t.key === tab.key);
-                        const titleToShow = currentTab ? currentTab.title : tab.title;
-                        modal.confirm({
-                          title: `${t("Delete")} ${TabTypeUtils.toString(tab.type)}: ${titleToShow}`,
-                          content: t("Are you sure you want to delete this? This action cannot be undone."),
-                          okText: t("Delete"),
-                          okType: 'danger',
-                          cancelText: t("Cancel"),
-                          onOk: async () => {
-                            const newTabs = props.tabList.filter(t => t.key !== tab.key);
-                            props.setTabList(newTabs);
-                            if (props.storage && props.project) {
-                              await commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
-                              props.setProject({ ...props.project });
-                            }
-                            // Use newTabs instead of props.tabList since it's already filtered
-                            if (newTabs.length > 0) {
-                              setActiveKey(newTabs[0].key);
-                            }
-                          },
-                        });
-                      }
-                    },
-                    {
-                      key: 'copy',
-                      label: t('Copy...'),
-                      disabled: tab.type === TabType.ROBOT,
-                      icon: <CopyOutlined />,
-                      onClick: () => {
-                        // Find the current tab to get the latest title
-                        const currentTab = props.tabList.find(t => t.key === tab.key);
-                        setName((currentTab ? currentTab.title : tab.title) + "Copy");
-                        setCurrentTab(currentTab || tab);
-                        setCopyModalOpen(true);
-                      },
-                    },
-                  ],
-                }}
-                trigger={['contextMenu']}
-              >
-                <span>
-                  {tab.title}
-                </span>
-              </Dropdown >
-            ),
-            icon: TabTypeUtils.getIcon(tab.type),
-            closable: (tab.type == TabType.ROBOT) ? false : true,
-          }
-        })}
+        items={createTabItems()}
       />
     </>
   );
-};
+}
