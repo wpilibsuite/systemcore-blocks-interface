@@ -22,13 +22,11 @@
 import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from '../editor/extended_python_generator';
 import * as toolboxItems from './items';
-import { getToolboxJSON } from '../toolbox/toolbox';
-
 
 // Tests
 
-export function testAllBlocksInToolbox() {
-  const contents: toolboxItems.ContentsType[] = getToolboxJSON([], null).contents;
+export function testAllBlocksInToolbox(toolbox : Blockly.utils.toolbox.ToolboxDefinition) {
+  const contents  = (toolbox as toolboxItems.Category).contents;
   alert('Press OK to run tests on all blocks from the toolbox.');
   const toolboxTestData = new ToolboxTestData(contents, () => {
     alert('Completed tests on all blocks in the toolbox. See console for any errors.');
@@ -42,12 +40,14 @@ class ToolboxTestData {
   jsonBlocks: toolboxItems.Block[];
   index: number;
 
-  constructor(contents: toolboxItems.ContentsType[], onFinish: () => void) {
+  constructor(contents: toolboxItems.ContentsType[] | undefined, onFinish: () => void) {
     this.onFinish = onFinish;
     this.blocklyWorkspace = new Blockly.Workspace();
     this.blocklyWorkspace.MAX_UNDO = 0;
     this.jsonBlocks = [];
-    this.collectBlocks(contents);
+    if(contents){
+      this.collectBlocks(contents);
+    }
     this.index = 0;
   }
 
@@ -55,7 +55,7 @@ class ToolboxTestData {
     contents.forEach((item) => {
       switch (item.kind) {
         default:
-          console.log('Error - item.kind is ' + item.kind + '. It must be block, category, or sep.');
+          console.log('Error - item.kind is ' + item.kind + '. It must be block, category, label, or sep.');
           break;
         case 'block':
           const block = item as toolboxItems.Block;
@@ -68,6 +68,7 @@ class ToolboxTestData {
           }
           break;
         case 'sep':
+        case 'label':
           break;
       }
     });

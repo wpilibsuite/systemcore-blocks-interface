@@ -19,57 +19,170 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
+import { PythonData, organizeVarDataByType, VariableGettersAndSetters } from './python_json_types';
 import { robotPyData } from './robotpy_data';
+import { externalSamplesData } from './external_samples_data';
 
-// Utilities related to RobotPy modules and classes.
+import * as pythonEnum from "../mrc_get_python_enum_value";
+import * as getPythonVariable from "../mrc_get_python_variable";
+import * as setPythonVariable from "../mrc_set_python_variable";
 
+// Utilities related to blocks for python modules and classes, including those from RobotPy, external samples, etc.
+
+const allPythonData: PythonData[] = [];
+allPythonData.push(robotPyData);
+allPythonData.push(externalSamplesData);
+
+
+// Initializes enum and variable blocks for python modules and classes.
+export function initialize() {
+  for (const pythonData of allPythonData) {
+    // Process modules.
+    for (const moduleData of pythonData.modules) {
+      // Initialize enums.
+      for (const enumData of moduleData.enums) {
+        pythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
+      }
+
+      // Initialize module variables.
+      const varsByType: {[key: string]: VariableGettersAndSetters} =
+          organizeVarDataByType(moduleData.moduleVariables);
+      for (const varType in varsByType) {
+        const variableGettersAndSetters = varsByType[varType];
+        getPythonVariable.initializeModuleVariableGetter(
+            moduleData.moduleName,
+            varType,
+            variableGettersAndSetters.varNamesForGetter,
+            variableGettersAndSetters.tooltipsForGetter);
+        if (variableGettersAndSetters.varNamesForSetter.length) {
+          setPythonVariable.initializeModuleVariableSetter(
+              moduleData.moduleName,
+              varType,
+              variableGettersAndSetters.varNamesForSetter,
+              variableGettersAndSetters.tooltipsForSetter);
+        }
+      }
+    }
+
+    // Process classes.
+    for (const classData of pythonData.classes) {
+      // Initialize enums.
+      for (const enumData of classData.enums) {
+        pythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
+      }
+
+      // Initialize instance variables.
+      if (classData.instanceVariables.length) {
+        const varsByType: {[key: string]: VariableGettersAndSetters} =
+            organizeVarDataByType(classData.instanceVariables);
+        for (const varType in varsByType) {
+          const variableGettersAndSetters = varsByType[varType];
+          getPythonVariable.initializeInstanceVariableGetter(
+              classData.className,
+              varType,
+              variableGettersAndSetters.varNamesForGetter,
+              variableGettersAndSetters.tooltipsForGetter);
+          if (variableGettersAndSetters.varNamesForSetter.length) {
+            setPythonVariable.initializeInstanceVariableSetter(
+                classData.className,
+                varType,
+                variableGettersAndSetters.varNamesForSetter,
+                variableGettersAndSetters.tooltipsForSetter);
+          }
+        }
+      }
+
+      // Initialize class variables.
+      if (classData.classVariables.length) {
+        const varsByType: {[key: string]: VariableGettersAndSetters} =
+            organizeVarDataByType(classData.classVariables);
+        for (const varType in varsByType) {
+          const variableGettersAndSetters = varsByType[varType];
+          getPythonVariable.initializeClassVariableGetter(
+              classData.className,
+              varType,
+              variableGettersAndSetters.varNamesForGetter,
+              variableGettersAndSetters.tooltipsForGetter);
+          if (variableGettersAndSetters.varNamesForSetter.length) {
+            setPythonVariable.initializeClassVariableSetter(
+                classData.className,
+                varType,
+                variableGettersAndSetters.varNamesForSetter,
+                variableGettersAndSetters.tooltipsForSetter);
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// If the given type is a type alias, returns the value of the type alias.
+// For example, if type is 'wpimath.units.nanoseconds', this function will return 'float'
 export function getAlias(type: string): string | null {
-  const aliases: {[key: string]: string} = robotPyData.aliases;
-  for (const className in aliases) {
-    if (type === className) {
-      return aliases[className];
+  for (const pythonData of allPythonData) {
+    const aliases: {[key: string]: string} = pythonData.aliases;
+    for (const className in aliases) {
+      if (type === className) {
+        return aliases[className];
+      }
     }
   }
   return null;
 }
 
+// Returns the list of subclass names for the given type.
+// For example, if type is 'wpilib.drive.RobotDriveBase', this function will
+// return ['wpilib.drive.DifferentialDrive', 'wpilib.drive.MecanumDrive'].
 function getSubclassNames(type: string): string[] | null {
-  const subclasses: {[key: string]: string[]} = robotPyData.subclasses;
-  for (const className in subclasses) {
-    if (type === className) {
-      return subclasses[className];
+  for (const pythonData of allPythonData) {
+    for (const className in pythonData.subclasses) {
+      if (type === className) {
+        return pythonData.subclasses[className];
+      }
     }
   }
   return null;
 }
 
-// Functions used in multiple python block definitions.
-
+// Returns the array of allowed types for the given string.
+// This function is used by multiple blocks to set the check for an input socket.
 export function getAllowedTypesForSetCheck(type: string): string[] {
   // For the given python type, returns an array of compatible input types.
+
+  const allowedTypes: string[] = [];
+  collectAllowedTypesForSetCheck(type, allowedTypes);
+  return allowedTypes;
+}
+
+function collectAllowedTypesForSetCheck(type: string, allowedTypes: string[]) {
+  // Built-in python types.
+  const check = getCheckForBuiltInType(type);
+  if (check) {
+    allowedTypes.push(check);
+    return;
+  }
+
+  // Not a built-in python type.
+  allowedTypes.push(type);
 
   // Type Aliases
   const alias = getAlias(type);
   if (alias) {
-    return [type].concat(getAllowedTypesForSetCheck(alias));
+    collectAllowedTypesForSetCheck(alias, allowedTypes);
   }
 
-  // Builtin python types.
-  const check = getCheckForBuiltInType(type);
-  if (check) {
-    return [check];
-  }
-
+  // Subclasses
   const subclassNames = getSubclassNames(type);
   if (subclassNames) {
-    return subclassNames;
+    for (const subclassName of subclassNames) {
+      collectAllowedTypesForSetCheck(subclassName, allowedTypes);
+    }
   }
-
-  return [type];
 }
 
-export function getCheckForBuiltInType(type: string): string {
-  // If type is a built-in python type, return the blockly check for it.
+// If type is a built-in python type, this function returns the blockly check for it.
+function getCheckForBuiltInType(type: string): string {
   if (type === 'bool') {
     return 'Boolean';
   }
@@ -92,6 +205,7 @@ export function getCheckForBuiltInType(type: string): string {
   return '';
 }
 
+// Returns the output check for the given type.
 export function getOutputCheck(type: string): string {
   // For the given python type, returns the output type.
   if (type === 'None') {
@@ -104,7 +218,7 @@ export function getOutputCheck(type: string): string {
     return getOutputCheck(alias);
   }
 
-  // Builtin python types.
+  // Built-in python types.
   const check = getCheckForBuiltInType(type);
   if (check) {
     return check;
