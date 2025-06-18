@@ -259,6 +259,16 @@ export class FieldFlydown extends Blockly.FieldTextInput {
             this.createFlydown_(mainWorkspace);
         }
         if (this.flydown_) {
+            const fieldElement = this.getClickTarget_();
+
+            const fieldRect = fieldElement!.getBoundingClientRect();
+            const workspaceRect = mainWorkspace.getParentSvg().getBoundingClientRect();
+            
+            const x = fieldRect.right - workspaceRect.left;
+            const y = fieldRect.top - workspaceRect.top;
+            
+            // Set flydown position
+            this.flydown_.setPosition(x, y);
             // Show the flydown with your blocks
             this.flydown_.show(this.getBlocksForFlydown_());
 
