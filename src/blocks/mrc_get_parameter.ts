@@ -25,17 +25,21 @@ import { Order } from 'blockly/python';
 import { MRC_STYLE_VARIABLES } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { BLOCK_NAME as MRC_CLASS_METHOD_DEF,  ClassMethodDefBlock} from './mrc_class_method_def';
+import * as ChangeFramework from './utils/change_framework'
+import { truncate } from 'node:fs';
 
 export const BLOCK_NAME = 'mrc_get_parameter';
+export const OUTPUT_NAME = 'mrc_get_parameter_output';
 
 
-type GetParameterBlock = Blockly.Block & GetParameterMixin;
+type GetParameterBlock = Blockly.Block & Blockly.BlockSvg & GetParameterMixin;
 interface GetParameterMixin extends GetParameterMixinType {
 }
 type GetParameterMixinType = typeof GET_PARAMETER_BLOCK;
 
 const GET_PARAMETER_BLOCK = {
-  parameterType : '',  // Later this will be set to the type of the parameter, e.g. 'string', 'number', etc.
+  parameterType: '',  // Later this will be set to the type of the parameter, e.g. 'string', 'number', etc.
   /**
     * Block initialization.
     */
@@ -45,13 +49,37 @@ const GET_PARAMETER_BLOCK = {
       .appendField('parameter')
       .appendField(createFieldNonEditableText('parameter'), 'PARAMETER_NAME');
 
-    this.setOutput(true, this.parameterType);
+    this.setOutput(true, [OUTPUT_NAME, this.parameterType]);
+    ChangeFramework.registerCallback(BLOCK_NAME, [Blockly.Events.BLOCK_MOVE], this.onBlockChanged);
   },
   setNameAndType: function (this: GetParameterBlock, name: string, type: string): void {
     this.setFieldValue(name, 'PARAMETER_NAME');
     this.parameterType = type;
-    this.setOutput(true, type);
-  }
+    this.setOutput(true, [OUTPUT_NAME, type]);
+  },
+
+  onBlockChanged(block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase): void {
+    let blockBlock = block as Blockly.Block;
+
+    if (blockEvent.type === Blockly.Events.BLOCK_MOVE) {
+      let parent = ChangeFramework.getParentOfType(block, MRC_CLASS_METHOD_DEF);
+      
+      if (parent) {
+        // It is a class method definition, so we see if this variable is in it.
+        let classMethodDefBlock = parent as ClassMethodDefBlock;
+        for(const parameter of classMethodDefBlock.mrcParameters) {
+          if (parameter.name === blockBlock.getFieldValue('PARAMETER_NAME')) {
+            // If it is, we allow it to stay.
+            blockBlock.setWarningText(null);
+            return;
+          }
+        }
+      }
+      // If we end up here it shouldn't be allowed
+      block.unplug(true);
+      blockBlock.setWarningText("Parameters can only go in their method's block.")
+    }
+  },
 }
 
 export const setup = function () {
@@ -62,8 +90,8 @@ export const pythonFromBlock = function (
   block: GetParameterBlock,
   generator: ExtendedPythonGenerator,
 ) {
-    //TODO (Alan) : Specify the type here as well
-    let code = block.getFieldValue('PARAMETER_NAME');
+  //TODO (Alan) : Specify the type here as well
+  let code = block.getFieldValue('PARAMETER_NAME');
 
-    return [code, Order.ATOMIC];
+  return [code, Order.ATOMIC];
 }
