@@ -31,97 +31,94 @@ enum FlydownLocation {
     DISPLAY_RIGHT = 'displayRight',
 }
 class CustomFlyout extends Blockly.VerticalFlyout {
-    protected x : number = 0;
-    protected y : number = 0;
+    protected x: number = 0;
+    protected y: number = 0;
 
-    public setPosition(x: number, y: number) : void {
+    public setPosition(x: number, y: number): void {
         this.x = x;
         this.y = y;
         this.position();
     }
-      /** Move the flyout to the edge of the workspace. */
-  override position() {
-    if (!this.isVisible() || !this.targetWorkspace!.isVisible()) {
-      return;
+
+    override position() {
+        if (!this.isVisible() || !this.targetWorkspace!.isVisible()) {
+            return;
+        }
+
+        const edgeWidth = this.width_ - this.CORNER_RADIUS;
+        const edgeHeight = this.height_ - 2 * this.CORNER_RADIUS;
+
+        this.mySetBackgroundPath(edgeWidth, edgeHeight);
+
+        const x = this.getX();
+        const y = this.getY();
+
+        this.positionAt_(this.width_, this.height_, x, y);
     }
-    const metricsManager = this.targetWorkspace!.getMetricsManager();
-    const targetWorkspaceViewMetrics = metricsManager.getViewMetrics();
-    this.height_ = 60;
 
-    const edgeWidth = this.width_ - this.CORNER_RADIUS;
-    const edgeHeight = this.height_ - 2 * this.CORNER_RADIUS;
-    
-    this.mySetBackgroundPath(edgeWidth, edgeHeight);
+    /**
+     * Create and set the path for the visible boundaries of the flyout.
+     *
+     * @param width The width of the flyout, not including the rounded corners.
+     * @param height The height of the flyout, not including rounded corners.
+     */
+    private mySetBackgroundPath(width: number, height: number) {
+        const atRight = false;
+        const totalWidth = width + this.CORNER_RADIUS;
 
-    const x = this.getX();
-    const y = this.getY();
+        // Decide whether to start on the left or right.
+        const path: Array<string | number> = [
+            'M ' + (atRight ? totalWidth : 0) + ',0',
+        ];
+        // Top.
+        path.push('h', atRight ? -width : width);
+        // Rounded corner.
+        path.push(
+            'a',
+            this.CORNER_RADIUS,
+            this.CORNER_RADIUS,
+            0,
+            0,
+            atRight ? 0 : 1,
+            atRight ? -this.CORNER_RADIUS : this.CORNER_RADIUS,
+            this.CORNER_RADIUS,
+        );
+        // Side closest to workspace.
+        path.push('v', Math.max(0, height));
+        // Rounded corner.
+        path.push(
+            'a',
+            this.CORNER_RADIUS,
+            this.CORNER_RADIUS,
+            0,
+            0,
+            atRight ? 0 : 1,
+            atRight ? this.CORNER_RADIUS : -this.CORNER_RADIUS,
+            this.CORNER_RADIUS,
+        );
+        // Bottom.
+        path.push('h', atRight ? width : -width);
+        path.push('z');
+        this.svgBackground_!.setAttribute('d', path.join(' '));
+    }
 
-    this.positionAt_(this.width_, this.height_, x, y);
-  }
-    
-  /**
-   * Create and set the path for the visible boundaries of the flyout.
-   *
-   * @param width The width of the flyout, not including the rounded corners.
-   * @param height The height of the flyout, not including rounded corners.
-   */
-  private mySetBackgroundPath(width: number, height: number) {
-    const atRight = false;
-    const totalWidth = width + this.CORNER_RADIUS;
+    /**
+     * Calculates the x coordinate for the flyout position.
+     *
+     * @returns X coordinate.
+     */
+    getX(): number {
+        return this.x;
+    }
 
-    // Decide whether to start on the left or right.
-    const path: Array<string | number> = [
-      'M ' + (atRight ? totalWidth : 0) + ',0',
-    ];
-    // Top.
-    path.push('h', atRight ? -width : width);
-    // Rounded corner.
-    path.push(
-      'a',
-      this.CORNER_RADIUS,
-      this.CORNER_RADIUS,
-      0,
-      0,
-      atRight ? 0 : 1,
-      atRight ? -this.CORNER_RADIUS : this.CORNER_RADIUS,
-      this.CORNER_RADIUS,
-    );
-    // Side closest to workspace.
-    path.push('v', Math.max(0, height));
-    // Rounded corner.
-    path.push(
-      'a',
-      this.CORNER_RADIUS,
-      this.CORNER_RADIUS,
-      0,
-      0,
-      atRight ? 0 : 1,
-      atRight ? this.CORNER_RADIUS : -this.CORNER_RADIUS,
-      this.CORNER_RADIUS,
-    );
-    // Bottom.
-    path.push('h', atRight ? width : -width);
-    path.push('z');
-    this.svgBackground_!.setAttribute('d', path.join(' '));
-  }
-    
-  /**
-   * Calculates the x coordinate for the flyout position.
-   *
-   * @returns X coordinate.
-   */
-  getX(): number {
-    return this.x;
-  }
-
-  /**
-   * Calculates the y coordinate for the flyout position.
-   *
-   * @returns Y coordinate.
-   */
-  getY(): number {
-    return this.y;
-  }
+    /**
+     * Calculates the y coordinate for the flyout position.
+     *
+     * @returns Y coordinate.
+     */
+    getY(): number {
+        return this.y;
+    }
 }
 
 export class FieldFlydown extends Blockly.FieldTextInput {
@@ -220,19 +217,20 @@ export class FieldFlydown extends Blockly.FieldTextInput {
                 this.flydown_.createDom("svg")!,
                 mainWorkspace.getParentSvg(),
             );
-            
+
 
             this.flydown_.init(mainWorkspace);
 
             const fieldElement = this.getClickTarget_();
             if (!fieldElement) return;
-    
+
             const fieldRect = fieldElement.getBoundingClientRect();
             const workspaceRect = mainWorkspace.getParentSvg().getBoundingClientRect();
-            
+
             const x = fieldRect.right - workspaceRect.left;
             const y = fieldRect.top - workspaceRect.top;
-            
+
+
             // Set flydown position
             this.flydown_.setPosition(x, y);
             // Create the flydown without explicit DOM manipulation
@@ -263,10 +261,10 @@ export class FieldFlydown extends Blockly.FieldTextInput {
 
             const fieldRect = fieldElement!.getBoundingClientRect();
             const workspaceRect = mainWorkspace.getParentSvg().getBoundingClientRect();
-            
+
             const x = fieldRect.right - workspaceRect.left;
             const y = fieldRect.top - workspaceRect.top;
-            
+
             // Set flydown position
             this.flydown_.setPosition(x, y);
             // Show the flydown with your blocks
@@ -278,7 +276,7 @@ export class FieldFlydown extends Blockly.FieldTextInput {
     }
     private getBlocksForFlydown_() {
         const name = this.getText();
-        return{
+        return {
             contents: [
                 {
                     kind: 'block',
