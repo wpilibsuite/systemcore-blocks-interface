@@ -57,7 +57,7 @@ class CustomFlyout extends Blockly.VerticalFlyout {
 
         this.positionAt_(this.width_, this.height_, x, y);
     }
-    protected getHeight(): number {
+    override getHeight(): number {
         let flydownWorkspace = this.getWorkspace();
         if (!flydownWorkspace) {
             return 0;
