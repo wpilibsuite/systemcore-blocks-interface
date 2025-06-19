@@ -28,8 +28,9 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_COMPONENT_NAME } from './mrc_component';
-
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
+import { BLOCK_NAME as  MRC_EVENT_NAME } from './mrc_event';
+import { OUTPUT_NAME as EVENT_OUTPUT } from './mrc_event';
 
 export const BLOCK_NAME = 'mrc_mechanism_component_holder';
 
@@ -69,12 +70,14 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.setInputsInline(false);
     this.appendStatementInput('MECHANISMS').setCheck(MECHANISM_OUTPUT).appendField('Mechanisms');
     this.appendStatementInput('COMPONENTS').setCheck(COMPONENT_OUTPUT).appendField('Components');
+    this.appendStatementInput('EVENTS').setCheck(EVENT_OUTPUT).appendField('Events');
+
 
     this.setOutput(false);
     this.setStyle(MRC_STYLE_MECHANISMS);
     ChangeFramework.registerCallback(MRC_COMPONENT_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
     ChangeFramework.registerCallback(MRC_MECHANISM_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
-
+    ChangeFramework.registerCallback(MRC_EVENT_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
   },
   saveExtraState: function (this: MechanismComponentHolderBlock): MechanismComponentHolderExtraState {
     const extraState: MechanismComponentHolderExtraState = {
@@ -140,7 +143,7 @@ function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator:
   if (body != '') {
     code += body;
   } 
-  
+
   generator.addClassMethodDefinition('define_hardware', code);
 }
 

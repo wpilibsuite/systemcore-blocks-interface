@@ -22,16 +22,20 @@
 import * as Blockly from 'blockly';
 import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
+import { createFieldFlydown } from '../fields/field_flydown';
 import * as ChangeFramework from './utils/change_framework'
 import { getLegalName } from './utils/python';
 import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
+import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
+import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
+
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
-const MUTATOR_BLOCK_NAME = 'methods_mutatorarg';
-const PARAM_CONTAINER_BLOCK_NAME    = 'method_param_container';
+export const MUTATOR_BLOCK_NAME = 'methods_mutatorarg';
+const PARAM_CONTAINER_BLOCK_NAME = 'method_param_container';
 
 export type Parameter = {
     name: string,
@@ -87,8 +91,7 @@ const CLASS_METHOD_DEF = {
      */
     init: function (this: ClassMethodDefBlock): void {
         this.appendDummyInput("TITLE")
-            .appendField('', 'NAME')
-            .appendField('', 'PARAMS');
+            .appendField('', 'NAME');
         this.setOutput(false);
         this.setStyle(MRC_STYLE_CLASS_BLOCKS);
         this.appendStatementInput('STACK').appendField('');
@@ -147,11 +150,11 @@ const CLASS_METHOD_DEF = {
     updateBlock_: function (this: ClassMethodDefBlock): void {
         const name = this.getFieldValue('NAME');
         const input = this.getInput('TITLE');
-        if (!input){
+        if (!input) {
             return;
         }
         input.removeField('NAME');
-            
+
         if (this.mrcCanChangeSignature) {
             const nameField = new Blockly.FieldTextInput(name);
             input.insertFieldAt(0, nameField, 'NAME');
@@ -161,7 +164,7 @@ const CLASS_METHOD_DEF = {
         else {
             input.insertFieldAt(0, createFieldNonEditableText(name), 'NAME');
             //Case because a current bug in blockly where it won't allow passing null to Blockly.Block.setMutator makes it necessary.
-            (this as Blockly.BlockSvg).setMutator( null );
+            (this as Blockly.BlockSvg).setMutator(null);
         }
         this.mrcUpdateParams();
     },
@@ -170,10 +173,15 @@ const CLASS_METHOD_DEF = {
         this.mrcParameters = [];
 
         let paramBlock = containerBlock.getInputTargetBlock('STACK');
-        while (paramBlock && !paramBlock.isInsertionMarker()) {
-            const param : Parameter = {
-                name : paramBlock.getFieldValue('NAME'),
-                type : ''
+        while (paramBlock) {
+            const param: Parameter = {
+                name: paramBlock.getFieldValue('NAME'),
+                type: ''
+            }
+            if (paramBlock.originalName) {
+                // This is a mutator arg block, so we can get the original name.
+                this.mrcRenameParameter(paramBlock.originalName, param.name);
+                paramBlock.originalName = param.name;
             }
             this.mrcParameters.push(param);
             paramBlock =
@@ -194,47 +202,60 @@ const CLASS_METHOD_DEF = {
         for (let i = 0; i < this.mrcParameters.length; i++) {
             let itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME);
             (itemBlock as Blockly.BlockSvg).initSvg();
-            itemBlock.setFieldValue(this.mrcParameters[i].name, 'NAME')
+            itemBlock.setFieldValue(this.mrcParameters[i].name, 'NAME');
+            (itemBlock as MethodMutatorArgBlock).originalName = this.mrcParameters[i].name;
 
             connection!.connect(itemBlock.previousConnection!);
             connection = itemBlock.nextConnection;
         }
         return topBlock;
     },
-    mrcUpdateParams: function (this : ClassMethodDefBlock) {
-        let paramString = '';
-        if (this.mrcParameters.length > 0){
-            this.mrcParameters.forEach((param) => {
-                if (paramString != '') {
-                    paramString += ', ';
+    mrcRenameParameter: function (this: ClassMethodDefBlock, oldName: string, newName: string) {
+        let nextBlock = this.getInputTargetBlock('STACK');
+
+        if(nextBlock){
+            findConnectedBlocksOfType(nextBlock, MRC_GET_PARAMETER_BLOCK_NAME).forEach((block) => {
+                if (block.getFieldValue('PARAMETER_NAME') === oldName) {
+                    block.setFieldValue(newName, 'PARAMETER_NAME');
                 }
-                paramString += param.name;
             });
-            paramString = Blockly.Msg['PROCEDURES_BEFORE_PARAMS'] + ' ' + paramString;
-        }
-        // The params field is deterministic based on the mutation,
-        // no need to fire a change event.
-        Blockly.Events.disable();
-        try {
-            this.setFieldValue(paramString, 'PARAMS');
-        } finally {
-            Blockly.Events.enable();
         }
     },
+    mrcUpdateParams: function (this: ClassMethodDefBlock) {
+        if (this.mrcParameters.length > 0) {
+            let input = this.getInput('TITLE');
+            if (input) {
+                this.removeParameterFields(input);
+                this.mrcParameters.forEach((param) => {
+                    const paramName = 'PARAM_' + param.name;                    
+                    input.appendField(createFieldFlydown(param.name, false), paramName);
+                });
+            }
+        }
+    },
+    removeParameterFields: function (input: Blockly.Input) {
+        const fieldsToRemove = input.fieldRow
+            .filter(field => field.name?.startsWith('PARAM_'))
+            .map(field => field.name!);
+
+        fieldsToRemove.forEach(fieldName => {
+            input.removeField(fieldName);
+        });
+    },
     mrcNameFieldValidator(this: ClassMethodDefBlock, nameField: Blockly.FieldTextInput, name: string): string {
-      // When the user changes the method name on the block, clear the mrcPythonMethodName field.
-      this.mrcPythonMethodName = '';
+        // When the user changes the method name on the block, clear the mrcPythonMethodName field.
+        this.mrcPythonMethodName = '';
 
-      // Strip leading and trailing whitespace.
-      name = name.trim();
+        // Strip leading and trailing whitespace.
+        name = name.trim();
 
-      const legalName = findLegalMethodName(name, this);
-      const oldName = nameField.getValue();
-      if (oldName && oldName !== name && oldName !== legalName) {
-        // Rename any callers.
-        renameMethodCallers(this.workspace, oldName, legalName);
-      }
-      return legalName;
+        const legalName = findLegalMethodName(name, this);
+        const oldName = nameField.getValue();
+        if (oldName && oldName !== name && oldName !== legalName) {
+            // Rename any callers.
+            renameMethodCallers(this.workspace, oldName, legalName);
+        }
+        return legalName;
     },
 };
 
@@ -248,21 +269,21 @@ const CLASS_METHOD_DEF = {
  * @returns Non-colliding name.
  */
 function findLegalMethodName(name: string, block: ClassMethodDefBlock): string {
-  if (block.isInFlyout) {
-    // Flyouts can have multiple methods called 'my_method'.
-    return name;
-  }
-  name = name || 'unnamed';
-  while (isMethodNameUsed(name, block.workspace, block)) {
-    // Collision with another method.
-    const r = name.match(/^(.*?)(\d+)$/);
-    if (!r) {
-      name += '2';
-    } else {
-      name = r[1] + (parseInt(r[2]) + 1);
+    if (block.isInFlyout) {
+        // Flyouts can have multiple methods called 'my_method'.
+        return name;
     }
-  }
-  return name;
+    name = name || 'unnamed';
+    while (isMethodNameUsed(name, block.workspace, block)) {
+        // Collision with another method.
+        const r = name.match(/^(.*?)(\d+)$/);
+        if (!r) {
+            name += '2';
+        } else {
+            name = r[1] + (parseInt(r[2]) + 1);
+        }
+    }
+    return name;
 }
 
 /**
@@ -276,25 +297,25 @@ function findLegalMethodName(name: string, block: ClassMethodDefBlock): string {
  */
 function isMethodNameUsed(
     name: string, workspace: Blockly.Workspace, opt_exclude?: Blockly.Block): boolean {
-  const nameLowerCase = name.toLowerCase();
-  for (const block of workspace.getBlocksByType('mrc_class_method_def')) {
-    if (block === opt_exclude) {
-      continue;
+    const nameLowerCase = name.toLowerCase();
+    for (const block of workspace.getBlocksByType('mrc_class_method_def')) {
+        if (block === opt_exclude) {
+            continue;
+        }
+        if (nameLowerCase === block.getFieldValue('NAME').toLowerCase()) {
+            return true;
+        }
+        const classMethodDefBlock = block as ClassMethodDefBlock;
+        if (classMethodDefBlock.mrcPythonMethodName &&
+            nameLowerCase === classMethodDefBlock.mrcPythonMethodName.toLowerCase()) {
+            return true;
+        }
     }
-    if (nameLowerCase === block.getFieldValue('NAME').toLowerCase()) {
-      return true;
-    }
-    const classMethodDefBlock = block as ClassMethodDefBlock;
-    if (classMethodDefBlock.mrcPythonMethodName &&
-        nameLowerCase === classMethodDefBlock.mrcPythonMethodName.toLowerCase()) {
-      return true;
-    }
-  }
-  return false;
+    return false;
 }
 
 const METHOD_PARAM_CONTAINER = {
-    init: function (this : Blockly.Block) {
+    init: function (this: Blockly.Block) {
         this.appendDummyInput("TITLE").appendField('Parameters');
         this.appendStatementInput('STACK');
         this.setStyle(MRC_STYLE_CLASS_BLOCKS);
@@ -303,12 +324,13 @@ const METHOD_PARAM_CONTAINER = {
 };
 
 type MethodMutatorArgBlock = Blockly.Block & MethodMutatorArgMixin & Blockly.BlockSvg;
-interface MethodMutatorArgMixin extends MethodMutatorArgMixinType{
-
+interface MethodMutatorArgMixin extends MethodMutatorArgMixinType {
+    originalName: string,
 }
+
 type MethodMutatorArgMixinType = typeof METHODS_MUTATORARG;
 
-function setName(block: Blockly.BlockSvg){
+function setName(block: Blockly.BlockSvg) {
     const parentBlock = ChangeFramework.getParentOfType(block, PARAM_CONTAINER_BLOCK_NAME);
     if (parentBlock) {
         const variableBlocks = parentBlock!.getDescendants(true)
@@ -318,36 +340,38 @@ function setName(block: Blockly.BlockSvg){
                 otherNames.push(variableBlock.getFieldValue('NAME'));
             }
         });
-        const currentName = block.getFieldValue('NAME');       
+        const currentName = block.getFieldValue('NAME');
         block.setFieldValue(getLegalName(currentName, otherNames), 'NAME');
         updateMutatorFlyout(block.workspace);
     }
 }
 
 const METHODS_MUTATORARG = {
-    init: function (this : MethodMutatorArgBlock) {
+    init: function (this: MethodMutatorArgBlock) {
         this.appendDummyInput()
             .appendField(new Blockly.FieldTextInput(Blockly.Procedures.DEFAULT_ARG), 'NAME');
         this.setPreviousStatement(true);
         this.setNextStatement(true);
         this.setStyle(MRC_STYLE_CLASS_BLOCKS);
+        this.originalName = '';
         this.contextMenu = false;
         ChangeFramework.registerCallback(MUTATOR_BLOCK_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
     },
     onBlockChanged: function (block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase) {
-        if (blockEvent.type == Blockly.Events.BLOCK_MOVE){
+        if (blockEvent.type == Blockly.Events.BLOCK_MOVE) {
             let blockMoveEvent = blockEvent as Blockly.Events.BlockMove;
             if (blockMoveEvent.reason?.includes('connect')) {
-                    setName(block);
-            }
-        }
-        else{
-            if(blockEvent.type == Blockly.Events.BLOCK_CHANGE){
                 setName(block);
             }
-        } 
+        }
+        else {
+            if (blockEvent.type == Blockly.Events.BLOCK_CHANGE) {
+                setName(block);
+            }
+        }
     },
 }
+
 
 /**
  * Updates the procedure mutator's flyout so that the arg block is not a
@@ -357,24 +381,24 @@ const METHODS_MUTATORARG = {
  *     is what is being updated.
  */
 function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
-  const usedNames = [];
-  const blocks = workspace.getBlocksByType(MUTATOR_BLOCK_NAME, false);
-  for (let i = 0, block; (block = blocks[i]); i++) {
-    usedNames.push(block.getFieldValue('NAME'));
-  }
-  const argValue = Blockly.Variables.generateUniqueNameFromOptions(
-    Blockly.Procedures.DEFAULT_ARG,
-    usedNames,
-  );
-  const jsonBlock = {
-    kind: 'block',
-    type: MUTATOR_BLOCK_NAME,
-    fields: {
-        NAME: argValue,
-    },
-  };
+    const usedNames = [];
+    const blocks = workspace.getBlocksByType(MUTATOR_BLOCK_NAME, false);
+    for (let i = 0, block; (block = blocks[i]); i++) {
+        usedNames.push(block.getFieldValue('NAME'));
+    }
+    const argValue = Blockly.Variables.generateUniqueNameFromOptions(
+        Blockly.Procedures.DEFAULT_ARG,
+        usedNames,
+    );
+    const jsonBlock = {
+        kind: 'block',
+        type: MUTATOR_BLOCK_NAME,
+        fields: {
+            NAME: argValue,
+        },
+    };
 
-  workspace.updateToolbox({contents:[jsonBlock]});
+    workspace.updateToolbox({ contents: [jsonBlock] });
 }
 
 
@@ -386,37 +410,37 @@ function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
  * @internal
  */
 export function mutatorOpenListener(e: Blockly.Events.Abstract) {
-    if (e.type != Blockly.Events.BUBBLE_OPEN){
-        return;  
-    }   
+    if (e.type != Blockly.Events.BUBBLE_OPEN) {
+        return;
+    }
     const bubbleEvent = e as Blockly.Events.BubbleOpen;
     if (
-      !(bubbleEvent.bubbleType === 'mutator' && bubbleEvent.isOpen) ||
-      !bubbleEvent.blockId
+        !(bubbleEvent.bubbleType === 'mutator' && bubbleEvent.isOpen) ||
+        !bubbleEvent.blockId
     ) {
-      return;
+        return;
     }
     const workspaceId = bubbleEvent.workspaceId;
     const block = Blockly.common
-      .getWorkspaceById(workspaceId)!
-      .getBlockById(bubbleEvent.blockId) as Blockly.BlockSvg;
+        .getWorkspaceById(workspaceId)!
+        .getBlockById(bubbleEvent.blockId) as Blockly.BlockSvg;
 
     if (block.type !== BLOCK_NAME) {
-      return;
+        return;
     }
     const workspace = (
-      block.getIcon(Blockly.icons.MutatorIcon.TYPE) as Blockly.icons.MutatorIcon
+        block.getIcon(Blockly.icons.MutatorIcon.TYPE) as Blockly.icons.MutatorIcon
     ).getWorkspace()!;
 
     updateMutatorFlyout(workspace);
     ChangeFramework.setup(workspace);
-  }
+}
 
 
-export const setup = function() {
-  Blockly.Blocks[BLOCK_NAME] = CLASS_METHOD_DEF;
-  Blockly.Blocks[MUTATOR_BLOCK_NAME] = METHODS_MUTATORARG;
-  Blockly.Blocks[PARAM_CONTAINER_BLOCK_NAME] = METHOD_PARAM_CONTAINER;
+export const setup = function () {
+    Blockly.Blocks[BLOCK_NAME] = CLASS_METHOD_DEF;
+    Blockly.Blocks[MUTATOR_BLOCK_NAME] = METHODS_MUTATORARG;
+    Blockly.Blocks[PARAM_CONTAINER_BLOCK_NAME] = METHOD_PARAM_CONTAINER;
 };
 
 export const pythonFromBlock = function (
@@ -457,11 +481,11 @@ export const pythonFromBlock = function (
         // After executing the function body, revisit this block for the return.
         xfix2 = xfix1;
     }
-    if(block.mrcPythonMethodName == '__init__'){
+    if (block.mrcPythonMethodName == '__init__') {
         let class_specific = generator.getClassSpecificForInit();
         branch = generator.INDENT + 'super().__init__(' + class_specific + ')\n' +
             generator.defineClassVariables() + branch;
-    }    
+    }
     if (returnValue) {
         returnValue = generator.INDENT + 'return ' + returnValue + '\n';
     } else if (!branch) {

@@ -30,10 +30,17 @@ export const MRC_STYLE_CLASS_BLOCKS = 'mrc_style_class_blocks';
 export const MRC_CATEGORY_STYLE_METHODS = 'mrc_category_style_methods';
 export const MRC_STYLE_MECHANISMS = 'mrc_style_mechanisms';
 export const MRC_STYLE_COMPONENTS = 'mrc_style_components';
+export const MRC_STYLE_EVENTS = 'mrc_style_events';
 export const MRC_STYLE_PORTS = 'mrc_style_ports';
 
 export const add_mrc_styles = function (theme: Blockly.Theme): Blockly.Theme {
     theme.setBlockStyle(MRC_STYLE_FUNCTIONS, {
+        colourPrimary: "#805ba5",
+        colourSecondary: "#e6deed",
+        colourTertiary: "#664984",
+        hat: ""
+    });
+    theme.setBlockStyle(MRC_STYLE_EVENTS, {
         colourPrimary: "#805ba5",
         colourSecondary: "#e6deed",
         colourTertiary: "#664984",
