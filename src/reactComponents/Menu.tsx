@@ -60,13 +60,15 @@ function getItem(
     label: React.ReactNode,
     key: React.Key,
     icon?: React.ReactNode,
-    children?: MenuItem[]
+    children?: MenuItem[],
+    disabled?: boolean
 ): MenuItem {
   return {
     key,
     icon,
     children,
     label,
+    disabled
   } as MenuItem;
 }
 
@@ -82,7 +84,7 @@ function getDivider(): MenuItem {
 /**
  * Generates menu items for a given project.
  */
-function getMenuItems(project: commonStorage.Project): MenuItem[] {
+function getMenuItems(t: (key: string) => string, project: commonStorage.Project): MenuItem[] {
   const mechanisms: MenuItem[] = [];
   const opmodes: MenuItem[] = [];
 
@@ -113,20 +115,27 @@ function getMenuItems(project: commonStorage.Project): MenuItem[] {
   opmodes.push(getItem('Manage...', 'manageOpmodes'));
 
   return [
-    getItem('Project', '100', <FolderOutlined />, [
-      getItem('Save', 'save', <SaveOutlined />),
-      getItem('Deploy', 'deploy'),
+    getItem(t('Project'), 'project', <FolderOutlined />, [
+      getItem(t('Save'), 'save', <SaveOutlined />),
+      getItem(t('Deploy'), 'deploy', undefined, undefined, true),
       getDivider(),
-      getItem('Manage...', 'manageProjects'),
+      getItem(t('Manage') + '...', 'manageProjects'),
     ]),
-    getItem('Explorer', 'explorer', <FileOutlined />, [
-      getItem('Robot', project.modulePath, <RobotOutlined />),
-      getItem('Mechanisms', '2', <BlockOutlined />, mechanisms),
-      getItem('OpModes', '3', <CodeOutlined />, opmodes),
+    getItem(t('Explorer'), 'explorer', <FileOutlined />, [
+      getItem(t('Robot'), project.modulePath, <RobotOutlined />),
+      getItem(t('Mechanisms'), 'mechanisms', <BlockOutlined />, mechanisms),
+      getItem(t('OpModes'), 'opmodes', <CodeOutlined />, opmodes),
     ]),
-    getItem('Settings', '4', <SettingOutlined />, [
-      getItem('WPI toolbox', '42'),
+    getItem(t('Settings'), 'settings', <SettingOutlined />, [
+      getItem(t('WPI toolbox'), 'wpi_toolbox'),
+      getItem(t('Theme') + '...', 'theme')
     ]),
+    getItem(t('Help'), 'help', <FileOutlined />, [
+      getItem(t('Documentation'), 'documentation'),
+      getItem(t('Tutorials'), 'tutorials'),
+      getItem(t('About'), 'about', <FileOutlined />),      
+    ]),
+    getItem(t('About'), 'about', <FileOutlined />),
   ];
 }
 
@@ -268,7 +277,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   React.useEffect(() => {
     if (props.project) {
       setMostRecentProject();
-      setMenuItems(getMenuItems(props.project));
+      setMenuItems(getMenuItems(t, props.project));
       setNoProjects(false);
     }
   }, [props.project]);
