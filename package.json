@@ -5,11 +5,11 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
-    "@blockly/theme-dark": "^7.0.7",
+    "@blockly/theme-dark": "^8.0.1",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "antd": "^5.22.1",
-    "blockly": "^11.1.1",
+    "blockly": "^12.1.0",
     "i18next": "^24.2.2",
     "i18next-http-backend": "^3.0.2",
     "jszip": "^3.10.1",
