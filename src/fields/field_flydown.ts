@@ -45,6 +45,8 @@ class CustomFlyout extends Blockly.VerticalFlyout {
             return;
         }
 
+        this.height_ = this.getHeight();
+
         const edgeWidth = this.width_ - this.CORNER_RADIUS;
         const edgeHeight = this.height_ - 2 * this.CORNER_RADIUS;
 
@@ -55,6 +57,21 @@ class CustomFlyout extends Blockly.VerticalFlyout {
 
         this.positionAt_(this.width_, this.height_, x, y);
     }
+    protected getHeight(): number {
+        let flydownWorkspace = this.getWorkspace();
+        if (!flydownWorkspace) {
+            return 0;
+        }
+        const blocks = flydownWorkspace.getAllBlocks();
+        let height = 0; 
+        blocks.forEach((block : Blockly.BlockSvg) => {
+            const blockHeight = block.getHeightWidth().height;
+            height += blockHeight + this.GAP_Y; // Add some padding between blocks
+        });
+
+        return height;
+    }
+    
 
     /**
      * Create and set the path for the visible boundaries of the flyout.
