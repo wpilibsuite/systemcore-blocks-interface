@@ -35,6 +35,7 @@ interface GetParameterMixin extends GetParameterMixinType {
 type GetParameterMixinType = typeof GET_PARAMETER_BLOCK;
 
 const GET_PARAMETER_BLOCK = {
+  parameterType : '',  // Later this will be set to the type of the parameter, e.g. 'string', 'number', etc.
   /**
     * Block initialization.
     */
@@ -44,9 +45,13 @@ const GET_PARAMETER_BLOCK = {
       .appendField('parameter')
       .appendField(createFieldNonEditableText('parameter'), 'PARAMETER_NAME');
 
-    //this.setOutput(true, OUTPUT_NAME);
-    this.setOutput(true);
+    this.setOutput(true, this.parameterType);
   },
+  setNameAndType: function (this: GetParameterBlock, name: string, type: string): void {
+    this.setFieldValue(name, 'PARAMETER_NAME');
+    this.parameterType = type;
+    this.setOutput(true, type);
+  }
 }
 
 export const setup = function () {
