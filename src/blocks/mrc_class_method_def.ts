@@ -28,6 +28,9 @@ import { getLegalName } from './utils/python';
 import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
+import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
+import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
+
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
@@ -170,10 +173,15 @@ const CLASS_METHOD_DEF = {
         this.mrcParameters = [];
 
         let paramBlock = containerBlock.getInputTargetBlock('STACK');
-        while (paramBlock && !paramBlock.isInsertionMarker()) {
+        while (paramBlock) {
             const param: Parameter = {
                 name: paramBlock.getFieldValue('NAME'),
                 type: ''
+            }
+            if (paramBlock.originalName) {
+                // This is a mutator arg block, so we can get the original name.
+                this.mrcRenameParameter(paramBlock.originalName, param.name);
+                paramBlock.originalName = param.name;
             }
             this.mrcParameters.push(param);
             paramBlock =
@@ -194,12 +202,24 @@ const CLASS_METHOD_DEF = {
         for (let i = 0; i < this.mrcParameters.length; i++) {
             let itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME);
             (itemBlock as Blockly.BlockSvg).initSvg();
-            itemBlock.setFieldValue(this.mrcParameters[i].name, 'NAME')
+            itemBlock.setFieldValue(this.mrcParameters[i].name, 'NAME');
+            (itemBlock as MethodMutatorArgBlock).originalName = this.mrcParameters[i].name;
 
             connection!.connect(itemBlock.previousConnection!);
             connection = itemBlock.nextConnection;
         }
         return topBlock;
+    },
+    mrcRenameParameter: function (this: ClassMethodDefBlock, oldName: string, newName: string) {
+        let nextBlock = this.getInputTargetBlock('STACK');
+
+        if(nextBlock){
+            findConnectedBlocksOfType(nextBlock, MRC_GET_PARAMETER_BLOCK_NAME).forEach((block) => {
+                if (block.getFieldValue('PARAMETER_NAME') === oldName) {
+                    block.setFieldValue(newName, 'PARAMETER_NAME');
+                }
+            });
+        }
     },
     mrcUpdateParams: function (this: ClassMethodDefBlock) {
         if (this.mrcParameters.length > 0) {
@@ -305,8 +325,9 @@ const METHOD_PARAM_CONTAINER = {
 
 type MethodMutatorArgBlock = Blockly.Block & MethodMutatorArgMixin & Blockly.BlockSvg;
 interface MethodMutatorArgMixin extends MethodMutatorArgMixinType {
-
+    originalName: string,
 }
+
 type MethodMutatorArgMixinType = typeof METHODS_MUTATORARG;
 
 function setName(block: Blockly.BlockSvg) {
@@ -332,6 +353,7 @@ const METHODS_MUTATORARG = {
         this.setPreviousStatement(true);
         this.setNextStatement(true);
         this.setStyle(MRC_STYLE_CLASS_BLOCKS);
+        this.originalName = '';
         this.contextMenu = false;
         ChangeFramework.registerCallback(MUTATOR_BLOCK_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
     },
@@ -349,6 +371,7 @@ const METHODS_MUTATORARG = {
         }
     },
 }
+
 
 /**
  * Updates the procedure mutator's flyout so that the arg block is not a
