@@ -88,7 +88,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     if (this.context?.getHasHardware()) {
       variableDefinitions += this.INDENT + "self.define_hardware(";
       variableDefinitions += this.getListOfPorts(true);
-      variableDefinitions += ')';
+      variableDefinitions += ')\n';
     }
 
     return variableDefinitions;

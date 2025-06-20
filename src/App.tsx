@@ -46,7 +46,7 @@ import * as clientSideStorage from './storage/client_side_storage';
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
 import * as ChangeFramework from './blocks/utils/change_framework'
-import { mutatorOpenListener } from './blocks/mrc_class_method_def'
+import { mutatorOpenListener } from './blocks/mrc_param_container'
 
 const App: React.FC = () => {
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');

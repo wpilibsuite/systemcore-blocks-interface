@@ -30,6 +30,7 @@ import * as toolboxRobot from '../toolbox/toolbox_robot';
 
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { MethodsCategory} from '../toolbox/methods_category';
+import { EventsCategory} from '../toolbox/event_category';
 
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
@@ -44,6 +45,7 @@ export class Editor {
   private generatorContext: GeneratorContext;
   private storage: commonStorage.Storage;
   private methodsCategory: MethodsCategory;
+  private eventsCategory: EventsCategory;
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
   private projectPath: string = '';
@@ -58,6 +60,7 @@ export class Editor {
     this.generatorContext = generatorContext;
     this.storage = storage;
     this.methodsCategory = new MethodsCategory(blocklyWorkspace);
+    this.eventsCategory = new EventsCategory(blocklyWorkspace);
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -120,6 +123,7 @@ export class Editor {
     this.generatorContext.setModule(currentModule);
     this.currentModule = currentModule;
     this.methodsCategory.setCurrentModule(currentModule);
+    this.eventsCategory.setCurrentModule(currentModule);
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
       this.projectPath = commonStorage.makeProjectPath(currentModule.projectName);
