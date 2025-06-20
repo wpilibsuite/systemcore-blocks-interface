@@ -1,5 +1,5 @@
 {
-  "name": "systemcore-blockly",
+  "name": "SystemCore Blocks",
   "version": "0.1.0",
   "homepage": "/blocks",
   "private": true,
@@ -47,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@electrovir/oss-attribution-generator": "^2.0.0",
     "@shadcn/ui": "^0.0.4",
     "@types/node": "^22.10.0",
     "@types/react-syntax-highlighter": "^15.5.13",
@@ -57,6 +58,7 @@
     "tailwindcss": "^3.4.15",
     "typescript-strict-plugin": "^2.4.4",
     "vite": "^6.0.0",
+    "vite-plugin-static-copy": "^3.0.2",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^3.0.5",
     "vitest-browser-react": "^0.1.0"

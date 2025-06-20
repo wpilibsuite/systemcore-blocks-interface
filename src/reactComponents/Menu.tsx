@@ -31,9 +31,12 @@ import {
   FolderOutlined,
   RobotOutlined,
   SaveOutlined,
+  QuestionCircleOutlined,
+  InfoCircleOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
+import AboutDialog from './AboutModal';
 
 /** Type definition for menu items. */
 type MenuItem = Required<Antd.MenuProps>['items'][number];
@@ -130,12 +133,10 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
       getItem(t('WPI toolbox'), 'wpi_toolbox'),
       getItem(t('Theme') + '...', 'theme')
     ]),
-    getItem(t('Help'), 'help', <FileOutlined />, [
-      getItem(t('Documentation'), 'documentation'),
-      getItem(t('Tutorials'), 'tutorials'),
-      getItem(t('About'), 'about', <FileOutlined />),      
+    getItem(t('Help'), 'help', <QuestionCircleOutlined />, [
+      getItem(t('About') + '...', 'about', <InfoCircleOutlined />
+),
     ]),
-    getItem(t('About'), 'about', <FileOutlined />),
   ];
 }
 
@@ -152,6 +153,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
   const [moduleType, setModuleType] = React.useState<TabType>(TabType.MECHANISM);
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
+  const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
 
   /** Fetches the list of modules from storage. */
   const fetchListOfModules = async (): Promise<commonStorage.Project[]> => {
@@ -243,6 +245,8 @@ export function Component(props: MenuProps): React.JSX.Element {
     } else if (key === 'manageProjects') {
       console.log('Opening projects modal');
       setProjectModalOpen(true);
+    } else if (key === 'about') {
+      setAboutDialogVisible(true);
     } else {
       // TODO: Handle other menu actions
       console.log(`Selected key that wasn't module: ${key}`);
@@ -309,6 +313,10 @@ export function Component(props: MenuProps): React.JSX.Element {
         mode="inline"
         items={menuItems}
         onClick={handleClick}
+      />
+      <AboutDialog
+        visible={aboutDialogVisible}
+        onClose={() => setAboutDialogVisible(false)}
       />
     </>
   );
