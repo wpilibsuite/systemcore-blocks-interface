@@ -67,6 +67,11 @@ export default function FileManageModal(props: FileManageModalProps) {
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
+  const triggerProjectUpdate = (): void => {
+    if (props.project) {
+      props.setProject({...props.project});
+    }
+  }
   React.useEffect(() => {
     if (!props.project || props.moduleType === null) {
       setModules([]);
@@ -116,7 +121,7 @@ export default function FileManageModal(props: FileManageModalProps) {
       });
 
       setModules(newModules);
-      props.setProject({...props.project});
+      triggerProjectUpdate();
     } catch (error) {
       console.error('Error renaming module:', error);
       props.setAlertErrorMessage('Failed to rename module');
@@ -154,7 +159,7 @@ export default function FileManageModal(props: FileManageModalProps) {
       });
 
       setModules(newModules);
-      props.setProject({...props.project});
+      triggerProjectUpdate();
     } catch (error) {
       console.error('Error copying module:', error);
       props.setAlertErrorMessage('Failed to copy module');
@@ -192,8 +197,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
 
     setNewItemName('');
-    props.setProject({...props.project});
-  };
+    triggerProjectUpdate();};
 
   /** Handles delete confirmation for a module. */
   const handleDeleteConfirm = async (record: Module): Promise<void> => {
@@ -206,7 +210,7 @@ export default function FileManageModal(props: FileManageModalProps) {
           props.project,
           record.path
       );
-      props.setProject({...props.project});
+      triggerProjectUpdate();
     }
   };
 

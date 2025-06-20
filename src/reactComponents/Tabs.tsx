@@ -108,7 +108,7 @@ const MIN_TABS_FOR_CLOSE_OTHERS = 2;
  * Provides context menus for tab operations and modal dialogs for user input.
  */
 export function Component(props: TabsProps): React.JSX.Element {
-  const {t} = I18Next.useTranslation();
+  const { t } = I18Next.useTranslation();
   const [modal, contextHolder] = Antd.Modal.useModal();
 
   const [activeKey, setActiveKey] = React.useState(props.activeTab);
@@ -117,6 +117,10 @@ export function Component(props: TabsProps): React.JSX.Element {
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
+
+  const triggerProjectUpdate = (): void => {
+    props.setProject(structuredClone(props.project));
+  }
 
   /** Handles tab change and updates current module. */
   const handleTabChange = (key: string): void => {
@@ -145,10 +149,10 @@ export function Component(props: TabsProps): React.JSX.Element {
 
     switch (module.moduleType) {
       case commonStorage.MODULE_TYPE_MECHANISM:
-        newTabs.push({key, title: module.className, type: TabType.MECHANISM});
+        newTabs.push({ key, title: module.className, type: TabType.MECHANISM });
         break;
       case commonStorage.MODULE_TYPE_OPMODE:
-        newTabs.push({key, title: module.className, type: TabType.OPMODE});
+        newTabs.push({ key, title: module.className, type: TabType.OPMODE });
         break;
       default:
         console.warn('Unknown module type:', module.moduleType);
@@ -160,8 +164,8 @@ export function Component(props: TabsProps): React.JSX.Element {
 
   /** Handles tab edit actions (add/remove). */
   const handleTabEdit = (
-      targetKey: React.MouseEvent | React.KeyboardEvent | string,
-      action: 'add' | 'remove'
+    targetKey: React.MouseEvent | React.KeyboardEvent | string,
+    action: 'add' | 'remove'
   ): void => {
     const items = props.tabList;
     if (action === 'add') {
@@ -187,6 +191,7 @@ export function Component(props: TabsProps): React.JSX.Element {
   /** Handles successful addition of new tabs. */
   const handleAddTabOk = (newTabs: TabItem[]): void => {
     props.setTabList([props.tabList[0], ...newTabs]);
+
     setActiveKey(props.tabList[0].key);
     setAddTabDialogOpen(false);
   };
@@ -199,22 +204,22 @@ export function Component(props: TabsProps): React.JSX.Element {
 
     try {
       const newPath = await commonStorage.renameModuleInProject(
-          props.storage,
-          props.project,
-          newName,
-          key
+        props.storage,
+        props.project,
+        newName,
+        key
       );
 
       const newTabs = props.tabList.map((tab) => {
         if (tab.key === key) {
-          return {...tab, title: newName, key: newPath};
+          return { ...tab, title: newName, key: newPath };
         }
         return tab;
       });
 
       props.setTabList(newTabs);
       setActiveKey(newPath);
-      props.setProject({...props.project});
+      triggerProjectUpdate();
     } catch (error) {
       console.error('Error renaming module:', error);
       props.setAlertErrorMessage('Failed to rename module');
@@ -231,10 +236,10 @@ export function Component(props: TabsProps): React.JSX.Element {
 
     try {
       const newPath = await commonStorage.copyModuleInProject(
-          props.storage,
-          props.project,
-          newName,
-          key
+        props.storage,
+        props.project,
+        newName,
+        key
       );
 
       const newTabs = [...props.tabList];
@@ -246,10 +251,10 @@ export function Component(props: TabsProps): React.JSX.Element {
         return;
       }
 
-      newTabs.push({key: newPath, title: newName, type: originalTab.type});
+      newTabs.push({ key: newPath, title: newName, type: originalTab.type });
       props.setTabList(newTabs);
       setActiveKey(newPath);
-      props.setProject({...props.project});
+      triggerProjectUpdate();
     } catch (error) {
       console.error('Error copying module:', error);
       props.setAlertErrorMessage('Failed to copy module');
@@ -261,7 +266,7 @@ export function Component(props: TabsProps): React.JSX.Element {
   /** Handles closing other tabs except the current one. */
   const handleCloseOtherTabs = (currentTabKey: string): void => {
     const newTabs = props.tabList.filter(
-        (tab) => tab.key === currentTabKey || tab.type === TabType.ROBOT
+      (tab) => tab.key === currentTabKey || tab.type === TabType.ROBOT
     );
     props.setTabList(newTabs);
     setActiveKey(currentTabKey);
@@ -300,7 +305,7 @@ export function Component(props: TabsProps): React.JSX.Element {
 
         if (props.storage && props.project) {
           await commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
-          props.setProject({...props.project});
+          triggerProjectUpdate();
         }
 
         if (newTabs.length > 0) {
@@ -360,7 +365,7 @@ export function Component(props: TabsProps): React.JSX.Element {
       key: tab.key,
       label: (
         <Antd.Dropdown
-          menu={{items: createTabContextMenuItems(tab)}}
+          menu={{ items: createTabContextMenuItems(tab) }}
           trigger={['contextMenu']}
         >
           <span>{tab.title}</span>
@@ -389,14 +394,14 @@ export function Component(props: TabsProps): React.JSX.Element {
         onCancel={() => setAddTabDialogOpen(false)}
         onOk={handleAddTabOk}
         project={props.project}
+        setProject={props.setProject}
         currentTabs={props.tabList}
         storage={props.storage}
       />
 
       <Antd.Modal
-        title={`Rename ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${
-          currentTab ? currentTab.title : ''
-        }`}
+        title={`Rename ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${currentTab ? currentTab.title : ''
+          }`}
         open={renameModalOpen}
         onCancel={() => setRenameModalOpen(false)}
         onOk={() => {
@@ -425,9 +430,8 @@ export function Component(props: TabsProps): React.JSX.Element {
       </Antd.Modal>
 
       <Antd.Modal
-        title={`Copy ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${
-          currentTab ? currentTab.title : ''
-        }`}
+        title={`Copy ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${currentTab ? currentTab.title : ''
+          }`}
         open={copyModalOpen}
         onCancel={() => setCopyModalOpen(false)}
         onOk={() => {
@@ -460,7 +464,7 @@ export function Component(props: TabsProps): React.JSX.Element {
         onChange={handleTabChange}
         onEdit={handleTabEdit}
         activeKey={activeKey}
-        tabBarStyle={{padding: 0, margin: 0}}
+        tabBarStyle={{ padding: 0, margin: 0 }}
         hideAdd={false}
         items={createTabItems()}
       />

@@ -38,6 +38,7 @@ interface AddTabDialogProps {
   onOk: (newTabs: TabItem[]) => void;
   onCancel: () => void;
   project: commonStorage.Project | null;
+  setProject: (project: commonStorage.Project | null) => void;
   currentTabs: TabItem[];
   storage: commonStorage.Storage | null;
 }
@@ -96,6 +97,12 @@ export default function AddTabDialog(props: AddTabDialogProps) {
     setSelectedItems(selectedModules);
   }, [props.project, props.currentTabs]);
 
+  const triggerProjectUpdate = (): void => {
+    if (props.project) {
+      props.setProject({...props.project});
+    }
+  }
+
   /** Handles adding a new item or selecting an existing one. */
   const handleAddNewItem = async (): Promise<void> => {
     const trimmedName = newItemName.trim();
@@ -134,7 +141,9 @@ export default function AddTabDialog(props: AddTabDialogProps) {
         type: tabType,
       };
       setSelectedItems([...selectedItems, module]);
+      triggerProjectUpdate();
     }
+
 
     setNewItemName('');
   };
