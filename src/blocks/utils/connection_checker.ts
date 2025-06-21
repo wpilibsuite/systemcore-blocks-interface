@@ -22,6 +22,7 @@
 import * as Blockly from 'blockly/core';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from '../mrc_mechanism';
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from '../mrc_component';
+import { OUTPUT_NAME as EVENT_OUTPUT } from '../mrc_event';
 
 export class MethodConnectionChecker extends Blockly.ConnectionChecker {
   /**
@@ -50,7 +51,11 @@ export class MethodConnectionChecker extends Blockly.ConnectionChecker {
         (checkArrayTwo && (checkArrayTwo.indexOf(MECHANISM_OUTPUT) != -1))){
          return false;
       }
-
+      // if either one has mrc_event, they must match
+      if((checkArrayOne && (checkArrayOne.indexOf(EVENT_OUTPUT) != -1)) ||
+        (checkArrayTwo && (checkArrayTwo.indexOf(EVENT_OUTPUT) != -1))){
+         return false;
+      }
       return true;
     }
 

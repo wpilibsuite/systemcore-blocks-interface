@@ -38,9 +38,10 @@ import * as commonStorage from './storage/common_storage';
 import * as clientSideStorage from './storage/client_side_storage';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
-import {initialize as initializePythonBlocks} from './blocks/utils/python';
-import * as ChangeFramework from './blocks/utils/change_framework';
-import {mutatorOpenListener} from './blocks/mrc_class_method_def';
+
+import { initialize as initializePythonBlocks } from './blocks/utils/python';
+import * as ChangeFramework from './blocks/utils/change_framework'
+import { mutatorOpenListener } from './blocks/mrc_param_container'
 
 /** Storage key for shown toolbox categories. */
 const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';

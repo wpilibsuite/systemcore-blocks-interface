@@ -158,7 +158,6 @@ function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, genera
   if (components != '') {
     code += components;
   } 
-
   generator.addClassMethodDefinition('define_hardware', code);
 }
 

@@ -24,7 +24,9 @@ import { Order } from 'blockly/python';
 
 import { MRC_STYLE_EVENTS } from '../themes/styles'
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { MUTATOR_BLOCK_NAME } from './mrc_class_method_def'
+import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
+import * as ChangeFramework from './utils/change_framework';
+import { BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER } from './mrc_mechanism_component_holder';
 
 export const BLOCK_NAME = 'mrc_event';
 export const OUTPUT_NAME = 'mrc_event';
@@ -38,10 +40,10 @@ type EventExtraState = {
   params?: Parameter[],
 }
 
-type EventBlock = Blockly.Block & EventMixin & Blockly.BlockSvg;
+export type EventBlock = Blockly.Block & EventMixin & Blockly.BlockSvg;
 
 interface EventMixin extends EventMixinType {
-  mrcParams: Parameter[],
+  mrcParameters: Parameter[],
 }
 type EventMixinType = typeof EVENT;
 
@@ -51,11 +53,12 @@ const EVENT = {
     */
   init: function (this: EventBlock): void {
     this.setStyle(MRC_STYLE_EVENTS);
-    this.appendDummyInput()
+    this.appendDummyInput("TITLE")
       .appendField(new Blockly.FieldTextInput('my_event'), 'NAME');
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
     this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
+    ChangeFramework.registerCallback(BLOCK_NAME, [Blockly.Events.BLOCK_MOVE], this.onBlockChanged);
   },
 
   /**
@@ -65,8 +68,8 @@ const EVENT = {
     const extraState: EventExtraState = {
     };
     extraState.params = [];
-    if (this.mrcParams) {
-      this.mrcParams.forEach((arg) => {
+    if (this.mrcParameters) {
+      this.mrcParameters.forEach((arg) => {
         extraState.params!.push({
           'name': arg.name,
           'type': arg.type,
@@ -79,24 +82,117 @@ const EVENT = {
   * Applies the given state to this block.
   */
   loadExtraState: function (this: EventBlock, extraState: EventExtraState): void {
-    this.mrcParams = [];
+    this.mrcParameters = [];
 
     if (extraState.params) {
       extraState.params.forEach((arg) => {
-        this.mrcParams.push({
+        this.mrcParameters.push({
           'name': arg.name,
           'type': arg.type,
         });
       });
     }
-    this.mrcParams = extraState.params ? extraState.params : [];
+    this.mrcParameters = extraState.params ? extraState.params : [];
     this.updateBlock_();
   },
   /**
      * Update the block to reflect the newly loaded extra state.
      */
   updateBlock_: function (this: EventBlock): void {
-  }
+    const name = this.getFieldValue('NAME');
+    const input = this.getInput('TITLE');
+    if (!input) {
+      return;
+    }
+    input.removeField('NAME');
+
+    const nameField = new Blockly.FieldTextInput(name);
+    input.insertFieldAt(0, nameField, 'NAME');
+    this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
+    // nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
+
+    this.mrcUpdateParams();
+  },
+  compose: function (this: EventBlock, containerBlock: any) {
+    // Parameter list.
+    this.mrcParameters = [];
+
+    let paramBlock = containerBlock.getInputTargetBlock('STACK');
+    while (paramBlock) {
+      const param: Parameter = {
+        name: paramBlock.getFieldValue('NAME'),
+        type: ''
+      }
+      if (paramBlock.originalName) {
+        // This is a mutator arg block, so we can get the original name.
+        paramBlock.originalName = param.name;
+      }
+      this.mrcParameters.push(param);
+      paramBlock =
+        paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
+    }
+    this.mrcUpdateParams();
+    //mutateMethodCallers(this.workspace, this.getFieldValue('NAME'), this.saveExtraState());
+  },
+  decompose: function (this: EventBlock, workspace: Blockly.Workspace) {
+    // This is a special sub-block that only gets created in the mutator UI.
+    // It acts as our "top block"
+    const topBlock = workspace.newBlock(PARAM_CONTAINER_BLOCK_NAME);
+    (topBlock as Blockly.BlockSvg).initSvg();
+
+    // Then we add one sub-block for each item in the list.
+    let connection = topBlock!.getInput('STACK')!.connection;
+
+    for (let i = 0; i < this.mrcParameters.length; i++) {
+      let itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME);
+      (itemBlock as Blockly.BlockSvg).initSvg();
+      itemBlock.setFieldValue(this.mrcParameters[i].name, 'NAME');
+      (itemBlock as MethodMutatorArgBlock).originalName = this.mrcParameters[i].name;
+
+      connection!.connect(itemBlock.previousConnection!);
+      connection = itemBlock.nextConnection;
+    }
+    return topBlock;
+  },
+  mrcUpdateParams: function (this: EventBlock) {
+    if (this.mrcParameters.length > 0) {
+      let input = this.getInput('TITLE');
+      if (input) {
+        this.removeParameterFields(input);
+        this.mrcParameters.forEach((param) => {
+          const paramName = 'PARAM_' + param.name;
+          const field = new Blockly.FieldTextInput(param.name);
+          field.EDITABLE = false;
+          input.appendField(field, paramName);
+        });
+      }
+    }
+  },
+  removeParameterFields: function (input: Blockly.Input) {
+    const fieldsToRemove = input.fieldRow
+      .filter(field => field.name?.startsWith('PARAM_'))
+      .map(field => field.name!);
+
+    fieldsToRemove.forEach(fieldName => {
+      input.removeField(fieldName);
+    });
+  },
+  onBlockChanged(block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase): void {
+      const blockBlock = block as Blockly.Block;
+  
+      if (blockEvent.type === Blockly.Events.BLOCK_MOVE) {
+        const parent = ChangeFramework.getParentOfType(block, MRC_MECHANISM_COMPONENT_HOLDER);
+        
+        if (parent) {
+              // If it is, we allow it to stay.
+              blockBlock.setWarningText(null);
+              return;
+            }
+        // If we end up here it shouldn't be allowed
+        block.unplug(true);
+        blockBlock.setWarningText('Events can only go in the events block');
+      }
+    },
 }
 
 export const setup = function () {

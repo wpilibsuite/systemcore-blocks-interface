@@ -40,16 +40,17 @@ import * as toolboxItems from '../toolbox/items';
 
 export const BLOCK_NAME = 'mrc_call_python_function';
 
-enum FunctionKind {
+export enum FunctionKind {
   MODULE = 'module',
   STATIC = 'static',
   CONSTRUCTOR = 'constructor',
   INSTANCE = 'instance',
   INSTANCE_WITHIN = 'instance_within',
-  INSTANCE_COMPONENT = 'instance_component'
+  INSTANCE_COMPONENT = 'instance_component',
+  EVENT = 'event',
 }
 
-const RETURN_TYPE_NONE = 'None';
+export const RETURN_TYPE_NONE = 'None';
 
 const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
 const FIELD_FUNCTION_NAME = 'FUNC';
@@ -318,6 +319,11 @@ const CALL_PYTHON_FUNCTION = {
           tooltip = 'Calls the instance method ' + functionName + '.';
           break;
         }
+        case FunctionKind.EVENT: {
+          const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
+          tooltip = 'Fires the event ' + functionName + '.';
+          break;
+        }
         case FunctionKind.INSTANCE_COMPONENT: {
           const className = this.mrcComponentClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
@@ -459,6 +465,15 @@ const CALL_PYTHON_FUNCTION = {
           }
           break;
         }
+        case FunctionKind.EVENT: {
+          const input = this.getInput('TITLE');
+          if (!input) {
+            this.appendDummyInput('TITLE')
+                .appendField('fire')
+                .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
+          }
+          break;
+        }
         case FunctionKind.INSTANCE_COMPONENT: {
           const componentNames = Editor.getComponentNames(this.workspace, this.mrcComponentClassName);
           const componentName = this.getComponentName();
@@ -584,6 +599,12 @@ export const pythonFromBlock = function(
       const blocklyName = block.getFieldValue(FIELD_FUNCTION_NAME);
       const functionName = generator.getProcedureName(blocklyName);
       code = 'self.' + functionName;
+      break;
+    }
+    case FunctionKind.EVENT: {
+      const blocklyName = block.getFieldValue(FIELD_FUNCTION_NAME);
+      const functionName = generator.getProcedureName(blocklyName);
+      code = 'if self.events.get("' + functionName + '", None):\n' + generator.INDENT + 'self.events["' + functionName + '"]';
       break;
     }
     case FunctionKind.INSTANCE_COMPONENT: {

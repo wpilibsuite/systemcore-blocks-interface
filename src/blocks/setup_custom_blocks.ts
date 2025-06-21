@@ -15,6 +15,7 @@ import * as Port from './mrc_port';
 import * as OpModeDetails from './mrc_opmode_details';
 import * as Event from './mrc_event';
 import * as GetParameter from './mrc_get_parameter';
+import * as ParameterMutator from './mrc_param_container'
 
 const customBlocks = [
   CallPythonFunction,
@@ -32,12 +33,16 @@ const customBlocks = [
   Port,
   OpModeDetails,
   Event,
-  GetParameter
+  GetParameter,
+  ParameterMutator
 ];
 
 export const setup = function(forBlock: any) {
   customBlocks.forEach(block => {
     block.setup();
-    forBlock[block.BLOCK_NAME] = block.pythonFromBlock;
+    const maybeBlock = block as { pythonFromBlock?: any; BLOCK_NAME?: string };
+    if(maybeBlock.pythonFromBlock && maybeBlock.BLOCK_NAME) {
+      forBlock[maybeBlock.BLOCK_NAME] = maybeBlock.pythonFromBlock;
+    }
   });
 };
