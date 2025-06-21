@@ -23,12 +23,12 @@ import JSZip from 'jszip';
 
 import * as Blockly from 'blockly/core';
 
-import {Block} from '../toolbox/items';
-import startingOpModeBlocks from '../modules/opmode_start.json'; 
+import { Block } from '../toolbox/items';
+import startingOpModeBlocks from '../modules/opmode_start.json';
 import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
 
-import {extendedPythonGenerator} from '../editor/extended_python_generator';
+import { extendedPythonGenerator } from '../editor/extended_python_generator';
 import { createGeneratorContext } from '../editor/generator_context';
 
 // Types, constants, and functions related to modules, regardless of where the modules are stored.
@@ -90,27 +90,214 @@ export interface Storage {
 }
 
 /**
+ * Adds a new module to the project.
+ * @param storage The storage interface to use for creating the module.
+ * @param project The project to add the module to.
+ * @param moduleType The type of the module (e.g., 'mechanism', 'opmode').
+ * @param className The name of the class.
+ */
+export async function addModuleToProject(
+  storage: Storage, project: Project, moduleType: string, className: string): Promise<void> {
+  let newModuleName = classNameToModuleName(className);
+  let newModulePath = makeModulePath(project.projectName, newModuleName);
+
+  if (moduleType === MODULE_TYPE_MECHANISM) {
+    const mechanismContent = newMechanismContent(project.projectName, newModuleName);
+    await storage.createModule(MODULE_TYPE_MECHANISM, newModulePath, mechanismContent);
+    project.mechanisms.push({
+      modulePath: newModulePath,
+      moduleType: MODULE_TYPE_MECHANISM,
+      projectName: project.projectName,
+      moduleName: newModuleName,
+      className: className
+    } as Mechanism);
+  } else if (moduleType === MODULE_TYPE_OPMODE) {
+    const opModeContent = newOpModeContent(project.projectName, newModuleName);
+    await storage.createModule(MODULE_TYPE_OPMODE, newModulePath, opModeContent);
+    project.opModes.push({
+      modulePath: newModulePath,
+      moduleType: MODULE_TYPE_OPMODE,
+      projectName: project.projectName,
+      moduleName: newModuleName,
+      className: className
+    } as OpMode);
+  }
+}
+/**
+ * Removes a module from the project.
+ * @param storage The storage interface to use for deleting the module.
+ * @param project The project to remove the module from.
+ * @param modulePath The path of the module to remove.
+ */
+export async function removeModuleFromProject(
+  storage: Storage, project: Project, modulePath: string): Promise<void> {
+  const module = findModuleInProject(project, modulePath);
+  if (module) {
+    await storage.deleteModule(module.moduleType, modulePath);
+    if (module.moduleType === MODULE_TYPE_MECHANISM) {
+      project.mechanisms = project.mechanisms.filter(m => m.modulePath !== modulePath);
+    } else if (module.moduleType === MODULE_TYPE_OPMODE) {
+      project.opModes = project.opModes.filter(o => o.modulePath !== modulePath);
+    }
+  }
+}
+
+/**
+ * Renames a module in the project.
+ * @param storage The storage interface to use for renaming the module.
+ * @param project The project containing the module to rename.
+ * @param proposedName The new name for the module.
+ * @param oldModuleName The current name of the module.
+ * @returns A promise that resolves when the module has been renamed.
+ */
+export async function renameModuleInProject(
+  storage: Storage, project: Project, proposedName: string, oldModulePath: string): Promise<string> {
+  const module = findModuleInProject(project, oldModulePath);
+  if (module) {
+    const newModuleName = classNameToModuleName(proposedName);
+    const newModulePath = makeModulePath(project.projectName, newModuleName);
+    await storage.renameModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
+    module.modulePath = newModulePath;
+    module.moduleName = newModuleName;
+    module.className = proposedName;
+
+    if (module.moduleType === MODULE_TYPE_MECHANISM) {
+      const mechanism = project.mechanisms.find(m => m.modulePath === module.modulePath);
+      if (mechanism) {
+        mechanism.modulePath = newModulePath;
+        mechanism.moduleName = newModuleName;
+        mechanism.className = proposedName;
+      }
+    } else if (module.moduleType === MODULE_TYPE_OPMODE) {
+      const opMode = project.opModes.find(o => o.modulePath === module.modulePath);
+      if (opMode) {
+        opMode.modulePath = newModulePath;
+        opMode.moduleName = newModuleName;
+        opMode.className = proposedName;
+      }
+      return newModulePath
+    }
+  }
+  return '';
+}
+/**
+ * Copies a module in the project.
+ * @param storage The storage interface to use for copying the module.
+ * @param project The project containing the module to copy.
+ * @param proposedName The new name for the module.
+ * @param oldModuleName The current name of the module.
+ * @returns A promise that resolves when the module has been copied.
+ */
+export async function copyModuleInProject(
+  storage: Storage, project: Project, proposedName: string, oldModulePath: string): Promise<string> {
+  const module = findModuleInProject(project, oldModulePath);
+  if (module) {
+    const newModuleName = classNameToModuleName(proposedName);
+    const newModulePath = makeModulePath(project.projectName, newModuleName);
+    await storage.copyModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
+
+    if (module.moduleType === MODULE_TYPE_MECHANISM) {
+      project.mechanisms.push({
+        modulePath: newModulePath,
+        moduleType: MODULE_TYPE_MECHANISM,
+        projectName: project.projectName,
+        moduleName: newModuleName,
+        className: proposedName
+      } as Mechanism);
+    } else if (module.moduleType === MODULE_TYPE_OPMODE) {
+      project.opModes.push({
+        modulePath: newModulePath,
+        moduleType: MODULE_TYPE_OPMODE,
+        projectName: project.projectName,
+        moduleName: newModuleName,
+        className: proposedName
+      } as OpMode);
+    }
+    return newModulePath;
+  }
+  return '';
+}
+
+/**
+ * Checks if the proposed class name is valid and does not conflict with existing names in the project.
+ * @param project The project to check against.
+ * @param proposedName The proposed class name to validate.
+ * @returns An object containing a boolean `ok` indicating if the name is valid, and an `error` message if it is not.
+ */
+export function isClassNameOk(project: Project, proposedName: string) {
+  let ok = true;
+  let error = '';
+
+  if (!isValidClassName(proposedName)) {
+    ok = false;
+    error = proposedName + ' is not a valid name. Please enter a different name.';
+  }
+  else if (proposedName == project.className) {
+    ok = false;
+    error = 'The project is already named ' + proposedName + '. Please enter a different name.';
+  }
+  else if (getClassInProject(project, proposedName) != null) {
+    ok = false;
+    error = 'Another Mechanism or OpMode is already named ' + proposedName + '. Please enter a different name.'
+  }
+
+  return {
+    ok: ok,
+    error: error
+  }
+}
+
+/**
+ * Returns true if the given classname is in the project
+ */
+export function getClassInProject(project: Project, name: string): Module | null {
+  for (const mechanism of project.mechanisms) {
+    if (mechanism.className === name) {
+      return mechanism;
+    }
+  }
+  for (const opMode of project.opModes) {
+    if (opMode.className === name) {
+      return opMode;
+    }
+  }
+  return null;
+}
+
+/**
  * Returns the module with the given module path, or null if it is not found.
  */
 export function findModule(modules: Project[], modulePath: string): Module | null {
   for (const project of modules) {
-    if (project.modulePath === modulePath) {
-      return project;
-    }
-    for (const mechanism of project.mechanisms) {
-      if (mechanism.modulePath === modulePath) {
-        return mechanism;
-      }
-    }
-    for (const opMode of project.opModes) {
-      if (opMode.modulePath === modulePath) {
-        return opMode;
-      }
+    const result = findModuleInProject(project, modulePath);
+    if (result) {
+      return result;
     }
   }
 
   return null;
 }
+
+/**
+ * Returns the module with the given module path inside the given project, or null if it is not found.
+ */
+export function findModuleInProject(project: Project, modulePath: string): Module | null {
+  if (project.modulePath === modulePath) {
+    return project;
+  }
+  for (const mechanism of project.mechanisms) {
+    if (mechanism.modulePath === modulePath) {
+      return mechanism;
+    }
+  }
+  for (const opMode of project.opModes) {
+    if (opMode.modulePath === modulePath) {
+      return opMode;
+    }
+  }
+  return null;
+}
+
 
 /**
  * Makes the given name a valid class name.
@@ -136,8 +323,8 @@ export function onChangeClassName(name: string): string {
   for (; i < name.length; i++) {
     const char = name.charAt(i);
     if ((char >= 'A' && char <= 'Z') ||
-        (char >= 'a' && char <= 'z') ||
-        (char >= '0' && char <= '9')) {
+      (char >= 'a' && char <= 'z') ||
+      (char >= '0' && char <= '9')) {
       newName += char;
     }
   }
@@ -218,7 +405,7 @@ export function makeProjectPath(projectName: string): string {
  * Returns the project name for given module path.
  */
 export function getProjectName(modulePath: string): string {
-  const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
+  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).py$');
   const result = regex.exec(modulePath)
   if (!result) {
     throw new Error('Unable to extract the project name.');
@@ -230,7 +417,7 @@ export function getProjectName(modulePath: string): string {
  * Returns the module name for given module path.
  */
 export function getModuleName(modulePath: string): string {
-  const regex = new RegExp('^([a-z_][a-z0-9_]*)/([a-z_][a-z0-9_]*).py$');
+  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).py$');
   const result = regex.exec(modulePath)
   if (!result) {
     throw new Error('Unable to extract the module name.');
@@ -239,7 +426,7 @@ export function getModuleName(modulePath: string): string {
 }
 
 function startingBlocksToModuleContent(
-    module: Module, startingBlocks: {[key: string]: any}) {
+  module: Module, startingBlocks: { [key: string]: any }) {
   // Create a headless blockly workspace.
   const headlessBlocklyWorkspace = new Blockly.Workspace();
   headlessBlocklyWorkspace.options.oneBasedIndex = false;
@@ -249,13 +436,13 @@ function startingBlocksToModuleContent(
   generatorContext.setModule(module);
 
   const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
-      headlessBlocklyWorkspace, generatorContext);
+    headlessBlocklyWorkspace, generatorContext);
   const exportedBlocks = JSON.stringify(generatorContext.getExportedBlocks());
   const blocksContent = JSON.stringify(
-      Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
+    Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
   const components = '[]';
   return makeModuleContent(
-      module, pythonCode, blocksContent, exportedBlocks, components);
+    module, pythonCode, blocksContent, exportedBlocks, components);
 }
 
 /**
@@ -310,29 +497,29 @@ export function newOpModeContent(projectName: string, opModeName: string): strin
  * Make the module content from the given python code and blocks content.
  */
 export function makeModuleContent(
-    module: Module,
-    pythonCode: string,
-    blocksContent: string,
-    exportedBlocks: string,
-    components: string): string {
+  module: Module,
+  pythonCode: string,
+  blocksContent: string,
+  exportedBlocks: string,
+  components: string): string {
   let delimiter = DELIMITER_PREFIX;
   while (blocksContent.includes(delimiter) || exportedBlocks.includes(delimiter) || module.moduleType.includes(delimiter)) {
     delimiter += '.';
   }
   return (
-      '# This file was generated by the Blocks editor.\n\n' +
-      pythonCode + '\n\n\n' +
-      '"""\n' +
-      delimiter + '\n' +
-      MARKER_COMPONENTS + components + '\n' +
-      delimiter + '\n' +
-      MARKER_MODULE_TYPE + module.moduleType + '\n' +
-      delimiter + '\n' +
-      MARKER_EXPORTED_BLOCKS + exportedBlocks + '\n' +
-      delimiter + '\n' +
-      MARKER_BLOCKS_CONTENT + blocksContent + '\n' +
-      delimiter + '\n' +
-      '"""\n');
+    '# This file was generated by the Blocks editor.\n\n' +
+    pythonCode + '\n\n\n' +
+    '"""\n' +
+    delimiter + '\n' +
+    MARKER_COMPONENTS + components + '\n' +
+    delimiter + '\n' +
+    MARKER_MODULE_TYPE + module.moduleType + '\n' +
+    delimiter + '\n' +
+    MARKER_EXPORTED_BLOCKS + exportedBlocks + '\n' +
+    delimiter + '\n' +
+    MARKER_BLOCKS_CONTENT + blocksContent + '\n' +
+    delimiter + '\n' +
+    '"""\n');
 }
 
 function getParts(moduleContent: string): string[] {
@@ -440,12 +627,12 @@ export function extractComponents(moduleContent: string): Component[] {
  * Produce the blob for downloading a project.
  */
 export async function produceDownloadProjectBlob(
-    projectName: string, moduleContents: {[key: string]: string}): Promise<string> {
+  projectName: string, moduleContents: { [key: string]: string }): Promise<string> {
   const zip = new JSZip();
   for (const moduleName in moduleContents) {
     const moduleContent = moduleContents[moduleName];
     const moduleContentForDownload = _processModuleContentForDownload(
-        projectName, moduleName, moduleContent);
+      projectName, moduleName, moduleContent);
     zip.file(moduleName, moduleContentForDownload);
   }
   const content = await zip.generateAsync({ type: "blob" });
@@ -457,7 +644,7 @@ export async function produceDownloadProjectBlob(
  * Process the module content so it can be downloaded.
  */
 function _processModuleContentForDownload(
-    projectName: string, moduleName: string, moduleContent: string): string {
+  projectName: string, moduleName: string, moduleContent: string): string {
   const parts = getParts(moduleContent);
   let blocksContent = parts[PARTS_INDEX_BLOCKS_CONTENT];
   if (blocksContent.startsWith(MARKER_BLOCKS_CONTENT)) {
@@ -482,16 +669,16 @@ function _processModuleContentForDownload(
   const exportedBlocks = '[]';
   const components = '[]';
   return makeModuleContent(
-      module, pythonCode, blocksContent, exportedBlocks, components);
+    module, pythonCode, blocksContent, exportedBlocks, components);
 }
 
 /**
  * Make a unique project name for an uploaded project.
  */
 export function makeUploadProjectName(
-    uploadFileName: string, existingProjectNames: string[]): string {
+  uploadFileName: string, existingProjectNames: string[]): string {
   const preferredName = uploadFileName.substring(
-      0, uploadFileName.length - UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
+    0, uploadFileName.length - UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
   let name = preferredName; // No suffix.
   let suffix = 0;
   while (true) {
@@ -514,22 +701,22 @@ export function makeUploadProjectName(
  * Process the uploaded blob to get the module types and contents.
  */
 export async function processUploadedBlob(
-    projectName: string, blobUrl: string)
-    : Promise<[{[key: string]: string}, {[key: string]: string}]> {
+  projectName: string, blobUrl: string)
+  : Promise<[{ [key: string]: string }, { [key: string]: string }]> {
   const prefix = 'data:application/octet-stream;base64,';
   if (!blobUrl.startsWith(prefix)) {
     throw new Error('blobUrl does not have the expected prefix.');
   }
   const data = blobUrl.substring(prefix.length);
 
-  const zip = await JSZip.loadAsync(data, {base64: true});
-  const promises: {[key: string]: Promise<string>} = {};
+  const zip = await JSZip.loadAsync(data, { base64: true });
+  const promises: { [key: string]: Promise<string> } = {};
   zip.forEach((moduleName, zipEntry) => {
     promises[moduleName] = zipEntry.async('text');
   });
 
   // Wait for all promises to resolve.
-  const files: {[key: string]: string} = {}; // key is file name, value is content
+  const files: { [key: string]: string } = {}; // key is file name, value is content
   await Promise.all(
     Object.entries(promises).map(async ([filename, promise]) => {
       files[filename] = await promise;
@@ -537,12 +724,12 @@ export async function processUploadedBlob(
   );
 
   // Process each module's content.
-  const moduleTypes: {[key: string]: string} = {}; // key is module name, value is module type
-  const moduleContents: {[key: string]: string} = {}; // key is module name, value is module content
+  const moduleTypes: { [key: string]: string } = {}; // key is module name, value is module type
+  const moduleContents: { [key: string]: string } = {}; // key is module name, value is module content
   for (const filename in files) {
     const uploadedContent = files[filename];
     let [moduleName, moduleType, moduleContent] = _processUploadedModule(
-        projectName, filename, uploadedContent);
+      projectName, filename, uploadedContent);
 
     moduleTypes[moduleName] = moduleType;
     moduleContents[moduleName] = moduleContent;
@@ -555,8 +742,8 @@ export async function processUploadedBlob(
  * Processes an uploaded module to get the module name, type, and content.
  */
 export function _processUploadedModule(
-    projectName: string, filename: string, uploadedContent: string)
-    : [string, string, string] {
+  projectName: string, filename: string, uploadedContent: string)
+  : [string, string, string] {
   const parts = getParts(uploadedContent);
   let blocksContent = parts[PARTS_INDEX_BLOCKS_CONTENT];
   if (blocksContent.startsWith(MARKER_BLOCKS_CONTENT)) {
@@ -568,7 +755,7 @@ export function _processUploadedModule(
   }
 
   const moduleName = (moduleType === MODULE_TYPE_PROJECT)
-      ? projectName : filename;
+    ? projectName : filename;
 
   const module: Module = {
     modulePath: makeModulePath(projectName, moduleName),
@@ -584,16 +771,16 @@ export function _processUploadedModule(
   const headlessBlocklyWorkspace = new Blockly.Workspace();
   headlessBlocklyWorkspace.options.oneBasedIndex = false;
   Blockly.serialization.workspaces.load(
-      JSON.parse(blocksContent), headlessBlocklyWorkspace);
+    JSON.parse(blocksContent), headlessBlocklyWorkspace);
 
   const generatorContext = createGeneratorContext();
   generatorContext.setModule(module);
 
   const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
-      headlessBlocklyWorkspace, generatorContext);
+    headlessBlocklyWorkspace, generatorContext);
   const exportedBlocks = JSON.stringify(generatorContext.getExportedBlocks());
   const components = '[]';
   const moduleContent = makeModuleContent(
-      module, pythonCode, blocksContent, exportedBlocks, components);
+    module, pythonCode, blocksContent, exportedBlocks, components);
   return [moduleName, moduleType, moduleContent];
 }

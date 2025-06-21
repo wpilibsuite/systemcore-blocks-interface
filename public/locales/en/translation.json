@@ -8,5 +8,17 @@
     "project_delete": "Delete Project",
     "project_rename": "Rename Project",
     "project_copy": "Copy Project",
-    "fail_list_modules": "Failed to load the list of modules."
+    "fail_list_modules": "Failed to load the list of modules.",
+    "mechanism": "Mechanism",
+    "opmode": "OpMode",
+    "class_rule_description": "No spaces are allowed in the name. Each word in the name should start with a capital letter.",
+    "example_mechanism": "For example: GamePieceShooter",
+    "example_opmode": "For example: AutoParkAndShoot",
+    "example_project": "For example: WackyWheelerRobot",
+    "addTabDialog": {
+        "title": "Add Tab",
+        "newItemPlaceholder": "Add Module",
+        "search": "Search..."
+
+    }    
 }

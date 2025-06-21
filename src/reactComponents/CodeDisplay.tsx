@@ -18,62 +18,101 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-//import React from 'react';
 import * as Antd from 'antd';
+import * as React from 'react';
 import {CopyOutlined as CopyIcon} from '@ant-design/icons';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
+import {dracula} from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-import type { MessageInstance } from 'antd/es/message/interface';
-type StringFunctionVoid = (input: string) => void;
+import type {MessageInstance} from 'antd/es/message/interface';
 
+/** Function type for setting string values. */
+type StringFunction = (input: string) => void;
+
+/** Props for the CodeDisplay component. */
 interface CodeDisplayProps {
-    generatedCode : string;
-    messageApi : MessageInstance;
-    setAlertErrorMessage : StringFunctionVoid;
+  generatedCode: string;
+  messageApi: MessageInstance;
+  setAlertErrorMessage: StringFunction;
 }
-export default function CodeDisplay(props : CodeDisplayProps) {
-    const handleCopyPythonClicked = () => {
-        navigator.clipboard.writeText(props.generatedCode).then(
-          () => {
-            props.messageApi.open({
-              type: 'success',
-              content: 'Copy completed successfully.',
-            });
-          },
-          (err) => {
-            props.setAlertErrorMessage('Could not copy code: ' + err);
-          }
-        );
-      };
 
-    return (
-        <Antd.Flex
-            vertical gap="small"
-        >
-            <Antd.Space>
-                <h3 style={{ color: '#fff', margin: 0 }}>Python Code</h3>
-                <Antd.Tooltip title="Copy">
-                    <Antd.Button
-                        icon={<CopyIcon />}
-                        size="small"
-                        onClick={handleCopyPythonClicked}
-                        style={{ color: 'white' }}
-                    >
-                    </Antd.Button>
-                </Antd.Tooltip>
-            </Antd.Space>
-            <SyntaxHighlighter
-                language="python"
-                style={dracula}
-                customStyle={{
-                    backgroundColor: '#333',
-                    width: '100%',
-                    height: '100%',
-                }}
-            >
-                {props.generatedCode}
-            </SyntaxHighlighter>
-        </Antd.Flex>
-    )
+/** Background color for the syntax highlighter. */
+const SYNTAX_HIGHLIGHTER_BACKGROUND = '#333';
+
+/** Full dimensions style for the syntax highlighter. */
+const FULL_SIZE_STYLE = {
+  width: '100%',
+  height: '100%',
+};
+
+/** Header text color. */
+const HEADER_TEXT_COLOR = '#fff';
+
+/** Button text color. */
+const BUTTON_TEXT_COLOR = 'white';
+
+/** Success message for copy operation. */
+const COPY_SUCCESS_MESSAGE = 'Copy completed successfully.';
+
+/** Error message prefix for copy failures. */
+const COPY_ERROR_MESSAGE_PREFIX = 'Could not copy code: ';
+
+/**
+ * Component that displays syntax-highlighted code with copy functionality.
+ * Shows generated Python code in a dark theme with a copy button.
+ */
+export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element {
+  /** Handles copying the generated code to clipboard. */
+  const handleCopyCode = (): void => {
+    navigator.clipboard.writeText(props.generatedCode).then(
+        () => {
+          props.messageApi.open({
+            type: 'success',
+            content: COPY_SUCCESS_MESSAGE,
+          });
+        },
+        (err) => {
+          props.setAlertErrorMessage(COPY_ERROR_MESSAGE_PREFIX + err);
+        }
+    );
+  };
+
+  /** Creates the custom style object for the syntax highlighter. */
+  const getSyntaxHighlighterStyle = (): React.CSSProperties => ({
+    backgroundColor: SYNTAX_HIGHLIGHTER_BACKGROUND,
+    ...FULL_SIZE_STYLE,
+  });
+
+  /** Renders the header section with title and copy button. */
+  const renderHeader = (): React.JSX.Element => (
+    <Antd.Space>
+      <h3 style={{color: HEADER_TEXT_COLOR, margin: 0}}>Code</h3>
+      <Antd.Tooltip title="Copy">
+        <Antd.Button
+          icon={<CopyIcon />}
+          size="small"
+          onClick={handleCopyCode}
+          style={{color: BUTTON_TEXT_COLOR}}
+        />
+      </Antd.Tooltip>
+    </Antd.Space>
+  );
+
+  /** Renders the syntax-highlighted code block. */
+  const renderCodeBlock = (): React.JSX.Element => (
+    <SyntaxHighlighter
+      language="python"
+      style={dracula}
+      customStyle={getSyntaxHighlighterStyle()}
+    >
+      {props.generatedCode}
+    </SyntaxHighlighter>
+  );
+
+  return (
+    <Antd.Flex vertical gap="small">
+      {renderHeader()}
+      {renderCodeBlock()}
+    </Antd.Flex>
+  );
 }
