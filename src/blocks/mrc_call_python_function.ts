@@ -612,7 +612,7 @@ export const pythonFromBlock = function(
       const functionName = callPythonFunctionBlock.mrcActualFunctionName
           ? callPythonFunctionBlock.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
-      code = 'self.robot.' + componentName + '.' + functionName;
+      code = 'self.' + componentName + '.' + functionName;
       break;
     }
     default:

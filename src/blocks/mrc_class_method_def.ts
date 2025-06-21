@@ -91,6 +91,8 @@ const CLASS_METHOD_DEF = {
         this.setStyle(MRC_STYLE_CLASS_BLOCKS);
         this.appendStatementInput('STACK').appendField('');
         this.mrcParameters = [];
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
     },
     /**
        * Returns the state of this block as a JSON serializable object.
@@ -353,12 +355,12 @@ export const pythonFromBlock = function (
     }
     if (block.mrcPythonMethodName == '__init__') {
         let class_specific = generator.getClassSpecificForInit();
-        branch = generator.INDENT + 'super().__init__(' + class_specific + ')\n' +
+        branch = generator.INDENT + 'super.__init__(' + class_specific + ')\n' +
             generator.defineClassVariables() + branch;
     }
     else if (funcName == 'update'){
         // Special case for update, to also call the update method of the base class
-        branch = generator.INDENT + 'self.update()\n' + branch;
+        branch = generator.INDENT + 'super.update()\n' + branch;
     }
     if (returnValue) {
         returnValue = generator.INDENT + 'return ' + returnValue + '\n';

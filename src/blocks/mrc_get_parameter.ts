@@ -27,6 +27,7 @@ import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
 import {createFieldNonEditableText} from '../fields/FieldNonEditableText';
 import {MRC_STYLE_VARIABLES} from '../themes/styles';
 import {BLOCK_NAME as MRC_CLASS_METHOD_DEF, ClassMethodDefBlock} from './mrc_class_method_def';
+import {BLOCK_NAME as MRC_EVENT_HANDLER, EventHandlerBlock} from './mrc_event_handler';
 import * as ChangeFramework from './utils/change_framework';
 
 
@@ -51,7 +52,7 @@ const GET_PARAMETER_BLOCK = {
         .appendField('parameter')
         .appendField(createFieldNonEditableText('parameter'), 'PARAMETER_NAME');
 
-    this.setOutput(true, [OUTPUT_NAME, this.parameterType]);
+    this.setOutput(true, this.parameterType);
     ChangeFramework.registerCallback(BLOCK_NAME, [Blockly.Events.BLOCK_MOVE], this.onBlockChanged);
   },
   setNameAndType: function(this: GetParameterBlock, name: string, type: string): void {
@@ -64,10 +65,19 @@ const GET_PARAMETER_BLOCK = {
     const blockBlock = block as Blockly.Block;
 
     if (blockEvent.type === Blockly.Events.BLOCK_MOVE) {
-      const parent = ChangeFramework.getParentOfType(block, MRC_CLASS_METHOD_DEF);
-      
-      if (parent) {
+      let parent = blockBlock.getRootBlock();
+      if( parent.type === MRC_CLASS_METHOD_DEF) {
         // It is a class method definition, so we see if this variable is in it.
+        const classMethodDefBlock = parent as ClassMethodDefBlock;
+        for (const parameter of classMethodDefBlock.mrcParameters) {
+          if (parameter.name === blockBlock.getFieldValue('PARAMETER_NAME')) {
+            // If it is, we allow it to stay.
+            blockBlock.setWarningText(null);
+            return;
+          }
+        }
+      }
+      else if (parent.type === MRC_EVENT_HANDLER) {
         const classMethodDefBlock = parent as ClassMethodDefBlock;
         for (const parameter of classMethodDefBlock.mrcParameters) {
           if (parameter.name === blockBlock.getFieldValue('PARAMETER_NAME')) {
