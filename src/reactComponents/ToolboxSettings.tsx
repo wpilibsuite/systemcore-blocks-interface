@@ -55,7 +55,7 @@ const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, sho
   const afterOpenChange = (open: boolean) => {
     // When the modal is opened, update the robotPyCategories.
     if (open) {
-      setRobotPyCategories(robotPyToolbox.getToolboxCategories());
+      setRobotPyCategories(robotPyToolbox.getToolboxCategories(null));
     }
   };
 
