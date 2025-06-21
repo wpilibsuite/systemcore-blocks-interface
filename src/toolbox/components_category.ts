@@ -83,6 +83,34 @@ export class ComponentsCategory {
                     EVENT_NAME: 'on_change',
                 },
             },
+              {
+                kind: 'block',
+                type: 'mrc_event_handler',
+                extraState: {
+                    tooltip: '',
+                    pathOfSender: '',
+                    typeOfSender: 'component',
+                    params: [],
+                },
+                fields: {
+                    SENDER: 'my_touch_sensor',
+                    EVENT_NAME: 'on_pressed',
+                },
+            },
+             {
+                kind: 'block',
+                type: 'mrc_event_handler',
+                extraState: {
+                    tooltip: '',
+                    pathOfSender: '',
+                    typeOfSender: 'component',
+                    params: [],
+                },
+                fields: {
+                    SENDER: 'my_touch_sensor',
+                    EVENT_NAME: 'on_released',
+                },
+            },
             // def set_speed(self, speed: float) -> None:
                 {
                     kind: 'block',
