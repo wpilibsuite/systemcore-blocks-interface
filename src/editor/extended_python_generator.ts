@@ -32,12 +32,12 @@ export class OpModeDetails {
   annotations() : string{
     let code = '';
 
-    if(this.enabled){
+    if (this.enabled){
       code += '@' + this.type + "\n";
-      if(this.name){
+      if (this.name){
         code += '@name("' + this.name + '")\n';
       }
-      if(this.group){
+      if (this.group){
         code += '@group("' + this.group + '")\n';
       }
     }
@@ -90,7 +90,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       variableDefinitions += this.INDENT + "self.define_hardware(";
       variableDefinitions += this.getListOfPorts(true);
       variableDefinitions += ')\n';
-      if(this.events && Object.keys(this.events).length > 0){
+      if (this.events && Object.keys(this.events).length > 0){
         variableDefinitions += this.INDENT + "self.register_events()\n";
       }
     }
@@ -152,7 +152,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     let returnString = ''
     let firstPort = startWithFirst;
     for (const port in this.ports) {
-      if(!firstPort){
+      if (!firstPort){
         returnString += ', ';
       }
       else{
@@ -188,7 +188,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       this.classMethods = Object.create(null);
       this.ports = Object.create(null);
       code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
-      if(annotations){
+      if (annotations){
         code = annotations + code;
       }
       this.details = null;
