@@ -63,7 +63,7 @@ const EVENT_HANDLER = {
      */
     init: function (this: EventHandlerBlock): void {
         this.appendDummyInput("TITLE")
-            .appendField('On')
+            .appendField('When')
             .appendField(createFieldNonEditableText('sender'), 'SENDER')
             .appendField(createFieldNonEditableText('eventName'), 'EVENT_NAME');
         this.appendDummyInput('PARAMS')
