@@ -16,6 +16,7 @@ import * as OpModeDetails from './mrc_opmode_details';
 import * as Event from './mrc_event';
 import * as GetParameter from './mrc_get_parameter';
 import * as ParameterMutator from './mrc_param_container'
+import * as EventHandler from './mrc_event_handler';
 
 const customBlocks = [
   CallPythonFunction,
@@ -34,7 +35,8 @@ const customBlocks = [
   OpModeDetails,
   Event,
   GetParameter,
-  ParameterMutator
+  ParameterMutator,
+  EventHandler,
 ];
 
 export const setup = function(forBlock: any) {

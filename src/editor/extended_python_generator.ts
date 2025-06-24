@@ -32,12 +32,12 @@ export class OpModeDetails {
   annotations() : string{
     let code = '';
 
-    if(this.enabled){
+    if (this.enabled){
       code += '@' + this.type + "\n";
-      if(this.name){
+      if (this.name){
         code += '@name("' + this.name + '")\n';
       }
-      if(this.group){
+      if (this.group){
         code += '@group("' + this.group + '")\n';
       }
     }
@@ -53,6 +53,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private context: GeneratorContext | null = null;
 
   private classMethods: {[key: string]: string} = Object.create(null);
+  private events: {[key: string]: {sender: string, eventName: string}} = Object.create(null);
   private ports: {[key: string]: string} = Object.create(null);
     // Opmode details
   private details : OpModeDetails | null  = null;
@@ -89,6 +90,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       variableDefinitions += this.INDENT + "self.define_hardware(";
       variableDefinitions += this.getListOfPorts(true);
       variableDefinitions += ')\n';
+      if (this.events && Object.keys(this.events).length > 0){
+        variableDefinitions += this.INDENT + "self.register_events()\n";
+      }
     }
 
     return variableDefinitions;
@@ -131,6 +135,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.classMethods[methodName] = code;
   }
 
+  addEventHandler(sender: string, eventName: string, funcName: string): void {
+    this.events[funcName] = {
+      'sender': sender,
+      'eventName': eventName,}
+    }    
+
   /**
    * Add a Hardware Port
    */
@@ -142,7 +152,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     let returnString = ''
     let firstPort = startWithFirst;
     for (const port in this.ports) {
-      if(!firstPort){
+      if (!firstPort){
         returnString += ', ';
       }
       else{
@@ -162,13 +172,23 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
       const classDef = 'class ' + className + '(' + classParent + '):\n';
       const classMethods = [];
+
+      if (this.events && Object.keys(this.events).length > 0) {
+        let code = 'def register_events(self):\n';
+        for (const eventName in this.events) {
+          const event = this.events[eventName];
+          code += this.INDENT + 'self.' + event.sender + '.register_event("' + event.eventName + '", self.' + eventName + ')\n';
+        }
+        classMethods.push(code);
+      }
       for (const name in this.classMethods) {
         classMethods.push(this.classMethods[name])
       }
+      this.events = Object.create(null);
       this.classMethods = Object.create(null);
       this.ports = Object.create(null);
       code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
-      if(annotations){
+      if (annotations){
         code = annotations + code;
       }
       this.details = null;
