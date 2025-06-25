@@ -18,7 +18,8 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-import {TabItem, TabType, TabTypeUtils} from './Tabs';
+import {TabItem} from './Tabs';
+import {TabType, TabTypeUtils } from '../types/TabType';
 import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';

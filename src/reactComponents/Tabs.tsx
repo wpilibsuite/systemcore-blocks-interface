@@ -34,48 +34,7 @@ import {
 } from '@ant-design/icons';
 import AddTabDialog from './AddTabDialog';
 import ModuleNameComponent from './ModuleNameComponent';
-
-/** Enumeration of tab types. */
-export enum TabType {
-  ROBOT,
-  MECHANISM,
-  OPMODE,
-}
-
-/** Utility functions for working with TabType enum. */
-export namespace TabTypeUtils {
-  /**
-   * Converts a TabType to its string representation.
-   */
-  export function toString(type: TabType): string {
-    switch (type) {
-      case TabType.ROBOT:
-        return 'Robot';
-      case TabType.MECHANISM:
-        return 'Mechanism';
-      case TabType.OPMODE:
-        return 'OpMode';
-      default:
-        return '';
-    }
-  }
-
-  /**
-   * Gets the appropriate icon for a given TabType.
-   */
-  export function getIcon(type: TabType): React.JSX.Element {
-    switch (type) {
-      case TabType.ROBOT:
-        return <RobotOutlined />;
-      case TabType.MECHANISM:
-        return <BlockOutlined />;
-      case TabType.OPMODE:
-        return <CodeOutlined />;
-      default:
-        return <></>;
-    }
-  }
-}
+import { TabType, TabTypeUtils } from '../types/TabType';
 
 /** Represents a tab item in the tab bar. */
 export interface TabItem {
