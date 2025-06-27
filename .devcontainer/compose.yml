@@ -1,12 +1,12 @@
 
 services:
   app:
-    build: 
+    # platform: linux/amd64
+    build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
-      - ..:/workspaces/${localWorkspaceFolderBasename}:cached
-      - node_modules:/workspaces/${localWorkspaceFolderBasename}/node_modules
+      - ..:/app:cached
     command: sleep infinity
 
 volumes:

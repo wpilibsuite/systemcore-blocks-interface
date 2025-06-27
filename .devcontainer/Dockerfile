@@ -1,6 +1,8 @@
 FROM mcr.microsoft.com/devcontainers/typescript-node:18
 
-WORKDIR /workspaces/systemcore-blocks-interface
+USER node
+
+WORKDIR /app/
 
 COPY --chown=node:node package*.json ./
 

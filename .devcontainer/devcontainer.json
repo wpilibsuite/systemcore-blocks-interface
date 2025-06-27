@@ -3,7 +3,8 @@
   "name": "systemcore-blocks-interface",
   "dockerComposeFile": "compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "remoteUser": "node",
+  "workspaceFolder": "/app/",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -18,7 +19,5 @@
     3000
   ],
   "postCreateCommand": "npm install",
-  "postAttachCommand": {
-    "server": "npm run start"
-  }
+  "postAttachCommand": "npm run start"
 }
