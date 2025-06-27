@@ -18,8 +18,6 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-import * as Blockly from 'blockly/core';
-
 import * as ToolboxItems from './items';
 
 /**

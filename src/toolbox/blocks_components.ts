@@ -18,16 +18,11 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-import * as Blockly from 'blockly/core';
-
 import * as ToolboxItems from './items';
 import * as ColorSensor from './hardware_components/color_sensor';
 import * as SmartMotor from './hardware_components/smart_motor';
 import * as TouchSensor from './hardware_components/touch_sensor';
 import * as Servo from './hardware_components/servo';
-
-import { Color } from 'antd/es/color-picker';
-
 
 export function getAllPossibleComponents(hideParams : boolean): ToolboxItems.ContentsType[] {
     return [
