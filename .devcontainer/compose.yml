@@ -1,9 +1,13 @@
 
 services:
   app:
-    build:
+    build: 
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
-      - ..:/workspaces/:cached
-    command: npm run start
+      - ..:/workspaces/${localWorkspaceFolderBasename}:cached
+      - node_modules:/workspaces/${localWorkspaceFolderBasename}/node_modules
+    command: sleep infinity
+
+volumes:
+  node_modules:
