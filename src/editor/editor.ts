@@ -24,13 +24,11 @@ import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
-import { getToolboxJSON } from '../toolbox/toolbox';
 
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { MethodsCategory} from '../toolbox/methods_category';
 import { EventsCategory} from '../toolbox/event_category';
-import { ComponentsCategory } from '../toolbox/components_category';
-
+import { getToolboxJSON } from '../toolbox/toolbox';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
    kind: 'categoryToolbox',
@@ -45,7 +43,6 @@ export class Editor {
   private storage: commonStorage.Storage;
   private methodsCategory: MethodsCategory;
   private eventsCategory: EventsCategory;
-  private componentsCategory: ComponentsCategory;
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
   private projectPath: string = '';
@@ -61,7 +58,6 @@ export class Editor {
     this.storage = storage;
     this.methodsCategory = new MethodsCategory(blocklyWorkspace);
     this.eventsCategory = new EventsCategory(blocklyWorkspace);
-    this.componentsCategory = new ComponentsCategory(blocklyWorkspace);
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -125,7 +121,6 @@ export class Editor {
     this.currentModule = currentModule;
     this.methodsCategory.setCurrentModule(currentModule);
     this.eventsCategory.setCurrentModule(currentModule);
-    this.componentsCategory.setCurrentModule(currentModule);
 
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
@@ -199,7 +194,8 @@ export class Editor {
         }, 50);
         return;
       }
-      this.setToolbox(getToolboxJSON(
+      this.setToolbox(
+        getToolboxJSON(
           shownPythonToolboxCategories, this.currentModule));
     }
   }
