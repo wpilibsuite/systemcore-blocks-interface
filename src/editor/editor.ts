@@ -24,9 +24,7 @@ import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
-import * as toolboxOpmode from '../toolbox/toolbox_opmode';
-import * as toolboxMechanism from '../toolbox/toolbox_mechanism';
-import * as toolboxRobot from '../toolbox/toolbox_robot';
+import { getToolboxJSON } from '../toolbox/toolbox';
 
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { MethodsCategory} from '../toolbox/methods_category';
@@ -201,23 +199,8 @@ export class Editor {
         }, 50);
         return;
       }
-      switch(this.currentModule.moduleType){
-        case commonStorage.MODULE_TYPE_PROJECT:
-          this.setToolbox(toolboxRobot.getToolboxJSON(shownPythonToolboxCategories));
-          break;
-        case commonStorage.MODULE_TYPE_MECHANISM:
-          this.setToolbox(toolboxMechanism.getToolboxJSON(shownPythonToolboxCategories));
-          break;
-        case commonStorage.MODULE_TYPE_OPMODE:
-/*
- * TODO: When editing an opmode, we'll need to have blocks for all the methods that a robot has.
- *      Not sure what this will be replaced with, but it will need something.
- *     const robotBlocks = commonStorage.extractExportedBlocks(
- *        this.currentModule.projectName, this.projectContent);
-*/
-          this.setToolbox(toolboxOpmode.getToolboxJSON(shownPythonToolboxCategories));
-          break;
-      }
+      this.setToolbox(getToolboxJSON(
+          shownPythonToolboxCategories, this.currentModule));
     }
   }
 

@@ -30,6 +30,8 @@ import * as toolboxItems from './items';
 import * as commonStorage from '../storage/common_storage';
 import { MRC_CATEGORY_STYLE_COMPONENTS } from '../themes/styles';
 
+
+
 const CUSTOM_CATEGORY_COMPONENTS = 'COMPONENTS';
 
 export const category = {
