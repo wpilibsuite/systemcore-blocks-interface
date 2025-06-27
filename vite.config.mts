@@ -1,10 +1,10 @@
 /// <reference types="vitest" />
 /// <reference types="@vitest/browser/matchers" />
+import react from "@vitejs/plugin-react";
+import path from "path";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
-import path from "path";
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths(), viteStaticCopy({
@@ -17,6 +17,7 @@ export default defineConfig({
   }),
   ],
   server: {
+    host: true,
     port: 3000,
   },
   define: {
