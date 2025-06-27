@@ -33,7 +33,7 @@ export function getDefinitionBlock(hideParams: boolean): ToolboxItems.ContentsTy
     type: 'mrc_component',
     fields: {
       NAME: 'my_color_range_sensor',
-      TYPE: 'ColorRangeSensor',
+      TYPE: TYPE_NAME,
     },
     extraState: {
       importModule: 'rev_color_range_sensor',

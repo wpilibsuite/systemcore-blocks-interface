@@ -19,9 +19,6 @@
  * @fileoverview Servo hardware component definitions.
  * @author alan@porpoiseful.com (Alan Smith)
  */
-
-import * as Blockly from 'blockly/core';
-
 import * as ToolboxItems from '../items';
 
 export const TYPE_NAME = 'Servo';
@@ -35,7 +32,7 @@ export function getDefinitionBlock(hideParams: boolean): ToolboxItems.ContentsTy
     type: 'mrc_component',
     fields: {
       NAME: 'my_servo',
-      TYPE: 'RevServo',
+      TYPE: TYPE_NAME,
     },
     extraState: {
       importModule: 'rev_servo',

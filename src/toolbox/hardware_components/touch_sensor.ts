@@ -33,7 +33,7 @@ export function getDefinitionBlock(hideParams: boolean): ToolboxItems.ContentsTy
     type: 'mrc_component',
     fields: {
       NAME: 'my_touch_sensor',
-      TYPE: 'RevTouchSensor',
+      TYPE: TYPE_NAME,
     },
     extraState: {
       importModule: 'rev_touch_sensor',

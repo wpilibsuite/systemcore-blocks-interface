@@ -33,7 +33,7 @@ export function getDefinitionBlock(hideParams: boolean): ToolboxItems.ContentsTy
     type: 'mrc_component',
     fields: {
       NAME: 'my_motor',
-      TYPE: 'SmartMotor',
+      TYPE: TYPE_NAME,
     },
     extraState: {
       importModule: 'smart_motor',
