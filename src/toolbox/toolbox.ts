@@ -17,9 +17,8 @@ export function getToolboxJSON(
                     { kind: 'sep' },
                     ...common.getToolboxItems(shownPythonToolboxCategories),
                     eventCategory,
-
                 ]
-            }; break;
+            };
         case commonStorage.MODULE_TYPE_OPMODE:
             return {
                 kind: 'categoryToolbox',
