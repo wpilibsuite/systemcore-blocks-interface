@@ -29,9 +29,8 @@ import * as Blockly from 'blockly/core';
 import * as toolboxItems from './items';
 import * as commonStorage from '../storage/common_storage';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
-import { getAllPossibleComponents } from './blocks_components';
-import * as SmartMotor from './hardware_components/smart_motor';
-import * as TouchSensor from './hardware_components/touch_sensor';
+import { getAllPossibleComponents, getBlocks } from './blocks_components';
+import * as MechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 
 export function getHardwareCategory(currentModule: commonStorage.Module) {
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
@@ -243,22 +242,46 @@ function getRobotMethodsBlocks(currentModule: commonStorage.Module) {
 
 function getComponentsBlocks(currentModule: commonStorage.Module) {
   const contents = [];
+
+  // Add the "+ Component" category
   contents.push({
     kind: 'category',
     name: '+ Component',
     contents: getAllPossibleComponents(true)
   });
-  contents.push({
-      kind: 'category',
-      name: 'my_motor',
-      contents: SmartMotor.getBlocks('my_motor')
-    },
-    {
-      kind: 'category',
-      name: 'my_touch_sensor',
-      contents: TouchSensor.getBlocks('my_touch_sensor')
-    },
-  );
+
+  // Get components from the current workspace
+  const workspace = Blockly.getMainWorkspace();
+  if (workspace) {
+    const holderBlocks = workspace.getBlocksByType(MechanismComponentHolder.BLOCK_NAME);
+
+    holderBlocks.forEach(holderBlock => {
+      // Get component blocks from the COMPONENTS input
+      const componentsInput = holderBlock.getInput('COMPONENTS');
+      if (componentsInput && componentsInput.connection) {
+        let componentBlock = componentsInput.connection.targetBlock();
+
+        // Walk through all connected component blocks
+        while (componentBlock) {
+          if (componentBlock.type === 'mrc_component') {
+            const componentName = componentBlock.getFieldValue('NAME');
+            const componentType = componentBlock.getFieldValue('TYPE');
+
+            if (componentName && componentType) {
+              // Get the blocks for this specific component              
+              contents.push({
+                kind: 'category',
+                name: componentName,
+                contents: getBlocks(componentType, componentName),
+              });
+            }
+          }
+          // Move to the next block in the chain
+          componentBlock = componentBlock.getNextBlock();
+        }
+      }
+    });
+  }
   return {
     kind: 'category',
     name: 'Components',

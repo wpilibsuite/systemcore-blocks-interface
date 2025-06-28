@@ -42,6 +42,7 @@ import * as CustomBlocks from './blocks/setup_custom_blocks';
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
 import * as ChangeFramework from './blocks/utils/change_framework'
 import { mutatorOpenListener } from './blocks/mrc_param_container'
+import { TOOLBOX_UPDATE_EVENT } from './blocks/mrc_mechanism_component_holder';
 
 /** Storage key for shown toolbox categories. */
 const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';
@@ -253,6 +254,22 @@ const App: React.FC = (): React.JSX.Element => {
     return tabs;
   };
 
+  /** Handles toolbox update requests from blocks */
+  const handleToolboxUpdateRequest = React.useCallback(() => {
+    if (blocksEditor.current && currentModule) {
+      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+    }
+  }, [currentModule, shownPythonToolboxCategories]);
+
+  // Add event listener for toolbox updates
+  React.useEffect(() => {
+    window.addEventListener(TOOLBOX_UPDATE_EVENT, handleToolboxUpdateRequest);
+    
+    return () => {
+      window.removeEventListener(TOOLBOX_UPDATE_EVENT, handleToolboxUpdateRequest);
+    };
+  }, [handleToolboxUpdateRequest]);
+
   // Initialize storage and blocks when app loads
   React.useEffect(() => {
     openStorage();
@@ -268,13 +285,6 @@ const App: React.FC = (): React.JSX.Element => {
       blocksEditor.current.loadModuleBlocks(currentModule);
     }
   }, [currentModule]);
-
-  // Update toolbox when shown categories change
-  React.useEffect(() => {
-    if (blocksEditor.current) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
-    }
-  }, [shownPythonToolboxCategories]);
 
   // Initialize Blockly workspace and editor when component and storage are ready
   React.useEffect(() => {

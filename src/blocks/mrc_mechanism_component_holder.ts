@@ -37,6 +37,8 @@ export const BLOCK_NAME = 'mrc_mechanism_component_holder';
 export const MECHANISM = 'mechanism';
 export const COMPONENT = 'component';
 
+export const TOOLBOX_UPDATE_EVENT = 'toolbox-update-requested';
+
 type MechanismComponentHolderExtraState = {
   hideMechanisms?: boolean;
 }
@@ -115,15 +117,31 @@ const MECHANISM_COMPONENT_HOLDER = {
       let blockMoveEvent = blockEvent as Blockly.Events.BlockMove;
       if (blockMoveEvent.reason?.includes('connect')) {
         setName(block);
+        updateToolboxAfterDelay();
       }
     }
     else {
       if (blockEvent.type == Blockly.Events.BLOCK_CHANGE) {
         setName(block);
+        updateToolboxAfterDelay();
       }
     }
   },
 
+}
+
+let toolboxUpdateTimeout: NodeJS.Timeout | null = null;
+export function updateToolboxAfterDelay(){
+  if (toolboxUpdateTimeout) {
+    clearTimeout(toolboxUpdateTimeout);
+  }
+  toolboxUpdateTimeout = setTimeout(() => {
+    const event = new CustomEvent(TOOLBOX_UPDATE_EVENT, {
+      detail: { timestamp: Date.now() }
+    });
+    window.dispatchEvent(event);
+    toolboxUpdateTimeout = null;
+  }, 100);
 }
 
 export const setup = function () {
