@@ -7,7 +7,7 @@ const reportWebVitals = (onPerfEntry?: (metric: any) => void) => {
       onLCP(onPerfEntry);
       onTTFB(onPerfEntry);
     });
-  };
-}
+  }
+};
 
 export default reportWebVitals;
