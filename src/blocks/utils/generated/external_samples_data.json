@@ -80,7 +80,7 @@
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
                     "functionName": "get_distance_mm",
-                    "returnType": "<class 'float'>",
+                    "returnType": "float",
                     "tooltip": "gets the distance of the object seen"
                 },
                 {
@@ -93,7 +93,7 @@
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
                     "functionName": "get_manufacturer",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -106,7 +106,7 @@
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
                     "functionName": "get_name",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -119,7 +119,7 @@
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
                     "functionName": "get_part_number",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -132,7 +132,7 @@
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
                     "functionName": "get_url",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -324,7 +324,7 @@
                     ],
                     "declaringClassName": "component.Component",
                     "functionName": "get_manufacturer",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -337,7 +337,7 @@
                     ],
                     "declaringClassName": "component.Component",
                     "functionName": "get_name",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -350,7 +350,7 @@
                     ],
                     "declaringClassName": "component.Component",
                     "functionName": "get_part_number",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -363,7 +363,7 @@
                     ],
                     "declaringClassName": "component.Component",
                     "functionName": "get_url",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -552,7 +552,7 @@
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
                     "functionName": "get_manufacturer",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -565,7 +565,7 @@
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
                     "functionName": "get_name",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -578,7 +578,7 @@
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
                     "functionName": "get_part_number",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -591,7 +591,7 @@
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
                     "functionName": "get_url",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -617,7 +617,7 @@
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
                     "functionName": "is_pressed",
-                    "returnType": "<class 'bool'>",
+                    "returnType": "bool",
                     "tooltip": "Returns if the touch sensor is pressed or not"
                 },
                 {
@@ -743,7 +743,7 @@
                     ],
                     "declaringClassName": "servo.Servo",
                     "functionName": "get_manufacturer",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -756,7 +756,7 @@
                     ],
                     "declaringClassName": "servo.Servo",
                     "functionName": "get_name",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -769,7 +769,7 @@
                     ],
                     "declaringClassName": "servo.Servo",
                     "functionName": "get_part_number",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -782,7 +782,7 @@
                     ],
                     "declaringClassName": "servo.Servo",
                     "functionName": "get_url",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -908,7 +908,7 @@
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
                     "functionName": "get_angle_degrees",
-                    "returnType": "<class 'float'>",
+                    "returnType": "float",
                     "tooltip": "Get the angle position of the motor"
                 },
                 {
@@ -934,7 +934,7 @@
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
                     "functionName": "get_manufacturer",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -947,7 +947,7 @@
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
                     "functionName": "get_name",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -960,7 +960,7 @@
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
                     "functionName": "get_num_relative_encoder_ticks",
-                    "returnType": "<class 'int'>",
+                    "returnType": "int",
                     "tooltip": "Get the number of relative motor ticks since reset of encoder"
                 },
                 {
@@ -973,7 +973,7 @@
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
                     "functionName": "get_part_number",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -986,7 +986,7 @@
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
                     "functionName": "get_url",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -1096,6 +1096,456 @@
             "staticMethods": []
         },
         {
+            "className": "spark_mini.SparkMiniComponent",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "ports",
+                            "type": "list[tuple[component.PortType, int]]"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "__init__",
+                    "returnType": "spark_mini.SparkMiniComponent",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        },
+                        {
+                            "defaultValue": null,
+                            "name": "follower",
+                            "type": "wpilib.PWMMotorController"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "add_follower",
+                    "returnType": "None",
+                    "tooltip": "Make the given PWM motor controller follow the output of this one.\n\n:param follower: The motor controller follower."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "check",
+                    "returnType": "None",
+                    "tooltip": "Check if this motor has exceeded its timeout.\n\nThis method is called periodically to determine if this motor has exceeded\nits timeout value. If it has, the stop method is called, and the motor is\nshut down until its value is updated again."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "disable",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        },
+                        {
+                            "defaultValue": null,
+                            "name": "eliminateDeadband",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "enable_deadband_elimination",
+                    "returnType": "None",
+                    "tooltip": "Optionally eliminate the deadband from a motor controller.\n\n:param eliminateDeadband: If true, set the motor curve on the motor\n                          controller to eliminate the deadband in the middle\n                          of the range. Otherwise, keep the full range\n                          without modifying any values."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "feed",
+                    "returnType": "None",
+                    "tooltip": "Feed the motor safety object.\n\nResets the timer on this object that is used to do the timeouts."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get",
+                    "returnType": "float",
+                    "tooltip": "Get the recently set value of the PWM. This value is affected by the\ninversion property. If you want the value that is sent directly to the\nMotorController, use PWM::GetSpeed() instead.\n\n:returns: The most recently set value for the PWM between -1.0 and 1.0."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_channel",
+                    "returnType": "int",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_connection_port_type",
+                    "returnType": "list[component.PortType]",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_description",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_expiration",
+                    "returnType": "float",
+                    "tooltip": "Retrieve the timeout value for the corresponding motor safety object.\n\n:returns: the timeout value."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_inverted",
+                    "returnType": "bool",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_manufacturer",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_name",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_part_number",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_url",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_version",
+                    "returnType": "tuple[int, int, int]",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "get_voltage",
+                    "returnType": "float",
+                    "tooltip": "Gets the voltage output of the motor controller, nominally between -12 V\nand 12 V.\n\n:returns: The voltage of the motor controller, nominally between -12 V and 12\n          V."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        },
+                        {
+                            "defaultValue": null,
+                            "name": "builder",
+                            "type": "wpiutil.SendableBuilder"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "init_sendable",
+                    "returnType": "None",
+                    "tooltip": "Initializes this Sendable object.\n\n:param builder: sendable builder"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "is_alive",
+                    "returnType": "bool",
+                    "tooltip": "Determine if the motor is still operating or has timed out.\n\n:returns: true if the motor is still operating normally and hasn't timed out."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "is_safety_enabled",
+                    "returnType": "bool",
+                    "tooltip": "Return the state of the motor safety enabled flag.\n\nReturn if the motor safety is currently enabled for this device.\n\n:returns: True if motor safety is enforced for this device."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "reset",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        },
+                        {
+                            "defaultValue": null,
+                            "name": "value",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "set",
+                    "returnType": "None",
+                    "tooltip": "Set the PWM value.\n\nThe PWM value is set using a range of -1.0 to 1.0, appropriately scaling\nthe value for the FPGA.\n\n:param value: The speed value between -1.0 and 1.0 to set."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        },
+                        {
+                            "defaultValue": null,
+                            "name": "expirationTime",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "set_expiration",
+                    "returnType": "None",
+                    "tooltip": "Set the expiration time for the corresponding motor safety object.\n\n:param expirationTime: The timeout value."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        },
+                        {
+                            "defaultValue": null,
+                            "name": "isInverted",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "set_inverted",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        },
+                        {
+                            "defaultValue": null,
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "set_safety_enabled",
+                    "returnType": "None",
+                    "tooltip": "Enable/disable motor safety for this device.\n\nTurn on and off the motor safety option for this PWM object.\n\n:param enabled: True if motor safety is enforced for this object."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        },
+                        {
+                            "defaultValue": null,
+                            "name": "output",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "set_voltage",
+                    "returnType": "None",
+                    "tooltip": "Sets the voltage output of the PWMMotorController. Compensates for\nthe current bus voltage to ensure that the desired voltage is output even\nif the battery voltage is below 12V - highly useful when the voltage\noutputs are \"meaningful\" (e.g. they come from a feedforward calculation).\n\nNOTE: This function *must* be called regularly in order for voltage\ncompensation to work properly - unlike the ordinary set function, it is not\n\"set it and forget it.\"\n\n:param output: The voltage to output."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "self",
+                            "type": "spark_mini.SparkMiniComponent"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "stop_motor",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "spark_mini",
+            "staticMethods": [
+                {
+                    "args": [],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "check_motors",
+                    "returnType": "None",
+                    "tooltip": "Check the motors to see if any have timed out.\n\nThis static method is called periodically to poll all the motors and stop\nany that have timed out."
+                }
+            ]
+        },
+        {
             "className": "sparkfun_led_stick.SparkFunLEDStick",
             "classVariables": [],
             "constructors": [
@@ -1138,7 +1588,7 @@
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
                     "functionName": "get_manufacturer",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -1151,7 +1601,7 @@
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
                     "functionName": "get_name",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -1164,7 +1614,7 @@
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
                     "functionName": "get_part_number",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -1177,7 +1627,7 @@
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
                     "functionName": "get_url",
-                    "returnType": "<class 'str'>",
+                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -1339,6 +1789,12 @@
         {
             "enums": [],
             "functions": [],
+            "moduleName": "spark_mini",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
             "moduleName": "sparkfun_led_stick",
             "moduleVariables": []
         }
@@ -1349,6 +1805,7 @@
             "rev_touch_sensor.RevTouchSensor",
             "servo.Servo",
             "smart_motor.SmartMotor",
+            "spark_mini.SparkMiniComponent",
             "sparkfun_led_stick.SparkFunLEDStick"
         ]
     }

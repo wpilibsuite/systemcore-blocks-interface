@@ -30,7 +30,7 @@ class SparkFunLEDStick(Component):
         return "SparkFun" 
 
     def get_name(self) -> str:  
-        return "SparkFun Qwiic LED Strip"
+        return "SparkFun Qwiic LED Stick"
 
     def get_part_number(self) -> str:  
         return "COM-18354"

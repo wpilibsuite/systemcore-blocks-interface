@@ -25,7 +25,7 @@ import { Order } from 'blockly/python';
 
 import { ClassMethodDefExtraState } from './mrc_class_method_def'
 import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
-import { FunctionData } from './utils/python_json_types';
+import { FunctionData, findSuperFunctionData } from './utils/python_json_types';
 import * as value from './utils/value';
 import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
@@ -34,6 +34,8 @@ import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
+import { getClassData } from './utils/external_samples_data';
+import * as commonStorage from '../storage/common_storage';
 
 
 // A block to call a python function.
@@ -217,6 +219,68 @@ function createInstanceMethodBlock(
   return block;
 }
 
+export function addInstanceComponentBlocks(
+    componentType: string,
+    componentName: string,
+    contents: toolboxItems.ContentsType[]) {
+
+  const classData = getClassData(componentType);
+  const functions = classData.instanceMethods;
+
+  const componentClassData = getClassData('component.Component');
+  const componentFunctions = componentClassData.instanceMethods;
+
+  for (const functionData of functions) {
+    // Skip the functions that are also defined in componentFunctions.
+    if (findSuperFunctionData(functionData, componentFunctions)) {
+      continue;
+    }
+    const block = createInstanceComponentBlock(componentName, functionData);
+    contents.push(block);
+  }
+}
+
+function createInstanceComponentBlock(
+    componentName: string, functionData: FunctionData): toolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.INSTANCE_COMPONENT,
+    returnType: functionData.returnType,
+    args: [],
+    tooltip: functionData.tooltip,
+    importModule: '',
+    componentClassName: functionData.declaringClassName,
+    componentName: componentName,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_COMPONENT_NAME] = componentName;
+  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
+  const inputs: {[key: string]: any} = {};
+  // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
+  // self is represented by the FIELD_COMPONENT_NAME field.
+  // We don't include the arg or input for self.
+  for (let i = 1; i < functionData.args.length; i++) {
+    const argData = functionData.args[i];
+    let argName = argData.name;
+    extraState.args.push({
+      'name': argName,
+      'type': argData.type,
+    });
+    // Check if we should plug a variable getter block into the argument input socket.
+    const input = value.valueForFunctionArgInput(argData.type, argData.defaultValue);
+    if (input) {
+      // Because we skipped the self argument, use i - 1 when filling the inputs array.
+      inputs['ARG' + (i - 1)] = input;
+    }
+  }
+  let block = new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+  if (functionData.returnType && functionData.returnType != 'None') {
+    const varName = variable.varNameForType(functionData.returnType);
+    if (varName) {
+      block = variable.createVariableSetterBlock(varName, block);
+    }
+  }
+  return block;
+}
 
 //..............................................................................
 
@@ -612,7 +676,18 @@ export const pythonFromBlock = function(
       const functionName = callPythonFunctionBlock.mrcActualFunctionName
           ? callPythonFunctionBlock.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
-      code = 'self.' + componentName + '.' + functionName;
+      // Generate the correct code depending on the module type.
+      switch (generator.getModuleType()) {
+        case commonStorage.MODULE_TYPE_PROJECT:
+          code = 'self.';
+          break;
+        case commonStorage.MODULE_TYPE_MECHANISM:
+        case commonStorage.MODULE_TYPE_OPMODE:
+        default:
+          code = 'self.robot.';
+          break;
+      }
+      code += componentName + '.' + functionName;
       break;
     }
     default:

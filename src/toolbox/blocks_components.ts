@@ -24,13 +24,7 @@ import * as ColorSensor from './hardware_components/color_sensor';
 import * as SmartMotor from './hardware_components/smart_motor';
 import * as Servo from './hardware_components/servo';
 import * as TouchSensor from './hardware_components/touch_sensor';
-
-const ALL_COMPONENTS: Record<string, (componentName: string) => ToolboxItems.ContentsType[]> = {
-  [ColorSensor.TYPE_NAME]: ColorSensor.getBlocks,
-  [SmartMotor.TYPE_NAME]: SmartMotor.getBlocks,
-  [TouchSensor.TYPE_NAME]: TouchSensor.getBlocks,
-  [Servo.TYPE_NAME]: Servo.getBlocks,
-};
+import { addInstanceComponentBlocks } from '../blocks/mrc_call_python_function';
 
 export function getAllPossibleComponents(hideParams: boolean): ToolboxItems.ContentsType[] {
   return [
@@ -42,9 +36,7 @@ export function getAllPossibleComponents(hideParams: boolean): ToolboxItems.Cont
 }
 
 export function getBlocks(componentType: string, componentName: string): ToolboxItems.ContentsType[] {
-  const getBlocksFunction = ALL_COMPONENTS[componentType];
-  if (getBlocksFunction) {
-    return getBlocksFunction(componentName);
-  }
-  return [];
+  const contents: ToolboxItems.ContentsType[] = [];
+  addInstanceComponentBlocks(componentType, componentName, contents);
+  return contents;
 }

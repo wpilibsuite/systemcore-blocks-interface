@@ -19,7 +19,16 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { PythonData } from './python_json_types';
+import { PythonData, ClassData } from './python_json_types';
 import generatedExternalSamplesData from './generated/external_samples_data.json';
 
 export const externalSamplesData = generatedExternalSamplesData as PythonData;
+
+export function getClassData(className: string): ClassData | null {
+  for (const classData of externalSamplesData.classes) {
+    if (classData.className === className) {
+      return classData;
+    }
+  }
+  return null;
+}

@@ -252,13 +252,13 @@ export class Editor {
     const components = commonStorage.extractComponents(this.projectContent);
 
     // TODO(lizlooney): Remove this fake code after getComponents (above) has been implemented.
-    components.push({name: 'frontTouch', className: 'rev.TouchSensor'});
-    components.push({name: 'backTouch', className: 'rev.TouchSensor'});
-    components.push({name: 'leftMotor', className: 'rev.SmartMotor'});
-    components.push({name: 'rightMotor', className: 'rev.SmartMotor'});
-    components.push({name: 'clawServo', className: 'rev.Servo'});
-    components.push({name: 'colorSensor', className: 'rev.ColorRangeSensor'});
-    components.push({name: 'ledStick', className: 'sparkfun.LEDStick'});
+    components.push({name: 'frontTouch', className: 'rev_touch_sensor.RevTouchSensor'});
+    components.push({name: 'backTouch', className: 'rev_touch_sensor.RevTouchSensor'});
+    components.push({name: 'leftMotor', className: 'smart_motor.SmartMotor'});
+    components.push({name: 'rightMotor', className: 'smart_motor.SmartMotor'});
+    components.push({name: 'clawServo', className: 'servo.Servo'});
+    components.push({name: 'colorSensor', className: 'color_range_sensor.ColorRangeSensor'});
+    components.push({name: 'ledStick', className: 'sparkfun_led_stick.SparkFunLEDStick'});
     // End of fake code
 
     const componentNames: string[] = [];
