@@ -269,13 +269,6 @@ const App: React.FC = (): React.JSX.Element => {
     }
   }, [currentModule]);
 
-  // Update toolbox when shown categories change
-  React.useEffect(() => {
-    if (blocksEditor.current) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
-    }
-  }, [shownPythonToolboxCategories]);
-
   // Initialize Blockly workspace and editor when component and storage are ready
   React.useEffect(() => {
     if (!blocklyComponent.current || !storage) {
