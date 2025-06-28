@@ -270,7 +270,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         }
       });
       if (exported) {
-        const variableName = variableModel.name;
+        const variableName = variableModel.getName();
         const actualVariableName = super.getVariableName(variableModel.getId());
         const getPythonModuleVariableBlock = {
           'kind': 'block',
