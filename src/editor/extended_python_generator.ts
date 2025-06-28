@@ -248,12 +248,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       exportedBlocks.push(callFunctionBlock);
     }
 
-    const allVariables = workspace.getAllVariables();
+    const allVariables = workspace.getVariableMap().getAllVariables();
     for (const variableModel of allVariables) {
       // Only variables that are used outside of functions are exported. (I'm not sure if this is
       // the right choice, since all blockly variables are global variables.)
       let exported = false;
-      const variableUsesById = workspace.getVariableUsesById(variableModel.getId())
+      const variableUsesById = workspace.getVariableMap().getVariableUsesById(variableModel.getId())
       if (variableUsesById.length === 0) {
         continue;
       }
