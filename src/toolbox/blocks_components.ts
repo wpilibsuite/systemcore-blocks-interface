@@ -16,19 +16,35 @@
  */
 
 /**
- * @author alan@porpoiseful.com (Alan Smith)
+ * @fileoverview Component blocks for the toolbox.
  */
+
 import * as ToolboxItems from './items';
 import * as ColorSensor from './hardware_components/color_sensor';
 import * as SmartMotor from './hardware_components/smart_motor';
-import * as TouchSensor from './hardware_components/touch_sensor';
 import * as Servo from './hardware_components/servo';
+import * as TouchSensor from './hardware_components/touch_sensor';
 
-export function getAllPossibleComponents(hideParams : boolean): ToolboxItems.ContentsType[] {
-    return [
-        SmartMotor.getDefinitionBlock(hideParams),
-        TouchSensor.getDefinitionBlock(hideParams),
-        ColorSensor.getDefinitionBlock(hideParams),
-        Servo.getDefinitionBlock(hideParams),
-    ];
+const ALL_COMPONENTS: Record<string, (componentName: string) => ToolboxItems.ContentsType[]> = {
+  [ColorSensor.TYPE_NAME]: ColorSensor.getBlocks,
+  [SmartMotor.TYPE_NAME]: SmartMotor.getBlocks,
+  [TouchSensor.TYPE_NAME]: TouchSensor.getBlocks,
+  [Servo.TYPE_NAME]: Servo.getBlocks,
+};
+
+export function getAllPossibleComponents(hideParams: boolean): ToolboxItems.ContentsType[] {
+  return [
+    SmartMotor.getDefinitionBlock(hideParams),
+    TouchSensor.getDefinitionBlock(hideParams),
+    ColorSensor.getDefinitionBlock(hideParams),
+    Servo.getDefinitionBlock(hideParams),
+  ];
+}
+
+export function getBlocks(componentType: string, componentName: string): ToolboxItems.ContentsType[] {
+  const getBlocksFunction = ALL_COMPONENTS[componentType];
+  if (getBlocksFunction) {
+    return getBlocksFunction(componentName);
+  }
+  return [];
 }
