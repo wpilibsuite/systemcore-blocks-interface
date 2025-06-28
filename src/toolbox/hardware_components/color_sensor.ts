@@ -72,7 +72,7 @@ export function getBlocks(componentName: string): ToolboxItems.ContentsType[] {
         tooltip: 'Get the color in rgb (red, green, blue).',
         importModule: '',
         componentClassName: 'rev.ColorRangeSensor',
-        componentName,
+        componentName : componentName,
       },
       fields: {
         COMPONENT_NAME: componentName,
