@@ -22,7 +22,8 @@ import * as Antd from 'antd';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as I18Next from 'react-i18next';
-import {TabType} from './Tabs';
+import {TabType } from '../types/TabType';
+
 import {
   SettingOutlined,
   CodeOutlined,

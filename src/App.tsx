@@ -29,6 +29,7 @@ import CodeDisplay from './reactComponents/CodeDisplay';
 import BlocklyComponent, {BlocklyComponentType} from './reactComponents/BlocklyComponent';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
+import {TabType } from './types/TabType';
 
 import {createGeneratorContext, GeneratorContext} from './editor/generator_context';
 import * as editor from './editor/editor';
@@ -231,7 +232,7 @@ const App: React.FC = (): React.JSX.Element => {
       {
         key: projectData.modulePath,
         title: 'Robot',
-        type: Tabs.TabType.ROBOT,
+        type: TabType.ROBOT,
       },
     ];
 
@@ -239,7 +240,7 @@ const App: React.FC = (): React.JSX.Element => {
       tabs.push({
         key: mechanism.modulePath,
         title: mechanism.className,
-        type: Tabs.TabType.MECHANISM,
+        type: TabType.MECHANISM,
       });
     });
 
@@ -247,7 +248,7 @@ const App: React.FC = (): React.JSX.Element => {
       tabs.push({
         key: opmode.modulePath,
         title: opmode.className,
-        type: Tabs.TabType.OPMODE,
+        type: TabType.OPMODE,
       });
     });
 
