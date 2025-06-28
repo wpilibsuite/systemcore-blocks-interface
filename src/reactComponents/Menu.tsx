@@ -48,6 +48,7 @@ export interface MenuProps {
   storage: commonStorage.Storage | null;
   gotoTab: (tabKey: string) => void;
   project: commonStorage.Project | null;
+  openToolbox: () => void;
   setProject: (project: commonStorage.Project | null) => void;
 }
 
@@ -248,6 +249,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       setProjectModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
+    } else if (key === 'wpi_toolbox'){
+      props.openToolbox();
     } else {
       // TODO: Handle other menu actions
       console.log(`Selected key that wasn't module: ${key}`);

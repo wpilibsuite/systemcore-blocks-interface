@@ -379,6 +379,7 @@ const App: React.FC = (): React.JSX.Element => {
               gotoTab={setActiveTab}
               project={project}
               setProject={setProject}
+              openToolbox= {() => setToolboxSettingsModalIsOpen(true)}
             />
           </Sider>
           <Antd.Layout>
