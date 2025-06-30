@@ -95,6 +95,8 @@ const App: React.FC = (): React.JSX.Element => {
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
+  const [rightCollapsed, setRightCollapsed] = React.useState(false);
+
 
   const blocksEditor = React.useRef<editor.Editor | null>(null);
   const generatorContext = React.useRef<GeneratorContext | null>(null);
@@ -208,11 +210,6 @@ const App: React.FC = (): React.JSX.Element => {
       await saveBlocks();
     }
     setCurrentModule(module);
-  };
-
-  /** Handles left sidebar collapse state change. */
-  const handleSiderCollapse = (collapsed: boolean): void => {
-    setLeftCollapsed(collapsed);
   };
 
   /** Handles toolbox settings modal close. */
@@ -337,21 +334,21 @@ const App: React.FC = (): React.JSX.Element => {
     }
   }, [project]);
 
-  const {Sider} = Antd.Layout;
+  const {Sider,Content} = Antd.Layout;
 
   return (
     <Antd.ConfigProvider
       theme={{
         algorithm: Antd.theme.darkAlgorithm,
         components: {
-          Tree: {
-            directoryNodeSelectedBg: '#1677ff',
-            directoryNodeSelectedColor: '#fff',
-            nodeSelectedBg: '#1677ff',
-            nodeSelectedColor: '#fff',
-            nodeHoverBg: '#333',
-            nodeHoverColor: '#fff',
+          Layout: {
+            headerBg: '#000000', // This is only for dark mode
+            siderBg: '#000000', // This is only for dark mode
+            triggerBg: '#000000', // This is only for dark mode 
           },
+          Menu:{
+            darkItemBg: '#000000', // This is only for dark mode
+          }
         },
       }}
     >
@@ -371,7 +368,7 @@ const App: React.FC = (): React.JSX.Element => {
           <Sider
             collapsible
             collapsed={leftCollapsed}
-            onCollapse={handleSiderCollapse}
+            onCollapse={(collapsed: boolean) => setLeftCollapsed(collapsed)}
           >
             <Menu.Component
               storage={storage}
@@ -394,22 +391,25 @@ const App: React.FC = (): React.JSX.Element => {
               setProject={setProject}
               storage={storage}
             />
-            <Antd.Splitter>
-              <Antd.Splitter.Panel>
+            <Antd.Layout>
+              <Content>
                 <BlocklyComponent ref={blocklyComponent} />
-              </Antd.Splitter.Panel>
-              <Antd.Splitter.Panel
-                min={CODE_PANEL_MIN_SIZE}
-                defaultSize={CODE_PANEL_DEFAULT_SIZE}
-                collapsible={true}
+              </Content>
+              <Sider
+                collapsible
+                reverseArrow={true}
+                collapsed={rightCollapsed}
+                collapsedWidth={80}
+                width={'25%'}
+                onCollapse={(collapsed: boolean) => setRightCollapsed(collapsed)}
               >
                 <CodeDisplay
                   generatedCode={generatedCode}
                   messageApi={messageApi}
                   setAlertErrorMessage={setAlertErrorMessage}
                 />
-              </Antd.Splitter.Panel>
-            </Antd.Splitter>
+              </Sider>
+            </Antd.Layout>
           </Antd.Layout>
         </Antd.Layout>
       </Antd.Layout>
