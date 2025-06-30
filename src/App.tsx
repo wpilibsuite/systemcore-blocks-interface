@@ -73,7 +73,7 @@ const FULL_HEIGHT = '100%';
 const CODE_PANEL_DEFAULT_SIZE = '25%';
 
 /** Minimum size for code panel. */
-const CODE_PANEL_MIN_SIZE = 40;
+const CODE_PANEL_MIN_SIZE = 80;
 
 /** Background color for testing layout. */
 const LAYOUT_BACKGROUND_COLOR = '#0F0';
@@ -399,8 +399,8 @@ const App: React.FC = (): React.JSX.Element => {
                 collapsible
                 reverseArrow={true}
                 collapsed={rightCollapsed}
-                collapsedWidth={80}
-                width={'25%'}
+                collapsedWidth={CODE_PANEL_MIN_SIZE}
+                width={CODE_PANEL_DEFAULT_SIZE}
                 onCollapse={(collapsed: boolean) => setRightCollapsed(collapsed)}
               >
                 <CodeDisplay
