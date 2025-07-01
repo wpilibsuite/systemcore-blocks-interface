@@ -20,6 +20,8 @@
  */
 import * as React from 'react';
 import * as Antd from 'antd';
+import '@ant-design/v5-patch-for-react-19';
+
 import * as Blockly from 'blockly/core';
 import {pythonGenerator} from 'blockly/python';
 
