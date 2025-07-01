@@ -26,7 +26,6 @@
 
 import * as Blockly from 'blockly/core';
 
-import * as toolboxItems from './items';
 import * as commonStorage from '../storage/common_storage';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
 import { getAllPossibleComponents, getBlocks } from './blocks_components';
@@ -50,7 +49,7 @@ export function getHardwareCategory(currentModule: commonStorage.Module) {
       name: 'Hardware',
       contents: [
         getRobotMechanismsBlocks(currentModule),
-        getRobotComponentsBlocks(currentModule),
+        getComponentsBlocks(currentModule),
       ]
     };
   }
