@@ -679,9 +679,9 @@ export const pythonFromBlock = function(
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
         case commonStorage.MODULE_TYPE_PROJECT:
+        case commonStorage.MODULE_TYPE_MECHANISM:
           code = 'self.';
           break;
-        case commonStorage.MODULE_TYPE_MECHANISM:
         case commonStorage.MODULE_TYPE_OPMODE:
         default:
           code = 'self.robot.';
