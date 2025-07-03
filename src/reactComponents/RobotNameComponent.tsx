@@ -23,13 +23,13 @@ import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 
-/** Props for the ProjectNameComponent. */
-interface ProjectNameComponentProps {
+/** Props for the RobotNameComponent. */
+interface RobotNameComponentProps {
   newItemName: string;
   setNewItemName: (name: string) => void;
   onAddNewItem: () => void;
-  projects: commonStorage.Project[] | null;
-  setProjects: (projects: commonStorage.Project[]) => void;
+  robots: commonStorage.Robot[] | null;
+  setRobots: (robots: commonStorage.Robot[]) => void;
 }
 
 /** Full width style for input components. */
@@ -38,20 +38,20 @@ const FULL_WIDTH_STYLE = {width: '100%'};
 /** Top margin for error alert. */
 const ERROR_ALERT_MARGIN_TOP = 8;
 
-/** Invalid project name message suffix. */
-const INVALID_NAME_MESSAGE_SUFFIX = ' is not a valid project name. Please enter a different name.';
+/** Invalid robot name message suffix. */
+const INVALID_NAME_MESSAGE_SUFFIX = ' is not a valid robot name. Please enter a different name.';
 
-/** Duplicate project name message prefix. */
-const DUPLICATE_NAME_MESSAGE_PREFIX = 'There is already a project named ';
+/** Duplicate robot name message prefix. */
+const DUPLICATE_NAME_MESSAGE_PREFIX = 'There is already a robot named ';
 
-/** Duplicate project name message suffix. */
+/** Duplicate robot name message suffix. */
 const DUPLICATE_NAME_MESSAGE_SUFFIX = '. Please enter a different name.';
 
 /**
- * Component for entering and validating project names.
+ * Component for entering and validating robot names.
  * Provides input validation, error display, and automatic capitalization.
  */
-export default function ProjectNameComponent(props: ProjectNameComponentProps): React.JSX.Element {
+export default function RobotNameComponent(props: RobotNameComponentProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [alertErrorVisible, setAlertErrorVisible] = React.useState(false);
@@ -59,7 +59,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
   /** Handles adding a new item with validation. */
   const handleAddNewItem = (): void => {
     const trimmedName = props.newItemName.trim();
-    if (!trimmedName || !props.projects) {
+    if (!trimmedName || !props.robots) {
       return;
     }
 
@@ -68,7 +68,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
       return;
     }
 
-    if (props.projects.some((project) => project.className === trimmedName)) {
+    if (props.robots.some((robot) => robot.className === trimmedName)) {
       showError(DUPLICATE_NAME_MESSAGE_PREFIX + trimmedName + DUPLICATE_NAME_MESSAGE_SUFFIX);
       return;
     }
@@ -117,7 +117,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
     />
   );
 
-  /** Renders the new project button. */
+  /** Renders the new robot button. */
   const renderButton = (): React.JSX.Element => (
     <Antd.Button
       type="primary"
@@ -150,7 +150,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
         {t('class_rule_description')}
       </Antd.Typography.Paragraph>
       <Antd.Typography.Paragraph>
-        {t('example_project')}
+        {t('example_robot')}
       </Antd.Typography.Paragraph>
       <Antd.Space.Compact style={FULL_WIDTH_STYLE}>
         {renderInput()}

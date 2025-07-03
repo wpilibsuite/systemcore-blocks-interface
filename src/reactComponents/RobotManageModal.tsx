@@ -24,14 +24,14 @@ import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import {EditOutlined, DeleteOutlined, CopyOutlined, SelectOutlined} from '@ant-design/icons';
-import ProjectNameComponent from './ProjectNameComponent';
+import RobotNameComponent from './RobotNameComponent';
 
-/** Props for the ProjectManageModal component. */
-interface ProjectManageModalProps {
+/** Props for the RobotManageModal component. */
+interface RobotManageModalProps {
   isOpen: boolean;
-  noProjects: boolean;
+  noRobots: boolean;
   onCancel: () => void;
-  setProject: (project: commonStorage.Project | null) => void;
+  setRobot: (robot: commonStorage.Robot | null) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
   moduleType: TabType;
@@ -46,7 +46,7 @@ const MODAL_WIDTH = 800;
 /** Actions column width in pixels. */
 const ACTIONS_COLUMN_WIDTH = 160;
 
-/** Default copy suffix for project names. */
+/** Default copy suffix for robot names. */
 const COPY_SUFFIX = 'Copy';
 
 /** Alert margin bottom in pixels. */
@@ -59,41 +59,41 @@ const CONTAINER_BORDER_RADIUS = '6px';
 const CONTAINER_PADDING = '12px';
 
 /**
- * Modal component for managing projects.
- * Provides functionality to create, rename, copy, delete, and select projects.
+ * Modal component for managing robots.
+ * Provides functionality to create, rename, copy, delete, and select robots.
  */
-export default function ProjectManageModal(props: ProjectManageModalProps): React.JSX.Element {
+export default function RobotManageModal(props: RobotManageModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
-  const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
+  const [modules, setModules] = React.useState<commonStorage.Robot[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
-  const [currentRecord, setCurrentRecord] = React.useState<commonStorage.Project | null>(null);
+  const [currentRecord, setCurrentRecord] = React.useState<commonStorage.Robot | null>(null);
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
   /** Loads modules from storage and sorts them alphabetically. */
   const loadModules = async (storage: commonStorage.Storage): Promise<void> => {
-    const projects = await storage.listModules();
+    const robots = await storage.listModules();
 
     // Sort modules alphabetically by class name
-    projects.sort((a, b) => a.className.localeCompare(b.className));
-    setModules(projects);
+    robots.sort((a, b) => a.className.localeCompare(b.className));
+    setModules(robots);
     
-    if (projects.length > 0 && props.noProjects) {
-      props.setProject(projects[0]); // Set the first project as the current project
+    if (robots.length > 0 && props.noRobots) {
+      props.setRobot(robots[0]); // Set the first robot as the current robot
       props.onCancel(); // Close the modal after selecting
     }
   };
 
-  /** Handles renaming a project. */
-  const handleRename = async (origModule: commonStorage.Project, newName: string): Promise<void> => {
+  /** Handles renaming a robot. */
+  const handleRename = async (origModule: commonStorage.Robot, newName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
     try {
       await props.storage.renameModule(
-          commonStorage.MODULE_TYPE_PROJECT,
+          commonStorage.MODULE_TYPE_ROBOT,
           origModule.className,
           origModule.className,
           newName
@@ -107,15 +107,15 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     setRenameModalOpen(false);
   };
 
-  /** Handles copying a project. */
-  const handleCopy = async (origModule: commonStorage.Project, newName: string): Promise<void> => {
+  /** Handles copying a robot. */
+  const handleCopy = async (origModule: commonStorage.Robot, newName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
     try {
       await props.storage.copyModule(
-          commonStorage.MODULE_TYPE_PROJECT,
+          commonStorage.MODULE_TYPE_ROBOT,
           origModule.className,
           origModule.className,
           newName
@@ -129,34 +129,34 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     setCopyModalOpen(false);
   };
 
-  /** Handles adding a new project. */
+  /** Handles adding a new robot. */
   const handleAddNewItem = async (): Promise<void> => {
     const trimmedName = newItemName.trim();
     if (!trimmedName || !props.storage) {
       return;
     }
 
-    const newProjectName = commonStorage.classNameToModuleName(trimmedName);
-    const newProjectPath = commonStorage.makeProjectPath(newProjectName);
-    const projectContent = commonStorage.newProjectContent(newProjectName);
+    const newRobotName = commonStorage.classNameToModuleName(trimmedName);
+    const newRobotPath = commonStorage.makeRobotPath(newRobotName);
+    const robotContent = commonStorage.newRobotContent(newRobotName);
 
     try {
       await props.storage.createModule(
-          commonStorage.MODULE_TYPE_PROJECT,
-          newProjectPath,
-          projectContent
+          commonStorage.MODULE_TYPE_ROBOT,
+          newRobotPath,
+          robotContent
       );
     } catch (e) {
-      console.error('Failed to create a new project:', e);
-      props.setAlertErrorMessage('Failed to create a new project.');
+      console.error('Failed to create a new robot:', e);
+      props.setAlertErrorMessage('Failed to create a new robot.');
     }
 
     setNewItemName('');
     await loadModules(props.storage);
   };
 
-  /** Handles project deletion with proper cleanup. */
-  const handleDeleteProject = async (record: commonStorage.Project): Promise<void> => {
+  /** Handles robot deletion with proper cleanup. */
+  const handleDeleteRobot = async (record: commonStorage.Robot): Promise<void> => {
     if (!props.storage) {
       return;
     }
@@ -164,43 +164,43 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     const newModules = modules.filter((m) => m.modulePath !== record.modulePath);
     setModules(newModules);
 
-    // Find another project to set as current
-    let foundAnotherProject = false;
-    for (const project of modules) {
-      if (project.modulePath !== record.modulePath) {
-        props.setProject(project);
-        foundAnotherProject = true;
+    // Find another robot to set as current
+    let foundAnotherRobot = false;
+    for (const robot of modules) {
+      if (robot.modulePath !== record.modulePath) {
+        props.setRobot(robot);
+        foundAnotherRobot = true;
         break;
       }
     }
 
-    if (!foundAnotherProject) {
-      props.setProject(null);
+    if (!foundAnotherRobot) {
+      props.setRobot(null);
     }
 
     try {
-      await props.storage.deleteModule(commonStorage.MODULE_TYPE_PROJECT, record.modulePath);
+      await props.storage.deleteModule(commonStorage.MODULE_TYPE_ROBOT, record.modulePath);
     } catch (e) {
-      console.error('Failed to delete the project:', e);
-      props.setAlertErrorMessage('Failed to delete the project.');
+      console.error('Failed to delete the robot:', e);
+      props.setAlertErrorMessage('Failed to delete the robot.');
     }
   };
 
-  /** Handles project selection. */
-  const handleSelectProject = (record: commonStorage.Project): void => {
-    props.setProject(record);
+  /** Handles robot selection. */
+  const handleSelectRobot = (record: commonStorage.Robot): void => {
+    props.setRobot(record);
     props.onCancel();
   };
 
-  /** Opens the rename modal for a specific project. */
-  const openRenameModal = (record: commonStorage.Project): void => {
+  /** Opens the rename modal for a specific robot. */
+  const openRenameModal = (record: commonStorage.Robot): void => {
     setCurrentRecord(record);
     setName(record.className);
     setRenameModalOpen(true);
   };
 
-  /** Opens the copy modal for a specific project. */
-  const openCopyModal = (record: commonStorage.Project): void => {
+  /** Opens the copy modal for a specific robot. */
+  const openCopyModal = (record: commonStorage.Robot): void => {
     setCurrentRecord(record);
     setName(record.className + COPY_SUFFIX);
     setCopyModalOpen(true);
@@ -208,12 +208,12 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
 
   /** Gets the rename modal title. */
   const getRenameModalTitle = (): string => {
-    return `Rename Project: ${currentRecord ? currentRecord.className : ''}`;
+    return `Rename Robot: ${currentRecord ? currentRecord.className : ''}`;
   };
 
   /** Gets the copy modal title. */
   const getCopyModalTitle = (): string => {
-    return `Copy Project: ${currentRecord ? currentRecord.className : ''}`;
+    return `Copy Robot: ${currentRecord ? currentRecord.className : ''}`;
   };
 
   /** Creates the container style object. */
@@ -230,7 +230,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   });
 
   /** Table column configuration. */
-  const columns: Antd.TableProps<commonStorage.Project>['columns'] = [
+  const columns: Antd.TableProps<commonStorage.Robot>['columns'] = [
     {
       title: 'Name',
       dataIndex: 'className',
@@ -248,14 +248,14 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       title: 'Actions',
       key: 'actions',
       width: ACTIONS_COLUMN_WIDTH,
-      render: (_, record: commonStorage.Project) => (
+      render: (_, record: commonStorage.Robot) => (
         <Antd.Space size="small">
           <Antd.Tooltip title={t('Select')}>
             <Antd.Button
               type="text"
               size="small"
               icon={<SelectOutlined />}
-              onClick={() => handleSelectProject(record)}
+              onClick={() => handleSelectRobot(record)}
             />
           </Antd.Tooltip>
           <Antd.Tooltip title={t('Rename')}>
@@ -279,7 +279,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
               <Antd.Popconfirm
                 title={`Delete ${record.className}?`}
                 description="This action cannot be undone."
-                onConfirm={() => handleDeleteProject(record)}
+                onConfirm={() => handleDeleteRobot(record)}
                 okText={t('Delete')}
                 cancelText={t('Cancel')}
                 okType="danger"
@@ -320,7 +320,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
         cancelText={t('Cancel')}
       >
         {currentRecord && (
-          <ProjectNameComponent
+          <RobotNameComponent
             newItemName={name}
             setNewItemName={setName}
             onAddNewItem={() => {
@@ -328,8 +328,8 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
                 handleRename(currentRecord, name);
               }
             }}
-            projects={modules}
-            setProjects={setModules}
+            robots={modules}
+            setRobots={setModules}
           />
         )}
       </Antd.Modal>
@@ -347,7 +347,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
         cancelText={t('Cancel')}
       >
         {currentRecord && (
-          <ProjectNameComponent
+          <RobotNameComponent
             newItemName={name}
             setNewItemName={setName}
             onAddNewItem={() => {
@@ -355,14 +355,14 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
                 handleCopy(currentRecord, name);
               }
             }}
-            projects={modules}
-            setProjects={setModules}
+            robots={modules}
+            setRobots={setModules}
           />
         )}
       </Antd.Modal>
 
       <Antd.Modal
-        title={t('Project Management')}
+        title={t('Robot Management')}
         open={props.isOpen}
         onCancel={props.onCancel}
         footer={[
@@ -372,26 +372,26 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
         ]}
         width={MODAL_WIDTH}
       >
-        {props.noProjects && (
+        {props.noRobots && (
           <Antd.Alert
-            message="No projects found"
-            description="Please create a new project to get started."
+            message="No robots found"
+            description="Please create a new robot to get started."
             type="info"
             showIcon
             style={getAlertStyle()}
           />
         )}
         <div style={getContainerStyle()}>
-          <ProjectNameComponent
+          <RobotNameComponent
             newItemName={newItemName}
             setNewItemName={setNewItemName}
             onAddNewItem={handleAddNewItem}
-            projects={modules}
-            setProjects={setModules}
+            robots={modules}
+            setRobots={setModules}
           />
         </div>
-        {!props.noProjects && (
-          <Antd.Table<commonStorage.Project>
+        {!props.noRobots && (
+          <Antd.Table<commonStorage.Robot>
             columns={columns}
             dataSource={modules}
             rowKey="modulePath"
@@ -405,10 +405,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             } : false}
             bordered
             locale={{
-              emptyText: 'No projects found',
+              emptyText: 'No robots found',
             }}
             onRow={(record) => ({
-              onDoubleClick: () => handleSelectProject(record),
+              onDoubleClick: () => handleSelectRobot(record),
             })}
           />
         )}

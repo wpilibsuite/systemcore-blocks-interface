@@ -82,7 +82,7 @@ const LAYOUT_BACKGROUND_COLOR = '#0F0';
 
 /**
  * Main application component that manages the Blockly interface, code generation,
- * project management, and user interface layout.
+ * robot management, and user interface layout.
  */
 const App: React.FC = (): React.JSX.Element => {
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
@@ -91,7 +91,7 @@ const App: React.FC = (): React.JSX.Element => {
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
-  const [project, setProject] = React.useState<commonStorage.Project | null>(null);
+  const [robot, setRobot] = React.useState<commonStorage.Robot | null>(null);
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [activeTab, setActiveTab] = React.useState('');
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
@@ -225,17 +225,17 @@ const App: React.FC = (): React.JSX.Element => {
     handleToolboxSettingsOk(updatedShownCategories);
   };
 
-  /** Creates tab items from project data. */
-  const createTabItemsFromProject = (projectData: commonStorage.Project): Tabs.TabItem[] => {
+  /** Creates tab items from robot data. */
+  const createTabItemsFromRobot = (robotData: commonStorage.Robot): Tabs.TabItem[] => {
     const tabs: Tabs.TabItem[] = [
       {
-        key: projectData.modulePath,
+        key: robotData.modulePath,
         title: 'Robot',
         type: TabType.ROBOT,
       },
     ];
 
-    projectData.mechanisms.forEach((mechanism) => {
+    robotData.mechanisms.forEach((mechanism) => {
       tabs.push({
         key: mechanism.modulePath,
         title: mechanism.className,
@@ -243,7 +243,7 @@ const App: React.FC = (): React.JSX.Element => {
       });
     });
 
-    projectData.opModes.forEach((opmode) => {
+    robotData.opModes.forEach((opmode) => {
       tabs.push({
         key: opmode.modulePath,
         title: opmode.className,
@@ -327,14 +327,14 @@ const App: React.FC = (): React.JSX.Element => {
     }
   }, [currentModule, shownPythonToolboxCategories]);
 
-  // Update tab items when project changes
+  // Update tab items when robot changes
   React.useEffect(() => {
-    if (project) {
-      const tabs = createTabItemsFromProject(project);
+    if (robot) {
+      const tabs = createTabItemsFromRobot(robot);
       setTabItems(tabs);
-      setActiveTab(project.modulePath);
+      setActiveTab(robot.modulePath);
     }
-  }, [project]);
+  }, [robot]);
 
   const {Sider,Content} = Antd.Layout;
 
@@ -359,7 +359,7 @@ const App: React.FC = (): React.JSX.Element => {
         <Header
           alertErrorMessage={alertErrorMessage}
           setAlertErrorMessage={setAlertErrorMessage}
-          project={project}
+          robot={robot}
         />
         <Antd.Layout
           style={{
@@ -376,8 +376,8 @@ const App: React.FC = (): React.JSX.Element => {
               storage={storage}
               setAlertErrorMessage={setAlertErrorMessage}
               gotoTab={setActiveTab}
-              project={project}
-              setProject={setProject}
+              robot={robot}
+              setRobot={setRobot}
               openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
             />
           </Sider>
@@ -389,8 +389,8 @@ const App: React.FC = (): React.JSX.Element => {
               setAlertErrorMessage={setAlertErrorMessage}
               currentModule={currentModule}
               setCurrentModule={changeModule}
-              project={project}
-              setProject={setProject}
+              robot={robot}
+              setRobot={setRobot}
               storage={storage}
             />
             <Antd.Layout>

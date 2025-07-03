@@ -118,13 +118,13 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
   
-  async listModules(): Promise<commonStorage.Project[]> {
+  async listModules(): Promise<commonStorage.Robot[]> {
     return new Promise((resolve, reject) => {
-      const projects: {[key: string]: commonStorage.Project} = {}; // key is project name, value is Project
+      const robots: {[key: string]: commonStorage.Robot} = {}; // key is robot name, value is Robot
       // The mechanisms and opModes variables hold any Mechanisms and OpModes that
-      // are read before the Project to which they belong is read.
-      const mechanisms: {[key: string]: commonStorage.Mechanism[]} = {}; // key is project name, value is list of Mechanisms
-      const opModes: {[key: string]: commonStorage.OpMode[]} = {}; // key is project name, value is list of OpModes
+      // are read before the Robot to which they belong is read.
+      const mechanisms: {[key: string]: commonStorage.Mechanism[]} = {}; // key is robot name, value is list of Mechanisms
+      const opModes: {[key: string]: commonStorage.OpMode[]} = {}; // key is robot name, value is list of OpModes
       const openCursorRequest = this.db.transaction(['modules'], 'readonly')
           .objectStore('modules')
           .openCursor();
@@ -143,70 +143,70 @@ class ClientSideStorage implements commonStorage.Storage {
           const module: commonStorage.Module = {
             modulePath: path,
             moduleType: moduleType,
-            projectName: commonStorage.getProjectName(path),
+            robotName: commonStorage.getRobotName(path),
             moduleName: moduleName,
             dateModifiedMillis: value.dateModifiedMillis,
             className: commonStorage.moduleNameToClassName(moduleName),
           }
-          if (moduleType === commonStorage.MODULE_TYPE_PROJECT) {
-            const project: commonStorage.Project = {
+          if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+            const robot: commonStorage.Robot = {
               ...module,
               mechanisms: [],
               opModes: [],
             };
-            projects[project.projectName] = project;
-            // Add any Mechanisms that belong to this project that have already
+            robots[robot.robotName] = robot;
+            // Add any Mechanisms that belong to this robot that have already
             // been read.
-            if (project.projectName in mechanisms) {
-              project.mechanisms = mechanisms[project.projectName];
-              delete mechanisms[project.projectName];
+            if (robot.robotName in mechanisms) {
+              robot.mechanisms = mechanisms[robot.robotName];
+              delete mechanisms[robot.robotName];
             }
-            // Add any OpModes that belong to this project that have already been
+            // Add any OpModes that belong to this robot that have already been
             // read.
-            if (project.projectName in opModes) {
-              project.opModes = opModes[project.projectName];
-              delete opModes[project.projectName];
+            if (robot.robotName in opModes) {
+              robot.opModes = opModes[robot.robotName];
+              delete opModes[robot.robotName];
             }
           } else if (moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
             const mechanism: commonStorage.Mechanism = {
               ...module,
             };
-            if (mechanism.projectName in projects) {
-              // If the Project to which this Mechanism belongs has already been read,
+            if (mechanism.robotName in robots) {
+              // If the Robot to which this Mechanism belongs has already been read,
               // add this Mechanism to it.
-              projects[mechanism.projectName].mechanisms.push(mechanism);
+              robots[mechanism.robotName].mechanisms.push(mechanism);
             } else {
               // Otherwise, add this Mechanism to the mechanisms local variable.
-              if (mechanism.projectName in mechanisms) {
-                mechanisms[mechanism.projectName].push(mechanism);
+              if (mechanism.robotName in mechanisms) {
+                mechanisms[mechanism.robotName].push(mechanism);
               } else {
-                mechanisms[mechanism.projectName] = [mechanism];
+                mechanisms[mechanism.robotName] = [mechanism];
               }
             }
           } else if (moduleType === commonStorage.MODULE_TYPE_OPMODE) {
             const opMode: commonStorage.OpMode = {
               ...module,
             };
-            if (opMode.projectName in projects) {
-              // If the Project to which this OpMode belongs has already been read,
+            if (opMode.robotName in robots) {
+              // If the Robot to which this OpMode belongs has already been read,
               // add this OpMode to it.
-              projects[opMode.projectName].opModes.push(opMode);
+              robots[opMode.robotName].opModes.push(opMode);
             } else {
               // Otherwise, add this OpMode to the opModes local variable.
-              if (opMode.projectName in opModes) {
-                opModes[opMode.projectName].push(opMode);
+              if (opMode.robotName in opModes) {
+                opModes[opMode.robotName].push(opMode);
               } else {
-                opModes[opMode.projectName] = [opMode];
+                opModes[opMode.robotName] = [opMode];
               }
             }
           }
           cursor.continue();
         } else {
           // The cursor is done. We have finished reading all the modules.
-          const modules: commonStorage.Project[] = [];
-          const sortedProjectNames = Object.keys(projects).sort();
-          sortedProjectNames.forEach((projectName) => {
-            modules.push(projects[projectName]);
+          const modules: commonStorage.Robot[] = [];
+          const sortedRobotNames = Object.keys(robots).sort();
+          sortedRobotNames.forEach((robotName) => {
+            modules.push(robots[robotName]);
           });
           resolve(modules);
         }
@@ -299,7 +299,7 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  private async _renameOrCopyProject(oldProjectName: string, newProjectName: string, copy: boolean): Promise<void> {
+  private async _renameOrCopyRobot(oldRobotName: string, newRobotName: string, copy: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(['modules'], 'readwrite');
       transaction.oncomplete = () => {
@@ -310,7 +310,7 @@ class ClientSideStorage implements commonStorage.Storage {
         reject(new Error('IndexedDB transaction aborted.'));
       };
       const modulesObjectStore = transaction.objectStore('modules');
-      // First get the list of modules in the project.
+      // First get the list of modules in the robot.
       const oldToNewModulePaths: {[key: string]: string} = {};
       const openCursorRequest = modulesObjectStore.openCursor();
       openCursorRequest.onerror = () => {
@@ -324,19 +324,19 @@ class ClientSideStorage implements commonStorage.Storage {
           const value = cursor.value;
           const path = value.path;
           const moduleType = value.type;
-          if (commonStorage.getProjectName(path) === oldProjectName) {
+          if (commonStorage.getRobotName(path) === oldRobotName) {
             let newPath;
-            if (moduleType === commonStorage.MODULE_TYPE_PROJECT) {
-              newPath = commonStorage.makeProjectPath(newProjectName);
+            if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+              newPath = commonStorage.makeRobotPath(newRobotName);
             } else {
               const moduleName = commonStorage.getModuleName(path);
-              newPath = commonStorage.makeModulePath(newProjectName, moduleName);
+              newPath = commonStorage.makeModulePath(newRobotName, moduleName);
             }
             oldToNewModulePaths[path] = newPath;
           }
           cursor.continue();
         } else {
-          // Now rename the project for each of the modules.
+          // Now rename the robot for each of the modules.
           Object.entries(oldToNewModulePaths).forEach(([oldModulePath, newModulePath]) => {
             const getRequest = modulesObjectStore.get(oldModulePath);
             getRequest.onerror = () => {
@@ -376,25 +376,25 @@ class ClientSideStorage implements commonStorage.Storage {
   }
 
   async renameModule(
-      moduleType: string, projectName: string,
+      moduleType: string, robotName: string,
       oldModuleName: string, newModuleName: string): Promise<void> {
     return this._renameOrCopyModule(
-        moduleType, projectName, oldModuleName, newModuleName, false);
+        moduleType, robotName, oldModuleName, newModuleName, false);
   }
 
   async copyModule(
-      moduleType: string, projectName: string,
+      moduleType: string, robotName: string,
       oldModuleName: string, newModuleName: string): Promise<void> {
     return this._renameOrCopyModule(
-        moduleType, projectName, oldModuleName, newModuleName, true);
+        moduleType, robotName, oldModuleName, newModuleName, true);
   }
 
   private async _renameOrCopyModule(
-      moduleType: string, projectName: string,
+      moduleType: string, robotName: string,
       oldModuleName: string, newModuleName: string, copy: boolean): Promise<void> {
 
-    if (moduleType == commonStorage.MODULE_TYPE_PROJECT) {
-      return this._renameOrCopyProject(oldModuleName, newModuleName, copy);
+    if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+      return this._renameOrCopyRobot(oldModuleName, newModuleName, copy);
     }
 
     return new Promise((resolve, reject) => {
@@ -407,8 +407,8 @@ class ClientSideStorage implements commonStorage.Storage {
         reject(new Error('IndexedDB transaction aborted.'));
       };
       const modulesObjectStore = transaction.objectStore('modules');
-      const oldModulePath = commonStorage.makeModulePath(projectName, oldModuleName);
-      const newModulePath = commonStorage.makeModulePath(projectName, newModuleName);
+      const oldModulePath = commonStorage.makeModulePath(robotName, oldModuleName);
+      const newModulePath = commonStorage.makeModulePath(robotName, newModuleName);
       const getRequest = modulesObjectStore.get(oldModulePath);
       getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
@@ -446,7 +446,7 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  private async _deleteProject(projectName: string): Promise<void> {
+  private async _deleteRobot(robotName: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(['modules'], 'readwrite');
       transaction.oncomplete = () => {
@@ -457,7 +457,7 @@ class ClientSideStorage implements commonStorage.Storage {
         reject(new Error('IndexedDB transaction aborted.'));
       };
       const modulesObjectStore = transaction.objectStore('modules');
-      // First get the list of modulePaths in the project.
+      // First get the list of modulePaths in the robot.
       const modulePaths: string[] = [];
       const openCursorRequest = modulesObjectStore.openCursor();
       openCursorRequest.onerror = () => {
@@ -470,7 +470,7 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           const path = value.path;
-          if (commonStorage.getProjectName(path) === projectName) {
+          if (commonStorage.getRobotName(path) === robotName) {
             modulePaths.push(path);
           }
           cursor.continue();
@@ -492,9 +492,9 @@ class ClientSideStorage implements commonStorage.Storage {
   }
 
   async deleteModule(moduleType: string, modulePath: string): Promise<void> {
-    if (moduleType == commonStorage.MODULE_TYPE_PROJECT) {
-      const projectName = commonStorage.getProjectName(modulePath);
-      return this._deleteProject(projectName);
+    if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+      const robotName = commonStorage.getRobotName(modulePath);
+      return this._deleteRobot(robotName);
     }
 
     return new Promise((resolve, reject) => {
@@ -518,9 +518,9 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async downloadProject(projectName: string): Promise<string> {
+  async downloadRobot(robotName: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      // Collect all the modules in the project.
+      // Collect all the modules in the robot.
       const moduleContents: {[key: string]: string} = {}; // key is module name, value is module content
       const openCursorRequest = this.db.transaction(['modules'], 'readonly')
           .objectStore('modules')
@@ -534,29 +534,29 @@ class ClientSideStorage implements commonStorage.Storage {
         const cursor = openCursorRequest.result;
         if (cursor) {
           const value = cursor.value;
-          if (commonStorage.getProjectName(value.path) === projectName) {
+          if (commonStorage.getRobotName(value.path) === robotName) {
             const moduleName = commonStorage.getModuleName(value.path);
             moduleContents[moduleName] = value.content;
           }
           cursor.continue();
         } else {
-          // The cursor is done. We have finished collecting all the modules in the project.
+          // The cursor is done. We have finished collecting all the modules in the robot.
           // Now create the blob for download.
-          const blobUrl = await commonStorage.produceDownloadProjectBlob(projectName, moduleContents);
+          const blobUrl = await commonStorage.produceDownloadRobotBlob(robotName, moduleContents);
           resolve(blobUrl);
         }
       };
     });
   }
 
-  async uploadProject(projectName: string, blobUrl: string): Promise<void> {
+  async uploadRobot(robotName: string, blobUrl: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       // Process the uploaded blob to get the module types and contents.
       let moduleTypes: {[key: string]: string}; // key is module name, value is module content
       let moduleContents: {[key: string]: string}; // key is module name, value is module content
       try {
         [moduleTypes, moduleContents] = await commonStorage.processUploadedBlob(
-            projectName, blobUrl);
+            robotName, blobUrl);
       } catch (e) {
         console.log('commonStorage.processUploadedBlob failed.');
         reject(new Error('commonStorage.processUploadedBlob failed.'));
@@ -577,7 +577,7 @@ class ClientSideStorage implements commonStorage.Storage {
       for (const moduleName in moduleTypes) {
         const moduleType = moduleTypes[moduleName];
         const moduleContent = moduleContents[moduleName];
-        const modulePath = commonStorage.makeModulePath(projectName, moduleName);
+        const modulePath = commonStorage.makeModulePath(robotName, moduleName);
         const getRequest = modulesObjectStore.get(modulePath);
         getRequest.onerror = () => {
           console.log('IndexedDB get request failed. getRequest.error is...');

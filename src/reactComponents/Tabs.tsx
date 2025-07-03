@@ -48,8 +48,8 @@ export interface TabsProps {
   tabList: TabItem[];
   setTabList: (items: TabItem[]) => void;
   activeTab: string;
-  project: commonStorage.Project | null;
-  setProject: (project: commonStorage.Project | null) => void;
+  robot: commonStorage.Robot | null;
+  setRobot: (robot: commonStorage.Robot | null) => void;
   setAlertErrorMessage: (message: string) => void;
   currentModule: commonStorage.Module | null;
   setCurrentModule: (module: commonStorage.Module | null) => void;
@@ -63,7 +63,7 @@ const COPY_SUFFIX = 'Copy';
 const MIN_TABS_FOR_CLOSE_OTHERS = 2;
 
 /**
- * Tab component that manages project module tabs with add, edit, delete, and rename functionality.
+ * Tab component that manages robot module tabs with add, edit, delete, and rename functionality.
  * Provides context menus for tab operations and modal dialogs for user input.
  */
 export function Component(props: TabsProps): React.JSX.Element {
@@ -77,14 +77,14 @@ export function Component(props: TabsProps): React.JSX.Element {
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
 
-  const triggerProjectUpdate = (): void => {
-    props.setProject(structuredClone(props.project));
+  const triggerRobotUpdate = (): void => {
+    props.setRobot(structuredClone(props.robot));
   }
 
   /** Handles tab change and updates current module. */
   const handleTabChange = (key: string): void => {
-    if (props.project) {
-      props.setCurrentModule(commonStorage.findModuleInProject(props.project, key));
+    if (props.robot) {
+      props.setCurrentModule(commonStorage.findModuleInRobot(props.robot, key));
       setActiveKey(key);
     }
   };
@@ -97,11 +97,11 @@ export function Component(props: TabsProps): React.JSX.Element {
   /** Adds a new tab for the given module key. */
   const addTab = (key: string): void => {
     const newTabs = [...props.tabList];
-    if (!props.project) {
+    if (!props.robot) {
       return;
     }
 
-    const module = commonStorage.findModuleInProject(props.project, key);
+    const module = commonStorage.findModuleInRobot(props.robot, key);
     if (!module) {
       return;
     }
@@ -157,14 +157,14 @@ export function Component(props: TabsProps): React.JSX.Element {
 
   /** Handles renaming a module tab. */
   const handleRename = async (key: string, newName: string): Promise<void> => {
-    if (!props.storage || !props.project) {
+    if (!props.storage || !props.robot) {
       return;
     }
 
     try {
-      const newPath = await commonStorage.renameModuleInProject(
+      const newPath = await commonStorage.renameModuleInRobot(
         props.storage,
-        props.project,
+        props.robot,
         newName,
         key
       );
@@ -178,7 +178,7 @@ export function Component(props: TabsProps): React.JSX.Element {
 
       props.setTabList(newTabs);
       setActiveKey(newPath);
-      triggerProjectUpdate();
+      triggerRobotUpdate();
     } catch (error) {
       console.error('Error renaming module:', error);
       props.setAlertErrorMessage('Failed to rename module');
@@ -189,14 +189,14 @@ export function Component(props: TabsProps): React.JSX.Element {
 
   /** Handles copying a module tab. */
   const handleCopy = async (key: string, newName: string): Promise<void> => {
-    if (!props.storage || !props.project) {
+    if (!props.storage || !props.robot) {
       return;
     }
 
     try {
-      const newPath = await commonStorage.copyModuleInProject(
+      const newPath = await commonStorage.copyModuleInRobot(
         props.storage,
-        props.project,
+        props.robot,
         newName,
         key
       );
@@ -213,7 +213,7 @@ export function Component(props: TabsProps): React.JSX.Element {
       newTabs.push({ key: newPath, title: newName, type: originalTab.type });
       props.setTabList(newTabs);
       setActiveKey(newPath);
-      triggerProjectUpdate();
+      triggerRobotUpdate();
     } catch (error) {
       console.error('Error copying module:', error);
       props.setAlertErrorMessage('Failed to copy module');
@@ -262,9 +262,9 @@ export function Component(props: TabsProps): React.JSX.Element {
         const newTabs = props.tabList.filter((t) => t.key !== tab.key);
         props.setTabList(newTabs);
 
-        if (props.storage && props.project) {
-          await commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
-          triggerProjectUpdate();
+        if (props.storage && props.robot) {
+          await commonStorage.removeModuleFromRobot(props.storage, props.robot, tab.key);
+          triggerRobotUpdate();
         }
 
         if (newTabs.length > 0) {
@@ -352,8 +352,8 @@ export function Component(props: TabsProps): React.JSX.Element {
         isOpen={addTabDialogOpen}
         onCancel={() => setAddTabDialogOpen(false)}
         onOk={handleAddTabOk}
-        project={props.project}
-        setProject={props.setProject}
+        robot={props.robot}
+        setRobot={props.setRobot}
         currentTabs={props.tabList}
         storage={props.storage}
       />
@@ -381,7 +381,7 @@ export function Component(props: TabsProps): React.JSX.Element {
                 handleRename(currentTab.key, name);
               }
             }}
-            project={props.project}
+            robot={props.robot}
             storage={props.storage}
             buttonLabel=""
           />
@@ -411,7 +411,7 @@ export function Component(props: TabsProps): React.JSX.Element {
                 handleCopy(currentTab.key, name);
               }
             }}
-            project={props.project}
+            robot={props.robot}
             storage={props.storage}
             buttonLabel=""
           />

@@ -44,10 +44,10 @@ export class Editor {
   private methodsCategory: MethodsCategory;
   private eventsCategory: EventsCategory;
   private currentModule: commonStorage.Module | null = null;
-  private modulePath: string = '';
-  private projectPath: string = '';
-  private moduleContent: string = '';
-  private projectContent: string = '';
+  private currentModulePath: string = '';
+  private robotPath: string = '';
+  private currentModuleContent: string = '';
+  private robotContent: string = '';
   private bindedOnChange: any = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
@@ -73,11 +73,11 @@ export class Editor {
 
     // TODO(lizlooney): As blocks are loaded, determine whether any blocks
     // are accessing variable or calling functions thar are defined in another
-    // blocks file (like a Project) and check whether the variable or function
+    // blocks file (like the Robot) and check whether the variable or function
     // definition has changed. This might happen if the user defines a variable
-    // or function in the Project, uses the variable or function in the
+    // or function in the Robot, uses the variable or function in the
     // OpMode, and then removes or changes the variable or function in the
-    // Project.
+    // Robot.
 
     // TODO(lizlooney): We will need a way to identify which variable or
     // function, other than by the variable name or function name, because the
@@ -88,7 +88,7 @@ export class Editor {
     // TODO(lizlooney): Look at blocks with type 'mrc_get_python_variable' or
     // 'mrc_set_python_variable', and where block.mrcExportedVariable === true.
     // Look at block.mrcImportModule and get the exported blocks for that module.
-    // (It should be the project and we already have the project content.)
+    // (It should be the Robot and we already have the Robot content.)
     // Check whether block.mrcActualVariableName matches any exportedBlock's
     // extraState.actualVariableName. If there is no match, put a warning on the
     // block.
@@ -96,7 +96,7 @@ export class Editor {
     // TODO(lizlooney): Look at blocks with type 'mrc_call_python_function' and
     // where block.mrcExportedFunction === true.
     // Look at block.mrcImportModule and get the exported blocks for that module.
-    // (It should be the project and we already have the project content.)
+    // (It should be the Robot and we already have the Robot content.)
     // Check whether block.mrcActualFunctionName matches any exportedBlock's
     // extraState.actualFunctionName. If there is no match, put a warning on the block.
     // If there is a match, check whether
@@ -123,35 +123,35 @@ export class Editor {
     this.eventsCategory.setCurrentModule(currentModule);
 
     if (currentModule) {
-      this.modulePath = currentModule.modulePath;
-      this.projectPath = commonStorage.makeProjectPath(currentModule.projectName);
+      this.currentModulePath = currentModule.modulePath;
+      this.robotPath = commonStorage.makeRobotPath(currentModule.robotName);
     } else {
-      this.modulePath = '';
-      this.projectPath = '';
+      this.currentModulePath = '';
+      this.robotPath = '';
     }
-    this.moduleContent = '';
-    this.projectContent = '';
+    this.currentModuleContent = '';
+    this.robotContent = '';
     this.clearBlocklyWorkspace();
 
     if (currentModule) {
       const promises: {[key: string]: Promise<string>} = {}; // key is module path, value is promise of module content.
-      promises[this.modulePath] = this.storage.fetchModuleContent(this.modulePath);
-      if (this.projectPath !== this.modulePath) {
-        // Also fetch the project module content. It contains exported blocks that can be used.
-        promises[this.projectPath] = this.storage.fetchModuleContent(this.projectPath)
+      promises[this.currentModulePath] = this.storage.fetchModuleContent(this.currentModulePath);
+      if (this.robotPath !== this.currentModulePath) {
+        // Also fetch the robot module content. It contains exported blocks that can be used.
+        promises[this.robotPath] = this.storage.fetchModuleContent(this.robotPath)
       }
 
       const moduleContents: {[key: string]: string} = {}; // key is module path, value is module content
       await Promise.all(
-        Object.entries(promises).map(async ([modulePath, promise]) => {
-          moduleContents[modulePath] = await promise;
+        Object.entries(promises).map(async ([currentModulePath, promise]) => {
+          moduleContents[currentModulePath] = await promise;
         })
       );
-      this.moduleContent = moduleContents[this.modulePath];
-      if (this.projectPath === this.modulePath) {
-        this.projectContent = this.moduleContent
+      this.currentModuleContent = moduleContents[this.currentModulePath];
+      if (this.robotPath === this.currentModulePath) {
+        this.robotContent = this.currentModuleContent;
       } else {
-        this.projectContent = moduleContents[this.projectPath];
+        this.robotContent = moduleContents[this.robotPath];
       }
       this.loadBlocksIntoBlocklyWorkspace();
     }
@@ -179,7 +179,7 @@ export class Editor {
     // Add the while-loading listener.
     this.bindedOnChange = this.onChangeWhileLoading.bind(this);
     this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
-    const blocksContent = commonStorage.extractBlocksContent(this.moduleContent);
+    const blocksContent = commonStorage.extractBlocksContent(this.currentModuleContent);
     if (blocksContent) {
       Blockly.serialization.workspaces.load(JSON.parse(blocksContent), this.blocklyWorkspace);
     }
@@ -187,8 +187,8 @@ export class Editor {
 
   public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
     if (this.currentModule) {
-      if (!this.projectContent) {
-        // The Project content hasn't been fetched yet. Try again in a bit.
+      if (!this.robotContent) {
+        // The Robot content hasn't been fetched yet. Try again in a bit.
         setTimeout(() => {
           this.updateToolbox(shownPythonToolboxCategories)
         }, 50);
@@ -204,13 +204,13 @@ export class Editor {
     /*
     // This code is helpful for debugging issues where the editor says
     // 'Blocks have been modified!'.
-    if (this.getModuleContent() !== this.moduleContent) {
+    if (this.getModuleContent() !== this.currentModuleContent) {
       console.log('isModified will return true');
       console.log('this.getModuleContent() is ' + this.getModuleContent());
-      console.log('this.moduleContent is ' + this.moduleContent);
+      console.log('this.currentModuleContent is ' + this.currentModuleContent);
     }
     */
-    return this.getModuleContent() !== this.moduleContent;
+    return this.getModuleContent() !== this.currentModuleContent;
   }
 
   private getModuleContent(): string {
@@ -229,7 +229,7 @@ export class Editor {
 
   private getComponents(): commonStorage.Component[] {
     const components: commonStorage.Component[] = [];
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
       // TODO(lizlooney): Fill the components array.
     }
     return components;
@@ -238,7 +238,7 @@ export class Editor {
   public async saveBlocks() {
     const moduleContent = this.getModuleContent();
     try {
-      await this.storage.saveModule(this.modulePath, moduleContent);
+      await this.storage.saveModule(this.currentModulePath, moduleContent);
       this.moduleContent = moduleContent;
     } catch (e) {
       throw e;

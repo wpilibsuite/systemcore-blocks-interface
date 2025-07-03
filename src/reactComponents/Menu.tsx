@@ -36,7 +36,7 @@ import {
   InfoCircleOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
-import ProjectManageModal from './ProjectManageModal';
+import RobotManageModal from './RobotManageModal';
 import AboutDialog from './AboutModal';
 
 /** Type definition for menu items. */
@@ -47,16 +47,16 @@ export interface MenuProps {
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
   gotoTab: (tabKey: string) => void;
-  project: commonStorage.Project | null;
+  robot: commonStorage.Robot | null;
   openWPIToolboxSettings: () => void;
-  setProject: (project: commonStorage.Project | null) => void;
+  setRobot: (robot: commonStorage.Robot | null) => void;
 }
 
 /** Default selected menu keys. */
 const DEFAULT_SELECTED_KEYS = ['1'];
 
-/** Storage key for the most recent project. */
-const MOST_RECENT_PROJECT_KEY = 'mostRecentProject';
+/** Storage key for the most recent robot. */
+const MOST_RECENT_ROBOT_KEY = 'mostRecentRobot';
 
 /**
  * Creates a menu item with the specified properties.
@@ -87,14 +87,14 @@ function getDivider(): MenuItem {
 }
 
 /**
- * Generates menu items for a given project.
+ * Generates menu items for a given robot.
  */
-function getMenuItems(t: (key: string) => string, project: commonStorage.Project): MenuItem[] {
+function getMenuItems(t: (key: string) => string, robot: commonStorage.Robot): MenuItem[] {
   const mechanisms: MenuItem[] = [];
   const opmodes: MenuItem[] = [];
 
   // Build mechanisms menu items
-  project.mechanisms.forEach((mechanism) => {
+  robot.mechanisms.forEach((mechanism) => {
     mechanisms.push(getItem(
         mechanism.className,
         mechanism.modulePath,
@@ -107,7 +107,7 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
   mechanisms.push(getItem('Manage...', 'manageMechanisms'));
 
   // Build opmodes menu items
-  project.opModes.forEach((opmode) => {
+  robot.opModes.forEach((opmode) => {
     opmodes.push(getItem(
         opmode.className,
         opmode.modulePath,
@@ -120,14 +120,14 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
   opmodes.push(getItem('Manage...', 'manageOpmodes'));
 
   return [
-    getItem(t('Project'), 'project', <FolderOutlined />, [
+    getItem(t('Robot'), 'robot', <FolderOutlined />, [
       getItem(t('Save'), 'save', <SaveOutlined />),
       getItem(t('Deploy'), 'deploy', undefined, undefined, true),
       getDivider(),
-      getItem(t('Manage') + '...', 'manageProjects'),
+      getItem(t('Manage') + '...', 'manageRobots'),
     ]),
     getItem(t('Explorer'), 'explorer', <FileOutlined />, [
-      getItem(t('Robot'), project.modulePath, <RobotOutlined />),
+      getItem(t('Robot'), robot.modulePath, <RobotOutlined />),
       getItem(t('Mechanisms'), 'mechanisms', <BlockOutlined />, mechanisms),
       getItem(t('OpModes'), 'opmodes', <CodeOutlined />, opmodes),
     ]),
@@ -143,22 +143,22 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
 }
 
 /**
- * Menu component that displays the project structure and navigation options.
- * Provides access to mechanisms, opmodes, and project management functionality.
+ * Menu component that displays the robot structure and navigation options.
+ * Provides access to mechanisms, opmodes, and robot management functionality.
  */
 export function Component(props: MenuProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
 
-  const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
+  const [modules, setModules] = React.useState<commonStorage.Robot[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
   const [fileModalOpen, setFileModalOpen] = React.useState<boolean>(false);
-  const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
+  const [robotModalOpen, setRobotModalOpen] = React.useState<boolean>(false);
   const [moduleType, setModuleType] = React.useState<TabType>(TabType.MECHANISM);
-  const [noProjects, setNoProjects] = React.useState<boolean>(false);
+  const [noRobots, setNoRobots] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
 
   /** Fetches the list of modules from storage. */
-  const fetchListOfModules = async (): Promise<commonStorage.Project[]> => {
+  const fetchListOfModules = async (): Promise<commonStorage.Robot[]> => {
     return new Promise(async (resolve, reject) => {
       if (!props.storage) {
         reject(new Error('Storage not available'));
@@ -176,50 +176,50 @@ export function Component(props: MenuProps): React.JSX.Element {
     });
   };
 
-  /** Initializes the modules and handles empty project state. */
+  /** Initializes the modules and handles empty robot state. */
   const initializeModules = async (): Promise<void> => {
     const array = await fetchListOfModules();
     if (array.length === 0) {
-      setNoProjects(true);
-      setProjectModalOpen(true);
+      setNoRobots(true);
+      setRobotModalOpen(true);
     }
   };
 
-  /** Fetches and sets the most recent project. */
-  const fetchMostRecentProject = async (): Promise<void> => {
+  /** Fetches and sets the most recent robot. */
+  const fetchMostRecentRobot = async (): Promise<void> => {
     let found = false;
 
     if (props.storage) {
-      const mostRecentProject = await props.storage.fetchEntry(
-          MOST_RECENT_PROJECT_KEY,
+      const mostRecentRobot = await props.storage.fetchEntry(
+          MOST_RECENT_ROBOT_KEY,
           ''
       );
       modules.forEach((module) => {
-        if (module.projectName === mostRecentProject) {
-          props.setProject(module);
+        if (module.robotName === mostRecentRobot) {
+          props.setRobot(module);
           found = true;
         }
       });
       if (!found && modules.length > 0) {
-        props.setProject(modules[0]);
+        props.setRobot(modules[0]);
       }
     }
   };
 
-  /** Saves the most recent project to storage. */
-  const setMostRecentProject = async (): Promise<void> => {
+  /** Saves the most recent robot to storage. */
+  const setMostRecentRobot = async (): Promise<void> => {
     if (props.storage) {
       await props.storage.saveEntry(
-          MOST_RECENT_PROJECT_KEY,
-          props.project?.projectName || ''
+          MOST_RECENT_ROBOT_KEY,
+          props.robot?.robotName || ''
       );
     }
   };
 
   /** Handles menu item clicks. */
   const handleClick: Antd.MenuProps['onClick'] = ({key}): void => {
-    const newModule = props.project ?
-      commonStorage.findModuleInProject(props.project, key) :
+    const newModule = props.robot ?
+      commonStorage.findModuleInRobot(props.robot, key) :
       null;
 
     if (newModule) {
@@ -244,9 +244,9 @@ export function Component(props: MenuProps): React.JSX.Element {
         console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
       }, 0);
-    } else if (key === 'manageProjects') {
-      console.log('Opening projects modal');
-      setProjectModalOpen(true);
+    } else if (key === 'manageRobots') {
+      console.log('Opening robots modal');
+      setRobotModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
     } else if (key === 'wpi_toolbox'){
@@ -263,9 +263,9 @@ export function Component(props: MenuProps): React.JSX.Element {
     setFileModalOpen(false);
   };
 
-  /** Handles closing the project management modal. */
-  const handleProjectModalClose = (): void => {
-    setProjectModalOpen(false);
+  /** Handles closing the robot management modal. */
+  const handleRobotModalClose = (): void => {
+    setRobotModalOpen(false);
   };
 
   // Initialize modules when storage is available
@@ -276,39 +276,39 @@ export function Component(props: MenuProps): React.JSX.Element {
     initializeModules();
   }, [props.storage]);
 
-  // Fetch most recent project when modules change
+  // Fetch most recent robot when modules change
   React.useEffect(() => {
-    fetchMostRecentProject();
+    fetchMostRecentRobot();
   }, [modules]);
 
-  // Update menu items and save project when project changes
+  // Update menu items and save robot when robot changes
   React.useEffect(() => {
-    if (props.project) {
-      setMostRecentProject();
-      setMenuItems(getMenuItems(t, props.project));
-      setNoProjects(false);
+    if (props.robot) {
+      setMostRecentRobot();
+      setMenuItems(getMenuItems(t, props.robot));
+      setNoRobots(false);
     }
-  }, [props.project]);
+  }, [props.robot]);
 
   return (
     <>
       <FileManageModal
         isOpen={fileModalOpen}
         onCancel={handleFileModalClose}
-        project={props.project}
+        robot={props.robot}
         storage={props.storage}
         moduleType={moduleType}
-        setProject={props.setProject}
+        setRobot={props.setRobot}
         setAlertErrorMessage={props.setAlertErrorMessage}
         gotoTab={props.gotoTab}
       />
-      <ProjectManageModal
-        noProjects={noProjects}
-        isOpen={projectModalOpen}
-        onCancel={handleProjectModalClose}
+      <RobotManageModal
+        noRobots={noRobots}
+        isOpen={robotModalOpen}
+        onCancel={handleRobotModalClose}
         storage={props.storage}
         moduleType={moduleType}
-        setProject={props.setProject}
+        setRobot={props.setRobot}
         setAlertErrorMessage={props.setAlertErrorMessage}
       />
       <Antd.Menu

@@ -58,7 +58,7 @@ export class GeneratorContext {
     if (!this.module) {
       throw new Error('getClassName: this.module is null.');
     }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+    if (this.module.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
       return 'Robot';
     }
 
@@ -69,7 +69,7 @@ export class GeneratorContext {
     if (!this.module) {
       throw new Error('getClassParent: this.module is null.');
     }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+    if (this.module.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
       return 'RobotBase';
     }
     if (this.module.moduleType === commonStorage.MODULE_TYPE_OPMODE) {

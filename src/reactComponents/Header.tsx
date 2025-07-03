@@ -29,7 +29,7 @@ type StringFunction = (input: string) => void;
 interface HeaderProps {
   alertErrorMessage: string;
   setAlertErrorMessage: StringFunction;
-  project: commonStorage.Project | null;
+  robot: commonStorage.Robot | null;
 }
 
 /** Height of the logo image in pixels. */
@@ -45,7 +45,7 @@ const TEXT_FONT_SIZE = '20px';
 const TEXT_PADDING_LEFT = 20;
 
 /**
- * Header component that displays the application logo, title, current project,
+ * Header component that displays the application logo, title, current robot,
  * and any error messages.
  */
 export default function Header(props: HeaderProps): React.JSX.Element {
@@ -70,9 +70,9 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     );
   };
 
-  /** Gets the project name or fallback text. */
-  const getProjectName = (): string => {
-    return props.project?.className || 'No Project Selected';
+  /** Gets the robot name or fallback text. */
+  const getRobotName = (): string => {
+    return props.robot?.className || 'No Robot Selected';
   };
 
   return (
@@ -102,7 +102,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
             fontWeight: 'normal',
           }}
         >
-          Project: {getProjectName()}
+          Robot: {getRobotName()}
         </Antd.Typography>
         {renderErrorAlert()}
       </Antd.Flex>

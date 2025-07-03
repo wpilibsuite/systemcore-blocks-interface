@@ -331,8 +331,7 @@ type CallPythonFunctionExtraState = {
    */
   actualFunctionName?: string,
   /**
-   * True if this blocks refers to an exported function (for example, from a
-   * user's Project).
+   * True if this blocks refers to an exported function (for example, from the Robot).
    */
   exportedFunction?: boolean,
   /**
@@ -679,7 +678,7 @@ export const pythonFromBlock = function(
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
-        case commonStorage.MODULE_TYPE_PROJECT:
+        case commonStorage.MODULE_TYPE_ROBOT:
         case commonStorage.MODULE_TYPE_MECHANISM:
           code = 'self.';
           break;

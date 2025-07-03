@@ -38,8 +38,8 @@ interface AddTabDialogProps {
   isOpen: boolean;
   onOk: (newTabs: TabItem[]) => void;
   onCancel: () => void;
-  project: commonStorage.Project | null;
-  setProject: (project: commonStorage.Project | null) => void;
+  robot: commonStorage.Robot | null;
+  setRobot: (robot: commonStorage.Robot | null) => void;
   currentTabs: TabItem[];
   storage: commonStorage.Storage | null;
 }
@@ -66,17 +66,17 @@ export default function AddTabDialog(props: AddTabDialogProps) {
   const [searchText, setSearchText] = React.useState('');
 
   React.useEffect(() => {
-    if (!props.project) {
+    if (!props.robot) {
       return;
     }
 
-    // Initialize available items based on project data
-    const mechanisms = props.project.mechanisms.map((m) => ({
+    // Initialize available items based on robot data
+    const mechanisms = props.robot.mechanisms.map((m) => ({
       path: m.modulePath,
       title: m.className,
       type: TabType.MECHANISM,
     }));
-    const opModes = props.project.opModes.map((o) => ({
+    const opModes = props.robot.opModes.map((o) => ({
       path: o.modulePath,
       title: o.className,
       type: TabType.OPMODE,
@@ -96,11 +96,11 @@ export default function AddTabDialog(props: AddTabDialogProps) {
 
     setAvailableItems(availableModules);
     setSelectedItems(selectedModules);
-  }, [props.project, props.currentTabs]);
+  }, [props.robot, props.currentTabs]);
 
-  const triggerProjectUpdate = (): void => {
-    if (props.project) {
-      props.setProject({...props.project});
+  const triggerRobotUpdate = (): void => {
+    if (props.robot) {
+      props.setRobot({...props.robot});
     }
   }
 
@@ -123,7 +123,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
       return;
     }
 
-    if (!props.storage || !props.project) {
+    if (!props.storage || !props.robot) {
       return;
     }
 
@@ -131,10 +131,10 @@ export default function AddTabDialog(props: AddTabDialogProps) {
       commonStorage.MODULE_TYPE_MECHANISM :
       commonStorage.MODULE_TYPE_OPMODE;
 
-    await commonStorage.addModuleToProject(
-        props.storage, props.project, storageType, trimmedName);
+    await commonStorage.addModuleToRobot(
+        props.storage, props.robot, storageType, trimmedName);
 
-    const newModule = commonStorage.getClassInProject(props.project, trimmedName);
+    const newModule = commonStorage.getClassInRobot(props.robot, trimmedName);
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,
@@ -142,7 +142,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
         type: tabType,
       };
       setSelectedItems([...selectedItems, module]);
-      triggerProjectUpdate();
+      triggerRobotUpdate();
     }
 
 
@@ -311,7 +311,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
             newItemName={newItemName}
             setNewItemName={setNewItemName}
             onAddNewItem={handleAddNewItem}
-            project={props.project}
+            robot={props.robot}
             storage={props.storage}
             buttonLabel={t('New')}
           />

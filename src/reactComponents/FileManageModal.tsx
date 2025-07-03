@@ -37,8 +37,8 @@ interface Module {
 interface FileManageModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  project: commonStorage.Project | null;
-  setProject: (project: commonStorage.Project | null) => void;
+  robot: commonStorage.Robot | null;
+  setRobot: (robot: commonStorage.Robot | null) => void;
   gotoTab: (path: string) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
@@ -55,7 +55,7 @@ const MODAL_WIDTH = 800;
 const ACTIONS_COLUMN_WIDTH = 120;
 
 /**
- * Modal component for managing files (mechanisms and opmodes) within a project.
+ * Modal component for managing files (mechanisms and opmodes) within a robot.
  * Provides functionality to create, rename, copy, and delete modules.
  */
 export default function FileManageModal(props: FileManageModalProps) {
@@ -67,13 +67,13 @@ export default function FileManageModal(props: FileManageModalProps) {
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
-  const triggerProjectUpdate = (): void => {
-    if (props.project) {
-      props.setProject({...props.project});
+  const triggerRobotUpdate = (): void => {
+    if (props.robot) {
+      props.setRobot({...props.robot});
     }
   }
   React.useEffect(() => {
-    if (!props.project || props.moduleType === null) {
+    if (!props.robot || props.moduleType === null) {
       setModules([]);
       return;
     }
@@ -81,13 +81,13 @@ export default function FileManageModal(props: FileManageModalProps) {
     let moduleList: Module[] = [];
 
     if (props.moduleType === TabType.MECHANISM) {
-      moduleList = props.project.mechanisms.map((m) => ({
+      moduleList = props.robot.mechanisms.map((m) => ({
         path: m.modulePath,
         title: m.className,
         type: TabType.MECHANISM,
       }));
     } else if (props.moduleType === TabType.OPMODE) {
-      moduleList = props.project.opModes.map((o) => ({
+      moduleList = props.robot.opModes.map((o) => ({
         path: o.modulePath,
         title: o.className,
         type: TabType.OPMODE,
@@ -97,18 +97,18 @@ export default function FileManageModal(props: FileManageModalProps) {
     // Sort modules alphabetically by title
     moduleList.sort((a, b) => a.title.localeCompare(b.title));
     setModules(moduleList);
-  }, [props.project, props.moduleType]);
+  }, [props.robot, props.moduleType]);
 
   /** Handles renaming a module. */
   const handleRename = async (origModule: Module, newName: string): Promise<void> => {
-    if (!props.storage || !props.project) {
+    if (!props.storage || !props.robot) {
       return;
     }
 
     try {
-      const newPath = await commonStorage.renameModuleInProject(
+      const newPath = await commonStorage.renameModuleInRobot(
           props.storage,
-          props.project,
+          props.robot,
           newName,
           origModule.path
       );
@@ -121,7 +121,7 @@ export default function FileManageModal(props: FileManageModalProps) {
       });
 
       setModules(newModules);
-      triggerProjectUpdate();
+      triggerRobotUpdate();
     } catch (error) {
       console.error('Error renaming module:', error);
       props.setAlertErrorMessage('Failed to rename module');
@@ -132,14 +132,14 @@ export default function FileManageModal(props: FileManageModalProps) {
 
   /** Handles copying a module. */
   const handleCopy = async (origModule: Module, newName: string): Promise<void> => {
-    if (!props.storage || !props.project) {
+    if (!props.storage || !props.robot) {
       return;
     }
 
     try {
-      const newPath = await commonStorage.copyModuleInProject(
+      const newPath = await commonStorage.copyModuleInRobot(
           props.storage,
-          props.project,
+          props.robot,
           newName,
           origModule.path
       );
@@ -159,7 +159,7 @@ export default function FileManageModal(props: FileManageModalProps) {
       });
 
       setModules(newModules);
-      triggerProjectUpdate();
+      triggerRobotUpdate();
     } catch (error) {
       console.error('Error copying module:', error);
       props.setAlertErrorMessage('Failed to copy module');
@@ -171,7 +171,7 @@ export default function FileManageModal(props: FileManageModalProps) {
   /** Handles adding a new module. */
   const handleAddNewItem = async (): Promise<void> => {
     const trimmedName = newItemName.trim();
-    if (!trimmedName || !props.storage || !props.project) {
+    if (!trimmedName || !props.storage || !props.robot) {
       return;
     }
 
@@ -179,14 +179,14 @@ export default function FileManageModal(props: FileManageModalProps) {
       commonStorage.MODULE_TYPE_MECHANISM :
       commonStorage.MODULE_TYPE_OPMODE;
 
-    await commonStorage.addModuleToProject(
+    await commonStorage.addModuleToRobot(
         props.storage,
-        props.project,
+        props.robot,
         storageType,
         trimmedName
     );
 
-    const newModule = commonStorage.getClassInProject(props.project, trimmedName);
+    const newModule = commonStorage.getClassInRobot(props.robot, trimmedName);
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,
@@ -197,20 +197,20 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
 
     setNewItemName('');
-    triggerProjectUpdate();};
+    triggerRobotUpdate();};
 
   /** Handles delete confirmation for a module. */
   const handleDeleteConfirm = async (record: Module): Promise<void> => {
     const newModules = modules.filter((m) => m.path !== record.path);
     setModules(newModules);
 
-    if (props.storage && props.project) {
-      await commonStorage.removeModuleFromProject(
+    if (props.storage && props.robot) {
+      await commonStorage.removeModuleFromRobot(
           props.storage,
-          props.project,
+          props.robot,
           record.path
       );
-      triggerProjectUpdate();
+      triggerRobotUpdate();
     }
   };
 
@@ -356,7 +356,7 @@ export default function FileManageModal(props: FileManageModalProps) {
                 handleRename(currentRecord, name);
               }
             }}
-            project={props.project}
+            robot={props.robot}
             storage={props.storage}
             buttonLabel=""
           />
@@ -385,7 +385,7 @@ export default function FileManageModal(props: FileManageModalProps) {
                 handleCopy(currentRecord, name);
               }
             }}
-            project={props.project}
+            robot={props.robot}
             storage={props.storage}
             buttonLabel=""
           />
@@ -414,7 +414,7 @@ export default function FileManageModal(props: FileManageModalProps) {
             newItemName={newItemName}
             setNewItemName={setNewItemName}
             onAddNewItem={handleAddNewItem}
-            project={props.project}
+            robot={props.robot}
             storage={props.storage}
             buttonLabel={t('New')}
           />

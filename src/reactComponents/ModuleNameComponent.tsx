@@ -31,7 +31,7 @@ interface ModuleNameComponentProps {
   newItemName: string;
   setNewItemName: (name: string) => void;
   onAddNewItem: () => void;
-  project: commonStorage.Project | null;
+  robot: commonStorage.Robot | null;
   storage: commonStorage.Storage | null;
   buttonLabel: string;
 }
@@ -61,11 +61,11 @@ export default function ModuleNameComponent(props: ModuleNameComponentProps): Re
       return;
     }
 
-    if (!props.project) {
+    if (!props.robot) {
       return;
     }
 
-    const {ok, error} = commonStorage.isClassNameOk(props.project, trimmedName);
+    const {ok, error} = commonStorage.isClassNameOk(props.robot, trimmedName);
     if (ok) {
       clearError();
       props.onAddNewItem();
