@@ -34,7 +34,7 @@ import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
-import { getClassData } from './utils/external_samples_data';
+import { getClassData } from './utils/python';
 import * as commonStorage from '../storage/common_storage';
 
 

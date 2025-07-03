@@ -116,6 +116,17 @@ export function initialize() {
   }
 }
 
+// Returns the ClassData for the given class name.
+export function getClassData(className: string): ClassData | null {
+  for (const pythonData of allPythonData) {
+    for (const classData of pythonData.classes) {
+      if (classData.className === className) {
+        return classData;
+      }
+    }
+  }
+  return null;
+}
 
 // If the given type is a type alias, returns the value of the type alias.
 // For example, if type is 'wpimath.units.nanoseconds', this function will return 'float'
