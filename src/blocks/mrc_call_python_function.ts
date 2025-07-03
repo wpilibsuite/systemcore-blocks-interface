@@ -24,7 +24,7 @@ import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
 import { ClassMethodDefExtraState } from './mrc_class_method_def'
-import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
+import { getClassData, getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
 import { FunctionData, findSuperFunctionData } from './utils/python_json_types';
 import * as value from './utils/value';
 import * as variable from './utils/variable';
@@ -34,7 +34,6 @@ import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
-import { getClassData } from './utils/python';
 import * as commonStorage from '../storage/common_storage';
 
 
