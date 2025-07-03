@@ -539,7 +539,9 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
-          const componentNames = Editor.getComponentNames(this.workspace, this.mrcComponentClassName);
+          // TODO: We need the list of component names for this.mrcComponentClassName so we can
+          // create a dropdown that has the appropriate component names.
+          const componentNames = [];
           const componentName = this.getComponentName();
           if (!componentNames.includes(componentName)) {
             componentNames.push(componentName);

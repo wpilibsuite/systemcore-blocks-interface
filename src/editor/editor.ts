@@ -244,46 +244,4 @@ export class Editor {
       throw e;
     }
   }
-
-  private getComponentNamesImpl(componentClassName: string): string[] {
-    if (!this.projectContent) {
-      throw new Error('getComponentNames: this.projectContent is null.');
-    }
-    const components = commonStorage.extractComponents(this.projectContent);
-
-    // TODO(lizlooney): Remove this fake code after getComponents (above) has been implemented.
-    components.push({name: 'frontTouch', className: 'rev_touch_sensor.RevTouchSensor'});
-    components.push({name: 'backTouch', className: 'rev_touch_sensor.RevTouchSensor'});
-    components.push({name: 'leftMotor', className: 'smart_motor.SmartMotor'});
-    components.push({name: 'rightMotor', className: 'smart_motor.SmartMotor'});
-    components.push({name: 'clawServo', className: 'servo.Servo'});
-    components.push({name: 'colorSensor', className: 'color_range_sensor.ColorRangeSensor'});
-    components.push({name: 'ledStick', className: 'sparkfun_led_stick.SparkFunLEDStick'});
-    // End of fake code
-
-    const componentNames: string[] = [];
-    components.forEach((component) => {
-      if (component.className === componentClassName) {
-        componentNames.push(component.name);
-      }
-    });
-    return componentNames;
-  }
-
-  public static getComponentNames(
-      workspace: Blockly.Workspace, componentClassName: string): string[] {
-
-    let editor: Editor | null = null;
-    if (workspace.id in Editor.workspaceIdToEditor) {
-      editor = Editor.workspaceIdToEditor[workspace.id];
-    } else {
-      // If the workspace id was not found, it might be because the workspace is associated with the
-      // toolbox flyout, not a real workspace. In that case, use the first editor.
-      const allEditors = Object.values(Editor.workspaceIdToEditor);
-      if (allEditors.length) {
-        editor =  allEditors[0];
-      }
-    }
-    return editor ? editor.getComponentNamesImpl(componentClassName) : [];
-  }
 }
