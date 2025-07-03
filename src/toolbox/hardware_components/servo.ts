@@ -19,9 +19,10 @@
  * @fileoverview Servo hardware component definitions.
  * @author alan@porpoiseful.com (Alan Smith)
  */
+
 import * as ToolboxItems from '../items';
 
-export const TYPE_NAME = 'Servo';
+export const TYPE_NAME = 'servo.Servo';
 
 /**
  * Returns a component definition block for a servo.
@@ -35,7 +36,7 @@ export function getDefinitionBlock(hideParams: boolean): ToolboxItems.ContentsTy
       TYPE: TYPE_NAME,
     },
     extraState: {
-      importModule: 'rev_servo',
+      importModule: 'servo',
       params: [{name: 'servo_port', type: 'int'}],
       hideParams,
     },
@@ -53,78 +54,4 @@ export function getDefinitionBlock(hideParams: boolean): ToolboxItems.ContentsTy
       },
     }),
   };
-}
-
-/**
- * Returns the blocks available for a servo component.
- */
-export function getBlocks(componentName: string): ToolboxItems.ContentsType[] {
-  return [
-    // Method: set_position(pos: float) -> None
-    {
-      kind: 'block',
-      type: 'mrc_call_python_function',
-      extraState: {
-        functionKind: 'instance_component',
-        returnType: 'None',
-        args: [
-          {
-            name: 'pos',
-            type: 'float',
-          },
-        ],
-        tooltip: 'Set the servo to a position between 0 and 1.',
-        importModule: '',
-        componentClassName: 'rev.Servo',
-        componentName,
-      },
-      fields: {
-        COMPONENT_NAME: componentName,
-        FUNC: 'set_position',
-      },
-      inputs: {
-        ARG0: {
-          block: {
-            type: 'math_number',
-            fields: {
-              NUM: 0.5,
-            },
-          },
-        },
-      },
-    },
-    // Method: set_angle_degrees(angle: float) -> None
-    {
-      kind: 'block',
-      type: 'mrc_call_python_function',
-      extraState: {
-        functionKind: 'instance_component',
-        returnType: 'None',
-        args: [
-          {
-            name: 'angle',
-            type: 'float',
-          },
-        ],
-        tooltip: 'Set the servo to an angle between 0 and 270.',
-        importModule: '',
-        componentClassName: 'rev.Servo',
-        componentName,
-      },
-      fields: {
-        COMPONENT_NAME: componentName,
-        FUNC: 'set_angle_degrees',
-      },
-      inputs: {
-        ARG0: {
-          block: {
-            type: 'math_number',
-            fields: {
-              NUM: 180,
-            },
-          },
-        },
-      },
-    },
-  ];
 }

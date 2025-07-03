@@ -22,7 +22,7 @@
 
 import * as ToolboxItems from '../items';
 
-export const TYPE_NAME = 'ColorRangeSensor';
+export const TYPE_NAME = 'color_range_sensor.ColorRangeSensor';
 
 /**
  * Returns a component definition block for a color range sensor.
@@ -36,7 +36,7 @@ export function getDefinitionBlock(hideParams: boolean): ToolboxItems.ContentsTy
       TYPE: TYPE_NAME,
     },
     extraState: {
-      importModule: 'rev_color_range_sensor',
+      importModule: 'color_range_sensor',
       params: [{name: 'smartIO_port', type: 'int'}],
       hideParams,
     },
@@ -54,69 +54,4 @@ export function getDefinitionBlock(hideParams: boolean): ToolboxItems.ContentsTy
       },
     }),
   };
-}
-
-/**
- * Returns the blocks available for a color range sensor component.
- */
-export function getBlocks(componentName: string): ToolboxItems.ContentsType[] {
-  return [
-    // Method: get_color_rgb() -> tuple[int, int, int]
-    {
-      kind: 'block',
-      type: 'mrc_call_python_function',
-      extraState: {
-        functionKind: 'instance_component',
-        returnType: 'tuple[int, int, int]',
-        args: [],
-        tooltip: 'Get the color in rgb (red, green, blue).',
-        importModule: '',
-        componentClassName: 'rev.ColorRangeSensor',
-        componentName : componentName,
-      },
-      fields: {
-        COMPONENT_NAME: componentName,
-        FUNC: 'get_color_rgb',
-      },
-      inputs: {},
-    },
-    // Method: get_color_hsv() -> tuple[int, int, int]
-    {
-      kind: 'block',
-      type: 'mrc_call_python_function',
-      extraState: {
-        functionKind: 'instance_component',
-        returnType: 'tuple[int, int, int]',
-        args: [],
-        tooltip: 'Get the color in hsv (hue, saturation, value).',
-        importModule: '',
-        componentClassName: 'rev.ColorRangeSensor',
-        componentName,
-      },
-      fields: {
-        COMPONENT_NAME: componentName,
-        FUNC: 'get_color_hsv',
-      },
-      inputs: {},
-    },
-    // Method: get_distance_mm() -> float
-    {
-      kind: 'block',
-      type: 'mrc_call_python_function',
-      extraState: {
-        functionKind: 'instance_component',
-        returnType: 'float',
-        args: [],
-        tooltip: 'Get the distance of the object seen.',
-        importModule: '',
-        componentClassName: 'rev.ColorRangeSensor',
-        componentName,
-      },
-      fields: {
-        COMPONENT_NAME: componentName,
-        FUNC: 'get_distance_mm',
-      },
-      inputs: {},
-    },
-  ];
 }

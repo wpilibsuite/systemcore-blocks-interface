@@ -100,3 +100,34 @@ export function organizeVarDataByType(vars: VarData[]): {[key: string]: Variable
   }
   return varsByType;
 }
+
+function isSuperFunction(f1: FunctionData, f2: FunctionData): boolean {
+  if (f1.functionName !== f2.functionName ||
+      f1.returnType !== f2.returnType ||
+      f1.args.length !== f2.args.length) {
+    return false;
+  }
+
+  for (let i = 0; i < f1.args.length; i++) {
+    if (f1.args[i].name !== f2.args[i].name) {
+      return false;
+    }
+    if (f1.args[i].name === 'self') {
+      // Don't compare the types of the self arguments.
+      continue;
+    }
+    if (f1.args[i].type !== f2.args[i].type) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function findSuperFunctionData(functionData: FunctionData, superClassFunctions: FunctionData): FunctionData | null {
+  for (const superClassFunctionData of superClassFunctions) {
+    if (isSuperFunction(superClassFunctionData, functionData)) {
+      return superClassFunctionData;
+    }
+  }
+  return null;
+}

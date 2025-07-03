@@ -121,6 +121,13 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     return code;
   }
 
+  getModuleType(): string | null {
+    if (this.context && this.context.module) {
+      return this.context.module.moduleType;
+    }
+    return null;
+  }
+
   /**
    * Add an import statement for a python module.
    */
@@ -248,7 +255,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       exportedBlocks.push(callFunctionBlock);
     }
 
-    const allVariables = workspace.getAllVariables();
+    const allVariables = workspace.getVariableMap().getAllVariables();
     for (const variableModel of allVariables) {
       // Only variables that are used outside of functions are exported. (I'm not sure if this is
       // the right choice, since all blockly variables are global variables.)

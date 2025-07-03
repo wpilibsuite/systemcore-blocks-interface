@@ -107,7 +107,7 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
             ],
             tooltip: 'Drive (robot relative)',
             importModule: '',
-            componentClassName: 'rev.ColorRangeSensor',
+            componentClassName: 'DriveRobotRelative',
             componentName: 'robot.drive',
           },
           fields: {
@@ -141,7 +141,7 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
                 args: [],
                 tooltip: 'Get the color in rgb (red, green, blue).',
                 importModule: '',
-                componentClassName: 'rev.ColorRangeSensor',
+                componentClassName: 'color_range_sensor.ColorRangeSensor',
                 componentName: 'colorSensor',
               },
               fields: {
@@ -160,7 +160,7 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
                 args: [],
                 tooltip: 'Get the color in hsv (hue, saturation, value).',
                 importModule: '',
-                componentClassName: 'rev.ColorRangeSensor',
+                componentClassName: 'color_range_sensor.ColorRangeSensor',
                 componentName: 'colorSensor',
               },
               fields: {
@@ -179,7 +179,7 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
                 args: [],
                 tooltip: 'Get the distance of the object seen.',
                 importModule: '',
-                componentClassName: 'rev.ColorRangeSensor',
+                componentClassName: 'color_range_sensor.ColorRangeSensor',
                 componentName: 'colorSensor',
               },
               fields: {
