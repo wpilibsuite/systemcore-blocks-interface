@@ -239,6 +239,8 @@ function getRobotMethodsBlocks(currentModule: commonStorage.Module) {
   };
 }
 
+// This is called when the user is editing a mechanism or the robot and allows
+// the user to add a component or use an existing component.
 function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : boolean) {
   const contents = [];
 
