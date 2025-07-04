@@ -25,6 +25,7 @@ import { MRC_STYLE_MECHANISMS } from '../themes/styles';
 import * as ChangeFramework from './utils/change_framework';
 import { getLegalName } from './utils/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import * as commonStorage from '../storage/common_storage';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_COMPONENT_NAME } from './mrc_component';
@@ -127,7 +128,33 @@ const MECHANISM_COMPONENT_HOLDER = {
       }
     }
   },
+  getComponents: function (this: MechanismComponentHolderBlock): commonStorage.Component[] {
+    const components: commonStorage.Component[] = []
 
+    // Get component blocks from the COMPONENTS input
+    const componentsInput = this.getInput('COMPONENTS');
+    if (componentsInput && componentsInput.connection) {
+      // Walk through all connected component blocks.
+      let componentBlock = componentsInput.connection.targetBlock();
+      while (componentBlock) {
+        if (componentBlock.type === 'mrc_component') {
+          const componentName = componentBlock.getFieldValue('NAME');
+          const componentType = componentBlock.getFieldValue('TYPE');
+
+          if (componentName && componentType) {
+            components.push({
+              name: componentName,
+              className: componentType,
+            });
+          }
+        }
+        // Move to the next block in the chain
+        componentBlock = componentBlock.getNextBlock();
+      }
+    }
+
+    return components;
+  },
 }
 
 let toolboxUpdateTimeout: NodeJS.Timeout | null = null;

@@ -29,7 +29,7 @@ import * as Blockly from 'blockly/core';
 import * as commonStorage from '../storage/common_storage';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
 import { getAllPossibleComponents, getBlocks } from './blocks_components';
-import * as MechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
+import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 
 export function getHardwareCategory(currentModule: commonStorage.Module) {
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
@@ -254,33 +254,19 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
   // Get components from the current workspace
   const workspace = Blockly.getMainWorkspace();
   if (workspace) {
-    const holderBlocks = workspace.getBlocksByType(MechanismComponentHolder.BLOCK_NAME);
+    // Get the holder block and ask it for the components.
+    const holderBlocks = workspace.getBlocksByType(mechanismComponentHolder.BLOCK_NAME);
 
     holderBlocks.forEach(holderBlock => {
-      // Get component blocks from the COMPONENTS input
-      const componentsInput = holderBlock.getInput('COMPONENTS');
-      if (componentsInput && componentsInput.connection) {
-        let componentBlock = componentsInput.connection.targetBlock();
-
-        // Walk through all connected component blocks
-        while (componentBlock) {
-          if (componentBlock.type === 'mrc_component') {
-            const componentName = componentBlock.getFieldValue('NAME');
-            const componentType = componentBlock.getFieldValue('TYPE');
-
-            if (componentName && componentType) {
-              // Get the blocks for this specific component              
-              contents.push({
-                kind: 'category',
-                name: componentName,
-                contents: getBlocks(componentType, componentName),
-              });
-            }
-          }
-          // Move to the next block in the chain
-          componentBlock = componentBlock.getNextBlock();
-        }
-      }
+      const componentsFromHolder: commonStorage.Component[] = holderBlock.getComponents();
+      componentsFromHolder.forEach(component => {
+        // Get the blocks for this specific component
+        contents.push({
+          kind: 'category',
+          name: component.name,
+          contents: getBlocks(component.className, component.name),
+        });
+      });
     });
   }
   return {
