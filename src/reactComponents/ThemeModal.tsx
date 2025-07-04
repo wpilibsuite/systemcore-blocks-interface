@@ -195,11 +195,11 @@ export default ThemeModal;
 
 export const antdThemeFromString = (theme: string): Antd.ThemeConfig => {
     let compact = false;
-    if(theme == 'compact-dark'){
+    if (theme == 'compact-dark') {
         compact = true;
         theme = 'dark';
     }
-    else if(theme == 'compact'){
+    else if (theme == 'compact') {
         compact = true;
         theme = 'light';
     }
