@@ -402,7 +402,7 @@ class ClientSideStorage implements commonStorage.Storage {
       throw new Error('Renaming the robot module is not allowed. Call renameProject to rename the project.');
     }
     return this._renameOrCopyModule(
-        moduleType, projectName, oldModuleName, newModuleName, false);
+        projectName, oldModuleName, newModuleName, false);
   }
 
   async copyModule(
@@ -412,11 +412,11 @@ class ClientSideStorage implements commonStorage.Storage {
       throw new Error('Copying the robot module is not allowed. Call copyProject to rename the project.');
     }
     return this._renameOrCopyModule(
-        moduleType, projectName, oldModuleName, newModuleName, true);
+        projectName, oldModuleName, newModuleName, true);
   }
 
   private async _renameOrCopyModule(
-      moduleType: string, projectName: string,
+      projectName: string,
       oldModuleName: string, newModuleName: string, copy: boolean): Promise<void> {
 
     return new Promise((resolve, reject) => {

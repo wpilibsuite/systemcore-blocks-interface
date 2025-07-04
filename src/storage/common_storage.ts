@@ -720,7 +720,7 @@ function _processModuleContentForDownload(
     projectName: projectName,
     moduleName: moduleName,
     dateModifiedMillis: 0,
-    className: getClassName(moduleType, moduleName),
+    className: getClassNameForModule(moduleType, moduleName),
   };
 
   // Clear out the python content and exported blocks.

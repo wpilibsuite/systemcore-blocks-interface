@@ -19,7 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { PythonData, ClassData } from './python_json_types';
+import { PythonData } from './python_json_types';
 import generatedExternalSamplesData from './generated/external_samples_data.json';
 
 export const externalSamplesData = generatedExternalSamplesData as PythonData;
