@@ -33,11 +33,13 @@ import {
   RobotOutlined,
   SaveOutlined,
   QuestionCircleOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  BgColorsOutlined,
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
 import AboutDialog from './AboutModal';
+import ThemeModal from './ThemeModal';
 
 /** Type definition for menu items. */
 type MenuItem = Required<Antd.MenuProps>['items'][number];
@@ -50,6 +52,7 @@ export interface MenuProps {
   project: commonStorage.Project | null;
   openWPIToolboxSettings: () => void;
   setProject: (project: commonStorage.Project | null) => void;
+  setTheme: (theme: string) => void;
 }
 
 /** Default selected menu keys. */
@@ -133,7 +136,7 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
     ]),
     getItem(t('Settings'), 'settings', <SettingOutlined />, [
       getItem(t('WPI toolbox'), 'wpi_toolbox'),
-      getItem(t('Theme') + '...', 'theme')
+      getItem(t('Theme') + '...', 'theme', <BgColorsOutlined />)
     ]),
     getItem(t('Help'), 'help', <QuestionCircleOutlined />, [
       getItem(t('About') + '...', 'about', <InfoCircleOutlined />
@@ -156,6 +159,14 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [moduleType, setModuleType] = React.useState<TabType>(TabType.MECHANISM);
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
+  const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
+  const [currentTheme, setCurrentTheme] = React.useState('dark');
+
+
+  const handleThemeChange = (newTheme: string) => {
+    setCurrentTheme(newTheme);
+    props.setTheme(newTheme);
+  };
 
   /** Fetches the list of projects from storage. */
   const fetchListOfProjects = async (): Promise<commonStorage.Project[]> => {
@@ -251,6 +262,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       setAboutDialogVisible(true);
     } else if (key === 'wpi_toolbox'){
       props.openWPIToolboxSettings();
+    } else if (key === 'theme') {
+      setThemeModalOpen(true);
     } else {
       // TODO: Handle other menu actions
       console.log(`Selected key that wasn't module: ${key}`);
@@ -321,6 +334,12 @@ export function Component(props: MenuProps): React.JSX.Element {
         visible={aboutDialogVisible}
         onClose={() => setAboutDialogVisible(false)}
       />
+      <ThemeModal
+          open={themeModalOpen}
+          onClose={() => setThemeModalOpen(false)}
+          currentTheme={currentTheme}
+          onThemeChange={handleThemeChange}
+        />
     </>
   );
 }

@@ -49,6 +49,10 @@ const TEXT_PADDING_LEFT = 20;
  * and any error messages.
  */
 export default function Header(props: HeaderProps): React.JSX.Element {
+  const { token } = Antd.theme.useToken();
+
+  const isDarkTheme = token.colorBgLayout === '#000000';
+
   /** Handles clearing the error message. */
   const handleClearError = (): void => {
     props.setAlertErrorMessage('');
@@ -76,17 +80,16 @@ export default function Header(props: HeaderProps): React.JSX.Element {
   };
 
   return (
-    <Antd.Flex vertical style={{background: '#000'}}>
+    <Antd.Flex vertical>
       <Antd.Flex style={{alignItems: 'center'}}>
         <img
           height={LOGO_HEIGHT}
           style={{objectFit: 'contain'}}
-          src="/FIRST_HorzRGB_reverse.png"
+          src={isDarkTheme ? "/FIRST_HorzRGB_reverse.png" : "/FIRST_HorzRGB.png"}
           alt="FIRST Logo"
         />
         <Antd.Typography
           style={{
-            color: 'white',
             paddingLeft: TEXT_PADDING_LEFT,
             fontSize: TEXT_FONT_SIZE,
             fontWeight: TITLE_FONT_WEIGHT,
@@ -96,7 +99,6 @@ export default function Header(props: HeaderProps): React.JSX.Element {
         </Antd.Typography>
         <Antd.Typography
           style={{
-            color: 'white',
             paddingLeft: TEXT_PADDING_LEFT,
             fontSize: TEXT_FONT_SIZE,
             fontWeight: 'normal',

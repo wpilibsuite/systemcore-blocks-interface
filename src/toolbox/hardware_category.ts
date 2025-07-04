@@ -49,12 +49,12 @@ export function getHardwareCategory(currentModule: commonStorage.Module) {
       name: 'Hardware',
       contents: [
         getRobotMechanismsBlocks(currentModule),
-        getComponentsBlocks(currentModule),
+        getComponentsBlocks(currentModule, false),
       ]
     };
   }
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-    return getComponentsBlocks(currentModule);
+    return getComponentsBlocks(currentModule, true);
   }
   // Return default empty category if module type doesn't match
   return {
@@ -239,14 +239,16 @@ function getRobotMethodsBlocks(currentModule: commonStorage.Module) {
   };
 }
 
-function getComponentsBlocks(currentModule: commonStorage.Module) {
+// This is called when the user is editing a mechanism or the robot and allows
+// the user to add a component or use an existing component.
+function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : boolean) {
   const contents = [];
 
   // Add the "+ Component" category
   contents.push({
     kind: 'category',
     name: '+ Component',
-    contents: getAllPossibleComponents(true)
+    contents: getAllPossibleComponents(hideParams)
   });
 
   // Get components from the current workspace
