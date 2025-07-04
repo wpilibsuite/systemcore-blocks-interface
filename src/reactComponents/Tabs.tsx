@@ -84,7 +84,7 @@ export function Component(props: TabsProps): React.JSX.Element {
   /** Handles tab change and updates current module. */
   const handleTabChange = (key: string): void => {
     if (props.project) {
-      props.setCurrentModule(commonStorage.findModuleInProject(props.project, key));
+      props.setCurrentModule(commonStorage.findModuleByModulePath(props.project, key));
       setActiveKey(key);
     }
   };
@@ -101,7 +101,7 @@ export function Component(props: TabsProps): React.JSX.Element {
       return;
     }
 
-    const module = commonStorage.findModuleInProject(props.project, key);
+    const module = commonStorage.findModuleByModulePath(props.project, key);
     if (!module) {
       return;
     }

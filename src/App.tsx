@@ -229,7 +229,7 @@ const App: React.FC = (): React.JSX.Element => {
   const createTabItemsFromProject = (projectData: commonStorage.Project): Tabs.TabItem[] => {
     const tabs: Tabs.TabItem[] = [
       {
-        key: projectData.modulePath,
+        key: projectData.robot.modulePath,
         title: 'Robot',
         type: TabType.ROBOT,
       },
@@ -332,7 +332,7 @@ const App: React.FC = (): React.JSX.Element => {
     if (project) {
       const tabs = createTabItemsFromProject(project);
       setTabItems(tabs);
-      setActiveTab(project.modulePath);
+      setActiveTab(project.robot.modulePath);
     }
   }, [project]);
 

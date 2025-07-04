@@ -41,6 +41,13 @@ export class GeneratorContext {
     this.clear();
   }
 
+  getModuleType(): string | null {
+    if (this.module) {
+      return this.module.moduleType;
+    }
+    return null;
+  }
+
   clear(): void {
     this.clearExportedBlocks();
     this.hasHardware= false;
@@ -58,7 +65,7 @@ export class GeneratorContext {
     if (!this.module) {
       throw new Error('getClassName: this.module is null.');
     }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+    if (this.module.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
       return 'Robot';
     }
 
@@ -69,7 +76,7 @@ export class GeneratorContext {
     if (!this.module) {
       throw new Error('getClassParent: this.module is null.');
     }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+    if (this.module.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
       return 'RobotBase';
     }
     if (this.module.moduleType === commonStorage.MODULE_TYPE_OPMODE) {

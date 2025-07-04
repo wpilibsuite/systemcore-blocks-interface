@@ -67,8 +67,8 @@ export class MethodsCategory {
         }
       });
     
-      if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
-        // Add the methods for a Project (Robot).
+      if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+        // Add the methods for a Robot.
         this.addClassBlocksForCurrentModule(
             'More Robot Methods', robot_class_blocks,
             methodNamesAlreadyUsed, contents);

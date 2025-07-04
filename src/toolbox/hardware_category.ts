@@ -43,7 +43,7 @@ export function getHardwareCategory(currentModule: commonStorage.Module) {
       ]
     };
   }
-  if (currentModule.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+  if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
     return {
       kind: 'category',
       name: 'Hardware',

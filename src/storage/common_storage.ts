@@ -42,10 +42,13 @@ export type Module = {
   className: string,
 };
 
+export type Robot = Module;
 export type Mechanism = Module;
 export type OpMode = Module;
 
-export type Project = Module & {
+export type Project = {
+  projectName: string,
+  robot: Robot,
   mechanisms: Mechanism[]
   opModes: OpMode[],
 };
@@ -56,7 +59,7 @@ export type Component = {
 }
 
 export const MODULE_TYPE_UNKNOWN = 'unknown';
-export const MODULE_TYPE_PROJECT = 'project';
+export const MODULE_TYPE_ROBOT = 'robot';
 export const MODULE_TYPE_MECHANISM = 'mechanism';
 export const MODULE_TYPE_OPMODE = 'opmode';
 
@@ -78,12 +81,16 @@ export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 export interface Storage {
   saveEntry(entryKey: string, entryValue: string): Promise<void>;
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
-  listModules(): Promise<Project[]>;
+  listProjects(): Promise<Project[]>;
   fetchModuleContent(modulePath: string): Promise<string>;
+  createProject(projectName: string, robotContent: string): Promise<void>;
   createModule(moduleType: string, modulePath: string, moduleContent: string): Promise<void>;
   saveModule(modulePath: string, moduleContent: string): Promise<void>;
+  renameProject(oldProjectName: string, newProjectName: string): Promise<void>;
+  copyProject(oldProjectName: string, newProjectName: string): Promise<void>;
   renameModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
   copyModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
+  deleteProject(projectName: string): Promise<void>;
   deleteModule(moduleType: string, modulePath: string): Promise<void>;
   downloadProject(projectName: string): Promise<string>;
   uploadProject(projectName: string, blobUrl: string): Promise<void>;
@@ -131,8 +138,11 @@ export async function addModuleToProject(
  */
 export async function removeModuleFromProject(
   storage: Storage, project: Project, modulePath: string): Promise<void> {
-  const module = findModuleInProject(project, modulePath);
+  const module = findModuleByModulePath(project, modulePath);
   if (module) {
+    if (module.moduleType == MODULE_TYPE_ROBOT) {
+      throw new Error('Removing the robot module from the project is not allowed.');
+    }
     await storage.deleteModule(module.moduleType, modulePath);
     if (module.moduleType === MODULE_TYPE_MECHANISM) {
       project.mechanisms = project.mechanisms.filter(m => m.modulePath !== modulePath);
@@ -152,8 +162,11 @@ export async function removeModuleFromProject(
  */
 export async function renameModuleInProject(
   storage: Storage, project: Project, proposedName: string, oldModulePath: string): Promise<string> {
-  const module = findModuleInProject(project, oldModulePath);
+  const module = findModuleByModulePath(project, oldModulePath);
   if (module) {
+    if (module.moduleType == MODULE_TYPE_ROBOT) {
+      throw new Error('Renaming the robot module is not allowed.');
+    }
     const newModuleName = classNameToModuleName(proposedName);
     const newModulePath = makeModulePath(project.projectName, newModuleName);
     await storage.renameModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
@@ -190,8 +203,11 @@ export async function renameModuleInProject(
  */
 export async function copyModuleInProject(
   storage: Storage, project: Project, proposedName: string, oldModulePath: string): Promise<string> {
-  const module = findModuleInProject(project, oldModulePath);
+  const module = findModuleByModulePath(project, oldModulePath);
   if (module) {
+    if (module.moduleType == MODULE_TYPE_ROBOT) {
+      throw new Error('Copying the robot module is not allowed.');
+    }
     const newModuleName = classNameToModuleName(proposedName);
     const newModulePath = makeModulePath(project.projectName, newModuleName);
     await storage.copyModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
@@ -231,12 +247,7 @@ export function isClassNameOk(project: Project, proposedName: string) {
   if (!isValidClassName(proposedName)) {
     ok = false;
     error = proposedName + ' is not a valid name. Please enter a different name.';
-  }
-  else if (proposedName == project.className) {
-    ok = false;
-    error = 'The project is already named ' + proposedName + '. Please enter a different name.';
-  }
-  else if (getClassInProject(project, proposedName) != null) {
+  } else if (findModuleByClassName(project, proposedName) != null) {
     ok = false;
     error = 'Another Mechanism or OpMode is already named ' + proposedName + '. Please enter a different name.'
   }
@@ -248,16 +259,19 @@ export function isClassNameOk(project: Project, proposedName: string) {
 }
 
 /**
- * Returns true if the given classname is in the project
+ * Returns the module in the given project with the given class name.
  */
-export function getClassInProject(project: Project, name: string): Module | null {
+export function findModuleByClassName(project: Project, className: string): Module | null {
+  if (project.robot.className === className) {
+    return project.robot;
+  }
   for (const mechanism of project.mechanisms) {
-    if (mechanism.className === name) {
+    if (mechanism.className === className) {
       return mechanism;
     }
   }
   for (const opMode of project.opModes) {
-    if (opMode.className === name) {
+    if (opMode.className === className) {
       return opMode;
     }
   }
@@ -265,25 +279,11 @@ export function getClassInProject(project: Project, name: string): Module | null
 }
 
 /**
- * Returns the module with the given module path, or null if it is not found.
- */
-export function findModule(modules: Project[], modulePath: string): Module | null {
-  for (const project of modules) {
-    const result = findModuleInProject(project, modulePath);
-    if (result) {
-      return result;
-    }
-  }
-
-  return null;
-}
-
-/**
  * Returns the module with the given module path inside the given project, or null if it is not found.
  */
-export function findModuleInProject(project: Project, modulePath: string): Module | null {
-  if (project.modulePath === modulePath) {
-    return project;
+export function findModuleByModulePath(project: Project, modulePath: string): Module | null {
+  if (project.robot.modulePath === modulePath) {
+    return project.robot;
   }
   for (const mechanism of project.mechanisms) {
     if (mechanism.modulePath === modulePath) {
@@ -343,7 +343,7 @@ export function isValidClassName(name: string): boolean {
 }
 
 /**
- * Returns the module name for the given class name.
+ * Returns the module name (snake_case) for the given class name (PascalCase).
  */
 export function classNameToModuleName(className: string): string {
   let moduleName = '';
@@ -362,7 +362,7 @@ export function classNameToModuleName(className: string): string {
 }
 
 /**
- * Returns the class name for the given module name.
+ * Returns the class name (PascalCase) for the given module name (snake_case).
  */
 export function moduleNameToClassName(moduleName: string): string {
   let className = '';
@@ -395,9 +395,9 @@ export function makeModulePath(projectName: string, moduleName: string): string 
 }
 
 /**
- * Returns the project path for the given project names.
+ * Returns the robot module path for the given project names.
  */
-export function makeProjectPath(projectName: string): string {
+export function makeRobotPath(projectName: string): string {
   return makeModulePath(projectName, projectName);
 }
 
@@ -446,12 +446,12 @@ function startingBlocksToModuleContent(
 }
 
 /**
- * Returns the module content for a new Project.
+ * Returns the robot module content for a new Project.
  */
-export function newProjectContent(projectName: string): string {
+export function newRobotContent(projectName: string): string {
   const module: Module = {
-    modulePath: makeProjectPath(projectName),
-    moduleType: MODULE_TYPE_PROJECT,
+    modulePath: makeRobotPath(projectName),
+    moduleType: MODULE_TYPE_ROBOT,
     projectName: projectName,
     moduleName: projectName,
     dateModifiedMillis: 0,
@@ -754,7 +754,7 @@ export function _processUploadedModule(
     moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
   }
 
-  const moduleName = (moduleType === MODULE_TYPE_PROJECT)
+  const moduleName = (moduleType === MODULE_TYPE_ROBOT)
     ? projectName : filename;
 
   const module: Module = {

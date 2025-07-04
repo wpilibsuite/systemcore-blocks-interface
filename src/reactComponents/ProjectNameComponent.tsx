@@ -68,7 +68,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
       return;
     }
 
-    if (props.projects.some((project) => project.className === trimmedName)) {
+    if (props.projects.some((project) => project.robot.className === trimmedName)) {
       showError(DUPLICATE_NAME_MESSAGE_PREFIX + trimmedName + DUPLICATE_NAME_MESSAGE_SUFFIX);
       return;
     }

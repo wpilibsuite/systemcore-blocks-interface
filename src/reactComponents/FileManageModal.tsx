@@ -186,7 +186,7 @@ export default function FileManageModal(props: FileManageModalProps) {
         trimmedName
     );
 
-    const newModule = commonStorage.getClassInProject(props.project, trimmedName);
+    const newModule = commonStorage.findModuleByClassName(props.project, trimmedName);
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,

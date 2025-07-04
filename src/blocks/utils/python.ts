@@ -19,7 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { PythonData, organizeVarDataByType, VariableGettersAndSetters } from './python_json_types';
+import { ClassData, PythonData, organizeVarDataByType, VariableGettersAndSetters } from './python_json_types';
 import { robotPyData } from './robotpy_data';
 import { externalSamplesData } from './external_samples_data';
 

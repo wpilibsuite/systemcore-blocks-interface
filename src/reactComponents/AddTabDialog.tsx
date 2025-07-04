@@ -134,7 +134,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
     await commonStorage.addModuleToProject(
         props.storage, props.project, storageType, trimmedName);
 
-    const newModule = commonStorage.getClassInProject(props.project, trimmedName);
+    const newModule = commonStorage.findModuleByClassName(props.project, trimmedName);
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,

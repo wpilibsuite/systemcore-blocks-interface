@@ -28,7 +28,6 @@ import { getClassData, getAllowedTypesForSetCheck, getOutputCheck } from './util
 import { FunctionData, findSuperFunctionData } from './utils/python_json_types';
 import * as value from './utils/value';
 import * as variable from './utils/variable';
-import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
@@ -224,9 +223,15 @@ export function addInstanceComponentBlocks(
     contents: toolboxItems.ContentsType[]) {
 
   const classData = getClassData(componentType);
+  if (!classData) {
+    throw new Error('Could not find classData for ' + componentType);
+  }
   const functions = classData.instanceMethods;
 
   const componentClassData = getClassData('component.Component');
+  if (!componentClassData) {
+    throw new Error('Could not find classData for component.Component');
+  }
   const componentFunctions = componentClassData.instanceMethods;
 
   for (const functionData of functions) {
@@ -331,8 +336,7 @@ type CallPythonFunctionExtraState = {
    */
   actualFunctionName?: string,
   /**
-   * True if this blocks refers to an exported function (for example, from a
-   * user's Project).
+   * True if this blocks refers to an exported function (for example, from the Robot).
    */
   exportedFunction?: boolean,
   /**
@@ -540,7 +544,7 @@ const CALL_PYTHON_FUNCTION = {
         case FunctionKind.INSTANCE_COMPONENT: {
           // TODO: We need the list of component names for this.mrcComponentClassName so we can
           // create a dropdown that has the appropriate component names.
-          const componentNames = [];
+          const componentNames: string[] = [];
           const componentName = this.getComponentName();
           if (!componentNames.includes(componentName)) {
             componentNames.push(componentName);
@@ -679,7 +683,7 @@ export const pythonFromBlock = function(
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
-        case commonStorage.MODULE_TYPE_PROJECT:
+        case commonStorage.MODULE_TYPE_ROBOT:
         case commonStorage.MODULE_TYPE_MECHANISM:
           code = 'self.';
           break;
