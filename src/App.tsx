@@ -23,19 +23,19 @@ import * as Antd from 'antd';
 import '@ant-design/v5-patch-for-react-19';
 
 import * as Blockly from 'blockly/core';
-import {pythonGenerator} from 'blockly/python';
+import { pythonGenerator } from 'blockly/python';
 
 import Header from './reactComponents/Header';
 import * as Menu from './reactComponents/Menu';
 import CodeDisplay from './reactComponents/CodeDisplay';
-import BlocklyComponent, {BlocklyComponentType} from './reactComponents/BlocklyComponent';
+import BlocklyComponent, { BlocklyComponentType } from './reactComponents/BlocklyComponent';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
-import {TabType } from './types/TabType';
+import { TabType } from './types/TabType';
 
-import {createGeneratorContext, GeneratorContext} from './editor/generator_context';
+import { createGeneratorContext, GeneratorContext } from './editor/generator_context';
 import * as editor from './editor/editor';
-import {extendedPythonGenerator} from './editor/extended_python_generator';
+import { extendedPythonGenerator } from './editor/extended_python_generator';
 
 import * as commonStorage from './storage/common_storage';
 import * as clientSideStorage from './storage/client_side_storage';
@@ -46,6 +46,7 @@ import { initialize as initializePythonBlocks } from './blocks/utils/python';
 import * as ChangeFramework from './blocks/utils/change_framework'
 import { mutatorOpenListener } from './blocks/mrc_param_container'
 import { TOOLBOX_UPDATE_EVENT } from './blocks/mrc_mechanism_component_holder';
+import { antdThemeFromString } from './reactComponents/ThemeModal';
 
 /** Storage key for shown toolbox categories. */
 const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';
@@ -98,6 +99,7 @@ const App: React.FC = (): React.JSX.Element => {
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
   const [rightCollapsed, setRightCollapsed] = React.useState(false);
+  const [theme, setTheme] = React.useState('dark');
 
 
   const blocksEditor = React.useRef<editor.Editor | null>(null);
@@ -264,7 +266,7 @@ const App: React.FC = (): React.JSX.Element => {
   // Add event listener for toolbox updates
   React.useEffect(() => {
     window.addEventListener(TOOLBOX_UPDATE_EVENT, handleToolboxUpdateRequest);
-    
+
     return () => {
       window.removeEventListener(TOOLBOX_UPDATE_EVENT, handleToolboxUpdateRequest);
     };
@@ -312,8 +314,8 @@ const App: React.FC = (): React.JSX.Element => {
     if (currentModule && blocklyComponent.current && generatorContext.current) {
       const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
       setGeneratedCode(extendedPythonGenerator.mrcWorkspaceToCode(
-          blocklyWorkspace,
-          generatorContext.current
+        blocklyWorkspace,
+        generatorContext.current
       ));
     } else {
       setGeneratedCode('');
@@ -336,26 +338,14 @@ const App: React.FC = (): React.JSX.Element => {
     }
   }, [project]);
 
-  const {Sider,Content} = Antd.Layout;
+  const { Sider, Content } = Antd.Layout;
 
   return (
     <Antd.ConfigProvider
-      theme={{
-        algorithm: Antd.theme.darkAlgorithm,
-        components: {
-          Layout: {
-            headerBg: '#000000', // This is only for dark mode
-            siderBg: '#000000', // This is only for dark mode
-            triggerBg: '#000000', // This is only for dark mode 
-          },
-          Menu:{
-            darkItemBg: '#000000', // This is only for dark mode
-          }
-        },
-      }}
+      theme={antdThemeFromString(theme)}
     >
       {contextHolder}
-      <Antd.Layout style={{height: FULL_VIEWPORT_HEIGHT}}>
+      <Antd.Layout style={{ height: FULL_VIEWPORT_HEIGHT }}>
         <Header
           alertErrorMessage={alertErrorMessage}
           setAlertErrorMessage={setAlertErrorMessage}
@@ -379,6 +369,7 @@ const App: React.FC = (): React.JSX.Element => {
               project={project}
               setProject={setProject}
               openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
+              setTheme={setTheme}
             />
           </Sider>
           <Antd.Layout>
@@ -395,7 +386,10 @@ const App: React.FC = (): React.JSX.Element => {
             />
             <Antd.Layout>
               <Content>
-                <BlocklyComponent ref={blocklyComponent} />
+                <BlocklyComponent 
+                  theme={theme}
+                  ref={blocklyComponent} 
+                />
               </Content>
               <Sider
                 collapsible
@@ -409,6 +403,7 @@ const App: React.FC = (): React.JSX.Element => {
                   generatedCode={generatedCode}
                   messageApi={messageApi}
                   setAlertErrorMessage={setAlertErrorMessage}
+                  theme={theme}
                 />
               </Sider>
             </Antd.Layout>
