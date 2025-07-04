@@ -21,7 +21,8 @@
 import * as React from 'react';
 import * as Blockly from 'blockly/core';
 import * as locale from 'blockly/msg/en';
-import * as MrcTheme from '../themes/mrc_theme_dark';
+import * as MrcDarkTheme from '../themes/mrc_theme_dark';
+import * as MrcLightTheme from '../themes/mrc_theme_light';
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
@@ -29,6 +30,11 @@ import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_com
 /** Interface for methods exposed by the BlocklyComponent. */
 export interface BlocklyComponentType {
   getBlocklyWorkspace: () => Blockly.WorkspaceSvg;
+}
+
+/** Interface for props passed to the BlocklyComponent. */
+export interface BlocklyComponentProps {
+  theme: string;
 }
 
 /** Grid spacing for the Blockly workspace. */
@@ -68,14 +74,25 @@ const WORKSPACE_STYLE: React.CSSProperties = {
  * React component that renders a Blockly workspace with proper initialization,
  * cleanup, and resize handling.
  */
-const BlocklyComponent = React.forwardRef<BlocklyComponentType | null>(
-    (_, ref): React.JSX.Element => {
+const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyComponentProps>(
+    ({ theme }, ref): React.JSX.Element => {
       const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
       const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
 
+      const getBlocklyTheme = (): Blockly.Theme => {
+        if(theme === 'dark' || theme === 'compact-dark') {
+          return MrcDarkTheme.theme;
+        }
+        if(theme === 'light' || theme === 'compact') {
+          return MrcLightTheme.theme;
+        }
+        // Default to light theme if unknown
+        return MrcLightTheme.theme;
+      };
+
       /** Creates the Blockly workspace configuration object. */
       const createWorkspaceConfig = (): Blockly.BlocklyOptions => ({
-        theme: MrcTheme.theme,
+        theme: getBlocklyTheme(),
         horizontalLayout: false, // Forces vertical layout for the workspace
         // Start with an empty (but not null) toolbox. It will be replaced later.
         toolbox: {
@@ -167,6 +184,14 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null>(
         initializeWorkspace();
         return cleanupWorkspace;
       }, []);
+
+      // Update theme when theme prop changes
+      React.useEffect(() => {
+        if (workspaceRef.current) {
+          const newTheme = getBlocklyTheme();
+          workspaceRef.current.setTheme(newTheme);
+        }
+      }, [theme]);
 
       // Handle workspace resize
       React.useEffect(() => {
