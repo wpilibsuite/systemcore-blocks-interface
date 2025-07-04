@@ -80,10 +80,10 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
       const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
 
       const getBlocklyTheme = (): Blockly.Theme => {
-        if(theme === 'dark' || theme === 'compact-dark') {
+        if (theme === 'dark' || theme === 'compact-dark') {
           return MrcDarkTheme.theme;
         }
-        if(theme === 'light' || theme === 'compact') {
+        if (theme === 'light' || theme === 'compact') {
           return MrcLightTheme.theme;
         }
         // Default to light theme if unknown
