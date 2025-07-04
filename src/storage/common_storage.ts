@@ -47,7 +47,8 @@ export type Mechanism = Module;
 export type OpMode = Module;
 
 export type Project = {
-  projectName: string,
+  projectName: string, // snake_case
+  userVisibleName: string, // PascalCase
   robot: Robot,
   mechanisms: Mechanism[]
   opModes: OpMode[],
@@ -62,6 +63,8 @@ export const MODULE_TYPE_UNKNOWN = 'unknown';
 export const MODULE_TYPE_ROBOT = 'robot';
 export const MODULE_TYPE_MECHANISM = 'mechanism';
 export const MODULE_TYPE_OPMODE = 'opmode';
+
+export const ROBOT_CLASS_NAME = 'Robot';
 
 export const MODULE_NAME_PLACEHOLDER = '%module_name%';
 
@@ -97,15 +100,65 @@ export interface Storage {
 }
 
 /**
+ * Creates a new project.
+ * @param storage The storage interface to use for creating the project.
+ * @param proposedUserVisibleName The name for the new project.
+ * @returns A promise that resolves when the project has been created.
+ */
+export async function createProject(
+  storage: Storage, proposedUserVisibleName: string): Promise<void> {
+  const newProjectName = pascalCaseToSnakeCase(proposedUserVisibleName);
+  const robotContent = newRobotContent(newProjectName);
+  await storage.createProject(newProjectName, robotContent);
+}
+
+/**
+ * Renames a project.
+ * @param storage The storage interface to use for renaming the project.
+ * @param project The project to rename
+ * @param proposedUserVisibleName The new name for the project.
+ * @returns A promise that resolves when the project has been renamed.
+ */
+export async function renameProject(
+  storage: Storage, project: Project, proposedUserVisibleName: string): Promise<void> {
+  const newProjectName = pascalCaseToSnakeCase(proposedUserVisibleName);
+  await storage.renameProject(project.projectName, newProjectName);
+}
+
+/**
+ * Copies a project.
+ * @param storage The storage interface to use for copying the project.
+ * @param project The project to copy
+ * @param proposedUserVisibleName The name for the new project.
+ * @returns A promise that resolves when the project has been copied.
+ */
+export async function copyProject(
+  storage: Storage, project: Project, proposedUserVisibleName: string): Promise<void> {
+  const newProjectName = pascalCaseToSnakeCase(proposedUserVisibleName);
+  await storage.copyProject(project.projectName, newProjectName);
+}
+
+/**
+ * Deletes a project.
+ * @param storage The storage interface to use for deleting the project.
+ * @param project The project to delete.
+ * @returns A promise that resolves when the project has been deleted.
+ */
+export async function deleteProject(
+  storage: Storage, project: Project): Promise<void> {
+  await storage.deleteProject(project.projectName);
+}
+
+/**
  * Adds a new module to the project.
  * @param storage The storage interface to use for creating the module.
  * @param project The project to add the module to.
  * @param moduleType The type of the module (e.g., 'mechanism', 'opmode').
- * @param className The name of the class.
+ * @param newClassName The name of the class.
  */
 export async function addModuleToProject(
-  storage: Storage, project: Project, moduleType: string, className: string): Promise<void> {
-  let newModuleName = classNameToModuleName(className);
+  storage: Storage, project: Project, moduleType: string, newClassName: string): Promise<void> {
+  let newModuleName = pascalCaseToSnakeCase(newClassName);
   let newModulePath = makeModulePath(project.projectName, newModuleName);
 
   if (moduleType === MODULE_TYPE_MECHANISM) {
@@ -116,7 +169,7 @@ export async function addModuleToProject(
       moduleType: MODULE_TYPE_MECHANISM,
       projectName: project.projectName,
       moduleName: newModuleName,
-      className: className
+      className: newClassName
     } as Mechanism);
   } else if (moduleType === MODULE_TYPE_OPMODE) {
     const opModeContent = newOpModeContent(project.projectName, newModuleName);
@@ -126,7 +179,7 @@ export async function addModuleToProject(
       moduleType: MODULE_TYPE_OPMODE,
       projectName: project.projectName,
       moduleName: newModuleName,
-      className: className
+      className: newClassName
     } as OpMode);
   }
 }
@@ -156,37 +209,37 @@ export async function removeModuleFromProject(
  * Renames a module in the project.
  * @param storage The storage interface to use for renaming the module.
  * @param project The project containing the module to rename.
- * @param proposedName The new name for the module.
- * @param oldModuleName The current name of the module.
+ * @param proposedClassName The new class name for the module.
+ * @param oldModulePath The current path of the module.
  * @returns A promise that resolves when the module has been renamed.
  */
 export async function renameModuleInProject(
-  storage: Storage, project: Project, proposedName: string, oldModulePath: string): Promise<string> {
+  storage: Storage, project: Project, proposedClassName: string, oldModulePath: string): Promise<string> {
   const module = findModuleByModulePath(project, oldModulePath);
   if (module) {
     if (module.moduleType == MODULE_TYPE_ROBOT) {
       throw new Error('Renaming the robot module is not allowed.');
     }
-    const newModuleName = classNameToModuleName(proposedName);
+    const newModuleName = pascalCaseToSnakeCase(proposedClassName);
     const newModulePath = makeModulePath(project.projectName, newModuleName);
     await storage.renameModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
     module.modulePath = newModulePath;
     module.moduleName = newModuleName;
-    module.className = proposedName;
+    module.className = proposedClassName;
 
     if (module.moduleType === MODULE_TYPE_MECHANISM) {
       const mechanism = project.mechanisms.find(m => m.modulePath === module.modulePath);
       if (mechanism) {
         mechanism.modulePath = newModulePath;
         mechanism.moduleName = newModuleName;
-        mechanism.className = proposedName;
+        mechanism.className = proposedClassName;
       }
     } else if (module.moduleType === MODULE_TYPE_OPMODE) {
       const opMode = project.opModes.find(o => o.modulePath === module.modulePath);
       if (opMode) {
         opMode.modulePath = newModulePath;
         opMode.moduleName = newModuleName;
-        opMode.className = proposedName;
+        opMode.className = proposedClassName;
       }
       return newModulePath
     }
@@ -197,18 +250,18 @@ export async function renameModuleInProject(
  * Copies a module in the project.
  * @param storage The storage interface to use for copying the module.
  * @param project The project containing the module to copy.
- * @param proposedName The new name for the module.
+ * @param proposedClassName The new name for the module.
  * @param oldModuleName The current name of the module.
  * @returns A promise that resolves when the module has been copied.
  */
 export async function copyModuleInProject(
-  storage: Storage, project: Project, proposedName: string, oldModulePath: string): Promise<string> {
+  storage: Storage, project: Project, proposedClassName: string, oldModulePath: string): Promise<string> {
   const module = findModuleByModulePath(project, oldModulePath);
   if (module) {
     if (module.moduleType == MODULE_TYPE_ROBOT) {
       throw new Error('Copying the robot module is not allowed.');
     }
-    const newModuleName = classNameToModuleName(proposedName);
+    const newModuleName = pascalCaseToSnakeCase(proposedClassName);
     const newModulePath = makeModulePath(project.projectName, newModuleName);
     await storage.copyModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
 
@@ -218,7 +271,7 @@ export async function copyModuleInProject(
         moduleType: MODULE_TYPE_MECHANISM,
         projectName: project.projectName,
         moduleName: newModuleName,
-        className: proposedName
+        className: proposedClassName
       } as Mechanism);
     } else if (module.moduleType === MODULE_TYPE_OPMODE) {
       project.opModes.push({
@@ -226,7 +279,7 @@ export async function copyModuleInProject(
         moduleType: MODULE_TYPE_OPMODE,
         projectName: project.projectName,
         moduleName: newModuleName,
-        className: proposedName
+        className: proposedClassName
       } as OpMode);
     }
     return newModulePath;
@@ -237,19 +290,19 @@ export async function copyModuleInProject(
 /**
  * Checks if the proposed class name is valid and does not conflict with existing names in the project.
  * @param project The project to check against.
- * @param proposedName The proposed class name to validate.
+ * @param proposedClassName The proposed class name to validate.
  * @returns An object containing a boolean `ok` indicating if the name is valid, and an `error` message if it is not.
  */
-export function isClassNameOk(project: Project, proposedName: string) {
+export function isClassNameOk(project: Project, proposedClassName: string) {
   let ok = true;
   let error = '';
 
-  if (!isValidClassName(proposedName)) {
+  if (!isValidClassName(proposedClassName)) {
     ok = false;
-    error = proposedName + ' is not a valid name. Please enter a different name.';
-  } else if (findModuleByClassName(project, proposedName) != null) {
+    error = proposedClassName + ' is not a valid name. Please enter a different name.';
+  } else if (findModuleByClassName(project, proposedClassName) != null) {
     ok = false;
-    error = 'Another Mechanism or OpMode is already named ' + proposedName + '. Please enter a different name.'
+    error = 'Another Mechanism or OpMode is already named ' + proposedClassName + '. Please enter a different name.'
   }
 
   return {
@@ -345,7 +398,7 @@ export function isValidClassName(name: string): boolean {
 /**
  * Returns the module name (snake_case) for the given class name (PascalCase).
  */
-export function classNameToModuleName(className: string): string {
+export function pascalCaseToSnakeCase(className: string): string {
   let moduleName = '';
   for (let i = 0; i < className.length; i++) {
     const char = className.charAt(i);
@@ -364,7 +417,7 @@ export function classNameToModuleName(className: string): string {
 /**
  * Returns the class name (PascalCase) for the given module name (snake_case).
  */
-export function moduleNameToClassName(moduleName: string): string {
+export function snakeCaseToPascalCase(moduleName: string): string {
   let className = '';
   let nextCharUpper = true;
   for (let i = 0; i < moduleName.length; i++) {
@@ -402,7 +455,7 @@ export function makeRobotPath(projectName: string): string {
 }
 
 /**
- * Returns the project name for given module path.
+ * Returns the project path for given module path.
  */
 export function getProjectName(modulePath: string): string {
   const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).py$');
@@ -449,13 +502,13 @@ function startingBlocksToModuleContent(
  * Returns the robot module content for a new Project.
  */
 export function newRobotContent(projectName: string): string {
-  const module: Module = {
+  const module: Robot = {
     modulePath: makeRobotPath(projectName),
     moduleType: MODULE_TYPE_ROBOT,
     projectName: projectName,
     moduleName: projectName,
     dateModifiedMillis: 0,
-    className: moduleNameToClassName(projectName),
+    className: ROBOT_CLASS_NAME,
   };
 
   return startingBlocksToModuleContent(module, startingRobotBlocks);
@@ -471,7 +524,7 @@ export function newMechanismContent(projectName: string, mechanismName: string):
     projectName: projectName,
     moduleName: mechanismName,
     dateModifiedMillis: 0,
-    className: moduleNameToClassName(mechanismName),
+    className: snakeCaseToPascalCase(mechanismName),
   };
 
   return startingBlocksToModuleContent(module, startingMechanismBlocks);
@@ -487,7 +540,7 @@ export function newOpModeContent(projectName: string, opModeName: string): strin
     projectName: projectName,
     moduleName: opModeName,
     dateModifiedMillis: 0,
-    className: moduleNameToClassName(opModeName),
+    className: snakeCaseToPascalCase(opModeName),
   };
 
   return startingBlocksToModuleContent(module, startingOpModeBlocks);
@@ -640,6 +693,12 @@ export async function produceDownloadProjectBlob(
   return blobUrl;
 }
 
+export function getClassNameForModule(moduleType: string, moduleName: string) {
+  return (moduleType == MODULE_TYPE_ROBOT)
+      ? ROBOT_CLASS_NAME
+      : snakeCaseToPascalCase(moduleName);
+}
+
 /**
  * Process the module content so it can be downloaded.
  */
@@ -661,7 +720,7 @@ function _processModuleContentForDownload(
     projectName: projectName,
     moduleName: moduleName,
     dateModifiedMillis: 0,
-    className: moduleNameToClassName(moduleName),
+    className: getClassName(moduleType, moduleName),
   };
 
   // Clear out the python content and exported blocks.
@@ -763,7 +822,7 @@ export function _processUploadedModule(
     projectName: projectName,
     moduleName: moduleName,
     dateModifiedMillis: 0,
-    className: moduleNameToClassName(moduleName),
+    className: snakeCaseToPascalCase(moduleName),
   };
 
   // Generate the python content and exported blocks.

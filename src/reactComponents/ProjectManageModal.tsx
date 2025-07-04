@@ -74,8 +74,8 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   const loadProjects = async (storage: commonStorage.Storage): Promise<void> => {
     const projects = await storage.listProjects();
 
-    // Sort projects alphabetically by class name
-    projects.sort((a, b) => a.robot.className.localeCompare(b.robot.className));
+    // Sort projects alphabetically by name
+    projects.sort((a, b) => a.userVisibleName.localeCompare(b.userVisibleName));
     setAllProjects(projects);
     
     if (projects.length > 0 && props.noProjects) {
@@ -85,17 +85,16 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   };
 
   /** Handles renaming a project. */
-  const handleRename = async (origProject: commonStorage.Project, newName: string): Promise<void> => {
+  const handleRename = async (origProject: commonStorage.Project, newUserVisibleName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
-    const newProjectName = commonStorage.classNameToModuleName(newName);
-
     try {
-      await props.storage.renameProject(
-          origProject.projectName,
-          newProjectName
+      await commonStorage.renameProject(
+          props.storage,
+          origProject,
+          newUserVisibleName
       );
       await loadProjects(props.storage);
     } catch (error) {
@@ -107,18 +106,16 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   };
 
   /** Handles copying a project. */
-  const handleCopy = async (origProject: commonStorage.Project, newName: string): Promise<void> => {
+  const handleCopy = async (origProject: commonStorage.Project, newUserVisibleName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
-    //
-    const newProjectName = commonStorage.classNameToModuleName(newName);
-
     try {
-      await props.storage.copyProject(
-          origProject.projectName,
-          newProjectName
+      await commonStorage.copyProject(
+          props.storage,
+          origProject,
+          newUserVisibleName
       );
       await loadProjects(props.storage);
     } catch (error) {
@@ -131,18 +128,15 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
 
   /** Handles adding a new project. */
   const handleAddNewItem = async (): Promise<void> => {
-    const trimmedName = newItemName.trim();
-    if (!trimmedName || !props.storage) {
+    const newUserVisibleName = newItemName.trim();
+    if (!newUserVisibleName || !props.storage) {
       return;
     }
 
-    const newProjectName = commonStorage.classNameToModuleName(trimmedName);
-    const robotContent = commonStorage.newRobotContent(newProjectName);
-
     try {
-      await props.storage.createProject(
-          newProjectName,
-          robotContent
+      await commonStorage.createProject(
+          props.storage,
+          newUserVisibleName
       );
     } catch (e) {
       console.error('Failed to create a new project:', e);
@@ -177,7 +171,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     }
 
     try {
-      await props.storage.deleteProject(record.projectName);
+      await commonStorage.deleteProject(props.storage, record);
     } catch (e) {
       console.error('Failed to delete the project:', e);
       props.setAlertErrorMessage('Failed to delete the project.');
@@ -193,25 +187,25 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   /** Opens the rename modal for a specific project. */
   const openRenameModal = (record: commonStorage.Project): void => {
     setCurrentRecord(record);
-    setName(record.robot.className);
+    setName(record.userVisibleName);
     setRenameModalOpen(true);
   };
 
   /** Opens the copy modal for a specific project. */
   const openCopyModal = (record: commonStorage.Project): void => {
     setCurrentRecord(record);
-    setName(record.robot.className + COPY_SUFFIX);
+    setName(record.userVisibleName + COPY_SUFFIX);
     setCopyModalOpen(true);
   };
 
   /** Gets the rename modal title. */
   const getRenameModalTitle = (): string => {
-    return `Rename Project: ${currentRecord ? currentRecord.robot.className : ''}`;
+    return `Rename Project: ${currentRecord ? currentRecord.userVisibleName : ''}`;
   };
 
   /** Gets the copy modal title. */
   const getCopyModalTitle = (): string => {
-    return `Copy Project: ${currentRecord ? currentRecord.robot.className : ''}`;
+    return `Copy Project: ${currentRecord ? currentRecord.userVisibleName : ''}`;
   };
 
   /** Creates the container style object. */
@@ -231,8 +225,8 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   const columns: Antd.TableProps<commonStorage.Project>['columns'] = [
     {
       title: 'Name',
-      dataIndex: 'robot.className',
-      key: 'robot.className',
+      dataIndex: 'userVisibleName',
+      key: 'userVisibleName',
       ellipsis: {
         showTitle: false,
       },
@@ -275,7 +269,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
           {allProjects.length > 1 && (
             <Antd.Tooltip title={t('Delete')}>
               <Antd.Popconfirm
-                title={`Delete ${record.robot.className}?`}
+                title={`Delete ${record.userVisibleName}?`}
                 description="This action cannot be undone."
                 onConfirm={() => handleDeleteProject(record)}
                 okText={t('Delete')}
@@ -392,7 +386,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
           <Antd.Table<commonStorage.Project>
             columns={columns}
             dataSource={allProjects}
-            rowKey="robot.className"
+            rowKey="userVisibleName"
             size="small"
             pagination={allProjects.length > DEFAULT_PAGE_SIZE ? {
               pageSize: DEFAULT_PAGE_SIZE,

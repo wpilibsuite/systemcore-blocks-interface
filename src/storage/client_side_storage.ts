@@ -138,7 +138,8 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           const path = value.path;
-          const moduleType = value.type;
+          // Before PR #143, robot modules were stored with the type 'project'.
+          const moduleType = (value.type == 'project') ? commonStorage.MODULE_TYPE_ROBOT : value.type;
           const moduleName = commonStorage.getModuleName(path);
           const module: commonStorage.Module = {
             modulePath: path,
@@ -146,7 +147,7 @@ class ClientSideStorage implements commonStorage.Storage {
             projectName: commonStorage.getProjectName(path),
             moduleName: moduleName,
             dateModifiedMillis: value.dateModifiedMillis,
-            className: commonStorage.moduleNameToClassName(moduleName),
+            className: commonStorage.getClassNameForModule(moduleType, moduleName),
           }
           if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {
             const robot: commonStorage.Robot = {
@@ -154,6 +155,7 @@ class ClientSideStorage implements commonStorage.Storage {
             };
             const project: commonStorage.Project = {
               projectName: moduleName,
+              userVisibleName: commonStorage.snakeCaseToPascalCase(moduleName),
               robot: robot,
               mechanisms: [],
               opModes: [],
@@ -332,7 +334,8 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           const path = value.path;
-          const moduleType = value.type;
+          // Before PR #143, robot modules were stored with the type 'project'.
+          const moduleType = (value.type == 'project') ? commonStorage.MODULE_TYPE_ROBOT : value.type;
           if (commonStorage.getProjectName(path) === oldProjectName) {
             let newPath;
             if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {

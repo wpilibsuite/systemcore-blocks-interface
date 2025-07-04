@@ -100,22 +100,22 @@ export default function FileManageModal(props: FileManageModalProps) {
   }, [props.project, props.moduleType]);
 
   /** Handles renaming a module. */
-  const handleRename = async (origModule: Module, newName: string): Promise<void> => {
+  const handleRename = async (origModule: Module, newClassName: string): Promise<void> => {
     if (!props.storage || !props.project) {
       return;
     }
 
     try {
-      const newPath = await commonStorage.renameModuleInProject(
+      const newModulePath = await commonStorage.renameModuleInProject(
           props.storage,
           props.project,
-          newName,
+          newClassName,
           origModule.path
       );
 
       const newModules = modules.map((module) => {
         if (module.path === origModule.path) {
-          return {...module, title: newName, path: newPath};
+          return {...module, title: newClassName, path: newModulePath};
         }
         return module;
       });
@@ -131,16 +131,16 @@ export default function FileManageModal(props: FileManageModalProps) {
   };
 
   /** Handles copying a module. */
-  const handleCopy = async (origModule: Module, newName: string): Promise<void> => {
+  const handleCopy = async (origModule: Module, newClassName: string): Promise<void> => {
     if (!props.storage || !props.project) {
       return;
     }
 
     try {
-      const newPath = await commonStorage.copyModuleInProject(
+      const newModulePath = await commonStorage.copyModuleInProject(
           props.storage,
           props.project,
-          newName,
+          newClassName,
           origModule.path
       );
 
@@ -153,8 +153,8 @@ export default function FileManageModal(props: FileManageModalProps) {
 
       const newModules = [...modules];
       newModules.push({
-        path: newPath,
-        title: newName,
+        path: newModulePath,
+        title: newClassName,
         type: originalModule.type,
       });
 
@@ -170,8 +170,8 @@ export default function FileManageModal(props: FileManageModalProps) {
 
   /** Handles adding a new module. */
   const handleAddNewItem = async (): Promise<void> => {
-    const trimmedName = newItemName.trim();
-    if (!trimmedName || !props.storage || !props.project) {
+    const newClassName = newItemName.trim();
+    if (!newClassName || !props.storage || !props.project) {
       return;
     }
 
@@ -183,10 +183,10 @@ export default function FileManageModal(props: FileManageModalProps) {
         props.storage,
         props.project,
         storageType,
-        trimmedName
+        newClassName
     );
 
-    const newModule = commonStorage.findModuleByClassName(props.project, trimmedName);
+    const newModule = commonStorage.findModuleByClassName(props.project, newClassName);
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,

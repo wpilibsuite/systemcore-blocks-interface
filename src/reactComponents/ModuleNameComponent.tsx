@@ -56,8 +56,8 @@ export default function ModuleNameComponent(props: ModuleNameComponentProps): Re
 
   /** Handles adding a new item with validation. */
   const handleAddNewItem = (): void => {
-    const trimmedName = props.newItemName.trim();
-    if (!trimmedName) {
+    const newClassName = props.newItemName.trim();
+    if (!newClassName) {
       return;
     }
 
@@ -65,7 +65,7 @@ export default function ModuleNameComponent(props: ModuleNameComponentProps): Re
       return;
     }
 
-    const {ok, error} = commonStorage.isClassNameOk(props.project, trimmedName);
+    const {ok, error} = commonStorage.isClassNameOk(props.project, newClassName);
     if (ok) {
       clearError();
       props.onAddNewItem();

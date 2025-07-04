@@ -84,7 +84,8 @@ export function Component(props: TabsProps): React.JSX.Element {
   /** Handles tab change and updates current module. */
   const handleTabChange = (key: string): void => {
     if (props.project) {
-      props.setCurrentModule(commonStorage.findModuleByModulePath(props.project, key));
+      const modulePath = key;
+      props.setCurrentModule(commonStorage.findModuleByModulePath(props.project, modulePath));
       setActiveKey(key);
     }
   };
@@ -101,7 +102,8 @@ export function Component(props: TabsProps): React.JSX.Element {
       return;
     }
 
-    const module = commonStorage.findModuleByModulePath(props.project, key);
+    const modulePath = key;
+    const module = commonStorage.findModuleByModulePath(props.project, modulePath);
     if (!module) {
       return;
     }
@@ -156,28 +158,30 @@ export function Component(props: TabsProps): React.JSX.Element {
   };
 
   /** Handles renaming a module tab. */
-  const handleRename = async (key: string, newName: string): Promise<void> => {
+  const handleRename = async (key: string, newClassName: string): Promise<void> => {
     if (!props.storage || !props.project) {
       return;
     }
 
+    const oldModulePath = key;
+
     try {
-      const newPath = await commonStorage.renameModuleInProject(
+      const newModulePath = await commonStorage.renameModuleInProject(
         props.storage,
         props.project,
-        newName,
-        key
+        newClassName,
+        oldModulePath,
       );
 
       const newTabs = props.tabList.map((tab) => {
         if (tab.key === key) {
-          return { ...tab, title: newName, key: newPath };
+          return { ...tab, title: newClassName, key: newModulePath };
         }
         return tab;
       });
 
       props.setTabList(newTabs);
-      setActiveKey(newPath);
+      setActiveKey(newModulePath);
       triggerProjectUpdate();
     } catch (error) {
       console.error('Error renaming module:', error);
@@ -188,17 +192,19 @@ export function Component(props: TabsProps): React.JSX.Element {
   };
 
   /** Handles copying a module tab. */
-  const handleCopy = async (key: string, newName: string): Promise<void> => {
+  const handleCopy = async (key: string, newClassName: string): Promise<void> => {
     if (!props.storage || !props.project) {
       return;
     }
 
+    const oldModulePath = key;
+
     try {
-      const newPath = await commonStorage.copyModuleInProject(
+      const newModulePath = await commonStorage.copyModuleInProject(
         props.storage,
         props.project,
-        newName,
-        key
+        newClassName,
+        oldModulePath,
       );
 
       const newTabs = [...props.tabList];
@@ -210,9 +216,9 @@ export function Component(props: TabsProps): React.JSX.Element {
         return;
       }
 
-      newTabs.push({ key: newPath, title: newName, type: originalTab.type });
+      newTabs.push({ key: newModulePath, title: newClassName, type: originalTab.type });
       props.setTabList(newTabs);
-      setActiveKey(newPath);
+      setActiveKey(newModulePath);
       triggerProjectUpdate();
     } catch (error) {
       console.error('Error copying module:', error);
