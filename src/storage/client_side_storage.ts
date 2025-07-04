@@ -118,7 +118,7 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
   
-  async listModules(): Promise<commonStorage.Project[]> {
+  async listProjects(): Promise<commonStorage.Project[]> {
     return new Promise((resolve, reject) => {
       const projects: {[key: string]: commonStorage.Project} = {}; // key is project name, value is Project
       // The mechanisms and opModes variables hold any Mechanisms and OpModes that
@@ -138,7 +138,8 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           const path = value.path;
-          const moduleType = value.type;
+          // Before PR #143, robot modules were stored with the type 'project'.
+          const moduleType = (value.type == 'project') ? commonStorage.MODULE_TYPE_ROBOT : value.type;
           const moduleName = commonStorage.getModuleName(path);
           const module: commonStorage.Module = {
             modulePath: path,
@@ -146,11 +147,16 @@ class ClientSideStorage implements commonStorage.Storage {
             projectName: commonStorage.getProjectName(path),
             moduleName: moduleName,
             dateModifiedMillis: value.dateModifiedMillis,
-            className: commonStorage.moduleNameToClassName(moduleName),
+            className: commonStorage.getClassNameForModule(moduleType, moduleName),
           }
-          if (moduleType === commonStorage.MODULE_TYPE_PROJECT) {
-            const project: commonStorage.Project = {
+          if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+            const robot: commonStorage.Robot = {
               ...module,
+            };
+            const project: commonStorage.Project = {
+              projectName: moduleName,
+              userVisibleName: commonStorage.snakeCaseToPascalCase(moduleName),
+              robot: robot,
               mechanisms: [],
               opModes: [],
             };
@@ -203,12 +209,12 @@ class ClientSideStorage implements commonStorage.Storage {
           cursor.continue();
         } else {
           // The cursor is done. We have finished reading all the modules.
-          const modules: commonStorage.Project[] = [];
+          const projectsToReturn: commonStorage.Project[] = [];
           const sortedProjectNames = Object.keys(projects).sort();
           sortedProjectNames.forEach((projectName) => {
-            modules.push(projects[projectName]);
+            projectsToReturn.push(projects[projectName]);
           });
-          resolve(modules);
+          resolve(projectsToReturn);
         }
       };
     });
@@ -232,6 +238,11 @@ class ClientSideStorage implements commonStorage.Storage {
         resolve(getRequest.result.content);
       };
     });
+  }
+
+  async createProject(projectName: string, robotContent: string): Promise<void> {
+    const modulePath = commonStorage.makeRobotPath(projectName);
+    return this._saveModule(commonStorage.MODULE_TYPE_ROBOT, modulePath, robotContent);
   }
 
   async createModule(moduleType: string, modulePath: string, moduleContent: string): Promise<void> {
@@ -323,11 +334,12 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           const path = value.path;
-          const moduleType = value.type;
+          // Before PR #143, robot modules were stored with the type 'project'.
+          const moduleType = (value.type == 'project') ? commonStorage.MODULE_TYPE_ROBOT : value.type;
           if (commonStorage.getProjectName(path) === oldProjectName) {
             let newPath;
-            if (moduleType === commonStorage.MODULE_TYPE_PROJECT) {
-              newPath = commonStorage.makeProjectPath(newProjectName);
+            if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+              newPath = commonStorage.makeRobotPath(newProjectName);
             } else {
               const moduleName = commonStorage.getModuleName(path);
               newPath = commonStorage.makeModulePath(newProjectName, moduleName);
@@ -375,27 +387,37 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
+  async renameProject(oldProjectName: string, newProjectName: string): Promise<void> {
+    return this._renameOrCopyProject(oldProjectName, newProjectName, false);
+  }
+
+  async copyProject(oldProjectName: string, newProjectName: string): Promise<void> {
+    return this._renameOrCopyProject(oldProjectName, newProjectName, true);
+  }
+
   async renameModule(
       moduleType: string, projectName: string,
       oldModuleName: string, newModuleName: string): Promise<void> {
+    if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+      throw new Error('Renaming the robot module is not allowed. Call renameProject to rename the project.');
+    }
     return this._renameOrCopyModule(
-        moduleType, projectName, oldModuleName, newModuleName, false);
+        projectName, oldModuleName, newModuleName, false);
   }
 
   async copyModule(
       moduleType: string, projectName: string,
       oldModuleName: string, newModuleName: string): Promise<void> {
+    if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+      throw new Error('Copying the robot module is not allowed. Call copyProject to rename the project.');
+    }
     return this._renameOrCopyModule(
-        moduleType, projectName, oldModuleName, newModuleName, true);
+        projectName, oldModuleName, newModuleName, true);
   }
 
   private async _renameOrCopyModule(
-      moduleType: string, projectName: string,
+      projectName: string,
       oldModuleName: string, newModuleName: string, copy: boolean): Promise<void> {
-
-    if (moduleType == commonStorage.MODULE_TYPE_PROJECT) {
-      return this._renameOrCopyProject(oldModuleName, newModuleName, copy);
-    }
 
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(['modules'], 'readwrite');
@@ -446,7 +468,7 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  private async _deleteProject(projectName: string): Promise<void> {
+  async deleteProject(projectName: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(['modules'], 'readwrite');
       transaction.oncomplete = () => {
@@ -492,9 +514,8 @@ class ClientSideStorage implements commonStorage.Storage {
   }
 
   async deleteModule(moduleType: string, modulePath: string): Promise<void> {
-    if (moduleType == commonStorage.MODULE_TYPE_PROJECT) {
-      const projectName = commonStorage.getProjectName(modulePath);
-      return this._deleteProject(projectName);
+    if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+      throw new Error('Deleting the robot module is not allowed. Call deleteProject to delete the project.');
     }
 
     return new Promise((resolve, reject) => {

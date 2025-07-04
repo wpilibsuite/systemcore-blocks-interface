@@ -8,7 +8,7 @@ export function getToolboxJSON(
     shownPythonToolboxCategories: Set<string> | null,
     currentModule: commonStorage.Module): Blockly.utils.toolbox.ToolboxDefinition {
     switch (currentModule.moduleType) {
-        case commonStorage.MODULE_TYPE_PROJECT:
+        case commonStorage.MODULE_TYPE_ROBOT:
         case commonStorage.MODULE_TYPE_MECHANISM:
             return {
                 kind: 'categoryToolbox',

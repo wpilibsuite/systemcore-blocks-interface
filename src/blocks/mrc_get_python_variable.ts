@@ -228,8 +228,7 @@ type GetPythonVariableExtraState = {
    */
   actualVariableName?: string,
   /**
-   * True if this blocks refers to an exported variable (for example, from a
-   * user's Project).
+   * True if this blocks refers to an exported variable (for example, from the Robot).
    */
   exportedVariable?: boolean,
 };

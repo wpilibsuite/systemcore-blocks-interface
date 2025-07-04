@@ -134,8 +134,8 @@ const App: React.FC = (): React.JSX.Element => {
 
     try {
       const value = await storage.fetchEntry(SHOWN_TOOLBOX_CATEGORIES_KEY, DEFAULT_TOOLBOX_CATEGORIES_JSON);
-      const shownCategories: string[] = JSON.parse(value);
-      setShownPythonToolboxCategories(new Set(shownCategories));
+      const shownCategories: Set<string> = new Set(JSON.parse(value));
+      setShownPythonToolboxCategories(shownCategories);
     } catch (e) {
       console.error(TOOLBOX_FETCH_ERROR_MESSAGE);
       console.error(e);
@@ -231,7 +231,7 @@ const App: React.FC = (): React.JSX.Element => {
   const createTabItemsFromProject = (projectData: commonStorage.Project): Tabs.TabItem[] => {
     const tabs: Tabs.TabItem[] = [
       {
-        key: projectData.modulePath,
+        key: projectData.robot.modulePath,
         title: 'Robot',
         type: TabType.ROBOT,
       },
@@ -277,6 +277,10 @@ const App: React.FC = (): React.JSX.Element => {
     openStorage();
     initializeBlocks();
   }, []);
+
+  React.useEffect(() => {
+    initializeShownPythonToolboxCategories();
+  }, [storage]);
 
   // Update generator context and load module blocks when current module changes
   React.useEffect(() => {
@@ -334,7 +338,7 @@ const App: React.FC = (): React.JSX.Element => {
     if (project) {
       const tabs = createTabItemsFromProject(project);
       setTabItems(tabs);
-      setActiveTab(project.modulePath);
+      setActiveTab(project.robot.modulePath);
     }
   }, [project]);
 

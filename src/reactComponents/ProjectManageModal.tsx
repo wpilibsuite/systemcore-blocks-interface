@@ -18,7 +18,6 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-import {TabType} from '../types/TabType';
 import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
@@ -34,7 +33,6 @@ interface ProjectManageModalProps {
   setProject: (project: commonStorage.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
-  moduleType: TabType;
 }
 
 /** Default page size for table pagination. */
@@ -64,20 +62,20 @@ const CONTAINER_PADDING = '12px';
  */
 export default function ProjectManageModal(props: ProjectManageModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
-  const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
+  const [allProjects, setAllProjects] = React.useState<commonStorage.Project[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
   const [currentRecord, setCurrentRecord] = React.useState<commonStorage.Project | null>(null);
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
-  /** Loads modules from storage and sorts them alphabetically. */
-  const loadModules = async (storage: commonStorage.Storage): Promise<void> => {
-    const projects = await storage.listModules();
+  /** Loads projects from storage and sorts them alphabetically. */
+  const loadProjects = async (storage: commonStorage.Storage): Promise<void> => {
+    const projects = await storage.listProjects();
 
-    // Sort modules alphabetically by class name
-    projects.sort((a, b) => a.className.localeCompare(b.className));
-    setModules(projects);
+    // Sort projects alphabetically by name
+    projects.sort((a, b) => a.userVisibleName.localeCompare(b.userVisibleName));
+    setAllProjects(projects);
     
     if (projects.length > 0 && props.noProjects) {
       props.setProject(projects[0]); // Set the first project as the current project
@@ -86,44 +84,42 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   };
 
   /** Handles renaming a project. */
-  const handleRename = async (origModule: commonStorage.Project, newName: string): Promise<void> => {
+  const handleRename = async (origProject: commonStorage.Project, newUserVisibleName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
     try {
-      await props.storage.renameModule(
-          commonStorage.MODULE_TYPE_PROJECT,
-          origModule.className,
-          origModule.className,
-          newName
+      await commonStorage.renameProject(
+          props.storage,
+          origProject,
+          newUserVisibleName
       );
-      await loadModules(props.storage);
+      await loadProjects(props.storage);
     } catch (error) {
-      console.error('Error renaming module:', error);
-      props.setAlertErrorMessage('Failed to rename module');
+      console.error('Error renaming project:', error);
+      props.setAlertErrorMessage('Failed to rename project');
     }
     
     setRenameModalOpen(false);
   };
 
   /** Handles copying a project. */
-  const handleCopy = async (origModule: commonStorage.Project, newName: string): Promise<void> => {
+  const handleCopy = async (origProject: commonStorage.Project, newUserVisibleName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
     try {
-      await props.storage.copyModule(
-          commonStorage.MODULE_TYPE_PROJECT,
-          origModule.className,
-          origModule.className,
-          newName
+      await commonStorage.copyProject(
+          props.storage,
+          origProject,
+          newUserVisibleName
       );
-      await loadModules(props.storage);
+      await loadProjects(props.storage);
     } catch (error) {
-      console.error('Error copying module:', error);
-      props.setAlertErrorMessage('Failed to copy module');
+      console.error('Error copying project:', error);
+      props.setAlertErrorMessage('Failed to copy project');
     }
     
     setCopyModalOpen(false);
@@ -131,20 +127,15 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
 
   /** Handles adding a new project. */
   const handleAddNewItem = async (): Promise<void> => {
-    const trimmedName = newItemName.trim();
-    if (!trimmedName || !props.storage) {
+    const newUserVisibleName = newItemName.trim();
+    if (!newUserVisibleName || !props.storage) {
       return;
     }
 
-    const newProjectName = commonStorage.classNameToModuleName(trimmedName);
-    const newProjectPath = commonStorage.makeProjectPath(newProjectName);
-    const projectContent = commonStorage.newProjectContent(newProjectName);
-
     try {
-      await props.storage.createModule(
-          commonStorage.MODULE_TYPE_PROJECT,
-          newProjectPath,
-          projectContent
+      await commonStorage.createProject(
+          props.storage,
+          newUserVisibleName
       );
     } catch (e) {
       console.error('Failed to create a new project:', e);
@@ -152,7 +143,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     }
 
     setNewItemName('');
-    await loadModules(props.storage);
+    await loadProjects(props.storage);
   };
 
   /** Handles project deletion with proper cleanup. */
@@ -161,13 +152,13 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       return;
     }
 
-    const newModules = modules.filter((m) => m.modulePath !== record.modulePath);
-    setModules(newModules);
+    const newProjects = allProjects.filter((m) => m.projectName !== record.projectName);
+    setAllProjects(newProjects);
 
     // Find another project to set as current
     let foundAnotherProject = false;
-    for (const project of modules) {
-      if (project.modulePath !== record.modulePath) {
+    for (const project of allProjects) {
+      if (project.projectName !== record.projectName) {
         props.setProject(project);
         foundAnotherProject = true;
         break;
@@ -179,7 +170,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     }
 
     try {
-      await props.storage.deleteModule(commonStorage.MODULE_TYPE_PROJECT, record.modulePath);
+      await commonStorage.deleteProject(props.storage, record);
     } catch (e) {
       console.error('Failed to delete the project:', e);
       props.setAlertErrorMessage('Failed to delete the project.');
@@ -195,25 +186,25 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   /** Opens the rename modal for a specific project. */
   const openRenameModal = (record: commonStorage.Project): void => {
     setCurrentRecord(record);
-    setName(record.className);
+    setName(record.userVisibleName);
     setRenameModalOpen(true);
   };
 
   /** Opens the copy modal for a specific project. */
   const openCopyModal = (record: commonStorage.Project): void => {
     setCurrentRecord(record);
-    setName(record.className + COPY_SUFFIX);
+    setName(record.userVisibleName + COPY_SUFFIX);
     setCopyModalOpen(true);
   };
 
   /** Gets the rename modal title. */
   const getRenameModalTitle = (): string => {
-    return `Rename Project: ${currentRecord ? currentRecord.className : ''}`;
+    return `Rename Project: ${currentRecord ? currentRecord.userVisibleName : ''}`;
   };
 
   /** Gets the copy modal title. */
   const getCopyModalTitle = (): string => {
-    return `Copy Project: ${currentRecord ? currentRecord.className : ''}`;
+    return `Copy Project: ${currentRecord ? currentRecord.userVisibleName : ''}`;
   };
 
   /** Creates the container style object. */
@@ -233,8 +224,8 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   const columns: Antd.TableProps<commonStorage.Project>['columns'] = [
     {
       title: 'Name',
-      dataIndex: 'className',
-      key: 'className',
+      dataIndex: 'userVisibleName',
+      key: 'userVisibleName',
       ellipsis: {
         showTitle: false,
       },
@@ -274,10 +265,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
               onClick={() => openCopyModal(record)}
             />
           </Antd.Tooltip>
-          {modules.length > 1 && (
+          {allProjects.length > 1 && (
             <Antd.Tooltip title={t('Delete')}>
               <Antd.Popconfirm
-                title={`Delete ${record.className}?`}
+                title={`Delete ${record.userVisibleName}?`}
                 description="This action cannot be undone."
                 onConfirm={() => handleDeleteProject(record)}
                 okText={t('Delete')}
@@ -298,10 +289,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     },
   ];
 
-  // Load modules when storage becomes available or modal opens
+  // Load projects when storage becomes available or modal opens
   React.useEffect(() => {
     if (props.storage) {
-      loadModules(props.storage);
+      loadProjects(props.storage);
     }
   }, [props.storage, props.isOpen]);
 
@@ -328,8 +319,8 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
                 handleRename(currentRecord, name);
               }
             }}
-            projects={modules}
-            setProjects={setModules}
+            projects={allProjects}
+            setProjects={setAllProjects}
           />
         )}
       </Antd.Modal>
@@ -355,8 +346,8 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
                 handleCopy(currentRecord, name);
               }
             }}
-            projects={modules}
-            setProjects={setModules}
+            projects={allProjects}
+            setProjects={setAllProjects}
           />
         )}
       </Antd.Modal>
@@ -386,17 +377,17 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             newItemName={newItemName}
             setNewItemName={setNewItemName}
             onAddNewItem={handleAddNewItem}
-            projects={modules}
-            setProjects={setModules}
+            projects={allProjects}
+            setProjects={setAllProjects}
           />
         </div>
         {!props.noProjects && (
           <Antd.Table<commonStorage.Project>
             columns={columns}
-            dataSource={modules}
-            rowKey="modulePath"
+            dataSource={allProjects}
+            rowKey="userVisibleName"
             size="small"
-            pagination={modules.length > DEFAULT_PAGE_SIZE ? {
+            pagination={allProjects.length > DEFAULT_PAGE_SIZE ? {
               pageSize: DEFAULT_PAGE_SIZE,
               showSizeChanger: false,
               showQuickJumper: false,

@@ -122,8 +122,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   getModuleType(): string | null {
-    if (this.context && this.context.module) {
-      return this.context.module.moduleType;
+    if (this.context) {
+      return this.context.getModuleType();
     }
     return null;
   }

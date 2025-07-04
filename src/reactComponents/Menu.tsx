@@ -130,7 +130,7 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
       getItem(t('Manage') + '...', 'manageProjects'),
     ]),
     getItem(t('Explorer'), 'explorer', <FileOutlined />, [
-      getItem(t('Robot'), project.modulePath, <RobotOutlined />),
+      getItem(t('Robot'), project.robot.modulePath, <RobotOutlined />),
       getItem(t('Mechanisms'), 'mechanisms', <BlockOutlined />, mechanisms),
       getItem(t('OpModes'), 'opmodes', <CodeOutlined />, opmodes),
     ]),
@@ -152,7 +152,7 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
 export function Component(props: MenuProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
 
-  const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
+  const [projects, setProjects] = React.useState<commonStorage.Project[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
   const [fileModalOpen, setFileModalOpen] = React.useState<boolean>(false);
   const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
@@ -168,28 +168,28 @@ export function Component(props: MenuProps): React.JSX.Element {
     props.setTheme(newTheme);
   };
 
-  /** Fetches the list of modules from storage. */
-  const fetchListOfModules = async (): Promise<commonStorage.Project[]> => {
+  /** Fetches the list of projects from storage. */
+  const fetchListOfProjects = async (): Promise<commonStorage.Project[]> => {
     return new Promise(async (resolve, reject) => {
       if (!props.storage) {
         reject(new Error('Storage not available'));
         return;
       }
       try {
-        const array = await props.storage.listModules();
-        setModules(array);
+        const array = await props.storage.listProjects();
+        setProjects(array);
         resolve(array);
       } catch (e) {
-        console.error('Failed to load the list of modules:', e);
-        props.setAlertErrorMessage(t('fail_list_modules'));
-        reject(new Error(t('fail_list_modules')));
+        console.error('Failed to load the list of projects:', e);
+        props.setAlertErrorMessage(t('fail_list_projects'));
+        reject(new Error(t('fail_list_projects')));
       }
     });
   };
 
-  /** Initializes the modules and handles empty project state. */
-  const initializeModules = async (): Promise<void> => {
-    const array = await fetchListOfModules();
+  /** Initializes the projects and handles empty project state. */
+  const initializeProjects = async (): Promise<void> => {
+    const array = await fetchListOfProjects();
     if (array.length === 0) {
       setNoProjects(true);
       setProjectModalOpen(true);
@@ -205,14 +205,14 @@ export function Component(props: MenuProps): React.JSX.Element {
           MOST_RECENT_PROJECT_KEY,
           ''
       );
-      modules.forEach((module) => {
-        if (module.projectName === mostRecentProject) {
-          props.setProject(module);
+      projects.forEach((project) => {
+        if (project.projectName === mostRecentProject) {
+          props.setProject(project);
           found = true;
         }
       });
-      if (!found && modules.length > 0) {
-        props.setProject(modules[0]);
+      if (!found && projects.length > 0) {
+        props.setProject(projects[0]);
       }
     }
   };
@@ -230,7 +230,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   /** Handles menu item clicks. */
   const handleClick: Antd.MenuProps['onClick'] = ({key}): void => {
     const newModule = props.project ?
-      commonStorage.findModuleInProject(props.project, key) :
+      commonStorage.findModuleByModulePath(props.project, key) :
       null;
 
     if (newModule) {
@@ -281,18 +281,18 @@ export function Component(props: MenuProps): React.JSX.Element {
     setProjectModalOpen(false);
   };
 
-  // Initialize modules when storage is available
+  // Initialize projects when storage is available
   React.useEffect(() => {
     if (!props.storage) {
       return;
     }
-    initializeModules();
+    initializeProjects();
   }, [props.storage]);
 
-  // Fetch most recent project when modules change
+  // Fetch most recent project when projects change
   React.useEffect(() => {
     fetchMostRecentProject();
-  }, [modules]);
+  }, [projects]);
 
   // Update menu items and save project when project changes
   React.useEffect(() => {
@@ -320,7 +320,6 @@ export function Component(props: MenuProps): React.JSX.Element {
         isOpen={projectModalOpen}
         onCancel={handleProjectModalClose}
         storage={props.storage}
-        moduleType={moduleType}
         setProject={props.setProject}
         setAlertErrorMessage={props.setAlertErrorMessage}
       />

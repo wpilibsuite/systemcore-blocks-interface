@@ -106,14 +106,14 @@ export default function AddTabDialog(props: AddTabDialogProps) {
 
   /** Handles adding a new item or selecting an existing one. */
   const handleAddNewItem = async (): Promise<void> => {
-    const trimmedName = newItemName.trim();
-    if (!trimmedName) {
+    const newClassName = newItemName.trim();
+    if (!newClassName) {
       return;
     }
 
     // Check if there's an exact match in available items
     const matchingItem = availableItems.find((item) =>
-      item.title.toLowerCase() === trimmedName.toLowerCase()
+      item.title.toLowerCase() === newClassName.toLowerCase()
     );
 
     if (matchingItem) {
@@ -132,9 +132,9 @@ export default function AddTabDialog(props: AddTabDialogProps) {
       commonStorage.MODULE_TYPE_OPMODE;
 
     await commonStorage.addModuleToProject(
-        props.storage, props.project, storageType, trimmedName);
+        props.storage, props.project, storageType, newClassName);
 
-    const newModule = commonStorage.getClassInProject(props.project, trimmedName);
+    const newModule = commonStorage.findModuleByClassName(props.project, newClassName);
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,

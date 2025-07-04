@@ -45,9 +45,9 @@ export class Editor {
   private eventsCategory: EventsCategory;
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
-  private projectPath: string = '';
+  private robotPath: string = '';
   private moduleContent: string = '';
-  private projectContent: string = '';
+  private robotContent: string = '';
   private bindedOnChange: any = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
@@ -73,11 +73,11 @@ export class Editor {
 
     // TODO(lizlooney): As blocks are loaded, determine whether any blocks
     // are accessing variable or calling functions thar are defined in another
-    // blocks file (like a Project) and check whether the variable or function
+    // blocks file (like the Robot) and check whether the variable or function
     // definition has changed. This might happen if the user defines a variable
-    // or function in the Project, uses the variable or function in the
+    // or function in the Robot, uses the variable or function in the
     // OpMode, and then removes or changes the variable or function in the
-    // Project.
+    // Robot.
 
     // TODO(lizlooney): We will need a way to identify which variable or
     // function, other than by the variable name or function name, because the
@@ -88,7 +88,7 @@ export class Editor {
     // TODO(lizlooney): Look at blocks with type 'mrc_get_python_variable' or
     // 'mrc_set_python_variable', and where block.mrcExportedVariable === true.
     // Look at block.mrcImportModule and get the exported blocks for that module.
-    // (It should be the project and we already have the project content.)
+    // It could be from the Robot (or a Mechanism?) and we already have the Robot content.
     // Check whether block.mrcActualVariableName matches any exportedBlock's
     // extraState.actualVariableName. If there is no match, put a warning on the
     // block.
@@ -96,7 +96,7 @@ export class Editor {
     // TODO(lizlooney): Look at blocks with type 'mrc_call_python_function' and
     // where block.mrcExportedFunction === true.
     // Look at block.mrcImportModule and get the exported blocks for that module.
-    // (It should be the project and we already have the project content.)
+    // It could be from the Robot (or a Mechanism?) and we already have the Robot content.
     // Check whether block.mrcActualFunctionName matches any exportedBlock's
     // extraState.actualFunctionName. If there is no match, put a warning on the block.
     // If there is a match, check whether
@@ -124,21 +124,23 @@ export class Editor {
 
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
-      this.projectPath = commonStorage.makeProjectPath(currentModule.projectName);
+      this.robotPath = commonStorage.makeRobotPath(currentModule.projectName);
     } else {
       this.modulePath = '';
-      this.projectPath = '';
+      this.robotPath = '';
     }
     this.moduleContent = '';
-    this.projectContent = '';
+    this.robotContent = '';
     this.clearBlocklyWorkspace();
 
     if (currentModule) {
+      // Fetch the content for the current module and the robot.
+      // TODO: Also fetch the content for the mechanisms?
       const promises: {[key: string]: Promise<string>} = {}; // key is module path, value is promise of module content.
       promises[this.modulePath] = this.storage.fetchModuleContent(this.modulePath);
-      if (this.projectPath !== this.modulePath) {
-        // Also fetch the project module content. It contains exported blocks that can be used.
-        promises[this.projectPath] = this.storage.fetchModuleContent(this.projectPath)
+      if (this.robotPath !== this.modulePath) {
+        // Also fetch the robot module content. It contains components, etc, that can be used.
+        promises[this.robotPath] = this.storage.fetchModuleContent(this.robotPath)
       }
 
       const moduleContents: {[key: string]: string} = {}; // key is module path, value is module content
@@ -148,10 +150,10 @@ export class Editor {
         })
       );
       this.moduleContent = moduleContents[this.modulePath];
-      if (this.projectPath === this.modulePath) {
-        this.projectContent = this.moduleContent
+      if (this.robotPath === this.modulePath) {
+        this.robotContent = this.moduleContent
       } else {
-        this.projectContent = moduleContents[this.projectPath];
+        this.robotContent = moduleContents[this.robotPath];
       }
       this.loadBlocksIntoBlocklyWorkspace();
     }
@@ -187,8 +189,8 @@ export class Editor {
 
   public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
     if (this.currentModule) {
-      if (!this.projectContent) {
-        // The Project content hasn't been fetched yet. Try again in a bit.
+      if (!this.robotContent) {
+        // The Robot content hasn't been fetched yet. Try again in a bit.
         setTimeout(() => {
           this.updateToolbox(shownPythonToolboxCategories)
         }, 50);
@@ -229,7 +231,8 @@ export class Editor {
 
   private getComponents(): commonStorage.Component[] {
     const components: commonStorage.Component[] = [];
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
+        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
       // TODO(lizlooney): Fill the components array.
     }
     return components;

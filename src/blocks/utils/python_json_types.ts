@@ -123,7 +123,7 @@ function isSuperFunction(f1: FunctionData, f2: FunctionData): boolean {
   return true;
 }
 
-export function findSuperFunctionData(functionData: FunctionData, superClassFunctions: FunctionData): FunctionData | null {
+export function findSuperFunctionData(functionData: FunctionData, superClassFunctions: FunctionData[]): FunctionData | null {
   for (const superClassFunctionData of superClassFunctions) {
     if (isSuperFunction(superClassFunctionData, functionData)) {
       return superClassFunctionData;
