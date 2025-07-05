@@ -37,22 +37,6 @@ export const OUTPUT_NAME = 'mrc_component';
 export const FIELD_NAME = 'NAME';
 export const FIELD_TYPE = 'TYPE';
 
-// key is a regex pattern that matches a function argument name, value is type of mrc_port block to use.
-// TODO: Improve these regex pattern.
-// The types here match the PortType values in external_samples/component.py.
-const RECOGNIZED_PORT_ARG_NAME_PATTERNS: { [key: string]: string } = {
-  'can_port': 'CAN_PORT',
-  'io_port': 'SMART_IO_PORT',
-  'smartIO_port': 'SMART_IO_PORT',
-  'smart_io_port': 'SMART_IO_PORT',
-  'motor_port': 'SMART_MOTOR_PORT',
-  'smart_motor_port': 'SMART_MOTOR_PORT',
-  'servo_port': 'SERVO_PORT',
-  'i2c_port': 'I2C_PORT',
-  'usb_port': 'USB_PORT',
-};
-
-
 export type ConstructorArg = {
   name: string,
   type: string,
@@ -247,10 +231,18 @@ function createComponentBlock(
 }
 
 function getPortTypeForArgument(argName: string): string | null {
-  for (const pattern in RECOGNIZED_PORT_ARG_NAME_PATTERNS) {
-    if (new RegExp(pattern, 'i').test(argName)) {
-      return RECOGNIZED_PORT_ARG_NAME_PATTERNS[pattern];
-    }
+  // TODO(lizlooney): Currently the JSON for component.PortType is ClassData
+  // instead of EnumData. When it is fixed to be EnumData, this code will need
+  // to be updated.
+
+  const argNameLower = argName.toLowerCase();
+  const classData = getClassData('component.PortType');
+  if (classData) {
+     for (const varData of classData.classVariables) {
+       if (argNameLower === varData.name.toLowerCase()) {
+         return varData.name;
+       }
+     }
   }
   return null;
 }

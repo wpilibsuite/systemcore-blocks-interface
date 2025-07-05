@@ -717,12 +717,12 @@
                     "args": [
                         {
                             "defaultValue": null,
-                            "name": "io_port",
+                            "name": "smart_io_port",
                             "type": "int"
                         }
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "from_io_port",
+                    "functionName": "from_smart_io_port",
                     "returnType": "rev_touch_sensor.RevTouchSensor",
                     "tooltip": ""
                 }
@@ -1140,12 +1140,12 @@
                     "args": [
                         {
                             "defaultValue": null,
-                            "name": "motor_port",
+                            "name": "smart_motor_port",
                             "type": "int"
                         }
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
-                    "functionName": "from_motor_port",
+                    "functionName": "from_smart_motor_port",
                     "returnType": "smart_motor.SmartMotor",
                     "tooltip": ""
                 }
@@ -1603,12 +1603,12 @@
                     "args": [
                         {
                             "defaultValue": null,
-                            "name": "motor_port",
+                            "name": "smart_motor_port",
                             "type": "int"
                         }
                     ],
                     "declaringClassName": "spark_mini.SparkMiniComponent",
-                    "functionName": "from_motor_port",
+                    "functionName": "from_smart_motor_port",
                     "returnType": "spark_mini.SparkMiniComponent",
                     "tooltip": ""
                 }

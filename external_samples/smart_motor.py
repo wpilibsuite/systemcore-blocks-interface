@@ -45,10 +45,10 @@ class SmartMotor(Component):
     def periodic(self) -> None:
         pass
 
-    # Alternative constructor to create an instance from a motor port
+    # Alternative constructor to create an instance from a smart motor port
     @classmethod
-    def from_motor_port(cls: type[Self], motor_port: int) -> Self:
-        return cls([(PortType.SMART_MOTOR_PORT, motor_port)])
+    def from_smart_motor_port(cls: type[Self], smart_motor_port: int) -> Self:
+        return cls([(PortType.SMART_MOTOR_PORT, smart_motor_port)])
     
     # Component specific methods
 

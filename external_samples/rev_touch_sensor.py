@@ -55,8 +55,8 @@ class RevTouchSensor(Component):
 
     # Alternative constructor to create an instance from a smart io port
     @classmethod
-    def from_io_port(cls: type[Self], io_port: int) -> Self:
-        return cls([(PortType.SMART_IO_PORT, io_port)])
+    def from_smart_io_port(cls: type[Self], smart_io_port: int) -> Self:
+        return cls([(PortType.SMART_IO_PORT, smart_io_port)])
     
     # Component specific methods
 
