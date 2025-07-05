@@ -26,14 +26,14 @@ import { Order } from 'blockly/python';
 import { ClassMethodDefExtraState } from './mrc_class_method_def'
 import { getClassData, getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
 import { FunctionData, findSuperFunctionData } from './utils/python_json_types';
-import * as value from './utils/value';
-import * as variable from './utils/variable';
+import * as Value from './utils/value';
+import * as Variable from './utils/variable';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
-import * as toolboxItems from '../toolbox/items';
-import * as commonStorage from '../storage/common_storage';
+import * as ToolboxItems from '../toolbox/items';
+import * as CommonStorage from '../storage/common_storage';
 
 
 // A block to call a python function.
@@ -66,7 +66,7 @@ export type FunctionArg = {
 export function addModuleFunctionBlocks(
     moduleName: string,
     functions: FunctionData[],
-    contents: toolboxItems.ContentsType[]) {
+    contents: ToolboxItems.ContentsType[]) {
   for (const functionData of functions) {
     const block = createModuleFunctionOrStaticMethodBlock(
         FunctionKind.MODULE, moduleName, moduleName, functionData);
@@ -77,7 +77,7 @@ export function addModuleFunctionBlocks(
 export function addStaticMethodBlocks(
     importModule: string,
     functions: FunctionData[],
-    contents: toolboxItems.ContentsType[]) {
+    contents: ToolboxItems.ContentsType[]) {
   for (const functionData of functions) {
     if (functionData.declaringClassName) {
       const block = createModuleFunctionOrStaticMethodBlock(
@@ -91,7 +91,7 @@ function createModuleFunctionOrStaticMethodBlock(
     functionKind: FunctionKind,
     importModule: string,
     moduleOrClassName: string,
-    functionData: FunctionData): toolboxItems.Block {
+    functionData: FunctionData): ToolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: functionKind,
     returnType: functionData.returnType,
@@ -110,16 +110,16 @@ function createModuleFunctionOrStaticMethodBlock(
       'type': argData.type,
     });
     // Check if we should plug a variable getter block into the argument input socket.
-    const input = value.valueForFunctionArgInput(argData.type, argData.defaultValue);
+    const input = Value.valueForFunctionArgInput(argData.type, argData.defaultValue);
     if (input) {
       inputs['ARG' + i] = input;
     }
   }
-  let block = new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+  let block = new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
   if (functionData.returnType && functionData.returnType != 'None') {
-    const varName = variable.varNameForType(functionData.returnType);
+    const varName = Variable.varNameForType(functionData.returnType);
     if (varName) {
-      block = variable.createVariableSetterBlock(varName, block);
+      block = Variable.createVariableSetterBlock(varName, block);
     }
   }
   return block;
@@ -128,7 +128,7 @@ function createModuleFunctionOrStaticMethodBlock(
 export function addConstructorBlocks(
     importModule: string,
     functions: FunctionData[],
-    contents: toolboxItems.ContentsType[]) {
+    contents: ToolboxItems.ContentsType[]) {
   for (const functionData of functions) {
     const block = createConstructorBlock(importModule, functionData);
     contents.push(block);
@@ -137,7 +137,7 @@ export function addConstructorBlocks(
 
 function createConstructorBlock(
     importModule: string,
-    functionData: FunctionData): toolboxItems.Block {
+    functionData: FunctionData): ToolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.CONSTRUCTOR,
     returnType: functionData.returnType,
@@ -155,16 +155,16 @@ function createConstructorBlock(
       'type': argData.type,
     });
     // Check if we should plug a variable getter block into the argument input socket.
-    const input = value.valueForFunctionArgInput(argData.type, argData.defaultValue);
+    const input = Value.valueForFunctionArgInput(argData.type, argData.defaultValue);
     if (input) {
       inputs['ARG' + i] = input;
     }
   }
-  let block = new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+  let block = new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
   if (functionData.returnType && functionData.returnType != 'None') {
-    const varName = variable.varNameForType(functionData.returnType);
+    const varName = Variable.varNameForType(functionData.returnType);
     if (varName) {
-      block = variable.createVariableSetterBlock(varName, block);
+      block = Variable.createVariableSetterBlock(varName, block);
     }
   }
   return block;
@@ -172,7 +172,7 @@ function createConstructorBlock(
 
 export function addInstanceMethodBlocks(
     functions: FunctionData[],
-    contents: toolboxItems.ContentsType[]) {
+    contents: ToolboxItems.ContentsType[]) {
   for (const functionData of functions) {
     const block = createInstanceMethodBlock(functionData);
     contents.push(block);
@@ -180,7 +180,7 @@ export function addInstanceMethodBlocks(
 }
 
 function createInstanceMethodBlock(
-    functionData: FunctionData): toolboxItems.Block {
+    functionData: FunctionData): ToolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE,
     returnType: functionData.returnType,
@@ -195,32 +195,32 @@ function createInstanceMethodBlock(
     const argData = functionData.args[i];
     let argName = argData.name;
     if (i === 0 && argName === 'self' && functionData.declaringClassName) {
-      argName = variable.getSelfArgName(functionData.declaringClassName);
+      argName = Variable.getSelfArgName(functionData.declaringClassName);
     }
     extraState.args.push({
       'name': argName,
       'type': argData.type,
     });
     // Check if we should plug a variable getter block into the argument input socket.
-    const input = value.valueForFunctionArgInput(argData.type, argData.defaultValue);
+    const input = Value.valueForFunctionArgInput(argData.type, argData.defaultValue);
     if (input) {
       inputs['ARG' + i] = input;
     }
   }
-  let block = new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+  let block = new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
   if (functionData.returnType && functionData.returnType != 'None') {
-    const varName = variable.varNameForType(functionData.returnType);
+    const varName = Variable.varNameForType(functionData.returnType);
     if (varName) {
-      block = variable.createVariableSetterBlock(varName, block);
+      block = Variable.createVariableSetterBlock(varName, block);
     }
   }
   return block;
 }
 
-export function addInstanceComponentBlocks(
+export function getInstanceComponentBlocks(
     componentType: string,
-    componentName: string,
-    contents: toolboxItems.ContentsType[]) {
+    componentName: string) {
+  const contents: ToolboxItems.ContentsType[] = [];
 
   const classData = getClassData(componentType);
   if (!classData) {
@@ -242,10 +242,12 @@ export function addInstanceComponentBlocks(
     const block = createInstanceComponentBlock(componentName, functionData);
     contents.push(block);
   }
+
+  return contents;
 }
 
 function createInstanceComponentBlock(
-    componentName: string, functionData: FunctionData): toolboxItems.Block {
+    componentName: string, functionData: FunctionData): ToolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_COMPONENT,
     returnType: functionData.returnType,
@@ -270,17 +272,17 @@ function createInstanceComponentBlock(
       'type': argData.type,
     });
     // Check if we should plug a variable getter block into the argument input socket.
-    const input = value.valueForFunctionArgInput(argData.type, argData.defaultValue);
+    const input = Value.valueForFunctionArgInput(argData.type, argData.defaultValue);
     if (input) {
       // Because we skipped the self argument, use i - 1 when filling the inputs array.
       inputs['ARG' + (i - 1)] = input;
     }
   }
-  let block = new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+  let block = new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
   if (functionData.returnType && functionData.returnType != 'None') {
-    const varName = variable.varNameForType(functionData.returnType);
+    const varName = Variable.varNameForType(functionData.returnType);
     if (varName) {
-      block = variable.createVariableSetterBlock(varName, block);
+      block = Variable.createVariableSetterBlock(varName, block);
     }
   }
   return block;
@@ -683,11 +685,11 @@ export const pythonFromBlock = function(
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
-        case commonStorage.MODULE_TYPE_ROBOT:
-        case commonStorage.MODULE_TYPE_MECHANISM:
+        case CommonStorage.MODULE_TYPE_ROBOT:
+        case CommonStorage.MODULE_TYPE_MECHANISM:
           code = 'self.';
           break;
-        case commonStorage.MODULE_TYPE_OPMODE:
+        case CommonStorage.MODULE_TYPE_OPMODE:
         default:
           code = 'self.robot.';
           break;

@@ -23,9 +23,9 @@ import { ClassData, PythonData, organizeVarDataByType, VariableGettersAndSetters
 import { robotPyData } from './robotpy_data';
 import { externalSamplesData } from './external_samples_data';
 
-import * as pythonEnum from "../mrc_get_python_enum_value";
-import * as getPythonVariable from "../mrc_get_python_variable";
-import * as setPythonVariable from "../mrc_set_python_variable";
+import * as PythonEnum from "../mrc_get_python_enum_value";
+import * as GetPythonVariable from "../mrc_get_python_variable";
+import * as SetPythonVariable from "../mrc_set_python_variable";
 
 // Utilities related to blocks for python modules and classes, including those from RobotPy, external samples, etc.
 
@@ -41,7 +41,7 @@ export function initialize() {
     for (const moduleData of pythonData.modules) {
       // Initialize enums.
       for (const enumData of moduleData.enums) {
-        pythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
+        PythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
       }
 
       // Initialize module variables.
@@ -49,13 +49,13 @@ export function initialize() {
           organizeVarDataByType(moduleData.moduleVariables);
       for (const varType in varsByType) {
         const variableGettersAndSetters = varsByType[varType];
-        getPythonVariable.initializeModuleVariableGetter(
+        GetPythonVariable.initializeModuleVariableGetter(
             moduleData.moduleName,
             varType,
             variableGettersAndSetters.varNamesForGetter,
             variableGettersAndSetters.tooltipsForGetter);
         if (variableGettersAndSetters.varNamesForSetter.length) {
-          setPythonVariable.initializeModuleVariableSetter(
+          SetPythonVariable.initializeModuleVariableSetter(
               moduleData.moduleName,
               varType,
               variableGettersAndSetters.varNamesForSetter,
@@ -68,7 +68,7 @@ export function initialize() {
     for (const classData of pythonData.classes) {
       // Initialize enums.
       for (const enumData of classData.enums) {
-        pythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
+        PythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
       }
 
       // Initialize instance variables.
@@ -77,13 +77,13 @@ export function initialize() {
             organizeVarDataByType(classData.instanceVariables);
         for (const varType in varsByType) {
           const variableGettersAndSetters = varsByType[varType];
-          getPythonVariable.initializeInstanceVariableGetter(
+          GetPythonVariable.initializeInstanceVariableGetter(
               classData.className,
               varType,
               variableGettersAndSetters.varNamesForGetter,
               variableGettersAndSetters.tooltipsForGetter);
           if (variableGettersAndSetters.varNamesForSetter.length) {
-            setPythonVariable.initializeInstanceVariableSetter(
+            SetPythonVariable.initializeInstanceVariableSetter(
                 classData.className,
                 varType,
                 variableGettersAndSetters.varNamesForSetter,
@@ -98,13 +98,13 @@ export function initialize() {
             organizeVarDataByType(classData.classVariables);
         for (const varType in varsByType) {
           const variableGettersAndSetters = varsByType[varType];
-          getPythonVariable.initializeClassVariableGetter(
+          GetPythonVariable.initializeClassVariableGetter(
               classData.className,
               varType,
               variableGettersAndSetters.varNamesForGetter,
               variableGettersAndSetters.tooltipsForGetter);
           if (variableGettersAndSetters.varNamesForSetter.length) {
-            setPythonVariable.initializeClassVariableSetter(
+            SetPythonVariable.initializeClassVariableSetter(
                 classData.className,
                 varType,
                 variableGettersAndSetters.varNamesForSetter,
@@ -145,7 +145,7 @@ export function getAlias(type: string): string | null {
 // Returns the list of subclass names for the given type.
 // For example, if type is 'wpilib.drive.RobotDriveBase', this function will
 // return ['wpilib.drive.DifferentialDrive', 'wpilib.drive.MecanumDrive'].
-function getSubclassNames(type: string): string[] | null {
+export function getSubclassNames(type: string): string[] | null {
   for (const pythonData of allPythonData) {
     for (const className in pythonData.subclasses) {
       if (type === className) {

@@ -15,9 +15,11 @@
 
 # @fileoverview This is a sample for a smart motor
 # @author alan@porpoiseful.com (Alan Smith)
+
+from typing import Self
 from component import Component, PortType, InvalidPortException
 
-class SmartMotor(Component):    
+class SmartMotor(Component):
     def __init__(self, ports : list[tuple[PortType, int]]):
         portType, port = ports[0]
         if portType != PortType.SMART_MOTOR_PORT:
@@ -43,7 +45,13 @@ class SmartMotor(Component):
     def periodic(self) -> None:
         pass
 
+    # Alternative constructor to create an instance from a motor port
+    @classmethod
+    def from_motor_port(cls: type[Self], motor_port: int) -> Self:
+        return cls([(PortType.SMART_MOTOR_PORT, motor_port)])
+    
     # Component specific methods
+
     def set_speed(self, speed: float) -> None:
         '''Set the motor to a speed between -1 and 1'''
         # TODO: send to the hardware the speed of the motor
@@ -64,4 +72,3 @@ class SmartMotor(Component):
     def reset_relative_encoder(self) -> None:
         '''Reset the relative encoder value to 0'''
         pass
-    

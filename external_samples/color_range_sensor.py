@@ -17,7 +17,7 @@
 # @author alan@porpoiseful.com (Alan Smith)
 
 from component import Component, PortType, InvalidPortException
-from typing import Protocol
+from typing import Protocol, Self
 
 class DistanceCallable(Protocol):
     def __call__(self, distance : float) -> None:
@@ -52,7 +52,13 @@ class ColorRangeSensor(Component):
     def periodic(self) -> None:
         pass
 
+    # Alternative constructor to create an instance from an i2c port
+    @classmethod
+    def from_i2c_port(cls: type[Self], i2c_port: int) -> Self:
+        return cls([(PortType.I2C_PORT, i2c_port)])
+    
     # Component specific methods
+
     def get_color_rgb(self) -> tuple[int, int, int]:
         '''gets the color in rgb (red, green, blue)'''
         pass

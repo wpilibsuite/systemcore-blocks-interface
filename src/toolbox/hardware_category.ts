@@ -28,7 +28,8 @@ import * as Blockly from 'blockly/core';
 
 import * as commonStorage from '../storage/common_storage';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
-import { getAllPossibleComponents, getBlocks } from './blocks_components';
+import { getAllPossibleComponents } from '../blocks/mrc_component';
+import { getInstanceComponentBlocks } from '../blocks/mrc_call_python_function';
 import * as MechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 
 export function getHardwareCategory(currentModule: commonStorage.Module) {
@@ -273,7 +274,7 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
               contents.push({
                 kind: 'category',
                 name: componentName,
-                contents: getBlocks(componentType, componentName),
+                contents: getInstanceComponentBlocks(componentType, componentName),
               });
             }
           }

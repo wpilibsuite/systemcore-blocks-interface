@@ -269,7 +269,21 @@
             ],
             "instanceVariables": [],
             "moduleName": "color_range_sensor",
-            "staticMethods": []
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "i2c_port",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
+                    "functionName": "from_i2c_port",
+                    "returnType": "color_range_sensor.ColorRangeSensor",
+                    "tooltip": ""
+                }
+            ]
         },
         {
             "className": "color_range_sensor.DistanceCallable",
@@ -698,7 +712,21 @@
             ],
             "instanceVariables": [],
             "moduleName": "rev_touch_sensor",
-            "staticMethods": []
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "io_port",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
+                    "functionName": "from_io_port",
+                    "returnType": "rev_touch_sensor.RevTouchSensor",
+                    "tooltip": ""
+                }
+            ]
         },
         {
             "className": "servo.Servo",
@@ -876,7 +904,21 @@
             ],
             "instanceVariables": [],
             "moduleName": "servo",
-            "staticMethods": []
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "servo_port",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "servo.Servo",
+                    "functionName": "from_servo_port",
+                    "returnType": "servo.Servo",
+                    "tooltip": ""
+                }
+            ]
         },
         {
             "className": "smart_motor.SmartMotor",
@@ -1093,7 +1135,21 @@
             ],
             "instanceVariables": [],
             "moduleName": "smart_motor",
-            "staticMethods": []
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "motor_port",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "smart_motor.SmartMotor",
+                    "functionName": "from_motor_port",
+                    "returnType": "smart_motor.SmartMotor",
+                    "tooltip": ""
+                }
+            ]
         },
         {
             "className": "spark_mini.SparkMiniComponent",
@@ -1542,6 +1598,19 @@
                     "functionName": "check_motors",
                     "returnType": "None",
                     "tooltip": "Check the motors to see if any have timed out.\n\nThis static method is called periodically to poll all the motors and stop\nany that have timed out."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "motor_port",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "functionName": "from_motor_port",
+                    "returnType": "spark_mini.SparkMiniComponent",
+                    "tooltip": ""
                 }
             ]
         },
@@ -1752,7 +1821,21 @@
             ],
             "instanceVariables": [],
             "moduleName": "sparkfun_led_stick",
-            "staticMethods": []
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": null,
+                            "name": "i2c_port",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
+                    "functionName": "from_i2c_port",
+                    "returnType": "sparkfun_led_stick.SparkFunLEDStick",
+                    "tooltip": ""
+                }
+            ]
         }
     ],
     "modules": [

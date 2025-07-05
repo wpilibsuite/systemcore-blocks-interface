@@ -16,6 +16,7 @@
 # @fileoverview This is a sample for a touch sensor
 # @author alan@porpoiseful.com (Alan Smith)
 
+from typing import Self
 from component import Component, PortType, InvalidPortException, EmptyCallable
 
 class RevTouchSensor(Component):
@@ -51,6 +52,14 @@ class RevTouchSensor(Component):
                 self.pressed_callback()
             elif old and self.released_callback:
                 self.released_callback()
+
+    # Alternative constructor to create an instance from a smart io port
+    @classmethod
+    def from_io_port(cls: type[Self], io_port: int) -> Self:
+        return cls([(PortType.SMART_IO_PORT, io_port)])
+    
+    # Component specific methods
+
     def _read_hardware(self):
         # here read hardware to get the current value of the sensor and set self.is_pressed
         pass
