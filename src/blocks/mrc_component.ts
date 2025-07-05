@@ -34,11 +34,12 @@ import { createNumberShadowValue } from './utils/value';
 export const BLOCK_NAME = 'mrc_component';
 export const OUTPUT_NAME = 'mrc_component';
 
-const FIELD_NAME = 'NAME';
-const FIELD_TYPE = 'TYPE';
+export const FIELD_NAME = 'NAME';
+export const FIELD_TYPE = 'TYPE';
 
 // key is a regex pattern that matches a function argument name, value is type of mrc_port block to use.
-// TODO: improve these regex pattern.
+// TODO: Improve these regex pattern.
+// TODO: Should the types here match the PortType values in external_samples/component.py?
 const RECOGNIZED_PORT_ARG_NAME_PATTERNS: { [key: string]: string } = {
   'can_port': 'SmartCan',
   'i2c_port': 'SmartIO',
@@ -231,12 +232,14 @@ function createComponentBlock(
       'name': argData.name,
       'type': argData.type,
     });
-    if (argData.type === 'int') {
-      const portType = getPortTypeForArgument(argData.name);
-      if (portType) {
-        inputs['ARG' + i] = createPortShadow(portType, 1);
-      } else {
-        inputs['ARG' + i] = createNumberShadowValue(1);
+    if (!hideParams) {
+      if (argData.type === 'int') {
+        const portType = getPortTypeForArgument(argData.name);
+        if (portType) {
+          inputs['ARG' + i] = createPortShadow(portType, 1);
+        } else {
+          inputs['ARG' + i] = createNumberShadowValue(1);
+        }
       }
     }
   }

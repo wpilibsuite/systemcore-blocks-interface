@@ -28,7 +28,7 @@ import * as Blockly from 'blockly/core';
 
 import * as commonStorage from '../storage/common_storage';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
-import { getAllPossibleComponents } from '../blocks/mrc_component';
+import * as Component from '../blocks/mrc_component';
 import { getInstanceComponentBlocks } from '../blocks/mrc_call_python_function';
 import * as MechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 
@@ -221,7 +221,7 @@ function getRobotComponentsBlocks(currentModule: commonStorage.Module) {
     contents.push({
       kind: 'category',
       name: '+ Component',
-      contents: getAllPossibleComponents(false)
+      contents: Component.getAllPossibleComponents(false)
     });
   }
 
@@ -249,7 +249,7 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
   contents.push({
     kind: 'category',
     name: '+ Component',
-    contents: getAllPossibleComponents(hideParams)
+    contents: Component.getAllPossibleComponents(hideParams)
   });
 
   // Get components from the current workspace
@@ -266,11 +266,11 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
         // Walk through all connected component blocks
         while (componentBlock) {
           if (componentBlock.type === 'mrc_component') {
-            const componentName = componentBlock.getFieldValue('NAME');
-            const componentType = componentBlock.getFieldValue('TYPE');
+            const componentName = componentBlock.getFieldValue(Component.FIELD_NAME);
+            const componentType = componentBlock.getFieldValue(Component.FIELD_TYPE);
 
             if (componentName && componentType) {
-              // Get the blocks for this specific component              
+              // Get the function blocks for this specific component.
               contents.push({
                 kind: 'category',
                 name: componentName,
