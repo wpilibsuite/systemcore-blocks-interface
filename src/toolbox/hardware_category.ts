@@ -259,7 +259,8 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
     const holderBlocks = workspace.getBlocksByType(MechanismComponentHolder.BLOCK_NAME);
 
     holderBlocks.forEach(holderBlock => {
-      const componentsFromHolder: commonStorage.Component[] = holderBlock.getComponents();
+      const componentsFromHolder: commonStorage.Component[] = 
+        (holderBlock as mechanismComponentHolder.MechanismComponentHolderBlock).getComponents();
       componentsFromHolder.forEach(component => {
         // Get the blocks for this specific component
         contents.push({
