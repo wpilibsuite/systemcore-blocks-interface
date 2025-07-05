@@ -64,3 +64,15 @@ export const pythonFromBlock = function (
     
     return [code, Order.ATOMIC];
 }
+
+export function createPortShadow(portType: string, portNum: int) {
+  return {
+    shadow: {
+      type: 'mrc_port',
+      fields: {
+        TYPE: portType,
+        PORT_NUM: portNum,
+      },
+    },
+  };
+}

@@ -29,6 +29,7 @@ import * as commonStorage from '../storage/common_storage';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_COMPONENT_NAME } from './mrc_component';
+import * as  Component from './mrc_component';
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
 import { BLOCK_NAME as  MRC_EVENT_NAME } from './mrc_event';
 import { OUTPUT_NAME as EVENT_OUTPUT } from './mrc_event';
@@ -137,9 +138,9 @@ const MECHANISM_COMPONENT_HOLDER = {
       // Walk through all connected component blocks.
       let componentBlock = componentsInput.connection.targetBlock();
       while (componentBlock) {
-        if (componentBlock.type === 'mrc_component') {
-          const componentName = componentBlock.getFieldValue('NAME');
-          const componentType = componentBlock.getFieldValue('TYPE');
+        if (componentBlock.type === MRC_COMPONENT_NAME) {
+          const componentName = componentBlock.getFieldValue(Component.FIELD_NAME);
+          const componentType = componentBlock.getFieldValue(Component.FIELD_TYPE);
 
           if (componentName && componentType) {
             components.push({

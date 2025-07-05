@@ -28,8 +28,9 @@ import * as Blockly from 'blockly/core';
 
 import * as commonStorage from '../storage/common_storage';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
-import { getAllPossibleComponents, getBlocks } from './blocks_components';
-import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
+import * as Component from '../blocks/mrc_component';
+import { getInstanceComponentBlocks } from '../blocks/mrc_call_python_function';
+import * as MechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 
 export function getHardwareCategory(currentModule: commonStorage.Module) {
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
@@ -220,7 +221,7 @@ function getRobotComponentsBlocks(currentModule: commonStorage.Module) {
     contents.push({
       kind: 'category',
       name: '+ Component',
-      contents: getAllPossibleComponents(false)
+      contents: Component.getAllPossibleComponents(false)
     });
   }
 
@@ -248,14 +249,14 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
   contents.push({
     kind: 'category',
     name: '+ Component',
-    contents: getAllPossibleComponents(hideParams)
+    contents: Component.getAllPossibleComponents(hideParams)
   });
 
   // Get components from the current workspace
   const workspace = Blockly.getMainWorkspace();
   if (workspace) {
     // Get the holder block and ask it for the components.
-    const holderBlocks = workspace.getBlocksByType(mechanismComponentHolder.BLOCK_NAME);
+    const holderBlocks = workspace.getBlocksByType(MechanismComponentHolder.BLOCK_NAME);
 
     holderBlocks.forEach(holderBlock => {
       const componentsFromHolder: commonStorage.Component[] = holderBlock.getComponents();
@@ -264,7 +265,7 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
         contents.push({
           kind: 'category',
           name: component.name,
-          contents: getBlocks(component.className, component.name),
+          contents: getInstanceComponentBlocks(component.className, component.name),
         });
       });
     });

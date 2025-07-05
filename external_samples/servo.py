@@ -16,6 +16,7 @@
 # @fileoverview This is a sample for a servo
 # @author alan@porpoiseful.com (Alan Smith)
 
+from typing import Self
 from component import Component, PortType, InvalidPortException
 
 class Servo(Component):    
@@ -44,7 +45,13 @@ class Servo(Component):
     def periodic(self) -> None:
         pass
 
+    # Alternative constructor to create an instance from an servo port
+    @classmethod
+    def from_servo_port(cls: type[Self], servo_port: int) -> Self:
+        return cls([(PortType.SERVO_PORT, servo_port)])
+    
     # Component specific methods
+
     def set_position(self, pos: float) -> None:
         '''Set the servo to a position between 0 and 1'''
         # sends to the hardware the position of the servo
@@ -52,6 +59,3 @@ class Servo(Component):
     def set_angle_degrees(self, angle: float) -> None:
         '''Set the servo to an angle between 0 and 270'''
         self.set_position(angle / 270.0)
-    
-    
-    

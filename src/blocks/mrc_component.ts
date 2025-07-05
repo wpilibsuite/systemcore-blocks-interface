@@ -25,10 +25,17 @@ import { Order } from 'blockly/python';
 import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { getAllowedTypesForSetCheck } from './utils/python';
+import { getAllowedTypesForSetCheck, getClassData, getSubclassNames } from './utils/python';
+import * as ToolboxItems from '../toolbox/items';
+import * as CommonStorage from '../storage/common_storage';
+import { createPortShadow } from './mrc_port';
+import { createNumberShadowValue } from './utils/value';
 
 export const BLOCK_NAME = 'mrc_component';
 export const OUTPUT_NAME = 'mrc_component';
+
+export const FIELD_NAME = 'NAME';
+export const FIELD_TYPE = 'TYPE';
 
 export type ConstructorArg = {
   name: string,
@@ -37,6 +44,8 @@ export type ConstructorArg = {
 
 type ComponentExtraState = {
   importModule?: string,
+  // If staticFunctionName is not present, generate the constructor.
+  staticFunctionName?: string,
   hideParams?: boolean,
   params?: ConstructorArg[],
 }
@@ -46,19 +55,20 @@ interface ComponentMixin extends ComponentMixinType {
   mrcArgs: ConstructorArg[],
   hideParams: boolean,
   mrcImportModule: string,
+  mrcStaticFunctionName: string,
 }
 type ComponentMixinType = typeof COMPONENT;
 
 const COMPONENT = {
   /**
-    * Block initialization.
-    */
+   * Block initialization.
+   */
   init: function (this: ComponentBlock): void {
     this.setStyle(MRC_STYLE_COMPONENTS);
     this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput('my_mech'), 'NAME')
+      .appendField(new Blockly.FieldTextInput(''), FIELD_NAME)
       .appendField('of type')
-      .appendField(createFieldNonEditableText(''), 'TYPE');
+      .appendField(createFieldNonEditableText(''), FIELD_TYPE);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
   },
@@ -79,16 +89,20 @@ const COMPONENT = {
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
     }
+    if (this.mrcStaticFunctionName) {
+      extraState.staticFunctionName = this.mrcStaticFunctionName;
+    }
     if (this.hideParams) {
       extraState.hideParams = this.hideParams;
     }
     return extraState;
   },
   /**
-  * Applies the given state to this block.
-  */
+   * Applies the given state to this block.
+   */
   loadExtraState: function (this: ComponentBlock, extraState: ComponentExtraState): void {
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
+    this.mrcStaticFunctionName = extraState.staticFunctionName ? extraState.staticFunctionName : '';
     this.hideParams = extraState.hideParams ? extraState.hideParams : false;
     this.mrcArgs = [];
 
@@ -104,8 +118,8 @@ const COMPONENT = {
     this.updateBlock_();
   },
   /**
-     * Update the block to reflect the newly loaded extra state.
-     */
+   * Update the block to reflect the newly loaded extra state.
+   */
   updateBlock_: function (this: ComponentBlock): void {
     if (this.hideParams == false) {
       // Add input sockets for the arguments.
@@ -132,25 +146,103 @@ export const pythonFromBlock = function (
   if (block.mrcImportModule) {
     generator.addImport(block.mrcImportModule);
   }
-  let code = 'self.' + block.getFieldValue('NAME') + ' = ' + block.getFieldValue('TYPE') + '(';
+  let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.getFieldValue(FIELD_TYPE);
+  if (block.mrcStaticFunctionName) {
+    code += '.' + block.mrcStaticFunctionName;
+  }
+  code += '(';
 
   for (let i = 0; i < block.mrcArgs.length; i++) {
     const fieldName = 'ARG' + i;
     if (i != 0) {
       code += ', '
     }
-    if(block.hideParams){
+    if (block.hideParams) {
       let extension = '';
-      if(i != 0){
+      if (i != 0) {
         extension = '_' + (i + 1).toString();
       }
-      const newPort = block.getFieldValue('NAME') + extension + '_port';
+      const newPort = block.getFieldValue(FIELD_NAME) + extension + '_port';
       generator.addHardwarePort(newPort, block.mrcArgs[i].type);
-      code += block.mrcArgs[i].name + " = " + newPort; 
-    }else{
+      code += block.mrcArgs[i].name + ' = ' + newPort; 
+    } else {
       code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
     }
   }
-  code += ')\n' + "self.hardware.append(self." + block.getFieldValue('NAME') + ")\n";
+  code += ')\n' + 'self.hardware.append(self.' + block.getFieldValue(FIELD_NAME) + ')\n';
   return code;
+}
+
+export function getAllPossibleComponents(hideParams: boolean): ToolboxItems.ContentsType[] {
+  const contents: ToolboxItems.ContentsType[] = [];
+  // Iterate through all the components subclasses and add definition blocks.
+  const componentTypes = getSubclassNames('component.Component');
+  componentTypes.forEach(componentType => {
+    const classData = getClassData(componentType);
+    if (!classData) {
+      throw new Error('Could not find classData for ' + componentType);
+    }
+
+    const componentName = (
+        'my_' +
+        CommonStorage.pascalCaseToSnakeCase(
+            componentType.substring(componentType.lastIndexOf('.') + 1)));
+
+    classData.staticMethods.forEach(staticFunctionData => {
+      if (staticFunctionData.returnType === componentType) {
+        contents.push(createComponentBlock(componentName, classData, staticFunctionData, hideParams));
+      }
+    });
+  });
+
+  return contents;
+}
+
+function createComponentBlock(
+    componentName: string, classData: ClassData, staticFunctionData: FunctionData, hideParams: boolean): ToolboxItems.Block {
+  const extraState: ComponentExtraState = {
+    importModule: classData.moduleName,
+    staticFunctionName: staticFunctionData.functionName,
+    params: [],
+    hideParams: hideParams,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_NAME] = componentName;
+  fields[FIELD_TYPE] = classData.className;
+  const inputs: {[key: string]: any} = {};
+  for (let i = 0; i < staticFunctionData.args.length; i++) {
+    const argData = staticFunctionData.args[i];
+    extraState.params.push({
+      'name': argData.name,
+      'type': argData.type,
+    });
+    if (!hideParams) {
+      if (argData.type === 'int') {
+        const portType = getPortTypeForArgument(argData.name);
+        if (portType) {
+          inputs['ARG' + i] = createPortShadow(portType, 1);
+        } else {
+          inputs['ARG' + i] = createNumberShadowValue(1);
+        }
+      }
+    }
+  }
+  return new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+}
+
+function getPortTypeForArgument(argName: string): string | null {
+  // TODO(lizlooney): Currently the JSON for component.PortType is ClassData
+  // instead of EnumData. When it is fixed to be EnumData, this code will need
+  // to be updated.
+
+  const argNameLower = argName.toLowerCase();
+  const classData = getClassData('component.PortType');
+  if (classData) {
+     for (const varData of classData.classVariables) {
+       if (argNameLower === varData.name.toLowerCase()) {
+         return varData.name;
+       }
+     }
+  }
+  return null;
 }
