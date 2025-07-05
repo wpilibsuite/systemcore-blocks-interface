@@ -39,17 +39,17 @@ export const FIELD_TYPE = 'TYPE';
 
 // key is a regex pattern that matches a function argument name, value is type of mrc_port block to use.
 // TODO: Improve these regex pattern.
-// TODO: Should the types here match the PortType values in external_samples/component.py?
+// The types here match the PortType values in external_samples/component.py.
 const RECOGNIZED_PORT_ARG_NAME_PATTERNS: { [key: string]: string } = {
-  'can_port': 'SmartCan',
-  'i2c_port': 'SmartIO',
-  'io_port': 'SmartIO',
-  'smartIO_port': 'SmartIO',
-  'smart_io_port': 'SmartIO',
-  'motor_port': 'SmartMotor',
-  'servo_port': 'SmartIO',
-  'smart_motor_port': 'SmartMotor',
-  'usb_port': 'USBPort',
+  'can_port': 'CAN_PORT',
+  'io_port': 'SMART_IO_PORT',
+  'smartIO_port': 'SMART_IO_PORT',
+  'smart_io_port': 'SMART_IO_PORT',
+  'motor_port': 'SMART_MOTOR_PORT',
+  'smart_motor_port': 'SMART_MOTOR_PORT',
+  'servo_port': 'SERVO_PORT',
+  'i2c_port': 'I2C_PORT',
+  'usb_port': 'USB_PORT',
 };
 
 
