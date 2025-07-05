@@ -255,33 +255,19 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
   // Get components from the current workspace
   const workspace = Blockly.getMainWorkspace();
   if (workspace) {
+    // Get the holder block and ask it for the components.
     const holderBlocks = workspace.getBlocksByType(MechanismComponentHolder.BLOCK_NAME);
 
     holderBlocks.forEach(holderBlock => {
-      // Get component blocks from the COMPONENTS input
-      const componentsInput = holderBlock.getInput('COMPONENTS');
-      if (componentsInput && componentsInput.connection) {
-        let componentBlock = componentsInput.connection.targetBlock();
-
-        // Walk through all connected component blocks
-        while (componentBlock) {
-          if (componentBlock.type === 'mrc_component') {
-            const componentName = componentBlock.getFieldValue(Component.FIELD_NAME);
-            const componentType = componentBlock.getFieldValue(Component.FIELD_TYPE);
-
-            if (componentName && componentType) {
-              // Get the function blocks for this specific component.
-              contents.push({
-                kind: 'category',
-                name: componentName,
-                contents: getInstanceComponentBlocks(componentType, componentName),
-              });
-            }
-          }
-          // Move to the next block in the chain
-          componentBlock = componentBlock.getNextBlock();
-        }
-      }
+      const componentsFromHolder: commonStorage.Component[] = holderBlock.getComponents();
+      componentsFromHolder.forEach(component => {
+        // Get the blocks for this specific component
+        contents.push({
+          kind: 'category',
+          name: component.name,
+          contents: getInstanceComponentBlocks(component.className, component.name),
+        });
+      });
     });
   }
   return {

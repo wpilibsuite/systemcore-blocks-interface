@@ -24,7 +24,7 @@ import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
-
+import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { MethodsCategory} from '../toolbox/methods_category';
 import { EventsCategory} from '../toolbox/event_category';
@@ -151,7 +151,7 @@ export class Editor {
       );
       this.moduleContent = moduleContents[this.modulePath];
       if (this.robotPath === this.modulePath) {
-        this.robotContent = this.moduleContent
+        this.robotContent = this.moduleContent;
       } else {
         this.robotContent = moduleContents[this.robotPath];
       }
@@ -233,7 +233,14 @@ export class Editor {
     const components: commonStorage.Component[] = [];
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
         this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-      // TODO(lizlooney): Fill the components array.
+      // Get the holder block and ask it for the components.
+      const holderBlocks = this.blocklyWorkspace.getBlocksByType(mechanismComponentHolder.BLOCK_NAME);
+      holderBlocks.forEach(holderBlock => {
+        const componentsFromHolder: commonStorage.Component[] = holderBlock.getComponents();
+        componentsFromHolder.forEach(component => {
+          components.push(component);
+        });
+      });
     }
     return components;
   }
@@ -246,5 +253,44 @@ export class Editor {
     } catch (e) {
       throw e;
     }
+  }
+
+  /**
+   * Returns the names of components defined in the robot that have the given component class name.
+   */
+  // TODO: what about components defined in a mechanism?
+  public getComponentNames(componentClassName: string): string[] {
+    let components: commonStorage.Component[];
+
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+      components = this.getComponents();
+    } else {
+      if (!this.robotContent) {
+        throw new Error('getComponentNames: this.robotContent is null.');
+      }
+      components = commonStorage.extractComponents(this.robotContent);
+    }
+
+    const componentNames: string[] = [];
+    components.forEach((component) => {
+      if (component.className === componentClassName) {
+        componentNames.push(component.name);
+      }
+    });
+    return componentNames;
+  }
+
+  public static getEditorForBlocklyWorkspace(workspace: Blockly.Workspace): Editor | null {
+    if (workspace.id in Editor.workspaceIdToEditor) {
+      return Editor.workspaceIdToEditor[workspace.id];
+    }
+
+    // If the workspace id was not found, it might be because the workspace is associated with the
+    // toolbox flyout, not a real workspace. In that case, use the first editor.
+    const allEditors = Object.values(Editor.workspaceIdToEditor);
+    if (allEditors.length) {
+      return allEditors[0];
+    }
+    return null;
   }
 }

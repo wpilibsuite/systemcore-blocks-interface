@@ -28,6 +28,7 @@ import { getClassData, getAllowedTypesForSetCheck, getOutputCheck } from './util
 import { FunctionData, findSuperFunctionData } from './utils/python_json_types';
 import * as Value from './utils/value';
 import * as Variable from './utils/variable';
+import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
@@ -544,9 +545,13 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
-          // TODO: We need the list of component names for this.mrcComponentClassName so we can
+          let componentNames: string[] = [];
+          // Get the list of component names whose type matches this.mrcComponentClassName so we can
           // create a dropdown that has the appropriate component names.
-          const componentNames: string[] = [];
+          const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+          if (editor) {
+            componentNames = editor.getComponentNames(this.mrcComponentClassName);
+          }
           const componentName = this.getComponentName();
           if (!componentNames.includes(componentName)) {
             componentNames.push(componentName);
