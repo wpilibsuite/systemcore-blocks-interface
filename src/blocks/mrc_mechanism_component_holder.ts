@@ -45,7 +45,7 @@ type MechanismComponentHolderExtraState = {
   hideMechanisms?: boolean;
 }
 
-type MechanismComponentHolderBlock = Blockly.Block & MechanismComponentHolderMixin;
+export type MechanismComponentHolderBlock = Blockly.Block & MechanismComponentHolderMixin;
 interface MechanismComponentHolderMixin extends MechanismComponentHolderMixinType {
   mrcHideMechanisms: boolean;
 }
