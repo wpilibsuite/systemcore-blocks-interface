@@ -128,6 +128,18 @@ export function getClassData(className: string): ClassData | null {
   return null;
 }
 
+// Returns the ModuleData for the given module name.
+export function getModuleData(moduleName: string): ModuleData | null {
+  for (const pythonData of allPythonData) {
+    for (const moduleData of pythonData.modules) {
+      if (moduleData.moduleName === moduleName) {
+        return moduleData;
+      }
+    }
+  }
+  return null;
+}
+
 // If the given type is a type alias, returns the value of the type alias.
 // For example, if type is 'wpimath.units.nanoseconds', this function will return 'float'
 export function getAlias(type: string): string | null {
