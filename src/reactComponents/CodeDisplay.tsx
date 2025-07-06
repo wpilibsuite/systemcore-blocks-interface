@@ -55,16 +55,12 @@ const COPY_ERROR_MESSAGE_PREFIX = 'Could not copy code: ';
  */
 export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element {
   const syntaxHighligherFromTheme = (theme: string) => {
-    switch (theme) {
-      case 'dark':
-      case 'compact-dark':
-        return dracula;
-      case 'light':
-      case 'compact':
-        return oneLight;
-      default:
-        return dracula; // Default to dracula if theme is unknown
+    const isDarkTheme = theme.endsWith('-dark') || theme === 'dark';
+    
+    if (isDarkTheme){
+      return dracula
     }
+    return oneLight
   }
 
   const { token } = Antd.theme.useToken();

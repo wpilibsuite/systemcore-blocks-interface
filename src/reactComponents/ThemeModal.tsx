@@ -9,7 +9,6 @@ import {
     CheckOutlined,
     MoonOutlined,
     SunOutlined,
-    DesktopOutlined,
 } from '@ant-design/icons';
 
 export interface ThemeOption {
@@ -40,16 +39,28 @@ const THEME_OPTIONS: ThemeOption[] = [
         description: 'Easy on the eyes for low-light environments',
     },
     {
-        key: 'compact',
-        name: 'Compact Theme',
-        icon: <DesktopOutlined />,
-        description: 'More content in less space',
+        key: 'tritanopia',
+        name: 'Tritanopia Theme',
+        icon: <SunOutlined />,
+        description: 'Designed for those with Tritanopia color blindness',
     },
     {
-        key: 'compact-dark',
-        name: 'Compact Dark',
-        icon: <BgColorsOutlined />,
-        description: 'Dark theme with compact layout',
+        key: 'tritanopia-dark',
+        name: 'Tritanopia Dark',
+        icon: <MoonOutlined />,
+        description: 'Dark theme for those with Tritanopia color blindness',
+    },
+    {
+        key: 'deuteranopia',
+        name: 'Deuteranopia Theme',
+        icon: <SunOutlined />,
+        description: 'Designed for those with Deuteranopia color blindness',
+    },
+    {
+        key: 'deuteranopia-dark',
+        name: 'Deuteranopia Dark',
+        icon: <MoonOutlined />,
+        description: 'Dark theme for those with Deuteranopia color blindness',
     },
 ];
 
@@ -195,15 +206,16 @@ export default ThemeModal;
 
 export const antdThemeFromString = (theme: string): Antd.ThemeConfig => {
     let compact = false;
+
     if (theme == 'compact-dark') {
         compact = true;
-        theme = 'dark';
     }
     else if (theme == 'compact') {
         compact = true;
-        theme = 'light';
     }
-    if (theme === 'dark') {
+    const isDarkTheme = theme.endsWith('-dark') || theme === 'dark';
+
+    if (isDarkTheme) {
         return {
             algorithm: compact ? [Antd.theme.darkAlgorithm, Antd.theme.compactAlgorithm] : Antd.theme.darkAlgorithm,
             components: {
@@ -219,7 +231,7 @@ export const antdThemeFromString = (theme: string): Antd.ThemeConfig => {
             }
         }
     }
-    else if (theme === 'light') {
+    else  {
         return {
             algorithm: compact ? [Antd.theme.defaultAlgorithm, Antd.theme.compactAlgorithm] : Antd.theme.defaultAlgorithm,
             components: {
@@ -230,10 +242,12 @@ export const antdThemeFromString = (theme: string): Antd.ThemeConfig => {
                     triggerColor: '#000000',
                 },
                 Menu: {
+                    darkItemDisabledColor: '#cccccc',
                     darkItemBg: '#ffffff',
                     darkSubMenuItemBg: '#ffffff',
-                    darkItemColor: '#000000',
+                    darkItemColor: '#666666',
                     darkItemSelectedColor: '#000000',
+                    darkItemHoverColor: '#000000',
                 }
             }
         }
