@@ -20,7 +20,7 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
-import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
+import { MRC_STYLE_FUNCTIONS } from '../themes/styles';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
 import { createFieldFlydown } from '../fields/field_flydown';
 import { Order } from 'blockly/python';
@@ -88,7 +88,7 @@ const CLASS_METHOD_DEF = {
         this.appendDummyInput("TITLE")
             .appendField('', 'NAME');
         this.setOutput(false);
-        this.setStyle(MRC_STYLE_CLASS_BLOCKS);
+        this.setStyle(MRC_STYLE_FUNCTIONS);
         this.appendStatementInput('STACK').appendField('');
         this.mrcParameters = [];
         this.setPreviousStatement(false);
