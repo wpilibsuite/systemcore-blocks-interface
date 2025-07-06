@@ -21,8 +21,7 @@
 import * as React from 'react';
 import * as Blockly from 'blockly/core';
 import * as locale from 'blockly/msg/en';
-import * as MrcDarkTheme from '../themes/mrc_theme_dark';
-import * as MrcLightTheme from '../themes/mrc_theme_light';
+import { themes } from '../themes/mrc_themes';
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
@@ -80,14 +79,15 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
       const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
 
       const getBlocklyTheme = (): Blockly.Theme => {
-        if (theme === 'dark' || theme === 'compact-dark') {
-          return MrcDarkTheme.theme;
+        const blocklyTheme = 'mrc_theme_' + theme.replace(/-/g, '_');
+        // Find the theme by key
+        const themeObj = themes.find(t => t.name === blocklyTheme);
+        if (!themeObj) {
+          throw new Error(`Theme not found: ${blocklyTheme}`);
         }
-        if (theme === 'light' || theme === 'compact') {
-          return MrcLightTheme.theme;
-        }
-        // Default to light theme if unknown
-        return MrcLightTheme.theme;
+
+        // Return the corresponding Blockly theme
+        return themeObj;
       };
 
       /** Creates the Blockly workspace configuration object. */
