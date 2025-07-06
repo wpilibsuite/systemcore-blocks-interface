@@ -242,10 +242,12 @@ export const antdThemeFromString = (theme: string): Antd.ThemeConfig => {
                     triggerColor: '#000000',
                 },
                 Menu: {
+                    darkItemDisabledColor: '#cccccc',
                     darkItemBg: '#ffffff',
                     darkSubMenuItemBg: '#ffffff',
-                    darkItemColor: '#000000',
+                    darkItemColor: '#666666',
                     darkItemSelectedColor: '#000000',
+                    darkItemHoverColor: '#000000',
                 }
             }
         }
