@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Script to run an opmode class derived from the Opmode base class.
+Script to run an opmode class derived from the OpMode base class.
 
 Usage:
     python run_opmode.py <opmode_file.py>
 
-The opmode file should contain a class that inherits from Opmode.
+The opmode file should contain a class that inherits from OpMode.
 """
 
 import sys
@@ -18,22 +18,22 @@ from pathlib import Path
 # Add the current directory to Python path to import local modules
 sys.path.insert(0, str(Path(__file__).parent))
 
-from opmode import Opmode
+from opmode import OpMode
 from robot import Robot
 
 
 def find_opmode_class(module):
     """
-    Find the first class in the module that inherits from Opmode.
+    Find the first class in the module that inherits from OpMode.
     
     Args:
         module: The imported Python module
         
     Returns:
-        The Opmode-derived class, or None if not found
+        The OpMode-derived class, or None if not found
     """
     for name, obj in inspect.getmembers(module, inspect.isclass):
-        if obj != Opmode and issubclass(obj, Opmode):
+        if obj != OpMode and issubclass(obj, OpMode):
             return obj
     return None
 
@@ -46,17 +46,17 @@ def load_opmode_from_file(file_path):
         file_path: Path to the Python file containing the opmode class
         
     Returns:
-        The Opmode-derived class
+        The OpMode-derived class
         
     Raises:
         FileNotFoundError: If the file doesn't exist
         ImportError: If the file can't be imported
-        ValueError: If no Opmode-derived class is found
+        ValueError: If no OpMode-derived class is found
     """
     file_path = Path(file_path)
     
     if not file_path.exists():
-        raise FileNotFoundError(f"Opmode file not found: {file_path}")
+        raise FileNotFoundError(f"OpMode file not found: {file_path}")
     
     if not file_path.suffix == '.py':
         raise ValueError(f"File must be a Python file (.py): {file_path}")
@@ -69,10 +69,10 @@ def load_opmode_from_file(file_path):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     
-    # Find the Opmode-derived class
+    # Find the OpMode-derived class
     opmode_class = find_opmode_class(module)
     if opmode_class is None:
-        raise ValueError(f"No class derived from Opmode found in {file_path}")
+        raise ValueError(f"No class derived from OpMode found in {file_path}")
     
     return opmode_class
 
@@ -146,7 +146,7 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
         total_time = time.time() - start_time
         actual_frequency = loop_count / total_time if total_time > 0 else 0
         
-        print(f"\nOpmode completed:")
+        print(f"\nOpMode completed:")
         print(f"  Total runtime: {total_time:.2f} seconds")
         print(f"  Total loops: {loop_count}")
         print(f"  Average frequency: {actual_frequency:.1f} Hz")
@@ -159,7 +159,7 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Run an opmode class derived from Opmode",
+        description="Run an opmode class derived from OpMode",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
