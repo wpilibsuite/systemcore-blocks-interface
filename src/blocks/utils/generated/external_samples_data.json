@@ -477,53 +477,6 @@
             "staticMethods": []
         },
         {
-            "className": "component.PortType",
-            "classVariables": [
-                {
-                    "name": "CAN_PORT",
-                    "tooltip": "",
-                    "type": "component.PortType",
-                    "writable": false
-                },
-                {
-                    "name": "I2C_PORT",
-                    "tooltip": "",
-                    "type": "component.PortType",
-                    "writable": false
-                },
-                {
-                    "name": "SERVO_PORT",
-                    "tooltip": "",
-                    "type": "component.PortType",
-                    "writable": false
-                },
-                {
-                    "name": "SMART_IO_PORT",
-                    "tooltip": "",
-                    "type": "component.PortType",
-                    "writable": false
-                },
-                {
-                    "name": "SMART_MOTOR_PORT",
-                    "tooltip": "",
-                    "type": "component.PortType",
-                    "writable": false
-                },
-                {
-                    "name": "USB_PORT",
-                    "tooltip": "",
-                    "type": "component.PortType",
-                    "writable": false
-                }
-            ],
-            "constructors": [],
-            "enums": [],
-            "instanceMethods": [],
-            "instanceVariables": [],
-            "moduleName": "component",
-            "staticMethods": []
-        },
-        {
             "className": "rev_touch_sensor.RevTouchSensor",
             "classVariables": [],
             "constructors": [
@@ -1846,7 +1799,21 @@
             "moduleVariables": []
         },
         {
-            "enums": [],
+            "enums": [
+                {
+                    "enumClassName": "component.PortType",
+                    "enumValues": [
+                        "CAN_PORT",
+                        "I2C_PORT",
+                        "SERVO_PORT",
+                        "SMART_IO_PORT",
+                        "SMART_MOTOR_PORT",
+                        "USB_PORT"
+                    ],
+                    "moduleName": "component",
+                    "tooltip": null
+                }
+            ],
             "functions": [],
             "moduleName": "component",
             "moduleVariables": []

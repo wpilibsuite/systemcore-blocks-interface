@@ -25,7 +25,7 @@ import { Order } from 'blockly/python';
 import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { getAllowedTypesForSetCheck, getClassData, getSubclassNames } from './utils/python';
+import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
 import * as ToolboxItems from '../toolbox/items';
 import * as CommonStorage from '../storage/common_storage';
 import { createPortShadow } from './mrc_port';
@@ -231,18 +231,18 @@ function createComponentBlock(
 }
 
 function getPortTypeForArgument(argName: string): string | null {
-  // TODO(lizlooney): Currently the JSON for component.PortType is ClassData
-  // instead of EnumData. When it is fixed to be EnumData, this code will need
-  // to be updated.
-
   const argNameLower = argName.toLowerCase();
-  const classData = getClassData('component.PortType');
-  if (classData) {
-     for (const varData of classData.classVariables) {
-       if (argNameLower === varData.name.toLowerCase()) {
-         return varData.name;
+  const moduleData = getModuleData('component');
+  for (const enumData of moduleData.enums) {
+    if (enumData.enumClassName ===  'component.PortType') {
+     for (const value of enumData.enumValues) {
+       if (argNameLower === value.toLowerCase()) {
+         return value;
        }
      }
+     break;
+    }
   }
+
   return null;
 }
