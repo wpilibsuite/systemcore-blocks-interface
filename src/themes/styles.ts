@@ -36,47 +36,30 @@ export const MRC_STYLE_EVENT_HANDLER = 'mrc_style_event_handler';
 export const MRC_CATEGORY_STYLE_COMPONENTS = 'mrc_category_style_components';
 
 export const add_mrc_styles = function (theme: Blockly.Theme): Blockly.Theme {
+    const procedureStyle = theme.blockStyles['procedure_blocks'];
+    const variableStyle = theme.blockStyles['variable_blocks'];
+
     theme.setBlockStyle(MRC_STYLE_FUNCTIONS, {
-        colourPrimary: "#805ba5",
-        colourSecondary: "#e6deed",
-        colourTertiary: "#664984",
-        hat: ""
+        ...procedureStyle
     });
     theme.setBlockStyle(MRC_STYLE_EVENT_HANDLER, {
-        colourPrimary: "#805ba5",
-        colourSecondary: "#e6deed",
-        colourTertiary: "#664984",
+        ...procedureStyle,
         hat: "cap"
     });
     theme.setBlockStyle(MRC_STYLE_EVENTS, {
-        colourPrimary: "#805ba5",
-        colourSecondary: "#e6deed",
-        colourTertiary: "#664984",
-        hat: ""
+        ...procedureStyle
     });
     theme.setBlockStyle(MRC_STYLE_ENUM, {
-        colourPrimary: "#5ba5a5",
-        colourSecondary: "#deeded",
-        colourTertiary: "#498484",
-        hat: ""
+        ...variableStyle
     });
     theme.setBlockStyle(MRC_STYLE_VARIABLES, {
-        colourPrimary: "#5ba55b",
-        colourSecondary: "#deedde",
-        colourTertiary: "#498449",
-        hat: ""
+        ...variableStyle
     });
     theme.setBlockStyle(MRC_STYLE_CLASS_BLOCKS, {
         colourPrimary: "#4a148c",
         colourSecondary: "#AD7BE9",
         colourTertiary: "#CDB6E9",
         hat: ""
-    });
-    theme.setCategoryStyle(MRC_CATEGORY_STYLE_METHODS, {
-        colour: '#4A148C',
-    });
-    theme.setCategoryStyle(MRC_CATEGORY_STYLE_COMPONENTS, {
-        colour: '#4A148C',
     });
 
     theme.setBlockStyle(MRC_STYLE_COMMENTS, {
@@ -92,16 +75,16 @@ export const add_mrc_styles = function (theme: Blockly.Theme): Blockly.Theme {
         hat: ""
     });
     theme.setBlockStyle(MRC_STYLE_MECHANISMS, {
-        "colourPrimary": "#5b61a5",
-        "colourSecondary": "#dedfed",
-        "colourTertiary": "#494e84",
+        colourPrimary: "#5b61a5",
+        colourSecondary: "#dedfed",
+        colourTertiary: "#494e84",
         hat: ""
 
     });
     theme.setBlockStyle(MRC_STYLE_COMPONENTS, {
-        "colourPrimary": "#5b80a5",
-        "colourSecondary": "#dee6ed",
-        "colourTertiary": "#496684",
+        colourPrimary: "#5b80a5",
+        colourSecondary: "#dee6ed",
+        colourTertiary: "#496684",
         hat: ""
     });
     theme.setBlockStyle(MRC_STYLE_PORTS, {
@@ -109,6 +92,14 @@ export const add_mrc_styles = function (theme: Blockly.Theme): Blockly.Theme {
         colourSecondary: "#deedde",
         colourTertiary: "#498449",
         hat: ""
+    });
+    const functionCategoryStyle = theme.categoryStyles['procedure_category'];
+    
+    theme.setCategoryStyle(MRC_CATEGORY_STYLE_METHODS, {
+        ...functionCategoryStyle,
+    });
+    theme.setCategoryStyle(MRC_CATEGORY_STYLE_COMPONENTS, {
+        colour: '#4A148C',
     });
 
     return theme;
