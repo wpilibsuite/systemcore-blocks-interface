@@ -57,7 +57,7 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
   const syntaxHighligherFromTheme = (theme: string) => {
     const isDarkTheme = theme.endsWith('-dark') || theme === 'dark';
     
-    if(isDarkTheme){
+    if (isDarkTheme){
       return dracula
     }
     return oneLight
