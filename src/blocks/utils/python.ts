@@ -19,7 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { ClassData, PythonData, organizeVarDataByType, VariableGettersAndSetters } from './python_json_types';
+import { ClassData, PythonData, ModuleData, organizeVarDataByType, VariableGettersAndSetters } from './python_json_types';
 import { robotPyData } from './robotpy_data';
 import { externalSamplesData } from './external_samples_data';
 
@@ -157,7 +157,7 @@ export function getAlias(type: string): string | null {
 // Returns the list of subclass names for the given type.
 // For example, if type is 'wpilib.drive.RobotDriveBase', this function will
 // return ['wpilib.drive.DifferentialDrive', 'wpilib.drive.MecanumDrive'].
-export function getSubclassNames(type: string): string[] | null {
+export function getSubclassNames(type: string): string[] {
   for (const pythonData of allPythonData) {
     for (const className in pythonData.subclasses) {
       if (type === className) {
@@ -165,7 +165,7 @@ export function getSubclassNames(type: string): string[] | null {
       }
     }
   }
-  return null;
+  return [];
 }
 
 // Returns the array of allowed types for the given string.

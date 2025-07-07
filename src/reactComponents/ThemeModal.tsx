@@ -89,7 +89,6 @@ const ThemeModal: React.FC<ThemeModalProps> = ({
         setSelectedTheme(currentTheme);
         onClose();
     };
-    const { token } = Antd.theme.useToken();
 
     return (
         <Antd.Modal

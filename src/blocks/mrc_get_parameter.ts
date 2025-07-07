@@ -27,7 +27,7 @@ import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
 import {createFieldNonEditableText} from '../fields/FieldNonEditableText';
 import {MRC_STYLE_VARIABLES} from '../themes/styles';
 import {BLOCK_NAME as MRC_CLASS_METHOD_DEF, ClassMethodDefBlock} from './mrc_class_method_def';
-import {BLOCK_NAME as MRC_EVENT_HANDLER, EventHandlerBlock} from './mrc_event_handler';
+import {BLOCK_NAME as MRC_EVENT_HANDLER } from './mrc_event_handler';
 import * as ChangeFramework from './utils/change_framework';
 
 
