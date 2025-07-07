@@ -8,8 +8,8 @@
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@blockly/theme-dark": "^8.0.1",
     "@blockly/theme-deuteranopia": "7.0.1",
-    "@blockly/theme-tritanopia": "7.0.1",
     "@blockly/theme-highcontrast": "7.0.1",
+    "@blockly/theme-tritanopia": "7.0.1",
     "@tailwindcss/postcss": "^4.1.10",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
@@ -18,7 +18,7 @@
     "i18next": "^25.2.1",
     "i18next-http-backend": "^3.0.2",
     "jszip": "^3.10.1",
-    "lucide-react": "^0.522.0",
+    "lucide-react": "^0.525.0",
     "re-resizable": "^6.10.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -62,10 +62,10 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^4.1.10",
     "typescript-strict-plugin": "^2.4.4",
-    "vite": "^6.0.0",
+    "vite": "^7.0.2",
     "vite-plugin-static-copy": "^3.0.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.5",
-    "vitest-browser-react": "^0.3.0"
+    "vitest-browser-react": "^1.0.0"
   }
 }
