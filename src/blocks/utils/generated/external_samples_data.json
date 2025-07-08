@@ -18,7 +18,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "ports",
                             "type": "list[tuple[component.PortType, int]]"
                         }
@@ -34,7 +34,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -47,7 +47,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -60,7 +60,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -73,7 +73,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -86,7 +86,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -99,7 +99,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -112,7 +112,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -125,7 +125,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -138,7 +138,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -151,7 +151,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -164,22 +164,22 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "min_hue",
                             "type": "int"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "max_hue",
                             "type": "int"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "callback",
                             "type": "color_range_sensor.ColorCallable"
                         }
@@ -192,17 +192,17 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "distance",
                             "type": "float"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "callback",
                             "type": "color_range_sensor.DistanceCallable"
                         }
@@ -215,22 +215,22 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "min_saturation",
                             "type": "int"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "max_saturation",
                             "type": "int"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "callback",
                             "type": "color_range_sensor.ColorCallable"
                         }
@@ -243,7 +243,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -256,7 +256,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "color_range_sensor.ColorRangeSensor"
                         }
@@ -273,7 +273,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "i2c_port",
                             "type": "int"
                         }
@@ -302,7 +302,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "ports",
                             "type": "list[tuple[component.PortType, int]]"
                         }
@@ -318,7 +318,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "component.Component"
                         }
@@ -331,7 +331,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "component.Component"
                         }
@@ -344,7 +344,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "component.Component"
                         }
@@ -357,7 +357,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "component.Component"
                         }
@@ -370,7 +370,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "component.Component"
                         }
@@ -383,7 +383,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "component.Component"
                         }
@@ -396,7 +396,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "component.Component"
                         }
@@ -409,7 +409,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "component.Component"
                         }
@@ -422,7 +422,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "component.Component"
                         }
@@ -454,12 +454,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "args",
                             "type": "tuple"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "kwargs",
                             "type": "dict"
                         }
@@ -483,7 +483,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "ports",
                             "type": "list[tuple[component.PortType, int]]"
                         }
@@ -499,7 +499,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -512,7 +512,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -525,7 +525,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -538,7 +538,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -551,7 +551,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -564,7 +564,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -577,7 +577,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -590,7 +590,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -603,12 +603,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "callback",
                             "type": "component.EmptyCallable"
                         }
@@ -621,12 +621,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "callback",
                             "type": "component.EmptyCallable"
                         }
@@ -639,7 +639,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -652,7 +652,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "rev_touch_sensor.RevTouchSensor"
                         }
@@ -669,7 +669,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "smart_io_port",
                             "type": "int"
                         }
@@ -688,7 +688,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "ports",
                             "type": "list[tuple[component.PortType, int]]"
                         }
@@ -704,7 +704,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         }
@@ -717,7 +717,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         }
@@ -730,7 +730,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         }
@@ -743,7 +743,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         }
@@ -756,7 +756,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         }
@@ -769,7 +769,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         }
@@ -782,7 +782,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         }
@@ -795,7 +795,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         }
@@ -808,12 +808,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "angle",
                             "type": "float"
                         }
@@ -826,12 +826,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "pos",
                             "type": "float"
                         }
@@ -844,7 +844,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "servo.Servo"
                         }
@@ -861,7 +861,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "servo_port",
                             "type": "int"
                         }
@@ -880,7 +880,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "ports",
                             "type": "list[tuple[component.PortType, int]]"
                         }
@@ -896,7 +896,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -909,7 +909,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -922,7 +922,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -935,7 +935,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -948,7 +948,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -961,7 +961,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -974,7 +974,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -987,7 +987,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -1000,7 +1000,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -1013,7 +1013,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -1026,7 +1026,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -1039,12 +1039,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "angle",
                             "type": "float"
                         }
@@ -1057,12 +1057,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "speed",
                             "type": "float"
                         }
@@ -1075,7 +1075,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "smart_motor.SmartMotor"
                         }
@@ -1092,7 +1092,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "smart_motor_port",
                             "type": "int"
                         }
@@ -1111,7 +1111,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "ports",
                             "type": "list[tuple[component.PortType, int]]"
                         }
@@ -1127,12 +1127,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "follower",
                             "type": "wpilib.PWMMotorController"
                         }
@@ -1145,7 +1145,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1158,7 +1158,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1171,12 +1171,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "eliminateDeadband",
                             "type": "bool"
                         }
@@ -1189,7 +1189,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1202,7 +1202,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1215,7 +1215,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1228,7 +1228,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1241,7 +1241,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1254,7 +1254,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1267,7 +1267,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1280,7 +1280,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1293,7 +1293,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1306,7 +1306,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1319,7 +1319,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1332,7 +1332,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1345,7 +1345,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1358,12 +1358,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "builder",
                             "type": "wpiutil.SendableBuilder"
                         }
@@ -1376,7 +1376,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1389,7 +1389,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1402,7 +1402,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1415,7 +1415,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1428,12 +1428,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "value",
                             "type": "float"
                         }
@@ -1446,12 +1446,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "expirationTime",
                             "type": "float"
                         }
@@ -1464,12 +1464,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "isInverted",
                             "type": "bool"
                         }
@@ -1482,12 +1482,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "enabled",
                             "type": "bool"
                         }
@@ -1500,12 +1500,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "output",
                             "type": "float"
                         }
@@ -1518,7 +1518,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1531,7 +1531,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "spark_mini.SparkMiniComponent"
                         }
@@ -1555,7 +1555,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "smart_motor_port",
                             "type": "int"
                         }
@@ -1574,7 +1574,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "ports",
                             "type": "list[tuple[component.PortType, int]]"
                         }
@@ -1590,7 +1590,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1603,7 +1603,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1616,7 +1616,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1629,7 +1629,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1642,7 +1642,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1655,7 +1655,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1668,7 +1668,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1681,7 +1681,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1694,12 +1694,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "brightness",
                             "type": "int"
                         }
@@ -1712,12 +1712,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "color",
                             "type": "wpilib.Color"
                         }
@@ -1730,12 +1730,12 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         },
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "colors",
                             "type": "list[int]"
                         }
@@ -1748,7 +1748,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1761,7 +1761,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "self",
                             "type": "sparkfun_led_stick.SparkFunLEDStick"
                         }
@@ -1778,7 +1778,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": null,
+                            "defaultValue": "",
                             "name": "i2c_port",
                             "type": "int"
                         }
@@ -1811,7 +1811,7 @@
                         "USB_PORT"
                     ],
                     "moduleName": "component",
-                    "tooltip": null
+                    "tooltip": ""
                 }
             ],
             "functions": [],
