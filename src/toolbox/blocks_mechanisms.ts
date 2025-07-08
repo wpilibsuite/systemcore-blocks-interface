@@ -20,102 +20,105 @@
  */
 import * as ToolboxItems from './items';
 
-/**
- * TODO: This is all fake right now, it will be generated dynamically
- * based on reading things from mechanisms.
- */
-
 export function getAllPossibleMechanisms(): ToolboxItems.ContentsType[] {
-    return [
+  const contents: ToolboxItems.ContentsType[] = []
 
-        {
-            kind: 'block',
-            type: 'mrc_mechanism',
+  // TODO: Get the blocks for adding mechanisms.
+
+  /* // Uncomment this fake code for testing purposes only.
+  contents.push(
+    {
+      kind: 'block',
+      type: 'mrc_mechanism',
+      fields: {
+        NAME: 'claw',
+        TYPE: 'Claw'
+      },
+      extraState: {
+        importModule: 'claw',
+        params: [
+          { name: 'gripper_port', type: 'int' },
+          { name: 'piece_sensor_port', type: 'int' },
+        ]
+      },
+      inputs: {
+        ARG0: {
+          shadow: {
+            type: 'mrc_port',
             fields: {
-                NAME: 'claw',
-                TYPE: 'Claw'
+              TYPE: 'SmartMotor',
+              PORT_NUM: 1
             },
-            extraState: {
-                importModule: 'claw',
-                params: [{ name: 'gripper_port', type: 'int' },
-                { name: 'piece_sensor_port', type: 'int' },
-                ]
-            },
-            inputs: {
-                ARG0: {
-                    shadow: {
-                        type: 'mrc_port',
-                        fields: {
-                            TYPE: 'SmartMotor',
-                            PORT_NUM: 1
-                        },
-                    },
-                },
-                ARG1: {
-                    shadow: {
-                        type: 'mrc_port',
-                        fields: {
-                            TYPE: 'SmartIO',
-                            PORT_NUM: 1
-                        },
-                    },
-                },
-            }
+          },
         },
-        {
-            kind: 'block',
-            type: 'mrc_mechanism',
+        ARG1: {
+          shadow: {
+            type: 'mrc_port',
             fields: {
-                NAME: 'drive',
-                TYPE: 'DriveMecanum'
+              TYPE: 'SmartIO',
+              PORT_NUM: 1
             },
-            extraState: {
-                importModule: 'DriveMecanum',
-                params: [{ name: 'front_left_drive_port', type: 'int' },
-                { name: 'front_right_drive_port', type: 'int' },
-                { name: 'back_left_drive_port', type: 'int' },
-                { name: 'back_right_drive_port', type: 'int' },
-                ]
-            },
-            inputs: {
-                ARG0: {
-                    shadow: {
-                        type: 'mrc_port',
-                        fields: {
-                            TYPE: 'SmartMotor',
-                            PORT_NUM: 1
-                        },
-                    },
-                },
-                ARG1: {
-                    shadow: {
-                        type: 'mrc_port',
-                        fields: {
-                            TYPE: 'SmartMotor',
-                            PORT_NUM: 2
-                        },
-                    },
-                },
-                ARG2: {
-                    shadow: {
-                        type: 'mrc_port',
-                        fields: {
-                            TYPE: 'SmartMotor',
-                            PORT_NUM: 3
-                        },
-                    },
-                },
-                ARG3: {
-                    shadow: {
-                        type: 'mrc_port',
-                        fields: {
-                            TYPE: 'SmartMotor',
-                            PORT_NUM: 4
-                        },
-                    },
-                },
-            }
+          },
         },
-    ];
+      }
+    },
+    {
+      kind: 'block',
+      type: 'mrc_mechanism',
+      fields: {
+        NAME: 'drive',
+        TYPE: 'DriveMecanum'
+      },
+      extraState: {
+        importModule: 'drive_mecanum',
+        params: [
+          { name: 'front_left_drive_port', type: 'int' },
+          { name: 'front_right_drive_port', type: 'int' },
+          { name: 'back_left_drive_port', type: 'int' },
+          { name: 'back_right_drive_port', type: 'int' },
+        ]
+      },
+      inputs: {
+        ARG0: {
+          shadow: {
+            type: 'mrc_port',
+            fields: {
+              TYPE: 'SmartMotor',
+              PORT_NUM: 1
+            },
+          },
+        },
+        ARG1: {
+          shadow: {
+            type: 'mrc_port',
+            fields: {
+              TYPE: 'SmartMotor',
+              PORT_NUM: 2
+            },
+          },
+        },
+        ARG2: {
+          shadow: {
+            type: 'mrc_port',
+            fields: {
+              TYPE: 'SmartMotor',
+              PORT_NUM: 3
+            },
+          },
+        },
+        ARG3: {
+          shadow: {
+            type: 'mrc_port',
+            fields: {
+              TYPE: 'SmartMotor',
+              PORT_NUM: 4
+            },
+          },
+        },
+      }
+    }
+  );
+  */
+
+  return contents;
 }
-

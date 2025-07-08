@@ -139,7 +139,7 @@ export class Editor {
       const promises: { [key: string]: Promise<string> } = {}; // key is module path, value is promise of module content.
       promises[this.modulePath] = this.storage.fetchModuleContent(this.modulePath);
       if (this.robotPath !== this.modulePath) {
-        // Also fetch the robot module content. It contains components, etc, that can be used.
+        // Also fetch the robot module content. It contains components, etc, that can be used in OpModes.
         promises[this.robotPath] = this.storage.fetchModuleContent(this.robotPath)
       }
 
@@ -224,12 +224,12 @@ export class Editor {
     const exportedBlocks = JSON.stringify(this.generatorContext.getExportedBlocks());
     const blocksContent = JSON.stringify(
       Blockly.serialization.workspaces.save(this.blocklyWorkspace));
-    const componentsContent = JSON.stringify(this.getComponents());
+    const componentsContent = JSON.stringify(this.getComponentsFromWorkspace());
     return commonStorage.makeModuleContent(
       this.currentModule, pythonCode, blocksContent, exportedBlocks, componentsContent);
   }
 
-  private getComponents(): commonStorage.Component[] {
+  public getComponentsFromWorkspace(): commonStorage.Component[] {
     const components: commonStorage.Component[] = [];
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
       this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
@@ -257,28 +257,18 @@ export class Editor {
   }
 
   /**
-   * Returns the names of components defined in the robot that have the given component class name.
+   * Returns the components defined in the robot.
    */
-  // TODO: what about components defined in a mechanism?
-  public getComponentNames(componentClassName: string): string[] {
+  public getComponentsFromRobot(): commonStorage.Component[] {
     let components: commonStorage.Component[];
 
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
-      components = this.getComponents();
-    } else {
-      if (!this.robotContent) {
-        throw new Error('getComponentNames: this.robotContent is null.');
-      }
-      components = commonStorage.extractComponents(this.robotContent);
+      return this.getComponentsFromWorkspace();
     }
-
-    const componentNames: string[] = [];
-    components.forEach((component) => {
-      if (component.className === componentClassName) {
-        componentNames.push(component.name);
-      }
-    });
-    return componentNames;
+    if (!this.robotContent) {
+      throw new Error('getComponentsFromRobot: this.robotContent is null.');
+    }
+    return commonStorage.extractComponents(this.robotContent);
   }
 
   public static getEditorForBlocklyWorkspace(workspace: Blockly.Workspace): Editor | null {
