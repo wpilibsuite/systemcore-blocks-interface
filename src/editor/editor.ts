@@ -26,17 +26,17 @@ import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
-import { MethodsCategory} from '../toolbox/methods_category';
-import { EventsCategory} from '../toolbox/event_category';
+import { MethodsCategory } from '../toolbox/methods_category';
+import { EventsCategory } from '../toolbox/event_category';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
-   kind: 'categoryToolbox',
-   contents: [],
+  kind: 'categoryToolbox',
+  contents: [],
 };
 
 export class Editor {
-  private static workspaceIdToEditor: {[key: string]: Editor} = {};
+  private static workspaceIdToEditor: { [key: string]: Editor } = {};
 
   private blocklyWorkspace: Blockly.WorkspaceSvg;
   private generatorContext: GeneratorContext;
@@ -136,14 +136,14 @@ export class Editor {
     if (currentModule) {
       // Fetch the content for the current module and the robot.
       // TODO: Also fetch the content for the mechanisms?
-      const promises: {[key: string]: Promise<string>} = {}; // key is module path, value is promise of module content.
+      const promises: { [key: string]: Promise<string> } = {}; // key is module path, value is promise of module content.
       promises[this.modulePath] = this.storage.fetchModuleContent(this.modulePath);
       if (this.robotPath !== this.modulePath) {
         // Also fetch the robot module content. It contains components, etc, that can be used.
         promises[this.robotPath] = this.storage.fetchModuleContent(this.robotPath)
       }
 
-      const moduleContents: {[key: string]: string} = {}; // key is module path, value is module content
+      const moduleContents: { [key: string]: string } = {}; // key is module path, value is module content
       await Promise.all(
         Object.entries(promises).map(async ([modulePath, promise]) => {
           moduleContents[modulePath] = await promise;
@@ -173,7 +173,7 @@ export class Editor {
     if (toolbox != this.toolbox) {
       this.toolbox = toolbox;
       this.blocklyWorkspace.updateToolbox(toolbox);
-  //    testAllBlocksInToolbox(toolbox);
+      //    testAllBlocksInToolbox(toolbox);
     }
   }
 
@@ -220,23 +220,24 @@ export class Editor {
       throw new Error('getModuleContent: this.currentModule is null.');
     }
     const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
-        this.blocklyWorkspace, this.generatorContext);
+      this.blocklyWorkspace, this.generatorContext);
     const exportedBlocks = JSON.stringify(this.generatorContext.getExportedBlocks());
     const blocksContent = JSON.stringify(
-        Blockly.serialization.workspaces.save(this.blocklyWorkspace));
+      Blockly.serialization.workspaces.save(this.blocklyWorkspace));
     const componentsContent = JSON.stringify(this.getComponents());
     return commonStorage.makeModuleContent(
-        this.currentModule, pythonCode, blocksContent, exportedBlocks, componentsContent);
+      this.currentModule, pythonCode, blocksContent, exportedBlocks, componentsContent);
   }
 
   private getComponents(): commonStorage.Component[] {
     const components: commonStorage.Component[] = [];
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
-        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+      this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
       // Get the holder block and ask it for the components.
       const holderBlocks = this.blocklyWorkspace.getBlocksByType(mechanismComponentHolder.BLOCK_NAME);
       holderBlocks.forEach(holderBlock => {
-        const componentsFromHolder: commonStorage.Component[] = holderBlock.getComponents();
+        const componentsFromHolder: commonStorage.Component[] =
+          (holderBlock as mechanismComponentHolder.MechanismComponentHolderBlock).getComponents();
         componentsFromHolder.forEach(component => {
           components.push(component);
         });

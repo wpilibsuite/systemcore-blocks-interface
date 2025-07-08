@@ -23,9 +23,6 @@ import * as Antd from 'antd';
 import * as commonStorage from '../storage/common_storage';
 import * as I18Next from 'react-i18next';
 import {
-  RobotOutlined,
-  CodeOutlined,
-  BlockOutlined,
   CloseOutlined,
   DeleteOutlined,
   CopyOutlined,

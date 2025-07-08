@@ -30,6 +30,8 @@ import * as ToolboxItems from '../toolbox/items';
 import * as CommonStorage from '../storage/common_storage';
 import { createPortShadow } from './mrc_port';
 import { createNumberShadowValue } from './utils/value';
+import { ClassData, FunctionData } from './utils/python_json_types';
+
 
 export const BLOCK_NAME = 'mrc_component';
 export const OUTPUT_NAME = 'mrc_component';
@@ -177,6 +179,7 @@ export function getAllPossibleComponents(hideParams: boolean): ToolboxItems.Cont
   const contents: ToolboxItems.ContentsType[] = [];
   // Iterate through all the components subclasses and add definition blocks.
   const componentTypes = getSubclassNames('component.Component');
+
   componentTypes.forEach(componentType => {
     const classData = getClassData(componentType);
     if (!classData) {
@@ -212,7 +215,7 @@ function createComponentBlock(
   const inputs: {[key: string]: any} = {};
   for (let i = 0; i < staticFunctionData.args.length; i++) {
     const argData = staticFunctionData.args[i];
-    extraState.params.push({
+    extraState.params!.push({
       'name': argData.name,
       'type': argData.type,
     });
@@ -233,14 +236,16 @@ function createComponentBlock(
 function getPortTypeForArgument(argName: string): string | null {
   const argNameLower = argName.toLowerCase();
   const moduleData = getModuleData('component');
-  for (const enumData of moduleData.enums) {
-    if (enumData.enumClassName ===  'component.PortType') {
-     for (const value of enumData.enumValues) {
-       if (argNameLower === value.toLowerCase()) {
-         return value;
-       }
-     }
-     break;
+  if (moduleData) {
+    for (const enumData of moduleData.enums) {
+      if (enumData.enumClassName ===  'component.PortType') {
+      for (const value of enumData.enumValues) {
+        if (argNameLower === value.toLowerCase()) {
+          return value;
+        }
+      }
+      break;
+      }
     }
   }
 

@@ -260,7 +260,7 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
 
     holderBlocks.forEach(holderBlock => {
       const componentsFromHolder: commonStorage.Component[] = 
-        (holderBlock as mechanismComponentHolder.MechanismComponentHolderBlock).getComponents();
+        (holderBlock as MechanismComponentHolder.MechanismComponentHolderBlock).getComponents();
       componentsFromHolder.forEach(component => {
         // Get the blocks for this specific component
         contents.push({
