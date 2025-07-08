@@ -19,31 +19,14 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 
-/**
- * TODO: This is all fake right now, it will be generated dynamically
- * based on the components that are available in the current module.
- */
-
 import * as Blockly from 'blockly/core';
-
 import * as commonStorage from '../storage/common_storage';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
 import * as Component from '../blocks/mrc_component';
 import { getInstanceComponentBlocks } from '../blocks/mrc_call_python_function';
-import * as MechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
+import { Editor } from '../editor/editor';
 
 export function getHardwareCategory(currentModule: commonStorage.Module) {
-  if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
-    return {
-      kind: 'category',
-      name: 'Robot',
-      contents: [
-        getRobotMechanismsBlocks(currentModule),
-        getRobotComponentsBlocks(currentModule),
-        getRobotMethodsBlocks(currentModule),
-      ]
-    };
-  }
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
     return {
       kind: 'category',
@@ -57,22 +40,31 @@ export function getHardwareCategory(currentModule: commonStorage.Module) {
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
     return getComponentsBlocks(currentModule, true);
   }
-  // Return default empty category if module type doesn't match
-  return {
-    kind: 'category',
-    name: 'Hardware',
-    contents: []
-  };
+  if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
+    return {
+      kind: 'category',
+      name: 'Robot',
+      contents: [
+        getRobotMechanismsBlocks(currentModule),
+        getRobotComponentsBlocks(currentModule),
+        getRobotMethodsBlocks(currentModule),
+      ]
+    };
+  }
+  throw new Error('currentModule.moduleType has unexpected value: ' + currentModule.moduleType)
 }
 
-// TODO: This needs to load the robot file and get the list of mechanisms
 function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
-  const includeAdd = currentModule.moduleType !== commonStorage.MODULE_TYPE_OPMODE;
+  // getRobotMechanismsBlocks is called when the user is editing the robot or an opmode.
+  // If the user is editing the robot, it allows the user to add a mechanism to
+  // the robot or use an existing mechanism.
+  // If the user is editing an opmode, it allows the user to use a mechanism that
+  // was previously added to the Robot.
 
   const contents = [];
 
-  // Only include the "+ Mechanism" category if includeAdd is true
-  if (includeAdd) {
+  // Include the "+ Mechanism" category if the user it editing the robot.
+  if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
     contents.push({
       kind: 'category',
       name: '+ Mechanism',
@@ -80,7 +72,10 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
     });
   }
 
-  // Add the existing mechanisms
+  // TODO: Get the list of mechanisms from the robot and add the blocks for
+  // calling the mechanism functions to the toolbox.
+
+  /* // Uncomment this fake code for testing purposes only.
   contents.push(
     {
       kind: 'category',
@@ -204,6 +199,7 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
       contents: [],
     }
   );
+  */
 
   return {
     kind: 'category',
@@ -212,17 +208,27 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
   };
 }
 
-// TODO: This needs to load the robot file and get the list of components
 function getRobotComponentsBlocks(currentModule: commonStorage.Module) {
-  const includeAdd = currentModule.moduleType !== commonStorage.MODULE_TYPE_OPMODE;
+  // getRobotComponentsBlocks is called when the user is editing an opmode.
+  // It allows the user to use a component that was previously added to the Robot.
+
   const contents = [];
 
-  if (includeAdd) {
-    contents.push({
-      kind: 'category',
-      name: '+ Component',
-      contents: Component.getAllPossibleComponents(false)
-    });
+  // Get the list of components from the roobt.
+  const workspace = Blockly.getMainWorkspace();
+  if (workspace) {
+    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
+    if (editor) {
+      const componentsFromRobot = editor.getComponentsFromRobot();
+      componentsFromRobot.forEach(component => {
+        // Get the blocks for this specific component.
+        contents.push({
+          kind: 'category',
+          name: component.name,
+          contents: getInstanceComponentBlocks(component.className, component.name),
+        });
+      });
+    }
   }
 
   return {
@@ -233,16 +239,22 @@ function getRobotComponentsBlocks(currentModule: commonStorage.Module) {
 }
 
 function getRobotMethodsBlocks(currentModule: commonStorage.Module) {
+  const contents = [];
+
+  // TODO: Get the list of public methods from the robot and add the blocks for
+  // calling the robot functions to the toolbox.
+
   return {
     kind: 'category',
     name: 'Methods',
-    contents: []
+    contents,
   };
 }
 
-// This is called when the user is editing a mechanism or the robot and allows
-// the user to add a component or use an existing component.
 function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : boolean) {
+  // getComponentsBlocks is called when the user is editing the robot or a
+  // mechanism. It allows the user to add a component or use an existing component.
+
   const contents = [];
 
   // Add the "+ Component" category
@@ -252,16 +264,13 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
     contents: Component.getAllPossibleComponents(hideParams)
   });
 
-  // Get components from the current workspace
+  // Get components from the current workspace.
   const workspace = Blockly.getMainWorkspace();
   if (workspace) {
-    // Get the holder block and ask it for the components.
-    const holderBlocks = workspace.getBlocksByType(MechanismComponentHolder.BLOCK_NAME);
-
-    holderBlocks.forEach(holderBlock => {
-      const componentsFromHolder: commonStorage.Component[] = 
-        (holderBlock as MechanismComponentHolder.MechanismComponentHolderBlock).getComponents();
-      componentsFromHolder.forEach(component => {
+    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
+    if (editor) {
+      const componentsFromWorkspace = editor.getComponentsFromWorkspace();
+      componentsFromWorkspace.forEach(component => {
         // Get the blocks for this specific component
         contents.push({
           kind: 'category',
@@ -269,8 +278,9 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
           contents: getInstanceComponentBlocks(component.className, component.name),
         });
       });
-    });
+    }
   }
+
   return {
     kind: 'category',
     name: 'Components',

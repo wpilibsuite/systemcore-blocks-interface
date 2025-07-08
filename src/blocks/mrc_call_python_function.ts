@@ -545,12 +545,17 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
-          let componentNames: string[] = [];
+          const componentNames: string[] = [];
           // Get the list of component names whose type matches this.mrcComponentClassName so we can
           // create a dropdown that has the appropriate component names.
           const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
           if (editor) {
-            componentNames = editor.getComponentNames(this.mrcComponentClassName);
+            const components = editor.getComponentsFromRobot();
+            components.forEach(component => {
+              if (component.className === this.mrcComponentClassName) {
+                componentNames.push(component.name);
+              }
+            });
           }
           const componentName = this.getComponentName();
           if (!componentNames.includes(componentName)) {
