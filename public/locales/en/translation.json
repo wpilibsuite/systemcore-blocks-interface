@@ -19,6 +19,8 @@
         "title": "Add Tab",
         "newItemPlaceholder": "Add Module",
         "search": "Search..."
-
-    }    
+    },
+    "BLOCKLY":{
+        "OF_TYPE": "of type"
+    }   
 }

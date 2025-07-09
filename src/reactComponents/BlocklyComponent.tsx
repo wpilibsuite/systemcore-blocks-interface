@@ -20,11 +20,16 @@
  */
 import * as React from 'react';
 import * as Blockly from 'blockly/core';
-import * as locale from 'blockly/msg/en';
+import * as En from 'blockly/msg/en';
+import * as Es from 'blockly/msg/es';
+import { customTokens } from '../blocks/tokens';
+
 import { themes } from '../themes/mrc_themes';
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
+import { useTranslation } from 'react-i18next';
+
 
 /** Interface for methods exposed by the BlocklyComponent. */
 export interface BlocklyComponentType {
@@ -77,6 +82,10 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
     ({ theme }, ref): React.JSX.Element => {
       const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
       const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
+
+      const { t, i18n } = useTranslation();
+      // const { t } = useTranslation();
+      
 
       const getBlocklyTheme = (): Blockly.Theme => {
         const blocklyTheme = 'mrc_theme_' + theme.replace(/-/g, '_');
@@ -133,8 +142,18 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         }
 
         // Set Blockly locale
-        Blockly.setLocale(locale as any);
-
+        switch (i18n.language) {
+          case 'es':
+            Blockly.setLocale(Es as any);
+            break;
+          case 'en':
+            Blockly.setLocale(En as any);
+            break;
+          default:
+            Blockly.setLocale(En as any);
+            break;
+        }
+        Blockly.setLocale(customTokens(t));
         // Create workspace
         const workspaceConfig = createWorkspaceConfig();
         const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);

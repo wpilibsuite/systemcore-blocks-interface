@@ -69,7 +69,7 @@ const COMPONENT = {
     this.setStyle(MRC_STYLE_COMPONENTS);
     this.appendDummyInput()
       .appendField(new Blockly.FieldTextInput(''), FIELD_NAME)
-      .appendField('of type')
+      .appendField(Blockly.Msg.OF_TYPE)
       .appendField(createFieldNonEditableText(''), FIELD_TYPE);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
