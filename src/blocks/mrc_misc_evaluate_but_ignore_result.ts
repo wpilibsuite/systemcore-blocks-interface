@@ -31,14 +31,13 @@ export const setup = function() {
   Blockly.Blocks[BLOCK_NAME] = {
     init: function() {
       this.appendValueInput('VALUE')
-          .appendField('evaluate but ignore result')
+          .appendField(Blockly.Msg.EVALUATE_BUT_IGNORE_RESULT)
           .setAlign(Blockly.inputs.Align.RIGHT);
       this.setPreviousStatement(true);
       this.setNextStatement(true);
       this.setStyle(MRC_STYLE_MISC);
       this.setTooltip(
-          'Executes the connected block and ignores the result. ' +
-          'Allows you to call a function and ignore the return value.');
+          Blockly.Msg.EVALUATE_BUT_IGNORE_RESULT_TOOLTIP);
     },
   };
 };

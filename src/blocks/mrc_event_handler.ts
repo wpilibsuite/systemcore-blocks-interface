@@ -65,11 +65,11 @@ const EVENT_HANDLER = {
    */
   init(this: EventHandlerBlock): void {
     this.appendDummyInput('TITLE')
-        .appendField('When')
+        .appendField(Blockly.Msg.WHEN)
         .appendField(createFieldNonEditableText('sender'), 'SENDER')
         .appendField(createFieldNonEditableText('eventName'), 'EVENT_NAME');
     this.appendDummyInput('PARAMS')
-        .appendField('with');
+        .appendField(Blockly.Msg.WITH);
     this.setOutput(false);
     this.setStyle(MRC_STYLE_EVENT_HANDLER);
     this.appendStatementInput('STACK').appendField('');

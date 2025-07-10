@@ -61,23 +61,23 @@ const OPMODE_DETAILS = {
   init: function (this: OpmodeDetailsBlock): void {
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
     this.appendDummyInput()
-      .appendField('Type')
-      .appendField(createFieldDropdown(['Auto', 'Teleop', 'Test']), 'TYPE')
+      .appendField(Blockly.Msg.TYPE)
+      .appendField(createFieldDropdown([Blockly.Msg.AUTO, Blockly.Msg.TELEOP, Blockly.Msg.TEST]), 'TYPE')
       .appendField('    ')
-      .appendField('Enabled')
+      .appendField(Blockly.Msg.ENABLED)
       .appendField(new Blockly.FieldCheckbox(true), 'ENABLED');
 
     this.appendDummyInput()
-        .appendField('Display Name')
+        .appendField(Blockly.Msg.DISPLAY_NAME)
         .appendField(new Blockly.FieldTextInput(''), 'NAME')
     this.appendDummyInput()
-        .appendField('Display Group')
+        .appendField(Blockly.Msg.DISPLAY_GROUP)
         .appendField(new Blockly.FieldTextInput(''), 'GROUP');
 
-    this.getField('TYPE')?.setTooltip('What sort of OpMode this is');
-    this.getField('ENABLED')?.setTooltip('Whether the OpMode is shown on Driver Station');
-    this.getField('NAME')?.setTooltip('The name shown on the Driver Station.  If blank will use the class name.');
-    this.getField('GROUP')?.setTooltip('An optional group to group OpModes on Driver Station');
+    this.getField('TYPE')?.setTooltip(Blockly.Msg.OPMODE_TYPE_TOOLTIP);
+    this.getField('ENABLED')?.setTooltip(Blockly.Msg.OPMODE_ENABLED_TOOLTIP);
+    this.getField('NAME')?.setTooltip(Blockly.Msg.OPMODE_NAME_TOOLTIP);
+    this.getField('GROUP')?.setTooltip(Blockly.Msg.OPMODE_GROUP_TOOLTIP);
   },
 }
 
