@@ -16,7 +16,7 @@
  */
 
 /**
- * @fileoverview Blocks for class method defintion
+ * @fileoverview Blocks for class method definition
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
@@ -25,6 +25,7 @@ import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
 import { createFieldFlydown } from '../fields/field_flydown';
 import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import * as commonStorage from '../storage/common_storage';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
@@ -45,6 +46,7 @@ interface ClassMethodDefMixin extends ClassMethodDefMixinType {
     mrcReturnType: string,
     mrcParameters: Parameter[],
     mrcPythonMethodName: string,
+    mrcMethod: commonStorage.Method | null,
 }
 type ClassMethodDefMixinType = typeof CLASS_METHOD_DEF;
 
@@ -131,6 +133,7 @@ const CLASS_METHOD_DEF = {
         this.mrcPythonMethodName = extraState.pythonMethodName ? extraState.pythonMethodName : '';
         this.mrcReturnType = extraState.returnType;
         this.mrcParameters = [];
+        this.mrcMethod = null;
 
         extraState.params.forEach((param) => {
             this.mrcParameters.push({
@@ -254,6 +257,9 @@ const CLASS_METHOD_DEF = {
         }
         return legalName;
     },
+    getMethod: function (this: ClassMethodDefBlock): commonStorage.Method | null {
+      return this.mrcMethod;
+    }
 };
 
 /**
@@ -394,6 +400,25 @@ export const pythonFromBlock = function (
         returnValue;
     code = generator.scrub_(block, code);
     generator.addClassMethodDefinition(funcName, code);
+
+    if (block.mrcCanBeCalledOutsideClass) {
+      // Update the mrcMethod.
+      block.mrcMethod = {
+        visibleName: block.getFieldValue('NAME'),
+        pythonName: funcName,
+        returnType: block.mrcReturnType,
+        args: [{
+          name: 'self',
+          type: '',
+        }],
+      };
+      block.mrcParameters.forEach(param => {
+        block.mrcMethod!.args.push({
+          name: param.name,
+          type: param.type ? param.type : '',
+        });
+      });
+    }
 
     return '';
 }

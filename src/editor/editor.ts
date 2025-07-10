@@ -25,6 +25,7 @@ import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
+import * as classMethodDef from '../blocks/mrc_class_method_def';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { MethodsCategory } from '../toolbox/methods_category';
 import { EventsCategory } from '../toolbox/event_category';
@@ -71,38 +72,15 @@ export class Editor {
       return;
     }
 
-    // TODO(lizlooney): As blocks are loaded, determine whether any blocks
-    // are accessing variable or calling functions thar are defined in another
-    // blocks file (like the Robot) and check whether the variable or function
-    // definition has changed. This might happen if the user defines a variable
-    // or function in the Robot, uses the variable or function in the
-    // OpMode, and then removes or changes the variable or function in the
-    // Robot.
+    // TODO(lizlooney): Look at blocks with type 'mrc_call_python_function' that
+    // are calling methods defined in the Robot and check that the Robot method
+    // still exists and hasn't been changed. If it has changed, update the block
+    // if possible or put a visible warning on it.
 
-    // TODO(lizlooney): We will need a way to identify which variable or
-    // function, other than by the variable name or function name, because the
-    // user might change the name. This will take some thought and I should
-    // write up a design doc and discuss it with others to make sure we have a
-    // good solution.
-
-    // TODO(lizlooney): Look at blocks with type 'mrc_get_python_variable' or
-    // 'mrc_set_python_variable', and where block.mrcExportedVariable === true.
-    // Look at block.mrcImportModule and get the exported blocks for that module.
-    // It could be from the Robot (or a Mechanism?) and we already have the Robot content.
-    // Check whether block.mrcActualVariableName matches any exportedBlock's
-    // extraState.actualVariableName. If there is no match, put a warning on the
-    // block.
-
-    // TODO(lizlooney): Look at blocks with type 'mrc_call_python_function' and
-    // where block.mrcExportedFunction === true.
-    // Look at block.mrcImportModule and get the exported blocks for that module.
-    // It could be from the Robot (or a Mechanism?) and we already have the Robot content.
-    // Check whether block.mrcActualFunctionName matches any exportedBlock's
-    // extraState.actualFunctionName. If there is no match, put a warning on the block.
-    // If there is a match, check whether
-    // block.mrcArgs.length === exportedBlock.extraState.args.length and
-    // block.mrcArgs[i].name === exportedBlock.extraState.args[i].name for all args.
-    // If there is any differences, put a warning on the block.
+    // TODO(lizlooney): Look at blocks with type 'mrc_call_python_function' that
+    // are calling methods on components defined in the Robot and check that the
+    // component and the method still exists and hasn't been changed. If it has
+    // changed, update the block if possible or put a visible warning on it.
   }
 
   private onChangeAfterLoading(event: Blockly.Events.Abstract) {
@@ -221,12 +199,12 @@ export class Editor {
     }
     const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
       this.blocklyWorkspace, this.generatorContext);
-    const exportedBlocks = JSON.stringify(this.generatorContext.getExportedBlocks());
     const blocksContent = JSON.stringify(
       Blockly.serialization.workspaces.save(this.blocklyWorkspace));
+    const methodsContent = JSON.stringify(this.getMethodsFromWorkspace());
     const componentsContent = JSON.stringify(this.getComponentsFromWorkspace());
     return commonStorage.makeModuleContent(
-      this.currentModule, pythonCode, blocksContent, exportedBlocks, componentsContent);
+      this.currentModule, pythonCode, blocksContent, methodsContent, componentsContent);
   }
 
   public getComponentsFromWorkspace(): commonStorage.Component[] {
@@ -246,6 +224,22 @@ export class Editor {
     return components;
   }
 
+  public getMethodsFromWorkspace(): commonStorage.Method[] {
+    const methods: commonStorage.Method[] = [];
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
+      this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+      // Get the class method definition blocks.
+      const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
+      methodDefBlocks.forEach(methodDefBlock => {
+        const method = (methodDefBlock as classMethodDef.ClassMethodDefBlock).getMethod();
+        if (method) {
+          methods.push(method);
+        }
+      });
+    }
+    return methods;
+  }
+
   public async saveBlocks() {
     const moduleContent = this.getModuleContent();
     try {
@@ -260,8 +254,6 @@ export class Editor {
    * Returns the components defined in the robot.
    */
   public getComponentsFromRobot(): commonStorage.Component[] {
-    let components: commonStorage.Component[];
-
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
       return this.getComponentsFromWorkspace();
     }
@@ -269,6 +261,19 @@ export class Editor {
       throw new Error('getComponentsFromRobot: this.robotContent is null.');
     }
     return commonStorage.extractComponents(this.robotContent);
+  }
+
+  /**
+   * Returns the methods defined in the robot.
+   */
+  public getMethodsFromRobot(): commonStorage.Method[] {
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+      return this.getMethodsFromWorkspace();
+    }
+    if (!this.robotContent) {
+      throw new Error('getMethodsFromRobot: this.robotContent is null.');
+    }
+    return commonStorage.extractMethods(this.robotContent);
   }
 
   public static getEditorForBlocklyWorkspace(workspace: Blockly.Workspace): Editor | null {
