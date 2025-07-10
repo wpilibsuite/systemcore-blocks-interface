@@ -84,7 +84,6 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
       const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
 
       const { t, i18n } = useTranslation();
-      // const { t } = useTranslation();
       
 
       const getBlocklyTheme = (): Blockly.Theme => {
@@ -135,6 +134,46 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         },
       });
 
+      /** Updates the Blockly locale when the language changes. */
+      const updateBlocklyLocale = (): void => {
+        if (!workspaceRef.current) {
+          return;
+        }
+
+        // Save the current workspace state
+        const workspaceXml = Blockly.Xml.workspaceToDom(workspaceRef.current);
+        
+        // Dispose of the current workspace
+        workspaceRef.current.dispose();
+        
+        // Set new locale
+        switch (i18n.language) {
+          case 'es':
+            Blockly.setLocale(Es as any);
+            break;
+          case 'en':
+            Blockly.setLocale(En as any);
+            break;
+          default:
+            Blockly.setLocale(En as any);
+            break;
+        }
+        
+        // Apply custom tokens
+        Blockly.setLocale(customTokens(t));
+        
+        // Re-create workspace with new locale
+        const workspaceConfig = createWorkspaceConfig();
+        const newWorkspace = Blockly.inject(blocklyDiv.current!, workspaceConfig);
+        workspaceRef.current = newWorkspace;
+        
+        // Restore the workspace state (this will create blocks with new locale)
+        Blockly.Xml.domToWorkspace(workspaceXml, newWorkspace);
+        
+        // Re-apply any event listeners that were on the original workspace
+        // You may need to call your setup functions here again
+      };
+
       /** Initializes the Blockly workspace. */
       const initializeWorkspace = (): void => {
         if (!blocklyDiv.current) {
@@ -154,6 +193,7 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
             break;
         }
         Blockly.setLocale(customTokens(t));
+        
         // Create workspace
         const workspaceConfig = createWorkspaceConfig();
         const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
@@ -211,6 +251,12 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
           workspaceRef.current.setTheme(newTheme);
         }
       }, [theme]);
+
+      // Add this: Update locale when language changes
+      React.useEffect(() => {
+        console.log('Updating Blockly locale for language:', i18n.language);
+        updateBlocklyLocale();
+      }, [i18n.language, t]);
 
       // Handle workspace resize
       React.useEffect(() => {

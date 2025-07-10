@@ -421,12 +421,14 @@ const CALL_PYTHON_FUNCTION = {
       returnType: this.mrcReturnType,
       args: [],
     };
-    this.mrcArgs.forEach((arg) => {
-      extraState.args.push({
-        'name': arg.name,
-        'type': arg.type,
+    if(this.mrcArgs){
+      this.mrcArgs.forEach((arg) => {
+        extraState.args.push({
+          'name': arg.name,
+          'type': arg.type,
+        });
       });
-    });
+    }
     if (this.mrcTooltip) {
       extraState.tooltip = this.mrcTooltip;
     }

@@ -82,12 +82,14 @@ const COMPONENT = {
     const extraState: ComponentExtraState = {
     };
     extraState.params = [];
-    this.mrcArgs.forEach((arg) => {
-      extraState.params!.push({
-        'name': arg.name,
-        'type': arg.type,
+    if(this.mrcArgs){
+      this.mrcArgs.forEach((arg) => {
+        extraState.params!.push({
+          'name': arg.name,
+          'type': arg.type,
+        });
       });
-    });
+    }
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
     }

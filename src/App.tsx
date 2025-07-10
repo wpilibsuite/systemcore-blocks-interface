@@ -47,7 +47,7 @@ import * as ChangeFramework from './blocks/utils/change_framework'
 import { mutatorOpenListener } from './blocks/mrc_param_container'
 import { TOOLBOX_UPDATE_EVENT } from './blocks/mrc_mechanism_component_holder';
 import { antdThemeFromString } from './reactComponents/ThemeModal';
-import i18n from './i18n/config';
+import { useTranslation } from 'react-i18next';
 
 /** Storage key for shown toolbox categories. */
 const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';
@@ -87,6 +87,8 @@ const LAYOUT_BACKGROUND_COLOR = '#0F0';
  * project management, and user interface layout.
  */
 const App: React.FC = (): React.JSX.Element => {
+  const { t } = useTranslation();
+    
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [storage, setStorage] = React.useState<commonStorage.Storage | null>(null);
   const [currentModule, setCurrentModule] = React.useState<commonStorage.Module | null>(null);
@@ -101,7 +103,6 @@ const App: React.FC = (): React.JSX.Element => {
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
   const [rightCollapsed, setRightCollapsed] = React.useState(false);
   const [theme, setTheme] = React.useState('dark');
-
 
   const blocksEditor = React.useRef<editor.Editor | null>(null);
   const generatorContext = React.useRef<GeneratorContext | null>(null);
@@ -291,7 +292,8 @@ const App: React.FC = (): React.JSX.Element => {
     if (blocksEditor.current) {
       blocksEditor.current.loadModuleBlocks(currentModule);
     }
-  }, [currentModule]);
+  }, [currentModule]); 
+
 
   // Initialize Blockly workspace and editor when component and storage are ready
   React.useEffect(() => {
