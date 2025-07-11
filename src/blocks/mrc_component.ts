@@ -82,7 +82,7 @@ const COMPONENT = {
     const extraState: ComponentExtraState = {
     };
     extraState.params = [];
-    if(this.mrcArgs){
+    if (this.mrcArgs){
       this.mrcArgs.forEach((arg) => {
         extraState.params!.push({
           'name': arg.name,
