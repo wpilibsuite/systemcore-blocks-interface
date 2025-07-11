@@ -37,7 +37,7 @@
         "newItemPlaceholder": "Agregar Módulo",
         "search": "Buscar..."
     },
-    "BLOCKLY":{
+    "BLOCKLY": {
         "OF_TYPE": "de tipo",
         "WITH": "con",
         "WHEN": "cuando",
@@ -51,14 +51,14 @@
         "ENABLED": "Habilitado",
         "DISPLAY_NAME": "Nombre a Mostrar",
         "DISPLAY_GROUP": "Grupo a Mostrar",
-        "TOOLTIP":{
+        "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Ejecuta el bloque conectado e ignora el resultado. Te permite llamar una función e ignorar el valor de retorno.",
             "OPMODE_TYPE": "Qué tipo de OpMode es este",
             "OPMODE_ENABLED": "Si el OpMode se muestra en la Estación del Conductor",
             "OPMODE_NAME": "El nombre mostrado en la Estación del Conductor. Si está en blanco usará el nombre de la clase.",
             "OPMODE_GROUP": "Un grupo opcional para agrupar OpModes en la Estación del Conductor"
         },
-        "CATEGORY":{
+        "CATEGORY": {
             "LISTS": "Listas",
             "HARDWARE": "Hardware",
             "COMPONENTS": "Componentes",
@@ -74,5 +74,6 @@
             "EVENTS": "Eventos",
             "ADD_MECHANISM": "+ Mecanismo",
             "ADD_COMPONENT": "+ Componente"
-    }   
+        }
+    }
 }
