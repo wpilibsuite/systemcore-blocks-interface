@@ -144,6 +144,7 @@ const MECHANISM_COMPONENT_HOLDER = {
 
           if (componentName && componentType) {
             components.push({
+              blockId: componentBlock.id,
               name: componentName,
               className: componentType,
             });

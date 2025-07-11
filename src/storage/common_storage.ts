@@ -59,6 +59,7 @@ export type MethodArg = {
 };
 
 export type Method = {
+  blockId: string, // ID of the mrc_class_method_def block that defines the method.
   visibleName: string,
   pythonName: string,
   returnType: string, // 'None' for no return value, '' for an untyped return value.
@@ -66,6 +67,7 @@ export type Method = {
 };
 
 export type Component = {
+  blockId: string, // ID of the mrc_component block that defines the component.
   name: string,
   className: string,
 }

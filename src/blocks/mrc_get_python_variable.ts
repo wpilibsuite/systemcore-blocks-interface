@@ -191,7 +191,6 @@ interface GetPythonVariableMixin extends GetPythonVariableMixinType {
   mrcSelfType: string,
   mrcImportModule: string,
   mrcActualVariableName: string,
-  mrcExportedVariable: boolean,
   mrcKey: string,
 }
 type GetPythonVariableMixinType = typeof GET_PYTHON_VARIABLE;
@@ -227,10 +226,6 @@ type GetPythonVariableExtraState = {
    * the FIELD_VARIABLE_NAME field.
    */
   actualVariableName?: string,
-  /**
-   * True if this blocks refers to an exported variable (for example, from the Robot).
-   */
-  exportedVariable?: boolean,
 };
 
 const GET_PYTHON_VARIABLE = {
@@ -289,7 +284,6 @@ const GET_PYTHON_VARIABLE = {
     const extraState: GetPythonVariableExtraState = {
       varKind: this.mrcVarKind,
       moduleOrClassName: this.mrcModuleOrClassName,
-      exportedVariable: this.mrcExportedVariable,
     };
     if (this.mrcVarType) {
       extraState.varType = this.mrcVarType;
@@ -324,8 +318,6 @@ const GET_PYTHON_VARIABLE = {
         ? extraState.importModule : '';
     this.mrcActualVariableName = extraState.actualVariableName
         ? extraState.actualVariableName : '';
-    this.mrcExportedVariable = extraState.exportedVariable
-        ? extraState.exportedVariable : false;
     this.mrcKey = createKey(this.mrcVarKind, this.mrcModuleOrClassName, this.mrcVarType);
     this.updateBlock_();
   },
