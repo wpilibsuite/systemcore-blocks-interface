@@ -245,6 +245,7 @@ export async function renameModuleInProject(
         mechanism.moduleName = newModuleName;
         mechanism.className = proposedClassName;
       }
+      return newModulePath;
     } else if (module.moduleType === MODULE_TYPE_OPMODE) {
       const opMode = project.opModes.find(o => o.modulePath === module.modulePath);
       if (opMode) {
