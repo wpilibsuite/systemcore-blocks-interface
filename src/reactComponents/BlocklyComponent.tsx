@@ -140,6 +140,8 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         if (!workspaceRef.current) {
           return;
         }
+        // Save workspace state
+        const workspaceXml = Blockly.Xml.workspaceToDom(workspaceRef.current);
 
         // Set new locale
         switch (i18n.language) {
@@ -153,30 +155,33 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
             Blockly.setLocale(En as any);
             break;
         }
-        
         // Apply custom tokens
         Blockly.setLocale(customTokens(t));
-        
-        // Save workspace state
-        const workspaceXml = Blockly.Xml.workspaceToDom(workspaceRef.current);
         
         // Clear the workspace
         workspaceRef.current.clear();
         
-        // Restore workspace with new locale (blocks will be recreated with new text)
-        if (workspaceXml.hasChildNodes()) {
-          Blockly.Xml.domToWorkspace(workspaceXml, workspaceRef.current);
+        // Force complete toolbox rebuild by calling onWorkspaceRecreated AFTER locale is set
+        if (props.onWorkspaceRecreated) {
+          props.onWorkspaceRecreated(workspaceRef.current);
         }
-        
-        // Refresh the toolbox
-        const toolbox = workspaceRef.current.getToolbox();
-        if (toolbox) {
-          // Force toolbox to rebuild with new locale
-          toolbox.refreshSelection();
-        }
-        
-        // Trigger workspace refresh
-        Blockly.svgResize(workspaceRef.current);
+               
+        // Small delay to ensure toolbox is rebuilt before restoring blocks
+        setTimeout(() => {
+          if (workspaceRef.current && workspaceXml.hasChildNodes()) {
+            Blockly.Xml.domToWorkspace(workspaceXml, workspaceRef.current);
+          }
+
+          // Final refresh
+          const toolbox = workspaceRef.current!.getToolbox();
+          if (toolbox && toolbox.refreshSelection) {
+            toolbox.refreshSelection();
+          }
+
+          if (workspaceRef.current) {
+            Blockly.svgResize(workspaceRef.current);            
+          }
+        }, 10);
       };
 
       /** Initializes the Blockly workspace. */

@@ -309,6 +309,12 @@ const App: React.FC = (): React.JSX.Element => {
     }
 
     blocksEditor.current = new editor.Editor(newWorkspace, generatorContext.current, storage);
+    
+    // Set the current module in the editor after creating it
+    if (currentModule) {
+      blocksEditor.current.loadModuleBlocks(currentModule);
+    }
+    
     blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
   };
 
@@ -352,6 +358,31 @@ const App: React.FC = (): React.JSX.Element => {
       setActiveTab(project.robot.modulePath);
     }
   }, [project]);
+
+  // Handle language changes with automatic saving
+  React.useEffect(() => {
+    const handleLanguageChange = async () => {
+      // Save current blocks before language change
+      if (currentModule && areBlocksModified()) {
+        try {
+          await saveBlocks();
+        } catch (e) {
+          console.error('Failed to save blocks before language change:', e);
+        }
+      }
+      
+      // Update toolbox after language change
+      if (blocksEditor.current) {
+        blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+      }
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [currentModule, shownPythonToolboxCategories, i18n]);
 
   const { Sider, Content } = Antd.Layout;
 
