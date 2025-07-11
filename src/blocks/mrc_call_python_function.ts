@@ -421,7 +421,7 @@ const CALL_PYTHON_FUNCTION = {
       returnType: this.mrcReturnType,
       args: [],
     };
-    if(this.mrcArgs){
+    if (this.mrcArgs){
       this.mrcArgs.forEach((arg) => {
         extraState.args.push({
           'name': arg.name,
