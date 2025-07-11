@@ -165,23 +165,6 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         if (props.onWorkspaceRecreated) {
           props.onWorkspaceRecreated(workspaceRef.current);
         }
-               
-        // Small delay to ensure toolbox is rebuilt before restoring blocks
-        setTimeout(() => {
-          if (workspaceRef.current && workspaceXml.hasChildNodes()) {
-            Blockly.Xml.domToWorkspace(workspaceXml, workspaceRef.current);
-          }
-
-          // Final refresh
-          const toolbox = workspaceRef.current!.getToolbox();
-          if (toolbox && toolbox.refreshSelection) {
-            toolbox.refreshSelection();
-          }
-
-          if (workspaceRef.current) {
-            Blockly.svgResize(workspaceRef.current);            
-          }
-        }, 10);
       };
 
       /** Initializes the Blockly workspace. */
