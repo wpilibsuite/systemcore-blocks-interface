@@ -22,10 +22,7 @@
 import * as Blockly from 'blockly/core';
 import { PythonGenerator } from 'blockly/python';
 import { GeneratorContext } from './generator_context';
-import { Block } from '../toolbox/items';
-import { FunctionArg } from '../blocks/mrc_call_python_function';
 import * as MechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
-import * as commonStorage from '../storage/common_storage';
 
 export class OpModeDetails {
   constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
@@ -199,125 +196,15 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         code = annotations + code;
       }
       this.details = null;
-
-      this.context.setExportedBlocks(this.produceExportedBlocks(this.workspace));
     }
 
     return super.finish(code);
   }
 
-  private produceExportedBlocks(workspace: Blockly.Workspace): Block[] {
-    // The exported blocks produced here have the extraState.importModule and fields.MODULE values
-    // set to the MODULE_NAME_PLACEHOLDER. This is so blocks modules can be renamed and copied
-    // without having to change the contents of the modules.
-    // The placeholders will be replaced with the actual module name before they are added to the
-    // toolbox.
-
-    const exportedBlocks = [];
-
-    // All functions are exported.
-    // TODO(lizlooney): instead of looking at procedure blocks, this code needs
-    // to look at mrc_class_method_def blocks.
-    const allProcedures = Blockly.Procedures.allProcedures(workspace);
-    const procedureTuples = allProcedures[0].concat(allProcedures[1]);
-    for (const procedureTuple of procedureTuples) {
-      const functionName = procedureTuple[0];
-      const blockDefinition = Blockly.Procedures.getDefinition(functionName, workspace);
-      if (!blockDefinition || !blockDefinition.isEnabled()) {
-        continue;
-      }
-      const actualFunctionName = super.getProcedureName(functionName);
-      const hasReturnValue = procedureTuple[2];
-      const args: FunctionArg[] = [];
-      const parameterNames = procedureTuple[1];
-      parameterNames.forEach((parameterName) => {
-        args.push({
-          'name': parameterName,
-          'type': '',
-        })
-      });
-      const callFunctionBlock: Block = {
-        'kind': 'block',
-        'type': 'mrc_call_python_function',
-        'extraState': {
-          'functionKind': 'module',
-          'returnType': hasReturnValue ? '' : 'None',
-          'args': args,
-          'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
-          'actualFunctionName': actualFunctionName,
-          'exportedFunction': true,
-        },
-        'fields': {
-          'MODULE_OR_CLASS': commonStorage.MODULE_NAME_PLACEHOLDER,
-          'FUNC': functionName,
-        },
-      };
-      exportedBlocks.push(callFunctionBlock);
-    }
-
-    const allVariables = workspace.getVariableMap().getAllVariables();
-    for (const variableModel of allVariables) {
-      // Only variables that are used outside of functions are exported. (I'm not sure if this is
-      // the right choice, since all blockly variables are global variables.)
-      let exported = false;
-      const variableUsesById = workspace.getVariableUsesById(variableModel.getId())
-      if (variableUsesById.length === 0) {
-        continue;
-      }
-      variableUsesById.forEach((block) => {
-        if (block.type === 'variables_get' ||
-          block.type === 'variables_set' ||
-          block.type === 'math_change' ||
-          block.type === 'text_append') {
-          const rootBlock = block.getRootBlock();
-          if (rootBlock.type !== 'procedures_defnoreturn' &&
-            rootBlock.type !== 'procedures_defreturn') {
-            exported = true;
-          }
-        }
-      });
-      if (exported) {
-        const variableName = variableModel.getName();
-        const actualVariableName = super.getVariableName(variableModel.getId());
-        const getPythonModuleVariableBlock = {
-          'kind': 'block',
-          'type': 'mrc_get_python_variable',
-          'extraState': {
-            'varKind': 'module',
-            'moduleOrClassName': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'actualVariableName': actualVariableName,
-            'exportedVariable': true,
-          },
-          'fields': {
-            'MODULE_OR_CLASS': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'VAR': variableName,
-          },
-        };
-        exportedBlocks.push(getPythonModuleVariableBlock);
-        const setPythonModuleVariableBlock = {
-          'kind': 'block',
-          'type': 'mrc_set_python_variable',
-          'extraState': {
-            'varKind': 'module',
-            'moduleOrClassName': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'actualVariableName': actualVariableName,
-            'exportedVariable': true,
-          },
-          'fields': {
-            'MODULE_OR_CLASS': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'VAR': variableName,
-          },
-        };
-        exportedBlocks.push(setPythonModuleVariableBlock);
-      }
-    }
-    return exportedBlocks;
-  }
   setOpModeDetails(details : OpModeDetails) {
     this.details = details;
   }
+
   getClassSpecificForInit() : string{
     let classParent = this.context?.getClassParent();
     if (classParent == 'OpMode'){

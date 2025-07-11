@@ -19,7 +19,6 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { Block } from "../toolbox/items";
 import * as commonStorage from '../storage/common_storage';
 
 
@@ -29,9 +28,6 @@ export function createGeneratorContext(): GeneratorContext {
 
 export class GeneratorContext {
   private module: commonStorage.Module | null = null;
-
-  // The exported blocks for the current module.
-  private exportedBlocks: Block[] = [];
 
   // Has mechanisms (ie, needs in init)
   private hasHardware = false;
@@ -49,7 +45,6 @@ export class GeneratorContext {
   }
 
   clear(): void {
-    this.clearExportedBlocks();
     this.hasHardware= false;
   }
 
@@ -82,18 +77,5 @@ export class GeneratorContext {
       return 'Mechanism';
     }
     return '';
-  }
-
-  clearExportedBlocks() {
-    this.exportedBlocks.length = 0;
-  }
-
-  setExportedBlocks(exportedBlocks: Block[]) {
-    this.exportedBlocks.length = 0;
-    this.exportedBlocks.push(...exportedBlocks);
-  }
-
-  getExportedBlocks(): Block[] {
-    return this.exportedBlocks;
   }
 }

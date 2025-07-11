@@ -23,7 +23,6 @@ import JSZip from 'jszip';
 
 import * as Blockly from 'blockly/core';
 
-import { Block } from '../toolbox/items';
 import startingOpModeBlocks from '../modules/opmode_start.json';
 import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
@@ -54,6 +53,18 @@ export type Project = {
   opModes: OpMode[],
 };
 
+export type MethodArg = {
+  name: string,
+  type: string, // '' for an untyped arg.
+};
+
+export type Method = {
+  visibleName: string,
+  pythonName: string,
+  returnType: string, // 'None' for no return value, '' for an untyped return value.
+  args: MethodArg[],
+};
+
 export type Component = {
   name: string,
   className: string,
@@ -66,15 +77,13 @@ export const MODULE_TYPE_OPMODE = 'opmode';
 
 export const ROBOT_CLASS_NAME = 'Robot';
 
-export const MODULE_NAME_PLACEHOLDER = '%module_name%';
-
 const DELIMITER_PREFIX = 'BlocksContent';
 const MARKER_BLOCKS_CONTENT = 'blocksContent: ';
-const MARKER_EXPORTED_BLOCKS = 'exportedBlocks: ';
+const MARKER_METHODS = 'methods: ';
 const MARKER_MODULE_TYPE = 'moduleType: ';
 const MARKER_COMPONENTS = 'components: ';
 const PARTS_INDEX_BLOCKS_CONTENT = 0;
-const PARTS_INDEX_EXPORTED_BLOCKS = 1;
+const PARTS_INDEX_METHODS = 1;
 const PARTS_INDEX_MODULE_TYPE = 2;
 const PARTS_INDEX_COMPONENTS = 3;
 const NUMBER_OF_PARTS = 4;
@@ -490,12 +499,12 @@ function startingBlocksToModuleContent(
 
   const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
     headlessBlocklyWorkspace, generatorContext);
-  const exportedBlocks = JSON.stringify(generatorContext.getExportedBlocks());
   const blocksContent = JSON.stringify(
     Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
-  const components = '[]';
+  const methodsContent = '[]';
+  const componentsContent = '[]';
   return makeModuleContent(
-    module, pythonCode, blocksContent, exportedBlocks, components);
+    module, pythonCode, blocksContent, methodsContent, componentsContent);
 }
 
 /**
@@ -553,10 +562,13 @@ export function makeModuleContent(
   module: Module,
   pythonCode: string,
   blocksContent: string,
-  exportedBlocks: string,
-  components: string): string {
+  methodsContent: string,
+  componentsContent: string): string {
   let delimiter = DELIMITER_PREFIX;
-  while (blocksContent.includes(delimiter) || exportedBlocks.includes(delimiter) || module.moduleType.includes(delimiter)) {
+  while (module.moduleType.includes(delimiter)
+      || blocksContent.includes(delimiter)
+      || methodsContent.includes(delimiter)
+      || componentsContent.includes(delimiter)) {
     delimiter += '.';
   }
   return (
@@ -564,11 +576,11 @@ export function makeModuleContent(
     pythonCode + '\n\n\n' +
     '"""\n' +
     delimiter + '\n' +
-    MARKER_COMPONENTS + components + '\n' +
+    MARKER_COMPONENTS + componentsContent + '\n' +
     delimiter + '\n' +
     MARKER_MODULE_TYPE + module.moduleType + '\n' +
     delimiter + '\n' +
-    MARKER_EXPORTED_BLOCKS + exportedBlocks + '\n' +
+    MARKER_METHODS + methodsContent + '\n' +
     delimiter + '\n' +
     MARKER_BLOCKS_CONTENT + blocksContent + '\n' +
     delimiter + '\n' +
@@ -602,8 +614,12 @@ function getParts(moduleContent: string): string[] {
       parts.push(s.trim());
     }
   }
-  if (parts.length <= PARTS_INDEX_EXPORTED_BLOCKS) {
-    parts.push('[]');
+  if (parts.length <= PARTS_INDEX_METHODS) {
+    // This module was saved without methods.
+    parts.push(MARKER_METHODS + '[]');
+  } else if (!parts[PARTS_INDEX_METHODS].startsWith(MARKER_METHODS)) {
+    // Older modules were saved with exported blocks instead of methods.
+    parts[PARTS_INDEX_METHODS] = MARKER_METHODS + '[]'
   }
   if (parts.length <= PARTS_INDEX_MODULE_TYPE) {
     // This module was saved without the module type.
@@ -612,7 +628,7 @@ function getParts(moduleContent: string): string[] {
   }
   if (parts.length <= PARTS_INDEX_COMPONENTS) {
     // This module was saved without components.
-    parts.push('');
+    parts.push(MARKER_COMPONENTS + '[]');
   }
   return parts;
 }
@@ -630,25 +646,16 @@ export function extractBlocksContent(moduleContent: string): string {
 }
 
 /**
- * Extract the exportedBlocks from the given module content.
+ * Extract the methods from the given module content.
  */
-export function extractExportedBlocks(moduleName: string, moduleContent: string): Block[] {
+export function extractMethods(moduleContent: string): Method[] {
   const parts = getParts(moduleContent);
-  let exportedBlocksContent = parts[PARTS_INDEX_EXPORTED_BLOCKS];
-  if (exportedBlocksContent.startsWith(MARKER_EXPORTED_BLOCKS)) {
-    exportedBlocksContent = exportedBlocksContent.substring(MARKER_EXPORTED_BLOCKS.length);
+  let methodsContent = parts[PARTS_INDEX_METHODS];
+  if (methodsContent.startsWith(MARKER_METHODS)) {
+    methodsContent = methodsContent.substring(MARKER_METHODS.length);
   }
-
-  const exportedBlocks: Block[] = JSON.parse(exportedBlocksContent);
-  exportedBlocks.forEach((block) => {
-    if (block.extraState?.importModule === MODULE_NAME_PLACEHOLDER) {
-      block.extraState.importModule = moduleName;
-    }
-    if (block.fields?.MODULE_OR_CLASS === MODULE_NAME_PLACEHOLDER) {
-      block.fields.MODULE_OR_CLASS = moduleName;
-    }
-  });
-  return exportedBlocks;
+  const methods: Method[] = JSON.parse(methodsContent);
+  return methods;
 }
 
 /**
@@ -713,6 +720,14 @@ function _processModuleContentForDownload(
   if (moduleType.startsWith(MARKER_MODULE_TYPE)) {
     moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
   }
+  let methodsContent = parts[PARTS_INDEX_METHODS];
+  if (methodsContent.startsWith(MARKER_METHODS)) {
+    methodsContent = methodsContent.substring(MARKER_METHODS.length);
+  }
+  let componentsContent = parts[PARTS_INDEX_COMPONENTS];
+  if (componentsContent.startsWith(MARKER_COMPONENTS)) {
+    componentsContent = componentsContent.substring(MARKER_COMPONENTS.length);
+  }
 
   const module: Module = {
     modulePath: makeModulePath(projectName, moduleName),
@@ -723,12 +738,10 @@ function _processModuleContentForDownload(
     className: getClassNameForModule(moduleType, moduleName),
   };
 
-  // Clear out the python content and exported blocks.
+  // Clear out the python content.
   const pythonCode = '';
-  const exportedBlocks = '[]';
-  const components = '[]';
   return makeModuleContent(
-    module, pythonCode, blocksContent, exportedBlocks, components);
+    module, pythonCode, blocksContent, methodsContent, componentsContent);
 }
 
 /**
@@ -812,6 +825,14 @@ export function _processUploadedModule(
   if (moduleType.startsWith(MARKER_MODULE_TYPE)) {
     moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
   }
+  let methodsContent = parts[PARTS_INDEX_METHODS];
+  if (methodsContent.startsWith(MARKER_METHODS)) {
+    methodsContent = methodsContent.substring(MARKER_METHODS.length);
+  }
+  let componentsContent = parts[PARTS_INDEX_COMPONENTS];
+  if (componentsContent.startsWith(MARKER_COMPONENTS)) {
+    componentsContent = componentsContent.substring(MARKER_COMPONENTS.length);
+  }
 
   const moduleName = (moduleType === MODULE_TYPE_ROBOT)
     ? projectName : filename;
@@ -825,7 +846,7 @@ export function _processUploadedModule(
     className: snakeCaseToPascalCase(moduleName),
   };
 
-  // Generate the python content and exported blocks.
+  // Generate the python content.
   // Create a headless blockly workspace.
   const headlessBlocklyWorkspace = new Blockly.Workspace();
   headlessBlocklyWorkspace.options.oneBasedIndex = false;
@@ -837,9 +858,8 @@ export function _processUploadedModule(
 
   const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
     headlessBlocklyWorkspace, generatorContext);
-  const exportedBlocks = JSON.stringify(generatorContext.getExportedBlocks());
-  const components = '[]';
+
   const moduleContent = makeModuleContent(
-    module, pythonCode, blocksContent, exportedBlocks, components);
+    module, pythonCode, blocksContent, methodsContent, componentsContent);
   return [moduleName, moduleType, moduleContent];
 }

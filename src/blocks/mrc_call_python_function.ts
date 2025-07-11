@@ -48,6 +48,7 @@ export enum FunctionKind {
   INSTANCE = 'instance',
   INSTANCE_WITHIN = 'instance_within',
   INSTANCE_COMPONENT = 'instance_component',
+  INSTANCE_ROBOT = 'instance_robot',
   EVENT = 'event',
 }
 
@@ -220,7 +221,7 @@ function createInstanceMethodBlock(
 
 export function getInstanceComponentBlocks(
     componentType: string,
-    componentName: string) {
+    componentName: string): ToolboxItems.ContentsType[] {
   const contents: ToolboxItems.ContentsType[] = [];
 
   const classData = getClassData(componentType);
@@ -267,7 +268,7 @@ function createInstanceComponentBlock(
   // We don't include the arg or input for self.
   for (let i = 1; i < functionData.args.length; i++) {
     const argData = functionData.args[i];
-    let argName = argData.name;
+    const argName = argData.name;
     extraState.args.push({
       'name': argName,
       'type': argData.type,
@@ -282,6 +283,51 @@ function createInstanceComponentBlock(
   let block = new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
   if (functionData.returnType && functionData.returnType != 'None') {
     const varName = Variable.varNameForType(functionData.returnType);
+    if (varName) {
+      block = Variable.createVariableSetterBlock(varName, block);
+    }
+  }
+  return block;
+}
+
+export function getInstanceRobotBlocks(methods: CommonStorage.Method[]): ToolboxItems.ContentsType[] {
+  const contents: ToolboxItems.ContentsType[] = [];
+
+  for (const method of methods) {
+    const block = createInstanceRobotBlock(method);
+    contents.push(block);
+  }
+
+  return contents;
+}
+
+function createInstanceRobotBlock(method: CommonStorage.Method): ToolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.INSTANCE_ROBOT,
+    returnType: method.returnType,
+    actualFunctionName: method.pythonName,
+    args: [],
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_FUNCTION_NAME] = method.visibleName;
+  const inputs: {[key: string]: any} = {};
+  // We don't include the arg or input for the self argument.
+  for (let i = 1; i < method.args.length; i++) {
+    const arg = method.args[i];
+    extraState.args.push({
+      'name': arg.name,
+      'type': arg.type,
+    });
+    // Check if we should plug a variable getter block into the argument input socket.
+    const input = Value.valueForFunctionArgInput(arg.type, '');
+    if (input) {
+      // Because we skipped the self argument, use i - 1 when filling the inputs array.
+      inputs['ARG' + (i - 1)] = input;
+    }
+  }
+  let block = new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+  if (method.returnType && method.returnType != 'None') {
+    const varName = Variable.varNameForType(method.returnType);
     if (varName) {
       block = Variable.createVariableSetterBlock(varName, block);
     }
@@ -399,6 +445,11 @@ const CALL_PYTHON_FUNCTION = {
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = 'Calls the instance method ' + className + '.' + functionName +
               ' on the component named ' + this.getComponentName() + '.';
+          break;
+        }
+        case FunctionKind.INSTANCE_ROBOT: {
+          const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
+          tooltip = 'Calls the robot method ' + functionName + '.';
           break;
         }
         default:
@@ -568,6 +619,14 @@ const CALL_PYTHON_FUNCTION = {
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         }
+        case FunctionKind.INSTANCE_ROBOT: {
+          this.appendDummyInput('TITLE')
+              .appendField('call')
+              .appendField(createFieldNonEditableText('robot'))
+              .appendField('.')
+              .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
+          break;
+        }
         default:
           throw new Error('mrcFunctionKind has unexpected value: ' + this.mrcFunctionKind)
       }
@@ -705,6 +764,13 @@ export const pythonFromBlock = function(
           break;
       }
       code += componentName + '.' + functionName;
+      break;
+    }
+    case FunctionKind.INSTANCE_ROBOT: {
+      const functionName = callPythonFunctionBlock.mrcActualFunctionName
+          ? callPythonFunctionBlock.mrcActualFunctionName
+          : block.getFieldValue(FIELD_FUNCTION_NAME);
+      code = 'self.robot.' + functionName;
       break;
     }
     default:
