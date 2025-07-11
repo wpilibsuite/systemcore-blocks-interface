@@ -57,6 +57,23 @@
             "OPMODE_ENABLED": "Whether the OpMode is shown on Driver Station",
             "OPMODE_NAME": "The name shown on the Driver Station.  If blank will use the class name.",
             "OPMODE_GROUP": "An optional group to group OpModes on Driver Station"
+        },
+        "CATEGORY":{
+            "LISTS": "Lists",
+            "HARDWARE": "Hardware",
+            "COMPONENTS": "Components",
+            "ROBOT": "Robot",
+            "MECHANISMS": "Mechanisms",
+            "LOGIC": "Logic",
+            "LOOPS": "Loops",
+            "MATH": "Math",
+            "TEXT": "Text",
+            "MISC": "Miscellaneous",
+            "VARIABLES": "Variables",
+            "METHODS": "Methods",
+            "EVENTS": "Events",
+            "ADD_MECHANISM": "+ Mechanism",
+            "ADD_COMPONENT": "+ Component"
         }
     }   
 }

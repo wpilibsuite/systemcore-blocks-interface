@@ -21,13 +21,15 @@
 
 import * as robotPyToolbox from './robotpy_toolbox';
 import * as toolboxItems from './items';
-import { category as logicCategory } from './logic_category';
-import { category as loopCategory } from './loop_category';
-import { category as mathCategory } from './math_category';
-import { category as textCategory } from './text_category';
-import { category as listsCategory } from './lists_category';
-import { category as miscCategory } from './misc_category';
-import { category as methodsCategory } from './methods_category';
+import * as Blockly from 'blockly/core';
+import { getCategory as logicCategory } from './logic_category';
+import { getCategory as loopCategory } from './loop_category';
+import { getCategory as mathCategory } from './math_category';
+import { getCategory as textCategory } from './text_category';
+import { getCategory as listsCategory } from './lists_category';
+import { getCategory as miscCategory } from './misc_category';
+import { getCategory as methodsCategory } from './methods_category';
+
 
 export function getToolboxItems(
   shownPythonToolboxCategories: Set<string> | null) {
@@ -47,22 +49,22 @@ export function getToolboxItems(
   contents.push.apply(
     contents,
     [
-      logicCategory,
-      loopCategory,
-      mathCategory,
-      textCategory,
-      listsCategory,
-      miscCategory,
+      logicCategory(),
+      loopCategory(),
+      mathCategory(),
+      textCategory(),
+      listsCategory(),
+      miscCategory(),
       {
         kind: 'sep',
       },
       {
         kind: 'category',
-        name: 'Variables',
+        name: Blockly.Msg['MRC_CATEGORY_VARIABLES'],
         categorystyle: 'variable_category',
         custom: 'VARIABLE',
       },
-      methodsCategory,
+      methodsCategory(),
     ],
   );
   return contents;

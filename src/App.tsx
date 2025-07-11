@@ -48,6 +48,7 @@ import { mutatorOpenListener } from './blocks/mrc_param_container'
 import { TOOLBOX_UPDATE_EVENT } from './blocks/mrc_mechanism_component_holder';
 import { antdThemeFromString } from './reactComponents/ThemeModal';
 import { useTranslation } from 'react-i18next';
+import { setup } from './blocks/mrc_event_handler';
 
 /** Storage key for shown toolbox categories. */
 const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';
@@ -87,7 +88,7 @@ const LAYOUT_BACKGROUND_COLOR = '#0F0';
  * project management, and user interface layout.
  */
 const App: React.FC = (): React.JSX.Element => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
     
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [storage, setStorage] = React.useState<commonStorage.Storage | null>(null);
@@ -263,7 +264,7 @@ const App: React.FC = (): React.JSX.Element => {
     if (blocksEditor.current && currentModule) {
       blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
     }
-  }, [currentModule, shownPythonToolboxCategories]);
+  }, [currentModule, shownPythonToolboxCategories, i18n.language]);
 
   // Add event listener for toolbox updates
   React.useEffect(() => {
@@ -294,6 +295,23 @@ const App: React.FC = (): React.JSX.Element => {
     }
   }, [currentModule]); 
 
+  const setupWorkspace = (newWorkspace: Blockly.WorkspaceSvg) => {
+     if (!blocklyComponent.current || !storage) {
+      return;
+    }
+    // Recreate workspace when Blockly component is ready
+    ChangeFramework.setup(newWorkspace);
+    newWorkspace.addChangeListener(mutatorOpenListener);
+    newWorkspace.addChangeListener(handleBlocksChanged);
+    generatorContext.current = createGeneratorContext();
+    
+    if (currentModule) {
+      generatorContext.current.setModule(currentModule);
+    }
+
+    blocksEditor.current = new editor.Editor(newWorkspace, generatorContext.current, storage);
+    blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+  };
 
   // Initialize Blockly workspace and editor when component and storage are ready
   React.useEffect(() => {
@@ -303,17 +321,8 @@ const App: React.FC = (): React.JSX.Element => {
 
     const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
     if (blocklyWorkspace) {
-      ChangeFramework.setup(blocklyWorkspace);
-      blocklyWorkspace.addChangeListener(mutatorOpenListener);
-      blocklyWorkspace.addChangeListener(handleBlocksChanged);
+      setupWorkspace(blocklyWorkspace);
     }
-
-    generatorContext.current = createGeneratorContext();
-    if (currentModule) {
-      generatorContext.current.setModule(currentModule);
-    }
-
-    blocksEditor.current = new editor.Editor(blocklyWorkspace, generatorContext.current, storage);
   }, [blocklyComponent, storage]);
 
   // Generate code when module or regeneration trigger changes
@@ -395,6 +404,7 @@ const App: React.FC = (): React.JSX.Element => {
               <Content>
                 <BlocklyComponent 
                   theme={theme}
+                  onWorkspaceRecreated={setupWorkspace}
                   ref={blocklyComponent} 
                 />
               </Content>

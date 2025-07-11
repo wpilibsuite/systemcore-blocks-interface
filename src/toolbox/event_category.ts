@@ -29,12 +29,12 @@ import { RETURN_TYPE_NONE, FunctionKind } from '../blocks/mrc_call_python_functi
 
 const CUSTOM_CATEGORY_EVENTS = 'EVENTS';
 
-export const category = {
+export const getCategory = () => ({
   kind: 'category',
   categorystyle: MRC_CATEGORY_STYLE_METHODS,
-  name: 'Events',
+  name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
   custom: CUSTOM_CATEGORY_EVENTS,
-};
+});
 
 export class EventsCategory {
   private currentModule: commonStorage.Module | null = null;

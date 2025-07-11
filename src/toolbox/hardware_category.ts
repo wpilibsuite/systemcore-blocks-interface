@@ -30,7 +30,7 @@ export function getHardwareCategory(currentModule: commonStorage.Module) {
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
     return {
       kind: 'category',
-      name: 'Hardware',
+      name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
       contents: [
         getRobotMechanismsBlocks(currentModule),
         getComponentsBlocks(currentModule, false),
@@ -43,7 +43,7 @@ export function getHardwareCategory(currentModule: commonStorage.Module) {
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
     return {
       kind: 'category',
-      name: 'Robot',
+      name: Blockly.Msg['MRC_CATEGORY_ROBOT'],
       contents: [
         getRobotMechanismsBlocks(currentModule),
         getRobotComponentsBlocks(currentModule),
@@ -67,7 +67,7 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
     contents.push({
       kind: 'category',
-      name: '+ Mechanism',
+      name: Blockly.Msg['MRC_CATEGORY_ADD_MECHANISM'],
       contents: getAllPossibleMechanisms(),
     });
   }
@@ -203,7 +203,7 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module) {
 
   return {
     kind: 'category',
-    name: 'Mechanisms',
+    name: Blockly.Msg['MRC_CATEGORY_MECHANISMS'],
     contents,
   };
 }
@@ -233,7 +233,7 @@ function getRobotComponentsBlocks(currentModule: commonStorage.Module) {
 
   return {
     kind: 'category',
-    name: 'Components',
+    name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
     contents,
   };
 }
@@ -246,7 +246,7 @@ function getRobotMethodsBlocks(currentModule: commonStorage.Module) {
 
   return {
     kind: 'category',
-    name: 'Methods',
+    name: Blockly.Msg['MRC_CATEGORY_METHODS'],
     contents,
   };
 }
@@ -260,7 +260,7 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
   // Add the "+ Component" category
   contents.push({
     kind: 'category',
-    name: '+ Component',
+    name: Blockly.Msg['MRC_CATEGORY_ADD_COMPONENT'],
     contents: Component.getAllPossibleComponents(hideParams)
   });
 
@@ -283,7 +283,7 @@ function getComponentsBlocks(currentModule: commonStorage.Module, hideParams : b
 
   return {
     kind: 'category',
-    name: 'Components',
+    name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
     contents,
   };
 }

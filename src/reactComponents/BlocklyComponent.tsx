@@ -39,6 +39,7 @@ export interface BlocklyComponentType {
 /** Interface for props passed to the BlocklyComponent. */
 export interface BlocklyComponentProps {
   theme: string;
+  onWorkspaceRecreated: (workspace: Blockly.WorkspaceSvg) => void;
 }
 
 /** Grid spacing for the Blockly workspace. */
@@ -79,7 +80,7 @@ const WORKSPACE_STYLE: React.CSSProperties = {
  * cleanup, and resize handling.
  */
 const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyComponentProps>(
-    ({ theme }, ref): React.JSX.Element => {
+    (props, ref): React.JSX.Element => {
       const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
       const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
 
@@ -87,7 +88,7 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
       
 
       const getBlocklyTheme = (): Blockly.Theme => {
-        const blocklyTheme = 'mrc_theme_' + theme.replace(/-/g, '_');
+        const blocklyTheme = 'mrc_theme_' + props.theme.replace(/-/g, '_');
         // Find the theme by key
         const themeObj = themes.find(t => t.name === blocklyTheme);
         if (!themeObj) {
@@ -140,12 +141,6 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
           return;
         }
 
-        // Save the current workspace state
-        const workspaceXml = Blockly.Xml.workspaceToDom(workspaceRef.current);
-        
-        // Dispose of the current workspace
-        workspaceRef.current.dispose();
-        
         // Set new locale
         switch (i18n.language) {
           case 'es':
@@ -162,16 +157,26 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         // Apply custom tokens
         Blockly.setLocale(customTokens(t));
         
-        // Re-create workspace with new locale
-        const workspaceConfig = createWorkspaceConfig();
-        const newWorkspace = Blockly.inject(blocklyDiv.current!, workspaceConfig);
-        workspaceRef.current = newWorkspace;
+        // Save workspace state
+        const workspaceXml = Blockly.Xml.workspaceToDom(workspaceRef.current);
         
-        // Restore the workspace state (this will create blocks with new locale)
-        Blockly.Xml.domToWorkspace(workspaceXml, newWorkspace);
+        // Clear the workspace
+        workspaceRef.current.clear();
         
-        // Re-apply any event listeners that were on the original workspace
-        // You may need to call your setup functions here again
+        // Restore workspace with new locale (blocks will be recreated with new text)
+        if (workspaceXml.hasChildNodes()) {
+          Blockly.Xml.domToWorkspace(workspaceXml, workspaceRef.current);
+        }
+        
+        // Refresh the toolbox
+        const toolbox = workspaceRef.current.getToolbox();
+        if (toolbox) {
+          // Force toolbox to rebuild with new locale
+          toolbox.refreshSelection();
+        }
+        
+        // Trigger workspace refresh
+        Blockly.svgResize(workspaceRef.current);
       };
 
       /** Initializes the Blockly workspace. */
@@ -250,7 +255,7 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
           const newTheme = getBlocklyTheme();
           workspaceRef.current.setTheme(newTheme);
         }
-      }, [theme]);
+      }, [props.theme]);
 
       React.useEffect(() => {
         updateBlocklyLocale();
