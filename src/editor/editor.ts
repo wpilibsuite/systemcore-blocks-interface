@@ -24,8 +24,9 @@ import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
-import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
+import * as callPythonFunction from '../blocks/mrc_call_python_function';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
+import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { MethodsCategory } from '../toolbox/methods_category';
 import { EventsCategory } from '../toolbox/event_category';
@@ -72,15 +73,19 @@ export class Editor {
       return;
     }
 
-    // TODO(lizlooney): Look at blocks with type 'mrc_call_python_function' that
-    // are calling methods defined in the Robot and check that the Robot method
-    // still exists and hasn't been changed. If it has changed, update the block
-    // if possible or put a visible warning on it.
-
-    // TODO(lizlooney): Look at blocks with type 'mrc_call_python_function' that
-    // are calling methods on components defined in the Robot and check that the
-    // component and the method still exists and hasn't been changed. If it has
-    // changed, update the block if possible or put a visible warning on it.
+    // Look at mrc_call_python_function blocks that might need updating if the
+    // function definition has changed.
+    if (event.type === Blockly.Events.BLOCK_CREATE) {
+      const blockCreateEvent = event as Blockly.Events.BlockCreate;
+      if (blockCreateEvent.ids) {
+        blockCreateEvent.ids.forEach(id => {
+          const block = this.blocklyWorkspace.getBlockById(id);
+          if (block && block.type == callPythonFunction.BLOCK_NAME) {
+            (block as callPythonFunction.CallPythonFunctionBlock).onLoad();
+          }
+        });
+      }
+    }
   }
 
   private onChangeAfterLoading(event: Blockly.Events.Abstract) {

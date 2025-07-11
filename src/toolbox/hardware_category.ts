@@ -227,7 +227,7 @@ function getRobotComponentsBlocks(): toolboxItems.Category {
         contents.push({
           kind: 'category',
           name: component.name,
-          contents: getInstanceComponentBlocks(component.className, component.name),
+          contents: getInstanceComponentBlocks(component),
         });
       });
     }
@@ -288,7 +288,7 @@ function getComponentsBlocks(hideParams : boolean): toolboxItems.Category {
         contents.push({
           kind: 'category',
           name: component.name,
-          contents: getInstanceComponentBlocks(component.className, component.name),
+          contents: getInstanceComponentBlocks(component),
         });
       });
     }

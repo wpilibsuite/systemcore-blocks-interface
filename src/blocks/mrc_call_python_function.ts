@@ -63,6 +63,8 @@ export type FunctionArg = {
   type: string,
 };
 
+const WARNING_ID_FUNCTION_CHANGED = 'function changed';
+
 // Functions used for creating blocks for the toolbox.
 
 export function addModuleFunctionBlocks(
@@ -220,13 +222,12 @@ function createInstanceMethodBlock(
 }
 
 export function getInstanceComponentBlocks(
-    componentType: string,
-    componentName: string): ToolboxItems.ContentsType[] {
+    component: CommonStorage.Component): ToolboxItems.ContentsType[] {
   const contents: ToolboxItems.ContentsType[] = [];
 
-  const classData = getClassData(componentType);
+  const classData = getClassData(component.className);
   if (!classData) {
-    throw new Error('Could not find classData for ' + componentType);
+    throw new Error('Could not find classData for ' + component.className);
   }
   const functions = classData.instanceMethods;
 
@@ -241,7 +242,7 @@ export function getInstanceComponentBlocks(
     if (findSuperFunctionData(functionData, componentFunctions)) {
       continue;
     }
-    const block = createInstanceComponentBlock(componentName, functionData);
+    const block = createInstanceComponentBlock(component, functionData);
     contents.push(block);
   }
 
@@ -249,18 +250,19 @@ export function getInstanceComponentBlocks(
 }
 
 function createInstanceComponentBlock(
-    componentName: string, functionData: FunctionData): ToolboxItems.Block {
+    component: CommonStorage.Component, functionData: FunctionData): ToolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_COMPONENT,
     returnType: functionData.returnType,
     args: [],
     tooltip: functionData.tooltip,
     importModule: '',
-    componentClassName: functionData.declaringClassName,
-    componentName: componentName,
+    componentClassName: component.className,
+    componentName: component.name,
+    componentBlockId: component.blockId,
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_COMPONENT_NAME] = componentName;
+  fields[FIELD_COMPONENT_NAME] = component.name;
   fields[FIELD_FUNCTION_NAME] = functionData.functionName;
   const inputs: {[key: string]: any} = {};
   // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
@@ -307,6 +309,7 @@ function createInstanceRobotBlock(method: CommonStorage.Method): ToolboxItems.Bl
     returnType: method.returnType,
     actualFunctionName: method.pythonName,
     args: [],
+    classMethodDefBlockId: method.blockId,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_FUNCTION_NAME] = method.visibleName;
@@ -337,7 +340,7 @@ function createInstanceRobotBlock(method: CommonStorage.Method): ToolboxItems.Bl
 
 //..............................................................................
 
-export type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin;
+export type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin & Blockly.BlockSvg;
 interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcFunctionKind: FunctionKind,
   mrcReturnType: string,
@@ -345,9 +348,10 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcTooltip: string,
   mrcImportModule: string,
   mrcActualFunctionName: string,
-  mrcExportedFunction: boolean,
+  mrcClassMethodDefBlockId: string,
   mrcComponentClassName: string,
   mrcComponentName: string, // Do not access directly. Call getComponentName.
+  mrcComponentBlockId: string,
   renameMethod(this: CallPythonFunctionBlock, newName: string): void;
   mutateMethod(this: CallPythonFunctionBlock, defBlockExtraState: ClassMethodDefExtraState): void;
 }
@@ -385,9 +389,9 @@ type CallPythonFunctionExtraState = {
    */
   actualFunctionName?: string,
   /**
-   * True if this blocks refers to an exported function (for example, from the Robot).
+   * The id of the mrc_class_method_def type that defines the method. Specified only if the function kind is INSTANCE_ROBOT.
    */
-  exportedFunction?: boolean,
+  classMethodDefBlockId?: string,
   /**
    * The component name. Specified only if the function kind is INSTANCE_COMPONENT.
    */
@@ -396,6 +400,10 @@ type CallPythonFunctionExtraState = {
    * The component class name. Specified only if the function kind is INSTANCE_COMPONENT.
    */
   componentClassName?: string,
+  /**
+   * The id of the mrc_component type that defines the component. Specified only if the function kind is INSTANCE_COMPONENT.
+   */
+  componentBlockId?: string,
 };
 
 const CALL_PYTHON_FUNCTION = {
@@ -487,14 +495,17 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcActualFunctionName) {
       extraState.actualFunctionName = this.mrcActualFunctionName;
     }
+    if (this.mrcClassMethodDefBlockId) {
+      extraState.classMethodDefBlockId = this.mrcClassMethodDefBlockId;
+    }
     if (this.mrcComponentClassName) {
       extraState.componentClassName = this.mrcComponentClassName;
     }
     if (this.getField(FIELD_COMPONENT_NAME)) {
       extraState.componentName = this.getComponentName();
     }
-    if (this.mrcExportedFunction) {
-      extraState.exportedFunction = this.mrcExportedFunction;
+    if (this.mrcComponentBlockId) {
+      extraState.componentBlockId = this.mrcComponentBlockId;
     }
     return extraState;
   },
@@ -519,12 +530,14 @@ const CALL_PYTHON_FUNCTION = {
         ? extraState.importModule : '';
     this.mrcActualFunctionName = extraState.actualFunctionName
         ? extraState.actualFunctionName : '';
-    this.mrcExportedFunction = extraState.exportedFunction
-        ? extraState.exportedFunction : false;
+    this.mrcClassMethodDefBlockId = extraState.classMethodDefBlockId
+        ? extraState.classMethodDefBlockId : '';
     this.mrcComponentClassName = extraState.componentClassName
         ? extraState.componentClassName : '';
     this.mrcComponentName = extraState.componentName
         ? extraState.componentName : '';
+    this.mrcComponentBlockId = extraState.componentBlockId
+        ? extraState.componentBlockId : '';
     this.updateBlock_();
   },
   /**
@@ -685,6 +698,101 @@ const CALL_PYTHON_FUNCTION = {
       });
     });
     this.updateBlock_();
+  },
+  onLoad: function(this: CallPythonFunctionBlock): void {
+    const warnings: string[] = [];
+
+    // If this block is calling a component method, check that the component
+    // still exists and hasn't been changed.
+    // If the component doesn't exist, put a visible warning on this block.
+    // If the component has changed, update the block if possible or put a
+    // visible warning on it.
+    if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
+      let foundComponent = false;
+      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+      if (editor) {
+        const components = editor.getComponentsFromRobot();
+        for (const component of components) {
+          if (component.blockId === this.mrcComponentBlockId) {
+            foundComponent = true;
+
+            // If the component name has changed, we can fix this block.
+            if (this.getComponentName() !== component.name) {
+              this.setFieldValue(component.name, FIELD_COMPONENT_NAME);
+            }
+
+            // Since we found the component, we can break out of the loop.
+            break;
+          }
+        }
+      }
+      if (!foundComponent) {
+        warnings.push('This block calls a method on a component that no longer exists.');
+      }
+
+      // TODO(lizlooney): Could the component's method have change?
+    }
+
+    // If this block is calling a robot method, check that the robot method
+    // still exists and hasn't been changed.
+    // If the robot method doesn't exist, put a visible warning on this block.
+    // If the robot method has changed, update the block if possible or put a
+    // visible warning on it.
+    if (this.mrcFunctionKind === FunctionKind.INSTANCE_ROBOT) {
+      let foundRobotMethod = false;
+      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+      if (editor) {
+        const robotMethods = editor.getMethodsFromRobot();
+        for (const robotMethod of robotMethods) {
+          if (robotMethod.blockId === this.mrcClassMethodDefBlockId) {
+            foundRobotMethod = true;
+
+            // If the function name has changed, we can fix this block.
+            if (this.mrcActualFunctionName !== robotMethod.pythonName) {
+              this.mrcActualFunctionName = robotMethod.pythonName;
+            }
+            if (this.getFieldValue(FIELD_FUNCTION_NAME) !== robotMethod.visibleName) {
+              this.setFieldValue(robotMethod.visibleName, FIELD_FUNCTION_NAME);
+            }
+
+            // Other things are more difficult.
+            if (this.mrcReturnType !== robotMethod.returnType) {
+              warnings.push('This block calls a method whose return type has changed.');
+            }
+            if (this.mrcArgs.length !== robotMethod.args.length - 1) {
+              warnings.push('This block calls a method whose arguments have changed.');
+            } else {
+              for (let i = 1; i < robotMethod.args.length; i++) { // Skip the self argument.
+                if (this.mrcArgs[i-1].name != robotMethod.args[i].name) {
+                  warnings.push('This block calls a method whose arguments have changed.');
+                  break;
+                }
+                if (this.mrcArgs[i-1].type != robotMethod.args[i].type) {
+                  warnings.push('This block calls a method whose arguments have changed.');
+                  break;
+                }
+              }
+            }
+
+            // Since we found the robot method, we can break out of the loop.
+            break;
+          }
+        }
+        if (!foundRobotMethod) {
+          warnings.push('This block calls a method that no longer exists.');
+        }
+      }
+    }
+
+    if (warnings.length) {
+      // Add a warnings to the block.
+      const warningText = warnings.join('\n\n');
+      this.setWarningText(warningText, WARNING_ID_FUNCTION_CHANGED);
+      this.bringToFront();
+    } else {
+      // Clear the existing warning on the block.
+      this.setWarningText(null, WARNING_ID_FUNCTION_CHANGED);
+    }
   },
 };
 

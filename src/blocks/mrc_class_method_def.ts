@@ -404,6 +404,7 @@ export const pythonFromBlock = function (
     if (block.mrcCanBeCalledOutsideClass) {
       // Update the mrcMethod.
       block.mrcMethod = {
+        blockId: block.id,
         visibleName: block.getFieldValue('NAME'),
         pythonName: funcName,
         returnType: block.mrcReturnType,

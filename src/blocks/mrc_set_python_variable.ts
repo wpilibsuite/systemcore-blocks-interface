@@ -141,7 +141,6 @@ interface SetPythonVariableMixin extends SetPythonVariableMixinType {
   mrcSelfType: string,
   mrcImportModule: string,
   mrcActualVariableName: string,
-  mrcExportedVariable: boolean,
   mrcKey: string,
 }
 type SetPythonVariableMixinType = typeof SET_PYTHON_VARIABLE;
@@ -177,10 +176,6 @@ type SetPythonVariableExtraState = {
    * the FIELD_VARIABLE_NAME field.
    */
   actualVariableName?: string,
-  /**
-   * True if this blocks refers to an exported variable (for example, from the Robot).
-   */
-  exportedVariable?: boolean,
 };
 
 const SET_PYTHON_VARIABLE = {
@@ -239,7 +234,6 @@ const SET_PYTHON_VARIABLE = {
     const extraState: SetPythonVariableExtraState = {
       varKind: this.mrcVarKind,
       moduleOrClassName: this.mrcModuleOrClassName,
-      exportedVariable: this.mrcExportedVariable,
     };
     if (this.mrcVarType) {
       extraState.varType = this.mrcVarType;
@@ -274,8 +268,6 @@ const SET_PYTHON_VARIABLE = {
         ? extraState.importModule : '';
     this.mrcActualVariableName = extraState.actualVariableName
         ? extraState.actualVariableName : '';
-    this.mrcExportedVariable = extraState.exportedVariable
-        ? extraState.exportedVariable : false;
     this.mrcKey = createKey(this.mrcVarKind, this.mrcModuleOrClassName, this.mrcVarType);
     this.updateBlock_();
   },
