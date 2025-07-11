@@ -318,7 +318,7 @@ export function Component(props: MenuProps): React.JSX.Element {
       setMenuItems(getMenuItems(t, props.project, i18n.language));
       setNoProjects(false);
     }
-  }, [props.project, i18n.language]); // Add i18n.language dependency
+  }, [props.project, i18n.language]); 
 
   return (
     <>

@@ -252,11 +252,9 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         }
       }, [theme]);
 
-      // Add this: Update locale when language changes
       React.useEffect(() => {
-        console.log('Updating Blockly locale for language:', i18n.language);
         updateBlocklyLocale();
-      }, [i18n.language, t]);
+      }, [i18n.language]);
 
       // Handle workspace resize
       React.useEffect(() => {
