@@ -34,6 +34,9 @@
     "SPANISH": "Spanish",
     "HELP": "Help",
     "ABOUT": "About",
+    "BLOCKS": "Blocks",
+    "CODE": "Code",
+    "COPY": "Copy",
     "BLOCKLY":{
         "OF_TYPE": "of type",
         "WITH": "with",

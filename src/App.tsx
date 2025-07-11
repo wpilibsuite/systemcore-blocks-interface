@@ -234,7 +234,7 @@ const App: React.FC = (): React.JSX.Element => {
     const tabs: Tabs.TabItem[] = [
       {
         key: projectData.robot.modulePath,
-        title: 'Robot',
+        title: t('ROBOT'),
         type: TabType.ROBOT,
       },
     ];

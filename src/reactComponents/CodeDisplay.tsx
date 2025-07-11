@@ -25,6 +25,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import type { MessageInstance } from 'antd/es/message/interface';
+import { useTranslation } from 'react-i18next';
 
 /** Function type for setting string values. */
 type StringFunction = (input: string) => void;
@@ -64,6 +65,7 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
   }
 
   const { token } = Antd.theme.useToken();
+  const { t } = useTranslation();
   const syntaxStyle = syntaxHighligherFromTheme(props.theme);
 
   /** Handles copying the generated code to clipboard. */
@@ -90,8 +92,8 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
   /** Renders the header section with title and copy button. */
   const renderHeader = (): React.JSX.Element => (
     <Antd.Space>
-      <Antd.Typography.Title level={3}>Code</Antd.Typography.Title>
-      <Antd.Tooltip title="Copy">
+      <Antd.Typography.Title level={3}>{t("CODE")}</Antd.Typography.Title>
+      <Antd.Tooltip title={t("COPY")}>
         <Antd.Button
           icon={<CopyIcon />}
           size="small"

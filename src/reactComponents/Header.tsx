@@ -97,7 +97,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
             fontWeight: TITLE_FONT_WEIGHT,
           }}
         >
-          Blocks
+          {t("BLOCKS")}
         </Antd.Typography>
         <Antd.Typography
           style={{

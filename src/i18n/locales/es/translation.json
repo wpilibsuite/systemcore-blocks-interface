@@ -29,6 +29,9 @@
     "SPANISH": "Español",
     "HELP": "Ayuda",
     "ABOUT": "Acerca de",
+    "BLOCKS": "Bloques",
+    "CODE": "Código",
+    "COPY": "Copiar",
     "addTabDialog": {
         "title": "Agregar Pestaña",
         "newItemPlaceholder": "Agregar Módulo",
