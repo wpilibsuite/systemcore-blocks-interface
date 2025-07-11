@@ -62,7 +62,8 @@ const OPMODE_DETAILS = {
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
     this.appendDummyInput()
       .appendField(Blockly.Msg.TYPE)
-      .appendField(createFieldDropdown([Blockly.Msg.AUTO, Blockly.Msg.TELEOP, Blockly.Msg.TEST]), 'TYPE')
+      // These aren't Blockly.Msg because they need to match the Python generator's expected values.
+      .appendField(createFieldDropdown(["Auto", "Teleop", "Test"]), 'TYPE')
       .appendField('    ')
       .appendField(Blockly.Msg.ENABLED)
       .appendField(new Blockly.FieldCheckbox(true), 'ENABLED');
