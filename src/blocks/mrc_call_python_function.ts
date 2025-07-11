@@ -350,7 +350,8 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcActualFunctionName: string,
   mrcClassMethodDefBlockId: string,
   mrcComponentClassName: string,
-  mrcComponentName: string, // Do not access directly. Call getComponentName.
+  mrcComponents: CommonStorage.Component[],
+  mrcComponentName: string,
   mrcComponentBlockId: string,
   renameMethod(this: CallPythonFunctionBlock, newName: string): void;
   mutateMethod(this: CallPythonFunctionBlock, defBlockExtraState: ClassMethodDefExtraState): void;
@@ -452,7 +453,7 @@ const CALL_PYTHON_FUNCTION = {
           const className = this.mrcComponentClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = 'Calls the instance method ' + className + '.' + functionName +
-              ' on the component named ' + this.getComponentName() + '.';
+              ' on the component named ' + this.getFieldValue(FIELD_COMPONENT_NAME) + '.';
           break;
         }
         case FunctionKind.INSTANCE_ROBOT: {
@@ -502,10 +503,13 @@ const CALL_PYTHON_FUNCTION = {
       extraState.componentClassName = this.mrcComponentClassName;
     }
     if (this.getField(FIELD_COMPONENT_NAME)) {
-      extraState.componentName = this.getComponentName();
-    }
-    if (this.mrcComponentBlockId) {
-      extraState.componentBlockId = this.mrcComponentBlockId;
+      extraState.componentName = this.getFieldValue(FIELD_COMPONENT_NAME);
+      for (const component of this.mrcComponents) {
+        if (component.name == extraState.componentName) {
+          extraState.componentBlockId = component.blockId;
+          break;
+        }
+      }
     }
     return extraState;
   },
@@ -534,6 +538,17 @@ const CALL_PYTHON_FUNCTION = {
         ? extraState.classMethodDefBlockId : '';
     this.mrcComponentClassName = extraState.componentClassName
         ? extraState.componentClassName : '';
+    // Get the list of components whose type matches this.mrcComponentClassName so we can
+    // create a dropdown that has the appropriate component name choices.
+    this.mrcComponents = [];
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    if (editor) {
+      editor.getComponentsFromRobot().forEach(component => {
+        if (component.className === this.mrcComponentClassName) {
+          this.mrcComponents.push(component);
+        }
+      });
+    }
     this.mrcComponentName = extraState.componentName
         ? extraState.componentName : '';
     this.mrcComponentBlockId = extraState.componentBlockId
@@ -609,25 +624,14 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
-          const componentNames: string[] = [];
-          // Get the list of component names whose type matches this.mrcComponentClassName so we can
-          // create a dropdown that has the appropriate component names.
-          const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-          if (editor) {
-            const components = editor.getComponentsFromRobot();
-            components.forEach(component => {
-              if (component.className === this.mrcComponentClassName) {
-                componentNames.push(component.name);
-              }
-            });
-          }
-          const componentName = this.getComponentName();
-          if (!componentNames.includes(componentName)) {
-            componentNames.push(componentName);
+          const componentNameChoices = [];
+          this.mrcComponents.forEach(component => componentNameChoices.push(component.name));
+          if (!componentNameChoices.includes(this.mrcComponentName)) {
+            componentNameChoices.push(this.mrcComponentName);
           }
           this.appendDummyInput('TITLE')
               .appendField('call')
-              .appendField(createFieldDropdown(componentNames), FIELD_COMPONENT_NAME)
+              .appendField(createFieldDropdown(componentNameChoices), FIELD_COMPONENT_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
@@ -673,15 +677,6 @@ const CALL_PYTHON_FUNCTION = {
       this.removeInput('ARG' + i);
     }
   },
-  getComponentName(this: CallPythonFunctionBlock): string {
-    // If the COMPONENT_NAME field has been created, get the field value, which the user may have changed.
-    // If the COMPONENT_NAME field has not been created, get the component name from this.mrcComponentName.
-    return (this.getField(FIELD_COMPONENT_NAME))
-      ? this.getFieldValue(FIELD_COMPONENT_NAME) : this.mrcComponentName;
-  },
-  getComponentClassName(this: CallPythonFunctionBlock): string {
-    return this.mrcComponentClassName;
-  },
   renameMethod: function(this: CallPythonFunctionBlock, newName: string): void {
     this.setFieldValue(newName, FIELD_FUNCTION_NAME);
   },
@@ -709,21 +704,35 @@ const CALL_PYTHON_FUNCTION = {
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
       let foundComponent = false;
-      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-      if (editor) {
-        const components = editor.getComponentsFromRobot();
-        for (const component of components) {
-          if (component.blockId === this.mrcComponentBlockId) {
-            foundComponent = true;
+      for (const component of this.mrcComponents) {
+        if (component.blockId === this.mrcComponentBlockId) {
+          foundComponent = true;
 
-            // If the component name has changed, we can fix this block.
-            if (this.getComponentName() !== component.name) {
+          // If the component name has changed, we can handle that.
+          if (this.getFieldValue(FIELD_COMPONENT_NAME) !== component.name) {
+            // Replace the FIELD_COMPONENT_NAME field.
+            const titleInput = this.getInput('TITLE')
+            if (titleInput) {
+              let indexOfComponentName = -1;
+              for (let i = 0, field; (field = titleInput.fieldRow[i]); i++) {
+                if (field.name === FIELD_COMPONENT_NAME) {
+                  indexOfComponentName = i;
+                  break;
+                }
+              }
+              if (indexOfComponentName != -1) {
+                const componentNameChoices = [];
+                this.mrcComponents.forEach(component => componentNameChoices.push(component.name));
+                titleInput.removeField(FIELD_COMPONENT_NAME);
+                titleInput.insertFieldAt(indexOfComponentName,
+                    createFieldDropdown(componentNameChoices), FIELD_COMPONENT_NAME);
+              }
               this.setFieldValue(component.name, FIELD_COMPONENT_NAME);
             }
-
-            // Since we found the component, we can break out of the loop.
-            break;
           }
+
+          // Since we found the component, we can break out of the loop.
+          break;
         }
       }
       if (!foundComponent) {
@@ -856,7 +865,7 @@ export const pythonFromBlock = function(
       break;
     }
     case FunctionKind.INSTANCE_COMPONENT: {
-      const componentName = callPythonFunctionBlock.getComponentName();
+      const componentName = block.getFieldValue(FIELD_COMPONENT_NAME);
       const functionName = callPythonFunctionBlock.mrcActualFunctionName
           ? callPythonFunctionBlock.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
