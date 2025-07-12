@@ -168,7 +168,7 @@ export class FieldFlydown extends Blockly.FieldTextInput {
      * @type {number}
      * @const
      */
-    static TIME_OUT = 500;
+    static TIME_OUT = 250;
 
 
     private displayLocation_: FlydownLocation;
@@ -221,7 +221,7 @@ export class FieldFlydown extends Blockly.FieldTextInput {
         // Add small delay to prevent flickering
         this.showTimeout_ = window.setTimeout(() => {
             this.showFlydown_();
-        }, 250); // 250ms delay
+        }, 100); // 100ms delay
 
         // This event has been handled.  No need to bubble up to the document.
         e.stopPropagation();
