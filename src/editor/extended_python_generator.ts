@@ -44,12 +44,12 @@ export class OpModeDetails {
   imports() : string{
     let code = '';
     if (this.enabled){
-      code += 'from blocks_base_classes import ' + this.type + '\n';
+      code += 'from blocks_base_classes import ' + this.type;
       if (this.name){
-        code += 'from blocks_base_classes import Name\n';
+        code += ', Name';
       }
       if (this.group){
-        code += 'from blocks_base_classes import Group\n';
+        code += ', Group';
       }
     }
 
