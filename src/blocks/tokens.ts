@@ -1,7 +1,33 @@
-import * as Blockly from 'blockly/core';
-import { M } from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js';
+/**
+ * @license
+ * Copyright 2025 Porpoiseful LLC
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-export const customTokens = (t: (key: string) => string): typeof Blockly.Msg => {
+/**
+ * @fileoverview Exposes translatable strings for use as Blockly.Msg tokens.
+ * @author alan@porpoiseful.com (Alan Smith)
+ */
+
+import * as Blockly from 'blockly/core';
+
+/**
+ * Creates custom translation tokens for Blockly messages.
+ * @param t Translation function that takes a key and returns translated string.
+ * @return Object containing translated Blockly message tokens.
+ */
+export function customTokens(t: (key: string) => string): typeof Blockly.Msg {
   return {
     ADD_COMMENT: t('BLOCKLY.ADD_COMMENT'),
     REMOVE_COMMENT: t('BLOCKLY.REMOVE_COMMENT'),
@@ -10,12 +36,14 @@ export const customTokens = (t: (key: string) => string): typeof Blockly.Msg => 
     WITH: t('BLOCKLY.WITH'),
     WHEN: t('BLOCKLY.WHEN'),
     PARAMETER: t('BLOCKLY.PARAMETER'),
-    PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK: t('BLOCKLY.PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK'),
+    PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK:
+      t('BLOCKLY.PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK'),
     MECHANISMS: t('BLOCKLY.MECHANISMS'),
     COMPONENTS: t('BLOCKLY.COMPONENTS'),
     EVENTS: t('BLOCKLY.EVENTS'),
     EVALUATE_BUT_IGNORE_RESULT: t('BLOCKLY.EVALUATE_BUT_IGNORE_RESULT'),
-    EVALUATE_BUT_IGNORE_RESULT_TOOLTIP: t('BLOCKLY.EVALUATE_BUT_IGNORE_RESULT_TOOLTIP'),
+    EVALUATE_BUT_IGNORE_RESULT_TOOLTIP:
+      t('BLOCKLY.EVALUATE_BUT_IGNORE_RESULT_TOOLTIP'),
     AUTO: t('BLOCKLY.AUTO'),
     TELEOP: t('BLOCKLY.TELEOP'),
     TEST: t('BLOCKLY.TEST'),
@@ -42,5 +70,5 @@ export const customTokens = (t: (key: string) => string): typeof Blockly.Msg => 
     MRC_CATEGORY_EVENTS: t('BLOCKLY.CATEGORY.EVENTS'),
     MRC_CATEGORY_ADD_MECHANISM: t('BLOCKLY.CATEGORY.ADD_MECHANISM'),
     MRC_CATEGORY_ADD_COMPONENT: t('BLOCKLY.CATEGORY.ADD_COMPONENT'),
-  };
-};
+  }
+}; 
