@@ -45,7 +45,7 @@ export const setup = function(forBlock: any) {
   customBlocks.forEach(block => {
     block.setup();
     const maybeBlock = block as { pythonFromBlock?: any; BLOCK_NAME?: string };
-    if(maybeBlock.pythonFromBlock && maybeBlock.BLOCK_NAME) {
+    if (maybeBlock.pythonFromBlock && maybeBlock.BLOCK_NAME) {
       forBlock[maybeBlock.BLOCK_NAME] = maybeBlock.pythonFromBlock;
     }
   });

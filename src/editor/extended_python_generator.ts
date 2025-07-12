@@ -198,7 +198,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       const annotations = this.details?.annotations(className);
       const import_annotations = this.details?.imports();
 
-      if(import_annotations){
+      if (import_annotations){
         this.definitions_['import_annotations'] = import_annotations;
       }
 

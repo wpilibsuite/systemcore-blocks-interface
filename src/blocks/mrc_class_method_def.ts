@@ -214,7 +214,7 @@ const CLASS_METHOD_DEF = {
     mrcRenameParameter: function (this: ClassMethodDefBlock, oldName: string, newName: string) {
         let nextBlock = this.getInputTargetBlock('STACK');
 
-        if(nextBlock){
+        if (nextBlock){
             findConnectedBlocksOfType(nextBlock, MRC_GET_PARAMETER_BLOCK_NAME).forEach((block) => {
                 if (block.getFieldValue('PARAMETER_NAME') === oldName) {
                     block.setFieldValue(newName, 'PARAMETER_NAME');
