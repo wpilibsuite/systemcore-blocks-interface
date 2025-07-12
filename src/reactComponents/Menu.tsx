@@ -35,6 +35,8 @@ import {
   QuestionCircleOutlined,
   InfoCircleOutlined,
   BgColorsOutlined,
+  GlobalOutlined,
+  CheckOutlined,
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
@@ -92,7 +94,7 @@ function getDivider(): MenuItem {
 /**
  * Generates menu items for a given project.
  */
-function getMenuItems(t: (key: string) => string, project: commonStorage.Project): MenuItem[] {
+function getMenuItems(t: (key: string) => string, project: commonStorage.Project, currentLanguage: string): MenuItem[] {
   const mechanisms: MenuItem[] = [];
   const opmodes: MenuItem[] = [];
 
@@ -123,24 +125,35 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
   opmodes.push(getItem('Manage...', 'manageOpmodes'));
 
   return [
-    getItem(t('Project'), 'project', <FolderOutlined />, [
-      getItem(t('Save'), 'save', <SaveOutlined />),
-      getItem(t('Deploy'), 'deploy', undefined, undefined, true),
+    getItem(t('PROJECT'), 'project', <FolderOutlined />, [
+      getItem(t('SAVE'), 'save', <SaveOutlined />),
+      getItem(t('DEPLOY'), 'deploy', undefined, undefined, true),
       getDivider(),
-      getItem(t('Manage') + '...', 'manageProjects'),
+      getItem(t('MANAGE') + '...', 'manageProjects'),
     ]),
-    getItem(t('Explorer'), 'explorer', <FileOutlined />, [
-      getItem(t('Robot'), project.robot.modulePath, <RobotOutlined />),
-      getItem(t('Mechanisms'), 'mechanisms', <BlockOutlined />, mechanisms),
-      getItem(t('OpModes'), 'opmodes', <CodeOutlined />, opmodes),
+    getItem(t('EXPLORER'), 'explorer', <FileOutlined />, [
+      getItem(t('ROBOT'), project.robot.modulePath, <RobotOutlined />),
+      getItem(t('MECHANISMS'), 'mechanisms', <BlockOutlined />, mechanisms),
+      getItem(t('OPMODES'), 'opmodes', <CodeOutlined />, opmodes),
     ]),
-    getItem(t('Settings'), 'settings', <SettingOutlined />, [
-      getItem(t('WPI toolbox'), 'wpi_toolbox'),
-      getItem(t('Theme') + '...', 'theme', <BgColorsOutlined />)
+    getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
+      getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
+      getItem(t('THEME') + '...', 'theme', <BgColorsOutlined />),
+      getItem(t('LANGUAGE'), 'language', <GlobalOutlined />, [
+        getItem(
+          t('ENGLISH'), 
+          'setlang:en', 
+          currentLanguage === 'en' ? <CheckOutlined /> : undefined
+        ),
+        getItem(
+          t('SPANISH'), 
+          'setlang:es', 
+          currentLanguage === 'es' ? <CheckOutlined /> : undefined
+        ),
+      ]),
     ]),
-    getItem(t('Help'), 'help', <QuestionCircleOutlined />, [
-      getItem(t('About') + '...', 'about', <InfoCircleOutlined />
-),
+    getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
+      getItem(t('ABOUT') + '...', 'about', <InfoCircleOutlined />),
     ]),
   ];
 }
@@ -150,7 +163,7 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
  * Provides access to mechanisms, opmodes, and project management functionality.
  */
 export function Component(props: MenuProps): React.JSX.Element {
-  const {t} = I18Next.useTranslation();
+  const {t, i18n} = I18Next.useTranslation();
 
   const [projects, setProjects] = React.useState<commonStorage.Project[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
@@ -264,8 +277,12 @@ export function Component(props: MenuProps): React.JSX.Element {
       props.openWPIToolboxSettings();
     } else if (key === 'theme') {
       setThemeModalOpen(true);
+    } else if (key.startsWith('setlang:')) {
+      const lang = key.split(':')[1];
+      i18n.changeLanguage(lang);
     } else {
       // TODO: Handle other menu actions
+
       console.log(`Selected key that wasn't module: ${key}`);
     }
   };
@@ -294,14 +311,14 @@ export function Component(props: MenuProps): React.JSX.Element {
     fetchMostRecentProject();
   }, [projects]);
 
-  // Update menu items and save project when project changes
+  // Update menu items and save project when project or language changes
   React.useEffect(() => {
     if (props.project) {
       setMostRecentProject();
-      setMenuItems(getMenuItems(t, props.project));
+      setMenuItems(getMenuItems(t, props.project, i18n.language));
       setNoProjects(false);
     }
-  }, [props.project]);
+  }, [props.project, i18n.language]); 
 
   return (
     <>

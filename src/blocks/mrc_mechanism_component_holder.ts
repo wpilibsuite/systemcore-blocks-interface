@@ -72,9 +72,9 @@ const MECHANISM_COMPONENT_HOLDER = {
     */
   init: function (this: MechanismComponentHolderBlock): void {
     this.setInputsInline(false);
-    this.appendStatementInput('MECHANISMS').setCheck(MECHANISM_OUTPUT).appendField('Mechanisms');
-    this.appendStatementInput('COMPONENTS').setCheck(COMPONENT_OUTPUT).appendField('Components');
-    this.appendStatementInput('EVENTS').setCheck(EVENT_OUTPUT).appendField('Events');
+    this.appendStatementInput('MECHANISMS').setCheck(MECHANISM_OUTPUT).appendField(Blockly.Msg.MECHANISMS);
+    this.appendStatementInput('COMPONENTS').setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.COMPONENTS);
+    this.appendStatementInput('EVENTS').setCheck(EVENT_OUTPUT).appendField(Blockly.Msg.EVENTS);
 
 
     this.setOutput(false);

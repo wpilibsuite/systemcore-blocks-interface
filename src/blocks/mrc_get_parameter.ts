@@ -49,7 +49,7 @@ const GET_PARAMETER_BLOCK = {
   init: function(this: GetParameterBlock): void {
     this.setStyle(MRC_STYLE_VARIABLES);
     this.appendDummyInput()
-        .appendField('parameter')
+        .appendField(Blockly.Msg.PARAMETER)
         .appendField(createFieldNonEditableText('parameter'), 'PARAMETER_NAME');
 
     this.setOutput(true, this.parameterType);
@@ -89,7 +89,7 @@ const GET_PARAMETER_BLOCK = {
       }
       // If we end up here it shouldn't be allowed
       block.unplug(true);
-      blockBlock.setWarningText('Parameters can only go in their method\'s block.');
+      blockBlock.setWarningText(Blockly.Msg.PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK);
     }
   },
 };

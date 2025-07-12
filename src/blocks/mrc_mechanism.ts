@@ -55,7 +55,7 @@ const MECHANISM = {
     this.setStyle(MRC_STYLE_MECHANISMS);
     this.appendDummyInput()
       .appendField(new Blockly.FieldTextInput('my_mech'), 'NAME')
-      .appendField('of type')
+      .appendField(Blockly.Msg.OF_TYPE)
       .appendField(createFieldNonEditableText(''), 'TYPE');
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);

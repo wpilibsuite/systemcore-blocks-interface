@@ -21,6 +21,7 @@
 import * as Antd from 'antd';
 import * as commonStorage from '../storage/common_storage';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /** Function type for setting string values. */
 type StringFunction = (input: string) => void;
@@ -50,6 +51,7 @@ const TEXT_PADDING_LEFT = 20;
  */
 export default function Header(props: HeaderProps): React.JSX.Element {
   const { token } = Antd.theme.useToken();
+  const { t } = useTranslation();
 
   const isDarkTheme = token.colorBgLayout === '#000000';
 
@@ -95,7 +97,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
             fontWeight: TITLE_FONT_WEIGHT,
           }}
         >
-          Blocks
+          {t("BLOCKS")}
         </Antd.Typography>
         <Antd.Typography
           style={{
@@ -104,7 +106,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
             fontWeight: 'normal',
           }}
         >
-          Project: {getProjectName()}
+          {t("PROJECT")}: {getProjectName()}
         </Antd.Typography>
         {renderErrorAlert()}
       </Antd.Flex>

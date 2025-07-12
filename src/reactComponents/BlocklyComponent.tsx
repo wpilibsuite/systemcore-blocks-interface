@@ -20,11 +20,16 @@
  */
 import * as React from 'react';
 import * as Blockly from 'blockly/core';
-import * as locale from 'blockly/msg/en';
+import * as En from 'blockly/msg/en';
+import * as Es from 'blockly/msg/es';
+import { customTokens } from '../blocks/tokens';
+
 import { themes } from '../themes/mrc_themes';
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
+import { useTranslation } from 'react-i18next';
+
 
 /** Interface for methods exposed by the BlocklyComponent. */
 export interface BlocklyComponentType {
@@ -34,6 +39,7 @@ export interface BlocklyComponentType {
 /** Interface for props passed to the BlocklyComponent. */
 export interface BlocklyComponentProps {
   theme: string;
+  onWorkspaceRecreated: (workspace: Blockly.WorkspaceSvg) => void;
 }
 
 /** Grid spacing for the Blockly workspace. */
@@ -74,12 +80,15 @@ const WORKSPACE_STYLE: React.CSSProperties = {
  * cleanup, and resize handling.
  */
 const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyComponentProps>(
-    ({ theme }, ref): React.JSX.Element => {
+    (props, ref): React.JSX.Element => {
       const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
       const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
 
+      const { t, i18n } = useTranslation();
+      
+
       const getBlocklyTheme = (): Blockly.Theme => {
-        const blocklyTheme = 'mrc_theme_' + theme.replace(/-/g, '_');
+        const blocklyTheme = 'mrc_theme_' + props.theme.replace(/-/g, '_');
         // Find the theme by key
         const themeObj = themes.find(t => t.name === blocklyTheme);
         if (!themeObj) {
@@ -126,6 +135,38 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         },
       });
 
+      /** Updates the Blockly locale when the language changes. */
+      const updateBlocklyLocale = (): void => {
+        if (!workspaceRef.current) {
+          return;
+        }
+        // Save workspace state
+        const workspaceXml = Blockly.Xml.workspaceToDom(workspaceRef.current);
+
+        // Set new locale
+        switch (i18n.language) {
+          case 'es':
+            Blockly.setLocale(Es as any);
+            break;
+          case 'en':
+            Blockly.setLocale(En as any);
+            break;
+          default:
+            Blockly.setLocale(En as any);
+            break;
+        }
+        // Apply custom tokens
+        Blockly.setLocale(customTokens(t));
+        
+        // Clear the workspace
+        workspaceRef.current.clear();
+        
+        // Force complete toolbox rebuild by calling onWorkspaceRecreated AFTER locale is set
+        if (props.onWorkspaceRecreated) {
+          props.onWorkspaceRecreated(workspaceRef.current);
+        }
+      };
+
       /** Initializes the Blockly workspace. */
       const initializeWorkspace = (): void => {
         if (!blocklyDiv.current) {
@@ -133,8 +174,19 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         }
 
         // Set Blockly locale
-        Blockly.setLocale(locale as any);
-
+        switch (i18n.language) {
+          case 'es':
+            Blockly.setLocale(Es as any);
+            break;
+          case 'en':
+            Blockly.setLocale(En as any);
+            break;
+          default:
+            Blockly.setLocale(En as any);
+            break;
+        }
+        Blockly.setLocale(customTokens(t));
+        
         // Create workspace
         const workspaceConfig = createWorkspaceConfig();
         const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
@@ -191,7 +243,11 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
           const newTheme = getBlocklyTheme();
           workspaceRef.current.setTheme(newTheme);
         }
-      }, [theme]);
+      }, [props.theme]);
+
+      React.useEffect(() => {
+        updateBlocklyLocale();
+      }, [i18n.language]);
 
       // Handle workspace resize
       React.useEffect(() => {

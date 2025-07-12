@@ -31,7 +31,7 @@ export function getHardwareCategory(currentModule: commonStorage.Module): toolbo
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
     return {
       kind: 'category',
-      name: 'Hardware',
+      name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
       contents: [
         getRobotMechanismsBlocks(currentModule),
         getComponentsBlocks(false),
@@ -44,7 +44,7 @@ export function getHardwareCategory(currentModule: commonStorage.Module): toolbo
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
     return {
       kind: 'category',
-      name: 'Robot',
+      name: Blockly.Msg['MRC_CATEGORY_ROBOT'],
       contents: [
         getRobotMechanismsBlocks(currentModule),
         getRobotComponentsBlocks(),
@@ -68,7 +68,7 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module): toolboxI
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
     contents.push({
       kind: 'category',
-      name: '+ Mechanism',
+      name: Blockly.Msg['MRC_CATEGORY_ADD_MECHANISM'],
       contents: getAllPossibleMechanisms(),
     });
   }
@@ -204,7 +204,7 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module): toolboxI
 
   return {
     kind: 'category',
-    name: 'Mechanisms',
+    name: Blockly.Msg['MRC_CATEGORY_MECHANISMS'],
     contents,
   };
 }
@@ -235,7 +235,7 @@ function getRobotComponentsBlocks(): toolboxItems.Category {
 
   return {
     kind: 'category',
-    name: 'Components',
+    name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
     contents,
   };
 }
@@ -259,7 +259,7 @@ function getRobotMethodsBlocks(): toolboxItems.Category {
 
   return {
     kind: 'category',
-    name: 'Methods',
+    name: Blockly.Msg['MRC_CATEGORY_METHODS'],
     contents,
   };
 }
@@ -273,7 +273,7 @@ function getComponentsBlocks(hideParams : boolean): toolboxItems.Category {
   // Add the "+ Component" category
   contents.push({
     kind: 'category',
-    name: '+ Component',
+    name: Blockly.Msg['MRC_CATEGORY_ADD_COMPONENT'],
     contents: Component.getAllPossibleComponents(hideParams)
   });
 
@@ -296,7 +296,7 @@ function getComponentsBlocks(hideParams : boolean): toolboxItems.Category {
 
   return {
     kind: 'category',
-    name: 'Components',
+    name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
     contents,
   };
 }

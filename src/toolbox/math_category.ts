@@ -1,7 +1,7 @@
-export const category =
-{
+import * as Blockly from 'blockly/core';
+export const getCategory = () => ({
   kind: 'category',
-  name: 'Math',
+  name: Blockly.Msg['MRC_CATEGORY_MATH'],
   categorystyle: 'math_category',
   contents: [
     {
@@ -351,4 +351,4 @@ export const category =
       type: 'math_random_float',
     },
   ],
-}
+});

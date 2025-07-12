@@ -95,6 +95,7 @@ const CLASS_METHOD_DEF = {
         this.mrcParameters = [];
         this.setPreviousStatement(false);
         this.setNextStatement(false);
+        this.updateBlock_();
     },
     /**
        * Returns the state of this block as a JSON serializable object.

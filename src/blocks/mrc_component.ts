@@ -69,7 +69,7 @@ const COMPONENT = {
     this.setStyle(MRC_STYLE_COMPONENTS);
     this.appendDummyInput()
       .appendField(new Blockly.FieldTextInput(''), FIELD_NAME)
-      .appendField('of type')
+      .appendField(Blockly.Msg.OF_TYPE)
       .appendField(createFieldNonEditableText(''), FIELD_TYPE);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
@@ -82,12 +82,14 @@ const COMPONENT = {
     const extraState: ComponentExtraState = {
     };
     extraState.params = [];
-    this.mrcArgs.forEach((arg) => {
-      extraState.params!.push({
-        'name': arg.name,
-        'type': arg.type,
+    if (this.mrcArgs){
+      this.mrcArgs.forEach((arg) => {
+        extraState.params!.push({
+          'name': arg.name,
+          'type': arg.type,
+        });
       });
-    });
+    }
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
     }

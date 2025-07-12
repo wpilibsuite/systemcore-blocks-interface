@@ -1,7 +1,9 @@
-export const category =
+import * as Blockly from 'blockly/core';
+
+export const getCategory = () => (
 {
     kind: 'category',
-    name: 'Logic',
+    name: Blockly.Msg['MRC_CATEGORY_LOGIC'],
     categorystyle: 'logic_category',
     contents: [
         {
@@ -48,4 +50,4 @@ export const category =
             type: 'logic_ternary',
         },
     ],
-}
+});

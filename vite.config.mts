@@ -12,6 +12,10 @@ export default defineConfig({
         src: 'oss-attribution/**/*',
         dest: "./",
       },
+      {
+        src: 'src/i18n/locales/**/*',
+        dest: "./locales/",
+      },
     ],
   }),
   ],

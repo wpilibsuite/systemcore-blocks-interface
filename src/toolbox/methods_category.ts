@@ -32,12 +32,12 @@ import { ClassMethodDefBlock } from '../blocks/mrc_class_method_def'
 
 const CUSTOM_CATEGORY_METHODS = 'METHODS';
 
-export const category = {
+export const getCategory = () => ({
   kind: 'category',
   categorystyle: MRC_CATEGORY_STYLE_METHODS,
-  name: 'Methods',
+  name: Blockly.Msg['MRC_CATEGORY_METHODS'],
   custom: CUSTOM_CATEGORY_METHODS,
-};
+});
 
 export class MethodsCategory {
   private currentModule: commonStorage.Module | null = null;
