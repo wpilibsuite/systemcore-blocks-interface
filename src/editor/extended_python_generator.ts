@@ -31,6 +31,7 @@ export class OpModeDetails {
 
     if (this.enabled){
       code += '@' + this.type + "\n";
+      
       if (this.name){
         code += '@name("' + this.name + '")\n';
       }
@@ -38,6 +39,20 @@ export class OpModeDetails {
         code += '@group("' + this.group + '")\n';
       }
     }
+    return code;
+  }
+  imports() : string{
+    let code = '';
+    if (this.enabled){
+      code += 'from blocks_base_classes import ' + this.type + '\n';
+      if (this.name){
+        code += 'from blocks_base_classes import name\n';
+      }
+      if (this.group){
+        code += 'from blocks_base_classes import group\n';
+      }
+    }
+
     return code;
   }
 }
@@ -181,6 +196,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       const className = this.context.getClassName();
       const classParent = this.context.getClassParent();
       const annotations = this.details?.annotations();
+      const import_annotations = this.details?.imports();
+
+      if(import_annotations){
+        this.definitions_['import_annotations'] = import_annotations;
+      }
+
       this.addImport(classParent);
 
       const classDef = 'class ' + className + '(' + classParent + '):\n';
