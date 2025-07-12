@@ -26,7 +26,7 @@ import * as MechanismContainerHolder from '../blocks/mrc_mechanism_component_hol
 
 export class OpModeDetails {
   constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
-  annotations(className : string) : string{
+  decorations(className : string) : string{
     let code = '';
 
     if (this.enabled){
@@ -195,11 +195,11 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     if (this.context && this.workspace) {
       const className = this.context.getClassName();
       const classParent = this.context.getClassParent();
-      const annotations = this.details?.annotations(className);
-      const import_annotations = this.details?.imports();
+      const decorations = this.details?.decorations(className);
+      const import_decorations = this.details?.imports();
 
-      if (import_annotations){
-        this.definitions_['import_annotations'] = import_annotations;
+      if (import_decorations){
+        this.definitions_['import_decorations'] = import_decorations;
       }
 
       this.addImport(classParent);
@@ -222,8 +222,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       this.classMethods = Object.create(null);
       this.ports = Object.create(null);
       code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
-      if (annotations){
-        code = annotations + code;
+      if (decorations){
+        code = decorations + code;
       }
       this.details = null;
     }
