@@ -365,9 +365,9 @@ export const pythonFromBlock = function (
         branch = generator.INDENT + 'super.__init__(' + class_specific + ')\n' +
             generator.defineClassVariables() + branch;
     }
-    else if (funcName == 'update'){
+    else if (generator.inBaseClassMethod(blocklyName)){
         // Special case for update, to also call the update method of the base class
-        branch = generator.INDENT + 'super.update()\n' + branch;
+        branch = generator.INDENT + 'super.' + blocklyName + '()\n' + branch;
     }
     if (returnValue) {
         returnValue = generator.INDENT + 'return ' + returnValue + '\n';

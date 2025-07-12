@@ -212,6 +212,34 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     }
     return ''
   }
+
+  /**
+   * This returns the list of methods that are derived from so that mrc_class_method_def 
+   * knows whether to call super() or not.
+   * @returns list of method names
+   */
+  getBaseClassMethods() : string[] {
+    let classParent = this.context?.getClassParent();
+    if (classParent == 'OpMode'){
+      return ['start', 'loop', 'stop'];
+    }
+    else if (classParent == 'Mechanism') {
+      return ['start', 'update', 'stop'];
+    }
+    else if (classParent == 'RobotBase'){
+      return ['start', 'update', 'stop'];
+    }
+    return [];
+  }
+
+  /**
+   * Returns true if the method is in the base class.
+   * @param methodName the name of the method to check
+   */
+  inBaseClassMethod(methodName: string): boolean {
+    const baseMethods = this.getBaseClassMethods();
+    return baseMethods.includes(methodName);
+  }
 }
 
 export const extendedPythonGenerator = new ExtendedPythonGenerator();
