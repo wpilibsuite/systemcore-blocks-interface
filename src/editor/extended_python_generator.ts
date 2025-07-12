@@ -26,17 +26,17 @@ import * as MechanismContainerHolder from '../blocks/mrc_mechanism_component_hol
 
 export class OpModeDetails {
   constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
-  annotations() : string{
+  annotations(className : string) : string{
     let code = '';
 
     if (this.enabled){
       code += '@' + this.type + "\n";
       
       if (this.name){
-        code += '@name("' + this.name + '")\n';
+        code += '@Name(' + className + ', "' + this.name + '")\n';
       }
       if (this.group){
-        code += '@group("' + this.group + '")\n';
+        code += '@Group(' + className + ', "' + this.group + '")\n';
       }
     }
     return code;
@@ -46,10 +46,10 @@ export class OpModeDetails {
     if (this.enabled){
       code += 'from blocks_base_classes import ' + this.type + '\n';
       if (this.name){
-        code += 'from blocks_base_classes import name\n';
+        code += 'from blocks_base_classes import Name\n';
       }
       if (this.group){
-        code += 'from blocks_base_classes import group\n';
+        code += 'from blocks_base_classes import Group\n';
       }
     }
 
@@ -195,7 +195,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     if (this.context && this.workspace) {
       const className = this.context.getClassName();
       const classParent = this.context.getClassParent();
-      const annotations = this.details?.annotations();
+      const annotations = this.details?.annotations(className);
       const import_annotations = this.details?.imports();
 
       if(import_annotations){
