@@ -214,7 +214,7 @@ const CLASS_METHOD_DEF = {
     mrcRenameParameter: function (this: ClassMethodDefBlock, oldName: string, newName: string) {
         let nextBlock = this.getInputTargetBlock('STACK');
 
-        if(nextBlock){
+        if (nextBlock){
             findConnectedBlocksOfType(nextBlock, MRC_GET_PARAMETER_BLOCK_NAME).forEach((block) => {
                 if (block.getFieldValue('PARAMETER_NAME') === oldName) {
                     block.setFieldValue(newName, 'PARAMETER_NAME');
@@ -362,12 +362,12 @@ export const pythonFromBlock = function (
     }
     if (block.mrcPythonMethodName == '__init__') {
         let class_specific = generator.getClassSpecificForInit();
-        branch = generator.INDENT + 'super.__init__(' + class_specific + ')\n' +
+        branch = generator.INDENT + 'super().__init__(' + class_specific + ')\n' +
             generator.defineClassVariables() + branch;
     }
-    else if (funcName == 'update'){
+    else if (generator.inBaseClassMethod(blocklyName)){
         // Special case for update, to also call the update method of the base class
-        branch = generator.INDENT + 'super.update()\n' + branch;
+        branch = generator.INDENT + 'super().' + blocklyName + '()\n' + branch;
     }
     if (returnValue) {
         returnValue = generator.INDENT + 'return ' + returnValue + '\n';

@@ -11,6 +11,10 @@
 # production
 /build
 
+# python stuff
+__pycache__
+*.egg-info
+
 # misc
 .DS_Store
 .env.local

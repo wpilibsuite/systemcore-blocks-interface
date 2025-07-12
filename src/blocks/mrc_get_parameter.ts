@@ -66,7 +66,7 @@ const GET_PARAMETER_BLOCK = {
 
     if (blockEvent.type === Blockly.Events.BLOCK_MOVE) {
       let parent = blockBlock.getRootBlock();
-      if( parent.type === MRC_CLASS_METHOD_DEF) {
+      if ( parent.type === MRC_CLASS_METHOD_DEF) {
         // It is a class method definition, so we see if this variable is in it.
         const classMethodDefBlock = parent as ClassMethodDefBlock;
         for (const parameter of classMethodDefBlock.mrcParameters) {

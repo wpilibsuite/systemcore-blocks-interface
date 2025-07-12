@@ -37,7 +37,7 @@ export function registerCallback(blockType : string, blockEvents : string[], fun
 export function getParentOfType(block : Blockly.Block | null, type : string) : Blockly.Block | null{
     let parentBlock = block?.getParent(); 
     while(parentBlock){
-        if(parentBlock.type == type){
+        if (parentBlock.type == type){
             return parentBlock;
         }
         parentBlock = parentBlock.getParent();
@@ -50,14 +50,14 @@ function changeListener(e: Blockly.Events.Abstract){
         let eventBlockBase = (e as Blockly.Events.BlockBase);
         let workspace = Blockly.Workspace.getById(eventBlockBase.workspaceId!)
         let block = (workspace?.getBlockById(eventBlockBase.blockId!)! as Blockly.BlockSvg)
-        if(!block){
+        if (!block){
             return;
         }
         let callbackInfo = registeredCallbacks.get(block.type);
-        if(!callbackInfo){
+        if (!callbackInfo){
             return;
         }
-        if(callbackInfo[0].includes(e.type)){
+        if (callbackInfo[0].includes(e.type)){
             callbackInfo[1](block, eventBlockBase);
         }            
     }

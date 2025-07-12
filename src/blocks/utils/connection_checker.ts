@@ -42,17 +42,17 @@ export class MethodConnectionChecker extends Blockly.ConnectionChecker {
 
     if (!checkArrayOne || !checkArrayTwo) {
       // if either one has mrc_component, they must match
-      if((checkArrayOne && (checkArrayOne.indexOf(COMPONENT_OUTPUT) != -1)) ||
+      if ((checkArrayOne && (checkArrayOne.indexOf(COMPONENT_OUTPUT) != -1)) ||
         (checkArrayTwo && (checkArrayTwo.indexOf(COMPONENT_OUTPUT) != -1))){
          return false;
       }
       // if either one has mrc_mechanism, they must match
-      if((checkArrayOne && (checkArrayOne.indexOf(MECHANISM_OUTPUT) != -1)) ||
+      if ((checkArrayOne && (checkArrayOne.indexOf(MECHANISM_OUTPUT) != -1)) ||
         (checkArrayTwo && (checkArrayTwo.indexOf(MECHANISM_OUTPUT) != -1))){
          return false;
       }
       // if either one has mrc_event, they must match
-      if((checkArrayOne && (checkArrayOne.indexOf(EVENT_OUTPUT) != -1)) ||
+      if ((checkArrayOne && (checkArrayOne.indexOf(EVENT_OUTPUT) != -1)) ||
         (checkArrayTwo && (checkArrayTwo.indexOf(EVENT_OUTPUT) != -1))){
          return false;
       }

@@ -29,5 +29,48 @@ import * as toolboxItems from './items';
  * toolbox.
  */
 export const robot_class_blocks: toolboxItems.Block[] = [
-  // TODO(lizlooney): Add one mrc_class_method_def blocks for each method in ther Robot class.
-];
+  {
+    kind: 'block',
+    type: 'mrc_class_method_def',
+    fields: {
+      'NAME': 'start',
+    },
+    extraState: {
+      canChangeSignature: false,
+      canBeCalledWithinClass: false,
+      canBeCalledOutsideClass: false,
+      canDelete: true,
+      returnType: 'None',
+      params: [],
+    },
+  },
+  {
+    kind: 'block',
+    type: 'mrc_class_method_def',
+    fields: {
+      'NAME': 'update',
+    },
+    extraState: {
+      canChangeSignature: false,
+      canBeCalledWithinClass: false,
+      canBeCalledOutsideClass: false,
+      canDelete: true,
+      returnType: 'None',
+      params: [],
+    },
+  },
+  {
+    kind: 'block',
+    type: 'mrc_class_method_def',
+    fields: {
+      'NAME': 'stop',
+    },
+    extraState: {
+      canChangeSignature: false,
+      canBeCalledWithinClass: false,
+      canBeCalledOutsideClass: false,
+      canDelete: true,
+      returnType: 'None',
+      params: [],
+    },
+  },];

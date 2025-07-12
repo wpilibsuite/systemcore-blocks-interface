@@ -38,13 +38,14 @@
         "newItemPlaceholder": "Agregar Módulo",
         "search": "Buscar..."
     },
+    "MECHANISMS": "Mecanismos",
+    "OPMODES": "OpModes",
     "BLOCKLY": {
         "OF_TYPE": "de tipo",
         "WITH": "con",
         "WHEN": "cuando",
         "PARAMETER": "parámetro",
         "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "Los parámetros solo pueden ir en el bloque de su método",
-        "MECHANISMS": "Mecanismos",
         "COMPONENTS": "Componentes",
         "EVENTS": "Eventos",
         "EVALUATE_BUT_IGNORE_RESULT": "evaluar pero ignorar resultado",
@@ -74,7 +75,8 @@
             "METHODS": "Métodos",
             "EVENTS": "Eventos",
             "ADD_MECHANISM": "+ Mecanismo",
-            "ADD_COMPONENT": "+ Componente"
+            "ADD_COMPONENT": "+ Componente",
+            "TEST": "Prueba"
         }
     }
 }

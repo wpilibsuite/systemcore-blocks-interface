@@ -21,23 +21,6 @@
                 }
             },
             {
-                "type": "mrc_class_method_def",
-                "id": "ElbONc{46f,UprTW(|1C",
-                "x": 210,
-                "y": 210,
-                "deletable": false,
-                "extraState": {
-                    "canChangeSignature": false,
-                    "canBeCalledWithinClass": false,
-                    "canBeCalledOutsideClass": false,
-                    "returnType": "None",
-                    "params": []
-                },
-                "fields": {
-                    "NAME": "update"
-                }
-            },
-            {
                 "type": "mrc_mechanism_component_holder",
                 "id": "ElbOAb{)s(,UprTW(|1C",
                 "x": 10,

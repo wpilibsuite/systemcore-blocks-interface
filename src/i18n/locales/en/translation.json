@@ -37,13 +37,14 @@
     "BLOCKS": "Blocks",
     "CODE": "Code",
     "COPY": "Copy",
+    "MECHANISMS": "Mechanisms",    
+    "OPMODES": "OpModes",
     "BLOCKLY":{
         "OF_TYPE": "of type",
         "WITH": "with",
         "WHEN": "when",
         "PARAMETER": "parameter",
         "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "Parameters can only go in their method's block",
-        "MECHANISMS": "Mechanisms",
         "COMPONENTS": "Components",
         "EVENTS": "Events",
         "EVALUATE_BUT_IGNORE_RESULT": "evaluate but ignore result",
@@ -51,6 +52,7 @@
         "ENABLED": "Enabled",
         "DISPLAY_NAME": "Display Name",
         "DISPLAY_GROUP": "Display Group",
+        "PRINT": "print",
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
             "OPMODE_TYPE": "What sort of OpMode this is",
@@ -73,7 +75,8 @@
             "METHODS": "Methods",
             "EVENTS": "Events",
             "ADD_MECHANISM": "+ Mechanism",
-            "ADD_COMPONENT": "+ Component"
+            "ADD_COMPONENT": "+ Component",
+            "TEST": "Test"
         }
     }   
 }
