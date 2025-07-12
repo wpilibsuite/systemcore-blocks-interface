@@ -34,12 +34,35 @@ class CustomFlyout extends Blockly.VerticalFlyout {
     protected x: number = 0;
     protected y: number = 0;
 
-    public setPosition(x: number, y: number): void {
-        this.x = x;
-        this.y = y;
+    public setPosition(fieldRect: DOMRect, workspaceRect: DOMRect, location: FlydownLocation): void {
+        // Calculate position based on field element, workspace, and desired location
+        switch (location) {
+            case FlydownLocation.DISPLAY_BELOW:
+                this.x = fieldRect.left - workspaceRect.left;
+                this.y = fieldRect.bottom - workspaceRect.top;
+                break;
+                
+            case FlydownLocation.DISPLAY_ABOVE:
+                this.x = fieldRect.left - workspaceRect.left;
+                this.y = fieldRect.top - workspaceRect.top - this.getHeight();
+                break;
+                
+            case FlydownLocation.DISPLAY_LEFT:
+                this.x = fieldRect.left - workspaceRect.left - this.width_;
+                this.y = fieldRect.top - workspaceRect.top;
+                break;
+                
+            case FlydownLocation.DISPLAY_RIGHT:
+            default:
+                this.x = fieldRect.right - workspaceRect.left;
+                this.y = fieldRect.top - workspaceRect.top;
+                break;
+        }
+
+        // Position the flyout at the calculated coordinates
         this.position();
     }
-
+    
     override position() {
         if (!this.isVisible() || !this.targetWorkspace!.isVisible()) {
             return;
@@ -157,7 +180,7 @@ export class FieldFlydown extends Blockly.FieldTextInput {
     private showTimeout_: number | null = null;
     private hideTimeout_: number | null = null;
 
-    constructor(value: string, isEditable: boolean, displayLocation: FlydownLocation = FlydownLocation.DISPLAY_BELOW) {
+    constructor(value: string, isEditable: boolean, displayLocation: FlydownLocation = FlydownLocation.DISPLAY_RIGHT) {
         super(value);
         this.EDITABLE = isEditable;
         this.displayLocation_ = displayLocation;
@@ -204,7 +227,7 @@ export class FieldFlydown extends Blockly.FieldTextInput {
         e.stopPropagation();
     }
 
-    private onMouseOut_(e: Event) {
+    private onMouseOut_(_e: Event) {
         // Clear any pending show timeout
         if (this.showTimeout_) {
             clearTimeout(this.showTimeout_);
@@ -244,12 +267,8 @@ export class FieldFlydown extends Blockly.FieldTextInput {
             const fieldRect = fieldElement.getBoundingClientRect();
             const workspaceRect = mainWorkspace.getParentSvg().getBoundingClientRect();
 
-            const x = fieldRect.right - workspaceRect.left;
-            const y = fieldRect.top - workspaceRect.top;
-
-
             // Set flydown position
-            this.flydown_.setPosition(x, y);
+            this.flydown_.setPosition(fieldRect, workspaceRect, this.displayLocation_);
             // Create the flydown without explicit DOM manipulation
             this.flydown_.setVisible(true);
 
@@ -279,11 +298,8 @@ export class FieldFlydown extends Blockly.FieldTextInput {
             const fieldRect = fieldElement!.getBoundingClientRect();
             const workspaceRect = mainWorkspace.getParentSvg().getBoundingClientRect();
 
-            const x = fieldRect.right - workspaceRect.left;
-            const y = fieldRect.top - workspaceRect.top;
-
             // Set flydown position
-            this.flydown_.setPosition(x, y);
+            this.flydown_.setPosition(fieldRect, workspaceRect, this.displayLocation_);
             // Show the flydown with your blocks
             this.flydown_.show(this.getBlocksForFlydown_());
 
