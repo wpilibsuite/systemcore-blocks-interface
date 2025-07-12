@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blocks_base_classes"
+version = "0.1.0"
+description = "Base classes for SystemCore blocks interface"
+requires-python = ">=3.8"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Alan Smith", email = "alan@porpoiseful.com"}
+]
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["blocks_base_classes*"]
+
+[tool.setuptools.package-dir]
+"blocks_base_classes" = "."

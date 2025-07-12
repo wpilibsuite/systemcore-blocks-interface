@@ -8,3 +8,7 @@ class OpMode:
         self.robot.update()
     def stop(self):
         self.robot.stop()
+
+# For now this does nothing but it lets the decorator work
+def Teleop(OpMode):
+    return OpMode
