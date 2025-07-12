@@ -74,7 +74,8 @@
             "METHODS": "Métodos",
             "EVENTS": "Eventos",
             "ADD_MECHANISM": "+ Mecanismo",
-            "ADD_COMPONENT": "+ Componente"
+            "ADD_COMPONENT": "+ Componente",
+            "TEST": "Prueba"
         }
     }
 }
