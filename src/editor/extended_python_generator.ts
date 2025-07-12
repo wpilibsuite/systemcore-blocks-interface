@@ -84,9 +84,11 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     let variableDefinitions = '';
 
     if (this.context?.getHasHardware()) {
-      variableDefinitions += this.INDENT + "self.define_hardware(";
-      variableDefinitions += this.getListOfPorts(true);
-      variableDefinitions += ')\n';
+      if ('define_hardware' in this.classMethods) {
+        variableDefinitions += this.INDENT + "self.define_hardware(";
+        variableDefinitions += this.getListOfPorts(true);
+        variableDefinitions += ')\n';
+      }
       if (this.events && Object.keys(this.events).length > 0){
         variableDefinitions += this.INDENT + "self.register_events()\n";
       }
@@ -129,7 +131,14 @@ export class ExtendedPythonGenerator extends PythonGenerator {
    * Add an import statement for a python module.
    */
   addImport(importModule: string): void {
-    this.definitions_['import_' + importModule] = 'import ' + importModule;
+    const baseClasses = ['RobotBase', 'OpMode', 'Mechanism'];
+    if (baseClasses.includes(importModule)) {
+      this.definitions_['import_' + importModule] = 'from blocks_base_classes import ' + importModule;
+    }
+    else{
+      this.definitions_['import_' + importModule] = 'import ' + importModule;
+    }
+
   }
 
   /**

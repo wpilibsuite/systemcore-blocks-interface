@@ -362,12 +362,12 @@ export const pythonFromBlock = function (
     }
     if (block.mrcPythonMethodName == '__init__') {
         let class_specific = generator.getClassSpecificForInit();
-        branch = generator.INDENT + 'super.__init__(' + class_specific + ')\n' +
+        branch = generator.INDENT + 'super().__init__(' + class_specific + ')\n' +
             generator.defineClassVariables() + branch;
     }
     else if (generator.inBaseClassMethod(blocklyName)){
         // Special case for update, to also call the update method of the base class
-        branch = generator.INDENT + 'super.' + blocklyName + '()\n' + branch;
+        branch = generator.INDENT + 'super().' + blocklyName + '()\n' + branch;
     }
     if (returnValue) {
         returnValue = generator.INDENT + 'return ' + returnValue + '\n';
