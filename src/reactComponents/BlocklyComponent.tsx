@@ -140,9 +140,6 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         if (!workspaceRef.current) {
           return;
         }
-        // Save workspace state
-        const workspaceXml = Blockly.Xml.workspaceToDom(workspaceRef.current);
-
         // Set new locale
         switch (i18n.language) {
           case 'es':
@@ -157,10 +154,7 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         }
         // Apply custom tokens
         Blockly.setLocale(customTokens(t));
-        
-        // Clear the workspace
-        workspaceRef.current.clear();
-        
+
         // Force complete toolbox rebuild by calling onWorkspaceRecreated AFTER locale is set
         if (props.onWorkspaceRecreated) {
           props.onWorkspaceRecreated(workspaceRef.current);
