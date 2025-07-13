@@ -1,6 +1,7 @@
 
 import * as Blockly from 'blockly/core';
 import * as toolboxItems from './items';
+import { FunctionData } from '../blocks/utils/python_json_types';
 import { addBuiltInFunctionBlocks } from '../blocks/mrc_call_python_function';
 
 export function getCategory(): toolboxItems.Category {
@@ -13,6 +14,7 @@ export function getCategory(): toolboxItems.Category {
     args: [{
       name: '',
       type: 'str',
+      defaultValue: '',
     }],
   };
 

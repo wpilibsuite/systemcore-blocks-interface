@@ -77,7 +77,7 @@ export class Category extends Item  {
   custom?: string;
 
   /** The blocks for this category. */
-  contents?: ContentsType[];
+  contents: ContentsType[] = [];
 
   constructor(name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {
     super('category');

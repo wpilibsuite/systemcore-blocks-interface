@@ -55,8 +55,8 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
       kind: 'category',
       name: name,
       moduleName: moduleData.moduleName,
+      contents: [],
     };
-    moduleCategory.contents = [];
     addModuleBlocks(moduleData, moduleCategory.contents);
     allCategories[path] = moduleCategory;
     moduleCategories[path] = moduleCategory;
@@ -72,8 +72,8 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
       kind: 'category',
       name: name,
       className: classData.className,
+      contents: [],
     };
-    classCategory.contents = [];
     addClassBlocks(classData, classCategory.contents);
     allCategories[path] = classCategory;
     classCategories[path] = classCategory;
