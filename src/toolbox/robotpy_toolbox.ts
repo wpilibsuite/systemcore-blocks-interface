@@ -29,7 +29,7 @@ import {
     addInstanceMethodBlocks,
     addModuleFunctionBlocks,
     addStaticMethodBlocks } from '../blocks/mrc_call_python_function';
-import { robotPyData } from '../blocks/utils/robotpy_data';
+import { robotPyData } from '../blocks/utils/python';
 import {
     ClassData,
     ModuleData,
@@ -55,8 +55,8 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
       kind: 'category',
       name: name,
       moduleName: moduleData.moduleName,
+      contents: [],
     };
-    moduleCategory.contents = [];
     addModuleBlocks(moduleData, moduleCategory.contents);
     allCategories[path] = moduleCategory;
     moduleCategories[path] = moduleCategory;
@@ -72,8 +72,8 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
       kind: 'category',
       name: name,
       className: classData.className,
+      contents: [],
     };
-    classCategory.contents = [];
     addClassBlocks(classData, classCategory.contents);
     allCategories[path] = classCategory;
     classCategories[path] = classCategory;

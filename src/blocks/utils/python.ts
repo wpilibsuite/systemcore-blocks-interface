@@ -20,18 +20,26 @@
  */
 
 import { ClassData, PythonData, ModuleData, organizeVarDataByType, VariableGettersAndSetters } from './python_json_types';
-import { robotPyData } from './robotpy_data';
-import { externalSamplesData } from './external_samples_data';
+import generatedExternalSamplesData from './generated/external_samples_data.json';
+import generatedRobotPyData from './generated/robotpy_data.json';
+import generatedServerPythonScripts from './generated/server_python_scripts.json';
 
 import * as PythonEnum from "../mrc_get_python_enum_value";
 import * as GetPythonVariable from "../mrc_get_python_variable";
 import * as SetPythonVariable from "../mrc_set_python_variable";
 
+
 // Utilities related to blocks for python modules and classes, including those from RobotPy, external samples, etc.
+
+export const robotPyData = generatedRobotPyData as PythonData;
+const externalSamplesData = generatedExternalSamplesData as PythonData
+const serverPythonScripts = generatedServerPythonScripts as PythonData;
+
 
 const allPythonData: PythonData[] = [];
 allPythonData.push(robotPyData);
 allPythonData.push(externalSamplesData);
+allPythonData.push(serverPythonScripts);
 
 
 // Initializes enum and variable blocks for python modules and classes.

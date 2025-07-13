@@ -54,8 +54,9 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
         // In RobotPy function hal.report(), the arg named feature has a default value of None.
         return null;
       }
-      // If argDefaultValue has single quotes, it's a literal string.
-      if (argDefaultValue.startsWith("'") && argDefaultValue.endsWith("'")) {
+      // If argDefaultValue is surrounded by single or double quotes, it's a literal string.
+      if (argDefaultValue.startsWith("'") && argDefaultValue.endsWith("'") ||
+          argDefaultValue.startsWith('"') && argDefaultValue.endsWith('"')) {
         const textValue = argDefaultValue.substring(1, argDefaultValue.length-1);
         return createTextShadowValue(textValue);
       }
