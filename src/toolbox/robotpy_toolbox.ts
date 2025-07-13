@@ -29,7 +29,7 @@ import {
     addInstanceMethodBlocks,
     addModuleFunctionBlocks,
     addStaticMethodBlocks } from '../blocks/mrc_call_python_function';
-import { robotPyData } from '../blocks/utils/robotpy_data';
+import { robotPyData } from '../blocks/utils/python';
 import {
     ClassData,
     ModuleData,

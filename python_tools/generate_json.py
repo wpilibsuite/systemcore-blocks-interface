@@ -53,6 +53,10 @@ import wpimath.units
 import wpinet
 import wpiutil
 
+# Server python scripts
+sys.path.append("../server_python_scripts")
+import blocks_base_classes
+
 # External samples
 sys.path.append("../external_samples")
 import color_range_sensor
@@ -116,6 +120,13 @@ def main(argv):
   file_path = f'{FLAGS.output_directory}/generated/robotpy_data.json'
   json_generator.writeJsonFile(file_path)
 
+  server_python_scripts = [
+    blocks_base_classes,
+  ]
+  json_generator = json_util.JsonGenerator(server_python_scripts)
+  file_path = f'{FLAGS.output_directory}/generated/server_python_scripts.json'
+  json_generator.writeJsonFile(file_path)
+
   external_samples_modules = [
     color_range_sensor,
     component,
@@ -128,7 +139,6 @@ def main(argv):
   json_generator = json_util.JsonGenerator(external_samples_modules)
   file_path = f'{FLAGS.output_directory}/generated/external_samples_data.json'
   json_generator.writeJsonFile(file_path)
-
 
 
 if __name__ == '__main__':

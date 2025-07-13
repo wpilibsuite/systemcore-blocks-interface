@@ -182,6 +182,8 @@ class JsonGenerator:
         continue
       for iSignature in range(len(signatures)):
         signature = signatures[iSignature]
+        if '**kwargs' in signature:
+          continue
         # Determine the argument names and types.
         try:
           (function_name, arg_names, arg_types, arg_default_values, return_type) = python_util.processSignature(signature)

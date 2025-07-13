@@ -217,6 +217,8 @@ def isConstructor(parent, key: str, object):
 def isFunction(parent, key: str, object):
   return (
     inspect.isroutine(object) and
+    object.__qualname__ != "BaseException.add_note" and
+    object.__qualname__ != "BaseException.with_traceback" and
     not key.startswith("_"))
 
 

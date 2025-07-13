@@ -1,0 +1,212 @@
+{
+    "aliases": {},
+    "classes": [
+        {
+            "className": "blocks_base_classes.mechanism.Mechanism",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "blocks_base_classes.mechanism.Mechanism",
+                    "functionName": "__init__",
+                    "returnType": "blocks_base_classes.mechanism.Mechanism",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.mechanism.Mechanism"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.mechanism.Mechanism",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.mechanism.Mechanism"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.mechanism.Mechanism",
+                    "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.mechanism.Mechanism"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.mechanism.Mechanism",
+                    "functionName": "update",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "blocks_base_classes.mechanism",
+            "staticMethods": []
+        },
+        {
+            "className": "blocks_base_classes.opmode.OpMode",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "robot",
+                            "type": "blocks_base_classes.robot_base.RobotBase"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.opmode.OpMode",
+                    "functionName": "__init__",
+                    "returnType": "blocks_base_classes.opmode.OpMode",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.opmode.OpMode"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.opmode.OpMode",
+                    "functionName": "loop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.opmode.OpMode"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.opmode.OpMode",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.opmode.OpMode"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.opmode.OpMode",
+                    "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "blocks_base_classes.opmode",
+            "staticMethods": []
+        },
+        {
+            "className": "blocks_base_classes.robot_base.RobotBase",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "blocks_base_classes.robot_base.RobotBase",
+                    "functionName": "__init__",
+                    "returnType": "blocks_base_classes.robot_base.RobotBase",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.robot_base.RobotBase"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.robot_base.RobotBase",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.robot_base.RobotBase"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.robot_base.RobotBase",
+                    "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.robot_base.RobotBase"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.robot_base.RobotBase",
+                    "functionName": "update",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "blocks_base_classes.robot_base",
+            "staticMethods": []
+        }
+    ],
+    "modules": [
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "blocks_base_classes",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "blocks_base_classes.mechanism",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "blocks_base_classes.opmode",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "blocks_base_classes.robot_base",
+            "moduleVariables": []
+        }
+    ],
+    "subclasses": {}
+}
