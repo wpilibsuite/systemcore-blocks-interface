@@ -31,7 +31,8 @@ class SparkMiniComponent(Component):
         portType, port = ports[0]
         if portType != PortType.SMART_MOTOR_PORT:
             raise InvalidPortException
-        self.spark_mini = wpilib.SparkMini(port)
+        # TODO(lizlooney): When we upgrade to 2027 robotpy, change PWMSparkMax to SparkMini.
+        self.spark_mini = wpilib.PWMSparkMax(port) # wpilib.SparkMini(port)
 
     def get_manufacturer(self) -> str:
         return "REV Robotics"
