@@ -341,7 +341,7 @@ const App: React.FC = (): React.JSX.Element => {
     } else {
       setGeneratedCode('');
     }
-  }, [currentModule, triggerPythonRegeneration, blocklyComponent]);
+  }, [currentModule, project, triggerPythonRegeneration, blocklyComponent]);
 
   // Update toolbox when module or categories change
   React.useEffect(() => {
