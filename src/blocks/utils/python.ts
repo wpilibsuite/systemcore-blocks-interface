@@ -262,10 +262,10 @@ export function getLegalName(proposedName: string, existingNames: string[]){
   while (existingNames.includes(newName)){
       const match = /(.*?)(\d+)$/.exec(newName)
 
-      if(match){
+      if (match) {
           let lastNumber  = +match[2]
           newName = match[1] + (lastNumber + 1)
-      }else{
+      } else {
           newName += "2"
       }
   }

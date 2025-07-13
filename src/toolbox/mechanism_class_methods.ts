@@ -29,6 +29,21 @@ import * as toolboxItems from './items';
  * toolbox.
  */
 export const mechanism_class_blocks: toolboxItems.Block[] = [
+ {
+    kind: 'block',
+    type: 'mrc_class_method_def',
+    fields: {
+      'NAME': 'start',
+    },
+    extraState: {
+      canChangeSignature: false,
+      canBeCalledWithinClass: false,
+      canBeCalledOutsideClass: false,
+      canDelete: true,
+      returnType: 'None',
+      params: [],
+    },
+  },
   {
     kind: 'block',
     type: 'mrc_class_method_def',
@@ -39,7 +54,22 @@ export const mechanism_class_blocks: toolboxItems.Block[] = [
       canChangeSignature: false,
       canBeCalledWithinClass: false,
       canBeCalledOutsideClass: false,
-      canDelete: false,
+      canDelete: true,
+      returnType: 'None',
+      params: [],
+    },
+  },
+  {
+    kind: 'block',
+    type: 'mrc_class_method_def',
+    fields: {
+      'NAME': 'stop',
+    },
+    extraState: {
+      canChangeSignature: false,
+      canBeCalledWithinClass: false,
+      canBeCalledOutsideClass: false,
+      canDelete: true,
       returnType: 'None',
       params: [],
     },

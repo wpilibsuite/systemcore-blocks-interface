@@ -178,7 +178,7 @@ export const setup = function () {
 }
 
 function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
-  let code = 'def define_hardware(self):\n' + generator.INDENT + 'self.hardware = []\n';
+  let code = 'def define_hardware(self):\n';
 
   let mechanisms = '';
   let components = '';
@@ -189,9 +189,8 @@ function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator:
   const body = mechanisms + components;
   if (body != '') {
     code += body;
+    generator.addClassMethodDefinition('define_hardware', code);    
   } 
-
-  generator.addClassMethodDefinition('define_hardware', code);
 }
 
 function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
@@ -199,13 +198,12 @@ function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, genera
 
   components = generator.statementToCode(block, 'COMPONENTS');
 
-  let code = 'def define_hardware(self' + generator.getListOfPorts(false) + '):\n' +
-    generator.INDENT + 'self.hardware = []\n';
+  let code = 'def define_hardware(self' + generator.getListOfPorts(false) + '):\n';
 
   if (components != '') {
     code += components;
-  } 
-  generator.addClassMethodDefinition('define_hardware', code);
+    generator.addClassMethodDefinition('define_hardware', code);    
+  }
 }
 
 export const pythonFromBlock = function (

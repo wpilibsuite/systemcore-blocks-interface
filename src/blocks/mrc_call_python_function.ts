@@ -626,7 +626,7 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
-          const componentNameChoices = [];
+          const componentNameChoices : string[] = [];
           this.mrcComponents.forEach(component => componentNameChoices.push(component.name));
           if (!componentNameChoices.includes(this.mrcComponentName)) {
             componentNameChoices.push(this.mrcComponentName);
@@ -723,7 +723,7 @@ const CALL_PYTHON_FUNCTION = {
                 }
               }
               if (indexOfComponentName != -1) {
-                const componentNameChoices = [];
+                const componentNameChoices : string[] = [];
                 this.mrcComponents.forEach(component => componentNameChoices.push(component.name));
                 titleInput.removeField(FIELD_COMPONENT_NAME);
                 titleInput.insertFieldAt(indexOfComponentName,

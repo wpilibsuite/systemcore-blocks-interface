@@ -29,6 +29,7 @@ import { getCategory as textCategory } from './text_category';
 import { getCategory as listsCategory } from './lists_category';
 import { getCategory as miscCategory } from './misc_category';
 import { getCategory as methodsCategory } from './methods_category';
+import { getCategory as testCategory } from './test_category';
 
 
 export function getToolboxItems(
@@ -44,6 +45,10 @@ export function getToolboxItems(
         kind: 'sep',
       },]
     );
+  }
+  const tCategory = testCategory();
+  if (tCategory.contents.length > 0) {
+    contents.push.apply(contents, [tCategory]);
   }
 
   contents.push.apply(
@@ -65,6 +70,7 @@ export function getToolboxItems(
         custom: 'VARIABLE',
       },
       methodsCategory(),
+
     ],
   );
   return contents;

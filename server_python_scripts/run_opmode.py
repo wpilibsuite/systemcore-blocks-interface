@@ -15,10 +15,8 @@ import inspect
 import argparse
 from pathlib import Path
 
-# Add the current directory to Python path to import local modules
-sys.path.insert(0, str(Path(__file__).parent))
+from blocks_base_classes import OpMode
 
-from opmode import OpMode
 from robot import Robot
 
 

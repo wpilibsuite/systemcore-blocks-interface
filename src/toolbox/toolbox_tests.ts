@@ -45,7 +45,7 @@ class ToolboxTestData {
     this.blocklyWorkspace = new Blockly.Workspace();
     this.blocklyWorkspace.MAX_UNDO = 0;
     this.jsonBlocks = [];
-    if(contents){
+    if (contents){
       this.collectBlocks(contents);
     }
     this.index = 0;

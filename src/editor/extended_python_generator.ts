@@ -26,18 +26,33 @@ import * as MechanismContainerHolder from '../blocks/mrc_mechanism_component_hol
 
 export class OpModeDetails {
   constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
-  annotations() : string{
+  decorations(className : string) : string{
     let code = '';
 
     if (this.enabled){
       code += '@' + this.type + "\n";
+      
       if (this.name){
-        code += '@name("' + this.name + '")\n';
+        code += '@Name(' + className + ', "' + this.name + '")\n';
       }
       if (this.group){
-        code += '@group("' + this.group + '")\n';
+        code += '@Group(' + className + ', "' + this.group + '")\n';
       }
     }
+    return code;
+  }
+  imports() : string{
+    let code = '';
+    if (this.enabled){
+      code += 'from blocks_base_classes import ' + this.type;
+      if (this.name){
+        code += ', Name';
+      }
+      if (this.group){
+        code += ', Group';
+      }
+    }
+
     return code;
   }
 }
@@ -84,9 +99,11 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     let variableDefinitions = '';
 
     if (this.context?.getHasHardware()) {
-      variableDefinitions += this.INDENT + "self.define_hardware(";
-      variableDefinitions += this.getListOfPorts(true);
-      variableDefinitions += ')\n';
+      if ('define_hardware' in this.classMethods) {
+        variableDefinitions += this.INDENT + "self.define_hardware(";
+        variableDefinitions += this.getListOfPorts(true);
+        variableDefinitions += ')\n';
+      }
       if (this.events && Object.keys(this.events).length > 0){
         variableDefinitions += this.INDENT + "self.register_events()\n";
       }
@@ -129,7 +146,14 @@ export class ExtendedPythonGenerator extends PythonGenerator {
    * Add an import statement for a python module.
    */
   addImport(importModule: string): void {
-    this.definitions_['import_' + importModule] = 'import ' + importModule;
+    const baseClasses = ['RobotBase', 'OpMode', 'Mechanism'];
+    if (baseClasses.includes(importModule)) {
+      this.definitions_['import_' + importModule] = 'from blocks_base_classes import ' + importModule;
+    }
+    else{
+      this.definitions_['import_' + importModule] = 'import ' + importModule;
+    }
+
   }
 
   /**
@@ -171,7 +195,13 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     if (this.context && this.workspace) {
       const className = this.context.getClassName();
       const classParent = this.context.getClassParent();
-      const annotations = this.details?.annotations();
+      const decorations = this.details?.decorations(className);
+      const import_decorations = this.details?.imports();
+
+      if (import_decorations){
+        this.definitions_['import_decorations'] = import_decorations;
+      }
+
       this.addImport(classParent);
 
       const classDef = 'class ' + className + '(' + classParent + '):\n';
@@ -192,8 +222,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       this.classMethods = Object.create(null);
       this.ports = Object.create(null);
       code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
-      if (annotations){
-        code = annotations + code;
+      if (decorations){
+        code = decorations + code;
       }
       this.details = null;
     }
@@ -211,6 +241,34 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       return 'robot'
     }
     return ''
+  }
+
+  /**
+   * This returns the list of methods that are derived from so that mrc_class_method_def 
+   * knows whether to call super() or not.
+   * @returns list of method names
+   */
+  getBaseClassMethods() : string[] {
+    let classParent = this.context?.getClassParent();
+    if (classParent == 'OpMode'){
+      return ['start', 'loop', 'stop'];
+    }
+    else if (classParent == 'Mechanism') {
+      return ['start', 'update', 'stop'];
+    }
+    else if (classParent == 'RobotBase'){
+      return ['start', 'update', 'stop'];
+    }
+    return [];
+  }
+
+  /**
+   * Returns true if the method is in the base class.
+   * @param methodName the name of the method to check
+   */
+  inBaseClassMethod(methodName: string): boolean {
+    const baseMethods = this.getBaseClassMethods();
+    return baseMethods.includes(methodName);
   }
 }
 

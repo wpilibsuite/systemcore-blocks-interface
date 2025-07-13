@@ -17,6 +17,7 @@ import * as Event from './mrc_event';
 import * as GetParameter from './mrc_get_parameter';
 import * as ParameterMutator from './mrc_param_container'
 import * as EventHandler from './mrc_event_handler';
+import * as Print from './mrc_print';
 
 const customBlocks = [
   CallPythonFunction,
@@ -37,13 +38,14 @@ const customBlocks = [
   GetParameter,
   ParameterMutator,
   EventHandler,
+  Print
 ];
 
 export const setup = function(forBlock: any) {
   customBlocks.forEach(block => {
     block.setup();
     const maybeBlock = block as { pythonFromBlock?: any; BLOCK_NAME?: string };
-    if(maybeBlock.pythonFromBlock && maybeBlock.BLOCK_NAME) {
+    if (maybeBlock.pythonFromBlock && maybeBlock.BLOCK_NAME) {
       forBlock[maybeBlock.BLOCK_NAME] = maybeBlock.pythonFromBlock;
     }
   });
