@@ -14,7 +14,7 @@ export function getCategory(): toolboxItems.Category {
     args: [{
       name: '',
       type: 'str',
-      defaultValue: '',
+      defaultValue: '""',
     }],
   };
 
