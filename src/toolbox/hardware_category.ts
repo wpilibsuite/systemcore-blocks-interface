@@ -24,7 +24,7 @@ import * as commonStorage from '../storage/common_storage';
 import * as toolboxItems from './items';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
 import * as Component from '../blocks/mrc_component';
-import { getInstanceComponentBlocks, getInstanceRobotBlocks } from '../blocks/mrc_call_python_function';
+import { getInstanceComponentBlocks, addInstanceRobotBlocks } from '../blocks/mrc_call_python_function';
 import { Editor } from '../editor/editor';
 
 export function getHardwareCategory(currentModule: commonStorage.Module): toolboxItems.Category {
@@ -253,7 +253,7 @@ function getRobotMethodsBlocks(): toolboxItems.Category {
     const editor = Editor.getEditorForBlocklyWorkspace(workspace);
     if (editor) {
       const methodsFromRobot = editor.getMethodsFromRobot();
-      contents.push(...getInstanceRobotBlocks(methodsFromRobot));
+      addInstanceRobotBlocks(methodsFromRobot, contents);
     }
   }
 

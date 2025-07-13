@@ -28,6 +28,8 @@ import { mechanism_class_blocks } from './mechanism_class_methods';
 import { opmode_class_blocks } from './opmode_class_methods';
 import { robot_class_blocks } from './robot_class_methods';
 import { ClassMethodDefBlock } from '../blocks/mrc_class_method_def'
+import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function'
+import { Editor } from '../editor/editor';
 
 
 const CUSTOM_CATEGORY_METHODS = 'METHODS';
@@ -56,32 +58,29 @@ export class MethodsCategory {
     // Add blocks for defining any methods that can be defined in the current
     // module. For example, if the current module is an OpMode, add blocks to
     // define the methods declared in the OpMode class.
-    if (this.currentModule) {
-      // Collect the method names for mrc_class_method_def blocks that are
-      // already in the blockly workspace.
-      const methodNamesAlreadyUsed: string[] = [];
-      workspace.getBlocksByType('mrc_class_method_def', false).forEach((block) => {
-        const classMethodDefBlock = block as ClassMethodDefBlock;
-        if (!classMethodDefBlock.mrcCanChangeSignature) {
-          methodNamesAlreadyUsed.push(classMethodDefBlock.getFieldValue('NAME'));
+
+    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
+    if (editor) {
+      // Collect the method names that are already overridden in the blockly workspace.
+      const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
+
+      if (this.currentModule) {
+        if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+          // Add the methods for a Robot.
+          this.addClassBlocksForCurrentModule(
+              'More Robot Methods', robot_class_blocks,
+              methodNamesAlreadyOverridden, contents);
+        } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
+          // Add the methods for a Mechanism.
+          this.addClassBlocksForCurrentModule(
+              'More Mechanism Methods', mechanism_class_blocks,
+              methodNamesAlreadyOverridden, contents);
+        } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
+          // Add the methods for an OpMode.
+          this.addClassBlocksForCurrentModule(
+              'More OpMode Methods', opmode_class_blocks,
+              methodNamesAlreadyOverridden, contents);
         }
-      });
-    
-      if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_ROBOT) {
-        // Add the methods for a Robot.
-        this.addClassBlocksForCurrentModule(
-            'More Robot Methods', robot_class_blocks,
-            methodNamesAlreadyUsed, contents);
-      } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
-        // Add the methods for a Mechanism.
-        this.addClassBlocksForCurrentModule(
-            'More Mechanism Methods', mechanism_class_blocks,
-            methodNamesAlreadyUsed, contents);
-      } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
-        // Add the methods for an OpMode.
-        this.addClassBlocksForCurrentModule(
-            'More OpMode Methods', opmode_class_blocks,
-            methodNamesAlreadyUsed, contents);
       }
     }
 
@@ -103,39 +102,14 @@ export class MethodsCategory {
           returnType: 'None',
           params: [],
         },
-      });
-
-    // For each mrc_class_method_def block in the blockly workspace, check if it
-    // can be called from within the class, and if so, add a
-    // mrc_call_python_function block.
-    workspace.getBlocksByType('mrc_class_method_def', false).forEach((block) => {
-      const classMethodDefBlock = block as ClassMethodDefBlock;
-      if (classMethodDefBlock.mrcCanBeCalledWithinClass) {
-        const callPythonFunctionBlock: toolboxItems.Block = {
-          kind: 'block',
-          type: 'mrc_call_python_function',
-          extraState: {
-            functionKind: 'instance_within',
-            returnType: classMethodDefBlock.mrcReturnType,
-            args: [],
-            importModule: '',
-          },
-          fields: {
-            FUNC: classMethodDefBlock.getFieldValue('NAME'),
-          },
-        };
-        classMethodDefBlock.mrcParameters.forEach((param) => {
-          if (callPythonFunctionBlock.extraState) {
-            callPythonFunctionBlock.extraState.args.push(
-              {
-                name: param.name,
-                type: param.type ?? '',
-              });
-            }
-          });
-        contents.push(callPythonFunctionBlock);
       }
-    });
+    );
+
+    // Get blocks for calling methods defined in the current workspace.
+    if (editor) {
+      const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
+      addInstanceWithinBlocks(methodsFromWorkspace, contents);
+    }
 
     const toolboxInfo = {
       contents: contents,
@@ -146,12 +120,12 @@ export class MethodsCategory {
 
   private addClassBlocksForCurrentModule(
       label: string, class_blocks: toolboxItems.Block[],
-      methodNamesAlreadyUsed: string[], contents: toolboxItems.ContentsType[]) {
+      methodNamesAlreadyOverridden: string[], contents: toolboxItems.ContentsType[]) {
     let labelAdded = false;
     class_blocks.forEach((blockInfo) => {
       if (blockInfo.fields) {
         const methodName = blockInfo.fields['NAME'];
-        if (!methodNamesAlreadyUsed.includes(methodName)) {
+        if (!methodNamesAlreadyOverridden.includes(methodName)) {
           if (!labelAdded) {
             contents.push(
               {

@@ -258,9 +258,18 @@ const CLASS_METHOD_DEF = {
         }
         return legalName;
     },
-    getMethod: function (this: ClassMethodDefBlock): commonStorage.Method | null {
-      return this.mrcMethod;
-    }
+    getMethodForWithin: function (this: ClassMethodDefBlock): commonStorage.Method | null {
+        return this.mrcCanBeCalledWithinClass ? this.mrcMethod : null;
+    },
+    getMethodForOutside: function (this: ClassMethodDefBlock): commonStorage.Method | null {
+        return this.mrcCanBeCalledOutsideClass ? this.mrcMethod : null;
+    },
+    canChangeSignature: function (this: ClassMethodDefBlock): boolean {
+        return this.mrcCanChangeSignature;
+    },
+    getMethodName: function (this: ClassMethodDefBlock): string {
+        return this.getFieldValue('NAME');
+    },
 };
 
 /**
@@ -402,7 +411,7 @@ export const pythonFromBlock = function (
     code = generator.scrub_(block, code);
     generator.addClassMethodDefinition(funcName, code);
 
-    if (block.mrcCanBeCalledOutsideClass) {
+    if (block.mrcCanBeCalledWithinClass || block.mrcCanBeCalledOutsideClass) {
       // Update the mrcMethod.
       block.mrcMethod = {
         blockId: block.id,
