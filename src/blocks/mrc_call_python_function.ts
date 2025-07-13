@@ -71,10 +71,9 @@ const WARNING_ID_FUNCTION_CHANGED = 'function changed';
 export function addBuiltInFunctionBlocks(
     functions: FunctionData[],
     contents: ToolboxItems.ContentsType[]) {
-  for (const functionData of functions) {
-    const block = createBuiltInMethodBlock(functionData);
-    contents.push(block);
-  }
+  functions.forEach(functionData => {
+    contents.push(createBuiltInMethodBlock(functionData));
+  });
 }
 
 function createBuiltInMethodBlock(
@@ -132,24 +131,24 @@ export function addModuleFunctionBlocks(
     moduleName: string,
     functions: FunctionData[],
     contents: ToolboxItems.ContentsType[]) {
-  for (const functionData of functions) {
+  functions.forEach(functionData => {
     const block = createModuleFunctionOrStaticMethodBlock(
         FunctionKind.MODULE, moduleName, moduleName, functionData);
     contents.push(block);
-  }
+  });
 }
 
 export function addStaticMethodBlocks(
     importModule: string,
     functions: FunctionData[],
     contents: ToolboxItems.ContentsType[]) {
-  for (const functionData of functions) {
+  functions.forEach(functionData => {
     if (functionData.declaringClassName) {
       const block = createModuleFunctionOrStaticMethodBlock(
           FunctionKind.STATIC, importModule, functionData.declaringClassName, functionData);
       contents.push(block);
     }
-  }
+  });
 }
 
 function createModuleFunctionOrStaticMethodBlock(
@@ -176,10 +175,9 @@ export function addConstructorBlocks(
     importModule: string,
     functions: FunctionData[],
     contents: ToolboxItems.ContentsType[]) {
-  for (const functionData of functions) {
-    const block = createConstructorBlock(importModule, functionData);
-    contents.push(block);
-  }
+  functions.forEach(functionData => {
+    contents.push(createConstructorBlock(importModule, functionData));
+  });
 }
 
 function createConstructorBlock(
@@ -202,10 +200,9 @@ function createConstructorBlock(
 export function addInstanceMethodBlocks(
     functions: FunctionData[],
     contents: ToolboxItems.ContentsType[]) {
-  for (const functionData of functions) {
-    const block = createInstanceMethodBlock(functionData);
-    contents.push(block);
-  }
+  functions.forEach(functionData => {
+    contents.push(createInstanceMethodBlock(functionData));
+  });
 }
 
 function createInstanceMethodBlock(
@@ -221,6 +218,39 @@ function createInstanceMethodBlock(
   fields[FIELD_FUNCTION_NAME] = functionData.functionName;
   const inputs: {[key: string]: any} = {};
   processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
+  return createBlock(extraState, fields, inputs);
+}
+
+export function addInstanceWithinBlocks(
+    methods: CommonStorage.Method[],
+    contents: ToolboxItems.ContentsType[]) {
+  methods.forEach(method => {
+    contents.push(createInstanceWithinBlock(method));
+  });
+}
+
+function createInstanceWithinBlock(method: CommonStorage.Method): ToolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.INSTANCE_WITHIN,
+    returnType: method.returnType,
+    actualFunctionName: method.pythonName,
+    args: [],
+    classMethodDefBlockId: method.blockId,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_FUNCTION_NAME] = method.visibleName;
+  const inputs: {[key: string]: any} = {};
+  // Convert method.args from CommonStorage.MethodArg[] to ArgData[].
+  const args: ArgData[] = [];
+  // We don't include the arg for the self argument.
+  for (let i = 1; i < method.args.length; i++) {
+    args.push({
+      name: method.args[i].name,
+      type: method.args[i].type,
+      defaultValue: '',
+    });
+  }
+  processArgs(args, extraState, inputs);
   return createBlock(extraState, fields, inputs);
 }
 
@@ -276,15 +306,12 @@ function createInstanceComponentBlock(
   return createBlock(extraState, fields, inputs);
 }
 
-export function getInstanceRobotBlocks(methods: CommonStorage.Method[]): ToolboxItems.ContentsType[] {
-  const contents: ToolboxItems.ContentsType[] = [];
-
-  for (const method of methods) {
-    const block = createInstanceRobotBlock(method);
-    contents.push(block);
-  }
-
-  return contents;
+export function addInstanceRobotBlocks(
+    methods: CommonStorage.Method[],
+    contents: ToolboxItems.ContentsType[]) {
+  methods.forEach(method => {
+    contents.push(createInstanceRobotBlock(method));
+  });
 }
 
 function createInstanceRobotBlock(method: CommonStorage.Method): ToolboxItems.Block {

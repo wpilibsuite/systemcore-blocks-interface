@@ -206,7 +206,11 @@ export class Editor {
       this.blocklyWorkspace, this.generatorContext);
     const blocksContent = JSON.stringify(
       Blockly.serialization.workspaces.save(this.blocklyWorkspace));
-    const methodsContent = JSON.stringify(this.getMethodsFromWorkspace());
+    const methodsContent = (
+        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
+        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM)
+        ? JSON.stringify(this.getMethodsForOutsideFromWorkspace())
+        : '[]';
     const componentsContent = JSON.stringify(this.getComponentsFromWorkspace());
     return commonStorage.makeModuleContent(
       this.currentModule, pythonCode, blocksContent, methodsContent, componentsContent);
@@ -229,20 +233,51 @@ export class Editor {
     return components;
   }
 
-  public getMethodsFromWorkspace(): commonStorage.Method[] {
+  public getMethodsForWithinFromWorkspace(): commonStorage.Method[] {
     const methods: commonStorage.Method[] = [];
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
-      this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-      // Get the class method definition blocks.
-      const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
-      methodDefBlocks.forEach(methodDefBlock => {
-        const method = (methodDefBlock as classMethodDef.ClassMethodDefBlock).getMethod();
-        if (method) {
-          methods.push(method);
-        }
-      });
-    }
+
+    // Get the class method definition blocks.
+    const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
+    methodDefBlocks.forEach(methodDefBlock => {
+      const method = (methodDefBlock as classMethodDef.ClassMethodDefBlock).getMethodForWithin();
+      if (method) {
+        methods.push(method);
+      }
+    });
+
     return methods;
+  }
+
+  public getMethodsForOutsideFromWorkspace(): commonStorage.Method[] {
+    const methods: commonStorage.Method[] = [];
+
+    // Get the class method definition blocks.
+    const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
+    methodDefBlocks.forEach(methodDefBlock => {
+      const method = (methodDefBlock as classMethodDef.ClassMethodDefBlock).getMethodForOutside();
+      if (method) {
+        methods.push(method);
+      }
+    });
+
+    return methods;
+  }
+
+  public getMethodNamesAlreadyOverriddenInWorkspace(): string[] {
+    const methodNamesAlreadyOverridden: string[] = [];
+
+    // Get the class method definition blocks.
+    const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
+    methodDefBlocks.forEach(block => {
+      const methodDefBlock = block as classMethodDef.ClassMethodDefBlock;
+      // If the user cannot change the signature, it means the block defines a method that overrides a baseclass method.
+      // That's what we are looking for here.
+      if (!methodDefBlock.canChangeSignature()) {
+        methodNamesAlreadyOverridden.push(methodDefBlock.getMethodName());
+      }
+    });
+
+    return methodNamesAlreadyOverridden;
   }
 
   public async saveBlocks() {
@@ -273,7 +308,7 @@ export class Editor {
    */
   public getMethodsFromRobot(): commonStorage.Method[] {
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
-      return this.getMethodsFromWorkspace();
+      return this.getMethodsForWithinFromWorkspace();
     }
     if (!this.robotContent) {
       throw new Error('getMethodsFromRobot: this.robotContent is null.');
