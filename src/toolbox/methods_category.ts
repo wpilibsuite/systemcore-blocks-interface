@@ -27,7 +27,7 @@ import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles'
 import { mechanism_class_blocks } from './mechanism_class_methods';
 import { robot_class_blocks } from './robot_class_methods';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function'
-import { getBaseClassBlocks } from '../blocks/mrc_class_method_def';
+import { createCustomMethodBlock, getBaseClassBlocks } from '../blocks/mrc_class_method_def';
 import { Editor } from '../editor/editor';
 
 
@@ -90,19 +90,7 @@ export class MethodsCategory {
         kind: 'label',
         text: 'Custom Methods',
       },
-      {
-        kind: 'block',
-        type: 'mrc_class_method_def',
-        fields: {NAME: "my_method"},
-        extraState: {
-          canChangeSignature: true,
-          canBeCalledWithinClass: true,
-          canBeCalledOutsideClass: true,
-          canDelete: true,
-          returnType: 'None',
-          params: [],
-        },
-      }
+      createCustomMethodBlock(),
     );
 
     // Get blocks for calling methods defined in the current workspace.

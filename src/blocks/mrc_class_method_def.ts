@@ -441,6 +441,19 @@ export const pythonFromBlock = function (
 
 // Functions used for creating blocks for the toolbox.
 
+export function createCustomMethodBlock(): toolboxItems.Block {
+  const extraState: ClassMethodDefExtraState = {
+    canChangeSignature: true,
+    canBeCalledWithinClass: true,
+    canBeCalledOutsideClass: true,
+    returnType: 'None',
+    params: [],
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_METHOD_NAME] = 'my_method';
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
+}
+
 export function getBaseClassBlocks(
     baseClassName: string): toolboxItems.Block[] {
   const blocks: toolboxItems.Block[] = [];
