@@ -78,60 +78,6 @@ export function initializeInstanceVariableSetter(
   PythonVariableSetterTooltips[key] = tooltips;
 }
 
-// Functions used for creating blocks for the toolbox.
-
-export function createModuleOrClassVariableSetterBlock(
-    varKind: VariableKind,
-    importModule: string,
-    moduleOrClassName: string,
-    varType: string,
-    varName: string): toolboxItems.Block {
-  const extraState: SetPythonVariableExtraState = {
-    varKind: varKind,
-    moduleOrClassName: moduleOrClassName,
-    varType: varType,
-    importModule: importModule,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
-  fields[FIELD_VARIABLE_NAME] = varName;
-  const inputs: {[key: string]: any} = {};
-  const valueVarName = variable.varNameForType(varType);
-  if (valueVarName) {
-    inputs['VALUE'] = variable.createVariableGetterBlockValue(valueVarName);
-  }
-  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
-}
-
-export function createInstanceVariableSetterBlock(
-    className: string,
-    varType: string,
-    varName: string): toolboxItems.Block {
-  const selfLabel = variable.getSelfArgName(className);
-  const extraState: SetPythonVariableExtraState = {
-    varKind: VariableKind.INSTANCE,
-    moduleOrClassName: className,
-    varType: varType,
-    selfLabel: selfLabel,
-    selfType: className,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = className;
-  fields[FIELD_VARIABLE_NAME] = varName;
-  const inputs: {[key: string]: any} = {};
-  const valueVarName = variable.varNameForType(varType);
-  if (valueVarName) {
-    inputs['VALUE'] = variable.createVariableGetterBlockValue(valueVarName);
-  }
-  const selfVarName = variable.varNameForType(className);
-  if (selfVarName) {
-    inputs['SELF'] = variable.createVariableGetterBlockValue(selfVarName);
-  }
-  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
-}
-
-//..............................................................................
-
 type SetPythonVariableBlock = Blockly.Block & SetPythonVariableMixin;
 interface SetPythonVariableMixin extends SetPythonVariableMixinType {
   mrcVarKind: VariableKind,
@@ -343,3 +289,55 @@ export const pythonFromBlock = function(
       throw new Error('mrcVarKind must be "module", "class", or "instance".')
   }
 };
+
+// Functions used for creating blocks for the toolbox.
+
+export function createModuleOrClassVariableSetterBlock(
+    varKind: VariableKind,
+    importModule: string,
+    moduleOrClassName: string,
+    varType: string,
+    varName: string): toolboxItems.Block {
+  const extraState: SetPythonVariableExtraState = {
+    varKind: varKind,
+    moduleOrClassName: moduleOrClassName,
+    varType: varType,
+    importModule: importModule,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
+  fields[FIELD_VARIABLE_NAME] = varName;
+  const inputs: {[key: string]: any} = {};
+  const valueVarName = variable.varNameForType(varType);
+  if (valueVarName) {
+    inputs['VALUE'] = variable.createVariableGetterBlockValue(valueVarName);
+  }
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+}
+
+export function createInstanceVariableSetterBlock(
+    className: string,
+    varType: string,
+    varName: string): toolboxItems.Block {
+  const selfLabel = variable.getSelfArgName(className);
+  const extraState: SetPythonVariableExtraState = {
+    varKind: VariableKind.INSTANCE,
+    moduleOrClassName: className,
+    varType: varType,
+    selfLabel: selfLabel,
+    selfType: className,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = className;
+  fields[FIELD_VARIABLE_NAME] = varName;
+  const inputs: {[key: string]: any} = {};
+  const valueVarName = variable.varNameForType(varType);
+  if (valueVarName) {
+    inputs['VALUE'] = variable.createVariableGetterBlockValue(valueVarName);
+  }
+  const selfVarName = variable.varNameForType(className);
+  if (selfVarName) {
+    inputs['SELF'] = variable.createVariableGetterBlockValue(selfVarName);
+  }
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+}

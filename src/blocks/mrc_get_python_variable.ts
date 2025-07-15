@@ -80,108 +80,6 @@ export function initializeInstanceVariableGetter(
   PythonVariableGetterTooltips[key] = tooltips;
 }
 
-// Functions used for creating blocks for the toolbox.
-
-export function addModuleVariableBlocks(
-    moduleName: string,
-    varsByType: {[key: string]: VariableGettersAndSetters},
-    contents: toolboxItems.ContentsType[]) {
-  addModuleOrClassVariableBlocks(
-      VariableKind.MODULE, moduleName, moduleName, varsByType, contents);
-}
-
-export function addClassVariableBlocks(
-    importModule: string,
-    className: string,
-    varsByType: {[key: string]: VariableGettersAndSetters},
-    contents: toolboxItems.ContentsType[]) {
-  addModuleOrClassVariableBlocks(
-      VariableKind.CLASS, importModule, className, varsByType, contents);
-}
-
-function addModuleOrClassVariableBlocks(
-    varKind: VariableKind, 
-    importModule: string,
-    moduleOrClassName: string,
-    varsByType: {[key: string]: VariableGettersAndSetters},
-    contents: toolboxItems.ContentsType[]) {
-  for (const varType in varsByType) {
-    const variableGettersAndSetters = varsByType[varType];
-    for (let i = 0; i < variableGettersAndSetters.varNamesForGetter.length; i++) {
-      const varName = variableGettersAndSetters.varNamesForGetter[i];
-      const getterBlock = createModuleOrClassVariableGetterBlock(
-          varKind, importModule, moduleOrClassName, varType, varName);
-      contents.push(getterBlock);
-      if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
-        const setterBlock = createModuleOrClassVariableSetterBlock(
-            VariableKind.CLASS, importModule, moduleOrClassName, varType, varName);
-        contents.push(setterBlock);
-      }
-    }
-  }
-}
-
-function createModuleOrClassVariableGetterBlock(
-    varKind: VariableKind,
-    importModule: string,
-    moduleOrClassName: string,
-    varType: string,
-    varName: string): toolboxItems.Block {
-  const extraState: GetPythonVariableExtraState = {
-    varKind: varKind,
-    moduleOrClassName: moduleOrClassName,
-    varType: varType,
-    importModule: importModule,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
-  fields[FIELD_VARIABLE_NAME] = varName;
-  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
-}
-
-export function addInstanceVariableBlocks(
-    className: string,
-    varsByType: {[key: string]: VariableGettersAndSetters},
-    contents: toolboxItems.ContentsType[]) {
-  for (const varType in varsByType) {
-    const variableGettersAndSetters = varsByType[varType];
-    for (let i = 0; i < variableGettersAndSetters.varNamesForGetter.length; i++) {
-      const varName = variableGettersAndSetters.varNamesForGetter[i];
-      const getterBlock = createInstanceVariableGetterBlock(className, varType, varName);
-      contents.push(getterBlock);
-      if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
-        const setterBlock = createInstanceVariableSetterBlock(className, varType, varName);
-        contents.push(setterBlock);
-      }
-    }
-  }
-}
-
-function createInstanceVariableGetterBlock(
-    className: string,
-    varType: string,
-    varName: string): toolboxItems.Block {
-  const selfLabel = variable.getSelfArgName(className);
-  const extraState: GetPythonVariableExtraState = {
-    varKind: VariableKind.INSTANCE,
-    moduleOrClassName: className,
-    varType: varType,
-    selfLabel: selfLabel,
-    selfType: className,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = className;
-  fields[FIELD_VARIABLE_NAME] = varName;
-  const inputs: {[key: string]: any} = {};
-  const selfVarName = variable.varNameForType(className);
-  if (selfVarName) {
-    inputs['SELF'] = variable.createVariableGetterBlockValue(selfVarName);
-  }
-  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
-}
-
-//..............................................................................
-
 type GetPythonVariableBlock = Blockly.Block & GetPythonVariableMixin;
 interface GetPythonVariableMixin extends GetPythonVariableMixinType {
   mrcVarKind: VariableKind,
@@ -391,3 +289,103 @@ export const pythonFromBlock = function(
       throw new Error('mrcVarKind must be "module", "class", or "instance".')
   }
 };
+
+// Functions used for creating blocks for the toolbox.
+
+export function addModuleVariableBlocks(
+    moduleName: string,
+    varsByType: {[key: string]: VariableGettersAndSetters},
+    contents: toolboxItems.ContentsType[]) {
+  addModuleOrClassVariableBlocks(
+      VariableKind.MODULE, moduleName, moduleName, varsByType, contents);
+}
+
+export function addClassVariableBlocks(
+    importModule: string,
+    className: string,
+    varsByType: {[key: string]: VariableGettersAndSetters},
+    contents: toolboxItems.ContentsType[]) {
+  addModuleOrClassVariableBlocks(
+      VariableKind.CLASS, importModule, className, varsByType, contents);
+}
+
+function addModuleOrClassVariableBlocks(
+    varKind: VariableKind, 
+    importModule: string,
+    moduleOrClassName: string,
+    varsByType: {[key: string]: VariableGettersAndSetters},
+    contents: toolboxItems.ContentsType[]) {
+  for (const varType in varsByType) {
+    const variableGettersAndSetters = varsByType[varType];
+    for (let i = 0; i < variableGettersAndSetters.varNamesForGetter.length; i++) {
+      const varName = variableGettersAndSetters.varNamesForGetter[i];
+      const getterBlock = createModuleOrClassVariableGetterBlock(
+          varKind, importModule, moduleOrClassName, varType, varName);
+      contents.push(getterBlock);
+      if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
+        const setterBlock = createModuleOrClassVariableSetterBlock(
+            VariableKind.CLASS, importModule, moduleOrClassName, varType, varName);
+        contents.push(setterBlock);
+      }
+    }
+  }
+}
+
+function createModuleOrClassVariableGetterBlock(
+    varKind: VariableKind,
+    importModule: string,
+    moduleOrClassName: string,
+    varType: string,
+    varName: string): toolboxItems.Block {
+  const extraState: GetPythonVariableExtraState = {
+    varKind: varKind,
+    moduleOrClassName: moduleOrClassName,
+    varType: varType,
+    importModule: importModule,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
+  fields[FIELD_VARIABLE_NAME] = varName;
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
+}
+
+export function addInstanceVariableBlocks(
+    className: string,
+    varsByType: {[key: string]: VariableGettersAndSetters},
+    contents: toolboxItems.ContentsType[]) {
+  for (const varType in varsByType) {
+    const variableGettersAndSetters = varsByType[varType];
+    for (let i = 0; i < variableGettersAndSetters.varNamesForGetter.length; i++) {
+      const varName = variableGettersAndSetters.varNamesForGetter[i];
+      const getterBlock = createInstanceVariableGetterBlock(className, varType, varName);
+      contents.push(getterBlock);
+      if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
+        const setterBlock = createInstanceVariableSetterBlock(className, varType, varName);
+        contents.push(setterBlock);
+      }
+    }
+  }
+}
+
+function createInstanceVariableGetterBlock(
+    className: string,
+    varType: string,
+    varName: string): toolboxItems.Block {
+  const selfLabel = variable.getSelfArgName(className);
+  const extraState: GetPythonVariableExtraState = {
+    varKind: VariableKind.INSTANCE,
+    moduleOrClassName: className,
+    varType: varType,
+    selfLabel: selfLabel,
+    selfType: className,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = className;
+  fields[FIELD_VARIABLE_NAME] = varName;
+  const inputs: {[key: string]: any} = {};
+  const selfVarName = variable.varNameForType(className);
+  if (selfVarName) {
+    inputs['SELF'] = variable.createVariableGetterBlockValue(selfVarName);
+  }
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+}

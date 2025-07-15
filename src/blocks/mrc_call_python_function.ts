@@ -66,281 +66,6 @@ export type FunctionArg = {
 
 const WARNING_ID_FUNCTION_CHANGED = 'function changed';
 
-// Functions used for creating blocks for the toolbox.
-
-export function addBuiltInFunctionBlocks(
-    functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
-    contents.push(createBuiltInMethodBlock(functionData));
-  });
-}
-
-function createBuiltInMethodBlock(
-    functionData: FunctionData): ToolboxItems.Block  {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.BUILT_IN,
-    returnType: functionData.returnType,
-    args: [],
-    tooltip: functionData.tooltip,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
-  const inputs: {[key: string]: any} = {};
-  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
-  return createBlock(extraState, fields, inputs);
-}
-
-function processArgs(
-    args: ArgData[],
-    extraState: CallPythonFunctionExtraState,
-    inputs: {[key: string]: any},
-    declaringClassName?: string) {
-  for (let i = 0; i < args.length; i++) {
-    let argName = args[i].name;
-    if (i === 0 && argName === 'self' && declaringClassName) {
-      argName = Variable.getSelfArgName(declaringClassName);
-    }
-    extraState.args.push({
-      'name': argName,
-      'type': args[i].type,
-    });
-    // Check if we should plug a variable getter block into the argument input socket.
-    const input = Value.valueForFunctionArgInput(args[i].type, args[i].defaultValue);
-    if (input) {
-      inputs['ARG' + i] = input;
-    }
-  }
-}
-
-function createBlock(
-    extraState: CallPythonFunctionExtraState,
-    fields: {[key: string]: any},
-    inputs: {[key: string]: any}): ToolboxItems.Block  {
-  let block = new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
-  if (extraState.returnType && extraState.returnType != 'None') {
-    const varName = Variable.varNameForType(extraState.returnType);
-    if (varName) {
-      block = Variable.createVariableSetterBlock(varName, block);
-    }
-  }
-  return block;
-}
-
-export function addModuleFunctionBlocks(
-    moduleName: string,
-    functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
-    const block = createModuleFunctionOrStaticMethodBlock(
-        FunctionKind.MODULE, moduleName, moduleName, functionData);
-    contents.push(block);
-  });
-}
-
-export function addStaticMethodBlocks(
-    importModule: string,
-    functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
-    if (functionData.declaringClassName) {
-      const block = createModuleFunctionOrStaticMethodBlock(
-          FunctionKind.STATIC, importModule, functionData.declaringClassName, functionData);
-      contents.push(block);
-    }
-  });
-}
-
-function createModuleFunctionOrStaticMethodBlock(
-    functionKind: FunctionKind,
-    importModule: string,
-    moduleOrClassName: string,
-    functionData: FunctionData): ToolboxItems.Block {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: functionKind,
-    returnType: functionData.returnType,
-    args: [],
-    tooltip: functionData.tooltip,
-    importModule: importModule,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
-  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
-  const inputs: {[key: string]: any} = {};
-  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
-  return createBlock(extraState, fields, inputs);
-}
-
-export function addConstructorBlocks(
-    importModule: string,
-    functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
-    contents.push(createConstructorBlock(importModule, functionData));
-  });
-}
-
-function createConstructorBlock(
-    importModule: string,
-    functionData: FunctionData): ToolboxItems.Block {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.CONSTRUCTOR,
-    returnType: functionData.returnType,
-    args: [],
-    tooltip: functionData.tooltip,
-    importModule: importModule,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = functionData.declaringClassName;
-  const inputs: {[key: string]: any} = {};
-  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
-  return createBlock(extraState, fields, inputs);
-}
-
-export function addInstanceMethodBlocks(
-    functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
-    contents.push(createInstanceMethodBlock(functionData));
-  });
-}
-
-function createInstanceMethodBlock(
-    functionData: FunctionData): ToolboxItems.Block {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.INSTANCE,
-    returnType: functionData.returnType,
-    args: [],
-    tooltip: functionData.tooltip,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = functionData.declaringClassName;
-  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
-  const inputs: {[key: string]: any} = {};
-  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
-  return createBlock(extraState, fields, inputs);
-}
-
-export function addInstanceWithinBlocks(
-    methods: CommonStorage.Method[],
-    contents: ToolboxItems.ContentsType[]) {
-  methods.forEach(method => {
-    contents.push(createInstanceWithinBlock(method));
-  });
-}
-
-function createInstanceWithinBlock(method: CommonStorage.Method): ToolboxItems.Block {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.INSTANCE_WITHIN,
-    returnType: method.returnType,
-    actualFunctionName: method.pythonName,
-    args: [],
-    classMethodDefBlockId: method.blockId,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_FUNCTION_NAME] = method.visibleName;
-  const inputs: {[key: string]: any} = {};
-  // Convert method.args from CommonStorage.MethodArg[] to ArgData[].
-  const args: ArgData[] = [];
-  // We don't include the arg for the self argument.
-  for (let i = 1; i < method.args.length; i++) {
-    args.push({
-      name: method.args[i].name,
-      type: method.args[i].type,
-      defaultValue: '',
-    });
-  }
-  processArgs(args, extraState, inputs);
-  return createBlock(extraState, fields, inputs);
-}
-
-export function getInstanceComponentBlocks(
-    component: CommonStorage.Component): ToolboxItems.ContentsType[] {
-  const contents: ToolboxItems.ContentsType[] = [];
-
-  const classData = getClassData(component.className);
-  if (!classData) {
-    throw new Error('Could not find classData for ' + component.className);
-  }
-  const functions = classData.instanceMethods;
-
-  const componentClassData = getClassData('component.Component');
-  if (!componentClassData) {
-    throw new Error('Could not find classData for component.Component');
-  }
-  const componentFunctions = componentClassData.instanceMethods;
-
-  for (const functionData of functions) {
-    // Skip the functions that are also defined in componentFunctions.
-    if (findSuperFunctionData(functionData, componentFunctions)) {
-      continue;
-    }
-    const block = createInstanceComponentBlock(component, functionData);
-    contents.push(block);
-  }
-
-  return contents;
-}
-
-function createInstanceComponentBlock(
-    component: CommonStorage.Component, functionData: FunctionData): ToolboxItems.Block {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.INSTANCE_COMPONENT,
-    returnType: functionData.returnType,
-    args: [],
-    tooltip: functionData.tooltip,
-    importModule: '',
-    componentClassName: component.className,
-    componentName: component.name,
-    componentBlockId: component.blockId,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_COMPONENT_NAME] = component.name;
-  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
-  const inputs: {[key: string]: any} = {};
-  // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
-  // self is represented by the FIELD_COMPONENT_NAME field.
-  // We don't include the arg for self.
-  const argsWithoutSelf = functionData.args.slice(1);
-  processArgs(argsWithoutSelf, extraState, inputs);
-  return createBlock(extraState, fields, inputs);
-}
-
-export function addInstanceRobotBlocks(
-    methods: CommonStorage.Method[],
-    contents: ToolboxItems.ContentsType[]) {
-  methods.forEach(method => {
-    contents.push(createInstanceRobotBlock(method));
-  });
-}
-
-function createInstanceRobotBlock(method: CommonStorage.Method): ToolboxItems.Block {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.INSTANCE_ROBOT,
-    returnType: method.returnType,
-    actualFunctionName: method.pythonName,
-    args: [],
-    classMethodDefBlockId: method.blockId,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_FUNCTION_NAME] = method.visibleName;
-  const inputs: {[key: string]: any} = {};
-  // Convert method.args from CommonStorage.MethodArg[] to ArgData[].
-  const args: ArgData[] = [];
-  // We don't include the arg for the self argument.
-  for (let i = 1; i < method.args.length; i++) {
-    args.push({
-      name: method.args[i].name,
-      type: method.args[i].type,
-      defaultValue: '',
-    });
-  }
-  processArgs(args, extraState, inputs);
-  return createBlock(extraState, fields, inputs);
-}
-
-//..............................................................................
-
 export type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin & Blockly.BlockSvg;
 interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcFunctionKind: FunctionKind,
@@ -984,4 +709,277 @@ export function mutateMethodCallers(
       Blockly.Events.setRecordUndo(oldRecordUndo);
     }
   }
+}
+
+// Functions used for creating blocks for the toolbox.
+
+export function addBuiltInFunctionBlocks(
+    functions: FunctionData[],
+    contents: ToolboxItems.ContentsType[]) {
+  functions.forEach(functionData => {
+    contents.push(createBuiltInMethodBlock(functionData));
+  });
+}
+
+function createBuiltInMethodBlock(
+    functionData: FunctionData): ToolboxItems.Block  {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.BUILT_IN,
+    returnType: functionData.returnType,
+    args: [],
+    tooltip: functionData.tooltip,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
+  const inputs: {[key: string]: any} = {};
+  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
+  return createBlock(extraState, fields, inputs);
+}
+
+function processArgs(
+    args: ArgData[],
+    extraState: CallPythonFunctionExtraState,
+    inputs: {[key: string]: any},
+    declaringClassName?: string) {
+  for (let i = 0; i < args.length; i++) {
+    let argName = args[i].name;
+    if (i === 0 && argName === 'self' && declaringClassName) {
+      argName = Variable.getSelfArgName(declaringClassName);
+    }
+    extraState.args.push({
+      'name': argName,
+      'type': args[i].type,
+    });
+    // Check if we should plug a variable getter block into the argument input socket.
+    const input = Value.valueForFunctionArgInput(args[i].type, args[i].defaultValue);
+    if (input) {
+      inputs['ARG' + i] = input;
+    }
+  }
+}
+
+function createBlock(
+    extraState: CallPythonFunctionExtraState,
+    fields: {[key: string]: any},
+    inputs: {[key: string]: any}): ToolboxItems.Block  {
+  let block = new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+  if (extraState.returnType && extraState.returnType != 'None') {
+    const varName = Variable.varNameForType(extraState.returnType);
+    if (varName) {
+      block = Variable.createVariableSetterBlock(varName, block);
+    }
+  }
+  return block;
+}
+
+export function addModuleFunctionBlocks(
+    moduleName: string,
+    functions: FunctionData[],
+    contents: ToolboxItems.ContentsType[]) {
+  functions.forEach(functionData => {
+    const block = createModuleFunctionOrStaticMethodBlock(
+        FunctionKind.MODULE, moduleName, moduleName, functionData);
+    contents.push(block);
+  });
+}
+
+export function addStaticMethodBlocks(
+    importModule: string,
+    functions: FunctionData[],
+    contents: ToolboxItems.ContentsType[]) {
+  functions.forEach(functionData => {
+    if (functionData.declaringClassName) {
+      const block = createModuleFunctionOrStaticMethodBlock(
+          FunctionKind.STATIC, importModule, functionData.declaringClassName, functionData);
+      contents.push(block);
+    }
+  });
+}
+
+function createModuleFunctionOrStaticMethodBlock(
+    functionKind: FunctionKind,
+    importModule: string,
+    moduleOrClassName: string,
+    functionData: FunctionData): ToolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: functionKind,
+    returnType: functionData.returnType,
+    args: [],
+    tooltip: functionData.tooltip,
+    importModule: importModule,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
+  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
+  const inputs: {[key: string]: any} = {};
+  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
+  return createBlock(extraState, fields, inputs);
+}
+
+export function addConstructorBlocks(
+    importModule: string,
+    functions: FunctionData[],
+    contents: ToolboxItems.ContentsType[]) {
+  functions.forEach(functionData => {
+    contents.push(createConstructorBlock(importModule, functionData));
+  });
+}
+
+function createConstructorBlock(
+    importModule: string,
+    functionData: FunctionData): ToolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.CONSTRUCTOR,
+    returnType: functionData.returnType,
+    args: [],
+    tooltip: functionData.tooltip,
+    importModule: importModule,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = functionData.declaringClassName;
+  const inputs: {[key: string]: any} = {};
+  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
+  return createBlock(extraState, fields, inputs);
+}
+
+export function addInstanceMethodBlocks(
+    functions: FunctionData[],
+    contents: ToolboxItems.ContentsType[]) {
+  functions.forEach(functionData => {
+    contents.push(createInstanceMethodBlock(functionData));
+  });
+}
+
+function createInstanceMethodBlock(
+    functionData: FunctionData): ToolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.INSTANCE,
+    returnType: functionData.returnType,
+    args: [],
+    tooltip: functionData.tooltip,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = functionData.declaringClassName;
+  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
+  const inputs: {[key: string]: any} = {};
+  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
+  return createBlock(extraState, fields, inputs);
+}
+
+export function addInstanceWithinBlocks(
+    methods: CommonStorage.Method[],
+    contents: ToolboxItems.ContentsType[]) {
+  methods.forEach(method => {
+    contents.push(createInstanceWithinBlock(method));
+  });
+}
+
+function createInstanceWithinBlock(method: CommonStorage.Method): ToolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.INSTANCE_WITHIN,
+    returnType: method.returnType,
+    actualFunctionName: method.pythonName,
+    args: [],
+    classMethodDefBlockId: method.blockId,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_FUNCTION_NAME] = method.visibleName;
+  const inputs: {[key: string]: any} = {};
+  // Convert method.args from CommonStorage.MethodArg[] to ArgData[].
+  const args: ArgData[] = [];
+  // We don't include the arg for the self argument.
+  for (let i = 1; i < method.args.length; i++) {
+    args.push({
+      name: method.args[i].name,
+      type: method.args[i].type,
+      defaultValue: '',
+    });
+  }
+  processArgs(args, extraState, inputs);
+  return createBlock(extraState, fields, inputs);
+}
+
+export function getInstanceComponentBlocks(
+    component: CommonStorage.Component): ToolboxItems.ContentsType[] {
+  const contents: ToolboxItems.ContentsType[] = [];
+
+  const classData = getClassData(component.className);
+  if (!classData) {
+    throw new Error('Could not find classData for ' + component.className);
+  }
+  const functions = classData.instanceMethods;
+
+  const componentClassData = getClassData('component.Component');
+  if (!componentClassData) {
+    throw new Error('Could not find classData for component.Component');
+  }
+  const componentFunctions = componentClassData.instanceMethods;
+
+  for (const functionData of functions) {
+    // Skip the functions that are also defined in componentFunctions.
+    if (findSuperFunctionData(functionData, componentFunctions)) {
+      continue;
+    }
+    const block = createInstanceComponentBlock(component, functionData);
+    contents.push(block);
+  }
+
+  return contents;
+}
+
+function createInstanceComponentBlock(
+    component: CommonStorage.Component, functionData: FunctionData): ToolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.INSTANCE_COMPONENT,
+    returnType: functionData.returnType,
+    args: [],
+    tooltip: functionData.tooltip,
+    importModule: '',
+    componentClassName: component.className,
+    componentName: component.name,
+    componentBlockId: component.blockId,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_COMPONENT_NAME] = component.name;
+  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
+  const inputs: {[key: string]: any} = {};
+  // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
+  // self is represented by the FIELD_COMPONENT_NAME field.
+  // We don't include the arg for self.
+  const argsWithoutSelf = functionData.args.slice(1);
+  processArgs(argsWithoutSelf, extraState, inputs);
+  return createBlock(extraState, fields, inputs);
+}
+
+export function addInstanceRobotBlocks(
+    methods: CommonStorage.Method[],
+    contents: ToolboxItems.ContentsType[]) {
+  methods.forEach(method => {
+    contents.push(createInstanceRobotBlock(method));
+  });
+}
+
+function createInstanceRobotBlock(method: CommonStorage.Method): ToolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.INSTANCE_ROBOT,
+    returnType: method.returnType,
+    actualFunctionName: method.pythonName,
+    args: [],
+    classMethodDefBlockId: method.blockId,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_FUNCTION_NAME] = method.visibleName;
+  const inputs: {[key: string]: any} = {};
+  // Convert method.args from CommonStorage.MethodArg[] to ArgData[].
+  const args: ArgData[] = [];
+  // We don't include the arg for the self argument.
+  for (let i = 1; i < method.args.length; i++) {
+    args.push({
+      name: method.args[i].name,
+      type: method.args[i].type,
+      defaultValue: '',
+    });
+  }
+  processArgs(args, extraState, inputs);
+  return createBlock(extraState, fields, inputs);
 }
