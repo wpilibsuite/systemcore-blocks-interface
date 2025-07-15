@@ -27,7 +27,6 @@ import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles'
 import { mechanism_class_blocks } from './mechanism_class_methods';
 import { opmode_class_blocks } from './opmode_class_methods';
 import { robot_class_blocks } from './robot_class_methods';
-import { ClassMethodDefBlock } from '../blocks/mrc_class_method_def'
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function'
 import { Editor } from '../editor/editor';
 
