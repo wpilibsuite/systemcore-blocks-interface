@@ -26,6 +26,7 @@ import * as commonStorage from '../storage/common_storage';
 import { EventBlock } from '../blocks/mrc_event';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
 import { RETURN_TYPE_NONE, FunctionKind } from '../blocks/mrc_call_python_function';
+import { createCustomEventBlock } from '../blocks/mrc_event';
 
 const CUSTOM_CATEGORY_EVENTS = 'EVENTS';
 
@@ -50,29 +51,13 @@ export class EventsCategory {
   public eventsFlyout(workspace: Blockly.WorkspaceSvg) {
     const contents: toolboxItems.ContentsType[] = [];
 
-    // Add blocks for defining any methods that can be defined in the current
-    // module. For example, if the current module is an OpMode, add blocks to
-    // define the methods declared in the OpMode class.
-    if (this.currentModule) {
-      // Collect the method names for mrc_class_method_def blocks that are
-      // already in the blockly workspace.
-      const eventNamesAlreadyUsed: string[] = [];
-      workspace.getBlocksByType('mrc_event', false).forEach((block) => {
-        eventNamesAlreadyUsed.push(block.getFieldValue('NAME'));
-      });   
-    }
-
-    // Add a block that lets the user define a new method.
+    // Add a block that lets the user define a new event.
     contents.push(
       {
         kind: 'label',
         text: 'Custom Events',
       },
-      {
-        kind: 'block',
-        type: 'mrc_event',
-        fields: {NAME: "my_event"},
-      });
+      createCustomEventBlock());
 
     // For each mrc_class_method_def block in the blockly workspace, check if it
     // can be called from within the class, and if so, add a

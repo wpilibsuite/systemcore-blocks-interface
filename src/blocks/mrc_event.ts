@@ -27,9 +27,12 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
 import * as ChangeFramework from './utils/change_framework';
 import { BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER } from './mrc_mechanism_component_holder';
+import * as toolboxItems from '../toolbox/items';
 
 export const BLOCK_NAME = 'mrc_event';
 export const OUTPUT_NAME = 'mrc_event';
+
+const FIELD_EVENT_NAME = 'NAME';
 
 export type Parameter = {
   name: string,
@@ -54,7 +57,7 @@ const EVENT = {
   init: function (this: EventBlock): void {
     this.setStyle(MRC_STYLE_EVENTS);
     this.appendDummyInput("TITLE")
-      .appendField(new Blockly.FieldTextInput('my_event'), 'NAME');
+      .appendField(new Blockly.FieldTextInput('my_event'), FIELD_EVENT_NAME);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
     this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
@@ -99,15 +102,15 @@ const EVENT = {
      * Update the block to reflect the newly loaded extra state.
      */
   updateBlock_: function (this: EventBlock): void {
-    const name = this.getFieldValue('NAME');
+    const name = this.getFieldValue(FIELD_EVENT_NAME);
     const input = this.getInput('TITLE');
     if (!input) {
       return;
     }
-    input.removeField('NAME');
+    input.removeField(FIELD_EVENT_NAME);
 
     const nameField = new Blockly.FieldTextInput(name);
-    input.insertFieldAt(0, nameField, 'NAME');
+    input.insertFieldAt(0, nameField, FIELD_EVENT_NAME);
     this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
     // nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
 
@@ -132,7 +135,7 @@ const EVENT = {
         paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
     }
     this.mrcUpdateParams();
-    //mutateMethodCallers(this.workspace, this.getFieldValue('NAME'), this.saveExtraState());
+    //mutateMethodCallers(this.workspace, this.getFieldValue(FIELD_EVENT_NAME), this.saveExtraState());
   },
   decompose: function (this: EventBlock, workspace: Blockly.Workspace) {
     // This is a special sub-block that only gets created in the mutator UI.
@@ -205,4 +208,15 @@ export const pythonFromBlock = function (
 ) {
   //TODO (Alan): What should this do here??
   return '';
+}
+
+// Functions used for creating blocks for the toolbox.
+
+export function createCustomEventBlock(): toolboxItems.Block {
+  const extraState: EventExtraState = {
+    params: [],
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_EVENT_NAME] = 'my_event';
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
 }
