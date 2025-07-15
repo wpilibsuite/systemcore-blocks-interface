@@ -38,12 +38,6 @@ interface CodeDisplayProps {
   setAlertErrorMessage: StringFunction;
 }
 
-/** Full dimensions style for the syntax highlighter. */
-const FULL_SIZE_STYLE = {
-  width: '100%',
-  height: '100%',
-};
-
 /** Success message for copy operation. */
 const COPY_SUCCESS_MESSAGE = 'Copy completed successfully.';
 
@@ -86,13 +80,15 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
   /** Creates the custom style object for the syntax highlighter. */
   const getSyntaxHighlighterStyle = (): React.CSSProperties => ({
     backgroundColor: token.colorBgContainer,
-    ...FULL_SIZE_STYLE,
+    width: '100%',
+    overflowX: 'hidden',
+    overflowY: 'auto',
   });
 
   /** Renders the header section with title and copy button. */
   const renderHeader = (): React.JSX.Element => (
-    <Antd.Space>
-      <Antd.Typography.Title level={3}>{t("CODE")}</Antd.Typography.Title>
+    <Antd.Space align="center">
+      <Antd.Typography.Title level={3} style={{ margin: 0 }}>{t("CODE")}</Antd.Typography.Title>
       <Antd.Tooltip title={t("COPY")}>
         <Antd.Button
           icon={<CopyIcon />}
@@ -115,7 +111,7 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
   );
 
   return (
-    <Antd.Flex vertical gap="small">
+    <Antd.Flex vertical gap="small" style={{ height: '100%' }}>
       {renderHeader()}
       {renderCodeBlock()}
     </Antd.Flex>
