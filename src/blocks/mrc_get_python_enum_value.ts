@@ -50,30 +50,6 @@ export function initializeEnum(
   PythonEnumTooltips[enumClassName] = tooltips;
 }
 
-// Functions used for creating blocks for the toolbox.
-
-export function addEnumBlocks(enums: EnumData[], contents: toolboxItems.ContentsType[]) {
-  for (const enumData of enums) {
-    for (const enumValue of enumData.enumValues) {
-      const block = createEnumBlock(enumValue, enumData);
-      contents.push(block);
-    }
-  }
-}
-
-function createEnumBlock(enumValue: string, enumData: EnumData): toolboxItems.Block {
-  const extraState: GetPythonEnumValueExtraState = {
-    enumType: enumData.enumClassName,
-    importModule: enumData.moduleName,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_ENUM_CLASS_NAME] = enumData.enumClassName;
-  fields[FIELD_ENUM_VALUE] = enumValue;
-  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
-}
-
-//..............................................................................
-
 type GetPythonEnumValueBlock = Blockly.Block & GetPythonEnumValueMixin;
 interface GetPythonEnumValueMixin extends GetPythonEnumValueMixinType {
   mrcEnumType: string,
@@ -175,3 +151,25 @@ export const pythonFromBlock = function(
   const code = enumClassName + '.' + enumValue;
   return [code, Order.MEMBER];
 };
+
+// Functions used for creating blocks for the toolbox.
+
+export function addEnumBlocks(enums: EnumData[], contents: toolboxItems.ContentsType[]) {
+  for (const enumData of enums) {
+    for (const enumValue of enumData.enumValues) {
+      const block = createEnumBlock(enumValue, enumData);
+      contents.push(block);
+    }
+  }
+}
+
+function createEnumBlock(enumValue: string, enumData: EnumData): toolboxItems.Block {
+  const extraState: GetPythonEnumValueExtraState = {
+    enumType: enumData.enumClassName,
+    importModule: enumData.moduleName,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_ENUM_CLASS_NAME] = enumData.enumClassName;
+  fields[FIELD_ENUM_VALUE] = enumValue;
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
+}

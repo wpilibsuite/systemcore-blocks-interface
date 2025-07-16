@@ -27,11 +27,16 @@ import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as commonStorage from '../storage/common_storage';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
+import * as toolboxItems from '../toolbox/items';
+import { getClassData } from './utils/python';
+import { FunctionData } from './utils/python_json_types';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
 import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
 
 export const BLOCK_NAME = 'mrc_class_method_def';
+
+const FIELD_METHOD_NAME = 'NAME';
 
 export type Parameter = {
     name: string,
@@ -88,7 +93,7 @@ const CLASS_METHOD_DEF = {
      */
     init: function (this: ClassMethodDefBlock): void {
         this.appendDummyInput("TITLE")
-            .appendField('', 'NAME');
+            .appendField('', FIELD_METHOD_NAME);
         this.setOutput(false);
         this.setStyle(MRC_STYLE_FUNCTIONS);
         this.appendStatementInput('STACK').appendField('');
@@ -143,27 +148,27 @@ const CLASS_METHOD_DEF = {
             });
         });
         this.updateBlock_();
-        mutateMethodCallers(this.workspace, this.getFieldValue('NAME'), this.saveExtraState());
+        mutateMethodCallers(this.workspace, this.getFieldValue(FIELD_METHOD_NAME), this.saveExtraState());
     },
     /**
      * Update the block to reflect the newly loaded extra state.
      */
     updateBlock_: function (this: ClassMethodDefBlock): void {
-        const name = this.getFieldValue('NAME');
+        const name = this.getFieldValue(FIELD_METHOD_NAME);
         const input = this.getInput('TITLE');
         if (!input) {
             return;
         }
-        input.removeField('NAME');
+        input.removeField(FIELD_METHOD_NAME);
 
         if (this.mrcCanChangeSignature) {
             const nameField = new Blockly.FieldTextInput(name);
-            input.insertFieldAt(0, nameField, 'NAME');
+            input.insertFieldAt(0, nameField, FIELD_METHOD_NAME);
             this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
             nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
         }
         else {
-            input.insertFieldAt(0, createFieldNonEditableText(name), 'NAME');
+            input.insertFieldAt(0, createFieldNonEditableText(name), FIELD_METHOD_NAME);
             //Case because a current bug in blockly where it won't allow passing null to Blockly.Block.setMutator makes it necessary.
             (this as Blockly.BlockSvg).setMutator(null);
         }
@@ -189,7 +194,7 @@ const CLASS_METHOD_DEF = {
                 paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
         }
         this.mrcUpdateParams();
-        mutateMethodCallers(this.workspace, this.getFieldValue('NAME'), this.saveExtraState());
+        mutateMethodCallers(this.workspace, this.getFieldValue(FIELD_METHOD_NAME), this.saveExtraState());
     },
     decompose: function (this: ClassMethodDefBlock, workspace: Blockly.Workspace) {
         // This is a special sub-block that only gets created in the mutator UI.
@@ -268,7 +273,7 @@ const CLASS_METHOD_DEF = {
         return this.mrcCanChangeSignature;
     },
     getMethodName: function (this: ClassMethodDefBlock): string {
-        return this.getFieldValue('NAME');
+        return this.getFieldValue(FIELD_METHOD_NAME);
     },
 };
 
@@ -315,7 +320,7 @@ function isMethodNameUsed(
         if (block === opt_exclude) {
             continue;
         }
-        if (nameLowerCase === block.getFieldValue('NAME').toLowerCase()) {
+        if (nameLowerCase === block.getFieldValue(FIELD_METHOD_NAME).toLowerCase()) {
             return true;
         }
         const classMethodDefBlock = block as ClassMethodDefBlock;
@@ -335,7 +340,7 @@ export const pythonFromBlock = function (
     block: ClassMethodDefBlock,
     generator: ExtendedPythonGenerator,
 ) {
-    const blocklyName = block.mrcPythonMethodName ? block.mrcPythonMethodName : block.getFieldValue('NAME');
+    const blocklyName = block.mrcPythonMethodName ? block.mrcPythonMethodName : block.getFieldValue(FIELD_METHOD_NAME);
 
     const funcName = generator.getProcedureName(blocklyName);
 
@@ -415,7 +420,7 @@ export const pythonFromBlock = function (
       // Update the mrcMethod.
       block.mrcMethod = {
         blockId: block.id,
-        visibleName: block.getFieldValue('NAME'),
+        visibleName: block.getFieldValue(FIELD_METHOD_NAME),
         pythonName: funcName,
         returnType: block.mrcReturnType,
         args: [{
@@ -432,4 +437,59 @@ export const pythonFromBlock = function (
     }
 
     return '';
+}
+
+// Functions used for creating blocks for the toolbox.
+
+export function createCustomMethodBlock(): toolboxItems.Block {
+  const extraState: ClassMethodDefExtraState = {
+    canChangeSignature: true,
+    canBeCalledWithinClass: true,
+    canBeCalledOutsideClass: true,
+    returnType: 'None',
+    params: [],
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_METHOD_NAME] = 'my_method';
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
+}
+
+export function getBaseClassBlocks(
+    baseClassName: string): toolboxItems.Block[] {
+  const blocks: toolboxItems.Block[] = [];
+  const classData = getClassData(baseClassName);
+  if (classData) {
+    classData.instanceMethods.forEach(functionData => {
+      blocks.push(createClassMethodDefBlock(
+          functionData,
+          /* canChangeSignature */ false,
+          /* canBeCalledWithinClass */ false,
+          /* canBeCalledOutsideClass */ false,
+      ));
+    });
+  }
+  return blocks;
+}
+
+function createClassMethodDefBlock(
+    functionData: FunctionData,
+    canChangeSignature: boolean,
+    canBeCalledWithinClass: boolean,
+    canBeCalledOutsideClass: boolean): toolboxItems.Block {
+  const extraState: ClassMethodDefExtraState = {
+    canChangeSignature,
+    canBeCalledWithinClass,
+    canBeCalledOutsideClass,
+    returnType: functionData.returnType,
+    params: [],
+  };
+  for (let i = 1; i < functionData.args.length; i++) {
+    extraState.params.push({
+      'name': functionData.args[i].name,
+      'type': functionData.args[i].type,
+    });
+  }
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_METHOD_NAME] = functionData.functionName;
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
 }

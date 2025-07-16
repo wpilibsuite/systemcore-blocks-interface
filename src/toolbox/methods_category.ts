@@ -24,11 +24,8 @@ import * as Blockly from 'blockly/core';
 import * as toolboxItems from './items';
 import * as commonStorage from '../storage/common_storage';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles'
-import { mechanism_class_blocks } from './mechanism_class_methods';
-import { opmode_class_blocks } from './opmode_class_methods';
-import { robot_class_blocks } from './robot_class_methods';
-import { ClassMethodDefBlock } from '../blocks/mrc_class_method_def'
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function'
+import { createCustomMethodBlock, getBaseClassBlocks } from '../blocks/mrc_class_method_def';
 import { Editor } from '../editor/editor';
 
 
@@ -43,6 +40,9 @@ export const getCategory = () => ({
 
 export class MethodsCategory {
   private currentModule: commonStorage.Module | null = null;
+  private robotClassBlocks = getBaseClassBlocks('blocks_base_classes.robot_base.RobotBase');
+  private mechanismClassBlocks = getBaseClassBlocks('blocks_base_classes.mechanism.Mechanism');
+  private opmodeClassBlocks = getBaseClassBlocks('blocks_base_classes.opmode.OpMode');
 
   constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
     blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS, this.methodsFlyout.bind(this));
@@ -68,17 +68,17 @@ export class MethodsCategory {
         if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_ROBOT) {
           // Add the methods for a Robot.
           this.addClassBlocksForCurrentModule(
-              'More Robot Methods', robot_class_blocks,
+              'More Robot Methods', this.robotClassBlocks,
               methodNamesAlreadyOverridden, contents);
         } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
           // Add the methods for a Mechanism.
           this.addClassBlocksForCurrentModule(
-              'More Mechanism Methods', mechanism_class_blocks,
+              'More Mechanism Methods', this.mechanismClassBlocks,
               methodNamesAlreadyOverridden, contents);
         } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
           // Add the methods for an OpMode.
           this.addClassBlocksForCurrentModule(
-              'More OpMode Methods', opmode_class_blocks,
+              'More OpMode Methods', this.opmodeClassBlocks,
               methodNamesAlreadyOverridden, contents);
         }
       }
@@ -90,19 +90,7 @@ export class MethodsCategory {
         kind: 'label',
         text: 'Custom Methods',
       },
-      {
-        kind: 'block',
-        type: 'mrc_class_method_def',
-        fields: {NAME: "my_method"},
-        extraState: {
-          canChangeSignature: true,
-          canBeCalledWithinClass: true,
-          canBeCalledOutsideClass: true,
-          canDelete: true,
-          returnType: 'None',
-          params: [],
-        },
-      }
+      createCustomMethodBlock(),
     );
 
     // Get blocks for calling methods defined in the current workspace.
@@ -140,4 +128,5 @@ export class MethodsCategory {
       }
     });
   }
+
 }

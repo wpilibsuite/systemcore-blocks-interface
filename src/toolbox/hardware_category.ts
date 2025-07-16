@@ -23,7 +23,7 @@ import * as Blockly from 'blockly/core';
 import * as commonStorage from '../storage/common_storage';
 import * as toolboxItems from './items';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
-import * as Component from '../blocks/mrc_component';
+import { getAllPossibleComponents } from '../blocks/mrc_component';
 import { getInstanceComponentBlocks, addInstanceRobotBlocks } from '../blocks/mrc_call_python_function';
 import { Editor } from '../editor/editor';
 
@@ -274,7 +274,7 @@ function getComponentsBlocks(hideParams : boolean): toolboxItems.Category {
   contents.push({
     kind: 'category',
     name: Blockly.Msg['MRC_CATEGORY_ADD_COMPONENT'],
-    contents: Component.getAllPossibleComponents(hideParams)
+    contents: getAllPossibleComponents(hideParams)
   });
 
   // Get components from the current workspace.
