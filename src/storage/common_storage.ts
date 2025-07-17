@@ -72,6 +72,12 @@ export type Component = {
   className: string,
 }
 
+export type Event = {
+  blockId: string, // ID of the mrc_event block that defines the event.
+  name: string,
+  args: MethodArg[],
+};
+
 export const MODULE_TYPE_UNKNOWN = 'unknown';
 export const MODULE_TYPE_ROBOT = 'robot';
 export const MODULE_TYPE_MECHANISM = 'mechanism';

@@ -225,9 +225,7 @@ export class Editor {
       holderBlocks.forEach(holderBlock => {
         const componentsFromHolder: commonStorage.Component[] =
           (holderBlock as mechanismComponentHolder.MechanismComponentHolderBlock).getComponents();
-        componentsFromHolder.forEach(component => {
-          components.push(component);
-        });
+        components.push(...componentsFromHolder);
       });
     }
     return components;
@@ -278,6 +276,21 @@ export class Editor {
     });
 
     return methodNamesAlreadyOverridden;
+  }
+
+  public getEventsFromWorkspace(): commonStorage.Event[] {
+    const events: commonStorage.Event[] = [];
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
+      this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+      // Get the holder block and ask it for the components.
+      const holderBlocks = this.blocklyWorkspace.getBlocksByType(mechanismComponentHolder.BLOCK_NAME);
+      holderBlocks.forEach(holderBlock => {
+        const eventsFromHolder: commonStorage.Event[] =
+          (holderBlock as mechanismComponentHolder.MechanismComponentHolderBlock).getEvents();
+        events.push(...eventsFromHolder);
+      });
+    }
+    return events;
   }
 
   public async saveBlocks() {

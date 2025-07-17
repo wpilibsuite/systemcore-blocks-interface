@@ -29,10 +29,11 @@ import * as commonStorage from '../storage/common_storage';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_COMPONENT_NAME } from './mrc_component';
-import * as  Component from './mrc_component';
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
+import { ComponentBlock } from './mrc_component';
 import { BLOCK_NAME as  MRC_EVENT_NAME } from './mrc_event';
 import { OUTPUT_NAME as EVENT_OUTPUT } from './mrc_event';
+import { EventBlock } from './mrc_event';
 
 export const BLOCK_NAME = 'mrc_mechanism_component_holder';
 
@@ -139,15 +140,9 @@ const MECHANISM_COMPONENT_HOLDER = {
       let componentBlock = componentsInput.connection.targetBlock();
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME) {
-          const componentName = componentBlock.getFieldValue(Component.FIELD_NAME);
-          const componentType = componentBlock.getFieldValue(Component.FIELD_TYPE);
-
-          if (componentName && componentType) {
-            components.push({
-              blockId: componentBlock.id,
-              name: componentName,
-              className: componentType,
-            });
+          const component = (componentBlock as ComponentBlock).getComponent();
+          if (component) {
+            components.push(component);
           }
         }
         // Move to the next block in the chain
@@ -156,6 +151,28 @@ const MECHANISM_COMPONENT_HOLDER = {
     }
 
     return components;
+  },
+  getEvents: function (this: MechanismComponentHolderBlock): commonStorage.Event[] {
+    const events: commonStorage.Event[] = []
+
+    // Get event blocks from the EVENTS input
+    const eventsInput = this.getInput('EVENTS');
+    if (eventsInput && eventsInput.connection) {
+      // Walk through all connected event blocks.
+      let eventBlock = eventsInput.connection.targetBlock();
+      while (eventBlock) {
+        if (eventBlock.type === MRC_EVENT_NAME) {
+          const event = (eventBlock as EventBlock).getEvent();
+          if (event) {
+            events.push(event);
+          }
+        }
+        // Move to the next block in the chain
+        eventBlock = eventBlock.getNextBlock();
+      }
+    }
+
+    return events;
   },
 }
 

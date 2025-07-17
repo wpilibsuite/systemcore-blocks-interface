@@ -26,8 +26,8 @@ import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
-import * as ToolboxItems from '../toolbox/items';
-import * as CommonStorage from '../storage/common_storage';
+import * as toolboxItems from '../toolbox/items';
+import * as commonStorage from '../storage/common_storage';
 import { createPortShadow } from './mrc_port';
 import { createNumberShadowValue } from './utils/value';
 import { ClassData, FunctionData } from './utils/python_json_types';
@@ -52,7 +52,7 @@ type ComponentExtraState = {
   params?: ConstructorArg[],
 }
 
-type ComponentBlock = Blockly.Block & ComponentMixin;
+export type ComponentBlock = Blockly.Block & ComponentMixin;
 interface ComponentMixin extends ComponentMixinType {
   mrcArgs: ConstructorArg[],
   hideParams: boolean,
@@ -136,7 +136,16 @@ const COMPONENT = {
         }
       }
     }
-  }
+  },
+  getComponent: function (this: ComponentBlock): commonStorage.Component | null {
+    const componentName = this.getFieldValue(FIELD_NAME);
+    const componentType = this.getFieldValue(FIELD_TYPE);
+    return {
+      blockId: this.id,
+      name: componentName,
+      className: componentType,
+    };
+  },
 }
 
 export const setup = function () {
@@ -177,8 +186,8 @@ export const pythonFromBlock = function (
   return code;
 }
 
-export function getAllPossibleComponents(hideParams: boolean): ToolboxItems.ContentsType[] {
-  const contents: ToolboxItems.ContentsType[] = [];
+export function getAllPossibleComponents(hideParams: boolean): toolboxItems.ContentsType[] {
+  const contents: toolboxItems.ContentsType[] = [];
   // Iterate through all the components subclasses and add definition blocks.
   const componentTypes = getSubclassNames('component.Component');
 
@@ -190,7 +199,7 @@ export function getAllPossibleComponents(hideParams: boolean): ToolboxItems.Cont
 
     const componentName = (
         'my_' +
-        CommonStorage.pascalCaseToSnakeCase(
+        commonStorage.pascalCaseToSnakeCase(
             componentType.substring(componentType.lastIndexOf('.') + 1)));
 
     classData.staticMethods.forEach(staticFunctionData => {
@@ -204,7 +213,7 @@ export function getAllPossibleComponents(hideParams: boolean): ToolboxItems.Cont
 }
 
 function createComponentBlock(
-    componentName: string, classData: ClassData, staticFunctionData: FunctionData, hideParams: boolean): ToolboxItems.Block {
+    componentName: string, classData: ClassData, staticFunctionData: FunctionData, hideParams: boolean): toolboxItems.Block {
   const extraState: ComponentExtraState = {
     importModule: classData.moduleName,
     staticFunctionName: staticFunctionData.functionName,
@@ -232,7 +241,7 @@ function createComponentBlock(
       }
     }
   }
-  return new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
 }
 
 function getPortTypeForArgument(argName: string): string | null {

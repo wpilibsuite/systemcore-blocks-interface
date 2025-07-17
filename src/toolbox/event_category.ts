@@ -23,10 +23,10 @@ import * as Blockly from 'blockly/core';
 
 import * as toolboxItems from './items';
 import * as commonStorage from '../storage/common_storage';
-import { EventBlock } from '../blocks/mrc_event';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
-import { RETURN_TYPE_NONE, FunctionKind } from '../blocks/mrc_call_python_function';
 import { createCustomEventBlock } from '../blocks/mrc_event';
+import { addFireEventBlocks } from '../blocks/mrc_call_python_function';
+import { Editor } from '../editor/editor';
 
 const CUSTOM_CATEGORY_EVENTS = 'EVENTS';
 
@@ -57,38 +57,15 @@ export class EventsCategory {
         kind: 'label',
         text: 'Custom Events',
       },
-      createCustomEventBlock());
+      createCustomEventBlock()
+    );
 
-    // For each mrc_class_method_def block in the blockly workspace, check if it
-    // can be called from within the class, and if so, add a
-    // mrc_call_python_function block.
-    workspace.getBlocksByType('mrc_event', false).forEach((block) => {
-        const eventBlock = block as EventBlock;
-        const callPythonFunctionBlock: toolboxItems.Block = {
-          kind: 'block',
-          type: 'mrc_call_python_function',
-          extraState: {
-            functionKind: FunctionKind.EVENT,
-            returnType: RETURN_TYPE_NONE,
-            args: [],
-            importModule: '',
-          },
-          fields: {
-            FUNC: block.getFieldValue('NAME'),
-          },
-        };
-        // Add the parameters from the event block to the callPythonFunctionBlock.        
-        eventBlock.mrcParameters.forEach((param) => {
-          if (callPythonFunctionBlock.extraState) {
-            callPythonFunctionBlock.extraState.args.push(
-              {
-                name: param.name,
-                type: param.type ?? '',
-              });
-            }
-          });
-        contents.push(callPythonFunctionBlock);
-    });
+    // Get blocks for firing methods defined in the current workspace.
+    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
+    if (editor) {
+      const eventsFromWorkspace = editor.getEventsFromWorkspace();
+      addFireEventBlocks(eventsFromWorkspace, contents);
+    }
 
     const toolboxInfo = {
       contents: contents,
