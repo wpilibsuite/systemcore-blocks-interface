@@ -25,6 +25,13 @@ import typing
 import python_util
 
 
+_LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
+  'hal',
+  'ntcore',
+  'wpinet',
+  'wpiutil',
+]
+
 _KEY_MODULES = 'modules'
 _KEY_CLASSES = 'classes'
 _KEY_MODULE_NAME = 'moduleName'
@@ -101,6 +108,13 @@ def getModuleName(m) -> str:
   else:
     raise Exception(f'Argument m must be a module or a module name.')
   return _DICT_FULL_MODULE_NAME_TO_MODULE_NAME.get(module_name, module_name)
+
+
+def ignoreModule(module_name: str) -> bool:
+  for prefix in _LIST_MODULE_NAME_PREFIXES_TO_IGNORE:
+    if module_name.startswith(prefix):
+      return True
+  return False
 
 
 def getClassName(c, containing_class_name: str = None) -> str:
@@ -250,11 +264,7 @@ class JsonGenerator:
       set_of_modules.add(module)
     for module in set_of_modules:
       module_name = getModuleName(module)
-      if module_name.startswith('ntcore'):
-        continue
-      if module_name.startswith('wpinet'):
-        continue
-      if module_name.startswith('wpiutil'):
+      if ignoreModule(module_name):
         continue
       #if not hasattr(module, '__all__'):
       #  print(f'Skipping module {getModuleName(module)}')
@@ -464,11 +474,7 @@ class JsonGenerator:
       if python_util.isEnum(cls):
         continue
       module_name = getModuleName(cls.__module__)
-      if module_name.startswith('ntcore'):
-        continue
-      if module_name.startswith('wpinet'):
-        continue
-      if module_name.startswith('wpiutil'):
+      if ignoreModule(module_name):
         continue
       #module = python_util.getModule(module_name)
       #if not hasattr(module, '__all__'):
