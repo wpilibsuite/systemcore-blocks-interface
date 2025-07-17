@@ -150,6 +150,11 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
           'setlang:es', 
           currentLanguage === 'es' ? <CheckOutlined /> : undefined
         ),
+        getItem(
+          t('HEBREW'), 
+          'setlang:he', 
+          currentLanguage === 'he' ? <CheckOutlined /> : undefined
+        ),        
       ]),
     ]),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
