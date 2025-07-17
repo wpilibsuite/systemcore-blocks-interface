@@ -22,6 +22,7 @@ import * as React from 'react';
 import * as Blockly from 'blockly/core';
 import * as En from 'blockly/msg/en';
 import * as Es from 'blockly/msg/es';
+import * as He from 'blockly/msg/he';
 import { customTokens } from '../blocks/tokens';
 
 import { themes } from '../themes/mrc_themes';
@@ -140,6 +141,20 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         if (!workspaceRef.current) {
           return;
         }
+
+        const newIsRtl = i18n.dir() === 'rtl';
+        const currentIsRtl = workspaceRef.current.RTL;
+
+        // If RTL direction changed, we need to recreate the workspace
+        if (newIsRtl !== currentIsRtl) {
+          cleanupWorkspace();
+          initializeWorkspace();
+          if (props.onWorkspaceRecreated) {
+            props.onWorkspaceRecreated(workspaceRef.current!);
+          }
+          return;
+        }
+
         // Set new locale
         switch (i18n.language) {
           case 'es':
@@ -147,6 +162,9 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
             break;
           case 'en':
             Blockly.setLocale(En as any);
+            break;
+          case 'he':
+            Blockly.setLocale(He as any);
             break;
           default:
             Blockly.setLocale(En as any);
@@ -175,6 +193,9 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
           case 'en':
             Blockly.setLocale(En as any);
             break;
+          case 'he':
+            Blockly.setLocale(He as any);
+            break;
           default:
             Blockly.setLocale(En as any);
             break;
@@ -183,6 +204,7 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         
         // Create workspace
         const workspaceConfig = createWorkspaceConfig();
+        workspaceConfig.rtl = i18n.dir() === 'rtl';
         const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
         workspaceRef.current = workspace;
       };
