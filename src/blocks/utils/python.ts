@@ -31,6 +31,12 @@ import * as SetPythonVariable from "../mrc_set_python_variable";
 
 // Utilities related to blocks for python modules and classes, including those from RobotPy, external samples, etc.
 
+export const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
+export const CLASS_NAME_ROBOT_BASE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.RobotBase';
+export const CLASS_NAME_OPMODE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.OpMode';
+export const CLASS_NAME_MECHANISM = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Mechanism';
+
+
 export const robotPyData = generatedRobotPyData as PythonData;
 const externalSamplesData = generatedExternalSamplesData as PythonData
 const serverPythonScripts = generatedServerPythonScripts as PythonData;

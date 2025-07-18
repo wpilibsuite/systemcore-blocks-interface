@@ -62,6 +62,10 @@ _KEY_SUBCLASSES = 'subclasses'
 
 
 _DICT_FULL_MODULE_NAME_TO_MODULE_NAME = {
+  'blocks_base_classes.opmode': 'blocks_base_classes',
+  'blocks_base_classes.mechanism': 'blocks_base_classes',
+  'blocks_base_classes.robot_base': 'blocks_base_classes',
+
   'hal._wpiHal': 'hal',
   'hal.simulation._simulation': 'hal.simulation',
 
