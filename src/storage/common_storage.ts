@@ -577,10 +577,10 @@ export function makeModuleContent(
   blocksContent: string,
   methodsContent: string,
   componentsContent: string,
-  versionContent: string): string {
-  if (!versionContent) {
-    versionContent = CURRENT_VERSION;
-  }
+  optVersionContent?: string): string {
+
+  const versionContent = optVersionContent ? optVersionContent : CURRENT_VERSION;
+
   let delimiter = DELIMITER_PREFIX;
   while (module.moduleType.includes(delimiter)
       || blocksContent.includes(delimiter)
@@ -781,7 +781,12 @@ function _processModuleContentForDownload(
   // Clear out the python content.
   const pythonCode = '';
   return makeModuleContent(
-    module, pythonCode, blocksContent, methodsContent, componentsContent, versionContent);
+      module,
+      pythonCode,
+      blocksContent,
+      methodsContent,
+      componentsContent,
+      versionContent);
 }
 
 /**
@@ -857,6 +862,10 @@ export function _processUploadedModule(
   projectName: string, filename: string, uploadedContent: string)
   : [string, string, string] {
   const parts = getParts(uploadedContent);
+  let versionContent = parts[PARTS_INDEX_VERSION];
+  if (versionContent.startsWith(MARKER_VERSION)) {
+    versionContent = versionContent.substring(MARKER_VERSION.length);
+  }
   let blocksContent = parts[PARTS_INDEX_BLOCKS_CONTENT];
   if (blocksContent.startsWith(MARKER_BLOCKS_CONTENT)) {
     blocksContent = blocksContent.substring(MARKER_BLOCKS_CONTENT.length);
@@ -872,10 +881,6 @@ export function _processUploadedModule(
   let componentsContent = parts[PARTS_INDEX_COMPONENTS];
   if (componentsContent.startsWith(MARKER_COMPONENTS)) {
     componentsContent = componentsContent.substring(MARKER_COMPONENTS.length);
-  }
-  let versionContent = parts[PARTS_INDEX_VERSION];
-  if (versionContent.startsWith(MARKER_VERSION)) {
-    versionContent = versionContent.substring(MARKER_VERSION.length);
   }
 
   const moduleName = (moduleType === MODULE_TYPE_ROBOT)
@@ -904,6 +909,11 @@ export function _processUploadedModule(
     headlessBlocklyWorkspace, generatorContext);
 
   const moduleContent = makeModuleContent(
-    module, pythonCode, blocksContent, methodsContent, componentsContent, versionContent);
+      module,
+      pythonCode,
+      blocksContent,
+      methodsContent,
+      componentsContent,
+      versionContent);
   return [moduleName, moduleType, moduleContent];
 }
