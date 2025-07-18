@@ -24,8 +24,6 @@ from absl import flags
 from absl import logging
 
 # robotpy
-import hal
-import hal.simulation
 import ntcore
 import pyfrc
 import wpilib
@@ -87,8 +85,6 @@ def main(argv):
   pathlib.Path(f'{FLAGS.output_directory}/generated/').mkdir(parents=True, exist_ok=True)
 
   robotpy_modules = [
-    hal,
-    hal.simulation,
     ntcore,
     wpilib,
     wpilib.counter,
