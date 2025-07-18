@@ -83,7 +83,7 @@ export const MODULE_TYPE_ROBOT = 'robot';
 export const MODULE_TYPE_MECHANISM = 'mechanism';
 export const MODULE_TYPE_OPMODE = 'opmode';
 
-export const ROBOT_CLASS_NAME = 'Robot';
+const CLASS_NAME_ROBOT = 'Robot';
 
 const DELIMITER_PREFIX = 'BlocksContent';
 const MARKER_BLOCKS_CONTENT = 'blocksContent: ';
@@ -526,7 +526,7 @@ export function newRobotContent(projectName: string): string {
     projectName: projectName,
     moduleName: projectName,
     dateModifiedMillis: 0,
-    className: ROBOT_CLASS_NAME,
+    className: CLASS_NAME_ROBOT,
   };
 
   return startingBlocksToModuleContent(module, startingRobotBlocks);
@@ -711,7 +711,7 @@ export async function produceDownloadProjectBlob(
 
 export function getClassNameForModule(moduleType: string, moduleName: string) {
   return (moduleType == MODULE_TYPE_ROBOT)
-      ? ROBOT_CLASS_NAME
+      ? CLASS_NAME_ROBOT
       : snakeCaseToPascalCase(moduleName);
 }
 

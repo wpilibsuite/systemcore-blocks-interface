@@ -24,6 +24,7 @@ import * as Blockly from 'blockly/core';
 import * as toolboxItems from './items';
 import * as commonStorage from '../storage/common_storage';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
+import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
 import { createCustomMethodBlock, getBaseClassBlocks } from '../blocks/mrc_class_method_def';
 import { Editor } from '../editor/editor';
@@ -40,9 +41,9 @@ export const getCategory = () => ({
 
 export class MethodsCategory {
   private currentModule: commonStorage.Module | null = null;
-  private robotClassBlocks = getBaseClassBlocks('blocks_base_classes.robot_base.RobotBase');
-  private mechanismClassBlocks = getBaseClassBlocks('blocks_base_classes.mechanism.Mechanism');
-  private opmodeClassBlocks = getBaseClassBlocks('blocks_base_classes.opmode.OpMode');
+  private robotClassBlocks = getBaseClassBlocks(CLASS_NAME_ROBOT_BASE);
+  private mechanismClassBlocks = getBaseClassBlocks(CLASS_NAME_MECHANISM);
+  private opmodeClassBlocks = getBaseClassBlocks(CLASS_NAME_OPMODE);
 
   constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
     blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS, this.methodsFlyout.bind(this));

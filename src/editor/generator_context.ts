@@ -20,6 +20,7 @@
  */
 
 import * as commonStorage from '../storage/common_storage';
+import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
 
 
 export function createGeneratorContext(): GeneratorContext {
@@ -63,18 +64,18 @@ export class GeneratorContext {
     return this.module.className;
   }
 
-  getClassParent(): string {
+  getBaseClassName(): string {
     if (!this.module) {
-      throw new Error('getClassParent: this.module is null.');
+      throw new Error('getParentClassName: this.module is null.');
     }
     if (this.module.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
-      return 'RobotBase';
+      return CLASS_NAME_ROBOT_BASE;
     }
     if (this.module.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
-      return 'OpMode';
+      return CLASS_NAME_OPMODE;
     }
     if (this.module.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-      return 'Mechanism';
+      return CLASS_NAME_MECHANISM;
     }
     return '';
   }

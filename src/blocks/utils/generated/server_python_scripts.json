@@ -2,14 +2,14 @@
     "aliases": {},
     "classes": [
         {
-            "className": "blocks_base_classes.mechanism.Mechanism",
+            "className": "blocks_base_classes.Mechanism",
             "classVariables": [],
             "constructors": [
                 {
                     "args": [],
-                    "declaringClassName": "blocks_base_classes.mechanism.Mechanism",
+                    "declaringClassName": "blocks_base_classes.Mechanism",
                     "functionName": "__init__",
-                    "returnType": "blocks_base_classes.mechanism.Mechanism",
+                    "returnType": "blocks_base_classes.Mechanism",
                     "tooltip": ""
                 }
             ],
@@ -20,10 +20,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.mechanism.Mechanism"
+                            "type": "blocks_base_classes.Mechanism"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.mechanism.Mechanism",
+                    "declaringClassName": "blocks_base_classes.Mechanism",
                     "functionName": "start",
                     "returnType": "None",
                     "tooltip": ""
@@ -33,10 +33,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.mechanism.Mechanism"
+                            "type": "blocks_base_classes.Mechanism"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.mechanism.Mechanism",
+                    "declaringClassName": "blocks_base_classes.Mechanism",
                     "functionName": "stop",
                     "returnType": "None",
                     "tooltip": ""
@@ -46,21 +46,21 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.mechanism.Mechanism"
+                            "type": "blocks_base_classes.Mechanism"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.mechanism.Mechanism",
+                    "declaringClassName": "blocks_base_classes.Mechanism",
                     "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
             ],
             "instanceVariables": [],
-            "moduleName": "blocks_base_classes.mechanism",
+            "moduleName": "blocks_base_classes",
             "staticMethods": []
         },
         {
-            "className": "blocks_base_classes.opmode.OpMode",
+            "className": "blocks_base_classes.OpMode",
             "classVariables": [],
             "constructors": [
                 {
@@ -68,12 +68,12 @@
                         {
                             "defaultValue": "",
                             "name": "robot",
-                            "type": "blocks_base_classes.robot_base.RobotBase"
+                            "type": "blocks_base_classes.RobotBase"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.opmode.OpMode",
+                    "declaringClassName": "blocks_base_classes.OpMode",
                     "functionName": "__init__",
-                    "returnType": "blocks_base_classes.opmode.OpMode",
+                    "returnType": "blocks_base_classes.OpMode",
                     "tooltip": ""
                 }
             ],
@@ -84,10 +84,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.opmode.OpMode"
+                            "type": "blocks_base_classes.OpMode"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.opmode.OpMode",
+                    "declaringClassName": "blocks_base_classes.OpMode",
                     "functionName": "loop",
                     "returnType": "None",
                     "tooltip": ""
@@ -97,10 +97,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.opmode.OpMode"
+                            "type": "blocks_base_classes.OpMode"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.opmode.OpMode",
+                    "declaringClassName": "blocks_base_classes.OpMode",
                     "functionName": "start",
                     "returnType": "None",
                     "tooltip": ""
@@ -110,28 +110,28 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.opmode.OpMode"
+                            "type": "blocks_base_classes.OpMode"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.opmode.OpMode",
+                    "declaringClassName": "blocks_base_classes.OpMode",
                     "functionName": "stop",
                     "returnType": "None",
                     "tooltip": ""
                 }
             ],
             "instanceVariables": [],
-            "moduleName": "blocks_base_classes.opmode",
+            "moduleName": "blocks_base_classes",
             "staticMethods": []
         },
         {
-            "className": "blocks_base_classes.robot_base.RobotBase",
+            "className": "blocks_base_classes.RobotBase",
             "classVariables": [],
             "constructors": [
                 {
                     "args": [],
-                    "declaringClassName": "blocks_base_classes.robot_base.RobotBase",
+                    "declaringClassName": "blocks_base_classes.RobotBase",
                     "functionName": "__init__",
-                    "returnType": "blocks_base_classes.robot_base.RobotBase",
+                    "returnType": "blocks_base_classes.RobotBase",
                     "tooltip": ""
                 }
             ],
@@ -142,10 +142,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.robot_base.RobotBase"
+                            "type": "blocks_base_classes.RobotBase"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.robot_base.RobotBase",
+                    "declaringClassName": "blocks_base_classes.RobotBase",
                     "functionName": "start",
                     "returnType": "None",
                     "tooltip": ""
@@ -155,10 +155,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.robot_base.RobotBase"
+                            "type": "blocks_base_classes.RobotBase"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.robot_base.RobotBase",
+                    "declaringClassName": "blocks_base_classes.RobotBase",
                     "functionName": "stop",
                     "returnType": "None",
                     "tooltip": ""
@@ -168,17 +168,17 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.robot_base.RobotBase"
+                            "type": "blocks_base_classes.RobotBase"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.robot_base.RobotBase",
+                    "declaringClassName": "blocks_base_classes.RobotBase",
                     "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
             ],
             "instanceVariables": [],
-            "moduleName": "blocks_base_classes.robot_base",
+            "moduleName": "blocks_base_classes",
             "staticMethods": []
         }
     ],
@@ -192,19 +192,19 @@
         {
             "enums": [],
             "functions": [],
-            "moduleName": "blocks_base_classes.mechanism",
+            "moduleName": "blocks_base_classes",
             "moduleVariables": []
         },
         {
             "enums": [],
             "functions": [],
-            "moduleName": "blocks_base_classes.opmode",
+            "moduleName": "blocks_base_classes",
             "moduleVariables": []
         },
         {
             "enums": [],
             "functions": [],
-            "moduleName": "blocks_base_classes.robot_base",
+            "moduleName": "blocks_base_classes",
             "moduleVariables": []
         }
     ],
