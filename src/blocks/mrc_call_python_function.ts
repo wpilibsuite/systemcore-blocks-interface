@@ -23,25 +23,24 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
-import { ClassMethodDefExtraState } from './mrc_class_method_def'
 import { getClassData, getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
 import { ArgData, FunctionData, findSuperFunctionData } from './utils/python_json_types';
-import * as Value from './utils/value';
-import * as Variable from './utils/variable';
+import * as value from './utils/value';
+import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
-import * as ToolboxItems from '../toolbox/items';
-import * as CommonStorage from '../storage/common_storage';
+import * as toolboxItems from '../toolbox/items';
+import * as commonStorage from '../storage/common_storage';
 
 
 // A block to call a python function.
 
 export const BLOCK_NAME = 'mrc_call_python_function';
 
-export enum FunctionKind {
+enum FunctionKind {
   BUILT_IN = 'built-in',
   MODULE = 'module',
   STATIC = 'static',
@@ -53,13 +52,14 @@ export enum FunctionKind {
   EVENT = 'event',
 }
 
-export const RETURN_TYPE_NONE = 'None';
+const RETURN_TYPE_NONE = 'None';
 
 const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
 const FIELD_FUNCTION_NAME = 'FUNC';
+const FIELD_EVENT_NAME = 'EVENT';
 const FIELD_COMPONENT_NAME = 'COMPONENT_NAME';
 
-export type FunctionArg = {
+type FunctionArg = {
   name: string,
   type: string,
 };
@@ -70,17 +70,13 @@ export type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin & 
 interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcFunctionKind: FunctionKind,
   mrcReturnType: string,
-  mrcArgs: FunctionArg[],
+  mrcArgs: FunctionArg[], // Include the self arg only if there is a socket for it.
   mrcTooltip: string,
   mrcImportModule: string,
   mrcActualFunctionName: string,
-  mrcClassMethodDefBlockId: string,
+  mrcOtherBlockId: string,
   mrcComponentClassName: string,
-  mrcComponents: CommonStorage.Component[],
-  mrcComponentName: string,
-  mrcComponentBlockId: string,
-  renameMethod(this: CallPythonFunctionBlock, newName: string): void;
-  mutateMethod(this: CallPythonFunctionBlock, defBlockExtraState: ClassMethodDefExtraState): void;
+  mrcOriginalComponentName: string,
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
 
@@ -116,9 +112,12 @@ type CallPythonFunctionExtraState = {
    */
   actualFunctionName?: string,
   /**
-   * The id of the mrc_class_method_def type that defines the method. Specified only if the function kind is INSTANCE_ROBOT.
+   * The id of the block that defines the method, component, or event.
+   * For INSTANCE_ROBOT or INSTANCE_WITHIN, this is the id of an mrc_class_method_def block.
+   * For INSTANCE_COMPONENT, this is the id of an mrc_component block.
+   * For EVENT, this is the id of an mrc_event block.
    */
-  classMethodDefBlockId?: string,
+  otherBlockId?: string,
   /**
    * The component name. Specified only if the function kind is INSTANCE_COMPONENT.
    */
@@ -127,10 +126,6 @@ type CallPythonFunctionExtraState = {
    * The component class name. Specified only if the function kind is INSTANCE_COMPONENT.
    */
   componentClassName?: string,
-  /**
-   * The id of the mrc_component type that defines the component. Specified only if the function kind is INSTANCE_COMPONENT.
-   */
-  componentBlockId?: string,
 };
 
 const CALL_PYTHON_FUNCTION = {
@@ -176,8 +171,8 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.EVENT: {
-          const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = 'Fires the event ' + functionName + '.';
+          const eventName = this.getFieldValue(FIELD_EVENT_NAME);
+          tooltip = 'Fires the event ' + eventName + '.';
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
@@ -215,8 +210,8 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcArgs){
       this.mrcArgs.forEach((arg) => {
         extraState.args.push({
-          'name': arg.name,
-          'type': arg.type,
+          name: arg.name,
+          type: arg.type,
         });
       });
     }
@@ -229,18 +224,25 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcActualFunctionName) {
       extraState.actualFunctionName = this.mrcActualFunctionName;
     }
-    if (this.mrcClassMethodDefBlockId) {
-      extraState.classMethodDefBlockId = this.mrcClassMethodDefBlockId;
+    if (this.mrcOtherBlockId) {
+      extraState.otherBlockId = this.mrcOtherBlockId;
     }
     if (this.mrcComponentClassName) {
       extraState.componentClassName = this.mrcComponentClassName;
     }
     if (this.getField(FIELD_COMPONENT_NAME)) {
       extraState.componentName = this.getFieldValue(FIELD_COMPONENT_NAME);
-      for (const component of this.mrcComponents) {
-        if (component.name == extraState.componentName) {
-          extraState.componentBlockId = component.blockId;
-          break;
+      // The component name field is a drop down where the user can choose between different
+      // components of the same type. For example, they can easily switch from a motor component
+      // name "left_motor" to a motor component named "right_motor".
+      if (extraState.componentName !== this.mrcOriginalComponentName) {
+        // The user has chosen a different component name. We need to get the block id of the
+        // mrc_component block that defines the component that the user has chosen.
+        for (const component of this.getComponentsFromRobot()) {
+          if (component.name == extraState.componentName) {
+            extraState.otherBlockId = component.blockId;
+            break;
+          }
         }
       }
     }
@@ -258,8 +260,8 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcArgs = [];
     extraState.args.forEach((arg) => {
       this.mrcArgs.push({
-        'name': arg.name,
-        'type': arg.type,
+        name: arg.name,
+        type: arg.type,
       });
     });
     this.mrcTooltip = extraState.tooltip ? extraState.tooltip : '';
@@ -267,25 +269,23 @@ const CALL_PYTHON_FUNCTION = {
         ? extraState.importModule : '';
     this.mrcActualFunctionName = extraState.actualFunctionName
         ? extraState.actualFunctionName : '';
-    this.mrcClassMethodDefBlockId = extraState.classMethodDefBlockId
-        ? extraState.classMethodDefBlockId : '';
+    this.mrcOtherBlockId = extraState.otherBlockId
+        ? extraState.otherBlockId : '';
+    // TODO(lizlooney: Remove this if statement after Alan and I have updated our projects.
+    if (!this.mrcOtherBlockId) {
+      const oldExtraState = extraState as any;
+      if (oldExtraState.classMethodDefBlockId) {
+        this.mrcOtherBlockId = oldExtraState.classMethodDefBlockId;
+      } else if (oldExtraState.componentBlockId) {
+        this.mrcOtherBlockId = oldExtraState.componentBlockId;
+      } else if (oldExtraState.eventBlockId) {
+        this.mrcOtherBlockId = oldExtraState.eventBlockId;
+      }
+    }
     this.mrcComponentClassName = extraState.componentClassName
         ? extraState.componentClassName : '';
-    // Get the list of components whose type matches this.mrcComponentClassName so we can
-    // create a dropdown that has the appropriate component name choices.
-    this.mrcComponents = [];
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-    if (editor) {
-      editor.getComponentsFromRobot().forEach(component => {
-        if (component.className === this.mrcComponentClassName) {
-          this.mrcComponents.push(component);
-        }
-      });
-    }
-    this.mrcComponentName = extraState.componentName
+    this.mrcOriginalComponentName = extraState.componentName
         ? extraState.componentName : '';
-    this.mrcComponentBlockId = extraState.componentBlockId
-        ? extraState.componentBlockId : '';
     this.updateBlock_();
   },
   /**
@@ -357,15 +357,15 @@ const CALL_PYTHON_FUNCTION = {
           if (!input) {
             this.appendDummyInput('TITLE')
                 .appendField('fire')
-                .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
+                .appendField(createFieldNonEditableText(''), FIELD_EVENT_NAME);
           }
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
           const componentNameChoices : string[] = [];
-          this.mrcComponents.forEach(component => componentNameChoices.push(component.name));
-          if (!componentNameChoices.includes(this.mrcComponentName)) {
-            componentNameChoices.push(this.mrcComponentName);
+          this.getComponentsFromRobot().forEach(component => componentNameChoices.push(component.name));
+          if (!componentNameChoices.includes(this.mrcOriginalComponentName)) {
+            componentNameChoices.push(this.mrcOriginalComponentName);
           }
           this.appendDummyInput('TITLE')
               .appendField('call')
@@ -415,22 +415,53 @@ const CALL_PYTHON_FUNCTION = {
       this.removeInput('ARG' + i);
     }
   },
-  renameMethod: function(this: CallPythonFunctionBlock, newName: string): void {
-    this.setFieldValue(newName, FIELD_FUNCTION_NAME);
+  renameMethodCaller: function(this: CallPythonFunctionBlock, newName: string): void {
+    if (this.mrcFunctionKind == FunctionKind.EVENT) {
+      this.setFieldValue(newName, FIELD_EVENT_NAME);
+    } else if (this.mrcFunctionKind == FunctionKind.INSTANCE_WITHIN) {
+      // TODO(lizlooney): What about this.mrcActualFunctionName? Does it need to be updated?
+      this.setFieldValue(newName, FIELD_FUNCTION_NAME);
+    }
   },
-  mutateMethod: function(
+  mutateMethodCaller: function(
       this: CallPythonFunctionBlock,
-      defBlockExtraState: ClassMethodDefExtraState
+      methodOrEvent: commonStorage.Method | commonStorage.Event
   ): void {
-    this.mrcReturnType = defBlockExtraState.returnType;
-    this.mrcArgs = [];
-    defBlockExtraState.params.forEach((param) => {
-      this.mrcArgs.push({
-        'name': param.name,
-        'type': param.type ?? '',
+    if (this.mrcFunctionKind == FunctionKind.EVENT) {
+      const event = methodOrEvent as commonStorage.Event;
+      this.mrcArgs = [];
+      event.args.forEach((arg) => {
+        this.mrcArgs.push({
+          name: arg.name,
+          type: arg.type,
+        });
       });
-    });
+    } else if (this.mrcFunctionKind == FunctionKind.INSTANCE_WITHIN) {
+      const method = methodOrEvent as commonStorage.Method;
+      this.mrcReturnType = method.returnType;
+      this.mrcArgs = [];
+      // We don't include the arg for the self argument because we don't want a socket for it.
+      for (let i = 1; i < method.args.length; i++) {
+        this.mrcArgs.push({
+          name: method.args[i].name,
+          type: method.args[i].type,
+        });
+      }
+    }
     this.updateBlock_();
+  },
+  getComponentsFromRobot: function(this: CallPythonFunctionBlock): commonStorage.Component[] {
+    // Get the list of components whose type matches this.mrcComponentClassName.
+    const components: commonStorage.Component[] = [];
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    if (editor) {
+      editor.getComponentsFromRobot().forEach(component => {
+        if (component.className === this.mrcComponentClassName) {
+          components.push(component);
+        }
+      });
+    }
+    return components;
   },
   onLoad: function(this: CallPythonFunctionBlock): void {
     const warnings: string[] = [];
@@ -442,8 +473,9 @@ const CALL_PYTHON_FUNCTION = {
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
       let foundComponent = false;
-      for (const component of this.mrcComponents) {
-        if (component.blockId === this.mrcComponentBlockId) {
+      const components = this.getComponentsFromRobot();
+      for (const component of components) {
+        if (component.blockId === this.mrcOtherBlockId) {
           foundComponent = true;
 
           // If the component name has changed, we can handle that.
@@ -460,7 +492,7 @@ const CALL_PYTHON_FUNCTION = {
               }
               if (indexOfComponentName != -1) {
                 const componentNameChoices : string[] = [];
-                this.mrcComponents.forEach(component => componentNameChoices.push(component.name));
+                components.forEach(component => componentNameChoices.push(component.name));
                 titleInput.removeField(FIELD_COMPONENT_NAME);
                 titleInput.insertFieldAt(indexOfComponentName,
                     createFieldDropdown(componentNameChoices), FIELD_COMPONENT_NAME);
@@ -491,7 +523,7 @@ const CALL_PYTHON_FUNCTION = {
       if (editor) {
         const robotMethods = editor.getMethodsFromRobot();
         for (const robotMethod of robotMethods) {
-          if (robotMethod.blockId === this.mrcClassMethodDefBlockId) {
+          if (robotMethod.blockId === this.mrcOtherBlockId) {
             foundRobotMethod = true;
 
             // If the function name has changed, we can fix this block.
@@ -604,9 +636,10 @@ export const pythonFromBlock = function(
       break;
     }
     case FunctionKind.EVENT: {
-      const blocklyName = block.getFieldValue(FIELD_FUNCTION_NAME);
-      const functionName = generator.getProcedureName(blocklyName);
-      code = 'if self.events.get("' + functionName + '", None):\n' + generator.INDENT + 'self.events["' + functionName + '"]';
+      const eventName = block.getFieldValue(FIELD_EVENT_NAME);
+      code = 
+          'if self.events.get("' + eventName + '", None):\n' +
+          generator.INDENT + 'self.events["' + eventName + '"]';
       break;
     }
     case FunctionKind.INSTANCE_COMPONENT: {
@@ -616,11 +649,11 @@ export const pythonFromBlock = function(
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
-        case CommonStorage.MODULE_TYPE_ROBOT:
-        case CommonStorage.MODULE_TYPE_MECHANISM:
+        case commonStorage.MODULE_TYPE_ROBOT:
+        case commonStorage.MODULE_TYPE_MECHANISM:
           code = 'self.';
           break;
-        case CommonStorage.MODULE_TYPE_OPMODE:
+        case commonStorage.MODULE_TYPE_OPMODE:
         default:
           code = 'self.robot.';
           break;
@@ -652,45 +685,42 @@ function generateCodeForArguments(
     startIndex: number) {
   let code = '';
   if (block.mrcArgs.length - startIndex === 1) {
+    // If there is only one input, put it on the same line as the function name.
     code += generator.valueToCode(block, 'ARG' + startIndex, Order.NONE) || 'None';
   } else {
-    let delimiter = '\n' + generator.INDENT + generator.INDENT;
+    let delimiter = '';
     for (let i = startIndex; i < block.mrcArgs.length; i++) {
-      code += delimiter;
+      code += delimiter + '\n' + generator.INDENT + generator.INDENT;
       code += generator.valueToCode(block, 'ARG' + i, Order.NONE) || 'None';
-      delimiter = ',\n' + generator.INDENT + generator.INDENT;
+      delimiter = ',';
     }
   }
   return code;
 }
 
-function getMethodCallers(workspace: Blockly.Workspace, name: string): Blockly.Block[] {
+function getMethodCallers(workspace: Blockly.Workspace, otherBlockId: string): Blockly.Block[] {
   return workspace.getBlocksByType('mrc_call_python_function').filter((block) => {
-    const callBlock = block as CallPythonFunctionBlock;
-    return (
-      callBlock.mrcFunctionKind === FunctionKind.INSTANCE_WITHIN &&
-      callBlock.getFieldValue(FIELD_FUNCTION_NAME) === name
-    );
+    return (block as CallPythonFunctionBlock).mrcOtherBlockId === otherBlockId;
   });
 }
 
-export function renameMethodCallers(workspace: Blockly.Workspace, oldName: string, newName: string): void {
-  for (const block of getMethodCallers(workspace, oldName)) {
-    (block as CallPythonFunctionBlock).renameMethod(newName);
+export function renameMethodCallers(workspace: Blockly.Workspace, otherBlockId: string, newName: string): void {
+  for (const block of getMethodCallers(workspace, otherBlockId)) {
+    (block as CallPythonFunctionBlock).renameMethodCaller(newName);
   }
 }
 
 export function mutateMethodCallers(
-    workspace: Blockly.Workspace, methodName: string, defBlockExtraState: ClassMethodDefExtraState) {
+    workspace: Blockly.Workspace, otherBlockId: string, methodOrEvent: commonStorage.Method | commonStorage.Event) {
   const oldRecordUndo = Blockly.Events.getRecordUndo();
 
-  for (const block of getMethodCallers(workspace, methodName)) {
+  for (const block of getMethodCallers(workspace, otherBlockId)) {
     const callBlock = block as CallPythonFunctionBlock;
     // Get the extra state before changing the call block.
     const oldExtraState = callBlock.saveExtraState();
 
     // Apply the changes.
-    callBlock.mutateMethod(defBlockExtraState);
+    callBlock.mutateMethodCaller(methodOrEvent);
 
     // Get the extra state after changing the call block.
     const newExtraState = callBlock.saveExtraState();
@@ -715,14 +745,14 @@ export function mutateMethodCallers(
 
 export function addBuiltInFunctionBlocks(
     functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[]) {
   functions.forEach(functionData => {
     contents.push(createBuiltInMethodBlock(functionData));
   });
 }
 
 function createBuiltInMethodBlock(
-    functionData: FunctionData): ToolboxItems.Block  {
+    functionData: FunctionData): toolboxItems.Block  {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.BUILT_IN,
     returnType: functionData.returnType,
@@ -744,14 +774,14 @@ function processArgs(
   for (let i = 0; i < args.length; i++) {
     let argName = args[i].name;
     if (i === 0 && argName === 'self' && declaringClassName) {
-      argName = Variable.getSelfArgName(declaringClassName);
+      argName = variable.getSelfArgName(declaringClassName);
     }
     extraState.args.push({
-      'name': argName,
-      'type': args[i].type,
+      name: argName,
+      type: args[i].type,
     });
     // Check if we should plug a variable getter block into the argument input socket.
-    const input = Value.valueForFunctionArgInput(args[i].type, args[i].defaultValue);
+    const input = value.valueForFunctionArgInput(args[i].type, args[i].defaultValue);
     if (input) {
       inputs['ARG' + i] = input;
     }
@@ -761,12 +791,12 @@ function processArgs(
 function createBlock(
     extraState: CallPythonFunctionExtraState,
     fields: {[key: string]: any},
-    inputs: {[key: string]: any}): ToolboxItems.Block  {
-  let block = new ToolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
-  if (extraState.returnType && extraState.returnType != 'None') {
-    const varName = Variable.varNameForType(extraState.returnType);
+    inputs: {[key: string]: any}): toolboxItems.Block  {
+  let block = new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+  if (extraState.returnType && extraState.returnType != RETURN_TYPE_NONE) {
+    const varName = variable.varNameForType(extraState.returnType);
     if (varName) {
-      block = Variable.createVariableSetterBlock(varName, block);
+      block = variable.createVariableSetterBlock(varName, block);
     }
   }
   return block;
@@ -775,7 +805,7 @@ function createBlock(
 export function addModuleFunctionBlocks(
     moduleName: string,
     functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[]) {
   functions.forEach(functionData => {
     const block = createModuleFunctionOrStaticMethodBlock(
         FunctionKind.MODULE, moduleName, moduleName, functionData);
@@ -786,7 +816,7 @@ export function addModuleFunctionBlocks(
 export function addStaticMethodBlocks(
     importModule: string,
     functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[]) {
   functions.forEach(functionData => {
     if (functionData.declaringClassName) {
       const block = createModuleFunctionOrStaticMethodBlock(
@@ -800,7 +830,7 @@ function createModuleFunctionOrStaticMethodBlock(
     functionKind: FunctionKind,
     importModule: string,
     moduleOrClassName: string,
-    functionData: FunctionData): ToolboxItems.Block {
+    functionData: FunctionData): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: functionKind,
     returnType: functionData.returnType,
@@ -819,7 +849,7 @@ function createModuleFunctionOrStaticMethodBlock(
 export function addConstructorBlocks(
     importModule: string,
     functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[]) {
   functions.forEach(functionData => {
     contents.push(createConstructorBlock(importModule, functionData));
   });
@@ -827,7 +857,7 @@ export function addConstructorBlocks(
 
 function createConstructorBlock(
     importModule: string,
-    functionData: FunctionData): ToolboxItems.Block {
+    functionData: FunctionData): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.CONSTRUCTOR,
     returnType: functionData.returnType,
@@ -844,14 +874,14 @@ function createConstructorBlock(
 
 export function addInstanceMethodBlocks(
     functions: FunctionData[],
-    contents: ToolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[]) {
   functions.forEach(functionData => {
     contents.push(createInstanceMethodBlock(functionData));
   });
 }
 
 function createInstanceMethodBlock(
-    functionData: FunctionData): ToolboxItems.Block {
+    functionData: FunctionData): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE,
     returnType: functionData.returnType,
@@ -862,32 +892,34 @@ function createInstanceMethodBlock(
   fields[FIELD_MODULE_OR_CLASS_NAME] = functionData.declaringClassName;
   fields[FIELD_FUNCTION_NAME] = functionData.functionName;
   const inputs: {[key: string]: any} = {};
+  // We include the arg for the self argument for INSTANCE methods because we want a socket that
+  // the user can plug the object into.
   processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
   return createBlock(extraState, fields, inputs);
 }
 
 export function addInstanceWithinBlocks(
-    methods: CommonStorage.Method[],
-    contents: ToolboxItems.ContentsType[]) {
+    methods: commonStorage.Method[],
+    contents: toolboxItems.ContentsType[]) {
   methods.forEach(method => {
     contents.push(createInstanceWithinBlock(method));
   });
 }
 
-function createInstanceWithinBlock(method: CommonStorage.Method): ToolboxItems.Block {
+function createInstanceWithinBlock(method: commonStorage.Method): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_WITHIN,
     returnType: method.returnType,
     actualFunctionName: method.pythonName,
     args: [],
-    classMethodDefBlockId: method.blockId,
+    otherBlockId: method.blockId,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_FUNCTION_NAME] = method.visibleName;
   const inputs: {[key: string]: any} = {};
-  // Convert method.args from CommonStorage.MethodArg[] to ArgData[].
+  // Convert method.args from commonStorage.MethodArg[] to ArgData[].
   const args: ArgData[] = [];
-  // We don't include the arg for the self argument.
+  // We don't include the arg for the self argument because we don't need a socket for it.
   for (let i = 1; i < method.args.length; i++) {
     args.push({
       name: method.args[i].name,
@@ -900,8 +932,8 @@ function createInstanceWithinBlock(method: CommonStorage.Method): ToolboxItems.B
 }
 
 export function getInstanceComponentBlocks(
-    component: CommonStorage.Component): ToolboxItems.ContentsType[] {
-  const contents: ToolboxItems.ContentsType[] = [];
+    component: commonStorage.Component): toolboxItems.ContentsType[] {
+  const contents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
   if (!classData) {
@@ -928,7 +960,7 @@ export function getInstanceComponentBlocks(
 }
 
 function createInstanceComponentBlock(
-    component: CommonStorage.Component, functionData: FunctionData): ToolboxItems.Block {
+    component: commonStorage.Component, functionData: FunctionData): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_COMPONENT,
     returnType: functionData.returnType,
@@ -937,7 +969,7 @@ function createInstanceComponentBlock(
     importModule: '',
     componentClassName: component.className,
     componentName: component.name,
-    componentBlockId: component.blockId,
+    otherBlockId: component.blockId,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_COMPONENT_NAME] = component.name;
@@ -945,34 +977,34 @@ function createInstanceComponentBlock(
   const inputs: {[key: string]: any} = {};
   // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
   // self is represented by the FIELD_COMPONENT_NAME field.
-  // We don't include the arg for self.
+  // We don't include the arg for the self argument because we don't need a socket for it.
   const argsWithoutSelf = functionData.args.slice(1);
   processArgs(argsWithoutSelf, extraState, inputs);
   return createBlock(extraState, fields, inputs);
 }
 
 export function addInstanceRobotBlocks(
-    methods: CommonStorage.Method[],
-    contents: ToolboxItems.ContentsType[]) {
+    methods: commonStorage.Method[],
+    contents: toolboxItems.ContentsType[]) {
   methods.forEach(method => {
     contents.push(createInstanceRobotBlock(method));
   });
 }
 
-function createInstanceRobotBlock(method: CommonStorage.Method): ToolboxItems.Block {
+function createInstanceRobotBlock(method: commonStorage.Method): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_ROBOT,
     returnType: method.returnType,
     actualFunctionName: method.pythonName,
     args: [],
-    classMethodDefBlockId: method.blockId,
+    otherBlockId: method.blockId,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_FUNCTION_NAME] = method.visibleName;
   const inputs: {[key: string]: any} = {};
-  // Convert method.args from CommonStorage.MethodArg[] to ArgData[].
+  // Convert method.args from commonStorage.MethodArg[] to ArgData[].
   const args: ArgData[] = [];
-  // We don't include the arg for the self argument.
+  // We don't include the arg for the self argument because we don't need a socket for it.
   for (let i = 1; i < method.args.length; i++) {
     args.push({
       name: method.args[i].name,
@@ -980,6 +1012,37 @@ function createInstanceRobotBlock(method: CommonStorage.Method): ToolboxItems.Bl
       defaultValue: '',
     });
   }
+  processArgs(args, extraState, inputs);
+  return createBlock(extraState, fields, inputs);
+}
+
+export function addFireEventBlocks(
+    events: commonStorage.Event[],
+    contents: toolboxItems.ContentsType[]) {
+  events.forEach(event => {
+    contents.push(createFireEventBlock(event));
+  });
+}
+
+function createFireEventBlock(event: commonStorage.Event): toolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.EVENT,
+    returnType: RETURN_TYPE_NONE,
+    args: [],
+    otherBlockId: event.blockId,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_EVENT_NAME] = event.name;
+  const inputs: {[key: string]: any} = {};
+  // Convert event.args from commonStorage.MethodArg[] to ArgData[].
+  const args: ArgData[] = [];
+  event.args.forEach(methodArg => {
+    args.push({
+      name: methodArg.name,
+      type: methodArg.type,
+      defaultValue: '',
+    });
+  });
   processArgs(args, extraState, inputs);
   return createBlock(extraState, fields, inputs);
 }

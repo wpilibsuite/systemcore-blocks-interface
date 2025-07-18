@@ -38,7 +38,7 @@ export const BLOCK_NAME = 'mrc_class_method_def';
 
 const FIELD_METHOD_NAME = 'NAME';
 
-export type Parameter = {
+type Parameter = {
     name: string,
     type?: string,
 };
@@ -51,12 +51,12 @@ interface ClassMethodDefMixin extends ClassMethodDefMixinType {
     mrcReturnType: string,
     mrcParameters: Parameter[],
     mrcPythonMethodName: string,
-    mrcMethod: commonStorage.Method | null,
+    mrcFuncName: string | null,
 }
 type ClassMethodDefMixinType = typeof CLASS_METHOD_DEF;
 
 /** Extra state for serialising call_python_* blocks. */
-export type ClassMethodDefExtraState = {
+type ClassMethodDefExtraState = {
     /**
      * Can change name and parameters and return type
      */
@@ -137,10 +137,9 @@ const CLASS_METHOD_DEF = {
         this.mrcCanBeCalledWithinClass = extraState.canBeCalledWithinClass;
         this.mrcCanBeCalledOutsideClass = extraState.canBeCalledOutsideClass;
         this.mrcPythonMethodName = extraState.pythonMethodName ? extraState.pythonMethodName : '';
+        this.mrcFuncName = null; // Set during python code generation.
         this.mrcReturnType = extraState.returnType;
         this.mrcParameters = [];
-        this.mrcMethod = null;
-
         extraState.params.forEach((param) => {
             this.mrcParameters.push({
                 'name': param.name,
@@ -148,7 +147,6 @@ const CLASS_METHOD_DEF = {
             });
         });
         this.updateBlock_();
-        mutateMethodCallers(this.workspace, this.getFieldValue(FIELD_METHOD_NAME), this.saveExtraState());
     },
     /**
      * Update the block to reflect the newly loaded extra state.
@@ -194,7 +192,12 @@ const CLASS_METHOD_DEF = {
                 paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
         }
         this.mrcUpdateParams();
-        mutateMethodCallers(this.workspace, this.getFieldValue(FIELD_METHOD_NAME), this.saveExtraState());
+        if (this.mrcCanBeCalledWithinClass) {
+          const methodForWithin = this.getMethodForWithin();
+          if (methodForWithin) {
+            mutateMethodCallers(this.workspace, this.id, methodForWithin);
+          }
+        }
     },
     decompose: function (this: ClassMethodDefBlock, workspace: Blockly.Workspace) {
         // This is a special sub-block that only gets created in the mutator UI.
@@ -259,15 +262,43 @@ const CLASS_METHOD_DEF = {
         const oldName = nameField.getValue();
         if (oldName && oldName !== name && oldName !== legalName) {
             // Rename any callers.
-            renameMethodCallers(this.workspace, oldName, legalName);
+            renameMethodCallers(this.workspace, this.id, legalName);
         }
         return legalName;
     },
+    getMethod: function (this: ClassMethodDefBlock): commonStorage.Method | null {
+        const method: commonStorage.Method = {
+            blockId: this.id,
+            visibleName: this.getFieldValue(FIELD_METHOD_NAME),
+            pythonName: this.mrcFuncName ? this.mrcFuncName : '',
+            returnType: this.mrcReturnType,
+            args: [{
+                name: 'self',
+                type: '',
+            }],
+        };
+        if (!method.pythonName) {
+            method.pythonName = method.visibleName;
+        }
+        this.mrcParameters.forEach(param => {
+            method.args.push({
+                name: param.name,
+                type: param.type ? param.type : '',
+            });
+        });
+        return method;
+    },
     getMethodForWithin: function (this: ClassMethodDefBlock): commonStorage.Method | null {
-        return this.mrcCanBeCalledWithinClass ? this.mrcMethod : null;
+        if (this.mrcCanBeCalledWithinClass) {
+            return this.getMethod();
+        }
+        return null;
     },
     getMethodForOutside: function (this: ClassMethodDefBlock): commonStorage.Method | null {
-        return this.mrcCanBeCalledOutsideClass ? this.mrcMethod : null;
+        if (this.mrcCanBeCalledOutsideClass) {
+            return this.getMethod();
+        }
+        return null;
     },
     canChangeSignature: function (this: ClassMethodDefBlock): boolean {
         return this.mrcCanChangeSignature;
@@ -342,6 +373,7 @@ export const pythonFromBlock = function (
 ) {
     const blocklyName = block.mrcPythonMethodName ? block.mrcPythonMethodName : block.getFieldValue(FIELD_METHOD_NAME);
 
+    // Call generator.getProcedureName so our function name is not a reserved word such as "while".
     const funcName = generator.getProcedureName(blocklyName);
 
     let xfix1 = '';
@@ -380,7 +412,8 @@ export const pythonFromBlock = function (
             generator.defineClassVariables() + branch;
     }
     else if (generator.inBaseClassMethod(blocklyName)){
-        // Special case for update, to also call the update method of the base class
+        // Special case for methods inherited from the based class: generate the
+        // call to the method in the base class.
         branch = generator.INDENT + 'super().' + blocklyName + '()\n' + branch;
     }
     if (returnValue) {
@@ -416,25 +449,9 @@ export const pythonFromBlock = function (
     code = generator.scrub_(block, code);
     generator.addClassMethodDefinition(funcName, code);
 
-    if (block.mrcCanBeCalledWithinClass || block.mrcCanBeCalledOutsideClass) {
-      // Update the mrcMethod.
-      block.mrcMethod = {
-        blockId: block.id,
-        visibleName: block.getFieldValue(FIELD_METHOD_NAME),
-        pythonName: funcName,
-        returnType: block.mrcReturnType,
-        args: [{
-          name: 'self',
-          type: '',
-        }],
-      };
-      block.mrcParameters.forEach(param => {
-        block.mrcMethod!.args.push({
-          name: param.name,
-          type: param.type ? param.type : '',
-        });
-      });
-    }
+    // Save the name of the function we just generated so we can use it to create the commonStorage.Method.
+    // in the getMethod function.
+    block.mrcFuncName = funcName;
 
     return '';
 }

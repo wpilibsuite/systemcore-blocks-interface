@@ -249,6 +249,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
    * @returns list of method names
    */
   getBaseClassMethods() : string[] {
+    // TODO(lizlooney): the names of base class methods should not be hard coded.
     let classParent = this.context?.getClassParent();
     if (classParent == 'OpMode'){
       return ['start', 'loop', 'stop'];

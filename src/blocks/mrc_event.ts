@@ -20,7 +20,6 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
-import { Order } from 'blockly/python';
 
 import { MRC_STYLE_EVENTS } from '../themes/styles'
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
@@ -28,13 +27,15 @@ import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock }
 import * as ChangeFramework from './utils/change_framework';
 import { BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER } from './mrc_mechanism_component_holder';
 import * as toolboxItems from '../toolbox/items';
+import * as commonStorage from '../storage/common_storage';
+import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
 
 export const BLOCK_NAME = 'mrc_event';
 export const OUTPUT_NAME = 'mrc_event';
 
 const FIELD_EVENT_NAME = 'NAME';
 
-export type Parameter = {
+type Parameter = {
   name: string,
   type?: string,
 };
@@ -112,7 +113,7 @@ const EVENT = {
     const nameField = new Blockly.FieldTextInput(name);
     input.insertFieldAt(0, nameField, FIELD_EVENT_NAME);
     this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
-    // nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
+    nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
 
     this.mrcUpdateParams();
   },
@@ -135,7 +136,7 @@ const EVENT = {
         paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
     }
     this.mrcUpdateParams();
-    //mutateMethodCallers(this.workspace, this.getFieldValue(FIELD_EVENT_NAME), this.saveExtraState());
+    mutateMethodCallers(this.workspace, this.id, this.getEvent());
   },
   decompose: function (this: EventBlock, workspace: Blockly.Workspace) {
     // This is a special sub-block that only gets created in the mutator UI.
@@ -180,6 +181,18 @@ const EVENT = {
       input.removeField(fieldName);
     });
   },
+  mrcNameFieldValidator(this: EventBlock, nameField: Blockly.FieldTextInput, name: string): string {
+    // Strip leading and trailing whitespace.
+    name = name.trim();
+
+    const legalName = name;
+    const oldName = nameField.getValue();
+    if (oldName && oldName !== name && oldName !== legalName) {
+      // Rename any callers.
+      renameMethodCallers(this.workspace, this.id, legalName);
+    }
+    return legalName;
+  },
   onBlockChanged(block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase): void {
       const blockBlock = block as Blockly.Block;
   
@@ -193,8 +206,22 @@ const EVENT = {
             }
         // If we end up here it shouldn't be allowed
         block.unplug(true);
-        blockBlock.setWarningText('Events can only go in the events block');
+        blockBlock.setWarningText('Events can only go in the events section of the robot or mechanism');
       }
+    },
+    getEvent: function (this: EventBlock): commonStorage.Event {
+      const event: commonStorage.Event = {
+        blockId: this.id,
+        name: this.getFieldValue(FIELD_EVENT_NAME),
+        args: [],
+      };
+      this.mrcParameters.forEach(param => {
+        event.args.push({
+          name: param.name,
+          type: param.type ? param.type : '',
+        });
+      });
+      return event;
     },
 }
 
@@ -204,9 +231,8 @@ export const setup = function () {
 
 export const pythonFromBlock = function (
   block: EventBlock,
-  generator: ExtendedPythonGenerator,
-) {
-  //TODO (Alan): What should this do here??
+  generator: ExtendedPythonGenerator) {
+  // TODO (Alan): What should this do here??
   return '';
 }
 
