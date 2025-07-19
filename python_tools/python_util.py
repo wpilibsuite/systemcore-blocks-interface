@@ -139,15 +139,6 @@ def processSignature(signature_line: str) -> tuple[str, list[str], list[str], li
 
 
 def ignoreMember(parent, key: str, member):
-  """
-  if inspect.ismodule(parent):
-    if hasattr(parent, '__all__'):
-      if key not in parent.__all__:
-        return True
-    else:
-      return True
-  """
-
   if inspect.ismodule(member):
     # Member is a module.
     if not inspect.ismodule(parent):

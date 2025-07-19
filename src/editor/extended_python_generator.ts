@@ -23,6 +23,11 @@ import * as Blockly from 'blockly/core';
 import { PythonGenerator } from 'blockly/python';
 import { GeneratorContext } from './generator_context';
 import * as MechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
+import {
+    MODULE_NAME_BLOCKS_BASE_CLASSES,
+    CLASS_NAME_OPMODE,
+    getClassData,
+} from '../blocks/utils/python';
 
 export class OpModeDetails {
   constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
@@ -31,7 +36,7 @@ export class OpModeDetails {
 
     if (this.enabled){
       code += '@' + this.type + "\n";
-      
+
       if (this.name){
         code += '@Name(' + className + ', "' + this.name + '")\n';
       }
@@ -44,7 +49,7 @@ export class OpModeDetails {
   imports() : string{
     let code = '';
     if (this.enabled){
-      code += 'from blocks_base_classes import ' + this.type;
+      code += 'from ' + MODULE_NAME_BLOCKS_BASE_CLASSES + ' import ' + this.type;
       if (this.name){
         code += ', Name';
       }
@@ -69,7 +74,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private ports: {[key: string]: string} = Object.create(null);
     // Opmode details
   private details : OpModeDetails | null  = null;
-  
+
   constructor() {
     super('Python');
   }
@@ -144,16 +149,20 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   /**
    * Add an import statement for a python module.
+   * If the given moduleOrClass is in the blocks_base_classes package, the simple name is returned.
    */
-  addImport(importModule: string): void {
-    const baseClasses = ['RobotBase', 'OpMode', 'Mechanism'];
-    if (baseClasses.includes(importModule)) {
-      this.definitions_['import_' + importModule] = 'from blocks_base_classes import ' + importModule;
-    }
-    else{
-      this.definitions_['import_' + importModule] = 'import ' + importModule;
+  addImport(moduleOrClass: string): string {
+    const key = 'import_' + moduleOrClass;
+
+    if (moduleOrClass.startsWith(MODULE_NAME_BLOCKS_BASE_CLASSES + '.') &&
+        moduleOrClass.lastIndexOf('.') == MODULE_NAME_BLOCKS_BASE_CLASSES.length) {
+      const simpleName = moduleOrClass.substring(MODULE_NAME_BLOCKS_BASE_CLASSES.length + 1);
+      this.definitions_[key] = 'from ' + MODULE_NAME_BLOCKS_BASE_CLASSES + ' import ' + simpleName;
+      return simpleName;
     }
 
+    this.definitions_[key] = 'import ' + moduleOrClass;
+    return '';
   }
 
   /**
@@ -167,7 +176,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.events[funcName] = {
       'sender': sender,
       'eventName': eventName,}
-    }    
+    }
 
   /**
    * Add a Hardware Port
@@ -194,17 +203,20 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   finish(code: string): string {
     if (this.context && this.workspace) {
       const className = this.context.getClassName();
-      const classParent = this.context.getClassParent();
+      const baseClassName = this.context.getBaseClassName();
       const decorations = this.details?.decorations(className);
       const import_decorations = this.details?.imports();
 
-      if (import_decorations){
+      if (import_decorations) {
         this.definitions_['import_decorations'] = import_decorations;
       }
 
-      this.addImport(classParent);
+      const simpleBaseClassName = this.addImport(baseClassName);
+      if (!simpleBaseClassName) {
+        throw new Error('addImport for ' + baseClassName + ' did not return a valid simple name')
+      }
 
-      const classDef = 'class ' + className + '(' + classParent + '):\n';
+      const classDef = 'class ' + className + '(' + simpleBaseClassName + '):\n';
       const classMethods = [];
 
       if (this.events && Object.keys(this.events).length > 0) {
@@ -236,31 +248,32 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   getClassSpecificForInit() : string{
-    let classParent = this.context?.getClassParent();
-    if (classParent == 'OpMode'){
+    if (this.context?.getBaseClassName() == CLASS_NAME_OPMODE) {
       return 'robot'
     }
     return ''
   }
 
   /**
-   * This returns the list of methods that are derived from so that mrc_class_method_def 
+   * This returns the list of methods that are derived from so that mrc_class_method_def
    * knows whether to call super() or not.
    * @returns list of method names
    */
   getBaseClassMethods() : string[] {
-    // TODO(lizlooney): the names of base class methods should not be hard coded.
-    let classParent = this.context?.getClassParent();
-    if (classParent == 'OpMode'){
-      return ['start', 'loop', 'stop'];
+    const methodNames: string[] = [];
+
+    const baseClassName = this.context?.getBaseClassName();
+    if (baseClassName) {
+      const classData = getClassData(baseClassName);
+      if (!classData) {
+        throw new Error('ClassData not found for ' + baseClassName);
+      }
+      classData.instanceMethods.forEach(functionData => {
+          methodNames.push(functionData.functionName);
+      });
     }
-    else if (classParent == 'Mechanism') {
-      return ['start', 'update', 'stop'];
-    }
-    else if (classParent == 'RobotBase'){
-      return ['start', 'update', 'stop'];
-    }
-    return [];
+
+    return methodNames;
   }
 
   /**
