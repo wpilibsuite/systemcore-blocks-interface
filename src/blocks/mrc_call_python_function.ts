@@ -416,17 +416,19 @@ const CALL_PYTHON_FUNCTION = {
     }
   },
   renameMethodCaller: function(this: CallPythonFunctionBlock, newName: string): void {
+    // renameMethodCaller is called when the method or event definition block in the same module is modified.
     if (this.mrcFunctionKind == FunctionKind.EVENT) {
       this.setFieldValue(newName, FIELD_EVENT_NAME);
     } else if (this.mrcFunctionKind == FunctionKind.INSTANCE_WITHIN) {
-      // TODO(lizlooney): What about this.mrcActualFunctionName? Does it need to be updated?
       this.setFieldValue(newName, FIELD_FUNCTION_NAME);
+      // mrcActualFunctionName does not need to be updated because it is not used for INSTANCE_WITHIN.
     }
   },
   mutateMethodCaller: function(
       this: CallPythonFunctionBlock,
       methodOrEvent: commonStorage.Method | commonStorage.Event
   ): void {
+    // mutateMethodCaller is called when the method or event definition block in the same module is modified.
     if (this.mrcFunctionKind == FunctionKind.EVENT) {
       const event = methodOrEvent as commonStorage.Event;
       this.mrcArgs = [];
@@ -440,7 +442,7 @@ const CALL_PYTHON_FUNCTION = {
       const method = methodOrEvent as commonStorage.Method;
       this.mrcReturnType = method.returnType;
       this.mrcArgs = [];
-      // We don't include the arg for the self argument because we don't want a socket for it.
+      // We don't include the arg for the self argument because we don't need a socket for it.
       for (let i = 1; i < method.args.length; i++) {
         this.mrcArgs.push({
           name: method.args[i].name,
@@ -464,6 +466,7 @@ const CALL_PYTHON_FUNCTION = {
     return components;
   },
   onLoad: function(this: CallPythonFunctionBlock): void {
+    // onLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly workspace.
     const warnings: string[] = [];
 
     // If this block is calling a component method, check that the component
@@ -509,7 +512,7 @@ const CALL_PYTHON_FUNCTION = {
         warnings.push('This block calls a method on a component that no longer exists.');
       }
 
-      // TODO(lizlooney): Could the component's method have change?
+      // TODO(lizlooney): Could the component's method have change or been deleted?
     }
 
     // If this block is calling a robot method, check that the robot method
@@ -526,7 +529,6 @@ const CALL_PYTHON_FUNCTION = {
           if (robotMethod.blockId === this.mrcOtherBlockId) {
             foundRobotMethod = true;
 
-            // If the function name has changed, we can fix this block.
             if (this.mrcActualFunctionName !== robotMethod.pythonName) {
               this.mrcActualFunctionName = robotMethod.pythonName;
             }
@@ -534,24 +536,16 @@ const CALL_PYTHON_FUNCTION = {
               this.setFieldValue(robotMethod.visibleName, FIELD_FUNCTION_NAME);
             }
 
-            // Other things are more difficult.
-            if (this.mrcReturnType !== robotMethod.returnType) {
-              warnings.push('This block calls a method whose return type has changed.');
+            this.mrcReturnType = robotMethod.returnType;
+            this.mrcArgs = [];
+            // We don't include the arg for the self argument because we don't need a socket for it.
+            for (let i = 1; i < robotMethod.args.length; i++) {
+              this.mrcArgs.push({
+                name: robotMethod.args[i].name,
+                type: robotMethod.args[i].type,
+              });
             }
-            if (this.mrcArgs.length !== robotMethod.args.length - 1) {
-              warnings.push('This block calls a method whose arguments have changed.');
-            } else {
-              for (let i = 1; i < robotMethod.args.length; i++) { // Skip the self argument.
-                if (this.mrcArgs[i-1].name != robotMethod.args[i].name) {
-                  warnings.push('This block calls a method whose arguments have changed.');
-                  break;
-                }
-                if (this.mrcArgs[i-1].type != robotMethod.args[i].type) {
-                  warnings.push('This block calls a method whose arguments have changed.');
-                  break;
-                }
-              }
-            }
+            this.updateBlock_();
 
             // Since we found the robot method, we can break out of the loop.
             break;
