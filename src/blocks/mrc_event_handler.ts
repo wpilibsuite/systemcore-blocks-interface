@@ -23,12 +23,18 @@
 import * as Blockly from 'blockly';
 import {Order} from 'blockly/python';
 
-import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
-import {createFieldFlydown} from '../fields/field_flydown';
-import {createFieldNonEditableText} from '../fields/FieldNonEditableText';
-import {MRC_STYLE_EVENT_HANDLER} from '../themes/styles';
+import { Editor } from '../editor/editor';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { createFieldFlydown } from '../fields/field_flydown';
+import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
+import { MRC_STYLE_EVENT_HANDLER } from '../themes/styles';
+import * as toolboxItems from '../toolbox/items';
+import * as commonStorage from '../storage/common_storage';
 
 export const BLOCK_NAME = 'mrc_event_handler';
+
+const FIELD_SENDER = 'SENDER';
+const FIELD_EVENT_NAME = 'EVENT_NAME';
 
 export enum SenderType {
   ROBOT = 'robot',
@@ -41,12 +47,15 @@ export interface Parameter {
   type?: string;
 }
 
+const WARNING_ID_EVENT_CHANGED = 'event changed';
+
 export type EventHandlerBlock = Blockly.Block & EventHandlerMixin & Blockly.BlockSvg;
 
 interface EventHandlerMixin extends EventHandlerMixinType {
   mrcPathOfSender: string;
   mrcTypeOfSender: SenderType;
   mrcParameters: Parameter[];
+  mrcOtherBlockId: string,
 }
 
 type EventHandlerMixinType = typeof EVENT_HANDLER;
@@ -57,6 +66,8 @@ export interface EventHandlerExtraState {
   typeOfSender: SenderType;
   /** The parameters of the event handler. */
   params: Parameter[];
+  /** The id of the mrc_event block that defines the event. */
+  otherBlockId: string,
 }
 
 const EVENT_HANDLER = {
@@ -66,8 +77,8 @@ const EVENT_HANDLER = {
   init(this: EventHandlerBlock): void {
     this.appendDummyInput('TITLE')
         .appendField(Blockly.Msg.WHEN)
-        .appendField(createFieldNonEditableText('sender'), 'SENDER')
-        .appendField(createFieldNonEditableText('eventName'), 'EVENT_NAME');
+        .appendField(createFieldNonEditableText('sender'), FIELD_SENDER)
+        .appendField(createFieldNonEditableText('eventName'), FIELD_EVENT_NAME);
     this.appendDummyInput('PARAMS')
         .appendField(Blockly.Msg.WITH);
     this.setOutput(false);
@@ -86,8 +97,9 @@ const EVENT_HANDLER = {
       pathOfSender: this.mrcPathOfSender,
       typeOfSender: this.mrcTypeOfSender,
       params: [],
+      otherBlockId: this.mrcOtherBlockId,
     };
-    
+
     this.mrcParameters.forEach((param) => {
       extraState.params.push({
         name: param.name,
@@ -102,9 +114,10 @@ const EVENT_HANDLER = {
    * Applies the given state to this block.
    */
   loadExtraState(this: EventHandlerBlock, extraState: EventHandlerExtraState): void {
-    this.mrcParameters = [];
     this.mrcPathOfSender = extraState.pathOfSender;
     this.mrcTypeOfSender = extraState.typeOfSender;
+    this.mrcParameters = [];
+    this.mrcOtherBlockId = extraState.otherBlockId;
 
     extraState.params.forEach((param) => {
       this.mrcParameters.push({
@@ -145,6 +158,58 @@ const EVENT_HANDLER = {
       input.removeField(fieldName);
     });
   },
+  onLoad: function(this: EventHandlerBlock): void {
+    // onLoad is called for each EventHandlerBlock when the blocks are loaded in the blockly workspace.
+    const warnings: string[] = [];
+
+    // If this block is an event handler for a robot event, check that the robot event
+    // still exists and hasn't been changed.
+    // If the robot event doesn't exist, put a visible warning on this block.
+    // If the robot event has changed, update the block if possible or put a
+    // visible warning on it.
+    if (this.mrcTypeOfSender === SenderType.ROBOT) {
+      let foundRobotEvent = false;
+      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+      if (editor) {
+        const robotEvents = editor.getEventsFromRobot();
+        for (const robotEvent of robotEvents) {
+          if (robotEvent.blockId === this.mrcOtherBlockId) {
+            foundRobotEvent = true;
+
+            // If the event name has changed, we can fix this block.
+            if (this.getFieldValue(FIELD_EVENT_NAME) !== robotEvent.name) {
+              this.setFieldValue(robotEvent.name, FIELD_EVENT_NAME);
+            }
+
+            this.mrcParameters = [];
+            robotEvent.args.forEach(arg => {
+              this.mrcParameters.push({
+                name: arg.name,
+                type: arg.type,
+              });
+            });
+            this.mrcUpdateParams();
+
+            // Since we found the robot event, we can break out of the loop.
+            break;
+          }
+        }
+        if (!foundRobotEvent) {
+          warnings.push('This block is an event handler for an event that no longer exists.');
+        }
+      }
+    }
+
+    if (warnings.length) {
+      // Add a warnings to the block.
+      const warningText = warnings.join('\n\n');
+      this.setWarningText(warningText, WARNING_ID_EVENT_CHANGED);
+      this.bringToFront();
+    } else {
+      // Clear the existing warning on the block.
+      this.setWarningText(null, WARNING_ID_EVENT_CHANGED);
+    }
+  },
 };
 
 export function setup(): void {
@@ -155,7 +220,10 @@ export function pythonFromBlock(
     block: EventHandlerBlock,
     generator: ExtendedPythonGenerator,
 ): string {
-  const blocklyName = `${block.getFieldValue('SENDER')}_${block.getFieldValue('EVENT_NAME')}`;
+  const sender = block.getFieldValue(FIELD_SENDER);
+  const eventName = block.getFieldValue(FIELD_EVENT_NAME);
+
+  const blocklyName = `${sender}_${eventName}`;
   const funcName = generator.getProcedureName(blocklyName);
 
   let xfix1 = '';
@@ -211,12 +279,41 @@ export function pythonFromBlock(
   let code = `def ${funcName}(${paramString}):\n`;
   code += xfix1 + loopTrap + branch + xfix2 + returnValue;
   code = generator.scrub_(block, code);
-  
+
   generator.addClassMethodDefinition(funcName, code);
-  generator.addEventHandler(
-      block.getFieldValue('SENDER'),
-      block.getFieldValue('EVENT_NAME'),
-      funcName);
+  generator.addEventHandler(sender, eventName, funcName);
 
   return '';
+}
+
+// Functions used for creating blocks for the toolbox.
+
+export function addRobotEventHandlerBlocks(
+    events: commonStorage.Event[],
+    contents: toolboxItems.ContentsType[]) {
+  events.forEach(event => {
+    contents.push(createRobotEventHandlerBlock(event));
+  });
+}
+
+function createRobotEventHandlerBlock(
+    event: commonStorage.Event): toolboxItems.Block  {
+  const extraState: EventHandlerExtraState = {
+    // TODO(lizlooney): ask Alan what pathOfSender is for.
+    pathOfSender: '',
+    typeOfSender: SenderType.ROBOT,
+    params: [],
+    otherBlockId: event.blockId,
+  };
+  event.args.forEach(arg => {
+    extraState.params.push({
+      name: arg.name,
+      type: arg.type,
+    });
+  });
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_SENDER] = 'robot';
+  fields[FIELD_EVENT_NAME] = event.name;
+  const inputs: {[key: string]: any} = {};
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
 }

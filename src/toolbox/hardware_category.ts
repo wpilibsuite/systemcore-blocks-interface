@@ -25,6 +25,7 @@ import * as toolboxItems from './items';
 import { getAllPossibleMechanisms } from './blocks_mechanisms';
 import { getAllPossibleComponents } from '../blocks/mrc_component';
 import { getInstanceComponentBlocks, addInstanceRobotBlocks } from '../blocks/mrc_call_python_function';
+import { addRobotEventHandlerBlocks } from '../blocks/mrc_event_handler';
 import { Editor } from '../editor/editor';
 
 export function getHardwareCategory(currentModule: commonStorage.Module): toolboxItems.Category {
@@ -49,6 +50,7 @@ export function getHardwareCategory(currentModule: commonStorage.Module): toolbo
         getRobotMechanismsBlocks(currentModule),
         getRobotComponentsBlocks(),
         getRobotMethodsBlocks(),
+        getRobotEventsBlocks(),
       ]
     };
   }
@@ -297,6 +299,30 @@ function getComponentsBlocks(hideParams : boolean): toolboxItems.Category {
   return {
     kind: 'category',
     name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
+    contents,
+  };
+}
+
+function getRobotEventsBlocks(): toolboxItems.Category {
+  // getRobotEventsBlocks is called when the user is editing an opmode.
+  // It allows the user to create event handlers for events previously defined in the Robot.
+
+  const contents: toolboxItems.ContentsType[] = [];
+
+  // Get the list of events from the robot and add the blocks for calling the
+  // robot functions.
+  const workspace = Blockly.getMainWorkspace();
+  if (workspace) {
+    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
+    if (editor) {
+      const eventsFromRobot = editor.getEventsFromRobot();
+      addRobotEventHandlerBlocks(eventsFromRobot, contents);
+    }
+  }
+
+  return {
+    kind: 'category',
+    name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
     contents,
   };
 }
