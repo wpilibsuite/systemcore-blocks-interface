@@ -517,7 +517,7 @@ export function getMethodsForWithin(
     workspace: Blockly.Workspace,
     methods: commonStorage.Method[]): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    const method = (block as classMethodDef.ClassMethodDefBlock).getMethodForWithin();
+    const method = (block as ClassMethodDefBlock).getMethodForWithin();
     if (method) {
       methods.push(method);
     }
@@ -528,7 +528,7 @@ export function getMethodsForOutside(
     workspace: Blockly.Workspace,
     methods: commonStorage.Method[]): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    const method = (block as classMethodDef.ClassMethodDefBlock).getMethodForOutside();
+    const method = (block as ClassMethodDefBlock).getMethodForOutside();
     if (method) {
       methods.push(method);
     }
@@ -539,7 +539,7 @@ export function getMethodNamesAlreadyOverriddenInWorkspace(
     workspace: Blockly.Workspace,
     methodNamesAlreadyOverridden: string[]): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    const methodDefBlock = block as classMethodDef.ClassMethodDefBlock;
+    const methodDefBlock = block as ClassMethodDefBlock;
     // If the user cannot change the signature, it means the block defines a method that overrides a baseclass method.
     // That's what we are looking for here.
     if (!methodDefBlock.canChangeSignature()) {

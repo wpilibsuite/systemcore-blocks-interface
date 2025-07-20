@@ -39,7 +39,7 @@ export const OUTPUT_NAME = 'mrc_component';
 export const FIELD_NAME = 'NAME';
 export const FIELD_TYPE = 'TYPE';
 
-export type ConstructorArg = {
+type ConstructorArg = {
   name: string,
   type: string,
 };
@@ -151,14 +151,13 @@ const COMPONENT = {
     if (i != 0) {
       extension = '_' + (i + 1).toString();
     }
-    return block.getFieldValue(FIELD_NAME) + extension + '_port';
+    return this.getFieldValue(FIELD_NAME) + extension + '_port';
   },
   getHardwarePorts: function (this: ComponentBlock, ports: {[key: string]: string}): void {
     // Collect the hardware ports for this component block that are needed to generate
-    // the robot's define_hardware method. (The key is the port, the value is the type.)
+    // the define_hardware method. (The key is the port, the value is the type.)
     if (this.hideParams) {
       for (let i = 0; i < this.mrcArgs.length; i++) {
-        const fieldName = 'ARG' + i;
         const newPort = this.getNewPort(i);
         ports[newPort] = this.mrcArgs[i].type;
       }

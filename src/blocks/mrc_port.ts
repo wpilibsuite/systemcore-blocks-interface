@@ -25,7 +25,6 @@ import { Order } from 'blockly/python';
 import { MRC_STYLE_PORTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { createFieldDropdown } from '../fields/FieldDropdown';
 
 export const BLOCK_NAME = 'mrc_port';
 export const OUTPUT_NAME = 'mrc_port';
@@ -56,13 +55,12 @@ export const setup = function () {
 }
 
 export const pythonFromBlock = function (
-  block: PortBlock,
-  generator: ExtendedPythonGenerator,
-) {
-    //TODO (Alan) : Specify the type here as well
-    let code = block.getFieldValue('PORT_NUM');
-    
-    return [code, Order.ATOMIC];
+    block: PortBlock,
+    _generator: ExtendedPythonGenerator) {
+  // TODO (Alan) : Specify the type here as well
+  let code = block.getFieldValue('PORT_NUM');
+
+  return [code, Order.ATOMIC];
 }
 
 export function createPortShadow(portType: string, portNum: Number) {

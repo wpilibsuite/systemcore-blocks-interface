@@ -31,6 +31,7 @@ import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_COMPONENT_NAME } from './mrc_component';
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
 import { ComponentBlock } from './mrc_component';
+import { MechanismBlock } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_EVENT_NAME } from './mrc_event';
 import { OUTPUT_NAME as EVENT_OUTPUT } from './mrc_event';
 import { EventBlock } from './mrc_event';
@@ -198,11 +199,8 @@ export const setup = function () {
 function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
   let code = 'def define_hardware(self):\n';
 
-  let mechanisms = '';
-  let components = '';
-
-  mechanisms = generator.statementToCode(block, INPUT_MECHANISMS);
-  components = generator.statementToCode(block, INPUT_COMPONENTS);
+  const mechanisms = generator.statementToCode(block, INPUT_MECHANISMS);
+  const components = generator.statementToCode(block, INPUT_COMPONENTS);
 
   const body = mechanisms + components;
   if (body != '') {
