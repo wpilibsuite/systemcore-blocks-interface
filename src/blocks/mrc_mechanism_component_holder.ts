@@ -244,13 +244,13 @@ export const pythonFromBlock = function (
  */
 export function getHardwarePorts(workspace: Blockly.Workspace, ports: {[key: string]: string}): boolean {
   let hasHardware = false;
-  for (const block of workspace.getBlocksByType(BLOCK_NAME)) {
+  workspace.getBlocksByType(BLOCK_NAME).forEach( block => {
     const mechanismsInput = block.getInput(INPUT_MECHANISMS);
     if (mechanismsInput && mechanismsInput.connection) {
       // Walk through all connected mechanism blocks.
       let mechanismBlock = mechanismsInput.connection.targetBlock();
       while (mechanismBlock) {
-        if (mechanismBlock.type === MRC_MECHANISM_NAME) {
+        if (mechanismBlock.type === MRC_MECHANISM_NAME && mechanismBlock.isEnabled()) {
           hasHardware = true;
           (mechanismBlock as MechanismBlock).getHardwarePorts(ports);
         }
@@ -263,7 +263,7 @@ export function getHardwarePorts(workspace: Blockly.Workspace, ports: {[key: str
       // Walk through all connected component blocks.
       let componentBlock = componentsInput.connection.targetBlock();
       while (componentBlock) {
-        if (componentBlock.type === MRC_COMPONENT_NAME) {
+        if (componentBlock.type === MRC_COMPONENT_NAME && componentBlock.isEnabled()) {
           hasHardware = true;
           (componentBlock as ComponentBlock).getHardwarePorts(ports);
         }
@@ -271,7 +271,7 @@ export function getHardwarePorts(workspace: Blockly.Workspace, ports: {[key: str
         componentBlock = componentBlock.getNextBlock();
       }
     }
-  }
+  });
   return hasHardware;
 }
 

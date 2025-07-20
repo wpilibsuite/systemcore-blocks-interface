@@ -588,6 +588,8 @@ export const pythonFromBlock = function(
     generator.addImport(callPythonFunctionBlock.mrcImportModule);
   }
   let code;
+  let needOpenParen = true;
+  let delimiterBeforeArgs = '';
   let argStartIndex = 0;
   switch (callPythonFunctionBlock.mrcFunctionKind) {
     case FunctionKind.BUILT_IN: {
@@ -637,9 +639,9 @@ export const pythonFromBlock = function(
     }
     case FunctionKind.EVENT: {
       const eventName = block.getFieldValue(FIELD_EVENT_NAME);
-      code = 
-          'if self.events.get("' + eventName + '", None):\n' +
-          generator.INDENT + 'self.events["' + eventName + '"]';
+      code = 'self.fire_event("' + eventName + '"';
+      needOpenParen = false;
+      delimiterBeforeArgs = ', ';
       break;
     }
     case FunctionKind.INSTANCE_COMPONENT: {
@@ -671,7 +673,14 @@ export const pythonFromBlock = function(
     default:
       throw new Error('mrcFunctionKind has unexpected value: ' + callPythonFunctionBlock.mrcFunctionKind)
   }
-  code += '(' + generateCodeForArguments(callPythonFunctionBlock, generator, argStartIndex) + ')';
+  if (needOpenParen) {
+    code += '(';
+  }
+  const codeForArgs = generateCodeForArguments(callPythonFunctionBlock, generator, argStartIndex);
+  if (codeForArgs) {
+    code += delimiterBeforeArgs + codeForArgs;
+  }
+  code += ')';
   if (block.outputConnection) {
     return [code, Order.FUNCTION_CALL];
   } else {

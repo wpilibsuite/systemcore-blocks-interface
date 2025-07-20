@@ -68,11 +68,12 @@ export class MethodsCategory {
       if (this.currentModule) {
         if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_ROBOT) {
           // TODO(lizlooney): We need a way to mark a method in python as not overridable.
-          // For example, in RobotBase, register_event and unregister_event should not be
-          // overridden in a user's robot.
+          // For example, in RobotBase, register_event_handler, unregister_event_handler,
+          // and fire_event should not be overridden in a user's robot.
           const methodNamesNotOverrideable: string[] = [
-            'register_event',
-            'unregister_event',
+            'register_event_handler',
+            'unregister_event_handler',
+            'fire_event',
           ];
           // Add the methods for a Robot.
           this.addClassBlocksForCurrentModule(

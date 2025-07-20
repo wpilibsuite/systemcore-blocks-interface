@@ -74,11 +74,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private hasHardware = false;
   private ports: {[key: string]: string} = Object.create(null);
 
-  // Has event handlers (ie, needs to call self.register_events in __init__)
+  // Has event handlers (ie, needs to call self.register_event_handlers in __init__)
   private hasEventHandler = false;
 
   private classMethods: {[key: string]: string} = Object.create(null);
-  private events: {[key: string]: {sender: string, eventName: string}} = Object.create(null);
+  // For eventHandlers, the keys are the function name.
+  private eventHandlers: {[key: string]: {sender: string, eventName: string}} = Object.create(null);
   // Opmode details
   private details : OpModeDetails | null  = null;
 
@@ -116,7 +117,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       initStatements += ')\n';
     }
     if (this.hasEventHandler) {
-      initStatements += this.INDENT + "self.register_events()\n";
+      initStatements += this.INDENT + "self.register_event_handlers()\n";
     }
 
     return initStatements;
@@ -175,7 +176,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   addEventHandler(sender: string, eventName: string, funcName: string): void {
-    this.events[funcName] = {
+    this.eventHandlers[funcName] = {
       'sender': sender,
       'eventName': eventName
     }
@@ -215,18 +216,19 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       const classDef = 'class ' + className + '(' + simpleBaseClassName + '):\n';
       const classMethods = [];
 
-      if (this.events && Object.keys(this.events).length > 0) {
-        let code = 'def register_events(self):\n';
-        for (const eventName in this.events) {
-          const event = this.events[eventName];
-          code += this.INDENT + 'self.' + event.sender + '.register_event("' + event.eventName + '", self.' + eventName + ')\n';
+      if (this.eventHandlers && Object.keys(this.eventHandlers).length > 0) {
+        let code = 'def register_event_handlers(self):\n';
+        for (const funcName in this.eventHandlers) {
+          const event = this.eventHandlers[funcName];
+          code += this.INDENT + 'self.' + event.sender + '.register_event_handler("' +
+              event.eventName + '", self.' + funcName + ')\n';
         }
         classMethods.push(code);
       }
       for (const name in this.classMethods) {
         classMethods.push(this.classMethods[name])
       }
-      this.events = Object.create(null);
+      this.eventHandlers = Object.create(null);
       this.classMethods = Object.create(null);
       this.ports = Object.create(null);
       code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
