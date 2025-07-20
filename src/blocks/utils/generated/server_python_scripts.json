@@ -143,6 +143,29 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "blocks_base_classes.RobotBase"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "event_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "func",
+                            "type": "typing.Callable"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.RobotBase",
+                    "functionName": "register_event",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.RobotBase"
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.RobotBase",
@@ -160,6 +183,24 @@
                     ],
                     "declaringClassName": "blocks_base_classes.RobotBase",
                     "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.RobotBase"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "event_name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.RobotBase",
+                    "functionName": "unregister_event",
                     "returnType": "None",
                     "tooltip": ""
                 },

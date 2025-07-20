@@ -226,76 +226,36 @@ export class Editor {
   public getComponentsFromWorkspace(): commonStorage.Component[] {
     const components: commonStorage.Component[] = [];
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
-      this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-      // Get the holder block and ask it for the components.
-      const holderBlocks = this.blocklyWorkspace.getBlocksByType(mechanismComponentHolder.BLOCK_NAME);
-      holderBlocks.forEach(holderBlock => {
-        const componentsFromHolder: commonStorage.Component[] =
-          (holderBlock as mechanismComponentHolder.MechanismComponentHolderBlock).getComponents();
-        components.push(...componentsFromHolder);
-      });
+        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+      mechanismComponentHolder.getComponents(this.blocklyWorkspace, components);
     }
     return components;
   }
 
   public getMethodsForWithinFromWorkspace(): commonStorage.Method[] {
     const methods: commonStorage.Method[] = [];
-
-    // Get the class method definition blocks.
-    const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
-    methodDefBlocks.forEach(methodDefBlock => {
-      const method = (methodDefBlock as classMethodDef.ClassMethodDefBlock).getMethodForWithin();
-      if (method) {
-        methods.push(method);
-      }
-    });
-
+    classMethodDef.getMethodsForWithin(this.blocklyWorkspace, methods);
     return methods;
   }
 
   public getMethodsForOutsideFromWorkspace(): commonStorage.Method[] {
     const methods: commonStorage.Method[] = [];
-
-    // Get the class method definition blocks.
-    const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
-    methodDefBlocks.forEach(methodDefBlock => {
-      const method = (methodDefBlock as classMethodDef.ClassMethodDefBlock).getMethodForOutside();
-      if (method) {
-        methods.push(method);
-      }
-    });
-
+    classMethodDef.getMethodsForOutside(this.blocklyWorkspace, methods);
     return methods;
   }
 
   public getMethodNamesAlreadyOverriddenInWorkspace(): string[] {
     const methodNamesAlreadyOverridden: string[] = [];
-
-    // Get the class method definition blocks.
-    const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
-    methodDefBlocks.forEach(block => {
-      const methodDefBlock = block as classMethodDef.ClassMethodDefBlock;
-      // If the user cannot change the signature, it means the block defines a method that overrides a baseclass method.
-      // That's what we are looking for here.
-      if (!methodDefBlock.canChangeSignature()) {
-        methodNamesAlreadyOverridden.push(methodDefBlock.getMethodName());
-      }
-    });
-
+    classMethodDef.getMethodNamesAlreadyOverriddenInWorkspace(
+        this.blocklyWorkspace, methodNamesAlreadyOverridden);
     return methodNamesAlreadyOverridden;
   }
 
   public getEventsFromWorkspace(): commonStorage.Event[] {
     const events: commonStorage.Event[] = [];
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
-      this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-      // Get the holder block and ask it for the events.
-      const holderBlocks = this.blocklyWorkspace.getBlocksByType(mechanismComponentHolder.BLOCK_NAME);
-      holderBlocks.forEach(holderBlock => {
-        const eventsFromHolder: commonStorage.Event[] =
-          (holderBlock as mechanismComponentHolder.MechanismComponentHolderBlock).getEvents();
-        events.push(...eventsFromHolder);
-      });
+        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+      mechanismComponentHolder.getEvents(this.blocklyWorkspace, events);
     }
     return events;
   }

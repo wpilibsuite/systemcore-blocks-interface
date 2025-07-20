@@ -317,3 +317,9 @@ function createRobotEventHandlerBlock(
   const inputs: {[key: string]: any} = {};
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
 }
+
+// Misc
+
+export function getHasEventHandler(workspace: Blockly.Workspace): boolean {
+  return workspace.getBlocksByType(BLOCK_NAME).length > 0;
+}

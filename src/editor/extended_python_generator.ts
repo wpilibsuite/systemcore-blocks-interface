@@ -22,7 +22,8 @@
 import * as Blockly from 'blockly/core';
 import { PythonGenerator } from 'blockly/python';
 import { GeneratorContext } from './generator_context';
-import * as MechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
+import * as mechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
+import * as eventHandler from '../blocks/mrc_event_handler';
 import {
     MODULE_NAME_BLOCKS_BASE_CLASSES,
     CLASS_NAME_OPMODE,
@@ -69,10 +70,16 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private workspace: Blockly.Workspace | null = null;
   private context: GeneratorContext | null = null;
 
+  // Has components or mechanisms (ie, needs to call self.define_hardware in __init__)
+  private hasHardware = false;
+  private ports: {[key: string]: string} = Object.create(null);
+
+  // Has event handlers (ie, needs to call self.register_events in __init__)
+  private hasEventHandler = false;
+
   private classMethods: {[key: string]: string} = Object.create(null);
   private events: {[key: string]: {sender: string, eventName: string}} = Object.create(null);
-  private ports: {[key: string]: string} = Object.create(null);
-    // Opmode details
+  // Opmode details
   private details : OpModeDetails | null  = null;
 
   constructor() {
@@ -100,38 +107,33 @@ export class ExtendedPythonGenerator extends PythonGenerator {
    * This is called from the python generator for the mrc_class_method_def for the
    * init method
    */
-  defineClassVariables() : string {
-    let variableDefinitions = '';
+  generateInitStatements() : string {
+    let initStatements = '';
 
-    if (this.context?.getHasHardware()) {
-      if ('define_hardware' in this.classMethods) {
-        variableDefinitions += this.INDENT + "self.define_hardware(";
-        variableDefinitions += this.getListOfPorts(true);
-        variableDefinitions += ')\n';
-      }
-      if (this.events && Object.keys(this.events).length > 0){
-        variableDefinitions += this.INDENT + "self.register_events()\n";
-      }
+    if (this.hasHardware) {
+      initStatements += this.INDENT + "self.define_hardware(";
+      initStatements += this.getListOfPorts(true);
+      initStatements += ')\n';
+    }
+    if (this.hasEventHandler) {
+      initStatements += this.INDENT + "self.register_events()\n";
     }
 
-    return variableDefinitions;
+    return initStatements;
   }
+
   getVariableName(nameOrId: string): string {
     const varName = super.getVariableName(nameOrId);
     return "self." + varName;
-  }
-  setHasHardware() : void{
-    this.context?.setHasHardware();
   }
 
   mrcWorkspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
     this.workspace = workspace;
     this.context = context;
-    this.context.clear();
 
-    if (this.workspace.getBlocksByType(MechanismContainerHolder.BLOCK_NAME).length > 0){
-      this.setHasHardware();
-    }
+    this.ports = Object.create(null);
+    this.hasHardware = mechanismContainerHolder.getHardwarePorts(this.workspace, this.ports);
+    this.hasEventHandler = eventHandler.getHasEventHandler(this.workspace);
 
     const code = super.workspaceToCode(workspace);
 
@@ -175,14 +177,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   addEventHandler(sender: string, eventName: string, funcName: string): void {
     this.events[funcName] = {
       'sender': sender,
-      'eventName': eventName,}
+      'eventName': eventName
     }
-
-  /**
-   * Add a Hardware Port
-   */
-  addHardwarePort(portName: string, type: string): void{
-    this.ports[portName] = type;
   }
 
   getListOfPorts(startWithFirst: boolean): string{

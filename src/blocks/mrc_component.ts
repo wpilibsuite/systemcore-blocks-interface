@@ -146,6 +146,24 @@ const COMPONENT = {
       className: componentType,
     };
   },
+  getNewPort: function (this: ComponentBlock, i: number): string {
+    let extension = '';
+    if (i != 0) {
+      extension = '_' + (i + 1).toString();
+    }
+    return block.getFieldValue(FIELD_NAME) + extension + '_port';
+  },
+  getHardwarePorts: function (this: ComponentBlock, ports: {[key: string]: string}): void {
+    // Collect the hardware ports for this component block that are needed to generate
+    // the robot's define_hardware method. (The key is the port, the value is the type.)
+    if (this.hideParams) {
+      for (let i = 0; i < this.mrcArgs.length; i++) {
+        const fieldName = 'ARG' + i;
+        const newPort = this.getNewPort(i);
+        ports[newPort] = this.mrcArgs[i].type;
+      }
+    }
+  },
 }
 
 export const setup = function () {
@@ -171,13 +189,7 @@ export const pythonFromBlock = function (
       code += ', '
     }
     if (block.hideParams) {
-      let extension = '';
-      if (i != 0) {
-        extension = '_' + (i + 1).toString();
-      }
-      const newPort = block.getFieldValue(FIELD_NAME) + extension + '_port';
-      generator.addHardwarePort(newPort, block.mrcArgs[i].type);
-      code += block.mrcArgs[i].name + ' = ' + newPort; 
+      code += block.mrcArgs[i].name + ' = ' + block.getNewPort(i);
     } else {
       code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
     }

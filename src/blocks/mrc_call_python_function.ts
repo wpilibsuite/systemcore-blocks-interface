@@ -699,22 +699,22 @@ function generateCodeForArguments(
 }
 
 function getMethodCallers(workspace: Blockly.Workspace, otherBlockId: string): Blockly.Block[] {
-  return workspace.getBlocksByType('mrc_call_python_function').filter((block) => {
+  return workspace.getBlocksByType(BLOCK_NAME).filter((block) => {
     return (block as CallPythonFunctionBlock).mrcOtherBlockId === otherBlockId;
   });
 }
 
 export function renameMethodCallers(workspace: Blockly.Workspace, otherBlockId: string, newName: string): void {
-  for (const block of getMethodCallers(workspace, otherBlockId)) {
+  getMethodCallers(workspace, otherBlockId).forEach(block => {
     (block as CallPythonFunctionBlock).renameMethodCaller(newName);
-  }
+  });
 }
 
 export function mutateMethodCallers(
     workspace: Blockly.Workspace, otherBlockId: string, methodOrEvent: commonStorage.Method | commonStorage.Event) {
   const oldRecordUndo = Blockly.Events.getRecordUndo();
 
-  for (const block of getMethodCallers(workspace, otherBlockId)) {
+  getMethodCallers(workspace, otherBlockId).forEach(block => {
     const callBlock = block as CallPythonFunctionBlock;
     // Get the extra state before changing the call block.
     const oldExtraState = callBlock.saveExtraState();
@@ -738,7 +738,7 @@ export function mutateMethodCallers(
       );
       Blockly.Events.setRecordUndo(oldRecordUndo);
     }
-  }
+  });
 }
 
 // Functions used for creating blocks for the toolbox.

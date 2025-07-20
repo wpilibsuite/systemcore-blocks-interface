@@ -111,7 +111,11 @@ const MECHANISM = {
         input.setCheck(getAllowedTypesForSetCheck(this.mrcArgs[i].type));
       }
     }
-  }
+  },
+  getHardwarePorts: function (this: MechanismBlock, ports: {[key: string]: string}): void {
+    // TODO: Collect the hardware ports for this mechanism block that are needed to generate
+    // the robot's define_hardware method. (The key is the port, the value is the type.)
+  },
 }
 
 export const setup = function () {

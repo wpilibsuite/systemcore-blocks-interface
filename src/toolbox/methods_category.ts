@@ -26,7 +26,7 @@ import * as commonStorage from '../storage/common_storage';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
 import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
-import { createCustomMethodBlock, getBaseClassBlocks } from '../blocks/mrc_class_method_def';
+import { createCustomMethodBlock, getBaseClassBlocks, FIELD_METHOD_NAME } from '../blocks/mrc_class_method_def';
 import { Editor } from '../editor/editor';
 
 
@@ -67,19 +67,26 @@ export class MethodsCategory {
 
       if (this.currentModule) {
         if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+          // TODO(lizlooney): We need a way to mark a method in python as not overridable.
+          // For example, in RobotBase, register_event and unregister_event should not be
+          // overridden in a user's robot.
+          const methodNamesNotOverrideable: string[] = [
+            'register_event',
+            'unregister_event',
+          ];
           // Add the methods for a Robot.
           this.addClassBlocksForCurrentModule(
-              'More Robot Methods', this.robotClassBlocks,
+              'More Robot Methods', this.robotClassBlocks, methodNamesNotOverrideable,
               methodNamesAlreadyOverridden, contents);
         } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
           // Add the methods for a Mechanism.
           this.addClassBlocksForCurrentModule(
-              'More Mechanism Methods', this.mechanismClassBlocks,
+              'More Mechanism Methods', this.mechanismClassBlocks, [],
               methodNamesAlreadyOverridden, contents);
         } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
           // Add the methods for an OpMode.
           this.addClassBlocksForCurrentModule(
-              'More OpMode Methods', this.opmodeClassBlocks,
+              'More OpMode Methods', this.opmodeClassBlocks, [],
               methodNamesAlreadyOverridden, contents);
         }
       }
@@ -108,26 +115,31 @@ export class MethodsCategory {
   }
 
   private addClassBlocksForCurrentModule(
-      label: string, class_blocks: toolboxItems.Block[],
+      label: string, classBlocks: toolboxItems.Block[],
+      methodNamesNotOverrideable: string[],
       methodNamesAlreadyOverridden: string[], contents: toolboxItems.ContentsType[]) {
     let labelAdded = false;
-    class_blocks.forEach((blockInfo) => {
+    for (const blockInfo of classBlocks) {
       if (blockInfo.fields) {
-        const methodName = blockInfo.fields['NAME'];
-        if (!methodNamesAlreadyOverridden.includes(methodName)) {
-          if (!labelAdded) {
-            contents.push(
-              {
-                kind: 'label',
-                text: label,
-              },
-            );
-            labelAdded = true;
-          }
-          contents.push(blockInfo);
+        const methodName = blockInfo.fields[FIELD_METHOD_NAME];
+        if (methodNamesNotOverrideable.includes(methodName)) {
+          continue;
         }
+        if (methodNamesAlreadyOverridden.includes(methodName)) {
+          continue;
+        }
+        if (!labelAdded) {
+          contents.push(
+            {
+              kind: 'label',
+              text: label,
+            },
+          );
+          labelAdded = true;
+        }
+        contents.push(blockInfo);
       }
-    });
+    }
   }
 
 }
