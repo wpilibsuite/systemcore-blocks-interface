@@ -143,6 +143,52 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "blocks_base_classes.RobotBase"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "event_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "args",
+                            "type": "tuple"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.RobotBase",
+                    "functionName": "fire_event",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.RobotBase"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "event_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "event_handler",
+                            "type": "typing.Callable"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.RobotBase",
+                    "functionName": "register_event_handler",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.RobotBase"
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.RobotBase",
@@ -160,6 +206,29 @@
                     ],
                     "declaringClassName": "blocks_base_classes.RobotBase",
                     "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.RobotBase"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "event_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "event_handler",
+                            "type": "typing.Callable"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.RobotBase",
+                    "functionName": "unregister_event_handler",
                     "returnType": "None",
                     "tooltip": ""
                 },

@@ -31,14 +31,16 @@ import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_COMPONENT_NAME } from './mrc_component';
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
 import { ComponentBlock } from './mrc_component';
+import { MechanismBlock } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_EVENT_NAME } from './mrc_event';
 import { OUTPUT_NAME as EVENT_OUTPUT } from './mrc_event';
 import { EventBlock } from './mrc_event';
 
 export const BLOCK_NAME = 'mrc_mechanism_component_holder';
 
-export const MECHANISM = 'mechanism';
-export const COMPONENT = 'component';
+const INPUT_MECHANISMS = 'MECHANISMS';
+const INPUT_COMPONENTS = 'COMPONENTS';
+const INPUT_EVENTS = 'EVENTS';
 
 export const TOOLBOX_UPDATE_EVENT = 'toolbox-update-requested';
 
@@ -73,9 +75,9 @@ const MECHANISM_COMPONENT_HOLDER = {
     */
   init: function (this: MechanismComponentHolderBlock): void {
     this.setInputsInline(false);
-    this.appendStatementInput('MECHANISMS').setCheck(MECHANISM_OUTPUT).appendField(Blockly.Msg.MECHANISMS);
-    this.appendStatementInput('COMPONENTS').setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.COMPONENTS);
-    this.appendStatementInput('EVENTS').setCheck(EVENT_OUTPUT).appendField(Blockly.Msg.EVENTS);
+    this.appendStatementInput(INPUT_MECHANISMS).setCheck(MECHANISM_OUTPUT).appendField(Blockly.Msg.MECHANISMS);
+    this.appendStatementInput(INPUT_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.COMPONENTS);
+    this.appendStatementInput(INPUT_EVENTS).setCheck(EVENT_OUTPUT).appendField(Blockly.Msg.EVENTS);
 
 
     this.setOutput(false);
@@ -104,14 +106,14 @@ const MECHANISM_COMPONENT_HOLDER = {
      */
   updateBlock_: function (this: MechanismComponentHolderBlock): void {
     if (this.mrcHideMechanisms) {
-      if (this.getInput('MECHANISMS')) {
-        this.removeInput('MECHANISMS')
+      if (this.getInput(INPUT_MECHANISMS)) {
+        this.removeInput(INPUT_MECHANISMS)
       }
     }
     else {
-      if (this.getInput('MECHANISMS') == null) {
-        this.appendStatementInput('MECHANISMS').setCheck(MECHANISM_OUTPUT).appendField('Mechanisms');
-        this.moveInputBefore('MECHANISMS', 'COMPONENTS')
+      if (this.getInput(INPUT_MECHANISMS) == null) {
+        this.appendStatementInput(INPUT_MECHANISMS).setCheck(MECHANISM_OUTPUT).appendField('Mechanisms');
+        this.moveInputBefore(INPUT_MECHANISMS, INPUT_COMPONENTS)
       }
     }
   },
@@ -134,7 +136,7 @@ const MECHANISM_COMPONENT_HOLDER = {
     const components: commonStorage.Component[] = []
 
     // Get component blocks from the COMPONENTS input
-    const componentsInput = this.getInput('COMPONENTS');
+    const componentsInput = this.getInput(INPUT_COMPONENTS);
     if (componentsInput && componentsInput.connection) {
       // Walk through all connected component blocks.
       let componentBlock = componentsInput.connection.targetBlock();
@@ -156,7 +158,7 @@ const MECHANISM_COMPONENT_HOLDER = {
     const events: commonStorage.Event[] = []
 
     // Get event blocks from the EVENTS input
-    const eventsInput = this.getInput('EVENTS');
+    const eventsInput = this.getInput(INPUT_EVENTS);
     if (eventsInput && eventsInput.connection) {
       // Walk through all connected event blocks.
       let eventBlock = eventsInput.connection.targetBlock();
@@ -197,11 +199,8 @@ export const setup = function () {
 function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
   let code = 'def define_hardware(self):\n';
 
-  let mechanisms = '';
-  let components = '';
-
-  mechanisms = generator.statementToCode(block, 'MECHANISMS');
-  components = generator.statementToCode(block, 'COMPONENTS');
+  const mechanisms = generator.statementToCode(block, INPUT_MECHANISMS);
+  const components = generator.statementToCode(block, INPUT_COMPONENTS);
 
   const body = mechanisms + components;
   if (body != '') {
@@ -213,7 +212,7 @@ function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator:
 function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
   let components = '';
 
-  components = generator.statementToCode(block, 'COMPONENTS');
+  components = generator.statementToCode(block, INPUT_COMPONENTS);
 
   let code = 'def define_hardware(self' + generator.getListOfPorts(false) + '):\n';
 
@@ -227,11 +226,73 @@ export const pythonFromBlock = function (
   block: MechanismComponentHolderBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  if (block.getInput('MECHANISMS')) {
+  if (block.getInput(INPUT_MECHANISMS)) {
     pythonFromBlockInRobot(block, generator);
   }
   else {
     pythonFromBlockInMechanism(block, generator);
   }
   return ''
+}
+
+// Misc
+
+/**
+ * Collects the ports for hardware (mechanisms and components).
+ * Returns true if the given workspace has a mrc_mechanism_component_holder
+ * block that contains at least one component or mechanism.
+ */
+export function getHardwarePorts(workspace: Blockly.Workspace, ports: {[key: string]: string}): boolean {
+  let hasHardware = false;
+  workspace.getBlocksByType(BLOCK_NAME).forEach( block => {
+    const mechanismsInput = block.getInput(INPUT_MECHANISMS);
+    if (mechanismsInput && mechanismsInput.connection) {
+      // Walk through all connected mechanism blocks.
+      let mechanismBlock = mechanismsInput.connection.targetBlock();
+      while (mechanismBlock) {
+        if (mechanismBlock.type === MRC_MECHANISM_NAME && mechanismBlock.isEnabled()) {
+          hasHardware = true;
+          (mechanismBlock as MechanismBlock).getHardwarePorts(ports);
+        }
+        // Move to the next block in the chain
+        mechanismBlock = mechanismBlock.getNextBlock();
+      }
+    }
+    const componentsInput = block.getInput(INPUT_COMPONENTS);
+    if (componentsInput && componentsInput.connection) {
+      // Walk through all connected component blocks.
+      let componentBlock = componentsInput.connection.targetBlock();
+      while (componentBlock) {
+        if (componentBlock.type === MRC_COMPONENT_NAME && componentBlock.isEnabled()) {
+          hasHardware = true;
+          (componentBlock as ComponentBlock).getHardwarePorts(ports);
+        }
+        // Move to the next block in the chain
+        componentBlock = componentBlock.getNextBlock();
+      }
+    }
+  });
+  return hasHardware;
+}
+
+export function getComponents(
+    workspace: Blockly.Workspace,
+    components: commonStorage.Component[]): void {
+  // Get the holder block and ask it for the components.
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    const componentsFromHolder: commonStorage.Component[] =
+      (block as MechanismComponentHolderBlock).getComponents();
+    components.push(...componentsFromHolder);
+  });
+}
+
+export function getEvents(
+    workspace: Blockly.Workspace,
+    events: commonStorage.Event[]): void {
+  // Get the holder block and ask it for the events.
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    const eventsFromHolder: commonStorage.Event[] =
+      (block as MechanismComponentHolderBlock).getEvents();
+    events.push(...eventsFromHolder);
+  });
 }

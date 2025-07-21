@@ -30,12 +30,8 @@ export function createGeneratorContext(): GeneratorContext {
 export class GeneratorContext {
   private module: commonStorage.Module | null = null;
 
-  // Has mechanisms (ie, needs in init)
-  private hasHardware = false;
-
   setModule(module: commonStorage.Module | null) {
     this.module = module;
-    this.clear();
   }
 
   getModuleType(): string | null {
@@ -43,18 +39,6 @@ export class GeneratorContext {
       return this.module.moduleType;
     }
     return null;
-  }
-
-  clear(): void {
-    this.hasHardware= false;
-  }
-
-  setHasHardware():void{
-    this.hasHardware = true;
-  }
-
-  getHasHardware():boolean{
-    return this.hasHardware;
   }
 
   getClassName(): string {

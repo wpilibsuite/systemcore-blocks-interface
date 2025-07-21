@@ -30,7 +30,7 @@ import { getAllowedTypesForSetCheck } from './utils/python';
 export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';
 
-export type ConstructorArg = {
+type ConstructorArg = {
   name: string,
   type: string,
 };
@@ -40,7 +40,7 @@ type MechanismExtraState = {
   params?: ConstructorArg[],
 }
 
-type MechanismBlock = Blockly.Block & MechanismMixin;
+export type MechanismBlock = Blockly.Block & MechanismMixin;
 interface MechanismMixin extends MechanismMixinType {
   mrcArgs: ConstructorArg[],
   mrcImportModule: string,
@@ -111,7 +111,11 @@ const MECHANISM = {
         input.setCheck(getAllowedTypesForSetCheck(this.mrcArgs[i].type));
       }
     }
-  }
+  },
+  getHardwarePorts: function (this: MechanismBlock, _ports: {[key: string]: string}): void {
+    // TODO: Collect the hardware ports for this mechanism block that are needed to generate
+    // the robot's define_hardware method. (The key is the port, the value is the type.)
+  },
 }
 
 export const setup = function () {

@@ -588,6 +588,8 @@ export const pythonFromBlock = function(
     generator.addImport(callPythonFunctionBlock.mrcImportModule);
   }
   let code;
+  let needOpenParen = true;
+  let delimiterBeforeArgs = '';
   let argStartIndex = 0;
   switch (callPythonFunctionBlock.mrcFunctionKind) {
     case FunctionKind.BUILT_IN: {
@@ -637,9 +639,9 @@ export const pythonFromBlock = function(
     }
     case FunctionKind.EVENT: {
       const eventName = block.getFieldValue(FIELD_EVENT_NAME);
-      code = 
-          'if self.events.get("' + eventName + '", None):\n' +
-          generator.INDENT + 'self.events["' + eventName + '"]';
+      code = 'self.fire_event("' + eventName + '"';
+      needOpenParen = false;
+      delimiterBeforeArgs = ', ';
       break;
     }
     case FunctionKind.INSTANCE_COMPONENT: {
@@ -671,7 +673,14 @@ export const pythonFromBlock = function(
     default:
       throw new Error('mrcFunctionKind has unexpected value: ' + callPythonFunctionBlock.mrcFunctionKind)
   }
-  code += '(' + generateCodeForArguments(callPythonFunctionBlock, generator, argStartIndex) + ')';
+  if (needOpenParen) {
+    code += '(';
+  }
+  const codeForArgs = generateCodeForArguments(callPythonFunctionBlock, generator, argStartIndex);
+  if (codeForArgs) {
+    code += delimiterBeforeArgs + codeForArgs;
+  }
+  code += ')';
   if (block.outputConnection) {
     return [code, Order.FUNCTION_CALL];
   } else {
@@ -699,22 +708,22 @@ function generateCodeForArguments(
 }
 
 function getMethodCallers(workspace: Blockly.Workspace, otherBlockId: string): Blockly.Block[] {
-  return workspace.getBlocksByType('mrc_call_python_function').filter((block) => {
+  return workspace.getBlocksByType(BLOCK_NAME).filter((block) => {
     return (block as CallPythonFunctionBlock).mrcOtherBlockId === otherBlockId;
   });
 }
 
 export function renameMethodCallers(workspace: Blockly.Workspace, otherBlockId: string, newName: string): void {
-  for (const block of getMethodCallers(workspace, otherBlockId)) {
+  getMethodCallers(workspace, otherBlockId).forEach(block => {
     (block as CallPythonFunctionBlock).renameMethodCaller(newName);
-  }
+  });
 }
 
 export function mutateMethodCallers(
     workspace: Blockly.Workspace, otherBlockId: string, methodOrEvent: commonStorage.Method | commonStorage.Event) {
   const oldRecordUndo = Blockly.Events.getRecordUndo();
 
-  for (const block of getMethodCallers(workspace, otherBlockId)) {
+  getMethodCallers(workspace, otherBlockId).forEach(block => {
     const callBlock = block as CallPythonFunctionBlock;
     // Get the extra state before changing the call block.
     const oldExtraState = callBlock.saveExtraState();
@@ -738,7 +747,7 @@ export function mutateMethodCallers(
       );
       Blockly.Events.setRecordUndo(oldRecordUndo);
     }
-  }
+  });
 }
 
 // Functions used for creating blocks for the toolbox.

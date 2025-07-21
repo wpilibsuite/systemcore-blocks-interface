@@ -36,7 +36,7 @@ import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock }
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
-const FIELD_METHOD_NAME = 'NAME';
+export const FIELD_METHOD_NAME = 'NAME';
 
 type Parameter = {
     name: string,
@@ -347,7 +347,7 @@ function findLegalMethodName(name: string, block: ClassMethodDefBlock): string {
 function isMethodNameUsed(
     name: string, workspace: Blockly.Workspace, opt_exclude?: Blockly.Block): boolean {
     const nameLowerCase = name.toLowerCase();
-    for (const block of workspace.getBlocksByType('mrc_class_method_def')) {
+    for (const block of workspace.getBlocksByType(BLOCK_NAME)) {
         if (block === opt_exclude) {
             continue;
         }
@@ -409,7 +409,7 @@ export const pythonFromBlock = function (
     if (block.mrcPythonMethodName == '__init__') {
         let class_specific = generator.getClassSpecificForInit();
         branch = generator.INDENT + 'super().__init__(' + class_specific + ')\n' +
-            generator.defineClassVariables() + branch;
+            generator.generateInitStatements() + branch;
     }
     else if (generator.inBaseClassMethod(blocklyName)){
         // Special case for methods inherited from the based class: generate the
@@ -509,4 +509,41 @@ function createClassMethodDefBlock(
   const fields: {[key: string]: any} = {};
   fields[FIELD_METHOD_NAME] = functionData.functionName;
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
+}
+
+// Misc
+
+export function getMethodsForWithin(
+    workspace: Blockly.Workspace,
+    methods: commonStorage.Method[]): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    const method = (block as ClassMethodDefBlock).getMethodForWithin();
+    if (method) {
+      methods.push(method);
+    }
+  });
+}
+
+export function getMethodsForOutside(
+    workspace: Blockly.Workspace,
+    methods: commonStorage.Method[]): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    const method = (block as ClassMethodDefBlock).getMethodForOutside();
+    if (method) {
+      methods.push(method);
+    }
+  });
+}
+
+export function getMethodNamesAlreadyOverriddenInWorkspace(
+    workspace: Blockly.Workspace,
+    methodNamesAlreadyOverridden: string[]): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    const methodDefBlock = block as ClassMethodDefBlock;
+    // If the user cannot change the signature, it means the block defines a method that overrides a baseclass method.
+    // That's what we are looking for here.
+    if (!methodDefBlock.canChangeSignature()) {
+      methodNamesAlreadyOverridden.push(methodDefBlock.getMethodName());
+    }
+  });
 }

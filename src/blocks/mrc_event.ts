@@ -230,8 +230,8 @@ export const setup = function () {
 }
 
 export const pythonFromBlock = function (
-  block: EventBlock,
-  generator: ExtendedPythonGenerator) {
+    _block: EventBlock,
+    _generator: ExtendedPythonGenerator) {
   // TODO (Alan): What should this do here??
   return '';
 }

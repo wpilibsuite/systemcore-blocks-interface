@@ -25,6 +25,7 @@ import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import * as callPythonFunction from '../blocks/mrc_call_python_function';
+import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
@@ -80,8 +81,12 @@ export class Editor {
       if (blockCreateEvent.ids) {
         blockCreateEvent.ids.forEach(id => {
           const block = this.blocklyWorkspace.getBlockById(id);
-          if (block && block.type == callPythonFunction.BLOCK_NAME) {
-            (block as callPythonFunction.CallPythonFunctionBlock).onLoad();
+          if (block) {
+            if (block.type == callPythonFunction.BLOCK_NAME) {
+              (block as callPythonFunction.CallPythonFunctionBlock).onLoad();
+            } else if (block.type == eventHandler.BLOCK_NAME) {
+              (block as eventHandler.EventHandlerBlock).onLoad();
+            }
           }
         });
       }
@@ -212,83 +217,45 @@ export class Editor {
         ? JSON.stringify(this.getMethodsForOutsideFromWorkspace())
         : '[]';
     const componentsContent = JSON.stringify(this.getComponentsFromWorkspace());
+    const eventsContent = JSON.stringify(this.getEventsFromWorkspace());
     return commonStorage.makeModuleContent(
-      this.currentModule, pythonCode, blocksContent, methodsContent, componentsContent);
+      this.currentModule, pythonCode, blocksContent,
+      methodsContent, componentsContent, eventsContent);
   }
 
   public getComponentsFromWorkspace(): commonStorage.Component[] {
     const components: commonStorage.Component[] = [];
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
-      this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-      // Get the holder block and ask it for the components.
-      const holderBlocks = this.blocklyWorkspace.getBlocksByType(mechanismComponentHolder.BLOCK_NAME);
-      holderBlocks.forEach(holderBlock => {
-        const componentsFromHolder: commonStorage.Component[] =
-          (holderBlock as mechanismComponentHolder.MechanismComponentHolderBlock).getComponents();
-        components.push(...componentsFromHolder);
-      });
+        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+      mechanismComponentHolder.getComponents(this.blocklyWorkspace, components);
     }
     return components;
   }
 
   public getMethodsForWithinFromWorkspace(): commonStorage.Method[] {
     const methods: commonStorage.Method[] = [];
-
-    // Get the class method definition blocks.
-    const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
-    methodDefBlocks.forEach(methodDefBlock => {
-      const method = (methodDefBlock as classMethodDef.ClassMethodDefBlock).getMethodForWithin();
-      if (method) {
-        methods.push(method);
-      }
-    });
-
+    classMethodDef.getMethodsForWithin(this.blocklyWorkspace, methods);
     return methods;
   }
 
   public getMethodsForOutsideFromWorkspace(): commonStorage.Method[] {
     const methods: commonStorage.Method[] = [];
-
-    // Get the class method definition blocks.
-    const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
-    methodDefBlocks.forEach(methodDefBlock => {
-      const method = (methodDefBlock as classMethodDef.ClassMethodDefBlock).getMethodForOutside();
-      if (method) {
-        methods.push(method);
-      }
-    });
-
+    classMethodDef.getMethodsForOutside(this.blocklyWorkspace, methods);
     return methods;
   }
 
   public getMethodNamesAlreadyOverriddenInWorkspace(): string[] {
     const methodNamesAlreadyOverridden: string[] = [];
-
-    // Get the class method definition blocks.
-    const methodDefBlocks = this.blocklyWorkspace.getBlocksByType(classMethodDef.BLOCK_NAME);
-    methodDefBlocks.forEach(block => {
-      const methodDefBlock = block as classMethodDef.ClassMethodDefBlock;
-      // If the user cannot change the signature, it means the block defines a method that overrides a baseclass method.
-      // That's what we are looking for here.
-      if (!methodDefBlock.canChangeSignature()) {
-        methodNamesAlreadyOverridden.push(methodDefBlock.getMethodName());
-      }
-    });
-
+    classMethodDef.getMethodNamesAlreadyOverriddenInWorkspace(
+        this.blocklyWorkspace, methodNamesAlreadyOverridden);
     return methodNamesAlreadyOverridden;
   }
 
   public getEventsFromWorkspace(): commonStorage.Event[] {
     const events: commonStorage.Event[] = [];
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
-      this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-      // Get the holder block and ask it for the components.
-      const holderBlocks = this.blocklyWorkspace.getBlocksByType(mechanismComponentHolder.BLOCK_NAME);
-      holderBlocks.forEach(holderBlock => {
-        const eventsFromHolder: commonStorage.Event[] =
-          (holderBlock as mechanismComponentHolder.MechanismComponentHolderBlock).getEvents();
-        events.push(...eventsFromHolder);
-      });
+        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+      mechanismComponentHolder.getEvents(this.blocklyWorkspace, events);
     }
     return events;
   }
@@ -314,6 +281,19 @@ export class Editor {
       throw new Error('getComponentsFromRobot: this.robotContent is null.');
     }
     return commonStorage.extractComponents(this.robotContent);
+  }
+
+  /**
+   * Returns the events defined in the robot.
+   */
+  public getEventsFromRobot(): commonStorage.Event[] {
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+      return this.getEventsFromWorkspace();
+    }
+    if (!this.robotContent) {
+      throw new Error('getEventsFromRobot: this.robotContent is null.');
+    }
+    return commonStorage.extractEvents(this.robotContent);
   }
 
   /**
