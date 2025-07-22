@@ -23,7 +23,7 @@ import * as Antd from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 declare const __APP_VERSION__: string;
-declare const __APP_NAME__: string;
+const __APP_NAME__ = "SystemCore Blocks";
 
 interface AboutDialogProps {
     visible: boolean;
