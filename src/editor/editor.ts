@@ -49,8 +49,8 @@ export class Editor {
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
   private robotPath: string = '';
-  private moduleContent: string = '';
-  private robotContent: string = '';
+  private moduleContentText: string = '';
+  private robotContent: commonStorage.ModuleContent | null = null;
   private bindedOnChange: any = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
@@ -117,31 +117,31 @@ export class Editor {
       this.modulePath = '';
       this.robotPath = '';
     }
-    this.moduleContent = '';
-    this.robotContent = '';
+    this.moduleContentText = '';
+    this.robotContent = null;
     this.clearBlocklyWorkspace();
 
     if (currentModule) {
       // Fetch the content for the current module and the robot.
       // TODO: Also fetch the content for the mechanisms?
       const promises: { [key: string]: Promise<string> } = {}; // key is module path, value is promise of module content.
-      promises[this.modulePath] = this.storage.fetchModuleContent(this.modulePath);
+      promises[this.modulePath] = this.storage.fetchModuleContentText(this.modulePath);
       if (this.robotPath !== this.modulePath) {
         // Also fetch the robot module content. It contains components, etc, that can be used in OpModes.
-        promises[this.robotPath] = this.storage.fetchModuleContent(this.robotPath)
+        promises[this.robotPath] = this.storage.fetchModuleContentText(this.robotPath)
       }
 
-      const moduleContents: { [key: string]: string } = {}; // key is module path, value is module content
+      const modulePathToContentText: { [key: string]: string } = {}; // key is module path, value is module content
       await Promise.all(
         Object.entries(promises).map(async ([modulePath, promise]) => {
-          moduleContents[modulePath] = await promise;
+          modulePathToContentText[modulePath] = await promise;
         })
       );
-      this.moduleContent = moduleContents[this.modulePath];
+      this.moduleContentText = modulePathToContentText[this.modulePath];
       if (this.robotPath === this.modulePath) {
-        this.robotContent = this.moduleContent;
+        this.robotContent = commonStorage.parseModuleContentText(this.moduleContentText);
       } else {
-        this.robotContent = moduleContents[this.robotPath];
+        this.robotContent = commonStorage.parseModuleContentText(modulePathToContentText[this.robotPath]);
       }
       this.loadBlocksIntoBlocklyWorkspace();
     }
@@ -169,10 +169,8 @@ export class Editor {
     // Add the while-loading listener.
     this.bindedOnChange = this.onChangeWhileLoading.bind(this);
     this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
-    const blocksContent = commonStorage.extractBlocksContent(this.moduleContent);
-    if (blocksContent) {
-      Blockly.serialization.workspaces.load(JSON.parse(blocksContent), this.blocklyWorkspace);
-    }
+    const moduleContent = commonStorage.parseModuleContentText(this.moduleContentText);
+    Blockly.serialization.workspaces.load(moduleContent.getBlocks(), this.blocklyWorkspace);
   }
 
   public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
@@ -194,33 +192,33 @@ export class Editor {
     /*
     // This code is helpful for debugging issues where the editor says
     // 'Blocks have been modified!'.
-    if (this.getModuleContent() !== this.moduleContent) {
+    if (this.getModuleContentText() !== this.moduleContentText) {
       console.log('isModified will return true');
-      console.log('this.getModuleContent() is ' + this.getModuleContent());
-      console.log('this.moduleContent is ' + this.moduleContent);
+      console.log('this.getModuleContentText() is ' + this.getModuleContentText());
+      console.log('this.moduleContentText is ' + this.moduleContentText);
     }
     */
-    return this.getModuleContent() !== this.moduleContent;
+    return this.getModuleContentText() !== this.moduleContentText;
   }
 
-  private getModuleContent(): string {
+  private getModuleContentText(): string {
     if (!this.currentModule) {
-      throw new Error('getModuleContent: this.currentModule is null.');
+      throw new Error('getModuleContentText: this.currentModule is null.');
     }
-    const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
-      this.blocklyWorkspace, this.generatorContext);
-    const blocksContent = JSON.stringify(
-      Blockly.serialization.workspaces.save(this.blocklyWorkspace));
-    const methodsContent = (
+
+    // Generate python because some parts of components, events, and methods are affected.
+    extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.generatorContext);
+
+    const blocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
+    const components: commonStorage.Component[] = this.getComponentsFromWorkspace();
+    const events: commonStorage.Event[] = this.getEventsFromWorkspace();
+    const methods: commonStorage.Method[] = (
         this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
         this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM)
-        ? JSON.stringify(this.getMethodsForOutsideFromWorkspace())
-        : '[]';
-    const componentsContent = JSON.stringify(this.getComponentsFromWorkspace());
-    const eventsContent = JSON.stringify(this.getEventsFromWorkspace());
-    return commonStorage.makeModuleContent(
-      this.currentModule, pythonCode, blocksContent,
-      methodsContent, componentsContent, eventsContent);
+        ? this.getMethodsForOutsideFromWorkspace()
+        : [];
+    return commonStorage.makeModuleContentText(
+      this.currentModule, blocks, components, events, methods);
   }
 
   public getComponentsFromWorkspace(): commonStorage.Component[] {
@@ -261,10 +259,10 @@ export class Editor {
   }
 
   public async saveBlocks() {
-    const moduleContent = this.getModuleContent();
+    const moduleContentText = this.getModuleContentText();
     try {
-      await this.storage.saveModule(this.modulePath, moduleContent);
-      this.moduleContent = moduleContent;
+      await this.storage.saveModule(this.modulePath, moduleContentText);
+      this.moduleContentText = moduleContentText;
     } catch (e) {
       throw e;
     }
@@ -280,7 +278,7 @@ export class Editor {
     if (!this.robotContent) {
       throw new Error('getComponentsFromRobot: this.robotContent is null.');
     }
-    return commonStorage.extractComponents(this.robotContent);
+    return this.robotContent.getComponents();
   }
 
   /**
@@ -293,7 +291,7 @@ export class Editor {
     if (!this.robotContent) {
       throw new Error('getEventsFromRobot: this.robotContent is null.');
     }
-    return commonStorage.extractEvents(this.robotContent);
+    return this.robotContent.getEvents();
   }
 
   /**
@@ -306,7 +304,7 @@ export class Editor {
     if (!this.robotContent) {
       throw new Error('getMethodsFromRobot: this.robotContent is null.');
     }
-    return commonStorage.extractMethods(this.robotContent);
+    return this.robotContent.getMethods();
   }
 
   public static getEditorForBlocklyWorkspace(workspace: Blockly.Workspace): Editor | null {

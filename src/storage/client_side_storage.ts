@@ -117,7 +117,7 @@ class ClientSideStorage implements commonStorage.Storage {
       };
     });
   }
-  
+
   async listProjects(): Promise<commonStorage.Project[]> {
     return new Promise((resolve, reject) => {
       const projects: {[key: string]: commonStorage.Project} = {}; // key is project name, value is Project
@@ -220,7 +220,7 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async fetchModuleContent(modulePath: string): Promise<string> {
+  async fetchModuleContentText(modulePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const getRequest = this.db.transaction(['modules'], 'readonly')
           .objectStore('modules').get(modulePath);
@@ -243,20 +243,20 @@ class ClientSideStorage implements commonStorage.Storage {
   async createProject(projectName: string, robotContent: string, opmodeContent : string): Promise<void> {
     const modulePath = commonStorage.makeRobotPath(projectName);
     const opmodePath = commonStorage.makeModulePath(projectName, 'Teleop');
-    
+
     await this._saveModule(commonStorage.MODULE_TYPE_ROBOT, modulePath, robotContent);
     await this._saveModule(commonStorage.MODULE_TYPE_OPMODE, opmodePath, opmodeContent);
   }
 
-  async createModule(moduleType: string, modulePath: string, moduleContent: string): Promise<void> {
-    return this._saveModule(moduleType, modulePath, moduleContent);
+  async createModule(moduleType: string, modulePath: string, moduleContentText: string): Promise<void> {
+    return this._saveModule(moduleType, modulePath, moduleContentText);
   }
 
-  async saveModule(modulePath: string, moduleContent: string): Promise<void> {
-    return this._saveModule('', modulePath, moduleContent);
+  async saveModule(modulePath: string, moduleContentText: string): Promise<void> {
+    return this._saveModule('', modulePath, moduleContentText);
   }
 
-  private async _saveModule(moduleType: string, modulePath: string, moduleContent: string)
+  private async _saveModule(moduleType: string, modulePath: string, moduleContentText: string)
       : Promise<void> {
     // When creating a new module, moduleType must be truthy.
     // When saving an existing module, the moduleType must be falsy.
@@ -301,7 +301,7 @@ class ClientSideStorage implements commonStorage.Storage {
           }
           value = getRequest.result;
         }
-        value.content = moduleContent;
+        value.content = moduleContentText;
         value.dateModifiedMillis = Date.now();
         const putRequest = modulesObjectStore.put(value);
         putRequest.onerror = () => {
@@ -545,7 +545,7 @@ class ClientSideStorage implements commonStorage.Storage {
   async downloadProject(projectName: string): Promise<string> {
     return new Promise((resolve, reject) => {
       // Collect all the modules in the project.
-      const moduleContents: {[key: string]: string} = {}; // key is module name, value is module content
+      const moduleNameToContentText: {[key: string]: string} = {}; // key is module name, value is module content
       const openCursorRequest = this.db.transaction(['modules'], 'readonly')
           .objectStore('modules')
           .openCursor();
@@ -560,13 +560,13 @@ class ClientSideStorage implements commonStorage.Storage {
           const value = cursor.value;
           if (commonStorage.getProjectName(value.path) === projectName) {
             const moduleName = commonStorage.getModuleName(value.path);
-            moduleContents[moduleName] = value.content;
+            moduleNameToContentText[moduleName] = value.content;
           }
           cursor.continue();
         } else {
           // The cursor is done. We have finished collecting all the modules in the project.
           // Now create the blob for download.
-          const blobUrl = await commonStorage.produceDownloadProjectBlob(projectName, moduleContents);
+          const blobUrl = await commonStorage.produceDownloadProjectBlob(moduleNameToContentText);
           resolve(blobUrl);
         }
       };
@@ -576,17 +576,17 @@ class ClientSideStorage implements commonStorage.Storage {
   async uploadProject(projectName: string, blobUrl: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       // Process the uploaded blob to get the module types and contents.
-      let moduleTypes: {[key: string]: string}; // key is module name, value is module content
-      let moduleContents: {[key: string]: string}; // key is module name, value is module content
+      let moduleNameToType: {[key: string]: string}; // key is module name, value is module content
+      let moduleNameToContentText: {[key: string]: string}; // key is module name, value is module content
       try {
-        [moduleTypes, moduleContents] = await commonStorage.processUploadedBlob(
+        [moduleNameToType, moduleNameToContentText] = await commonStorage.processUploadedBlob(
             projectName, blobUrl);
       } catch (e) {
         console.log('commonStorage.processUploadedBlob failed.');
         reject(new Error('commonStorage.processUploadedBlob failed.'));
         return;
       }
-  
+
       // Save each module.
       const transaction = this.db.transaction(['modules'], 'readwrite');
       transaction.oncomplete = () => {
@@ -597,10 +597,10 @@ class ClientSideStorage implements commonStorage.Storage {
         reject(new Error('IndexedDB transaction aborted.'));
       };
       const modulesObjectStore = transaction.objectStore('modules');
-  
-      for (const moduleName in moduleTypes) {
-        const moduleType = moduleTypes[moduleName];
-        const moduleContent = moduleContents[moduleName];
+
+      for (const moduleName in moduleNameToType) {
+        const moduleType = moduleNameToType[moduleName];
+        const moduleContentText = moduleNameToContentText[moduleName];
         const modulePath = commonStorage.makeModulePath(projectName, moduleName);
         const getRequest = modulesObjectStore.get(modulePath);
         getRequest.onerror = () => {
@@ -617,7 +617,7 @@ class ClientSideStorage implements commonStorage.Storage {
           const value = Object.create(null);
           value.path = modulePath;
           value.type = moduleType;
-          value.content = moduleContent;
+          value.content = moduleContentText;
           value.dateModifiedMillis = Date.now();
           const putRequest = modulesObjectStore.put(value);
           putRequest.onerror = () => {
