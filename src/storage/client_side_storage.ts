@@ -240,9 +240,12 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async createProject(projectName: string, robotContent: string): Promise<void> {
+  async createProject(projectName: string, robotContent: string, opmodeContent : string): Promise<void> {
     const modulePath = commonStorage.makeRobotPath(projectName);
-    return this._saveModule(commonStorage.MODULE_TYPE_ROBOT, modulePath, robotContent);
+    const opmodePath = commonStorage.makeModulePath(projectName, 'Teleop');
+    
+    await this._saveModule(commonStorage.MODULE_TYPE_ROBOT, modulePath, robotContent);
+    await this._saveModule(commonStorage.MODULE_TYPE_OPMODE, opmodePath, opmodeContent);
   }
 
   async createModule(moduleType: string, modulePath: string, moduleContent: string): Promise<void> {

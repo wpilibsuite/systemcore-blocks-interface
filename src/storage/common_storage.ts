@@ -106,7 +106,7 @@ export interface Storage {
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
   listProjects(): Promise<Project[]>;
   fetchModuleContent(modulePath: string): Promise<string>;
-  createProject(projectName: string, robotContent: string): Promise<void>;
+  createProject(projectName: string, robotContent: string, opmodeContent: string): Promise<void>;
   createModule(moduleType: string, modulePath: string, moduleContent: string): Promise<void>;
   saveModule(modulePath: string, moduleContent: string): Promise<void>;
   renameProject(oldProjectName: string, newProjectName: string): Promise<void>;
@@ -129,7 +129,8 @@ export async function createProject(
   storage: Storage, proposedUserVisibleName: string): Promise<void> {
   const newProjectName = pascalCaseToSnakeCase(proposedUserVisibleName);
   const robotContent = newRobotContent(newProjectName);
-  await storage.createProject(newProjectName, robotContent);
+  const opmodeContent = newOpModeContent(newProjectName, 'Teleop');
+  await storage.createProject(newProjectName, robotContent, opmodeContent);
 }
 
 /**

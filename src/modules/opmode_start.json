@@ -11,7 +11,7 @@
                 "fields": {
                     "NAME": "",
                     "GROUP": "",
-                    "TYPE": "Auto",
+                    "TYPE": "Teleop",
                     "ENABLED": true 
                 }
             },
