@@ -447,7 +447,7 @@ export function isValidPythonModuleName(name: string): boolean {
  * Returns the module path for the given project and module names.
  */
 export function makeModulePath(projectName: string, moduleName: string): string {
-  return projectName + '/' + moduleName + '.py';
+  return projectName + '/' + moduleName + '.blocks';
 }
 
 /**
@@ -461,7 +461,7 @@ export function makeRobotPath(projectName: string): string {
  * Returns the project path for given module path.
  */
 export function getProjectName(modulePath: string): string {
-  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).py$');
+  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).blocks$');
   const result = regex.exec(modulePath)
   if (!result) {
     throw new Error('Unable to extract the project name.');
