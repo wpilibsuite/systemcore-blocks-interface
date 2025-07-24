@@ -473,7 +473,7 @@ export function getProjectName(modulePath: string): string {
  * Returns the module name for given module path.
  */
 export function getModuleName(modulePath: string): string {
-  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).py$');
+  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).blocks$');
   const result = regex.exec(modulePath)
   if (!result) {
     throw new Error('Unable to extract the module name.');
