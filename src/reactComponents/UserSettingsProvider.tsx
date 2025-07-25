@@ -26,18 +26,15 @@ import { Storage } from '../storage/common_storage';
 /** Storage keys for user settings. */
 const USER_LANGUAGE_KEY = 'userLanguage';
 const USER_THEME_KEY = 'userTheme';
-const USER_OPEN_TABS_KEY_PREFIX = 'userOpenTabs';
 
 /** Default values for user settings. */
 const DEFAULT_LANGUAGE = 'en';
 const DEFAULT_THEME = 'dark';
-const DEFAULT_OPEN_TABS: string[] = [];
 
 /** User settings interface. */
 export interface UserSettings {
   language: string;
   theme: string;
-  openTabs: string[];
 }
 
 /** User settings context interface. */
@@ -45,7 +42,6 @@ export interface UserSettingsContextType {
   settings: UserSettings;
   updateLanguage: (language: string) => Promise<void>;
   updateTheme: (theme: string) => Promise<void>;
-  updateOpenTabs: (tabs: string[]) => Promise<void>;
   isLoading: boolean;
   error: string | null;
   storage: Storage | null;
@@ -70,18 +66,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
   const [settings, setSettings] = React.useState<UserSettings>({
     language: DEFAULT_LANGUAGE,
     theme: DEFAULT_THEME,
-    openTabs: DEFAULT_OPEN_TABS,
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
-
-  /** Generate project-specific storage key for open tabs. */
-  const getOpenTabsKey = (projectName: string | null | undefined): string => {
-    if (!projectName) {
-      return `${USER_OPEN_TABS_KEY_PREFIX}_default`;
-    }
-    return `${USER_OPEN_TABS_KEY_PREFIX}_${projectName}`;
-  };
 
   /** Load user settings from storage on component mount. */
   React.useEffect(() => {
@@ -90,27 +77,14 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
         setIsLoading(true);
         setError(null);
 
-        const openTabsKey = getOpenTabsKey(currentProjectName);
-        const [language, theme, openTabsJson] = await Promise.all([
+        const [language, theme] = await Promise.all([
           validStorage.fetchEntry(USER_LANGUAGE_KEY, DEFAULT_LANGUAGE),
           validStorage.fetchEntry(USER_THEME_KEY, DEFAULT_THEME),
-          validStorage.fetchEntry(openTabsKey, JSON.stringify(DEFAULT_OPEN_TABS)),
         ]);
-
-        let openTabs: string[];
-        try {
-          openTabs = JSON.parse(openTabsJson);
-          if (!Array.isArray(openTabs)) {
-            openTabs = DEFAULT_OPEN_TABS;
-          }
-        } catch {
-          openTabs = DEFAULT_OPEN_TABS;
-        }
 
         setSettings({
           language,
           theme,
-          openTabs,
         });
       } catch (err) {
         setError(`Failed to load user settings: ${err}`);
@@ -160,27 +134,10 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     }
   };
 
-  /** Update open tabs setting. */
-  const updateOpenTabs = async (tabs: string[]): Promise<void> => {
-    try {
-      setError(null);
-      const openTabsKey = getOpenTabsKey(currentProjectName);
-      if (storage) {
-        await storage.saveEntry(openTabsKey, JSON.stringify(tabs));
-        setSettings(prev => ({ ...prev, openTabs: tabs }));        
-      }
-    } catch (err) {
-      setError(`Failed to save open tabs setting: ${err}`);
-      console.error('Error saving open tabs setting:', err);
-      throw err;
-    }
-  };
-
   const contextValue: UserSettingsContextType = {
     settings,
     updateLanguage,
     updateTheme,
-    updateOpenTabs,
     isLoading,
     error,
     storage: storage || null,
