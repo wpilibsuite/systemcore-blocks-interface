@@ -31,7 +31,6 @@ import wpilib.counter
 import wpilib.drive
 import wpilib.event
 import wpilib.interfaces
-import wpilib.shuffleboard
 import wpilib.simulation
 import wpimath
 import wpimath.controller
@@ -91,7 +90,6 @@ def main(argv):
     wpilib.drive,
     wpilib.event,
     wpilib.interfaces,
-    wpilib.shuffleboard,
     wpilib.simulation,
     python_util.getModule('wpilib.sysid'),
     wpimath,
