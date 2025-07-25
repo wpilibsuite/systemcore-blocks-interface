@@ -21,14 +21,9 @@
 
 import JSZip from 'jszip';
 
-import * as Blockly from 'blockly/core';
-
 import startingOpModeBlocks from '../modules/opmode_start.json';
 import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
-
-import { extendedPythonGenerator } from '../editor/extended_python_generator';
-import { createGeneratorContext } from '../editor/generator_context';
 
 // Types, constants, and functions related to modules, regardless of where the modules are stored.
 
@@ -85,30 +80,16 @@ export const MODULE_TYPE_OPMODE = 'opmode';
 
 const CLASS_NAME_ROBOT = 'Robot';
 
-const DELIMITER_PREFIX = 'BlocksContent';
-const MARKER_BLOCKS_CONTENT = 'blocksContent: ';
-const MARKER_METHODS = 'methods: ';
-const MARKER_MODULE_TYPE = 'moduleType: ';
-const MARKER_COMPONENTS = 'components: ';
-const MARKER_EVENTS = 'events: ';
-
-const PARTS_INDEX_BLOCKS_CONTENT = 0;
-const PARTS_INDEX_METHODS = 1;
-const PARTS_INDEX_MODULE_TYPE = 2;
-const PARTS_INDEX_COMPONENTS = 3;
-const PARTS_INDEX_EVENTS = 4;
-const NUMBER_OF_PARTS = 5;
-
 export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 
 export interface Storage {
   saveEntry(entryKey: string, entryValue: string): Promise<void>;
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
   listProjects(): Promise<Project[]>;
-  fetchModuleContent(modulePath: string): Promise<string>;
+  fetchModuleContentText(modulePath: string): Promise<string>;
   createProject(projectName: string, robotContent: string, opmodeContent: string): Promise<void>;
-  createModule(moduleType: string, modulePath: string, moduleContent: string): Promise<void>;
-  saveModule(modulePath: string, moduleContent: string): Promise<void>;
+  createModule(moduleType: string, modulePath: string, moduleContentText: string): Promise<void>;
+  saveModule(modulePath: string, moduleContentText: string): Promise<void>;
   renameProject(oldProjectName: string, newProjectName: string): Promise<void>;
   copyProject(oldProjectName: string, newProjectName: string): Promise<void>;
   renameModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
@@ -179,8 +160,8 @@ export async function deleteProject(
  */
 export async function addModuleToProject(
   storage: Storage, project: Project, moduleType: string, newClassName: string): Promise<void> {
-  let newModuleName = pascalCaseToSnakeCase(newClassName);
-  let newModulePath = makeModulePath(project.projectName, newModuleName);
+  const newModuleName = pascalCaseToSnakeCase(newClassName);
+  const newModulePath = makeModulePath(project.projectName, newModuleName);
 
   if (moduleType === MODULE_TYPE_MECHANISM) {
     const mechanismContent = newMechanismContent(project.projectName, newModuleName);
@@ -466,7 +447,7 @@ export function isValidPythonModuleName(name: string): boolean {
  * Returns the module path for the given project and module names.
  */
 export function makeModulePath(projectName: string, moduleName: string): string {
-  return projectName + '/' + moduleName + '.py';
+  return projectName + '/' + moduleName + '.blocks';
 }
 
 /**
@@ -480,7 +461,7 @@ export function makeRobotPath(projectName: string): string {
  * Returns the project path for given module path.
  */
 export function getProjectName(modulePath: string): string {
-  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).py$');
+  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).blocks$');
   const result = regex.exec(modulePath)
   if (!result) {
     throw new Error('Unable to extract the project name.');
@@ -492,7 +473,7 @@ export function getProjectName(modulePath: string): string {
  * Returns the module name for given module path.
  */
 export function getModuleName(modulePath: string): string {
-  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).py$');
+  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).blocks$');
   const result = regex.exec(modulePath)
   if (!result) {
     throw new Error('Unable to extract the module name.');
@@ -500,30 +481,17 @@ export function getModuleName(modulePath: string): string {
   return result[2];
 }
 
-function startingBlocksToModuleContent(
-  module: Module, startingBlocks: { [key: string]: any }) {
-  // Create a headless blockly workspace.
-  const headlessBlocklyWorkspace = new Blockly.Workspace();
-  headlessBlocklyWorkspace.options.oneBasedIndex = false;
-  Blockly.serialization.workspaces.load(startingBlocks, headlessBlocklyWorkspace);
-
-  const generatorContext = createGeneratorContext();
-  generatorContext.setModule(module);
-
-  const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
-    headlessBlocklyWorkspace, generatorContext);
-  const blocksContent = JSON.stringify(
-    Blockly.serialization.workspaces.save(headlessBlocklyWorkspace));
-  const methodsContent = '[]';
-  const componentsContent = '[]';
-  const eventsContent = '[]';
-  return makeModuleContent(
+function startingBlocksToModuleContentText(
+    module: Module, startingBlocks: { [key: string]: any }): string {
+  const components: Component[] = [];
+  const events: Event[] = [];
+  const methods: Method[] = [];
+  return makeModuleContentText(
       module,
-      pythonCode,
-      blocksContent,
-      methodsContent,
-      componentsContent,
-      eventsContent);
+      startingBlocks,
+      components,
+      events,
+      methods);
 }
 
 /**
@@ -539,7 +507,7 @@ export function newRobotContent(projectName: string): string {
     className: CLASS_NAME_ROBOT,
   };
 
-  return startingBlocksToModuleContent(module, startingRobotBlocks);
+  return startingBlocksToModuleContentText(module, startingRobotBlocks);
 }
 
 /**
@@ -555,7 +523,7 @@ export function newMechanismContent(projectName: string, mechanismName: string):
     className: snakeCaseToPascalCase(mechanismName),
   };
 
-  return startingBlocksToModuleContent(module, startingMechanismBlocks);
+  return startingBlocksToModuleContentText(module, startingMechanismBlocks);
 }
 
 /**
@@ -571,169 +539,80 @@ export function newOpModeContent(projectName: string, opModeName: string): strin
     className: snakeCaseToPascalCase(opModeName),
   };
 
-  return startingBlocksToModuleContent(module, startingOpModeBlocks);
+  return startingBlocksToModuleContentText(module, startingOpModeBlocks);
 }
 
 /**
  * Make the module content from the given python code and blocks content.
  */
-export function makeModuleContent(
+export function makeModuleContentText(
     module: Module,
-    pythonCode: string,
-    blocksContent: string,
-    methodsContent: string,
-    componentsContent: string,
-    eventsContent: string): string {
-  let delimiter = DELIMITER_PREFIX;
-  while (module.moduleType.includes(delimiter)
-      || blocksContent.includes(delimiter)
-      || methodsContent.includes(delimiter)
-      || componentsContent.includes(delimiter)
-      || eventsContent.includes(delimiter)) {
-    delimiter += '.';
-  }
-  return (
-    '# This file was generated by the Blocks editor.\n\n' +
-    pythonCode + '\n\n\n' +
-    '"""\n' +
-    delimiter + '\n' +
-    MARKER_EVENTS + eventsContent + '\n' +
-    delimiter + '\n' +
-    MARKER_COMPONENTS + componentsContent + '\n' +
-    delimiter + '\n' +
-    MARKER_MODULE_TYPE + module.moduleType + '\n' +
-    delimiter + '\n' +
-    MARKER_METHODS + methodsContent + '\n' +
-    delimiter + '\n' +
-    MARKER_BLOCKS_CONTENT + blocksContent + '\n' +
-    delimiter + '\n' +
-    '"""\n');
+    blocks: { [key: string]: any },
+    components: Component[],
+    events: Event[],
+    methods: Method[]): string {
+  const moduleContent = new ModuleContent(
+      module.moduleType,
+      blocks,
+      components,
+      events,
+      methods);
+  return moduleContent.getModuleContentText();
 }
 
-function getParts(moduleContent: string): string[] {
-  // The last line is """.
-  const lastChars = '\n"""\n';
-  if (!moduleContent.endsWith(lastChars) || moduleContent.length <= lastChars.length) {
-    throw new Error('Unable to parse the module content.');
-  }
-  // The line before that is the delimiter.
-  const iEndOfDelimiter = moduleContent.length - lastChars.length;
-  const iPreviousNewLine = moduleContent.lastIndexOf('\n', iEndOfDelimiter - 1);
-  if (iPreviousNewLine === -1) {
-    throw new Error('Unable to parse the module content.');
-  }
-  const iStartOfDelimiter = iPreviousNewLine + 1;
-  const delimiter = moduleContent.substring(iStartOfDelimiter, iEndOfDelimiter);
-  const split = moduleContent.split(delimiter);
-  split.pop(); // The last element is the """ that closes the python comment.
-  const parts = [];
-  // Pop the elements off of the split array and push them onto the parts array
-  // so they end up in the reverse order that they were in the module content.
-  // Ignore the first (index 0) element of the split array, which is the python
-  // code.
-  while (split.length > 1 && parts.length < NUMBER_OF_PARTS) {
-    const s = split.pop();
-    if (s) {
-      parts.push(s.trim());
-    }
-  }
-  if (parts.length <= PARTS_INDEX_METHODS) {
-    // This module was saved without methods.
-    parts.push(MARKER_METHODS + '[]');
-  } else if (!parts[PARTS_INDEX_METHODS].startsWith(MARKER_METHODS)) {
-    // Older modules were saved with exported blocks instead of methods.
-    parts[PARTS_INDEX_METHODS] = MARKER_METHODS + '[]'
-  }
-  if (parts.length <= PARTS_INDEX_MODULE_TYPE) {
-    // This module was saved without the module type.
-    // This module is either a Project or an OpMode, but we don't know which from just the content.
-    parts.push(MODULE_TYPE_UNKNOWN);
-  }
-  if (parts.length <= PARTS_INDEX_COMPONENTS) {
-    // This module was saved without components.
-    parts.push(MARKER_COMPONENTS + '[]');
-  }
-  if (parts.length <= PARTS_INDEX_EVENTS) {
-    // This module was saved without events.
-    parts.push(MARKER_EVENTS + '[]');
-  }
-  return parts;
+export function parseModuleContentText(moduleContentText: string): ModuleContent {
+  const parsedContent = JSON.parse(moduleContentText);
+  return new ModuleContent(
+      parsedContent.moduleType,
+      parsedContent.blocks,
+      parsedContent.components,
+      parsedContent.events,
+      parsedContent.methods);
 }
 
-/**
- * Extract the blocks content from the given module content.
- */
-export function extractBlocksContent(moduleContent: string): string {
-  const parts = getParts(moduleContent);
-  let blocksContent = parts[PARTS_INDEX_BLOCKS_CONTENT];
-  if (blocksContent.startsWith(MARKER_BLOCKS_CONTENT)) {
-    blocksContent = blocksContent.substring(MARKER_BLOCKS_CONTENT.length);
+export class ModuleContent {
+  constructor(
+      private moduleType: string,
+      private blocks : { [key: string]: any },
+      private components: Component[],
+      private events: Event[],
+      private methods: Method[]) {
   }
-  return blocksContent;
-}
 
-/**
- * Extract the methods from the given module content.
- */
-export function extractMethods(moduleContent: string): Method[] {
-  const parts = getParts(moduleContent);
-  let methodsContent = parts[PARTS_INDEX_METHODS];
-  if (methodsContent.startsWith(MARKER_METHODS)) {
-    methodsContent = methodsContent.substring(MARKER_METHODS.length);
+  getModuleContentText(): string {
+    return JSON.stringify(this);
   }
-  const methods: Method[] = JSON.parse(methodsContent);
-  return methods;
-}
 
-/**
- * Extract the moduleType from the given module content.
- */
-export function extractModuleType(moduleContent: string): string {
-  const parts = getParts(moduleContent);
-  let moduleType = parts[PARTS_INDEX_MODULE_TYPE];
-  if (moduleType.startsWith(MARKER_MODULE_TYPE)) {
-    moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
+  getModuleType(): string {
+    return this.moduleType;
   }
-  return moduleType;
-}
 
-/**
- * Extract the components from the given module content.
- */
-export function extractComponents(moduleContent: string): Component[] {
-  const parts = getParts(moduleContent);
-  let componentsContent = parts[PARTS_INDEX_COMPONENTS];
-  if (componentsContent.startsWith(MARKER_COMPONENTS)) {
-    componentsContent = componentsContent.substring(MARKER_COMPONENTS.length);
+  getBlocks(): { [key: string]: any } {
+    return this.blocks;
   }
-  const components: Component[] = JSON.parse(componentsContent);
-  return components;
-}
 
-/**
- * Extract the events from the given module content.
- */
-export function extractEvents(moduleContent: string): Event[] {
-  const parts = getParts(moduleContent);
-  let eventsContent = parts[PARTS_INDEX_EVENTS];
-  if (eventsContent.startsWith(MARKER_EVENTS)) {
-    eventsContent = eventsContent.substring(MARKER_EVENTS.length);
+  getComponents(): Component[] {
+    return this.components;
   }
-  const events: Event[] = JSON.parse(eventsContent);
-  return events;
+
+  getEvents(): Event[] {
+    return this.events;
+  }
+
+  getMethods(): Method[] {
+    return this.methods;
+  }
 }
 
 /**
  * Produce the blob for downloading a project.
  */
 export async function produceDownloadProjectBlob(
-  projectName: string, moduleContents: { [key: string]: string }): Promise<string> {
+    moduleNameToContentText: { [key: string]: string }): Promise<string> {
   const zip = new JSZip();
-  for (const moduleName in moduleContents) {
-    const moduleContent = moduleContents[moduleName];
-    const moduleContentForDownload = _processModuleContentForDownload(
-      projectName, moduleName, moduleContent);
-    zip.file(moduleName, moduleContentForDownload);
+  for (const moduleName in moduleNameToContentText) {
+    const moduleContentText = moduleNameToContentText[moduleName];
+    zip.file(moduleName, moduleContentText);
   }
   const content = await zip.generateAsync({ type: "blob" });
   const blobUrl = URL.createObjectURL(content);
@@ -744,53 +623,6 @@ export function getClassNameForModule(moduleType: string, moduleName: string) {
   return (moduleType == MODULE_TYPE_ROBOT)
       ? CLASS_NAME_ROBOT
       : snakeCaseToPascalCase(moduleName);
-}
-
-/**
- * Process the module content so it can be downloaded.
- */
-function _processModuleContentForDownload(
-  projectName: string, moduleName: string, moduleContent: string): string {
-  const parts = getParts(moduleContent);
-  let blocksContent = parts[PARTS_INDEX_BLOCKS_CONTENT];
-  if (blocksContent.startsWith(MARKER_BLOCKS_CONTENT)) {
-    blocksContent = blocksContent.substring(MARKER_BLOCKS_CONTENT.length);
-  }
-  let moduleType = parts[PARTS_INDEX_MODULE_TYPE];
-  if (moduleType.startsWith(MARKER_MODULE_TYPE)) {
-    moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
-  }
-  let methodsContent = parts[PARTS_INDEX_METHODS];
-  if (methodsContent.startsWith(MARKER_METHODS)) {
-    methodsContent = methodsContent.substring(MARKER_METHODS.length);
-  }
-  let componentsContent = parts[PARTS_INDEX_COMPONENTS];
-  if (componentsContent.startsWith(MARKER_COMPONENTS)) {
-    componentsContent = componentsContent.substring(MARKER_COMPONENTS.length);
-  }
-  let eventsContent = parts[PARTS_INDEX_EVENTS];
-  if (eventsContent.startsWith(MARKER_EVENTS)) {
-    eventsContent = eventsContent.substring(MARKER_EVENTS.length);
-  }
-
-  const module: Module = {
-    modulePath: makeModulePath(projectName, moduleName),
-    moduleType: moduleType,
-    projectName: projectName,
-    moduleName: moduleName,
-    dateModifiedMillis: 0,
-    className: getClassNameForModule(moduleType, moduleName),
-  };
-
-  // Clear out the python content.
-  const pythonCode = '';
-  return makeModuleContent(
-      module,
-      pythonCode,
-      blocksContent,
-      methodsContent,
-      componentsContent,
-      eventsContent);
 }
 
 /**
@@ -822,8 +654,9 @@ export function makeUploadProjectName(
  * Process the uploaded blob to get the module types and contents.
  */
 export async function processUploadedBlob(
-  projectName: string, blobUrl: string)
-  : Promise<[{ [key: string]: string }, { [key: string]: string }]> {
+    projectName: string, blobUrl: string)
+    : Promise<[{ [key: string]: string }, { [key: string]: string }]> {
+
   const prefix = 'data:application/octet-stream;base64,';
   if (!blobUrl.startsWith(prefix)) {
     throw new Error('blobUrl does not have the expected prefix.');
@@ -845,79 +678,29 @@ export async function processUploadedBlob(
   );
 
   // Process each module's content.
-  const moduleTypes: { [key: string]: string } = {}; // key is module name, value is module type
-  const moduleContents: { [key: string]: string } = {}; // key is module name, value is module content
+  const moduleNameToType: { [key: string]: string } = {}; // key is module name, value is module type
+  const moduleNameToContentText: { [key: string]: string } = {}; // key is module name, value is module content text
   for (const filename in files) {
     const uploadedContent = files[filename];
-    let [moduleName, moduleType, moduleContent] = _processUploadedModule(
-      projectName, filename, uploadedContent);
-
-    moduleTypes[moduleName] = moduleType;
-    moduleContents[moduleName] = moduleContent;
+    const [moduleName, moduleType, moduleContent] = _processUploadedModule(
+        projectName, filename, uploadedContent);
+    moduleNameToType[moduleName] = moduleType;
+    moduleNameToContentText[moduleName] = moduleContent;
   }
 
-  return [moduleTypes, moduleContents];
+  return [moduleNameToType, moduleNameToContentText];
 }
 
 /**
- * Processes an uploaded module to get the module name, type, and content.
+ * Processes an uploaded module to get the module name, type, and content text.
  */
 export function _processUploadedModule(
-  projectName: string, filename: string, uploadedContent: string)
-  : [string, string, string] {
-  const parts = getParts(uploadedContent);
-  let blocksContent = parts[PARTS_INDEX_BLOCKS_CONTENT];
-  if (blocksContent.startsWith(MARKER_BLOCKS_CONTENT)) {
-    blocksContent = blocksContent.substring(MARKER_BLOCKS_CONTENT.length);
-  }
-  let moduleType = parts[PARTS_INDEX_MODULE_TYPE];
-  if (moduleType.startsWith(MARKER_MODULE_TYPE)) {
-    moduleType = moduleType.substring(MARKER_MODULE_TYPE.length);
-  }
-  let methodsContent = parts[PARTS_INDEX_METHODS];
-  if (methodsContent.startsWith(MARKER_METHODS)) {
-    methodsContent = methodsContent.substring(MARKER_METHODS.length);
-  }
-  let componentsContent = parts[PARTS_INDEX_COMPONENTS];
-  if (componentsContent.startsWith(MARKER_COMPONENTS)) {
-    componentsContent = componentsContent.substring(MARKER_COMPONENTS.length);
-  }
-  let eventsContent = parts[PARTS_INDEX_EVENTS];
-  if (eventsContent.startsWith(MARKER_EVENTS)) {
-    eventsContent = eventsContent.substring(MARKER_EVENTS.length);
-  }
+    projectName: string, filename: string, uploadedContent: string)
+    : [string, string, string] {
 
-  const moduleName = (moduleType === MODULE_TYPE_ROBOT)
-    ? projectName : filename;
-
-  const module: Module = {
-    modulePath: makeModulePath(projectName, moduleName),
-    moduleType: moduleType,
-    projectName: projectName,
-    moduleName: moduleName,
-    dateModifiedMillis: 0,
-    className: snakeCaseToPascalCase(moduleName),
-  };
-
-  // Generate the python content.
-  // Create a headless blockly workspace.
-  const headlessBlocklyWorkspace = new Blockly.Workspace();
-  headlessBlocklyWorkspace.options.oneBasedIndex = false;
-  Blockly.serialization.workspaces.load(
-    JSON.parse(blocksContent), headlessBlocklyWorkspace);
-
-  const generatorContext = createGeneratorContext();
-  generatorContext.setModule(module);
-
-  const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(
-    headlessBlocklyWorkspace, generatorContext);
-
-  const moduleContent = makeModuleContent(
-      module,
-      pythonCode,
-      blocksContent,
-      methodsContent,
-      componentsContent,
-      eventsContent);
-  return [moduleName, moduleType, moduleContent];
+  const moduleContent = parseModuleContentText(uploadedContent);
+  const moduleType = moduleContent.getModuleType();
+  const moduleName = (moduleType === MODULE_TYPE_ROBOT) ? projectName : filename;
+  const moduleContentText = moduleContent.getModuleContentText();
+  return [moduleName, moduleType, moduleContentText];
 }
