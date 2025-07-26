@@ -454,7 +454,7 @@ export function makeModulePath(projectName: string, moduleName: string): string 
  * Returns the robot module path for the given project names.
  */
 export function makeRobotPath(projectName: string): string {
-  return makeModulePath(projectName, projectName);
+  return makeModulePath(projectName, 'robot');
 }
 
 /**
@@ -502,7 +502,7 @@ export function newRobotContent(projectName: string): string {
     modulePath: makeRobotPath(projectName),
     moduleType: MODULE_TYPE_ROBOT,
     projectName: projectName,
-    moduleName: projectName,
+    moduleName: 'robot',
     dateModifiedMillis: 0,
     className: CLASS_NAME_ROBOT,
   };
@@ -654,7 +654,7 @@ export function makeUploadProjectName(
  * Process the uploaded blob to get the module types and contents.
  */
 export async function processUploadedBlob(
-    projectName: string, blobUrl: string)
+    blobUrl: string)
     : Promise<[{ [key: string]: string }, { [key: string]: string }]> {
 
   const prefix = 'data:application/octet-stream;base64,';
@@ -683,7 +683,7 @@ export async function processUploadedBlob(
   for (const filename in files) {
     const uploadedContent = files[filename];
     const [moduleName, moduleType, moduleContent] = _processUploadedModule(
-        projectName, filename, uploadedContent);
+        filename, uploadedContent);
     moduleNameToType[moduleName] = moduleType;
     moduleNameToContentText[moduleName] = moduleContent;
   }
@@ -695,12 +695,12 @@ export async function processUploadedBlob(
  * Processes an uploaded module to get the module name, type, and content text.
  */
 export function _processUploadedModule(
-    projectName: string, filename: string, uploadedContent: string)
+    filename: string, uploadedContent: string)
     : [string, string, string] {
 
   const moduleContent = parseModuleContentText(uploadedContent);
   const moduleType = moduleContent.getModuleType();
-  const moduleName = (moduleType === MODULE_TYPE_ROBOT) ? projectName : filename;
+  const moduleName = (moduleType === MODULE_TYPE_ROBOT) ? 'robot' : filename;
   const moduleContentText = moduleContent.getModuleContentText();
   return [moduleName, moduleType, moduleContentText];
 }
