@@ -54,6 +54,7 @@ export interface MenuProps {
   project: commonStorage.Project | null;
   openWPIToolboxSettings: () => void;
   setProject: (project: commonStorage.Project | null) => void;
+  theme: string;
   setTheme: (theme: string) => void;
 }
 
@@ -178,11 +179,8 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
-  const [currentTheme, setCurrentTheme] = React.useState('dark');
-
 
   const handleThemeChange = (newTheme: string) => {
-    setCurrentTheme(newTheme);
     props.setTheme(newTheme);
   };
 
@@ -359,7 +357,7 @@ export function Component(props: MenuProps): React.JSX.Element {
       <ThemeModal
           open={themeModalOpen}
           onClose={() => setThemeModalOpen(false)}
-          currentTheme={currentTheme}
+          currentTheme={props.theme}
           onThemeChange={handleThemeChange}
         />
     </>
