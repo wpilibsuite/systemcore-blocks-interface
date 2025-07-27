@@ -261,8 +261,7 @@ def isClassVariableReadable(parent, key: str, object):
     not (key.startswith("_") and not startsWithUnderscoreDigit(key)) and
     isNothing(object) and
     not (isEnum(parent) and type(object) == parent) and
-    not (type(object) == logging.Logger) and
-    not (key == "WPIStruct" and type(object).__name__ == "PyCapsule"))
+    not (type(object) == logging.Logger))
 
 
 def isClassVariableWritable(parent, key: str, object):
@@ -336,8 +335,8 @@ def inspectSignature(object, cls=None) -> str:
     if sig.return_annotation != inspect.Signature.empty:
       s = f"{s} -> {_annotationToType(sig.return_annotation)}"
     else:
-      if object.__name__ == "__init__":
-        s = f"{s} -> None"
+      # If there is no return type hint, assume the function returns None.
+      s = f"{s} -> None"
   except:
     s = ""
   return s
@@ -448,8 +447,7 @@ def isBuiltInClass(cls: type):
 
 
 def _collectModulesAndClasses(
-    object, packages: list[str], modules: list[types.ModuleType], classes: list[type],
-    dict_class_name_to_alias: dict[str, str], ids: list[int]):
+    object, modules: list[types.ModuleType], classes: list[type], ids: list[int]):
   if id(object) in ids:
     return
   ids.append(id(object))
@@ -457,11 +455,9 @@ def _collectModulesAndClasses(
   if inspect.ismodule(object):
     if isBuiltInModule(object):
       return
+    # Add the module to the modules list.
     if object not in modules:
       modules.append(object)
-    if object.__package__:
-      if object.__package__ not in packages:
-        packages.append(object.__package__)
   if inspect.isclass(object):
     if isBuiltInClass(object):
       return
@@ -474,33 +470,26 @@ def _collectModulesAndClasses(
     if ignoreMember(object, key, member):
       continue
 
-    if isTypeAlias(object, key, member):
-      alias = member
-      if inspect.ismodule(object):
-        dict_class_name_to_alias.update({f"{getFullModuleName(object)}.{key}": getFullClassName(alias)})
-      elif inspect.isclass(object):
-        dict_class_name_to_alias.update({f"{getFullClassName(object)}.{key}": getFullClassName(alias)})
-
     if inspect.ismodule(member):
-      _collectModulesAndClasses(member, packages, modules, classes, dict_class_name_to_alias, ids)
+      _collectModulesAndClasses(member, modules, classes, ids)
     if inspect.isclass(member):
       # Collect the classes in the base classes (including this class).
       for cls in inspect.getmro(member):
         if isBuiltInClass(cls):
           break
-        _collectModulesAndClasses(cls, packages, modules, classes, dict_class_name_to_alias, ids)
+        _collectModulesAndClasses(cls, modules, classes, ids)
     if inspect.isroutine(member) and member.__doc__:
       # Collect the classes for the function arguments and return types.
       signature_line = member.__doc__.split("\n")[0]
       for cls in getClassesFromSignatureLine(signature_line):
         if isBuiltInClass(cls):
           continue
-        _collectModulesAndClasses(cls, packages, modules, classes, dict_class_name_to_alias, ids)
+        _collectModulesAndClasses(cls, modules, classes, ids)
     if isNothing(member):
       # Collect the class of this class variable.
       cls = type(member)
       if not isBuiltInClass(cls):
-        _collectModulesAndClasses(cls, packages, modules, classes, dict_class_name_to_alias, ids)
+        _collectModulesAndClasses(cls, modules, classes, ids)
     if inspect.isdatadescriptor(member):
       if hasattr(member, "fget"):
         # Collect the class of this instance variable.
@@ -511,19 +500,68 @@ def _collectModulesAndClasses(
           except:
             cls = None
           if cls and not isBuiltInClass(cls):
-            _collectModulesAndClasses(cls, packages, modules, classes, dict_class_name_to_alias, ids)
+            _collectModulesAndClasses(cls, modules, classes, ids)
 
 
-def collectModulesAndClasses(root_modules: list[types.ModuleType]) -> tuple[list[types.ModuleType], list[type], dict[str, list[str]]]:
-  packages = []
+def collectModulesAndClasses(root_modules: list[types.ModuleType]) -> tuple[list[types.ModuleType], list[type]]:
   modules = []
   classes = []
-  dict_class_name_to_alias = {}
   ids = []
   for module in root_modules:
-    _collectModulesAndClasses(module, packages, modules, classes, dict_class_name_to_alias, ids)
+    _collectModulesAndClasses(module, modules, classes, ids)
+  modules.sort(key=lambda m: getFullModuleName(m))
   classes.sort(key=lambda c: getFullClassName(c))
-  return (packages, modules, classes, dict_class_name_to_alias)
+  return (modules, classes)
+
+
+def collectModuleExports(modules: list[types.ModuleType]) -> dict[any, list[str]]:
+  module_exports = {}
+  for module in modules:
+    if not hasattr(module, '__all__'):
+      continue
+    for key, member in inspect.getmembers(module):
+      if not key in module.__all__:
+        continue
+      module_name = getFullModuleName(module)
+      # For each entry we add to module_exports
+      # The key is the member being exported.
+      # value[0] is the full exported name, starting with the name of the module.
+      # value[1] is the name of the module that contains the exported name.
+      full_exported_name = f"{module_name}.{key}"
+      value = [full_exported_name, module_name]
+      if member in module_exports:
+        # If there are multiple module exports for the same thing, keep the one that is shorter.
+        other_full_exported_name = module_exports.get(member)[0];
+        if len(full_exported_name) < len(other_full_exported_name):
+          module_exports.update({member: value})
+      else:
+        module_exports.update({member: value})
+  return module_exports
+
+
+def collectTypeAliases(modules: list[types.ModuleType], classes: list[type]) -> dict[str, str]:
+  type_aliases = {}
+  for module in modules:
+    for key, member in inspect.getmembers(module):
+      if key == "_":
+        continue
+      if ignoreMember(module, key, member):
+        continue
+      if not isTypeAlias(module, key, member):
+        continue
+      alias = member
+      type_aliases.update({f"{getFullModuleName(module)}.{key}": getFullClassName(alias)})
+  for cls in classes:
+    for key, member in inspect.getmembers(cls):
+      if key == "_":
+        continue
+      if ignoreMember(cls, key, member):
+        continue
+      if not isTypeAlias(cls, key, member):
+        continue
+      alias = member
+      type_aliases.update({f"{getFullClassName(cls)}.{key}": getFullClassName(alias)})
+  return type_aliases
 
 
 def collectSubclasses(classes: list[type]) -> dict[str, list[str]]:

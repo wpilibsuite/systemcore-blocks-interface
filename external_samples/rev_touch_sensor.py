@@ -26,24 +26,33 @@ class RevTouchSensor(Component):
         if portType != PortType.SMART_IO_PORT:
             raise InvalidPortException
         self.port = port
+
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 
+
     def get_name(self) -> str:  
         return "Touch Sensor"
+
     def get_part_number(self) -> str:  
         return "REV-31-1425"
+
     def get_url(self) -> str:  
         return "https://www.revrobotics.com/rev-31-1425/"
+
     def get_version(self) -> tuple[int, int, int]: 
         return (1, 0, 0)
+
     def stop(self) -> None:
         pass
+
     def reset(self) -> None:
         self.pressed_callback = None
         self.released_callback = None
         pass
+
     def get_connection_port_type(self) -> list[PortType]:
         return [PortType.SMART_IO_PORT]
+
     def periodic(self) -> None:
         old = self.is_pressed
         self._read_hardware()

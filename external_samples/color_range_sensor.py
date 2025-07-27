@@ -16,15 +16,18 @@
 # @fileoverview This is a sample for a color/range sensor
 # @author alan@porpoiseful.com (Alan Smith)
 
-from component import Component, PortType, InvalidPortException
 from typing import Protocol, Self
+from component import Component, PortType, InvalidPortException
 
 class DistanceCallable(Protocol):
     def __call__(self, distance : float) -> None:
         pass
+
+
 class ColorCallable(Protocol):
     def __call__(self, hue : int, saturation : int, value : int) -> None:
         pass
+
 
 class ColorRangeSensor(Component):    
     def __init__(self, ports : list[tuple[PortType, int]]):
@@ -32,23 +35,32 @@ class ColorRangeSensor(Component):
         if portType != PortType.I2C_PORT:
             raise InvalidPortException
         self.port = port
+
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 
+
     def get_name(self) -> str:  
         return "Color Sensor v3"
+
     def get_part_number(self) -> str:  
         return "REV-31-1557"
+
     def get_url(self) -> str:  
         return "https://www.revrobotics.com/rev-31-1557"
+
     def get_version(self) -> tuple[int, int, int]: 
         return (1, 0, 0)
+
     def stop(self) -> None:
         # send stop command to sensor
         pass
+
     def reset(self) -> None:
         pass
+
     def get_connection_port_type(self) -> list[PortType]:
         return [PortType.I2C_PORT]
+
     def periodic(self) -> None:
         pass
 
@@ -62,9 +74,11 @@ class ColorRangeSensor(Component):
     def get_color_rgb(self) -> tuple[int, int, int]:
         '''gets the color in rgb (red, green, blue)'''
         pass
+
     def get_color_hsv(self) -> tuple[int, int, int]:
         '''gets the color in hsv (hue, saturation, value)'''
         pass
+
     def get_distance_mm(self) -> float:
         '''gets the distance of the object seen'''
         pass

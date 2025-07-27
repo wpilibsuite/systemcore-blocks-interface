@@ -23,6 +23,8 @@ from typing import Protocol
 class EmptyCallable(Protocol):
     def __call__(self) -> None:
         pass
+
+
 class PortType(Enum):
     CAN_PORT = 1
     SMART_IO_PORT = 2
@@ -31,37 +33,44 @@ class PortType(Enum):
     I2C_PORT = 5
     USB_PORT = 6
 
+
 class InvalidPortException(Exception):
     pass
+
 
 # This is an abstract class
 class Component(ABC):
     @abstractmethod
     def __init__(self, ports : list[tuple[PortType, int]]):
         pass
-    # This is the manufacturer of the component
+
+    # Returns the manufacturer of the component
     @abstractmethod
-    def get_manufacturer(self) -> str:   
-        pass 
-    # This is the name of the component
-    @abstractmethod
-    def get_name(self) -> str:  
+    def get_manufacturer(self) -> str:
         pass
-    # This is the part number of the component
+
+    # Returns the name of the component
     @abstractmethod
-    def get_part_number(self) -> str:  
+    def get_name(self) -> str:
         pass
-    # This is the URL of the component
+
+    # Returns the part number of the component
     @abstractmethod
-    def get_url(self) -> str:  
+    def get_part_number(self) -> str:
         pass
-    # This is the version of the software (returned as a (major, minor, patch) tuple where 
+
+    # Returns the URL of the component
+    @abstractmethod
+    def get_url(self) -> str:
+        pass
+
+    # Returns the version of the software (returned as a (major, minor, patch) tuple where
     # major, minor and patch are all positive integers
     # This MUST follow semantic versioning as described here: https://semver.org/
     @abstractmethod
-    def get_version(self) -> tuple[int, int, int]: 
+    def get_version(self) -> tuple[int, int, int]:
         pass
-    
+
     # This stops all movement (if any) for the component
     @abstractmethod
     def stop(self) -> None:
@@ -73,13 +82,13 @@ class Component(ABC):
     def reset(self) -> None:
         pass
 
-    # This returns a list (can be empty, one, or multiple) of the ports this connects to
+    # Returns a list (can be empty, one, or multiple) of the ports this connects to
     # of the PortType enumeration
     @abstractmethod
     def get_connection_port_type(self) -> list[PortType]:
         pass
 
-    # This is called periodically when an opmode is running.   The component might use this
+    # This is called periodically when an opmode is running. The component might use this
     # to talk to hardware and then call callbacks
     @abstractmethod
     def periodic(self) -> None:

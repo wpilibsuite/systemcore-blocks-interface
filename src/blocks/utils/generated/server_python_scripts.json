@@ -261,19 +261,19 @@
         {
             "enums": [],
             "functions": [],
-            "moduleName": "blocks_base_classes",
+            "moduleName": "blocks_base_classes.mechanism",
             "moduleVariables": []
         },
         {
             "enums": [],
             "functions": [],
-            "moduleName": "blocks_base_classes",
+            "moduleName": "blocks_base_classes.opmode",
             "moduleVariables": []
         },
         {
             "enums": [],
             "functions": [],
-            "moduleName": "blocks_base_classes",
+            "moduleName": "blocks_base_classes.robot_base",
             "moduleVariables": []
         }
     ],
