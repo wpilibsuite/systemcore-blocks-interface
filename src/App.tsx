@@ -48,6 +48,8 @@ import { mutatorOpenListener } from './blocks/mrc_param_container'
 import { TOOLBOX_UPDATE_EVENT } from './blocks/mrc_mechanism_component_holder';
 import { antdThemeFromString } from './reactComponents/ThemeModal';
 import { useTranslation } from 'react-i18next';
+import { UserSettingsProvider } from './reactComponents/UserSettingsProvider';
+import { useUserSettings } from './reactComponents/useUserSettings';
 
 /** Storage key for shown toolbox categories. */
 const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';
@@ -87,26 +89,7 @@ const LAYOUT_BACKGROUND_COLOR = '#0F0';
  * project management, and user interface layout.
  */
 const App: React.FC = (): React.JSX.Element => {
-  const { t, i18n } = useTranslation();
-    
-  const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [storage, setStorage] = React.useState<commonStorage.Storage | null>(null);
-  const [currentModule, setCurrentModule] = React.useState<commonStorage.Module | null>(null);
-  const [messageApi, contextHolder] = Antd.message.useMessage();
-  const [generatedCode, setGeneratedCode] = React.useState<string>('');
-  const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
-  const [project, setProject] = React.useState<commonStorage.Project | null>(null);
-  const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
-  const [activeTab, setActiveTab] = React.useState('');
-  const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
-  const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
-  const [leftCollapsed, setLeftCollapsed] = React.useState(false);
-  const [rightCollapsed, setRightCollapsed] = React.useState(false);
-  const [theme, setTheme] = React.useState('dark');
-
-  const blocksEditor = React.useRef<editor.Editor | null>(null);
-  const generatorContext = React.useRef<GeneratorContext | null>(null);
-  const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
 
   /** Opens client-side storage asynchronously. */
   const openStorage = async (): Promise<void> => {
@@ -118,6 +101,152 @@ const App: React.FC = (): React.JSX.Element => {
       console.error(e);
     }
   };
+
+  // Initialize storage when app loads
+  React.useEffect(() => {
+    openStorage();
+  }, []);
+
+  if (!storage) {
+    return (
+      <Antd.ConfigProvider>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh' 
+        }}>
+          <Antd.Spin size="large" />
+        </div>
+      </Antd.ConfigProvider>
+    );
+  }
+
+  return <AppWithUserSettings storage={storage} />;
+};
+
+/**
+ * App wrapper that manages project state and provides it to UserSettingsProvider.
+ */
+const AppWithUserSettings: React.FC<{ storage: commonStorage.Storage }> = ({ storage }) => {
+  const [project, setProject] = React.useState<commonStorage.Project | null>(null);
+
+  return (
+    <UserSettingsProvider
+      storage={storage}
+      currentProjectName={project?.projectName}
+    >
+      <AppContent project={project} setProject={setProject} />
+    </UserSettingsProvider>
+  );
+};
+
+/**
+ * Inner application content component that has access to UserSettings context.
+ */
+interface AppContentProps {
+  project: commonStorage.Project | null;
+  setProject: React.Dispatch<React.SetStateAction<commonStorage.Project | null>>;
+}
+
+const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.JSX.Element => {
+  const { t, i18n } = useTranslation();
+  const { settings, updateLanguage, updateTheme, storage, isLoading } = useUserSettings();
+
+  const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
+  const [currentModule, setCurrentModule] = React.useState<commonStorage.Module | null>(null);
+  const [messageApi, contextHolder] = Antd.message.useMessage();
+  const [generatedCode, setGeneratedCode] = React.useState<string>('');
+  const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+  const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
+  const [activeTab, setActiveTab] = React.useState('');
+  const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
+  const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
+  const [leftCollapsed, setLeftCollapsed] = React.useState(false);
+  const [rightCollapsed, setRightCollapsed] = React.useState(false);
+  const [theme, setTheme] = React.useState('dark');
+  const [languageInitialized, setLanguageInitialized] = React.useState(false);
+  const [themeInitialized, setThemeInitialized] = React.useState(false);
+
+  const blocksEditor = React.useRef<editor.Editor | null>(null);
+  const generatorContext = React.useRef<GeneratorContext | null>(null);
+  const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
+
+  /** Initialize language from UserSettings when app first starts. */
+  React.useEffect(() => {
+    // Only proceed if settings are loaded
+    if (!isLoading) {
+      if (!languageInitialized && settings.language && i18n.language !== settings.language) {
+        i18n.changeLanguage(settings.language);
+        setLanguageInitialized(true);
+      } else if (!languageInitialized) {
+        setLanguageInitialized(true);
+      }
+    }
+  }, [settings.language, i18n, languageInitialized, isLoading]);
+
+  /** Initialize theme from UserSettings when app first starts. */
+  React.useEffect(() => {
+    // Only proceed if settings are loaded
+    if (!isLoading) {
+      if (!themeInitialized && settings.theme && settings.theme !== theme) {
+        setTheme(settings.theme);
+        setThemeInitialized(true);
+      } else if (!themeInitialized) {
+        setThemeInitialized(true);
+      }
+    }
+  }, [settings.theme, theme, themeInitialized, isLoading]);
+
+  /** Save language changes to UserSettings when i18n language changes. */
+  React.useEffect(() => {
+    const handleLanguageChange = async (newLanguage: string) => {
+      // Save current blocks before language change
+      if (currentModule && areBlocksModified()) {
+        try {
+          await saveBlocks();
+        } catch (e) {
+          console.error('Failed to save blocks before language change:', e);
+        }
+      }
+
+      // Only save if this is not the initial load and the language is different
+      if (languageInitialized && newLanguage !== settings.language) {
+        try {
+          await updateLanguage(newLanguage);
+        } catch (error) {
+          console.error('Failed to save language setting:', error);
+        }
+      }
+
+      // Update toolbox after language change
+      if (blocksEditor.current) {
+        blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+      }
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [languageInitialized, settings.language, updateLanguage, i18n, currentModule, shownPythonToolboxCategories]);
+
+  /** Save theme changes to UserSettings when theme changes. */
+  React.useEffect(() => {
+    const saveThemeChange = async () => {
+      // Only save if this is not the initial load and theme is different from settings
+      if (themeInitialized && theme !== settings.theme && !isLoading) {
+        try {
+          await updateTheme(theme);
+        } catch (error) {
+          console.error('Failed to save theme setting:', error);
+        }
+      }
+    };
+
+    saveThemeChange();
+  }, [theme, settings.theme, updateTheme, themeInitialized, isLoading]);
 
   /** Initializes custom blocks and Python generator. */
   const initializeBlocks = (): void => {
@@ -274,9 +403,8 @@ const App: React.FC = (): React.JSX.Element => {
     };
   }, [handleToolboxUpdateRequest]);
 
-  // Initialize storage and blocks when app loads
+  // Initialize blocks when app loads
   React.useEffect(() => {
-    openStorage();
     initializeBlocks();
   }, []);
 
@@ -292,10 +420,10 @@ const App: React.FC = (): React.JSX.Element => {
     if (blocksEditor.current) {
       blocksEditor.current.loadModuleBlocks(currentModule);
     }
-  }, [currentModule]); 
+  }, [currentModule]);
 
   const setupWorkspace = (newWorkspace: Blockly.WorkspaceSvg) => {
-     if (!blocklyComponent.current || !storage) {
+    if (!blocklyComponent.current || !storage) {
       return;
     }
     // Recreate workspace when Blockly component is ready
@@ -303,18 +431,18 @@ const App: React.FC = (): React.JSX.Element => {
     newWorkspace.addChangeListener(mutatorOpenListener);
     newWorkspace.addChangeListener(handleBlocksChanged);
     generatorContext.current = createGeneratorContext();
-    
+
     if (currentModule) {
       generatorContext.current.setModule(currentModule);
     }
 
     blocksEditor.current = new editor.Editor(newWorkspace, generatorContext.current, storage);
-    
+
     // Set the current module in the editor after creating it
     if (currentModule) {
       blocksEditor.current.loadModuleBlocks(currentModule);
     }
-    
+
     blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
   };
 
@@ -359,31 +487,6 @@ const App: React.FC = (): React.JSX.Element => {
     }
   }, [project]);
 
-  // Handle language changes with automatic saving
-  React.useEffect(() => {
-    const handleLanguageChange = async () => {
-      // Save current blocks before language change
-      if (currentModule && areBlocksModified()) {
-        try {
-          await saveBlocks();
-        } catch (e) {
-          console.error('Failed to save blocks before language change:', e);
-        }
-      }
-      
-      // Update toolbox after language change
-      if (blocksEditor.current) {
-        blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
-      }
-    };
-
-    i18n.on('languageChanged', handleLanguageChange);
-
-    return () => {
-      i18n.off('languageChanged', handleLanguageChange);
-    };
-  }, [currentModule, shownPythonToolboxCategories, i18n]);
-
   const { Sider, Content } = Antd.Layout;
 
   return (
@@ -392,78 +495,79 @@ const App: React.FC = (): React.JSX.Element => {
     >
       {contextHolder}
       <Antd.Layout style={{ height: FULL_VIEWPORT_HEIGHT }}>
-        <Header
-          alertErrorMessage={alertErrorMessage}
-          setAlertErrorMessage={setAlertErrorMessage}
-          project={project}
-        />
-        <Antd.Layout
-          style={{
-            background: LAYOUT_BACKGROUND_COLOR,
-            height: FULL_HEIGHT,
-          }}
-        >
-          <Sider
-            collapsible
-            collapsed={leftCollapsed}
-            onCollapse={(collapsed: boolean) => setLeftCollapsed(collapsed)}
+          <Header
+            alertErrorMessage={alertErrorMessage}
+            setAlertErrorMessage={setAlertErrorMessage}
+            project={project}
+          />
+          <Antd.Layout
+            style={{
+              background: LAYOUT_BACKGROUND_COLOR,
+              height: FULL_HEIGHT,
+            }}
           >
-            <Menu.Component
-              storage={storage}
-              setAlertErrorMessage={setAlertErrorMessage}
-              gotoTab={setActiveTab}
-              project={project}
-              setProject={setProject}
-              openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
-              setTheme={setTheme}
-            />
-          </Sider>
-          <Antd.Layout>
-            <Tabs.Component
-              tabList={tabItems}
-              activeTab={activeTab}
-              setTabList={setTabItems}
-              setAlertErrorMessage={setAlertErrorMessage}
-              currentModule={currentModule}
-              setCurrentModule={changeModule}
-              project={project}
-              setProject={setProject}
-              storage={storage}
-            />
+            <Sider
+              collapsible
+              collapsed={leftCollapsed}
+              onCollapse={(collapsed: boolean) => setLeftCollapsed(collapsed)}
+            >
+              <Menu.Component
+                storage={storage}
+                setAlertErrorMessage={setAlertErrorMessage}
+                gotoTab={setActiveTab}
+                project={project}
+                setProject={setProject}
+                openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
+                theme={theme}
+                setTheme={setTheme}
+              />
+            </Sider>
             <Antd.Layout>
-              <Content>
-                <BlocklyComponent 
-                  theme={theme}
-                  onWorkspaceRecreated={setupWorkspace}
-                  ref={blocklyComponent} 
-                />
-              </Content>
-              <Sider
-                collapsible
-                reverseArrow={true}
-                collapsed={rightCollapsed}
-                collapsedWidth={CODE_PANEL_MIN_SIZE}
-                width={CODE_PANEL_DEFAULT_SIZE}
-                onCollapse={(collapsed: boolean) => setRightCollapsed(collapsed)}
-              >
-                <CodeDisplay
-                  generatedCode={generatedCode}
-                  messageApi={messageApi}
-                  setAlertErrorMessage={setAlertErrorMessage}
-                  theme={theme}
-                />
-              </Sider>
+              <Tabs.Component
+                tabList={tabItems}
+                activeTab={activeTab}
+                setTabList={setTabItems}
+                setAlertErrorMessage={setAlertErrorMessage}
+                currentModule={currentModule}
+                setCurrentModule={changeModule}
+                project={project}
+                setProject={setProject}
+                storage={storage}
+              />
+              <Antd.Layout>
+                <Content>
+                  <BlocklyComponent
+                    theme={theme}
+                    onWorkspaceRecreated={setupWorkspace}
+                    ref={blocklyComponent}
+                  />
+                </Content>
+                <Sider
+                  collapsible
+                  reverseArrow={true}
+                  collapsed={rightCollapsed}
+                  collapsedWidth={CODE_PANEL_MIN_SIZE}
+                  width={CODE_PANEL_DEFAULT_SIZE}
+                  onCollapse={(collapsed: boolean) => setRightCollapsed(collapsed)}
+                >
+                  <CodeDisplay
+                    generatedCode={generatedCode}
+                    messageApi={messageApi}
+                    setAlertErrorMessage={setAlertErrorMessage}
+                    theme={theme}
+                  />
+                </Sider>
+              </Antd.Layout>
             </Antd.Layout>
           </Antd.Layout>
         </Antd.Layout>
-      </Antd.Layout>
 
-      <ToolboxSettingsModal
-        isOpen={toolboxSettingsModalIsOpen}
-        shownCategories={shownPythonToolboxCategories}
-        onOk={handleToolboxSettingsConfirm}
-        onCancel={handleToolboxSettingsCancel}
-      />
+        <ToolboxSettingsModal
+          isOpen={toolboxSettingsModalIsOpen}
+          shownCategories={shownPythonToolboxCategories}
+          onOk={handleToolboxSettingsConfirm}
+          onCancel={handleToolboxSettingsCancel}
+        />
     </Antd.ConfigProvider>
   );
 };

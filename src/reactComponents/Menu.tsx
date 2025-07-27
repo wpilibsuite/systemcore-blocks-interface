@@ -21,6 +21,7 @@
 import * as Antd from 'antd';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
+import * as createPythonFiles from '../storage/create_python_files';
 import * as I18Next from 'react-i18next';
 import {TabType } from '../types/TabType';
 
@@ -54,6 +55,7 @@ export interface MenuProps {
   project: commonStorage.Project | null;
   openWPIToolboxSettings: () => void;
   setProject: (project: commonStorage.Project | null) => void;
+  theme: string;
   setTheme: (theme: string) => void;
 }
 
@@ -127,7 +129,7 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
   return [
     getItem(t('PROJECT'), 'project', <FolderOutlined />, [
       getItem(t('SAVE'), 'save', <SaveOutlined />),
-      getItem(t('DEPLOY'), 'deploy', undefined, undefined, true),
+      getItem(t('DEPLOY'), 'deploy'),
       getDivider(),
       getItem(t('MANAGE') + '...', 'manageProjects'),
     ]),
@@ -178,11 +180,8 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
-  const [currentTheme, setCurrentTheme] = React.useState('dark');
-
 
   const handleThemeChange = (newTheme: string) => {
-    setCurrentTheme(newTheme);
     props.setTheme(newTheme);
   };
 
@@ -282,6 +281,12 @@ export function Component(props: MenuProps): React.JSX.Element {
       props.openWPIToolboxSettings();
     } else if (key === 'theme') {
       setThemeModalOpen(true);
+    } else if (key == 'deploy') {
+      if (props.project && props.storage) {
+        handleDeploy();
+      } else {
+        props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
+      }
     } else if (key.startsWith('setlang:')) {
       const lang = key.split(':')[1];
       i18n.changeLanguage(lang);
@@ -289,6 +294,31 @@ export function Component(props: MenuProps): React.JSX.Element {
       // TODO: Handle other menu actions
 
       console.log(`Selected key that wasn't module: ${key}`);
+    }
+  };
+
+  /** Handles the deploy action to generate and download Python files. */
+  const handleDeploy = async (): Promise<void> => {
+    if (!props.project || !props.storage) {
+      return;
+    }
+
+    try {
+      const blobUrl = await createPythonFiles.producePythonProjectBlob(props.project, props.storage);
+      
+      // Create a temporary link to download the file
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `${props.project.projectName}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the blob URL
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Failed to deploy project:', error);
+      props.setAlertErrorMessage(t('DEPLOY_FAILED') || 'Failed to deploy project');
     }
   };
 
@@ -359,7 +389,7 @@ export function Component(props: MenuProps): React.JSX.Element {
       <ThemeModal
           open={themeModalOpen}
           onClose={() => setThemeModalOpen(false)}
-          currentTheme={currentTheme}
+          currentTheme={props.theme}
           onThemeChange={handleThemeChange}
         />
     </>

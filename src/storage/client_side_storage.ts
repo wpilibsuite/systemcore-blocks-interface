@@ -154,8 +154,8 @@ class ClientSideStorage implements commonStorage.Storage {
               ...module,
             };
             const project: commonStorage.Project = {
-              projectName: moduleName,
-              userVisibleName: commonStorage.snakeCaseToPascalCase(moduleName),
+              projectName: module.projectName,
+              userVisibleName: commonStorage.snakeCaseToPascalCase(module.projectName),
               robot: robot,
               mechanisms: [],
               opModes: [],
@@ -242,7 +242,7 @@ class ClientSideStorage implements commonStorage.Storage {
 
   async createProject(projectName: string, robotContent: string, opmodeContent : string): Promise<void> {
     const modulePath = commonStorage.makeRobotPath(projectName);
-    const opmodePath = commonStorage.makeModulePath(projectName, 'Teleop');
+    const opmodePath = commonStorage.makeModulePath(projectName, 'teleop');
 
     await this._saveModule(commonStorage.MODULE_TYPE_ROBOT, modulePath, robotContent);
     await this._saveModule(commonStorage.MODULE_TYPE_OPMODE, opmodePath, opmodeContent);
@@ -580,7 +580,7 @@ class ClientSideStorage implements commonStorage.Storage {
       let moduleNameToContentText: {[key: string]: string}; // key is module name, value is module content
       try {
         [moduleNameToType, moduleNameToContentText] = await commonStorage.processUploadedBlob(
-            projectName, blobUrl);
+            blobUrl);
       } catch (e) {
         console.log('commonStorage.processUploadedBlob failed.');
         reject(new Error('commonStorage.processUploadedBlob failed.'));
