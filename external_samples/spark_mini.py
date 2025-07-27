@@ -26,7 +26,7 @@ import wpilib
 import wpimath
 import wpiutil
 
-class SparkMiniComponent(Component):
+class SparkMini(Component):
     def __init__(self, ports : list[tuple[PortType, int]]):
         portType, port = ports[0]
         if portType != PortType.SMART_MOTOR_PORT:

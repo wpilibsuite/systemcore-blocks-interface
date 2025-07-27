@@ -304,6 +304,618 @@
     },
     "classes": [
         {
+            "className": "expansion_hub.ExpansionHub",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hubNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHub",
+                    "functionName": "__init__",
+                    "returnType": "expansion_hub.ExpansionHub",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHub"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHub",
+                    "functionName": "getBatteryVoltage",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHub"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "motorNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHub",
+                    "functionName": "getMotor",
+                    "returnType": "expansion_hub.ExpansionHubMotor",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHub"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "servoNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHub",
+                    "functionName": "getServo",
+                    "returnType": "expansion_hub.ExpansionHubServo",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHub"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHub",
+                    "functionName": "isConnected",
+                    "returnType": "bool",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "expansion_hub",
+            "staticMethods": []
+        },
+        {
+            "className": "expansion_hub.ExpansionHubMotor",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hubNumber",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "motorNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "__init__",
+                    "returnType": "expansion_hub.ExpansionHubMotor",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "getCurrent",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "getEncoder",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "getEncoderVelocity",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "getPositionPidConstants",
+                    "returnType": "expansion_hub.ExpansionHubPidConstants",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "getVelocityPidConstants",
+                    "returnType": "expansion_hub.ExpansionHubPidConstants",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "isHubConnected",
+                    "returnType": "bool",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "resetEncoder",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "perCount",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "setDistancePerCount",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "setEnabled",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "floatOn0",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "setFloatOn0",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "power",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "setPercentagePower",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setpoint",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "setPositionSetpoint",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "reversed",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "setReversed",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setpoint",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "setVelocitySetpoint",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "voltage",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
+                    "functionName": "setVoltage",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "expansion_hub",
+            "staticMethods": []
+        },
+        {
+            "className": "expansion_hub.ExpansionHubPidConstants",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hubNumber",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "motorNumber",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "isVelocityPid",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
+                    "functionName": "__init__",
+                    "returnType": "expansion_hub.ExpansionHubPidConstants",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubPidConstants"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
+                    "functionName": "disableContinousInput",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubPidConstants"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "minimum",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "maximum",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
+                    "functionName": "enableContinousInput",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubPidConstants"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "s",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "v",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "a",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
+                    "functionName": "setFF",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubPidConstants"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "p",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "i",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "d",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
+                    "functionName": "setPID",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "expansion_hub",
+            "staticMethods": []
+        },
+        {
+            "className": "expansion_hub.ExpansionHubServo",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hubNumber",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "servoNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubServo",
+                    "functionName": "__init__",
+                    "returnType": "expansion_hub.ExpansionHubServo",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubServo",
+                    "functionName": "isHubConnected",
+                    "returnType": "bool",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubServo",
+                    "functionName": "set",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "degrees",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubServo",
+                    "functionName": "setAngle",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubServo",
+                    "functionName": "setEnabled",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "framePeriod",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubServo",
+                    "functionName": "setFramePeriod",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "pulseWidth",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub.ExpansionHubServo",
+                    "functionName": "setPulseWidth",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "expansion_hub",
+            "staticMethods": []
+        },
+        {
             "className": "wpilib.ADXL345_I2C",
             "classVariables": [
                 {
@@ -2062,13 +2674,13 @@
                 {
                     "name": "kTeamDeviceType",
                     "tooltip": "",
-                    "type": "hal.CANDeviceType",
+                    "type": "hal._wpiHal.CANDeviceType",
                     "writable": false
                 },
                 {
                     "name": "kTeamManufacturer",
                     "tooltip": "",
-                    "type": "hal.CANManufacturer",
+                    "type": "hal._wpiHal.CANManufacturer",
                     "writable": false
                 }
             ],
@@ -2137,7 +2749,7 @@
                         {
                             "defaultValue": "",
                             "name": "data",
-                            "type": "hal.CANReceiveMessage"
+                            "type": "hal._wpiHal.CANReceiveMessage"
                         }
                     ],
                     "declaringClassName": "wpilib.CAN",
@@ -2160,7 +2772,7 @@
                         {
                             "defaultValue": "",
                             "name": "data",
-                            "type": "hal.CANReceiveMessage"
+                            "type": "hal._wpiHal.CANReceiveMessage"
                         }
                     ],
                     "declaringClassName": "wpilib.CAN",
@@ -2188,7 +2800,7 @@
                         {
                             "defaultValue": "",
                             "name": "data",
-                            "type": "hal.CANReceiveMessage"
+                            "type": "hal._wpiHal.CANReceiveMessage"
                         }
                     ],
                     "declaringClassName": "wpilib.CAN",
@@ -2229,7 +2841,7 @@
                         {
                             "defaultValue": "",
                             "name": "message",
-                            "type": "hal.CANMessage"
+                            "type": "hal._wpiHal.CANMessage"
                         }
                     ],
                     "declaringClassName": "wpilib.CAN",
@@ -2252,7 +2864,7 @@
                         {
                             "defaultValue": "",
                             "name": "message",
-                            "type": "hal.CANMessage"
+                            "type": "hal._wpiHal.CANMessage"
                         }
                     ],
                     "declaringClassName": "wpilib.CAN",
@@ -2275,7 +2887,7 @@
                         {
                             "defaultValue": "",
                             "name": "message",
-                            "type": "hal.CANMessage"
+                            "type": "hal._wpiHal.CANMessage"
                         },
                         {
                             "defaultValue": "",
@@ -2303,7 +2915,7 @@
                         {
                             "defaultValue": "",
                             "name": "message",
-                            "type": "hal.CANMessage"
+                            "type": "hal._wpiHal.CANMessage"
                         },
                         {
                             "defaultValue": "",
@@ -2331,7 +2943,7 @@
                         {
                             "defaultValue": "",
                             "name": "message",
-                            "type": "hal.CANMessage"
+                            "type": "hal._wpiHal.CANMessage"
                         }
                     ],
                     "declaringClassName": "wpilib.CAN",
@@ -2354,7 +2966,7 @@
                         {
                             "defaultValue": "",
                             "name": "message",
-                            "type": "hal.CANMessage"
+                            "type": "hal._wpiHal.CANMessage"
                         }
                     ],
                     "declaringClassName": "wpilib.CAN",
@@ -2415,6 +3027,56 @@
             ],
             "moduleName": "wpilib",
             "staticMethods": []
+        },
+        {
+            "className": "wpilib.CameraServer",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "args",
+                            "type": "tuple"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "kwargs",
+                            "type": "dict"
+                        }
+                    ],
+                    "declaringClassName": "wpilib.CameraServer",
+                    "functionName": "__init__",
+                    "returnType": "wpilib.CameraServer",
+                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [],
+            "instanceVariables": [],
+            "moduleName": "wpilib",
+            "staticMethods": [
+                {
+                    "args": [],
+                    "declaringClassName": "wpilib.CameraServer",
+                    "functionName": "is_alive",
+                    "returnType": "bool",
+                    "tooltip": ":returns: True if the CameraServer is still alive"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "vision_py",
+                            "type": "typing.Optional[str]"
+                        }
+                    ],
+                    "declaringClassName": "wpilib.CameraServer",
+                    "functionName": "launch",
+                    "returnType": "None",
+                    "tooltip": "\n        Launches the CameraServer process in autocapture mode or\n        using a user-specified python script\n\n        :param vision_py: If specified, this is the relative path to\n                          a filename with a function in it\n\n        Example usage::\n\n            wpilib.CameraServer.launch(\"vision.py:main\")\n\n        .. warning:: You must have robotpy-cscore installed, or this\n                     function will fail without returning an error\n                     (you will see an error in the console).\n\n        "
+                }
+            ]
         },
         {
             "className": "wpilib.Color",
@@ -30048,56 +30710,6 @@
             "staticMethods": []
         },
         {
-            "className": "wpilib.cameraserver.CameraServer",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "args",
-                            "type": "tuple"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "kwargs",
-                            "type": "dict"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.cameraserver.CameraServer",
-                    "functionName": "__init__",
-                    "returnType": "wpilib.cameraserver.CameraServer",
-                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [],
-            "instanceVariables": [],
-            "moduleName": "wpilib.cameraserver",
-            "staticMethods": [
-                {
-                    "args": [],
-                    "declaringClassName": "wpilib.cameraserver.CameraServer",
-                    "functionName": "is_alive",
-                    "returnType": "bool",
-                    "tooltip": ":returns: True if the CameraServer is still alive"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "vision_py",
-                            "type": "typing.Optional[str]"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.cameraserver.CameraServer",
-                    "functionName": "launch",
-                    "returnType": "None",
-                    "tooltip": "\n        Launches the CameraServer process in autocapture mode or\n        using a user-specified python script\n\n        :param vision_py: If specified, this is the relative path to\n                          a filename with a function in it\n\n        Example usage::\n\n            wpilib.CameraServer.launch(\"vision.py:main\")\n\n        .. warning:: You must have robotpy-cscore installed, or this\n                     function will fail without returning an error\n                     (you will see an error in the console).\n\n        "
-                }
-            ]
-        },
-        {
             "className": "wpilib.counter.EdgeConfiguration",
             "classVariables": [
                 {
@@ -32048,7 +32660,7 @@
                 }
             ],
             "instanceVariables": [],
-            "moduleName": "wpilib._wpilib.interfaces",
+            "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
         {
@@ -32104,7 +32716,7 @@
                     "writable": false
                 }
             ],
-            "moduleName": "wpilib._wpilib.interfaces",
+            "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
         {
@@ -32684,7 +33296,7 @@
                 }
             ],
             "instanceVariables": [],
-            "moduleName": "wpilib._wpilib.interfaces",
+            "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
         {
@@ -32824,7 +33436,7 @@
                     "writable": false
                 }
             ],
-            "moduleName": "wpilib._wpilib.interfaces",
+            "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
         {
@@ -32880,7 +33492,7 @@
                     "writable": false
                 }
             ],
-            "moduleName": "wpilib._wpilib.interfaces",
+            "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
         {
@@ -33005,7 +33617,7 @@
                 }
             ],
             "instanceVariables": [],
-            "moduleName": "wpilib._wpilib.interfaces",
+            "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
         {
@@ -33130,7 +33742,7 @@
                         {
                             "defaultValue": "",
                             "name": "data",
-                            "type": "hal.AddressableLEDData"
+                            "type": "hal._wpiHal.AddressableLEDData"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.AddressableLEDSim",
@@ -33187,7 +33799,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33210,7 +33822,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33233,7 +33845,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33256,7 +33868,7 @@
                         {
                             "defaultValue": "",
                             "name": "data",
-                            "type": "hal.AddressableLEDData"
+                            "type": "hal._wpiHal.AddressableLEDData"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.AddressableLEDSim",
@@ -33337,7 +33949,7 @@
                         {
                             "defaultValue": "",
                             "name": "data",
-                            "type": "hal.AddressableLEDData"
+                            "type": "hal._wpiHal.AddressableLEDData"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.AddressableLEDSim",
@@ -33378,7 +33990,7 @@
                         {
                             "defaultValue": "",
                             "name": "data",
-                            "type": "hal.AddressableLEDData"
+                            "type": "hal._wpiHal.AddressableLEDData"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.AddressableLEDSim",
@@ -33539,7 +34151,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33562,7 +34174,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33585,7 +34197,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33608,7 +34220,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33912,7 +34524,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33935,7 +34547,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33958,7 +34570,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -33981,7 +34593,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -34004,7 +34616,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -34032,7 +34644,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -34758,7 +35370,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -34781,7 +35393,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -34804,7 +35416,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -34827,7 +35439,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -34850,7 +35462,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -35753,7 +36365,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -35776,7 +36388,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -35799,7 +36411,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36062,7 +36674,7 @@
                     "args": [],
                     "declaringClassName": "wpilib.simulation.DriverStationSim",
                     "functionName": "getAllianceStationId",
-                    "returnType": "hal.AllianceStationID",
+                    "returnType": "hal._wpiHal.AllianceStationID",
                     "tooltip": "Get the alliance station ID (color + number).\n\n:returns: the alliance station color and number"
                 },
                 {
@@ -36157,7 +36769,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36175,7 +36787,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36193,7 +36805,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36211,7 +36823,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36229,7 +36841,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36247,7 +36859,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36265,7 +36877,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36283,7 +36895,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36308,7 +36920,7 @@
                         {
                             "defaultValue": "",
                             "name": "allianceStationId",
-                            "type": "hal.AllianceStationID"
+                            "type": "hal._wpiHal.AllianceStationID"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.DriverStationSim",
@@ -36887,7 +37499,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36910,7 +37522,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -36933,7 +37545,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -37615,7 +38227,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -37638,7 +38250,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -37661,7 +38273,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -37684,7 +38296,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -37707,7 +38319,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -37730,7 +38342,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -37753,7 +38365,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -37776,7 +38388,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -37799,7 +38411,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -41562,7 +42174,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -41585,7 +42197,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -41608,7 +42220,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -41819,7 +42431,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -41842,7 +42454,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -41865,7 +42477,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -41888,7 +42500,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -41916,7 +42528,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42202,7 +42814,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42225,7 +42837,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42248,7 +42860,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42271,7 +42883,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42548,7 +43160,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42571,7 +43183,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42594,7 +43206,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42617,7 +43229,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42640,7 +43252,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42668,7 +43280,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42941,7 +43553,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42959,7 +43571,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42977,7 +43589,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -42995,7 +43607,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -43013,7 +43625,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -43031,7 +43643,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -43049,7 +43661,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -43067,7 +43679,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -43502,7 +44114,7 @@
                     ],
                     "declaringClassName": "wpilib.simulation.SimDeviceSim",
                     "functionName": "getBoolean",
-                    "returnType": "hal.SimBoolean",
+                    "returnType": "hal._wpiHal.SimBoolean",
                     "tooltip": "Retrieves an object that allows you to interact with simulated values\nrepresented as a boolean."
                 },
                 {
@@ -43520,7 +44132,7 @@
                     ],
                     "declaringClassName": "wpilib.simulation.SimDeviceSim",
                     "functionName": "getDouble",
-                    "returnType": "hal.SimDouble",
+                    "returnType": "hal._wpiHal.SimDouble",
                     "tooltip": "Retrieves an object that allows you to interact with simulated values\nrepresented as a double."
                 },
                 {
@@ -43538,7 +44150,7 @@
                     ],
                     "declaringClassName": "wpilib.simulation.SimDeviceSim",
                     "functionName": "getEnum",
-                    "returnType": "hal.SimEnum",
+                    "returnType": "hal._wpiHal.SimEnum",
                     "tooltip": "Get the property object with the given name.\n\n:param name: the property name\n\n:returns: the property object"
                 },
                 {
@@ -43556,7 +44168,7 @@
                     ],
                     "declaringClassName": "wpilib.simulation.SimDeviceSim",
                     "functionName": "getInt",
-                    "returnType": "hal.SimInt",
+                    "returnType": "hal._wpiHal.SimInt",
                     "tooltip": "Retrieves an object that allows you to interact with simulated values\nrepresented as an integer."
                 },
                 {
@@ -43574,7 +44186,7 @@
                     ],
                     "declaringClassName": "wpilib.simulation.SimDeviceSim",
                     "functionName": "getLong",
-                    "returnType": "hal.SimLong",
+                    "returnType": "hal._wpiHal.SimLong",
                     "tooltip": "Retrieves an object that allows you to interact with simulated values\nrepresented as a long."
                 },
                 {
@@ -43605,7 +44217,7 @@
                     ],
                     "declaringClassName": "wpilib.simulation.SimDeviceSim",
                     "functionName": "getValue",
-                    "returnType": "hal.SimValue",
+                    "returnType": "hal._wpiHal.SimValue",
                     "tooltip": "Provides a readonly mechanism to retrieve all types of device values"
                 }
             ],
@@ -43630,7 +44242,7 @@
                         {
                             "defaultValue": "",
                             "name": "val",
-                            "type": "hal.SimEnum"
+                            "type": "hal._wpiHal.SimEnum"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.SimDeviceSim",
@@ -44175,7 +44787,7 @@
                         {
                             "defaultValue": "",
                             "name": "callback",
-                            "type": "Callable[[str, hal.Value], None]"
+                            "type": "Callable[[str, hal._wpiHal.Value], None]"
                         },
                         {
                             "defaultValue": "",
@@ -53671,7 +54283,7 @@
                         {
                             "defaultValue": "",
                             "name": "odometry",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
+                            "type": "wpimath.kinematics._kinematics.DifferentialDriveOdometry3dBase"
                         },
                         {
                             "defaultValue": "",
@@ -57308,7 +57920,7 @@
                         {
                             "defaultValue": "",
                             "name": "odometry",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
+                            "type": "wpimath.kinematics._kinematics.MecanumDriveOdometry3dBase"
                         },
                         {
                             "defaultValue": "",
@@ -58476,7 +59088,7 @@
                         {
                             "defaultValue": "",
                             "name": "odometry",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
+                            "type": "wpimath.kinematics._kinematics.SwerveDrive2Odometry3dBase"
                         },
                         {
                             "defaultValue": "",
@@ -59644,7 +60256,7 @@
                         {
                             "defaultValue": "",
                             "name": "odometry",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
+                            "type": "wpimath.kinematics._kinematics.SwerveDrive3Odometry3dBase"
                         },
                         {
                             "defaultValue": "",
@@ -60812,7 +61424,7 @@
                         {
                             "defaultValue": "",
                             "name": "odometry",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
+                            "type": "wpimath.kinematics._kinematics.SwerveDrive4Odometry3dBase"
                         },
                         {
                             "defaultValue": "",
@@ -61980,7 +62592,7 @@
                         {
                             "defaultValue": "",
                             "name": "odometry",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
+                            "type": "wpimath.kinematics._kinematics.SwerveDrive6Odometry3dBase"
                         },
                         {
                             "defaultValue": "",
@@ -67957,332 +68569,6 @@
             "staticMethods": []
         },
         {
-            "className": "wpimath.kinematics.DifferentialDriveOdometry3d",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "leftDistance",
-                            "type": "wpimath.units.meters"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rightDistance",
-                            "type": "wpimath.units.meters"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3d",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.DifferentialDriveOdometry3d",
-                    "tooltip": "Constructs a DifferentialDriveOdometry3d object.\n\nIF leftDistance and rightDistance are unspecified,\nYou NEED to reset your encoders (to zero).\n\n:param gyroAngle:     The angle reported by the gyroscope.\n:param leftDistance:  The distance traveled by the left encoder.\n:param rightDistance: The distance traveled by the right encoder.\n:param initialPose:   The starting position of the robot on the field."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "leftDistance",
-                            "type": "wpimath.units.meters"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rightDistance",
-                            "type": "wpimath.units.meters"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3d",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nIF leftDistance and rightDistance are unspecified,\nYou NEED to reset your encoders (to zero).\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param pose:          The position on the field that your robot is at.\n:param gyroAngle:     The angle reported by the gyroscope.\n:param leftDistance:  The distance traveled by the left encoder.\n:param rightDistance: The distance traveled by the right encoder."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "leftDistance",
-                            "type": "wpimath.units.meters"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rightDistance",
-                            "type": "wpimath.units.meters"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3d",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Updates the robot position on the field using distance measurements from\nencoders. This method is more numerically accurate than using velocities to\nintegrate the pose and is also advantageous for teams that are using lower\nCPR encoders.\n\n:param gyroAngle:     The angle reported by the gyroscope.\n:param leftDistance:  The distance traveled by the left encoder.\n:param rightDistance: The distance traveled by the right encoder.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.DifferentialDriveKinematicsBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "wpimath.kinematics.DifferentialDriveWheelPositions"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "tooltip": "Constructs an Odometry3d object.\n\n:param kinematics:     The kinematics for your drivetrain.\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param initialPose:    The starting position of the robot on the field."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "wpimath.kinematics.DifferentialDriveWheelPositions"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.DifferentialDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "wpimath.kinematics.DifferentialDriveWheelPositions"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.DifferentialDriveOdometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
             "className": "wpimath.kinematics.DifferentialDriveOdometryBase",
             "classVariables": [],
             "constructors": [
@@ -69064,322 +69350,6 @@
                     "declaringClassName": "wpimath.kinematics.MecanumDriveOdometryBase",
                     "functionName": "update",
                     "returnType": "wpimath.geometry.Pose2d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.MecanumDriveOdometry3d",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.MecanumDriveKinematics"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "wpimath.kinematics.MecanumDriveWheelPositions"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3d",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.MecanumDriveOdometry3d",
-                    "tooltip": "Constructs a MecanumDriveOdometry3d object.\n\n:param kinematics:     The mecanum drive kinematics for your drivetrain.\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param initialPose:    The starting position of the robot on the field."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "wpimath.kinematics.MecanumDriveWheelPositions"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "wpimath.kinematics.MecanumDriveWheelPositions"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.MecanumDriveKinematicsBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "wpimath.kinematics.MecanumDriveWheelPositions"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "tooltip": "Constructs an Odometry3d object.\n\n:param kinematics:     The kinematics for your drivetrain.\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param initialPose:    The starting position of the robot on the field."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "wpimath.kinematics.MecanumDriveWheelPositions"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.MecanumDriveOdometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "wpimath.kinematics.MecanumDriveWheelPositions"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.MecanumDriveOdometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
                     "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
                 }
             ],
@@ -70254,322 +70224,6 @@
             "staticMethods": []
         },
         {
-            "className": "wpimath.kinematics.SwerveDrive2Odometry3d",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.SwerveDrive2Kinematics"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "modulePositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3d",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.SwerveDrive2Odometry3d",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.SwerveDrive2KinematicsBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "tooltip": "Constructs an Odometry3d object.\n\n:param kinematics:     The kinematics for your drivetrain.\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param initialPose:    The starting position of the robot on the field."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive2Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive2Odometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
             "className": "wpimath.kinematics.SwerveDrive2OdometryBase",
             "classVariables": [],
             "constructors": [
@@ -71230,322 +70884,6 @@
                     "declaringClassName": "wpimath.kinematics.SwerveDrive3OdometryBase",
                     "functionName": "update",
                     "returnType": "wpimath.geometry.Pose2d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.SwerveDrive3Odometry3d",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.SwerveDrive3Kinematics"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "modulePositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3d",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.SwerveDrive3Odometry3d",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.SwerveDrive3KinematicsBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "tooltip": "Constructs an Odometry3d object.\n\n:param kinematics:     The kinematics for your drivetrain.\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param initialPose:    The starting position of the robot on the field."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive3Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive3Odometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
                     "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
                 }
             ],
@@ -72219,322 +71557,6 @@
                     "declaringClassName": "wpimath.kinematics.SwerveDrive4OdometryBase",
                     "functionName": "update",
                     "returnType": "wpimath.geometry.Pose2d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.SwerveDrive4Odometry3d",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.SwerveDrive4Kinematics"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "modulePositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3d",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.SwerveDrive4Odometry3d",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.SwerveDrive4KinematicsBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "tooltip": "Constructs an Odometry3d object.\n\n:param kinematics:     The kinematics for your drivetrain.\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param initialPose:    The starting position of the robot on the field."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive4Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive4Odometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
                     "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
                 }
             ],
@@ -73218,322 +72240,6 @@
                     "declaringClassName": "wpimath.kinematics.SwerveDrive6OdometryBase",
                     "functionName": "update",
                     "returnType": "wpimath.geometry.Pose2d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.SwerveDrive6Odometry3d",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.SwerveDrive6Kinematics"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "modulePositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3d",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.SwerveDrive6Odometry3d",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "wpimath.kinematics",
-            "staticMethods": []
-        },
-        {
-            "className": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "kinematics",
-                            "type": "wpimath.kinematics.SwerveDrive6KinematicsBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "Pose3d(Translation3d(x=0.000000, y=0.000000, z=0.000000), Rotation3d(x=0.000000, y=0.000000, z=0.000000))",
-                            "name": "initialPose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "tooltip": "Constructs an Odometry3d object.\n\n:param kinematics:     The kinematics for your drivetrain.\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param initialPose:    The starting position of the robot on the field."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "getPose",
-                    "returnType": "wpimath.geometry.Pose3d",
-                    "tooltip": "Returns the position of the robot on the field.\n\n:returns: The pose of the robot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "resetPose",
-                    "returnType": "None",
-                    "tooltip": "Resets the pose.\n\n:param pose: The pose to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pose",
-                            "type": "wpimath.geometry.Pose3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "resetPosition",
-                    "returnType": "None",
-                    "tooltip": "Resets the robot's position on the field.\n\nThe gyroscope angle does not need to be reset here on the user's robot\ncode. The library automatically takes care of offsetting the gyro angle.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n:param pose:           The position on the field that your robot is at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "rotation",
-                            "type": "wpimath.geometry.Rotation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "resetRotation",
-                    "returnType": "None",
-                    "tooltip": "Resets the rotation of the pose.\n\n:param rotation: The rotation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "translation",
-                            "type": "wpimath.geometry.Translation3d"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "resetTranslation",
-                    "returnType": "None",
-                    "tooltip": "Resets the translation of the pose.\n\n:param translation: The translation to reset to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.kinematics.SwerveDrive6Odometry3dBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "gyroAngle",
-                            "type": "wpimath.geometry.Rotation3d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "wheelPositions",
-                            "type": "Tuple[wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition, wpimath.kinematics.SwerveModulePosition]"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.kinematics.SwerveDrive6Odometry3dBase",
-                    "functionName": "update",
-                    "returnType": "wpimath.geometry.Pose3d",
                     "tooltip": "Updates the robot's position on the field using forward kinematics and\nintegration of the pose over time. This method takes in an angle parameter\nwhich is used instead of the angular rate that is calculated from forward\nkinematics, in addition to the current distance measurement at each wheel.\n\n:param gyroAngle:      The angle reported by the gyroscope.\n:param wheelPositions: The current distances measured by each wheel.\n\n:returns: The new pose of the robot."
                 }
             ],
@@ -82746,6 +81452,12 @@
     "modules": [
         {
             "enums": [],
+            "functions": [],
+            "moduleName": "expansion_hub",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
             "functions": [
                 {
                     "args": [],
@@ -82918,7 +81630,7 @@
                         {
                             "defaultValue": "",
                             "name": "type",
-                            "type": "hal.RuntimeType"
+                            "type": "hal._wpiHal.RuntimeType"
                         }
                     ],
                     "functionName": "setRuntimeType",
@@ -83437,15 +82149,15 @@
         }
     ],
     "subclasses": {
-        "hal.AddressableLEDData": [
+        "hal._wpiHal.AddressableLEDData": [
             "wpilib.AddressableLED.LEDData"
         ],
-        "hal.SimValue": [
-            "hal.SimBoolean",
-            "hal.SimDouble",
-            "hal.SimEnum",
-            "hal.SimInt",
-            "hal.SimLong"
+        "hal._wpiHal.SimValue": [
+            "hal._wpiHal.SimBoolean",
+            "hal._wpiHal.SimDouble",
+            "hal._wpiHal.SimEnum",
+            "hal._wpiHal.SimInt",
+            "hal._wpiHal.SimLong"
         ],
         "ntcore.BooleanArrayPublisher": [
             "ntcore.BooleanArrayEntry"
@@ -83705,17 +82417,11 @@
         "wpimath.kinematics.DifferentialDriveKinematicsBase": [
             "wpimath.kinematics.DifferentialDriveKinematics"
         ],
-        "wpimath.kinematics.DifferentialDriveOdometry3dBase": [
-            "wpimath.kinematics.DifferentialDriveOdometry3d"
-        ],
         "wpimath.kinematics.DifferentialDriveOdometryBase": [
             "wpimath.kinematics.DifferentialDriveOdometry"
         ],
         "wpimath.kinematics.MecanumDriveKinematicsBase": [
             "wpimath.kinematics.MecanumDriveKinematics"
-        ],
-        "wpimath.kinematics.MecanumDriveOdometry3dBase": [
-            "wpimath.kinematics.MecanumDriveOdometry3d"
         ],
         "wpimath.kinematics.MecanumDriveOdometryBase": [
             "wpimath.kinematics.MecanumDriveOdometry"
@@ -83723,17 +82429,11 @@
         "wpimath.kinematics.SwerveDrive2KinematicsBase": [
             "wpimath.kinematics.SwerveDrive2Kinematics"
         ],
-        "wpimath.kinematics.SwerveDrive2Odometry3dBase": [
-            "wpimath.kinematics.SwerveDrive2Odometry3d"
-        ],
         "wpimath.kinematics.SwerveDrive2OdometryBase": [
             "wpimath.kinematics.SwerveDrive2Odometry"
         ],
         "wpimath.kinematics.SwerveDrive3KinematicsBase": [
             "wpimath.kinematics.SwerveDrive3Kinematics"
-        ],
-        "wpimath.kinematics.SwerveDrive3Odometry3dBase": [
-            "wpimath.kinematics.SwerveDrive3Odometry3d"
         ],
         "wpimath.kinematics.SwerveDrive3OdometryBase": [
             "wpimath.kinematics.SwerveDrive3Odometry"
@@ -83741,20 +82441,32 @@
         "wpimath.kinematics.SwerveDrive4KinematicsBase": [
             "wpimath.kinematics.SwerveDrive4Kinematics"
         ],
-        "wpimath.kinematics.SwerveDrive4Odometry3dBase": [
-            "wpimath.kinematics.SwerveDrive4Odometry3d"
-        ],
         "wpimath.kinematics.SwerveDrive4OdometryBase": [
             "wpimath.kinematics.SwerveDrive4Odometry"
         ],
         "wpimath.kinematics.SwerveDrive6KinematicsBase": [
             "wpimath.kinematics.SwerveDrive6Kinematics"
         ],
-        "wpimath.kinematics.SwerveDrive6Odometry3dBase": [
-            "wpimath.kinematics.SwerveDrive6Odometry3d"
-        ],
         "wpimath.kinematics.SwerveDrive6OdometryBase": [
             "wpimath.kinematics.SwerveDrive6Odometry"
+        ],
+        "wpimath.kinematics._kinematics.DifferentialDriveOdometry3dBase": [
+            "wpimath.kinematics._kinematics.DifferentialDriveOdometry3d"
+        ],
+        "wpimath.kinematics._kinematics.MecanumDriveOdometry3dBase": [
+            "wpimath.kinematics._kinematics.MecanumDriveOdometry3d"
+        ],
+        "wpimath.kinematics._kinematics.SwerveDrive2Odometry3dBase": [
+            "wpimath.kinematics._kinematics.SwerveDrive2Odometry3d"
+        ],
+        "wpimath.kinematics._kinematics.SwerveDrive3Odometry3dBase": [
+            "wpimath.kinematics._kinematics.SwerveDrive3Odometry3d"
+        ],
+        "wpimath.kinematics._kinematics.SwerveDrive4Odometry3dBase": [
+            "wpimath.kinematics._kinematics.SwerveDrive4Odometry3d"
+        ],
+        "wpimath.kinematics._kinematics.SwerveDrive6Odometry3dBase": [
+            "wpimath.kinematics._kinematics.SwerveDrive6Odometry3d"
         ],
         "wpimath.spline.Spline3": [
             "wpimath.spline.CubicHermiteSpline"

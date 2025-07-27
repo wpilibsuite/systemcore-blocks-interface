@@ -1105,7 +1105,7 @@
             ]
         },
         {
-            "className": "spark_mini.SparkMiniComponent",
+            "className": "spark_mini.SparkMini",
             "classVariables": [],
             "constructors": [
                 {
@@ -1116,9 +1116,9 @@
                             "type": "list[tuple[component.PortType, int]]"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "__init__",
-                    "returnType": "spark_mini.SparkMiniComponent",
+                    "returnType": "spark_mini.SparkMini",
                     "tooltip": ""
                 }
             ],
@@ -1129,7 +1129,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         },
                         {
                             "defaultValue": "",
@@ -1137,7 +1137,7 @@
                             "type": "wpilib.PWMMotorController"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "add_follower",
                     "returnType": "None",
                     "tooltip": "Make the given PWM motor controller follow the output of this one.\n\n:param follower: The motor controller follower."
@@ -1147,10 +1147,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "check",
                     "returnType": "None",
                     "tooltip": "Check if this motor has exceeded its timeout.\n\nThis method is called periodically to determine if this motor has exceeded\nits timeout value. If it has, the stop method is called, and the motor is\nshut down until its value is updated again."
@@ -1160,10 +1160,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "disable",
                     "returnType": "None",
                     "tooltip": ""
@@ -1173,7 +1173,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         },
                         {
                             "defaultValue": "",
@@ -1181,7 +1181,7 @@
                             "type": "bool"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "enable_deadband_elimination",
                     "returnType": "None",
                     "tooltip": "Optionally eliminate the deadband from a motor controller.\n\n:param eliminateDeadband: If true, set the motor curve on the motor\n                          controller to eliminate the deadband in the middle\n                          of the range. Otherwise, keep the full range\n                          without modifying any values."
@@ -1191,10 +1191,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "feed",
                     "returnType": "None",
                     "tooltip": "Feed the motor safety object.\n\nResets the timer on this object that is used to do the timeouts."
@@ -1204,10 +1204,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get",
                     "returnType": "float",
                     "tooltip": "Get the recently set value of the PWM. This value is affected by the\ninversion property. If you want the value that is sent directly to the\nMotorController, use PWM::GetSpeed() instead.\n\n:returns: The most recently set value for the PWM between -1.0 and 1.0."
@@ -1217,10 +1217,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_channel",
                     "returnType": "int",
                     "tooltip": ""
@@ -1230,10 +1230,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_connection_port_type",
                     "returnType": "list[component.PortType]",
                     "tooltip": ""
@@ -1243,10 +1243,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_description",
                     "returnType": "str",
                     "tooltip": ""
@@ -1256,10 +1256,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_expiration",
                     "returnType": "float",
                     "tooltip": "Retrieve the timeout value for the corresponding motor safety object.\n\n:returns: the timeout value."
@@ -1269,10 +1269,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_inverted",
                     "returnType": "bool",
                     "tooltip": ""
@@ -1282,10 +1282,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_manufacturer",
                     "returnType": "str",
                     "tooltip": ""
@@ -1295,10 +1295,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_name",
                     "returnType": "str",
                     "tooltip": ""
@@ -1308,10 +1308,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_part_number",
                     "returnType": "str",
                     "tooltip": ""
@@ -1321,10 +1321,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_url",
                     "returnType": "str",
                     "tooltip": ""
@@ -1334,10 +1334,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_version",
                     "returnType": "tuple[int, int, int]",
                     "tooltip": ""
@@ -1347,10 +1347,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_voltage",
                     "returnType": "float",
                     "tooltip": "Gets the voltage output of the motor controller, nominally between -12 V\nand 12 V.\n\n:returns: The voltage of the motor controller, nominally between -12 V and 12\n          V."
@@ -1360,7 +1360,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         },
                         {
                             "defaultValue": "",
@@ -1368,7 +1368,7 @@
                             "type": "wpiutil.SendableBuilder"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "init_sendable",
                     "returnType": "None",
                     "tooltip": "Initializes this Sendable object.\n\n:param builder: sendable builder"
@@ -1378,10 +1378,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "is_alive",
                     "returnType": "bool",
                     "tooltip": "Determine if the motor is still operating or has timed out.\n\n:returns: true if the motor is still operating normally and hasn't timed out."
@@ -1391,10 +1391,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "is_safety_enabled",
                     "returnType": "bool",
                     "tooltip": "Return the state of the motor safety enabled flag.\n\nReturn if the motor safety is currently enabled for this device.\n\n:returns: True if motor safety is enforced for this device."
@@ -1404,10 +1404,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "periodic",
                     "returnType": "None",
                     "tooltip": ""
@@ -1417,10 +1417,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "reset",
                     "returnType": "None",
                     "tooltip": ""
@@ -1430,7 +1430,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         },
                         {
                             "defaultValue": "",
@@ -1438,7 +1438,7 @@
                             "type": "float"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "set",
                     "returnType": "None",
                     "tooltip": "Set the PWM value.\n\nThe PWM value is set using a range of -1.0 to 1.0, appropriately scaling\nthe value for the FPGA.\n\n:param value: The speed value between -1.0 and 1.0 to set."
@@ -1448,7 +1448,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         },
                         {
                             "defaultValue": "",
@@ -1456,7 +1456,7 @@
                             "type": "float"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "set_expiration",
                     "returnType": "None",
                     "tooltip": "Set the expiration time for the corresponding motor safety object.\n\n:param expirationTime: The timeout value."
@@ -1466,7 +1466,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         },
                         {
                             "defaultValue": "",
@@ -1474,7 +1474,7 @@
                             "type": "bool"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "set_inverted",
                     "returnType": "None",
                     "tooltip": ""
@@ -1484,7 +1484,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         },
                         {
                             "defaultValue": "",
@@ -1492,7 +1492,7 @@
                             "type": "bool"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "set_safety_enabled",
                     "returnType": "None",
                     "tooltip": "Enable/disable motor safety for this device.\n\nTurn on and off the motor safety option for this PWM object.\n\n:param enabled: True if motor safety is enforced for this object."
@@ -1502,7 +1502,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         },
                         {
                             "defaultValue": "",
@@ -1510,7 +1510,7 @@
                             "type": "float"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "set_voltage",
                     "returnType": "None",
                     "tooltip": "Sets the voltage output of the PWMMotorController. Compensates for\nthe current bus voltage to ensure that the desired voltage is output even\nif the battery voltage is below 12V - highly useful when the voltage\noutputs are \"meaningful\" (e.g. they come from a feedforward calculation).\n\nNOTE: This function *must* be called regularly in order for voltage\ncompensation to work properly - unlike the ordinary set function, it is not\n\"set it and forget it.\"\n\n:param output: The voltage to output."
@@ -1520,10 +1520,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "stop",
                     "returnType": "None",
                     "tooltip": ""
@@ -1533,10 +1533,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "spark_mini.SparkMiniComponent"
+                            "type": "spark_mini.SparkMini"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "stop_motor",
                     "returnType": "None",
                     "tooltip": ""
@@ -1547,7 +1547,7 @@
             "staticMethods": [
                 {
                     "args": [],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "check_motors",
                     "returnType": "None",
                     "tooltip": "Check the motors to see if any have timed out.\n\nThis static method is called periodically to poll all the motors and stop\nany that have timed out."
@@ -1560,9 +1560,9 @@
                             "type": "int"
                         }
                     ],
-                    "declaringClassName": "spark_mini.SparkMiniComponent",
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "from_smart_motor_port",
-                    "returnType": "spark_mini.SparkMiniComponent",
+                    "returnType": "spark_mini.SparkMini",
                     "tooltip": ""
                 }
             ]
@@ -1855,7 +1855,7 @@
             "rev_touch_sensor.RevTouchSensor",
             "servo.Servo",
             "smart_motor.SmartMotor",
-            "spark_mini.SparkMiniComponent",
+            "spark_mini.SparkMini",
             "sparkfun_led_stick.SparkFunLEDStick"
         ]
     }

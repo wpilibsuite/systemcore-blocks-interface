@@ -53,6 +53,7 @@ import wpiutil
 # Server python scripts
 sys.path.append("../server_python_scripts")
 import blocks_base_classes
+import expansion_hub  # TODO(lizlooney): update this when it is built into robotpy.
 
 # External samples
 sys.path.append("../external_samples")
@@ -84,6 +85,7 @@ def main(argv):
   pathlib.Path(f'{FLAGS.output_directory}/generated/').mkdir(parents=True, exist_ok=True)
 
   robotpy_modules = [
+    expansion_hub,  # TODO(lizlooney): update this when it is built into robotpy.
     ntcore,
     wpilib,
     wpilib.counter,
@@ -110,16 +112,9 @@ def main(argv):
     wpinet,
     wpiutil,
   ]
-  json_generator = json_util.JsonGenerator(robotpy_modules)
+  json_generator_robotpy = json_util.JsonGenerator(robotpy_modules)
   file_path = f'{FLAGS.output_directory}/generated/robotpy_data.json'
-  json_generator.writeJsonFile(file_path)
-
-  server_python_scripts = [
-    blocks_base_classes,
-  ]
-  json_generator = json_util.JsonGenerator(server_python_scripts)
-  file_path = f'{FLAGS.output_directory}/generated/server_python_scripts.json'
-  json_generator.writeJsonFile(file_path)
+  json_generator_robotpy.writeJsonFile(file_path)
 
   external_samples_modules = [
     color_range_sensor,
@@ -130,10 +125,18 @@ def main(argv):
     spark_mini,
     sparkfun_led_stick,
   ]
-  json_generator = json_util.JsonGenerator(external_samples_modules)
+  json_generator_external_samples = json_util.JsonGenerator(
+      external_samples_modules, [json_generator_robotpy])
   file_path = f'{FLAGS.output_directory}/generated/external_samples_data.json'
-  json_generator.writeJsonFile(file_path)
+  json_generator_external_samples.writeJsonFile(file_path)
 
+  server_python_scripts = [
+    blocks_base_classes,
+  ]
+  json_generator_server_python = json_util.JsonGenerator(
+      server_python_scripts, [json_generator_robotpy])
+  file_path = f'{FLAGS.output_directory}/generated/server_python_scripts.json'
+  json_generator_server_python.writeJsonFile(file_path)
 
 if __name__ == '__main__':
   app.run(main)
