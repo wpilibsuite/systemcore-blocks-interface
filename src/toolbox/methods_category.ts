@@ -40,17 +40,12 @@ export const getCategory = () => ({
 });
 
 export class MethodsCategory {
-  private currentModule: commonStorage.Module | null = null;
   private robotClassBlocks = getBaseClassBlocks(CLASS_NAME_ROBOT_BASE);
   private mechanismClassBlocks = getBaseClassBlocks(CLASS_NAME_MECHANISM);
   private opmodeClassBlocks = getBaseClassBlocks(CLASS_NAME_OPMODE);
 
   constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
     blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS, this.methodsFlyout.bind(this));
-  }
-
-  public setCurrentModule(currentModule: commonStorage.Module | null) {
-    this.currentModule = currentModule;
   }
 
   public methodsFlyout(workspace: Blockly.WorkspaceSvg) {
@@ -65,8 +60,8 @@ export class MethodsCategory {
       // Collect the method names that are already overridden in the blockly workspace.
       const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
 
-      if (this.currentModule) {
-        if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+      switch (editor.getCurrentModuleType()) {
+        case commonStorage.MODULE_TYPE_ROBOT:
           // TODO(lizlooney): We need a way to mark a method in python as not overridable.
           // For example, in RobotBase, register_event_handler, unregister_event_handler,
           // and fire_event should not be overridden in a user's robot.
@@ -79,17 +74,19 @@ export class MethodsCategory {
           this.addClassBlocksForCurrentModule(
               'More Robot Methods', this.robotClassBlocks, methodNamesNotOverrideable,
               methodNamesAlreadyOverridden, contents);
-        } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
+          break;
+        case commonStorage.MODULE_TYPE_MECHANISM:
           // Add the methods for a Mechanism.
           this.addClassBlocksForCurrentModule(
               'More Mechanism Methods', this.mechanismClassBlocks, [],
               methodNamesAlreadyOverridden, contents);
-        } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
+          break;
+        case commonStorage.MODULE_TYPE_OPMODE:
           // Add the methods for an OpMode.
           this.addClassBlocksForCurrentModule(
               'More OpMode Methods', this.opmodeClassBlocks, [],
               methodNamesAlreadyOverridden, contents);
-        }
+          break;
       }
     }
 

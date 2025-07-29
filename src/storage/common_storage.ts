@@ -629,25 +629,10 @@ export function getClassNameForModule(moduleType: string, moduleName: string) {
  * Make a unique project name for an uploaded project.
  */
 export function makeUploadProjectName(
-  uploadFileName: string, existingProjectNames: string[]): string {
+    uploadFileName: string, existingProjectNames: string[]): string {
   const preferredName = uploadFileName.substring(
     0, uploadFileName.length - UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
-  let name = preferredName; // No suffix.
-  let suffix = 0;
-  while (true) {
-    let nameClash = false;
-    for (const existingProjectName of existingProjectNames) {
-      if (name == existingProjectName) {
-        nameClash = true;
-        break;
-      }
-    }
-    if (!nameClash) {
-      return name;
-    }
-    suffix++;
-    name = preferredName + suffix;
-  }
+  return makeUniqueName(preferredName, existingProjectNames);
 }
 
 /**
@@ -703,4 +688,26 @@ export function _processUploadedModule(
   const moduleName = (moduleType === MODULE_TYPE_ROBOT) ? 'robot' : filename;
   const moduleContentText = moduleContent.getModuleContentText();
   return [moduleName, moduleType, moduleContentText];
+}
+
+/**
+ * Makes a unique name given a list of existing names
+ */
+export function makeUniqueName(preferredName: string, existingNames: string[]): string {
+  let name = preferredName; // No suffix.
+  let suffix = 0;
+  while (true) {
+    let nameClash = false;
+    for (const existingName of existingNames) {
+      if (name == existingName) {
+        nameClash = true;
+        break;
+      }
+    }
+    if (!nameClash) {
+      return name;
+    }
+    suffix++;
+    name = preferredName + suffix;
+  }
 }

@@ -31,6 +31,7 @@ import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_hol
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { MethodsCategory } from '../toolbox/methods_category';
 import { EventsCategory } from '../toolbox/event_category';
+import { RobotEventsCategory } from '../toolbox/hardware_category';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
@@ -44,8 +45,6 @@ export class Editor {
   private blocklyWorkspace: Blockly.WorkspaceSvg;
   private generatorContext: GeneratorContext;
   private storage: commonStorage.Storage;
-  private methodsCategory: MethodsCategory;
-  private eventsCategory: EventsCategory;
   private currentModule: commonStorage.Module | null = null;
   private modulePath: string = '';
   private robotPath: string = '';
@@ -59,8 +58,10 @@ export class Editor {
     this.blocklyWorkspace = blocklyWorkspace;
     this.generatorContext = generatorContext;
     this.storage = storage;
-    this.methodsCategory = new MethodsCategory(blocklyWorkspace);
-    this.eventsCategory = new EventsCategory(blocklyWorkspace);
+    // Create the custom toolbox categories so they register their flyout callbacks.
+    new MethodsCategory(blocklyWorkspace);
+    new EventsCategory(blocklyWorkspace);
+    new RobotEventsCategory(blocklyWorkspace);
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -107,8 +108,6 @@ export class Editor {
   public async loadModuleBlocks(currentModule: commonStorage.Module | null) {
     this.generatorContext.setModule(currentModule);
     this.currentModule = currentModule;
-    this.methodsCategory.setCurrentModule(currentModule);
-    this.eventsCategory.setCurrentModule(currentModule);
 
     if (currentModule) {
       this.modulePath = currentModule.modulePath;
@@ -201,6 +200,13 @@ export class Editor {
     return this.getModuleContentText() !== this.moduleContentText;
   }
 
+  public getCurrentModuleType(): string {
+    if (this.currentModule) {
+      return this.currentModule.moduleType;
+    }
+    return commonStorage.MODULE_TYPE_UNKNOWN;
+  }
+
   private getModuleContentText(): string {
     if (!this.currentModule) {
       throw new Error('getModuleContentText: this.currentModule is null.');
@@ -256,6 +262,12 @@ export class Editor {
       mechanismComponentHolder.getEvents(this.blocklyWorkspace, events);
     }
     return events;
+  }
+
+  public getEventHandlerNamesFromWorkspace(): string[] {
+    const names: string[] = [];
+    eventHandler.getEventHandlerNames(this.blocklyWorkspace, names);
+    return names;
   }
 
   public async saveBlocks() {
