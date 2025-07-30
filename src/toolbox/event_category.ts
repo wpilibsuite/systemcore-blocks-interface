@@ -38,32 +38,31 @@ export const getCategory = () => ({
 });
 
 export class EventsCategory {
-  private currentModule: commonStorage.Module | null = null;
-
   constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
     blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_EVENTS, this.eventsFlyout.bind(this));
-  }
-
-  public setCurrentModule(currentModule: commonStorage.Module | null) {
-    this.currentModule = currentModule;
   }
 
   public eventsFlyout(workspace: Blockly.WorkspaceSvg) {
     const contents: toolboxItems.ContentsType[] = [];
 
-    // Add a block that lets the user define a new event.
-    contents.push(
-      {
-        kind: 'label',
-        text: 'Custom Events',
-      },
-      createCustomEventBlock()
-    );
-
-    // Get blocks for firing methods defined in the current workspace.
     const editor = Editor.getEditorForBlocklyWorkspace(workspace);
     if (editor) {
       const eventsFromWorkspace = editor.getEventsFromWorkspace();
+      const eventNames: string[] = [];
+      eventsFromWorkspace.forEach(event => {
+        eventNames.push(event.name);
+      });
+
+      // Add a block that lets the user define a new event.
+      contents.push(
+        {
+          kind: 'label',
+          text: 'Custom Events',
+        },
+        createCustomEventBlock(commonStorage.makeUniqueName('my_event', eventNames))
+      );
+
+      // Get blocks for firing methods defined in the current workspace.
       addFireEventBlocks(eventsFromWorkspace, contents);
     }
 

@@ -34,31 +34,31 @@ export function getHardwareCategory(currentModule: commonStorage.Module): toolbo
       kind: 'category',
       name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
       contents: [
-        getRobotMechanismsBlocks(currentModule),
-        getComponentsBlocks(false),
+        getRobotMechanismsCategory(currentModule),
+        getComponentsCategory(false),
       ]
     };
   }
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-    return getComponentsBlocks(true);
+    return getComponentsCategory(true);
   }
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
     return {
       kind: 'category',
       name: Blockly.Msg['MRC_CATEGORY_ROBOT'],
       contents: [
-        getRobotMechanismsBlocks(currentModule),
-        getRobotComponentsBlocks(),
-        getRobotMethodsBlocks(),
-        getRobotEventsBlocks(),
+        getRobotMechanismsCategory(currentModule),
+        getRobotComponentsCategory(),
+        getRobotMethodsCategory(),
+        getRobotEventsCategory(),
       ]
     };
   }
   throw new Error('currentModule.moduleType has unexpected value: ' + currentModule.moduleType)
 }
 
-function getRobotMechanismsBlocks(currentModule: commonStorage.Module): toolboxItems.Category {
-  // getRobotMechanismsBlocks is called when the user is editing the robot or an opmode.
+function getRobotMechanismsCategory(currentModule: commonStorage.Module): toolboxItems.Category {
+  // getRobotMechanismsCategory is called when the user is editing the robot or an opmode.
   // If the user is editing the robot, it allows the user to add a mechanism to
   // the robot or use an existing mechanism.
   // If the user is editing an opmode, it allows the user to use a mechanism that
@@ -211,8 +211,8 @@ function getRobotMechanismsBlocks(currentModule: commonStorage.Module): toolboxI
   };
 }
 
-function getRobotComponentsBlocks(): toolboxItems.Category {
-  // getRobotComponentsBlocks is called when the user is editing an opmode.
+function getRobotComponentsCategory(): toolboxItems.Category {
+  // getRobotComponentsCategory is called when the user is editing an opmode.
   // It allows the user to use a component that was previously added to the Robot.
 
   const contents: toolboxItems.ContentsType[] = [];
@@ -242,8 +242,8 @@ function getRobotComponentsBlocks(): toolboxItems.Category {
   };
 }
 
-function getRobotMethodsBlocks(): toolboxItems.Category {
-  // getRobotMethodsBlocks is called when the user is editing an opmode.
+function getRobotMethodsCategory(): toolboxItems.Category {
+  // getRobotMethodsCategory is called when the user is editing an opmode.
   // It allows the user to use methods there previously defined in the Robot.
 
   const contents: toolboxItems.ContentsType[] = [];
@@ -266,8 +266,8 @@ function getRobotMethodsBlocks(): toolboxItems.Category {
   };
 }
 
-function getComponentsBlocks(hideParams : boolean): toolboxItems.Category {
-  // getComponentsBlocks is called when the user is editing the robot or a
+function getComponentsCategory(hideParams : boolean): toolboxItems.Category {
+  // getComponentsCategory is called when the user is editing the robot or a
   // mechanism. It allows the user to add a component or use an existing component.
 
   const contents: toolboxItems.ContentsType[] = [];
@@ -303,26 +303,41 @@ function getComponentsBlocks(hideParams : boolean): toolboxItems.Category {
   };
 }
 
-function getRobotEventsBlocks(): toolboxItems.Category {
-  // getRobotEventsBlocks is called when the user is editing an opmode.
-  // It allows the user to create event handlers for events previously defined in the Robot.
+const CUSTOM_CATEGORY_ROBOT_EVENTS = 'ROBOT_EVENTS';
 
-  const contents: toolboxItems.ContentsType[] = [];
+// The robot events category is shown when the user is editing an opmode.
+// It allows the user to create event handlers for events previously defined in the Robot.
+const getRobotEventsCategory = () => ({
+  kind: 'category',
+  name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
+  custom: CUSTOM_CATEGORY_ROBOT_EVENTS,
+});
 
-  // Get the list of events from the robot and add the blocks for calling the
-  // robot functions.
-  const workspace = Blockly.getMainWorkspace();
-  if (workspace) {
+export class RobotEventsCategory {
+  constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
+    blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_ROBOT_EVENTS, this.robotEventsFlyout.bind(this));
+  }
+
+  public robotEventsFlyout(workspace: Blockly.WorkspaceSvg) {
+    const contents: toolboxItems.ContentsType[] = [];
+
+    // Get the list of events from the robot and add the blocks for handling events.
+
     const editor = Editor.getEditorForBlocklyWorkspace(workspace);
     if (editor) {
       const eventsFromRobot = editor.getEventsFromRobot();
-      addRobotEventHandlerBlocks(eventsFromRobot, contents);
+      // Remove events if there is already a corresponding handler in the workspace.
+      const eventHandlerNames = editor.getEventHandlerNamesFromWorkspace();
+      const eventsToShow = eventsFromRobot.filter(event => {
+        return !eventHandlerNames.includes(event.name);
+      });
+      addRobotEventHandlerBlocks(eventsToShow, contents);
     }
-  }
 
-  return {
-    kind: 'category',
-    name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
-    contents,
-  };
+    const toolboxInfo = {
+      contents: contents,
+    };
+
+    return toolboxInfo;
+  }
 }

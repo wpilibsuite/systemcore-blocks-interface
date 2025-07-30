@@ -145,7 +145,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     this.ports = Object.create(null);
     this.hasHardware = mechanismContainerHolder.getHardwarePorts(this.workspace, this.ports);
-    this.hasEventHandler = eventHandler.getHasEventHandler(this.workspace);
+    this.hasEventHandler = eventHandler.getHasAnyEnabledEventHandlers(this.workspace);
 
     const code = super.workspaceToCode(workspace);
 

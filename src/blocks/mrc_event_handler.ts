@@ -226,9 +226,6 @@ export function pythonFromBlock(
   const blocklyName = `${sender}_${eventName}`;
   const funcName = generator.getProcedureName(blocklyName);
 
-  // TODO(lizlooney): if the user adds multiple event handlers for the same event
-  // name, we need to make the event handler function names unique.
-
   let xfix1 = '';
   if (generator.STATEMENT_PREFIX) {
     xfix1 += generator.injectId(generator.STATEMENT_PREFIX, block);
@@ -323,8 +320,16 @@ function createRobotEventHandlerBlock(
 
 // Misc
 
-export function getHasEventHandler(workspace: Blockly.Workspace): boolean {
+export function getHasAnyEnabledEventHandlers(workspace: Blockly.Workspace): boolean {
   return workspace.getBlocksByType(BLOCK_NAME).filter(block => {
     return block.isEnabled();
   }).length > 0;
+}
+
+export function getEventHandlerNames(workspace: Blockly.Workspace, names: string[]): void {
+  // Here we collect the event names of the event handlers in the given
+  // workspace, regardless of whether the event handler is enabled.
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    names.push(block.getFieldValue(FIELD_EVENT_NAME));
+  });
 }

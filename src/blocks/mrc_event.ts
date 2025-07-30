@@ -238,11 +238,11 @@ export const pythonFromBlock = function (
 
 // Functions used for creating blocks for the toolbox.
 
-export function createCustomEventBlock(): toolboxItems.Block {
+export function createCustomEventBlock(name: string): toolboxItems.Block {
   const extraState: EventExtraState = {
     params: [],
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_EVENT_NAME] = 'my_event';
+  fields[FIELD_EVENT_NAME] = name;
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
 }
