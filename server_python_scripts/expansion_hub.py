@@ -208,13 +208,13 @@ class ExpansionHubServo:
             .publish(options))
 
     def set(self, value: float):
-        value = max(1.0, min(0.0, value))
+        value = min(1.0, max(0.0, value))
         rawValue = (value * 1800) + 600
 
         self.setPulseWidth(int(rawValue))
 
     def setAngle(self, degrees: float):
-        degrees = max(180.0, min(0.0, degrees))
+        degrees = min(180.0, max(0.0, degrees))
         self.set(degrees / 180.0)
 
     def setEnabled(self, enabled: bool):
