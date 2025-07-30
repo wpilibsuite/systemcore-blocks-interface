@@ -7,6 +7,10 @@ class RobotBase:
         self.hardware = []
         # In self.event_handlers, the keys are the event names, the values are a list of handlers.
         self.event_handlers = {}
+        self.define_hardware()
+
+    def define_hardware(self):
+        pass
 
     def register_event_handler(self, event_name: str, event_handler: Callable) -> None:
         if event_name in self.event_handlers:

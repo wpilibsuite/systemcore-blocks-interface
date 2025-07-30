@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2025 Porpoiseful LLC
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -64,7 +64,7 @@ function setName(block: Blockly.BlockSvg){
                 otherNames.push(variableBlock.getFieldValue('NAME'));
             }
         });
-        const currentName = block.getFieldValue('NAME');       
+        const currentName = block.getFieldValue('NAME');
         block.setFieldValue(getLegalName(currentName, otherNames), 'NAME');
     }
 }
@@ -205,8 +205,8 @@ function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator:
   const body = mechanisms + components;
   if (body != '') {
     code += body;
-    generator.addClassMethodDefinition('define_hardware', code);    
-  } 
+    generator.addClassMethodDefinition('define_hardware', code);
+  }
 }
 
 function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
@@ -218,19 +218,20 @@ function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, genera
 
   if (components != '') {
     code += components;
-    generator.addClassMethodDefinition('define_hardware', code);    
+    generator.addClassMethodDefinition('define_hardware', code);
   }
 }
 
 export const pythonFromBlock = function (
   block: MechanismComponentHolderBlock,
-  generator: ExtendedPythonGenerator,
-) {
-  if (block.getInput(INPUT_MECHANISMS)) {
-    pythonFromBlockInRobot(block, generator);
-  }
-  else {
-    pythonFromBlockInMechanism(block, generator);
+  generator: ExtendedPythonGenerator) {
+  switch (generator.getModuleType()) {
+    case commonStorage.MODULE_TYPE_ROBOT:
+      pythonFromBlockInRobot(block, generator);
+      break;
+    case commonStorage.MODULE_TYPE_MECHANISM:
+      pythonFromBlockInMechanism(block, generator);
+      break;
   }
   return ''
 }

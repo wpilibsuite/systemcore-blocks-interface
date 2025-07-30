@@ -29,6 +29,7 @@ import {
     CLASS_NAME_OPMODE,
     getClassData,
 } from '../blocks/utils/python';
+import * as commonStorage from '../storage/common_storage';
 
 export class OpModeDetails {
   constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
@@ -70,7 +71,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private workspace: Blockly.Workspace | null = null;
   private context: GeneratorContext | null = null;
 
-  // Has components or mechanisms (ie, needs to call self.define_hardware in __init__)
+  // Has components or mechanisms (ie, might need to call self.define_hardware in __init__)
   private hasHardware = false;
   private ports: {[key: string]: string} = Object.create(null);
 
@@ -112,10 +113,20 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     let initStatements = '';
 
     if (this.hasHardware) {
-      initStatements += this.INDENT + "self.define_hardware(";
-      initStatements += this.getListOfPorts(true);
-      initStatements += ')\n';
+      switch (this.getModuleType()) {
+        case commonStorage.MODULE_TYPE_ROBOT:
+          // The RobotBase __init__ method already calls self.define_robot(), so
+          // we don't need to generate that call here.
+          break;
+        case commonStorage.MODULE_TYPE_MECHANISM:
+          // For mechanisms
+          initStatements += this.INDENT + "self.define_hardware(";
+          initStatements += this.getListOfPorts(true);
+          initStatements += ')\n';
+          break;
+      }
     }
+
     if (this.hasEventHandler) {
       initStatements += this.INDENT + "self.register_event_handlers()\n";
     }
@@ -225,7 +236,14 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         }
         classMethods.push(code);
       }
+      // Generate the __init__ method first.
+      if ('__init__' in this.classMethods) {
+        classMethods.push(this.classMethods['__init__'])
+      }
       for (const name in this.classMethods) {
+        if (name === '__init__') {
+          continue;
+        }
         classMethods.push(this.classMethods[name])
       }
       this.eventHandlers = Object.create(null);
