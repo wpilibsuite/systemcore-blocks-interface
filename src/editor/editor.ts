@@ -24,7 +24,6 @@ import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
-import * as callPythonFunction from '../blocks/mrc_call_python_function';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
@@ -40,16 +39,19 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
 };
 
 export class Editor {
-  private static workspaceIdToEditor: { [key: string]: Editor } = {};
+  private static workspaceIdToEditor: { [workspaceId: string]: Editor } = {};
+  private static currentEditor: Editor | null = null;
 
   private blocklyWorkspace: Blockly.WorkspaceSvg;
   private generatorContext: GeneratorContext;
   private storage: commonStorage.Storage;
   private currentModule: commonStorage.Module | null = null;
+  private currentProject: commonStorage.Project | null = null;
   private modulePath: string = '';
   private robotPath: string = '';
   private moduleContentText: string = '';
   private robotContent: commonStorage.ModuleContent | null = null;
+  private mechanismClassNameToModuleContent: {[mechanismClassName: string]: commonStorage.ModuleContent} = {};
   private bindedOnChange: any = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
@@ -83,10 +85,8 @@ export class Editor {
         blockCreateEvent.ids.forEach(id => {
           const block = this.blocklyWorkspace.getBlockById(id);
           if (block) {
-            if (block.type == callPythonFunction.BLOCK_NAME) {
-              (block as callPythonFunction.CallPythonFunctionBlock).onLoad();
-            } else if (block.type == eventHandler.BLOCK_NAME) {
-              (block as eventHandler.EventHandlerBlock).onLoad();
+            if ('mrcOnLoad' in block && typeof block.mrcOnLoad === "function") {
+              block.mrcOnLoad();
             }
           }
         });
@@ -105,32 +105,54 @@ export class Editor {
     // TODO(lizlooney): do we need to do anything here?
   }
 
-  public async loadModuleBlocks(currentModule: commonStorage.Module | null) {
+  public makeCurrent(): void {
+    Editor.currentEditor = this;
+  }
+
+  public abandon(): void {
+    if (Editor.currentEditor === this) {
+      Editor.currentEditor = null;
+    }
+    if (this.blocklyWorkspace.id in Editor.workspaceIdToEditor) {
+      delete Editor.workspaceIdToEditor[this.blocklyWorkspace.id];
+    }
+  }
+
+  public async loadModuleBlocks(
+      currentModule: commonStorage.Module | null,
+      currentProject: commonStorage.Project | null) {
     this.generatorContext.setModule(currentModule);
     this.currentModule = currentModule;
+    this.currentProject = currentProject;
 
-    if (currentModule) {
-      this.modulePath = currentModule.modulePath;
-      this.robotPath = commonStorage.makeRobotPath(currentModule.projectName);
+    if (this.currentModule && this.currentProject) {
+      this.modulePath = this.currentModule.modulePath;
+      this.robotPath = this.currentProject.robot.modulePath;
     } else {
       this.modulePath = '';
       this.robotPath = '';
     }
     this.moduleContentText = '';
     this.robotContent = null;
+    this.mechanismClassNameToModuleContent = {}
     this.clearBlocklyWorkspace();
 
-    if (currentModule) {
+    if (this.currentModule && this.currentProject) {
       // Fetch the content for the current module and the robot.
       // TODO: Also fetch the content for the mechanisms?
-      const promises: { [key: string]: Promise<string> } = {}; // key is module path, value is promise of module content.
+      const promises: { [modulePath: string]: Promise<string> } = {}; // value is promise of module content.
       promises[this.modulePath] = this.storage.fetchModuleContentText(this.modulePath);
       if (this.robotPath !== this.modulePath) {
         // Also fetch the robot module content. It contains components, etc, that can be used in OpModes.
         promises[this.robotPath] = this.storage.fetchModuleContentText(this.robotPath)
       }
+      for (const mechanism of this.currentProject.mechanisms) {
+        if (mechanism.modulePath !== this.modulePath) {
+          promises[mechanism.modulePath] = this.storage.fetchModuleContentText(mechanism.modulePath)
+        }
+      }
 
-      const modulePathToContentText: { [key: string]: string } = {}; // key is module path, value is module content
+      const modulePathToContentText: { [modulePath: string]: string } = {}; // value is module content
       await Promise.all(
         Object.entries(promises).map(async ([modulePath, promise]) => {
           modulePathToContentText[modulePath] = await promise;
@@ -141,6 +163,13 @@ export class Editor {
         this.robotContent = commonStorage.parseModuleContentText(this.moduleContentText);
       } else {
         this.robotContent = commonStorage.parseModuleContentText(modulePathToContentText[this.robotPath]);
+      }
+      for (const mechanism of this.currentProject.mechanisms) {
+        if (mechanism.modulePath === this.modulePath) {
+          this.mechanismClassNameToModuleContent[mechanism.className] = commonStorage.parseModuleContentText(this.moduleContentText);
+        } else {
+          this.mechanismClassNameToModuleContent[mechanism.className] = commonStorage.parseModuleContentText(modulePathToContentText[mechanism.modulePath]);
+        }
       }
       this.loadBlocksIntoBlocklyWorkspace();
     }
@@ -287,10 +316,10 @@ export class Editor {
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
       return this.getComponentsFromWorkspace();
     }
-    if (!this.robotContent) {
-      throw new Error('getComponentsFromRobot: this.robotContent is null.');
+    if (this.robotContent) {
+      return this.robotContent.getComponents();
     }
-    return this.robotContent.getComponents();
+    throw new Error('getComponentsFromRobot: this.robotContent is null.');
   }
 
   /**
@@ -300,10 +329,10 @@ export class Editor {
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
       return this.getEventsFromWorkspace();
     }
-    if (!this.robotContent) {
-      throw new Error('getEventsFromRobot: this.robotContent is null.');
+    if (this.robotContent) {
+      return this.robotContent.getEvents();
     }
-    return this.robotContent.getEvents();
+    throw new Error('getEventsFromRobot: this.robotContent is null.');
   }
 
   /**
@@ -313,10 +342,56 @@ export class Editor {
     if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
       return this.getMethodsForWithinFromWorkspace();
     }
-    if (!this.robotContent) {
-      throw new Error('getMethodsFromRobot: this.robotContent is null.');
+    if (this.robotContent) {
+      return this.robotContent.getMethods();
     }
-    return this.robotContent.getMethods();
+    throw new Error('getMethodsFromRobot: this.robotContent is null.');
+  }
+
+  /**
+   * Returns the mechanisms in this project.
+   */
+  public getMechanisms(): commonStorage.Mechanism[] {
+    return this.currentProject ? this.currentProject.mechanisms : [];
+  }
+
+  /**
+   * Returns the components defined in the given mechanism.
+   */
+  public getComponentsFromMechanism(mechanism: commonStorage.Mechanism): commonStorage.Component[] {
+    if (this.currentModule?.modulePath === mechanism.modulePath) {
+      return this.getComponentsFromWorkspace();
+    }
+    if (mechanism.className in this.mechanismClassNameToModuleContent) {
+      return this.mechanismClassNameToModuleContent[mechanism.className].getComponents();
+    }
+    throw new Error('getComponentsFromMechanism: mechanism not found: ' + mechanism.className);
+  }
+
+  /**
+   * Returns the events defined in the given mechanism.
+   */
+  public getEventsFromMechanism(mechanism: commonStorage.Mechanism): commonStorage.Event[] {
+    if (this.currentModule?.modulePath === mechanism.modulePath) {
+      return this.getEventsFromWorkspace();
+    }
+    if (mechanism.className in this.mechanismClassNameToModuleContent) {
+      return this.mechanismClassNameToModuleContent[mechanism.className].getEvents();
+    }
+    throw new Error('getEventsFromMechanism: mechanism not found: ' + mechanism.className);
+  }
+
+  /**
+   * Returns the methods defined in the given mechanism.
+   */
+  public getMethodsFromMechanism(mechanism: commonStorage.Mechanism): commonStorage.Method[] {
+    if (this.currentModule?.modulePath === mechanism.modulePath) {
+      return this.getMethodsForWithinFromWorkspace();
+    }
+    if (mechanism.className in this.mechanismClassNameToModuleContent) {
+      return this.mechanismClassNameToModuleContent[mechanism.className].getMethods();
+    }
+    throw new Error('getMethodsFromMechanism: mechanism not found: ' + mechanism.className);
   }
 
   public static getEditorForBlocklyWorkspace(workspace: Blockly.Workspace): Editor | null {
@@ -324,12 +399,19 @@ export class Editor {
       return Editor.workspaceIdToEditor[workspace.id];
     }
 
-    // If the workspace id was not found, it might be because the workspace is associated with the
-    // toolbox flyout, not a real workspace. In that case, use the first editor.
-    const allEditors = Object.values(Editor.workspaceIdToEditor);
-    if (allEditors.length) {
-      return allEditors[0];
+    // If the workspace id was not found, it might be because the workspace is associated with a block mutator's flyout.
+    // Try this workspaces's root workspace.
+    const rootWorkspace = workspace.getRootWorkspace();
+    if (rootWorkspace &&
+        rootWorkspace.id in Editor.workspaceIdToEditor) {
+      return Editor.workspaceIdToEditor[rootWorkspace.id];
     }
-    return null;
+
+    // Otherwise, return the current editor.
+    return Editor.currentEditor;
+  }
+
+  public static getCurrentEditor(): Editor | null {
+    return Editor.currentEditor;
   }
 }

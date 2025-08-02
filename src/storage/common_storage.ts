@@ -28,6 +28,7 @@ import startingRobotBlocks from '../modules/robot_start.json';
 // Types, constants, and functions related to modules, regardless of where the modules are stored.
 
 export type Module = {
+  // TODO(lizlooney): Add a uuid so we can keep track of mechanisms in the robot even if the user renames the mechamism
   modulePath: string,
   moduleType: string,
   projectName: string,
@@ -65,6 +66,7 @@ export type Component = {
   blockId: string, // ID of the mrc_component block that defines the component.
   name: string,
   className: string,
+  ports: {[port: string]: string}, // The value is the type.
 }
 
 export type Event = {

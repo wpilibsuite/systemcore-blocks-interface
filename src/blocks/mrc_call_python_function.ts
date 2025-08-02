@@ -465,8 +465,8 @@ const CALL_PYTHON_FUNCTION = {
     }
     return components;
   },
-  onLoad: function(this: CallPythonFunctionBlock): void {
-    // onLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly workspace.
+  mrcOnLoad: function(this: CallPythonFunctionBlock): void {
+    // mrcOnLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly workspace.
     const warnings: string[] = [];
 
     // If this block is calling a component method, check that the component

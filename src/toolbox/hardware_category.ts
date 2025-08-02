@@ -22,7 +22,7 @@
 import * as Blockly from 'blockly/core';
 import * as commonStorage from '../storage/common_storage';
 import * as toolboxItems from './items';
-import { getAllPossibleMechanisms } from './blocks_mechanisms';
+import { createMechanismBlock } from '../blocks/mrc_mechanism';
 import { getAllPossibleComponents } from '../blocks/mrc_component';
 import { getInstanceComponentBlocks, addInstanceRobotBlocks } from '../blocks/mrc_call_python_function';
 import { addRobotEventHandlerBlocks } from '../blocks/mrc_event_handler';
@@ -35,12 +35,12 @@ export function getHardwareCategory(currentModule: commonStorage.Module): toolbo
       name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
       contents: [
         getRobotMechanismsCategory(currentModule),
-        getComponentsCategory(false),
+        getComponentsCategory(currentModule.moduleType),
       ]
     };
   }
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-    return getComponentsCategory(true);
+    return getComponentsCategory(currentModule.moduleType);
   }
   if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
     return {
@@ -66,17 +66,27 @@ function getRobotMechanismsCategory(currentModule: commonStorage.Module): toolbo
 
   const contents: toolboxItems.ContentsType[] = [];
 
-  // Include the "+ Mechanism" category if the user it editing the robot.
-  if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
-    contents.push({
-      kind: 'category',
-      name: Blockly.Msg['MRC_CATEGORY_ADD_MECHANISM'],
-      contents: getAllPossibleMechanisms(),
-    });
-  }
+  const editor = Editor.getCurrentEditor();
 
-  // TODO: Get the list of mechanisms from the robot and add the blocks for
-  // calling the mechanism functions to the toolbox.
+  // Include the "+ Mechanism" category if the user it editing the robot and there are any mechanism modules.
+  if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+    if (editor) {
+      const mechanisms = editor.getMechanisms();
+      if (mechanisms.length) {
+        const mechanismBlocks: toolboxItems.Block[] = [];
+        mechanisms.forEach(mechanism => {
+          const components = editor.getComponentsFromMechanism(mechanism);
+          mechanismBlocks.push(createMechanismBlock(mechanism, components));
+        });
+
+        contents.push({
+          kind: 'category',
+          name: Blockly.Msg['MRC_CATEGORY_ADD_MECHANISM'],
+          contents: mechanismBlocks,
+        });
+      }
+    }
+  }
 
   /* // Uncomment this fake code for testing purposes only.
   contents.push(
@@ -217,22 +227,20 @@ function getRobotComponentsCategory(): toolboxItems.Category {
 
   const contents: toolboxItems.ContentsType[] = [];
 
+  const editor = Editor.getCurrentEditor();
+
   // Get the list of components from the robot and add the blocks for calling the
   // component functions.
-  const workspace = Blockly.getMainWorkspace();
-  if (workspace) {
-    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
-    if (editor) {
-      const componentsFromRobot = editor.getComponentsFromRobot();
-      componentsFromRobot.forEach(component => {
-        // Get the blocks for this specific component.
-        contents.push({
-          kind: 'category',
-          name: component.name,
-          contents: getInstanceComponentBlocks(component),
-        });
+  if (editor) {
+    const componentsFromRobot = editor.getComponentsFromRobot();
+    componentsFromRobot.forEach(component => {
+      // Get the blocks for this specific component.
+      contents.push({
+        kind: 'category',
+        name: component.name,
+        contents: getInstanceComponentBlocks(component),
       });
-    }
+    });
   }
 
   return {
@@ -250,13 +258,10 @@ function getRobotMethodsCategory(): toolboxItems.Category {
 
   // Get the list of methods from the robot and add the blocks for calling the
   // robot functions.
-  const workspace = Blockly.getMainWorkspace();
-  if (workspace) {
-    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
-    if (editor) {
-      const methodsFromRobot = editor.getMethodsFromRobot();
-      addInstanceRobotBlocks(methodsFromRobot, contents);
-    }
+  const editor = Editor.getCurrentEditor();
+  if (editor) {
+    const methodsFromRobot = editor.getMethodsFromRobot();
+    addInstanceRobotBlocks(methodsFromRobot, contents);
   }
 
   return {
@@ -266,7 +271,7 @@ function getRobotMethodsCategory(): toolboxItems.Category {
   };
 }
 
-function getComponentsCategory(hideParams : boolean): toolboxItems.Category {
+function getComponentsCategory(moduleType : string): toolboxItems.Category {
   // getComponentsCategory is called when the user is editing the robot or a
   // mechanism. It allows the user to add a component or use an existing component.
 
@@ -276,24 +281,21 @@ function getComponentsCategory(hideParams : boolean): toolboxItems.Category {
   contents.push({
     kind: 'category',
     name: Blockly.Msg['MRC_CATEGORY_ADD_COMPONENT'],
-    contents: getAllPossibleComponents(hideParams)
+    contents: getAllPossibleComponents(moduleType),
   });
 
   // Get components from the current workspace.
-  const workspace = Blockly.getMainWorkspace();
-  if (workspace) {
-    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
-    if (editor) {
-      const componentsFromWorkspace = editor.getComponentsFromWorkspace();
-      componentsFromWorkspace.forEach(component => {
-        // Get the blocks for this specific component
-        contents.push({
-          kind: 'category',
-          name: component.name,
-          contents: getInstanceComponentBlocks(component),
-        });
+  const editor = Editor.getCurrentEditor();
+  if (editor) {
+    const componentsFromWorkspace = editor.getComponentsFromWorkspace();
+    componentsFromWorkspace.forEach(component => {
+      // Get the blocks for this specific component
+      contents.push({
+        kind: 'category',
+        name: component.name,
+        contents: getInstanceComponentBlocks(component),
       });
-    }
+    });
   }
 
   return {

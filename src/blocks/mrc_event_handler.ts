@@ -53,7 +53,7 @@ export type EventHandlerBlock = Blockly.Block & EventHandlerMixin & Blockly.Bloc
 
 interface EventHandlerMixin extends EventHandlerMixinType {
   mrcPathOfSender: string;
-  mrcTypeOfSender: SenderType;
+  mrcSenderType: SenderType;
   mrcParameters: Parameter[];
   mrcOtherBlockId: string,
 }
@@ -63,7 +63,7 @@ type EventHandlerMixinType = typeof EVENT_HANDLER;
 /** Extra state for serialising event handler blocks. */
 export interface EventHandlerExtraState {
   pathOfSender: string;
-  typeOfSender: SenderType;
+  senderType: SenderType;
   /** The parameters of the event handler. */
   params: Parameter[];
   /** The id of the mrc_event block that defines the event. */
@@ -95,7 +95,7 @@ const EVENT_HANDLER = {
   saveExtraState(this: EventHandlerBlock): EventHandlerExtraState {
     const extraState: EventHandlerExtraState = {
       pathOfSender: this.mrcPathOfSender,
-      typeOfSender: this.mrcTypeOfSender,
+      senderType: this.mrcSenderType,
       params: [],
       otherBlockId: this.mrcOtherBlockId,
     };
@@ -115,7 +115,7 @@ const EVENT_HANDLER = {
    */
   loadExtraState(this: EventHandlerBlock, extraState: EventHandlerExtraState): void {
     this.mrcPathOfSender = extraState.pathOfSender;
-    this.mrcTypeOfSender = extraState.typeOfSender;
+    this.mrcSenderType = extraState.senderType;
     this.mrcParameters = [];
     this.mrcOtherBlockId = extraState.otherBlockId;
 
@@ -158,8 +158,8 @@ const EVENT_HANDLER = {
       input.removeField(fieldName);
     });
   },
-  onLoad: function(this: EventHandlerBlock): void {
-    // onLoad is called for each EventHandlerBlock when the blocks are loaded in the blockly workspace.
+  mrcOnLoad: function(this: EventHandlerBlock): void {
+    // mrcOnLoad is called for each EventHandlerBlock when the blocks are loaded in the blockly workspace.
     const warnings: string[] = [];
 
     // If this block is an event handler for a robot event, check that the robot event
@@ -167,7 +167,7 @@ const EVENT_HANDLER = {
     // If the robot event doesn't exist, put a visible warning on this block.
     // If the robot event has changed, update the block if possible or put a
     // visible warning on it.
-    if (this.mrcTypeOfSender === SenderType.ROBOT) {
+    if (this.mrcSenderType === SenderType.ROBOT) {
       let foundRobotEvent = false;
       const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
       if (editor) {
@@ -301,7 +301,7 @@ function createRobotEventHandlerBlock(
   const extraState: EventHandlerExtraState = {
     // TODO(lizlooney): ask Alan what pathOfSender is for.
     pathOfSender: '',
-    typeOfSender: SenderType.ROBOT,
+    senderType: SenderType.ROBOT,
     params: [],
     otherBlockId: event.blockId,
   };

@@ -138,8 +138,7 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           const path = value.path;
-          // Before PR #143, robot modules were stored with the type 'project'.
-          const moduleType = (value.type == 'project') ? commonStorage.MODULE_TYPE_ROBOT : value.type;
+          const moduleType = value.type;
           const moduleName = commonStorage.getModuleName(path);
           const module: commonStorage.Module = {
             modulePath: path,

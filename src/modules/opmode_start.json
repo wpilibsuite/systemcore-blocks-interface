@@ -7,6 +7,7 @@
                 "id": "ElbONc{)gh,UprTW(|1C",
                 "x": 10,
                 "y": 10,
+                "editable": false,
                 "deletable": false,
                 "fields": {
                     "NAME": "",
@@ -20,6 +21,7 @@
                 "id": "ElbONc{)s(,UprTW(|1C",
                 "x": 10,
                 "y": 120,
+                "editable": false,
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
@@ -43,6 +45,7 @@
                 "id": "wxFAh6eaR1|3fTuV:UAd",
                 "x": 10,
                 "y": 300,
+                "editable": false,
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
