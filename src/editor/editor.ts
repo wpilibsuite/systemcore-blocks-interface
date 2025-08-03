@@ -245,6 +245,7 @@ export class Editor {
     extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.generatorContext);
 
     const blocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
+    const mechanisms: commonStorage.MechanismInRobot[] = this.getMechanismsFromWorkspace();
     const components: commonStorage.Component[] = this.getComponentsFromWorkspace();
     const events: commonStorage.Event[] = this.getEventsFromWorkspace();
     const methods: commonStorage.Method[] = (
@@ -253,7 +254,15 @@ export class Editor {
         ? this.getMethodsForOutsideFromWorkspace()
         : [];
     return commonStorage.makeModuleContentText(
-      this.currentModule, blocks, components, events, methods);
+      this.currentModule, blocks, mechanisms, components, events, methods);
+  }
+
+  public getMechanismsFromWorkspace(): commonStorage.MechanismInRobot[] {
+    const mechanisms: commonStorage.MechanismInRobot[] = [];
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+      mechanismComponentHolder.getMechanisms(this.blocklyWorkspace, mechanisms);
+    }
+    return mechanisms;
   }
 
   public getComponentsFromWorkspace(): commonStorage.Component[] {
@@ -307,6 +316,19 @@ export class Editor {
     } catch (e) {
       throw e;
     }
+  }
+
+  /**
+   * Returns the mechanisms defined in the robot.
+   */
+  public getMechanismsFromRobot(): commonStorage.MechanismInRobot[] {
+    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+      return this.getMechanismsFromWorkspace();
+    }
+    if (this.robotContent) {
+      return this.robotContent.getMechanisms();
+    }
+    throw new Error('getMechanismsFromRobot: this.robotContent is null.');
   }
 
   /**

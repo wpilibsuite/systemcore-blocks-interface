@@ -26,8 +26,9 @@ import * as ChangeFramework from './utils/change_framework';
 import { getLegalName } from './utils/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as commonStorage from '../storage/common_storage';
-import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
+import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
+import { MechanismBlock } from './mrc_mechanism';
 import { BLOCK_NAME as  MRC_COMPONENT_NAME } from './mrc_component';
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
 import { ComponentBlock } from './mrc_component';
@@ -130,6 +131,28 @@ const MECHANISM_COMPONENT_HOLDER = {
         updateToolboxAfterDelay();
       }
     }
+  },
+  getMechanisms: function (this: MechanismComponentHolderBlock): commonStorage.MechanismInRobot[] {
+    const mechanisms: commonStorage.MechanismInRobot[] = []
+
+    // Get mechanism blocks from the MECHANISMS input
+    const mechanismsInput = this.getInput(INPUT_MECHANISMS);
+    if (mechanismsInput && mechanismsInput.connection) {
+      // Walk through all connected mechanism blocks.
+      let mechanismBlock = mechanismsInput.connection.targetBlock();
+      while (mechanismBlock) {
+        if (mechanismBlock.type === MRC_MECHANISM_NAME) {
+          const mechanism = (mechanismBlock as MechanismBlock).getMechanism();
+          if (mechanism) {
+            mechanisms.push(mechanism);
+          }
+        }
+        // Move to the next block in the chain
+        mechanismBlock = mechanismBlock.getNextBlock();
+      }
+    }
+
+    return mechanisms;
   },
   getComponents: function (this: MechanismComponentHolderBlock): commonStorage.Component[] {
     const components: commonStorage.Component[] = []
@@ -279,6 +302,17 @@ export function getComponentPorts(workspace: Blockly.Workspace, ports: {[key: st
         componentBlock = componentBlock.getNextBlock();
       }
     }
+  });
+}
+
+export function getMechanisms(
+    workspace: Blockly.Workspace,
+    mechanisms: commonStorage.MechanismInRobot[]): void {
+  // Get the holder block and ask it for the mechanisms.
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    const mechanismsFromHolder: commonStorage.MechanismInRobot[] =
+      (block as MechanismComponentHolderBlock).getMechanisms();
+    mechanisms.push(...mechanismsFromHolder);
   });
 }
 

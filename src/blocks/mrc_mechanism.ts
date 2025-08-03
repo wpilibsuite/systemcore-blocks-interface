@@ -137,6 +137,15 @@ const MECHANISM = {
       this.removeInput('ARG' + i);
     }
   },
+  getMechanism: function (this: MechanismBlock): commonStorage.MechanismInRobot | null {
+    const mechanismName = this.getFieldValue(FIELD_NAME);
+    const mechanismType = this.mrcImportModule + '.' + this.getFieldValue(FIELD_TYPE);
+    return {
+      blockId: this.id,
+      name: mechanismName,
+      className: mechanismType,
+    };
+  },
   mrcOnLoad: function(this: MechanismBlock): void {
     // mrcOnLoad is called for each MechanismBlock when the blocks are loaded in the blockly workspace.
     const warnings: string[] = [];

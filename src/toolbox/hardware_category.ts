@@ -29,30 +29,29 @@ import { addRobotEventHandlerBlocks } from '../blocks/mrc_event_handler';
 import { Editor } from '../editor/editor';
 
 export function getHardwareCategory(currentModule: commonStorage.Module): toolboxItems.Category {
-  if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
-    return {
-      kind: 'category',
-      name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
-      contents: [
-        getRobotMechanismsCategory(currentModule),
-        getComponentsCategory(currentModule.moduleType),
-      ]
-    };
-  }
-  if (currentModule.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-    return getComponentsCategory(currentModule.moduleType);
-  }
-  if (currentModule.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
-    return {
-      kind: 'category',
-      name: Blockly.Msg['MRC_CATEGORY_ROBOT'],
-      contents: [
-        getRobotMechanismsCategory(currentModule),
-        getRobotComponentsCategory(),
-        getRobotMethodsCategory(),
-        getRobotEventsCategory(),
-      ]
-    };
+  switch (currentModule.moduleType) {
+    case commonStorage.MODULE_TYPE_ROBOT:
+      return {
+        kind: 'category',
+        name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
+        contents: [
+          getRobotMechanismsCategory(currentModule),
+          getComponentsCategory(currentModule.moduleType),
+        ]
+      };
+    case commonStorage.MODULE_TYPE_MECHANISM:
+      return getComponentsCategory(currentModule.moduleType);
+    case commonStorage.MODULE_TYPE_OPMODE:
+      return {
+        kind: 'category',
+        name: Blockly.Msg['MRC_CATEGORY_ROBOT'],
+        contents: [
+          getRobotMechanismsCategory(currentModule),
+          getRobotComponentsCategory(),
+          getRobotMethodsCategory(),
+          getRobotEventsCategory(),
+        ]
+      };
   }
   throw new Error('currentModule.moduleType has unexpected value: ' + currentModule.moduleType)
 }
@@ -86,6 +85,18 @@ function getRobotMechanismsCategory(currentModule: commonStorage.Module): toolbo
         });
       }
     }
+  }
+
+  if (editor) {
+    editor.getMechanismsFromRobot().forEach(mechanism => {
+      const mechanismBlocks: toolboxItems.Block[] = [];
+      // TODO(lizlooney): add the blocks for mechanism methods.
+      contents.push({
+        kind: 'category',
+        name: mechanism.name,
+        contents: mechanismBlocks,
+      });
+    });
   }
 
   /* // Uncomment this fake code for testing purposes only.

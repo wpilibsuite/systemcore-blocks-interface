@@ -62,8 +62,14 @@ export type Method = {
   args: MethodArg[],
 };
 
+export type MechanismInRobot = {
+  blockId: string, // ID of the mrc_mechanism block that adds the mechanism to the robot.
+  name: string,
+  className: string,
+}
+
 export type Component = {
-  blockId: string, // ID of the mrc_component block that defines the component.
+  blockId: string, // ID of the mrc_component block that adds the component to the robot or to a mechanism.
   name: string,
   className: string,
   ports: {[port: string]: string}, // The value is the type.
@@ -485,12 +491,14 @@ export function getModuleName(modulePath: string): string {
 
 function startingBlocksToModuleContentText(
     module: Module, startingBlocks: { [key: string]: any }): string {
+  const mechanisms: MechanismInRobot[] = [];
   const components: Component[] = [];
   const events: Event[] = [];
   const methods: Method[] = [];
   return makeModuleContentText(
       module,
       startingBlocks,
+      mechanisms,
       components,
       events,
       methods);
@@ -550,12 +558,14 @@ export function newOpModeContent(projectName: string, opModeName: string): strin
 export function makeModuleContentText(
     module: Module,
     blocks: { [key: string]: any },
+    mechanisms: MechanismInRobot[],
     components: Component[],
     events: Event[],
     methods: Method[]): string {
   const moduleContent = new ModuleContent(
       module.moduleType,
       blocks,
+      mechanisms,
       components,
       events,
       methods);
@@ -567,6 +577,7 @@ export function parseModuleContentText(moduleContentText: string): ModuleContent
   return new ModuleContent(
       parsedContent.moduleType,
       parsedContent.blocks,
+      parsedContent.mechanisms,
       parsedContent.components,
       parsedContent.events,
       parsedContent.methods);
@@ -576,6 +587,7 @@ export class ModuleContent {
   constructor(
       private moduleType: string,
       private blocks : { [key: string]: any },
+      private mechanisms: MechanismInRobot[],
       private components: Component[],
       private events: Event[],
       private methods: Method[]) {
@@ -591,6 +603,10 @@ export class ModuleContent {
 
   getBlocks(): { [key: string]: any } {
     return this.blocks;
+  }
+
+  getMechanisms(): MechanismInRobot[] {
+    return this.mechanisms;
   }
 
   getComponents(): Component[] {
