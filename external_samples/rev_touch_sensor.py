@@ -42,6 +42,12 @@ class RevTouchSensor(Component):
     def get_version(self) -> tuple[int, int, int]: 
         return (1, 0, 0)
 
+    def start(self) -> None:
+        pass
+
+    def update(self) -> None:
+        pass
+
     def stop(self) -> None:
         pass
 

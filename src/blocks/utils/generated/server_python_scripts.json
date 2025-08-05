@@ -143,6 +143,19 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "blocks_base_classes.RobotBase"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.RobotBase",
+                    "functionName": "define_hardware",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.RobotBase"
                         },
                         {
                             "defaultValue": "",

@@ -71,6 +71,14 @@ class Component(ABC):
     def get_version(self) -> tuple[int, int, int]:
         pass
 
+    @abstractmethod
+    def start(self) -> None:
+        pass
+
+    @abstractmethod
+    def update(self) -> None:
+        pass
+
     # This stops all movement (if any) for the component
     @abstractmethod
     def stop(self) -> None:
