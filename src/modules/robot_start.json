@@ -7,6 +7,7 @@
                 "id": "ElbONc{)s(,UprTW(|1C",
                 "x": 10,
                 "y": 210,
+                "editable": false,
                 "deletable": false,
                 "extraState": {
                     "canChangeSignature": false,
@@ -25,6 +26,7 @@
                 "id": "ElbOAb{)s(,UprTW(|1C",
                 "x": 10,
                 "y": 10,
+                "editable": false,
                 "deletable": false
             }
         ]
