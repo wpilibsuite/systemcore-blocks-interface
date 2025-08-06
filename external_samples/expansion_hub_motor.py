@@ -55,9 +55,6 @@ class ExpansionHubMotor(Component):
     def start(self) -> None:
         self.expansion_hub_motor.setEnabled(True)
 
-    def update(self) -> None:
-        pass
-
     def stop(self) -> None:
         # TODO: Send stop command to motor.
         pass

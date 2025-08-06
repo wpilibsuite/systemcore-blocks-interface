@@ -55,9 +55,6 @@ class ExpansionHubServo(Component):
         self.expansion_hub_servo.setEnabled(True)
         pass
 
-    def update(self) -> None:
-        pass
-
     def stop(self) -> None:
         # TODO: Send stop command to servo.
         pass
