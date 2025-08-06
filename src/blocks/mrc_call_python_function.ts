@@ -49,6 +49,7 @@ enum FunctionKind {
   INSTANCE_WITHIN = 'instance_within',
   INSTANCE_COMPONENT = 'instance_component',
   INSTANCE_ROBOT = 'instance_robot',
+  INSTANCE_MECHANISM = 'instance_mechanism',
   EVENT = 'event',
 }
 
@@ -58,6 +59,7 @@ const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
 const FIELD_FUNCTION_NAME = 'FUNC';
 const FIELD_EVENT_NAME = 'EVENT';
 const FIELD_COMPONENT_NAME = 'COMPONENT_NAME';
+const FIELD_MECHANISM_NAME = 'MECHANISM_NAME';
 
 type FunctionArg = {
   name: string,
@@ -77,6 +79,8 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcOtherBlockId: string,
   mrcComponentClassName: string,
   mrcOriginalComponentName: string,
+  mrcMechanismClassName: string,
+  mrcMechanismBlockId: string,
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
 
@@ -113,7 +117,8 @@ type CallPythonFunctionExtraState = {
   actualFunctionName?: string,
   /**
    * The id of the block that defines the method, component, or event.
-   * For INSTANCE_ROBOT or INSTANCE_WITHIN, this is the id of an mrc_class_method_def block.
+   * For INSTANCE_WITHIN, INSTANCE_ROBOT, or INSTANCE_MECHANISM, this is the id of an
+   * mrc_class_method_def block.
    * For INSTANCE_COMPONENT, this is the id of an mrc_component block.
    * For EVENT, this is the id of an mrc_event block.
    */
@@ -126,6 +131,15 @@ type CallPythonFunctionExtraState = {
    * The component class name. Specified only if the function kind is INSTANCE_COMPONENT.
    */
   componentClassName?: string,
+  /**
+   * The mechanism class name. Specified only if the function kind is INSTANCE_MECHANISM.
+   */
+  mechanismClassName?: string,
+  /**
+   * The id of the mrc_mechanism block that adds the mechanism to the robot.
+   * Specified only if the function kind is INSTANCE_MECHANISM.
+   */
+  mechanismBlockId?: string,
 };
 
 const CALL_PYTHON_FUNCTION = {
@@ -187,6 +201,13 @@ const CALL_PYTHON_FUNCTION = {
           tooltip = 'Calls the robot method ' + functionName + '.';
           break;
         }
+        case FunctionKind.INSTANCE_MECHANISM: {
+          const className = this.mrcMechanismClassName;
+          const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
+          tooltip = 'Calls the instance method ' + className + '.' + functionName +
+              ' on the mechanism named ' + this.getFieldValue(FIELD_MECHANISM_NAME) + '.';
+          break;
+        }
         default:
           throw new Error('mrcFunctionKind has unexpected value: ' + this.mrcFunctionKind)
       }
@@ -246,6 +267,12 @@ const CALL_PYTHON_FUNCTION = {
         }
       }
     }
+    if (this.mrcMechanismClassName) {
+      extraState.mechanismClassName = this.mrcMechanismClassName;
+    }
+    if (this.mrcMechanismBlockId) {
+      extraState.mechanismBlockId = this.mrcMechanismBlockId;
+    }
     return extraState;
   },
   /**
@@ -286,6 +313,10 @@ const CALL_PYTHON_FUNCTION = {
         ? extraState.componentClassName : '';
     this.mrcOriginalComponentName = extraState.componentName
         ? extraState.componentName : '';
+    this.mrcMechanismClassName = extraState.mechanismClassName
+        ? extraState.mechanismClassName : '';
+    this.mrcMechanismBlockId = extraState.mechanismBlockId
+        ? extraState.mechanismBlockId : '';
     this.updateBlock_();
   },
   /**
@@ -382,6 +413,14 @@ const CALL_PYTHON_FUNCTION = {
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         }
+        case FunctionKind.INSTANCE_MECHANISM: {
+          this.appendDummyInput('TITLE')
+              .appendField('call')
+              .appendField(createFieldNonEditableText(''), FIELD_MECHANISM_NAME)
+              .appendField('.')
+              .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
+          break;
+        }
         default:
           throw new Error('mrcFunctionKind has unexpected value: ' + this.mrcFunctionKind)
       }
@@ -415,13 +454,44 @@ const CALL_PYTHON_FUNCTION = {
       this.removeInput('ARG' + i);
     }
   },
-  renameMethodCaller: function(this: CallPythonFunctionBlock, newName: string): void {
-    // renameMethodCaller is called when the method or event definition block in the same module is modified.
-    if (this.mrcFunctionKind == FunctionKind.EVENT) {
-      this.setFieldValue(newName, FIELD_EVENT_NAME);
-    } else if (this.mrcFunctionKind == FunctionKind.INSTANCE_WITHIN) {
-      this.setFieldValue(newName, FIELD_FUNCTION_NAME);
-      // mrcActualFunctionName does not need to be updated because it is not used for INSTANCE_WITHIN.
+  renameMethodCaller: function(this: CallPythonFunctionBlock, blockId: string, newName: string): void {
+    // renameMethodCaller is called when a component, mechanism, event, or
+    // method block in the same module is modified.
+    switch (this.mrcFunctionKind) {
+      case FunctionKind.INSTANCE_WITHIN:
+        if (blockId === this.mrcOtherBlockId) {
+          // For INSTANCE_WITHIN this.mrcOtherBlockId is the id of an mrc_class_method_def block.
+          this.setFieldValue(newName, FIELD_FUNCTION_NAME);
+          // mrcActualFunctionName does not need to be updated because it is not used for INSTANCE_WITHIN.
+        }
+        break;
+      case FunctionKind.INSTANCE_COMPONENT:
+        if (blockId === this.mrcOtherBlockId) {
+          // For INSTANCE_COMPONENT this.mrcOtherBlockId is the id of an mrc_component block.
+          this.setFieldValue(newName, FIELD_COMPONENT_NAME);
+        }
+        break;
+      case FunctionKind.INSTANCE_ROBOT:
+        if (blockId === this.mrcOtherBlockId) {
+          // For INSTANCE_ROBOT this.mrcOtherBlockId is the id of an mrc_class_method_def block.
+          this.setFieldValue(newName, FIELD_FUNCTION_NAME);
+        }
+        break;
+      case FunctionKind.INSTANCE_MECHANISM:
+        if (blockId === this.mrcOtherBlockId) {
+          // For INSTANCE_MECHANISM this.mrcOtherBlockId is the id of an mrc_class_method_def block.
+          this.setFieldValue(newName, FIELD_FUNCTION_NAME);
+        } else if (blockId === this.mrcMechanismBlockId) {
+          // For INSTANCE_MECHANISM this.mrcMechanismBlockId is the id of an mrc_mechanism block.
+          this.setFieldValue(newName, FIELD_MECHANISM_NAME);
+        }
+        break;
+      case FunctionKind.EVENT:
+        if (blockId === this.mrcOtherBlockId) {
+          // For EVENT, this.mrcOtherBlockId is the id of an mrc_event block.
+          this.setFieldValue(newName, FIELD_EVENT_NAME);
+        }
+        break;
     }
   },
   mutateMethodCaller: function(
@@ -467,10 +537,14 @@ const CALL_PYTHON_FUNCTION = {
   },
   mrcOnLoad: function(this: CallPythonFunctionBlock): void {
     // mrcOnLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly workspace.
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    if (!editor) {
+      return;
+    }
     const warnings: string[] = [];
 
-    // If this block is calling a component method, check that the component
-    // still exists and hasn't been changed.
+    // If this block is calling a component method, check whether the component
+    // still exists and whether it has been changed.
     // If the component doesn't exist, put a visible warning on this block.
     // If the component has changed, update the block if possible or put a
     // visible warning on it.
@@ -478,8 +552,7 @@ const CALL_PYTHON_FUNCTION = {
       let foundComponent = false;
       const componentsInScope: commonStorage.Component[] = [];
       componentsInScope.push(...this.getComponentsFromRobot());
-      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-      if (editor && editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_MECHANISM) {
+      if (editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_MECHANISM) {
         componentsInScope.push(...editor.getComponentsFromWorkspace());
       }
       for (const component of componentsInScope) {
@@ -520,20 +593,20 @@ const CALL_PYTHON_FUNCTION = {
       // TODO(lizlooney): Could the component's method have change or been deleted?
     }
 
-    // If this block is calling a robot method, check that the robot method
-    // still exists and hasn't been changed.
+    // If this block is calling a robot method, check whether the robot method
+    // still exists and whether it has been changed.
     // If the robot method doesn't exist, put a visible warning on this block.
     // If the robot method has changed, update the block if possible or put a
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_ROBOT) {
-      let foundRobotMethod = false;
-      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-      if (editor) {
+      if (editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_MECHANISM) {
+        warnings.push('This block is not allowed to be used inside a mechanism.');
+      } else {
+        let foundRobotMethod = false;
         const robotMethods = editor.getMethodsFromRobot();
         for (const robotMethod of robotMethods) {
           if (robotMethod.blockId === this.mrcOtherBlockId) {
             foundRobotMethod = true;
-
             if (this.mrcActualFunctionName !== robotMethod.pythonName) {
               this.mrcActualFunctionName = robotMethod.pythonName;
             }
@@ -562,6 +635,72 @@ const CALL_PYTHON_FUNCTION = {
       }
     }
 
+    // If this block is calling a mechanism method, check whether the mechanism
+    // still exists, whether it has been changed, whether the method still
+    // exists, and whether the method has been changed.
+    // If the mechanism doesn't exist, put a visible warning on this block.
+    // If the mechanism has changed, update the block if possible or put a
+    // visible warning on it.
+    // If the method doesn't exist, put a visible warning on this block.
+    // If the method has changed, update the block if possible or put a
+    // visible warning on it.
+    if (this.mrcFunctionKind === FunctionKind.INSTANCE_MECHANISM) {
+      if (editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_MECHANISM) {
+        warnings.push('This block is not allowed to be used inside a mechanism.');
+      } else {
+        let foundMechanism = false;
+        const mechanismsInRobot = editor.getMechanismsFromRobot();
+        for (const mechanismInRobot of mechanismsInRobot) {
+          if (mechanismInRobot.blockId === this.mrcMechanismBlockId) {
+            foundMechanism = true;
+
+            // If the mechanism name has changed, we can handle that.
+            if (this.getFieldValue(FIELD_MECHANISM_NAME) !== mechanismInRobot.name) {
+              this.setFieldValue(mechanismInRobot.name, FIELD_MECHANISM_NAME);
+            }
+
+            let foundMechanismMethod = false;
+            const mechanism = editor.getMechanism(mechanismInRobot);
+            const mechanismMethods: commonStorage.Method[] = mechanism
+                ? editor.getMethodsFromMechanism(mechanism) : [];
+            for (const mechanismMethod of mechanismMethods) {
+              if (mechanismMethod.blockId === this.mrcOtherBlockId) {
+                foundMechanismMethod = true;
+                if (this.mrcActualFunctionName !== mechanismMethod.pythonName) {
+                  this.mrcActualFunctionName = mechanismMethod.pythonName;
+                }
+                if (this.getFieldValue(FIELD_FUNCTION_NAME) !== mechanismMethod.visibleName) {
+                  this.setFieldValue(mechanismMethod.visibleName, FIELD_FUNCTION_NAME);
+                }
+                this.mrcReturnType = mechanismMethod.returnType;
+                this.mrcArgs = [];
+                // We don't include the arg for the self argument because we don't need a socket for it.
+                for (let i = 1; i < mechanismMethod.args.length; i++) {
+                  this.mrcArgs.push({
+                    name: mechanismMethod.args[i].name,
+                    type: mechanismMethod.args[i].type,
+                  });
+                }
+                this.updateBlock_();
+
+                // Since we found the mechanism method, we can break out of the loop.
+                break;
+              }
+            }
+            if (!foundMechanismMethod) {
+              warnings.push('This block calls a method that no longer exists.');
+            }
+
+            // Since we found the mechanism, we can break out of the loop.
+            break;
+          }
+        }
+        if (!foundMechanism) {
+          warnings.push('This block calls a method on a mechanism that no longer exists.');
+        }
+      }
+    }
+
     if (warnings.length) {
       // Add a warnings to the block.
       const warningText = warnings.join('\n\n');
@@ -586,7 +725,7 @@ export const pythonFromBlock = function(
   if (callPythonFunctionBlock.mrcImportModule) {
     generator.addImport(callPythonFunctionBlock.mrcImportModule);
   }
-  let code;
+  let code = '';
   let needOpenParen = true;
   let delimiterBeforeArgs = '';
   let argStartIndex = 0;
@@ -655,7 +794,6 @@ export const pythonFromBlock = function(
           code = 'self.';
           break;
         case commonStorage.MODULE_TYPE_OPMODE:
-        default:
           code = 'self.robot.';
           break;
       }
@@ -667,6 +805,28 @@ export const pythonFromBlock = function(
           ? callPythonFunctionBlock.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = 'self.robot.' + functionName;
+      break;
+    }
+    case FunctionKind.INSTANCE_MECHANISM: {
+      const mechanismName = block.getFieldValue(FIELD_MECHANISM_NAME);
+      const functionName = callPythonFunctionBlock.mrcActualFunctionName
+          ? callPythonFunctionBlock.mrcActualFunctionName
+          : block.getFieldValue(FIELD_FUNCTION_NAME);
+      // Generate the correct code depending on the module type.
+      switch (generator.getModuleType()) {
+        case commonStorage.MODULE_TYPE_ROBOT:
+          code = 'self.' + mechanismName;
+          break;
+        case commonStorage.MODULE_TYPE_OPMODE:
+          code = 'self.robot.' + mechanismName;
+          break;
+        case commonStorage.MODULE_TYPE_MECHANISM:
+          // The INSTANCE_MECHANISM version should not be used in a mechanism.
+          // TODO(lizlooney): What if the user copies a block from an robot or opmode and pastes
+          // it into a mechanism?
+          break;
+      }
+      code += '.' + functionName;
       break;
     }
     default:
@@ -708,13 +868,15 @@ function generateCodeForArguments(
 
 function getMethodCallers(workspace: Blockly.Workspace, otherBlockId: string): Blockly.Block[] {
   return workspace.getBlocksByType(BLOCK_NAME).filter((block) => {
-    return (block as CallPythonFunctionBlock).mrcOtherBlockId === otherBlockId;
+    return (
+        (block as CallPythonFunctionBlock).mrcOtherBlockId === otherBlockId ||
+        (block as CallPythonFunctionBlock).mrcMechanismBlockId === otherBlockId);
   });
 }
 
 export function renameMethodCallers(workspace: Blockly.Workspace, otherBlockId: string, newName: string): void {
   getMethodCallers(workspace, otherBlockId).forEach(block => {
-    (block as CallPythonFunctionBlock).renameMethodCaller(newName);
+    (block as CallPythonFunctionBlock).renameMethodCaller(otherBlockId, newName);
   });
 }
 
@@ -1012,6 +1174,47 @@ function createInstanceRobotBlock(method: commonStorage.Method): toolboxItems.Bl
   const inputs: {[key: string]: any} = {};
   // Convert method.args from commonStorage.MethodArg[] to ArgData[].
   const args: ArgData[] = [];
+  // We don't include the arg for the self argument because we don't need a socket for it.
+  for (let i = 1; i < method.args.length; i++) {
+    args.push({
+      name: method.args[i].name,
+      type: method.args[i].type,
+      defaultValue: '',
+    });
+  }
+  processArgs(args, extraState, inputs);
+  return createBlock(extraState, fields, inputs);
+}
+
+export function addInstanceMechanismBlocks(
+    mechanismInRobot: commonStorage.MechanismInRobot,
+    methods: commonStorage.Method[],
+    contents: toolboxItems.ContentsType[]) {
+  methods.forEach(method => {
+    contents.push(createInstanceMechanismBlock(mechanismInRobot, method));
+  });
+}
+
+function createInstanceMechanismBlock(
+    mechanismInRobot: commonStorage.MechanismInRobot,
+    method: commonStorage.Method): toolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.INSTANCE_MECHANISM,
+    returnType: method.returnType,
+    actualFunctionName: method.pythonName,
+    args: [],
+    otherBlockId: method.blockId,
+    mechanismClassName: mechanismInRobot.className,
+    mechanismBlockId: mechanismInRobot.blockId,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MECHANISM_NAME] = mechanismInRobot.name;
+  fields[FIELD_FUNCTION_NAME] = method.visibleName;
+  const inputs: {[key: string]: any} = {};
+  // Convert method.args from commonStorage.MethodArg[] to ArgData[].
+  const args: ArgData[] = [];
+  // For INSTANCE_MECHANISM functions, the 0 argument is 'self', but
+  // self is represented by the FIELD_MECHANISM_NAME field.
   // We don't include the arg for the self argument because we don't need a socket for it.
   for (let i = 1; i < method.args.length; i++) {
     args.push({

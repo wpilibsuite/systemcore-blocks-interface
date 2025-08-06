@@ -138,8 +138,7 @@ export class Editor {
     this.clearBlocklyWorkspace();
 
     if (this.currentModule && this.currentProject) {
-      // Fetch the content for the current module and the robot.
-      // TODO: Also fetch the content for the mechanisms?
+      // Fetch the content for the current module, the robot, and the mechanisms.
       const promises: { [modulePath: string]: Promise<string> } = {}; // value is promise of module content.
       promises[this.modulePath] = this.storage.fetchModuleContentText(this.modulePath);
       if (this.robotPath !== this.modulePath) {
@@ -375,6 +374,20 @@ export class Editor {
    */
   public getMechanisms(): commonStorage.Mechanism[] {
     return this.currentProject ? this.currentProject.mechanisms : [];
+  }
+
+  /**
+   * Returns the Mechanism matching the given MechanismInRobot.
+   */
+  public getMechanism(mechanismInRobot: commonStorage.MechanismInRobot): commonStorage.Mechanism | null {
+    if (this.currentProject) {
+      for (const mechanism of this.currentProject.mechanisms) {
+        if (mechanism.moduleName + '.' + mechanism.className === mechanismInRobot.className) {
+          return mechanism;
+        }
+      }
+    }
+    return null;
   }
 
   /**

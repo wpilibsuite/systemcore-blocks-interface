@@ -69,7 +69,6 @@ export class MethodsCategory {
             'define_hardware',
             'fire_event',
             'register_event_handler',
-            'register_event_handler',
             'unregister_event_handler',
           ];
           // Add the methods for a Robot.
@@ -141,5 +140,4 @@ export class MethodsCategory {
       }
     }
   }
-
 }

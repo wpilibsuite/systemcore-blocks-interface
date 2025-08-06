@@ -24,6 +24,7 @@ import { Order } from 'blockly/python';
 
 import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
+import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
@@ -31,6 +32,7 @@ import * as commonStorage from '../storage/common_storage';
 import { createPortShadow } from './mrc_port';
 import { createNumberShadowValue } from './utils/value';
 import { ClassData, FunctionData } from './utils/python_json_types';
+import { renameMethodCallers } from './mrc_call_python_function'
 
 
 export const BLOCK_NAME = 'mrc_component';
@@ -48,14 +50,12 @@ type ComponentExtraState = {
   importModule?: string,
   // If staticFunctionName is not present, generate the constructor.
   staticFunctionName?: string,
-  hideParams?: boolean,
   params?: ConstructorArg[],
 }
 
 export type ComponentBlock = Blockly.Block & ComponentMixin;
 interface ComponentMixin extends ComponentMixinType {
   mrcArgs: ConstructorArg[],
-  hideParams: boolean,
   mrcImportModule: string,
   mrcStaticFunctionName: string,
 }
@@ -67,8 +67,10 @@ const COMPONENT = {
    */
   init: function (this: ComponentBlock): void {
     this.setStyle(MRC_STYLE_COMPONENTS);
+    const nameField = new Blockly.FieldTextInput('')
+    nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput(''), FIELD_NAME)
+      .appendField(nameField, FIELD_NAME)
       .appendField(Blockly.Msg.OF_TYPE)
       .appendField(createFieldNonEditableText(''), FIELD_TYPE);
     this.setPreviousStatement(true, OUTPUT_NAME);
@@ -96,9 +98,6 @@ const COMPONENT = {
     if (this.mrcStaticFunctionName) {
       extraState.staticFunctionName = this.mrcStaticFunctionName;
     }
-    if (this.hideParams) {
-      extraState.hideParams = this.hideParams;
-    }
     return extraState;
   },
   /**
@@ -107,7 +106,6 @@ const COMPONENT = {
   loadExtraState: function (this: ComponentBlock, extraState: ComponentExtraState): void {
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
     this.mrcStaticFunctionName = extraState.staticFunctionName ? extraState.staticFunctionName : '';
-    this.hideParams = extraState.hideParams ? extraState.hideParams : false;
     this.mrcArgs = [];
 
     if (extraState.params) {
@@ -125,7 +123,8 @@ const COMPONENT = {
    * Update the block to reflect the newly loaded extra state.
    */
   updateBlock_: function (this: ComponentBlock): void {
-    if (this.hideParams == false) {
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    if (editor && editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)
@@ -136,6 +135,18 @@ const COMPONENT = {
         }
       }
     }
+  },
+  mrcNameFieldValidator(this: ComponentBlock, nameField: Blockly.FieldTextInput, name: string): string {
+    // Strip leading and trailing whitespace.
+    name = name.trim();
+
+    const legalName = name;
+    const oldName = nameField.getValue();
+    if (oldName && oldName !== name && oldName !== legalName) {
+      // Rename any callers.
+      renameMethodCallers(this.workspace, this.id, legalName);
+    }
+    return legalName;
   },
   getComponent: function (this: ComponentBlock): commonStorage.Component | null {
     const componentName = this.getFieldValue(FIELD_NAME);
@@ -149,19 +160,14 @@ const COMPONENT = {
       ports: ports,
     };
   },
-  getNewPort: function (this: ComponentBlock, i: number): string {
-    let extension = '';
-    if (i != 0) {
-      extension = '_' + (i + 1).toString();
-    }
-    return this.getFieldValue(FIELD_NAME) + extension + '_port';
+  getArgName: function (this: ComponentBlock, i: number): string {
+    return this.getFieldValue(FIELD_NAME) + '__' + this.mrcArgs[i].name;
   },
-  getComponentPorts: function (this: ComponentBlock, ports: {[key: string]: string}): void {
+  getComponentPorts: function (this: ComponentBlock, ports: {[argName: string]: string}): void {
     // Collect the ports for this component block.
     for (let i = 0; i < this.mrcArgs.length; i++) {
-      const newPort = this.getNewPort(i);
-      // The key is the port, the value is the type.
-      ports[newPort] = this.mrcArgs[i].type;
+      const argName = this.getArgName(i);
+      ports[argName] = this.mrcArgs[i].type;
     }
   },
 }
@@ -184,14 +190,13 @@ export const pythonFromBlock = function (
   code += '(';
 
   for (let i = 0; i < block.mrcArgs.length; i++) {
-    const fieldName = 'ARG' + i;
     if (i != 0) {
-      code += ', '
+      code += ', ';
     }
-    if (block.hideParams) {
-      code += block.mrcArgs[i].name + ' = ' + block.getNewPort(i);
+    if (generator.getModuleType() === commonStorage.MODULE_TYPE_ROBOT) {
+      code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, 'ARG' + i, Order.NONE);
     } else {
-      code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
+      code += block.mrcArgs[i].name + ' = ' + block.getArgName(i);
     }
   }
   code += ')\n' + 'self.hardware.append(self.' + block.getFieldValue(FIELD_NAME) + ')\n';
@@ -230,7 +235,6 @@ function createComponentBlock(
     importModule: classData.moduleName,
     staticFunctionName: staticFunctionData.functionName,
     params: [],
-    hideParams: (moduleType == commonStorage.MODULE_TYPE_MECHANISM),
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_NAME] = componentName;
