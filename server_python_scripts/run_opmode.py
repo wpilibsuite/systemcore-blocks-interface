@@ -13,6 +13,7 @@ import time
 import importlib.util
 import inspect
 import argparse
+import traceback
 from pathlib import Path
 
 from blocks_base_classes import OpMode
@@ -151,6 +152,7 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
         
     except Exception as e:
         print(f"Error running opmode: {e}")
+        traceback.print_exc()
         sys.exit(1)
 
 

@@ -59,6 +59,8 @@ import expansion_hub  # TODO(lizlooney): update this when it is built into robot
 sys.path.append("../external_samples")
 import color_range_sensor
 import component
+import expansion_hub_motor
+import expansion_hub_servo
 import rev_touch_sensor
 import servo
 import smart_motor
@@ -119,6 +121,8 @@ def main(argv):
   external_samples_modules = [
     color_range_sensor,
     component,
+    expansion_hub_motor,
+    expansion_hub_servo,
     rev_touch_sensor,
     servo,
     smart_motor,

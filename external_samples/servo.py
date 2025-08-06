@@ -42,7 +42,7 @@ class Servo(Component):
         return (1, 0, 0)
 
     def stop(self) -> None:
-        # De-energize servo port
+        # TODO: De-energize servo port
         pass
 
     def reset(self) -> None:

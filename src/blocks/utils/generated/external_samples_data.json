@@ -262,7 +262,33 @@
                         }
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "color_range_sensor.ColorRangeSensor"
+                        }
+                    ],
+                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
                     "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "color_range_sensor.ColorRangeSensor"
+                        }
+                    ],
+                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
+                    "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -428,7 +454,33 @@
                         }
                     ],
                     "declaringClassName": "component.Component",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "component.Component"
+                        }
+                    ],
+                    "declaringClassName": "component.Component",
                     "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "component.Component"
+                        }
+                    ],
+                    "declaringClassName": "component.Component",
+                    "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -475,6 +527,718 @@
             "instanceVariables": [],
             "moduleName": "component",
             "staticMethods": []
+        },
+        {
+            "className": "expansion_hub_motor.ExpansionHubMotor",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "ports",
+                            "type": "list[tuple[component.PortType, int]]"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "__init__",
+                    "returnType": "expansion_hub_motor.ExpansionHubMotor",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "getCurrent",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "getEncoder",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "getEncoderVelocity",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "getPositionPidConstants",
+                    "returnType": "expansion_hub.ExpansionHubPidConstants",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "getVelocityPidConstants",
+                    "returnType": "expansion_hub.ExpansionHubPidConstants",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "get_connection_port_type",
+                    "returnType": "list[component.PortType]",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "get_manufacturer",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "get_name",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "get_part_number",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "get_url",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "get_version",
+                    "returnType": "tuple[int, int, int]",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "isHubConnected",
+                    "returnType": "bool",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "reset",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "resetEncoder",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "perCount",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "setDistancePerCount",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "setEnabled",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "floatOn0",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "setFloatOn0",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "power",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "setPercentagePower",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setpoint",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "setPositionSetpoint",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "reversed",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "setReversed",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setpoint",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "setVelocitySetpoint",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "voltage",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "setVoltage",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "update",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "expansion_hub_motor",
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hub_number",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "motor_number",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "from_hub_number_and_motor_number",
+                    "returnType": "expansion_hub_motor.ExpansionHubMotor",
+                    "tooltip": ""
+                }
+            ]
+        },
+        {
+            "className": "expansion_hub_servo.ExpansionHubServo",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "ports",
+                            "type": "list[tuple[component.PortType, int]]"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "__init__",
+                    "returnType": "expansion_hub_servo.ExpansionHubServo",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "get_connection_port_type",
+                    "returnType": "list[component.PortType]",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "get_manufacturer",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "get_name",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "get_part_number",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "get_url",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "get_version",
+                    "returnType": "tuple[int, int, int]",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "isHubConnected",
+                    "returnType": "bool",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "reset",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "set",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "degrees",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "setAngle",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "setEnabled",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "framePeriod",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "setFramePeriod",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "pulseWidth",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "setPulseWidth",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "update",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "expansion_hub_servo",
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hub_number",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "servo_number",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "from_hub_number_and_servo_number",
+                    "returnType": "expansion_hub_servo.ExpansionHubServo",
+                    "tooltip": ""
+                }
+            ]
         },
         {
             "className": "rev_touch_sensor.RevTouchSensor",
@@ -658,7 +1422,33 @@
                         }
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev_touch_sensor.RevTouchSensor"
+                        }
+                    ],
+                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
                     "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev_touch_sensor.RevTouchSensor"
+                        }
+                    ],
+                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
+                    "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -850,7 +1640,33 @@
                         }
                     ],
                     "declaringClassName": "servo.Servo",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "servo.Servo"
+                        }
+                    ],
+                    "declaringClassName": "servo.Servo",
                     "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "servo.Servo"
+                        }
+                    ],
+                    "declaringClassName": "servo.Servo",
+                    "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -1081,7 +1897,33 @@
                         }
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "smart_motor.SmartMotor"
+                        }
+                    ],
+                    "declaringClassName": "smart_motor.SmartMotor",
                     "functionName": "stop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "smart_motor.SmartMotor"
+                        }
+                    ],
+                    "declaringClassName": "smart_motor.SmartMotor",
+                    "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -1524,6 +2366,19 @@
                         }
                     ],
                     "declaringClassName": "spark_mini.SparkMini",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "spark_mini.SparkMini"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "stop",
                     "returnType": "None",
                     "tooltip": ""
@@ -1538,6 +2393,19 @@
                     ],
                     "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "stop_motor",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "spark_mini.SparkMini"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMini",
+                    "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -1754,6 +2622,19 @@
                         }
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
+                    "functionName": "start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "sparkfun_led_stick.SparkFunLEDStick"
+                        }
+                    ],
+                    "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
                     "functionName": "stop",
                     "returnType": "None",
                     "tooltip": ""
@@ -1770,6 +2651,19 @@
                     "functionName": "turn_all_off",
                     "returnType": "None",
                     "tooltip": "Turn all LEDs off."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "sparkfun_led_stick.SparkFunLEDStick"
+                        }
+                    ],
+                    "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
+                    "functionName": "update",
+                    "returnType": "None",
+                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -1821,6 +2715,18 @@
         {
             "enums": [],
             "functions": [],
+            "moduleName": "expansion_hub_motor",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "expansion_hub_servo",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
             "moduleName": "rev_touch_sensor",
             "moduleVariables": []
         },
@@ -1852,6 +2758,8 @@
     "subclasses": {
         "component.Component": [
             "color_range_sensor.ColorRangeSensor",
+            "expansion_hub_motor.ExpansionHubMotor",
+            "expansion_hub_servo.ExpansionHubServo",
             "rev_touch_sensor.RevTouchSensor",
             "servo.Servo",
             "smart_motor.SmartMotor",

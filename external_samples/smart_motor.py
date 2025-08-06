@@ -42,7 +42,7 @@ class SmartMotor(Component):
         return (1, 0, 0)
 
     def stop(self) -> None:
-        # send stop command to motor
+        # TODO: send stop command to motor
         pass
 
     def reset(self) -> None:
