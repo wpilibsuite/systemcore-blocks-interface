@@ -103,8 +103,8 @@ const CLASS_METHOD_DEF = {
         this.updateBlock_();
     },
     /**
-       * Returns the state of this block as a JSON serializable object.
-       */
+     * Returns the state of this block as a JSON serializable object.
+     */
     saveExtraState: function (
         this: ClassMethodDefBlock): ClassMethodDefExtraState {
         const extraState: ClassMethodDefExtraState = {
@@ -424,8 +424,11 @@ export const pythonFromBlock = function (
 
     let params = block.mrcParameters;
     let paramString = "self";
-    if (block.mrcPythonMethodName == '__init__') {
-        paramString += generator.getListOfPorts(false);
+    if (generator.getModuleType() == commonStorage.MODULE_TYPE_MECHANISM && block.mrcPythonMethodName == '__init__') {
+        const ports: string[] = generator.getComponentPortParameters();
+        if (ports.length) {
+            paramString += ', ' + ports.join(', ');
+        }
     }
 
     if (params.length != 0) {

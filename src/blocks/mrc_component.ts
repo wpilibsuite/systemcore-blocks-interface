@@ -140,10 +140,13 @@ const COMPONENT = {
   getComponent: function (this: ComponentBlock): commonStorage.Component | null {
     const componentName = this.getFieldValue(FIELD_NAME);
     const componentType = this.getFieldValue(FIELD_TYPE);
+    const ports: {[port: string]: string} = {};
+    this.getComponentPorts(ports);
     return {
       blockId: this.id,
       name: componentName,
       className: componentType,
+      ports: ports,
     };
   },
   getNewPort: function (this: ComponentBlock, i: number): string {
@@ -153,14 +156,12 @@ const COMPONENT = {
     }
     return this.getFieldValue(FIELD_NAME) + extension + '_port';
   },
-  getHardwarePorts: function (this: ComponentBlock, ports: {[key: string]: string}): void {
-    // Collect the hardware ports for this component block that are needed to generate
-    // the define_hardware method. (The key is the port, the value is the type.)
-    if (this.hideParams) {
-      for (let i = 0; i < this.mrcArgs.length; i++) {
-        const newPort = this.getNewPort(i);
-        ports[newPort] = this.mrcArgs[i].type;
-      }
+  getComponentPorts: function (this: ComponentBlock, ports: {[key: string]: string}): void {
+    // Collect the ports for this component block.
+    for (let i = 0; i < this.mrcArgs.length; i++) {
+      const newPort = this.getNewPort(i);
+      // The key is the port, the value is the type.
+      ports[newPort] = this.mrcArgs[i].type;
     }
   },
 }
@@ -197,7 +198,7 @@ export const pythonFromBlock = function (
   return code;
 }
 
-export function getAllPossibleComponents(hideParams: boolean): toolboxItems.ContentsType[] {
+export function getAllPossibleComponents(moduleType: string): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
   // Iterate through all the components subclasses and add definition blocks.
   const componentTypes = getSubclassNames('component.Component');
@@ -215,7 +216,7 @@ export function getAllPossibleComponents(hideParams: boolean): toolboxItems.Cont
 
     classData.staticMethods.forEach(staticFunctionData => {
       if (staticFunctionData.returnType === componentType) {
-        contents.push(createComponentBlock(componentName, classData, staticFunctionData, hideParams));
+        contents.push(createComponentBlock(componentName, classData, staticFunctionData, moduleType));
       }
     });
   });
@@ -224,12 +225,12 @@ export function getAllPossibleComponents(hideParams: boolean): toolboxItems.Cont
 }
 
 function createComponentBlock(
-    componentName: string, classData: ClassData, staticFunctionData: FunctionData, hideParams: boolean): toolboxItems.Block {
+    componentName: string, classData: ClassData, staticFunctionData: FunctionData, moduleType: string): toolboxItems.Block {
   const extraState: ComponentExtraState = {
     importModule: classData.moduleName,
     staticFunctionName: staticFunctionData.functionName,
     params: [],
-    hideParams: hideParams,
+    hideParams: (moduleType == commonStorage.MODULE_TYPE_MECHANISM),
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_NAME] = componentName;
@@ -241,7 +242,7 @@ function createComponentBlock(
       'name': argData.name,
       'type': argData.type,
     });
-    if (!hideParams) {
+    if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
       if (argData.type === 'int') {
         const portType = getPortTypeForArgument(argData.name);
         if (portType) {

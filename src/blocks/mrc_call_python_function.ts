@@ -465,8 +465,8 @@ const CALL_PYTHON_FUNCTION = {
     }
     return components;
   },
-  onLoad: function(this: CallPythonFunctionBlock): void {
-    // onLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly workspace.
+  mrcOnLoad: function(this: CallPythonFunctionBlock): void {
+    // mrcOnLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly workspace.
     const warnings: string[] = [];
 
     // If this block is calling a component method, check that the component
@@ -476,8 +476,13 @@ const CALL_PYTHON_FUNCTION = {
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
       let foundComponent = false;
-      const components = this.getComponentsFromRobot();
-      for (const component of components) {
+      const componentsInScope: commonStorage.Component[] = [];
+      componentsInScope.push(...this.getComponentsFromRobot());
+      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+      if (editor && editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_MECHANISM) {
+        componentsInScope.push(...editor.getComponentsFromWorkspace());
+      }
+      for (const component of componentsInScope) {
         if (component.blockId === this.mrcOtherBlockId) {
           foundComponent = true;
 
@@ -495,7 +500,7 @@ const CALL_PYTHON_FUNCTION = {
               }
               if (indexOfComponentName != -1) {
                 const componentNameChoices : string[] = [];
-                components.forEach(component => componentNameChoices.push(component.name));
+                componentsInScope.forEach(component => componentNameChoices.push(component.name));
                 titleInput.removeField(FIELD_COMPONENT_NAME);
                 titleInput.insertFieldAt(indexOfComponentName,
                     createFieldDropdown(componentNameChoices), FIELD_COMPONENT_NAME);

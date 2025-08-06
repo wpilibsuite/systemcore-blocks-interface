@@ -418,7 +418,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       generatorContext.current.setModule(currentModule);
     }
     if (blocksEditor.current) {
-      blocksEditor.current.loadModuleBlocks(currentModule);
+      blocksEditor.current.loadModuleBlocks(currentModule, project);
     }
   }, [currentModule]);
 
@@ -436,11 +436,15 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       generatorContext.current.setModule(currentModule);
     }
 
+    if (blocksEditor.current) {
+      blocksEditor.current.abandon();
+    }
     blocksEditor.current = new editor.Editor(newWorkspace, generatorContext.current, storage);
+    blocksEditor.current.makeCurrent();
 
     // Set the current module in the editor after creating it
     if (currentModule) {
-      blocksEditor.current.loadModuleBlocks(currentModule);
+      blocksEditor.current.loadModuleBlocks(currentModule, project);
     }
 
     blocksEditor.current.updateToolbox(shownPythonToolboxCategories);

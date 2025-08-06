@@ -71,12 +71,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private workspace: Blockly.Workspace | null = null;
   private context: GeneratorContext | null = null;
 
-  // Has components or mechanisms (ie, might need to call self.define_hardware in __init__)
-  private hasHardware = false;
-  private ports: {[key: string]: string} = Object.create(null);
+  // Fields related to generating the __init__ for a mechanism.
+  private hasAnyComponents = false;
+  private componentPorts: {[key: string]: string} = Object.create(null);
 
   // Has event handlers (ie, needs to call self.register_event_handlers in __init__)
-  private hasEventHandler = false;
+  private hasAnyEventHandlers = false;
 
   private classMethods: {[key: string]: string} = Object.create(null);
   // For eventHandlers, the keys are the function name.
@@ -112,22 +112,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   generateInitStatements() : string {
     let initStatements = '';
 
-    if (this.hasHardware) {
-      switch (this.getModuleType()) {
-        case commonStorage.MODULE_TYPE_ROBOT:
-          // The RobotBase __init__ method already calls self.define_robot(), so
-          // we don't need to generate that call here.
-          break;
-        case commonStorage.MODULE_TYPE_MECHANISM:
-          // For mechanisms
-          initStatements += this.INDENT + "self.define_hardware(";
-          initStatements += this.getListOfPorts(true);
-          initStatements += ')\n';
-          break;
-      }
+    if (this.getModuleType() === commonStorage.MODULE_TYPE_MECHANISM && this.hasAnyComponents) {
+      initStatements += this.INDENT + 'self.define_hardware(' +
+          this.getComponentPortParameters().join(', ') + ')\n';
     }
 
-    if (this.hasEventHandler) {
+    if (this.hasAnyEventHandlers) {
       initStatements += this.INDENT + "self.register_event_handlers()\n";
     }
 
@@ -143,9 +133,13 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.workspace = workspace;
     this.context = context;
 
-    this.ports = Object.create(null);
-    this.hasHardware = mechanismContainerHolder.getHardwarePorts(this.workspace, this.ports);
-    this.hasEventHandler = eventHandler.getHasAnyEnabledEventHandlers(this.workspace);
+    this.hasAnyComponents = false;
+    this.componentPorts = Object.create(null);
+    if (this.getModuleType() ===  commonStorage.MODULE_TYPE_MECHANISM) {
+      this.hasAnyComponents = mechanismContainerHolder.hasAnyComponents(this.workspace);
+      mechanismContainerHolder.getComponentPorts(this.workspace, this.componentPorts);
+    }
+    this.hasAnyEventHandlers = eventHandler.getHasAnyEnabledEventHandlers(this.workspace);
 
     const code = super.workspaceToCode(workspace);
 
@@ -193,19 +187,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     }
   }
 
-  getListOfPorts(startWithFirst: boolean): string{
-    let returnString = ''
-    let firstPort = startWithFirst;
-    for (const port in this.ports) {
-      if (!firstPort){
-        returnString += ', ';
-      }
-      else{
-        firstPort = false;
-      }
-      returnString += port;
+  getComponentPortParameters(): string[] {
+    const ports: string[] = []
+    for (const port in this.componentPorts) {
+      ports.push(port);
     }
-    return returnString;
+    return ports;
   }
 
   finish(code: string): string {
@@ -248,7 +235,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       }
       this.eventHandlers = Object.create(null);
       this.classMethods = Object.create(null);
-      this.ports = Object.create(null);
+      this.componentPorts = Object.create(null);
       code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
       if (decorations){
         code = decorations + code;
