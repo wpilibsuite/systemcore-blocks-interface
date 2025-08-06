@@ -139,7 +139,7 @@ const MECHANISM = {
       this.removeInput('ARG' + i);
     }
   },
-  mrcNameFieldValidator(this: ComponentBlock, nameField: Blockly.FieldTextInput, name: string): string {
+  mrcNameFieldValidator(this: MechanismBlock, nameField: Blockly.FieldTextInput, name: string): string {
     // Strip leading and trailing whitespace.
     name = name.trim();
 
