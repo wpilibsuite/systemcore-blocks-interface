@@ -58,18 +58,18 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
 
   /** Handles adding a new item with validation. */
   const handleAddNewItem = (): void => {
-    const newUserVisibleName = props.newItemName.trim();
-    if (!newUserVisibleName || !props.projects) {
+    const newProjectName = props.newItemName.trim();
+    if (!newProjectName || !props.projects) {
       return;
     }
 
-    if (!commonStorage.isValidClassName(newUserVisibleName)) {
-      showError(newUserVisibleName + INVALID_NAME_MESSAGE_SUFFIX);
+    if (!commonStorage.isValidClassName(newProjectName)) {
+      showError(newProjectName + INVALID_NAME_MESSAGE_SUFFIX);
       return;
     }
 
-    if (props.projects.some((project) => project.userVisibleName === newUserVisibleName)) {
-      showError(DUPLICATE_NAME_MESSAGE_PREFIX + newUserVisibleName + DUPLICATE_NAME_MESSAGE_SUFFIX);
+    if (props.projects.some((project) => project.projectName === newProjectName)) {
+      showError(DUPLICATE_NAME_MESSAGE_PREFIX + newProjectName + DUPLICATE_NAME_MESSAGE_SUFFIX);
       return;
     }
 

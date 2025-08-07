@@ -186,9 +186,9 @@ const MECHANISM = {
         if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {
           this.setFieldValue(foundMechanism.className, FIELD_TYPE);
         }
-        // If the mechanism module name has changed, update this block.
-        if (this.mrcImportModule !== foundMechanism.moduleName) {
-          this.mrcImportModule = foundMechanism.moduleName;
+        const importModule = commonStorage.pascalCaseToSnakeCase(foundMechanism.className);
+        if (this.mrcImportModule !== importModule) {
+          this.mrcImportModule = importModule;
         }
         this.mrcParameters = [];
         components.forEach(component => {
@@ -245,12 +245,10 @@ export const pythonFromBlock = function (
 
 export function createMechanismBlock(
     mechanism: commonStorage.Mechanism, components: commonStorage.Component[]): toolboxItems.Block {
-  const lastDot = mechanism.className.lastIndexOf('.');
-  const mechanismName = (
-      'my_' +
-      commonStorage.pascalCaseToSnakeCase(mechanism.className.substring(lastDot + 1)));
+  const snakeCaseName = commonStorage.pascalCaseToSnakeCase(mechanism.className);
+  const mechanismName = 'my_' + snakeCaseName;
   const extraState: MechanismExtraState = {
-    importModule: mechanism.moduleName,
+    importModule: snakeCaseName,
     parameters: [],
   };
   const inputs: {[key: string]: any} = {};

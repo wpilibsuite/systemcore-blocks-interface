@@ -23,12 +23,17 @@
 
 import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from '../editor/extended_python_generator';
-import { Project, Module, Storage, parseModuleContentText } from './common_storage';
+import {
+    Project,
+    Module,
+    Storage,
+    parseModuleContentText,
+    pascalCaseToSnakeCase } from './common_storage';
 import JSZip from 'jszip';
 import { GeneratorContext } from '../editor/generator_context';
 
 /** Result of Python code generation for a single module */
-export interface ModulePythonResult {
+interface ModulePythonResult {
   moduleName: string;
   pythonCode: string;
   success: boolean;
@@ -36,7 +41,7 @@ export interface ModulePythonResult {
 }
 
 /** Result of Python code generation for an entire project */
-export interface ProjectPythonResult {
+interface ProjectPythonResult {
   projectName: string;
   modules: ModulePythonResult[];
   success: boolean;
@@ -49,45 +54,46 @@ export interface ProjectPythonResult {
  * @param storage The storage interface to fetch module content
  * @returns Result containing generated Python code or error
  */
-export async function generatePythonForModule(module: Module, storage: Storage): Promise<ModulePythonResult> {
+async function generatePythonForModule(module: Module, storage: Storage): Promise<ModulePythonResult> {
+  const moduleName = pascalCaseToSnakeCase(module.className);
+
   try {
     // Fetch the module content from storage
     const moduleContentText = await storage.fetchModuleContentText(module.modulePath);
     const moduleContent = parseModuleContentText(moduleContentText);
-    
+
     // Create a headless workspace
     const workspace = new Blockly.Workspace();
-    
+
     // Parse and load the JSON into the workspace
     const blocks = moduleContent.getBlocks();
-    
+
     Blockly.serialization.workspaces.load(blocks, workspace);
-    
-   
+
     // Create and set up generator context like the editor does
     const generatorContext = new GeneratorContext();
     generatorContext.setModule(module);
-    
+
     // Initialize the generator if not already done
     if (!extendedPythonGenerator.isInitialized) {
       extendedPythonGenerator.init(workspace);
     }
-    
+
     // Generate Python code using the same method as the editor
     const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(workspace, generatorContext);
-    
+
     // Clean up the workspace
     workspace.dispose();
-    
+
     return {
-      moduleName: module.moduleName,
+      moduleName: moduleName,
       pythonCode,
       success: true,
     };
   } catch (error) {
-    console.error('Error generating Python for module', module.moduleName, ':', error);
+    console.error('Error generating Python for module ', moduleName, ':', error);
     return {
-      moduleName: module.moduleName,
+      moduleName: moduleName,
       pythonCode: '',
       success: false,
       error: error instanceof Error ? error.message : String(error),
@@ -101,17 +107,17 @@ export async function generatePythonForModule(module: Module, storage: Storage):
  * @param storage The storage interface to fetch module content
  * @returns Result containing Python code for all modules
  */
-export async function generatePythonForProject(project: Project, storage: Storage): Promise<ProjectPythonResult> {
+async function generatePythonForProject(project: Project, storage: Storage): Promise<ProjectPythonResult> {
   const moduleResults: ModulePythonResult[] = [];
   let errorCount = 0;
-  
+
   // Process the robot module
   const robotResult = await generatePythonForModule(project.robot, storage);
   moduleResults.push(robotResult);
   if (!robotResult.success) {
     errorCount++;
   }
-  
+
   // Process all mechanism modules
   for (const mechanism of project.mechanisms) {
     const result = await generatePythonForModule(mechanism, storage);
@@ -120,7 +126,7 @@ export async function generatePythonForProject(project: Project, storage: Storag
       errorCount++;
     }
   }
-  
+
   // Process all opmode modules
   for (const opMode of project.opModes) {
     const result = await generatePythonForModule(opMode, storage);
@@ -129,7 +135,7 @@ export async function generatePythonForProject(project: Project, storage: Storag
       errorCount++;
     }
   }
-  
+
   return {
     projectName: project.projectName,
     modules: moduleResults,
@@ -144,17 +150,17 @@ export async function generatePythonForProject(project: Project, storage: Storag
  * @param storage The storage interface to fetch module content
  * @returns Map of filename to Python code content
  */
-export async function generatePythonFilesMap(project: Project, storage: Storage): Promise<Map<string, string>> {
+async function generatePythonFilesMap(project: Project, storage: Storage): Promise<Map<string, string>> {
   const filesMap = new Map<string, string>();
   const result = await generatePythonForProject(project, storage);
-  
+
   for (const moduleResult of result.modules) {
     if (moduleResult.success) {
       const filename = `${moduleResult.moduleName}.py`;
       filesMap.set(filename, moduleResult.pythonCode);
     }
   }
-  
+
   return filesMap;
 }
 
@@ -167,19 +173,19 @@ export async function generatePythonFilesMap(project: Project, storage: Storage)
 export async function producePythonProjectBlob(project: Project, storage: Storage): Promise<string> {
   // Initialize the generator first
   initializeHeadlessBlockly();
-  
+
   const pythonFilesMap = await generatePythonFilesMap(project, storage);
-  
-  
+
+
   if (pythonFilesMap.size === 0) {
     throw new Error('No Python files were generated successfully');
   }
-  
+
   const zip = new JSZip();
   for (const [filename, pythonCode] of pythonFilesMap) {
     zip.file(filename, pythonCode);
   }
-  
+
   const content = await zip.generateAsync({ type: "blob" });
   const blobUrl = URL.createObjectURL(content);
   return blobUrl;
@@ -189,7 +195,7 @@ export async function producePythonProjectBlob(project: Project, storage: Storag
  * Initialize Blockly for headless operation
  * This should be called once before using the generation functions
  */
-export function initializeHeadlessBlockly(): void {
+function initializeHeadlessBlockly(): void {
   // Initialize Blockly for headless operation
   // This ensures all necessary generators and blocks are loaded
   extendedPythonGenerator.init(new Blockly.Workspace());

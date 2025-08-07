@@ -322,6 +322,92 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
   };
 
+  // TODO: Add menu or button or something for the download action.
+  /** Handles the download action to generate and download json files. */
+  const handleDownload = async (): Promise<void> => {
+    if (!props.project || !props.storage) {
+      return;
+    }
+
+    try {
+      const blobUrl = await props.storage.downloadProject(props.project.projectName);
+      const filename = props.project.projectName + commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+
+      // Create a temporary link to download the file
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the blob URL
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Failed to download project:', error);
+      props.setAlertErrorMessage(t('DOWNLOAD_FAILED') || 'Failed to download project');
+    }
+  }
+
+  // TODO: Add menu or button or something for the upload action.
+  /** Handles the upload action to upload a previously downloaded project. */
+  const handleUpload = (): Antd.UploadProps => {
+    if (!props.storage) {
+      return;
+    }
+
+    const uploadProps: Antd.UploadProps = {
+      accept: commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION,
+      beforeUpload: (file) => {
+        const isBlocks = file.name.endsWith(commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION)
+        if (!isBlocks) {
+          // TODO: i18n
+          props.setAlertErrorMessage(file.name + ' is not a blocks file');
+          setAlertErrorVisible(true);
+          return false;
+        }
+        return isBlocks || Antd.Upload.LIST_IGNORE;
+      },
+      onChange: (info) => {
+      },
+      customRequest: ({ file, onSuccess, onError }) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target.result;
+          const existingProjectNames: string[] = [];
+          projects.forEach(project => {
+            existingProjectNames.push(project.projectName);
+          });
+          const uploadProjectName = commonStorage.makeUploadProjectName(file.name, existingProjectNames);
+          if (props.storage) {
+            props.storage.uploadProject(
+                uploadProjectName, dataUrl,
+                (success: boolean, errorMessage: string) => {
+                  if (success) {
+                    // TODO: i18n
+                    onSuccess('Upload successful');
+                    // TODO: Select the project that was just uploaded.
+                  } else {
+                    onError(errorMessage);
+                    // TODO: i18n
+                    props.setAlertErrorMessage('Unable to upload the project');
+                  }
+                }
+            );
+          }
+        };
+        reader.onerror = (error) => {
+          onError(error);
+          // TODO: i18n
+          props.setAlertErrorMessage(t('UPLOAD_FAILED') || 'Failed to upload project');
+          setAlertErrorVisible(true);
+        };
+        reader.readAsDataURL(file);
+      },
+    };
+    return uploadProps;
+  };
+
   /** Handles closing the file management modal. */
   const handleFileModalClose = (): void => {
     console.log('Modal onCancel called');

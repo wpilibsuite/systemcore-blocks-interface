@@ -24,7 +24,7 @@ import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
-import ModuleNameComponent from './ModuleNameComponent';
+import ClassNameComponent from './ClassNameComponent';
 
 /** Represents a module item in the dialog. */
 interface Module {
@@ -306,7 +306,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
             </Antd.Radio.Button>
           </Antd.Radio.Group>
 
-          <ModuleNameComponent
+          <ClassNameComponent
             tabType={tabType}
             newItemName={newItemName}
             setNewItemName={setNewItemName}

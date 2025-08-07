@@ -25,8 +25,8 @@ import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 
-/** Props for the ModuleNameComponent. */
-interface ModuleNameComponentProps {
+/** Props for the ClassNameComponent. */
+interface ClassNameComponentProps {
   tabType: TabType;
   newItemName: string;
   setNewItemName: (name: string) => void;
@@ -46,10 +46,10 @@ const INPUT_WIDTH_FULL = '100%';
 const ERROR_ALERT_MARGIN_TOP = 8;
 
 /**
- * Component for entering and validating module names.
+ * Component for entering and validating class names.
  * Provides input validation, error display, and automatic capitalization.
  */
-export default function ModuleNameComponent(props: ModuleNameComponentProps): React.JSX.Element {
+export default function ClassNameComponent(props: ClassNameComponentProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [alertErrorVisible, setAlertErrorVisible] = React.useState(false);
