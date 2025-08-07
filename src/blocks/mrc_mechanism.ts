@@ -30,6 +30,7 @@ import { getAllowedTypesForSetCheck } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
 import * as commonStorage from '../storage/common_storage';
 import * as value from './utils/value';
+import { renameMethodCallers } from './mrc_call_python_function'
 
 export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';
@@ -62,13 +63,14 @@ const MECHANISM = {
     */
   init: function (this: MechanismBlock): void {
     this.setStyle(MRC_STYLE_MECHANISMS);
+    const nameField = new Blockly.FieldTextInput('')
+    nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput('my_mech'), FIELD_NAME)
+      .appendField(nameField, FIELD_NAME)
       .appendField(Blockly.Msg.OF_TYPE)
       .appendField(createFieldNonEditableText(''), FIELD_TYPE);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
-    //this.setOutput(true, OUTPUT_NAME);
   },
 
   /**
@@ -136,6 +138,18 @@ const MECHANISM = {
     for (let i = this.mrcParameters.length; this.getInput('ARG' + i); i++) {
       this.removeInput('ARG' + i);
     }
+  },
+  mrcNameFieldValidator(this: MechanismBlock, nameField: Blockly.FieldTextInput, name: string): string {
+    // Strip leading and trailing whitespace.
+    name = name.trim();
+
+    const legalName = name;
+    const oldName = nameField.getValue();
+    if (oldName && oldName !== name && oldName !== legalName) {
+      // Rename any callers.
+      renameMethodCallers(this.workspace, this.id, legalName);
+    }
+    return legalName;
   },
   getMechanism: function (this: MechanismBlock): commonStorage.MechanismInRobot | null {
     const mechanismName = this.getFieldValue(FIELD_NAME);

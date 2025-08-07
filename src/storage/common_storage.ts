@@ -34,7 +34,7 @@ export type Module = {
   projectName: string,
   moduleName: string,
   dateModifiedMillis: number,
-  className: string,
+  className: string, // Does not include the module name.
 };
 
 export type Robot = Module;
@@ -65,13 +65,13 @@ export type Method = {
 export type MechanismInRobot = {
   blockId: string, // ID of the mrc_mechanism block that adds the mechanism to the robot.
   name: string,
-  className: string,
+  className: string, // Includes the module name, for example 'game_piece_shooter.GamePieceShooter'.
 }
 
 export type Component = {
   blockId: string, // ID of the mrc_component block that adds the component to the robot or to a mechanism.
   name: string,
-  className: string,
+  className: string, // Includes the module name, for example 'smart_motor.SmartMotor'.
   ports: {[port: string]: string}, // The value is the type.
 }
 
