@@ -207,6 +207,7 @@ const EVENT = {
         // If we end up here it shouldn't be allowed
         block.unplug(true);
         blockBlock.setWarningText('Events can only go in the events section of the robot or mechanism');
+        blockBlock.getIcon(Blockly.icons.IconType.WARNING).setBubbleVisible(true);
       }
     },
     getEvent: function (this: EventBlock): commonStorage.Event {

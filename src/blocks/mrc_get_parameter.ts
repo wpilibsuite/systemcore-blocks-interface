@@ -90,6 +90,7 @@ const GET_PARAMETER_BLOCK = {
       // If we end up here it shouldn't be allowed
       block.unplug(true);
       blockBlock.setWarningText(Blockly.Msg.PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK);
+      blockBlock.getIcon(Blockly.icons.IconType.WARNING).setBubbleVisible(true);
     }
   },
 };
