@@ -32,7 +32,7 @@
     "test": "vitest",
     "gen": "node src/Blockly/gen.js",
     "dev": "vite",
-    "tscheck": "tsc --noEmit"
+    "tscheck": "tsc -b --noEmit"
   },
   "eslintConfig": {
     "extends": [
