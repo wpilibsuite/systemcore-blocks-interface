@@ -28,3 +28,4 @@
             with:
               github_token: ${{ secrets.GITHUB_TOKEN }}
               publish_dir: ./dist # Directory containing your built output
+              publish_branch: gh-pages
