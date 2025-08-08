@@ -210,7 +210,7 @@ const MECHANISM = {
       // Add a warnings to the block.
       const warningText = warnings.join('\n\n');
       this.setWarningText(warningText, WARNING_ID_MECHANISM_CHANGED);
-      this.getIcon(Blockly.icons.IconType.WARNING).setBubbleVisible(true);
+      this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
       this.bringToFront();
     } else {
       // Clear the existing warning on the block.
