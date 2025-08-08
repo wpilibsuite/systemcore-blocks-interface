@@ -87,7 +87,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
         <img
           height={LOGO_HEIGHT}
           style={{objectFit: 'contain'}}
-          src={isDarkTheme ? "/FIRST_HorzRGB_reverse.png" : "/FIRST_HorzRGB.png"}
+          src={import.meta.env.BASE_URL + (isDarkTheme ? "/FIRST_HorzRGB_reverse.png" : "/FIRST_HorzRGB.png")}
           alt="FIRST Logo"
         />
         <Antd.Typography
