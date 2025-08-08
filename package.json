@@ -31,7 +31,8 @@
     "build": "vite build",
     "test": "vitest",
     "gen": "node src/Blockly/gen.js",
-    "dev": "vite"
+    "dev": "vite",
+    "tscheck": "tsc --noEmit"
   },
   "eslintConfig": {
     "extends": [
