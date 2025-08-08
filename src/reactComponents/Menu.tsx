@@ -20,6 +20,7 @@
  */
 import * as Antd from 'antd';
 import * as React from 'react';
+import { RcFile, UploadRequestOption } from 'rc-upload/lib/interface';
 import * as commonStorage from '../storage/common_storage';
 import * as createPythonFiles from '../storage/create_python_files';
 import * as I18Next from 'react-i18next';
@@ -38,6 +39,8 @@ import {
   BgColorsOutlined,
   GlobalOutlined,
   CheckOutlined,
+  DownloadOutlined,
+  UploadOutlined,
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
@@ -180,6 +183,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
+  const [showUploadAndDownload, _setShowUploadAndDownload] = React.useState(false);
 
   const handleThemeChange = (newTheme: string) => {
     props.setTheme(newTheme);
@@ -322,7 +326,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
   };
 
-  // TODO: Add menu or button or something for the download action.
+  // TODO: Add UI for the download action.
   /** Handles the download action to generate and download json files. */
   const handleDownload = async (): Promise<void> => {
     if (!props.project || !props.storage) {
@@ -349,11 +353,11 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
   }
 
-  // TODO: Add menu or button or something for the upload action.
+  // TODO: Add UI for the upload action.
   /** Handles the upload action to upload a previously downloaded project. */
-  const handleUpload = (): Antd.UploadProps => {
+  const handleUpload = (): Antd.UploadProps | null => {
     if (!props.storage) {
-      return;
+      return null;
     }
 
     const uploadProps: Antd.UploadProps = {
@@ -363,46 +367,35 @@ export function Component(props: MenuProps): React.JSX.Element {
         if (!isBlocks) {
           // TODO: i18n
           props.setAlertErrorMessage(file.name + ' is not a blocks file');
-          setAlertErrorVisible(true);
           return false;
         }
         return isBlocks || Antd.Upload.LIST_IGNORE;
       },
-      onChange: (info) => {
+      onChange: (_info) => {
       },
-      customRequest: ({ file, onSuccess, onError }) => {
+      customRequest: (options: UploadRequestOption) => {
         const reader = new FileReader();
         reader.onload = (event) => {
-          const dataUrl = event.target.result;
+          if (!event.target) {
+            return;
+          }
+          const dataUrl = event.target.result as string;
           const existingProjectNames: string[] = [];
           projects.forEach(project => {
             existingProjectNames.push(project.projectName);
           });
+          const file = options.file as RcFile;
           const uploadProjectName = commonStorage.makeUploadProjectName(file.name, existingProjectNames);
           if (props.storage) {
-            props.storage.uploadProject(
-                uploadProjectName, dataUrl,
-                (success: boolean, errorMessage: string) => {
-                  if (success) {
-                    // TODO: i18n
-                    onSuccess('Upload successful');
-                    // TODO: Select the project that was just uploaded.
-                  } else {
-                    onError(errorMessage);
-                    // TODO: i18n
-                    props.setAlertErrorMessage('Unable to upload the project');
-                  }
-                }
-            );
+            props.storage.uploadProject(uploadProjectName, dataUrl);
           }
         };
-        reader.onerror = (error) => {
-          onError(error);
+        reader.onerror = (_error) => {
+          console.log('Error reading file: ' + reader.error);
           // TODO: i18n
           props.setAlertErrorMessage(t('UPLOAD_FAILED') || 'Failed to upload project');
-          setAlertErrorVisible(true);
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(options.file as Blob);
       },
     };
     return uploadProps;
@@ -468,6 +461,30 @@ export function Component(props: MenuProps): React.JSX.Element {
         items={menuItems}
         onClick={handleClick}
       />
+      {showUploadAndDownload ? (
+        <div>
+          <Antd.Upload
+            {...handleUpload()}
+            showUploadList={false}
+          >
+            <Antd.Button
+              icon={<UploadOutlined />}
+              size="small"
+              style={{ color: 'white' }}
+            />
+          </Antd.Upload>
+          <Antd.Button
+            icon={<DownloadOutlined />}
+            size="small"
+            disabled={!props.project}
+            onClick={handleDownload}
+            style={{ color: 'white' }}
+          />
+        </div>
+      ) : (
+        <div>
+        </div>
+      )}
       <AboutDialog
         visible={aboutDialogVisible}
         onClose={() => setAboutDialogVisible(false)}
