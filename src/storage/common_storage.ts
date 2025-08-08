@@ -31,10 +31,9 @@ export type Module = {
   // TODO(lizlooney): Add a uuid so we can keep track of mechanisms in the robot even if the user renames the mechamism
   modulePath: string,
   moduleType: string,
-  projectName: string,
-  moduleName: string,
+  projectName: string, // For example, WackyWheelerRobot
+  className: string,   // For example, GamePieceShooter.
   dateModifiedMillis: number,
-  className: string, // Does not include the module name.
 };
 
 export type Robot = Module;
@@ -42,8 +41,7 @@ export type Mechanism = Module;
 export type OpMode = Module;
 
 export type Project = {
-  projectName: string, // snake_case
-  userVisibleName: string, // PascalCase
+  projectName: string, // For example, WackyWheelerRobot
   robot: Robot,
   mechanisms: Mechanism[]
   opModes: OpMode[],
@@ -87,8 +85,15 @@ export const MODULE_TYPE_MECHANISM = 'mechanism';
 export const MODULE_TYPE_OPMODE = 'opmode';
 
 const CLASS_NAME_ROBOT = 'Robot';
+export const CLASS_NAME_TELEOP = 'Teleop';
 
+export const JSON_FILE_EXTENSION = '.json';
 export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
+
+/**
+ * Regular expression to extract the project name and the class name from a module path.
+ */
+const REGEX_MODULE_PATH = '^([A-Za-z_][A-Za-z0-9_]*)/([A-Za-z_][A-Za-z0-9_]*).json$';
 
 export interface Storage {
   saveEntry(entryKey: string, entryValue: string): Promise<void>;
@@ -100,8 +105,8 @@ export interface Storage {
   saveModule(modulePath: string, moduleContentText: string): Promise<void>;
   renameProject(oldProjectName: string, newProjectName: string): Promise<void>;
   copyProject(oldProjectName: string, newProjectName: string): Promise<void>;
-  renameModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
-  copyModule(moduleType: string, projectName: string, oldModuleName: string, newModuleName: string): Promise<void>;
+  renameModule(moduleType: string, projectName: string, oldClassName: string, newClassName: string): Promise<void>;
+  copyModule(moduleType: string, projectName: string, oldClassName: string, newClassName: string): Promise<void>;
   deleteProject(projectName: string): Promise<void>;
   deleteModule(moduleType: string, modulePath: string): Promise<void>;
   downloadProject(projectName: string): Promise<string>;
@@ -111,14 +116,13 @@ export interface Storage {
 /**
  * Creates a new project.
  * @param storage The storage interface to use for creating the project.
- * @param proposedUserVisibleName The name for the new project.
+ * @param newProjectName The name for the new project. For example, WackyWheelerRobot
  * @returns A promise that resolves when the project has been created.
  */
 export async function createProject(
-  storage: Storage, proposedUserVisibleName: string): Promise<void> {
-  const newProjectName = pascalCaseToSnakeCase(proposedUserVisibleName);
+  storage: Storage, newProjectName: string): Promise<void> {
   const robotContent = newRobotContent(newProjectName);
-  const opmodeContent = newOpModeContent(newProjectName, 'Teleop');
+  const opmodeContent = newOpModeContent(newProjectName, CLASS_NAME_TELEOP);
   await storage.createProject(newProjectName, robotContent, opmodeContent);
 }
 
@@ -126,12 +130,11 @@ export async function createProject(
  * Renames a project.
  * @param storage The storage interface to use for renaming the project.
  * @param project The project to rename
- * @param proposedUserVisibleName The new name for the project.
+ * @param newProjectName The new name for the project. For example, WackyWheelerRobot
  * @returns A promise that resolves when the project has been renamed.
  */
 export async function renameProject(
-  storage: Storage, project: Project, proposedUserVisibleName: string): Promise<void> {
-  const newProjectName = pascalCaseToSnakeCase(proposedUserVisibleName);
+  storage: Storage, project: Project, newProjectName: string): Promise<void> {
   await storage.renameProject(project.projectName, newProjectName);
 }
 
@@ -139,12 +142,11 @@ export async function renameProject(
  * Copies a project.
  * @param storage The storage interface to use for copying the project.
  * @param project The project to copy
- * @param proposedUserVisibleName The name for the new project.
+ * @param newProjectName The name for the new project. For example, WackyWheelerRobot
  * @returns A promise that resolves when the project has been copied.
  */
 export async function copyProject(
-  storage: Storage, project: Project, proposedUserVisibleName: string): Promise<void> {
-  const newProjectName = pascalCaseToSnakeCase(proposedUserVisibleName);
+  storage: Storage, project: Project, newProjectName: string): Promise<void> {
   await storage.copyProject(project.projectName, newProjectName);
 }
 
@@ -164,31 +166,28 @@ export async function deleteProject(
  * @param storage The storage interface to use for creating the module.
  * @param project The project to add the module to.
  * @param moduleType The type of the module (e.g., 'mechanism', 'opmode').
- * @param newClassName The name of the class.
+ * @param newClassName The name of the class. For example, GamePieceShooter.
  */
 export async function addModuleToProject(
   storage: Storage, project: Project, moduleType: string, newClassName: string): Promise<void> {
-  const newModuleName = pascalCaseToSnakeCase(newClassName);
-  const newModulePath = makeModulePath(project.projectName, newModuleName);
+  const newModulePath = makeModulePath(project.projectName, newClassName);
 
   if (moduleType === MODULE_TYPE_MECHANISM) {
-    const mechanismContent = newMechanismContent(project.projectName, newModuleName);
+    const mechanismContent = newMechanismContent(project.projectName, newClassName);
     await storage.createModule(MODULE_TYPE_MECHANISM, newModulePath, mechanismContent);
     project.mechanisms.push({
       modulePath: newModulePath,
       moduleType: MODULE_TYPE_MECHANISM,
       projectName: project.projectName,
-      moduleName: newModuleName,
       className: newClassName
     } as Mechanism);
   } else if (moduleType === MODULE_TYPE_OPMODE) {
-    const opModeContent = newOpModeContent(project.projectName, newModuleName);
+    const opModeContent = newOpModeContent(project.projectName, newClassName);
     await storage.createModule(MODULE_TYPE_OPMODE, newModulePath, opModeContent);
     project.opModes.push({
       modulePath: newModulePath,
       moduleType: MODULE_TYPE_OPMODE,
       projectName: project.projectName,
-      moduleName: newModuleName,
       className: newClassName
     } as OpMode);
   }
@@ -219,38 +218,37 @@ export async function removeModuleFromProject(
  * Renames a module in the project.
  * @param storage The storage interface to use for renaming the module.
  * @param project The project containing the module to rename.
- * @param proposedClassName The new class name for the module.
+ * @param newClassName The new name for the module. For example, GamePieceShooter.
  * @param oldModulePath The current path of the module.
  * @returns A promise that resolves when the module has been renamed.
  */
 export async function renameModuleInProject(
-  storage: Storage, project: Project, proposedClassName: string, oldModulePath: string): Promise<string> {
+  storage: Storage, project: Project, newClassName: string, oldModulePath: string): Promise<string> {
   const module = findModuleByModulePath(project, oldModulePath);
   if (module) {
     if (module.moduleType == MODULE_TYPE_ROBOT) {
       throw new Error('Renaming the robot module is not allowed.');
     }
-    const newModuleName = pascalCaseToSnakeCase(proposedClassName);
-    const newModulePath = makeModulePath(project.projectName, newModuleName);
-    await storage.renameModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
+    const newModulePath = makeModulePath(project.projectName, newClassName);
+    await storage.renameModule(module.moduleType, project.projectName, module.className, newClassName);
     module.modulePath = newModulePath;
-    module.moduleName = newModuleName;
-    module.className = proposedClassName;
+    module.className = newClassName;
+    module.className = newClassName;
 
     if (module.moduleType === MODULE_TYPE_MECHANISM) {
       const mechanism = project.mechanisms.find(m => m.modulePath === module.modulePath);
       if (mechanism) {
         mechanism.modulePath = newModulePath;
-        mechanism.moduleName = newModuleName;
-        mechanism.className = proposedClassName;
+        mechanism.className = newClassName;
+        mechanism.className = newClassName;
       }
       return newModulePath;
     } else if (module.moduleType === MODULE_TYPE_OPMODE) {
       const opMode = project.opModes.find(o => o.modulePath === module.modulePath);
       if (opMode) {
         opMode.modulePath = newModulePath;
-        opMode.moduleName = newModuleName;
-        opMode.className = proposedClassName;
+        opMode.className = newClassName;
+        opMode.className = newClassName;
       }
       return newModulePath
     }
@@ -261,36 +259,33 @@ export async function renameModuleInProject(
  * Copies a module in the project.
  * @param storage The storage interface to use for copying the module.
  * @param project The project containing the module to copy.
- * @param proposedClassName The new name for the module.
- * @param oldModuleName The current name of the module.
+ * @param newClassName The new name for the module. For example, GamePieceShooter.
+ * @param oldModulePath The current path of the module.
  * @returns A promise that resolves when the module has been copied.
  */
 export async function copyModuleInProject(
-  storage: Storage, project: Project, proposedClassName: string, oldModulePath: string): Promise<string> {
+  storage: Storage, project: Project, newClassName: string, oldModulePath: string): Promise<string> {
   const module = findModuleByModulePath(project, oldModulePath);
   if (module) {
     if (module.moduleType == MODULE_TYPE_ROBOT) {
       throw new Error('Copying the robot module is not allowed.');
     }
-    const newModuleName = pascalCaseToSnakeCase(proposedClassName);
-    const newModulePath = makeModulePath(project.projectName, newModuleName);
-    await storage.copyModule(module.moduleType, project.projectName, module.moduleName, newModuleName);
+    const newModulePath = makeModulePath(project.projectName, newClassName);
+    await storage.copyModule(module.moduleType, project.projectName, module.className, newClassName);
 
     if (module.moduleType === MODULE_TYPE_MECHANISM) {
       project.mechanisms.push({
         modulePath: newModulePath,
         moduleType: MODULE_TYPE_MECHANISM,
         projectName: project.projectName,
-        moduleName: newModuleName,
-        className: proposedClassName
+        className: newClassName
       } as Mechanism);
     } else if (module.moduleType === MODULE_TYPE_OPMODE) {
       project.opModes.push({
         modulePath: newModulePath,
         moduleType: MODULE_TYPE_OPMODE,
         projectName: project.projectName,
-        moduleName: newModuleName,
-        className: proposedClassName
+        className: newClassName
       } as OpMode);
     }
     return newModulePath;
@@ -407,84 +402,74 @@ export function isValidClassName(name: string): boolean {
 }
 
 /**
- * Returns the module name (snake_case) for the given class name (PascalCase).
+ * Returns the snake_case name for the given PascalCase name.
  */
-export function pascalCaseToSnakeCase(className: string): string {
-  let moduleName = '';
-  for (let i = 0; i < className.length; i++) {
-    const char = className.charAt(i);
+export function pascalCaseToSnakeCase(pascalCaseName: string): string {
+  let snakeCaseName = '';
+  for (let i = 0; i < pascalCaseName.length; i++) {
+    const char = pascalCaseName.charAt(i);
     if (char >= 'A' && char <= 'Z') {
       if (i > 0) {
-        moduleName += '_';
+        snakeCaseName += '_';
       }
-      moduleName += char.toLowerCase();
+      snakeCaseName += char.toLowerCase();
     } else {
-      moduleName += char;
+      snakeCaseName += char;
     }
   }
-  return moduleName;
+  return snakeCaseName;
 }
 
 /**
- * Returns the class name (PascalCase) for the given module name (snake_case).
+ * Returns the PascalCase name for the given snake_case name.
  */
-export function snakeCaseToPascalCase(moduleName: string): string {
-  let className = '';
+export function snakeCaseToPascalCase(snakeCaseName: string): string {
+  let pascalCaseName = '';
   let nextCharUpper = true;
-  for (let i = 0; i < moduleName.length; i++) {
-    const char = moduleName.charAt(i);
+  for (let i = 0; i < snakeCaseName.length; i++) {
+    const char = snakeCaseName.charAt(i);
     if (char !== '_') {
-      className += nextCharUpper ? char.toUpperCase() : char;
+      pascalCaseName += nextCharUpper ? char.toUpperCase() : char;
     }
     nextCharUpper = (char === '_');
   }
-  return className;
+  return pascalCaseName;
 }
 
 /**
- * Returns true if the given name is a valid python module name.
+ * Returns the module path for the given project name and class name.
  */
-export function isValidPythonModuleName(name: string): boolean {
-  if (name) {
-    return /^[a-z_][a-z0-9_]*$/.test(name);
-  }
-  return false;
-}
-
-/**
- * Returns the module path for the given project and module names.
- */
-export function makeModulePath(projectName: string, moduleName: string): string {
-  return projectName + '/' + moduleName + '.blocks';
+export function makeModulePath(projectName: string, className: string): string {
+  return projectName + '/' + className + JSON_FILE_EXTENSION;;
 }
 
 /**
  * Returns the robot module path for the given project names.
  */
 export function makeRobotPath(projectName: string): string {
-  return makeModulePath(projectName, 'robot');
+  return makeModulePath(projectName, CLASS_NAME_ROBOT);
 }
 
 /**
  * Returns the project path for given module path.
  */
 export function getProjectName(modulePath: string): string {
-  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).blocks$');
+  const regex = new RegExp(REGEX_MODULE_PATH);
   const result = regex.exec(modulePath)
   if (!result) {
-    throw new Error('Unable to extract the project name.');
+    throw new Error('Unable to extract the project name from "' + modulePath + '"');
   }
   return result[1];
 }
 
 /**
- * Returns the module name for given module path.
+ * Returns the class name for given module path.
  */
-export function getModuleName(modulePath: string): string {
-  const regex = new RegExp('^([a-z_A-Z][a-z0-9_]*)/([a-z_A-Z][a-z0-9_]*).blocks$');
+export function getClassName(modulePath: string): string {
+  const regex = new RegExp(REGEX_MODULE_PATH);
   const result = regex.exec(modulePath)
   if (!result) {
-    throw new Error('Unable to extract the module name.');
+    throw new Error('Unable to extract the class name from "' + modulePath + '"');
   }
   return result[2];
 }
@@ -512,9 +497,8 @@ export function newRobotContent(projectName: string): string {
     modulePath: makeRobotPath(projectName),
     moduleType: MODULE_TYPE_ROBOT,
     projectName: projectName,
-    moduleName: 'robot',
-    dateModifiedMillis: 0,
     className: CLASS_NAME_ROBOT,
+    dateModifiedMillis: 0,
   };
 
   return startingBlocksToModuleContentText(module, startingRobotBlocks);
@@ -523,14 +507,13 @@ export function newRobotContent(projectName: string): string {
 /**
  * Returns the module content for a new Mechanism.
  */
-export function newMechanismContent(projectName: string, mechanismName: string): string {
-  const module: Module = {
-    modulePath: makeModulePath(projectName, mechanismName),
+export function newMechanismContent(projectName: string, mechanismClassName: string): string {
+  const module: Mechanism = {
+    modulePath: makeModulePath(projectName, mechanismClassName),
     moduleType: MODULE_TYPE_MECHANISM,
     projectName: projectName,
-    moduleName: mechanismName,
+    className: mechanismClassName,
     dateModifiedMillis: 0,
-    className: snakeCaseToPascalCase(mechanismName),
   };
 
   return startingBlocksToModuleContentText(module, startingMechanismBlocks);
@@ -539,14 +522,13 @@ export function newMechanismContent(projectName: string, mechanismName: string):
 /**
  * Returns the module content for a new OpMode.
  */
-export function newOpModeContent(projectName: string, opModeName: string): string {
-  const module: Module = {
-    modulePath: makeModulePath(projectName, opModeName),
+export function newOpModeContent(projectName: string, opModeClassName: string): string {
+  const module: OpMode = {
+    modulePath: makeModulePath(projectName, opModeClassName),
     moduleType: MODULE_TYPE_OPMODE,
     projectName: projectName,
-    moduleName: opModeName,
+    className: opModeClassName,
     dateModifiedMillis: 0,
-    className: snakeCaseToPascalCase(opModeName),
   };
 
   return startingBlocksToModuleContentText(module, startingOpModeBlocks);
@@ -594,7 +576,7 @@ export class ModuleContent {
   }
 
   getModuleContentText(): string {
-    return JSON.stringify(this);
+    return JSON.stringify(this, null, 2);
   }
 
   getModuleType(): string {
@@ -626,21 +608,16 @@ export class ModuleContent {
  * Produce the blob for downloading a project.
  */
 export async function produceDownloadProjectBlob(
-    moduleNameToContentText: { [key: string]: string }): Promise<string> {
+    classNameToModuleContentText: { [key: string]: string }): Promise<string> {
   const zip = new JSZip();
-  for (const moduleName in moduleNameToContentText) {
-    const moduleContentText = moduleNameToContentText[moduleName];
-    zip.file(moduleName, moduleContentText);
+  for (const className in classNameToModuleContentText) {
+    const moduleContentText = classNameToModuleContentText[className];
+    const filename = className + JSON_FILE_EXTENSION;
+    zip.file(filename, moduleContentText);
   }
   const content = await zip.generateAsync({ type: "blob" });
   const blobUrl = URL.createObjectURL(content);
   return blobUrl;
-}
-
-export function getClassNameForModule(moduleType: string, moduleName: string) {
-  return (moduleType == MODULE_TYPE_ROBOT)
-      ? CLASS_NAME_ROBOT
-      : snakeCaseToPascalCase(moduleName);
 }
 
 /**
@@ -655,10 +632,11 @@ export function makeUploadProjectName(
 
 /**
  * Process the uploaded blob to get the module types and contents.
+ * Returns a promise of classNameToModuleType and classNameToModuleContentText.
  */
 export async function processUploadedBlob(
     blobUrl: string)
-    : Promise<[{ [key: string]: string }, { [key: string]: string }]> {
+    : Promise<[{ [className: string]: string }, { [className: string]: string }]> {
 
   const prefix = 'data:application/octet-stream;base64,';
   if (!blobUrl.startsWith(prefix)) {
@@ -668,8 +646,11 @@ export async function processUploadedBlob(
 
   const zip = await JSZip.loadAsync(data, { base64: true });
   const promises: { [key: string]: Promise<string> } = {};
-  zip.forEach((moduleName, zipEntry) => {
-    promises[moduleName] = zipEntry.async('text');
+  zip.forEach((filename, zipEntry) => {
+    const className = filename.endsWith(JSON_FILE_EXTENSION)
+        ? filename.substring(0, filename.length - JSON_FILE_EXTENSION.length)
+        : filename;
+    promises[className] = zipEntry.async('text');
   });
 
   // Wait for all promises to resolve.
@@ -681,31 +662,30 @@ export async function processUploadedBlob(
   );
 
   // Process each module's content.
-  const moduleNameToType: { [key: string]: string } = {}; // key is module name, value is module type
-  const moduleNameToContentText: { [key: string]: string } = {}; // key is module name, value is module content text
+  const classNameToModuleType: { [className: string]: string } = {}; // key is class name, value is module type
+  const classNameToModuleContentText: { [className: string]: string } = {}; // key is class name, value is module content text
   for (const filename in files) {
     const uploadedContent = files[filename];
-    const [moduleName, moduleType, moduleContent] = _processUploadedModule(
+    const [className, moduleType, moduleContent] = _processUploadedModule(
         filename, uploadedContent);
-    moduleNameToType[moduleName] = moduleType;
-    moduleNameToContentText[moduleName] = moduleContent;
+    classNameToModuleType[className] = moduleType;
+    classNameToModuleContentText[className] = moduleContent;
   }
 
-  return [moduleNameToType, moduleNameToContentText];
+  return [classNameToModuleType, classNameToModuleContentText];
 }
 
 /**
- * Processes an uploaded module to get the module name, type, and content text.
+ * Processes an uploaded module to get the class name, type, and content text.
  */
 export function _processUploadedModule(
-    filename: string, uploadedContent: string)
-    : [string, string, string] {
+    filename: string, uploadedContent: string): [string, string, string] {
 
   const moduleContent = parseModuleContentText(uploadedContent);
   const moduleType = moduleContent.getModuleType();
-  const moduleName = (moduleType === MODULE_TYPE_ROBOT) ? 'robot' : filename;
+  const className = filename;
   const moduleContentText = moduleContent.getModuleContentText();
-  return [moduleName, moduleType, moduleContentText];
+  return [className, moduleType, moduleContentText];
 }
 
 /**

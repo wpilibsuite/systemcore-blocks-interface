@@ -30,7 +30,7 @@ import {
   CloseCircleOutlined,
 } from '@ant-design/icons';
 import AddTabDialog from './AddTabDialog';
-import ModuleNameComponent from './ModuleNameComponent';
+import ClassNameComponent from './ClassNameComponent';
 import { TabType, TabTypeUtils } from '../types/TabType';
 
 /** Represents a tab item in the tab bar. */
@@ -375,7 +375,7 @@ export function Component(props: TabsProps): React.JSX.Element {
         cancelText={t('Cancel')}
       >
         {currentTab && (
-          <ModuleNameComponent
+          <ClassNameComponent
             tabType={currentTab.type}
             newItemName={name}
             setNewItemName={setName}
@@ -405,7 +405,7 @@ export function Component(props: TabsProps): React.JSX.Element {
         cancelText={t('Cancel')}
       >
         {currentTab && (
-          <ModuleNameComponent
+          <ClassNameComponent
             tabType={currentTab.type}
             newItemName={name}
             setNewItemName={setName}

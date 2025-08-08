@@ -382,7 +382,8 @@ export class Editor {
   public getMechanism(mechanismInRobot: commonStorage.MechanismInRobot): commonStorage.Mechanism | null {
     if (this.currentProject) {
       for (const mechanism of this.currentProject.mechanisms) {
-        if (mechanism.moduleName + '.' + mechanism.className === mechanismInRobot.className) {
+        const fullClassName = commonStorage.pascalCaseToSnakeCase(mechanism.className) + '.' + mechanism.className;
+        if (fullClassName === mechanismInRobot.className) {
           return mechanism;
         }
       }

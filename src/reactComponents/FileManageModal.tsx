@@ -24,7 +24,7 @@ import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import {EditOutlined, DeleteOutlined, CopyOutlined} from '@ant-design/icons';
-import ModuleNameComponent from './ModuleNameComponent';
+import ClassNameComponent from './ClassNameComponent';
 
 /** Represents a module in the file management system. */
 interface Module {
@@ -347,7 +347,7 @@ export default function FileManageModal(props: FileManageModalProps) {
         cancelText={t('Cancel')}
       >
         {currentRecord && (
-          <ModuleNameComponent
+          <ClassNameComponent
             tabType={currentRecord.type}
             newItemName={name}
             setNewItemName={setName}
@@ -376,7 +376,7 @@ export default function FileManageModal(props: FileManageModalProps) {
         cancelText={t('Cancel')}
       >
         {currentRecord && (
-          <ModuleNameComponent
+          <ClassNameComponent
             tabType={currentRecord.type}
             newItemName={name}
             setNewItemName={setName}
@@ -409,7 +409,7 @@ export default function FileManageModal(props: FileManageModalProps) {
           borderRadius: '6px',
           padding: '12px',
         }}>
-          <ModuleNameComponent
+          <ClassNameComponent
             tabType={props.moduleType}
             newItemName={newItemName}
             setNewItemName={setNewItemName}

@@ -25,6 +25,12 @@ import * as commonStorage from './common_storage';
 
 const DATABASE_NAME = 'systemcore-blocks-interface';
 
+const ENTRIES_STORE_NAME = 'entries';
+const ENTRIES_KEY = 'key';
+
+const MODULES_STORE_NAME = 'modules';
+const MODULES_KEY = 'path';
+
 export async function openClientSideStorage(): Promise<commonStorage.Storage> {
   return new Promise((resolve, reject) => {
     const openRequest = window.indexedDB.open(DATABASE_NAME, 1);
@@ -38,14 +44,14 @@ export async function openClientSideStorage(): Promise<commonStorage.Storage> {
 
       const stores = db.objectStoreNames;
 
-      if (!stores.contains('entries')) {
+      if (!stores.contains(ENTRIES_STORE_NAME)) {
         // Create an object store for key/value entries.
-        db.createObjectStore('entries', { keyPath: 'key' });
+        db.createObjectStore(ENTRIES_STORE_NAME, { keyPath: ENTRIES_KEY });
       }
 
-      if (!stores.contains('modules')) {
+      if (!stores.contains(MODULES_STORE_NAME)) {
         // Create the object store for modules.
-        db.createObjectStore('modules', { keyPath: 'path' });
+        db.createObjectStore(MODULES_STORE_NAME, { keyPath: MODULES_KEY });
       }
     };
     openRequest.onsuccess = () => {
@@ -68,7 +74,7 @@ class ClientSideStorage implements commonStorage.Storage {
 
   async saveEntry(entryKey: string, entryValue: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction(['entries'], 'readwrite');
+      const transaction = this.db.transaction([ENTRIES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
         resolve();
       };
@@ -76,7 +82,7 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB transaction aborted.');
         reject(new Error('IndexedDB transaction aborted.'));
       };
-      const entriesObjectStore = transaction.objectStore('entries');
+      const entriesObjectStore = transaction.objectStore(ENTRIES_STORE_NAME);
       const getRequest = entriesObjectStore.get(entryKey);
       getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
@@ -104,8 +110,8 @@ class ClientSideStorage implements commonStorage.Storage {
 
   async fetchEntry(entryKey: string, defaultValue: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      const getRequest = this.db.transaction(['entries'], 'readonly')
-          .objectStore('entries').get(entryKey);
+      const getRequest = this.db.transaction([ENTRIES_STORE_NAME], 'readonly')
+          .objectStore(ENTRIES_STORE_NAME).get(entryKey);
       getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
         console.log(getRequest.error);
@@ -125,8 +131,8 @@ class ClientSideStorage implements commonStorage.Storage {
       // are read before the Project to which they belong is read.
       const mechanisms: {[key: string]: commonStorage.Mechanism[]} = {}; // key is project name, value is list of Mechanisms
       const opModes: {[key: string]: commonStorage.OpMode[]} = {}; // key is project name, value is list of OpModes
-      const openCursorRequest = this.db.transaction(['modules'], 'readonly')
-          .objectStore('modules')
+      const openCursorRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
+          .objectStore(MODULES_STORE_NAME)
           .openCursor();
       openCursorRequest.onerror = () => {
         console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
@@ -139,14 +145,12 @@ class ClientSideStorage implements commonStorage.Storage {
           const value = cursor.value;
           const path = value.path;
           const moduleType = value.type;
-          const moduleName = commonStorage.getModuleName(path);
           const module: commonStorage.Module = {
             modulePath: path,
             moduleType: moduleType,
             projectName: commonStorage.getProjectName(path),
-            moduleName: moduleName,
+            className: commonStorage.getClassName(path),
             dateModifiedMillis: value.dateModifiedMillis,
-            className: commonStorage.getClassNameForModule(moduleType, moduleName),
           }
           if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {
             const robot: commonStorage.Robot = {
@@ -154,7 +158,6 @@ class ClientSideStorage implements commonStorage.Storage {
             };
             const project: commonStorage.Project = {
               projectName: module.projectName,
-              userVisibleName: commonStorage.snakeCaseToPascalCase(module.projectName),
               robot: robot,
               mechanisms: [],
               opModes: [],
@@ -221,8 +224,8 @@ class ClientSideStorage implements commonStorage.Storage {
 
   async fetchModuleContentText(modulePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      const getRequest = this.db.transaction(['modules'], 'readonly')
-          .objectStore('modules').get(modulePath);
+      const getRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
+          .objectStore(MODULES_STORE_NAME).get(modulePath);
       getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
         console.log(getRequest.error);
@@ -241,7 +244,7 @@ class ClientSideStorage implements commonStorage.Storage {
 
   async createProject(projectName: string, robotContent: string, opmodeContent : string): Promise<void> {
     const modulePath = commonStorage.makeRobotPath(projectName);
-    const opmodePath = commonStorage.makeModulePath(projectName, 'teleop');
+    const opmodePath = commonStorage.makeModulePath(projectName, commonStorage.CLASS_NAME_TELEOP);
 
     await this._saveModule(commonStorage.MODULE_TYPE_ROBOT, modulePath, robotContent);
     await this._saveModule(commonStorage.MODULE_TYPE_OPMODE, opmodePath, opmodeContent);
@@ -260,7 +263,7 @@ class ClientSideStorage implements commonStorage.Storage {
     // When creating a new module, moduleType must be truthy.
     // When saving an existing module, the moduleType must be falsy.
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction(['modules'], 'readwrite');
+      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
         resolve();
       };
@@ -268,7 +271,7 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB transaction aborted.');
         reject(new Error('IndexedDB transaction aborted.'));
       };
-      const modulesObjectStore = transaction.objectStore('modules');
+      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
       const getRequest = modulesObjectStore.get(modulePath);
       getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
@@ -314,7 +317,7 @@ class ClientSideStorage implements commonStorage.Storage {
 
   private async _renameOrCopyProject(oldProjectName: string, newProjectName: string, copy: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction(['modules'], 'readwrite');
+      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
         resolve();
       };
@@ -322,7 +325,7 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB transaction aborted.');
         reject(new Error('IndexedDB transaction aborted.'));
       };
-      const modulesObjectStore = transaction.objectStore('modules');
+      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
       // First get the list of modules in the project.
       const oldToNewModulePaths: {[key: string]: string} = {};
       const openCursorRequest = modulesObjectStore.openCursor();
@@ -336,15 +339,14 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           const path = value.path;
-          // Before PR #143, robot modules were stored with the type 'project'.
-          const moduleType = (value.type == 'project') ? commonStorage.MODULE_TYPE_ROBOT : value.type;
+          const moduleType = value.type;
           if (commonStorage.getProjectName(path) === oldProjectName) {
             let newPath;
             if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {
               newPath = commonStorage.makeRobotPath(newProjectName);
             } else {
-              const moduleName = commonStorage.getModuleName(path);
-              newPath = commonStorage.makeModulePath(newProjectName, moduleName);
+              const className = commonStorage.getClassName(path);
+              newPath = commonStorage.makeModulePath(newProjectName, className);
             }
             oldToNewModulePaths[path] = newPath;
           }
@@ -399,30 +401,30 @@ class ClientSideStorage implements commonStorage.Storage {
 
   async renameModule(
       moduleType: string, projectName: string,
-      oldModuleName: string, newModuleName: string): Promise<void> {
+      oldClassName: string, newClassName: string): Promise<void> {
     if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
       throw new Error('Renaming the robot module is not allowed. Call renameProject to rename the project.');
     }
     return this._renameOrCopyModule(
-        projectName, oldModuleName, newModuleName, false);
+        projectName, oldClassName, newClassName, false);
   }
 
   async copyModule(
       moduleType: string, projectName: string,
-      oldModuleName: string, newModuleName: string): Promise<void> {
+      oldClassName: string, newClassName: string): Promise<void> {
     if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
       throw new Error('Copying the robot module is not allowed. Call copyProject to rename the project.');
     }
     return this._renameOrCopyModule(
-        projectName, oldModuleName, newModuleName, true);
+        projectName, oldClassName, newClassName, true);
   }
 
   private async _renameOrCopyModule(
       projectName: string,
-      oldModuleName: string, newModuleName: string, copy: boolean): Promise<void> {
+      oldClassName: string, newClassName: string, copy: boolean): Promise<void> {
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction(['modules'], 'readwrite');
+      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
         resolve();
       };
@@ -430,9 +432,9 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB transaction aborted.');
         reject(new Error('IndexedDB transaction aborted.'));
       };
-      const modulesObjectStore = transaction.objectStore('modules');
-      const oldModulePath = commonStorage.makeModulePath(projectName, oldModuleName);
-      const newModulePath = commonStorage.makeModulePath(projectName, newModuleName);
+      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
+      const oldModulePath = commonStorage.makeModulePath(projectName, oldClassName);
+      const newModulePath = commonStorage.makeModulePath(projectName, newClassName);
       const getRequest = modulesObjectStore.get(oldModulePath);
       getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
@@ -472,7 +474,7 @@ class ClientSideStorage implements commonStorage.Storage {
 
   async deleteProject(projectName: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction(['modules'], 'readwrite');
+      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
         resolve();
       };
@@ -480,7 +482,7 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB transaction aborted.');
         reject(new Error('IndexedDB transaction aborted.'));
       };
-      const modulesObjectStore = transaction.objectStore('modules');
+      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
       // First get the list of modulePaths in the project.
       const modulePaths: string[] = [];
       const openCursorRequest = modulesObjectStore.openCursor();
@@ -521,7 +523,7 @@ class ClientSideStorage implements commonStorage.Storage {
     }
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction(['modules'], 'readwrite');
+      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
         resolve();
       };
@@ -529,7 +531,7 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB transaction aborted.');
         reject(new Error('IndexedDB transaction aborted.'));
       };
-      const modulesObjectStore = transaction.objectStore('modules');
+      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
       const deleteRequest = modulesObjectStore.delete(modulePath);
       deleteRequest.onerror = () => {
         console.log('IndexedDB delete request failed. deleteRequest.error is...');
@@ -544,9 +546,9 @@ class ClientSideStorage implements commonStorage.Storage {
   async downloadProject(projectName: string): Promise<string> {
     return new Promise((resolve, reject) => {
       // Collect all the modules in the project.
-      const moduleNameToContentText: {[key: string]: string} = {}; // key is module name, value is module content
-      const openCursorRequest = this.db.transaction(['modules'], 'readonly')
-          .objectStore('modules')
+      const classNameToModuleContentText: {[className: string]: string} = {}; // key is class name, value is module content
+      const openCursorRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
+          .objectStore(MODULES_STORE_NAME)
           .openCursor();
       openCursorRequest.onerror = () => {
         console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
@@ -558,14 +560,14 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           if (commonStorage.getProjectName(value.path) === projectName) {
-            const moduleName = commonStorage.getModuleName(value.path);
-            moduleNameToContentText[moduleName] = value.content;
+            const className = commonStorage.getClassName(value.path);
+            classNameToModuleContentText[className] = value.content;
           }
           cursor.continue();
         } else {
           // The cursor is done. We have finished collecting all the modules in the project.
           // Now create the blob for download.
-          const blobUrl = await commonStorage.produceDownloadProjectBlob(moduleNameToContentText);
+          const blobUrl = await commonStorage.produceDownloadProjectBlob(classNameToModuleContentText);
           resolve(blobUrl);
         }
       };
@@ -575,10 +577,10 @@ class ClientSideStorage implements commonStorage.Storage {
   async uploadProject(projectName: string, blobUrl: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       // Process the uploaded blob to get the module types and contents.
-      let moduleNameToType: {[key: string]: string}; // key is module name, value is module content
-      let moduleNameToContentText: {[key: string]: string}; // key is module name, value is module content
+      let classNameToModuleType: {[className: string]: string}; // key is class name, value is module type
+      let classNameToModuleContentText: {[className: string]: string}; // key is class name, value is module content
       try {
-        [moduleNameToType, moduleNameToContentText] = await commonStorage.processUploadedBlob(
+        [classNameToModuleType, classNameToModuleContentText] = await commonStorage.processUploadedBlob(
             blobUrl);
       } catch (e) {
         console.log('commonStorage.processUploadedBlob failed.');
@@ -587,7 +589,7 @@ class ClientSideStorage implements commonStorage.Storage {
       }
 
       // Save each module.
-      const transaction = this.db.transaction(['modules'], 'readwrite');
+      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
         resolve();
       };
@@ -595,12 +597,12 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB transaction aborted.');
         reject(new Error('IndexedDB transaction aborted.'));
       };
-      const modulesObjectStore = transaction.objectStore('modules');
+      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
 
-      for (const moduleName in moduleNameToType) {
-        const moduleType = moduleNameToType[moduleName];
-        const moduleContentText = moduleNameToContentText[moduleName];
-        const modulePath = commonStorage.makeModulePath(projectName, moduleName);
+      for (const className in classNameToModuleType) {
+        const moduleType = classNameToModuleType[className];
+        const moduleContentText = classNameToModuleContentText[className];
+        const modulePath = commonStorage.makeModulePath(projectName, className);
         const getRequest = modulesObjectStore.get(modulePath);
         getRequest.onerror = () => {
           console.log('IndexedDB get request failed. getRequest.error is...');

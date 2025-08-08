@@ -268,6 +268,8 @@ export function getOutputCheck(type: string): string {
 // This is a legal name for python methods and variables. 
 export function getLegalName(proposedName: string, existingNames: string[]){
   let newName = proposedName.trim().replace(' ', '_');
+
+  // TODO: Allow the user to put numbers in the name.
   
   if (!/^[A-Za-z_]/.test(newName)){
       newName = "_" + newName;

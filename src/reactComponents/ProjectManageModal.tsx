@@ -74,7 +74,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     const projects = await storage.listProjects();
 
     // Sort projects alphabetically by name
-    projects.sort((a, b) => a.userVisibleName.localeCompare(b.userVisibleName));
+    projects.sort((a, b) => a.projectName.localeCompare(b.projectName));
     setAllProjects(projects);
     
     if (projects.length > 0 && props.noProjects) {
@@ -186,25 +186,25 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   /** Opens the rename modal for a specific project. */
   const openRenameModal = (record: commonStorage.Project): void => {
     setCurrentRecord(record);
-    setName(record.userVisibleName);
+    setName(record.projectName);
     setRenameModalOpen(true);
   };
 
   /** Opens the copy modal for a specific project. */
   const openCopyModal = (record: commonStorage.Project): void => {
     setCurrentRecord(record);
-    setName(record.userVisibleName + COPY_SUFFIX);
+    setName(record.projectName + COPY_SUFFIX);
     setCopyModalOpen(true);
   };
 
   /** Gets the rename modal title. */
   const getRenameModalTitle = (): string => {
-    return `Rename Project: ${currentRecord ? currentRecord.userVisibleName : ''}`;
+    return `Rename Project: ${currentRecord ? currentRecord.projectName : ''}`;
   };
 
   /** Gets the copy modal title. */
   const getCopyModalTitle = (): string => {
-    return `Copy Project: ${currentRecord ? currentRecord.userVisibleName : ''}`;
+    return `Copy Project: ${currentRecord ? currentRecord.projectName : ''}`;
   };
 
   /** Creates the container style object. */
@@ -224,8 +224,8 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   const columns: Antd.TableProps<commonStorage.Project>['columns'] = [
     {
       title: 'Name',
-      dataIndex: 'userVisibleName',
-      key: 'userVisibleName',
+      dataIndex: 'projectName',
+      key: 'projectName',
       ellipsis: {
         showTitle: false,
       },
@@ -268,7 +268,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
           {allProjects.length > 1 && (
             <Antd.Tooltip title={t('Delete')}>
               <Antd.Popconfirm
-                title={`Delete ${record.userVisibleName}?`}
+                title={`Delete ${record.projectName}?`}
                 description="This action cannot be undone."
                 onConfirm={() => handleDeleteProject(record)}
                 okText={t('Delete')}
@@ -385,7 +385,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
           <Antd.Table<commonStorage.Project>
             columns={columns}
             dataSource={allProjects}
-            rowKey="userVisibleName"
+            rowKey="projectName"
             size="small"
             pagination={allProjects.length > DEFAULT_PAGE_SIZE ? {
               pageSize: DEFAULT_PAGE_SIZE,
