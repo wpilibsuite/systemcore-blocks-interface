@@ -23,7 +23,7 @@ jobs:
         run: npm test
       - name: Get diff lines
         id: diff
-        uses: Equip-Collaboration/diff-line-numbers@v1.0.0
+        uses: Equip-Collaboration/diff-line-numbers@v1.1.0
         with:
           include: '["\\.ts$"]'
       - name: Detecting files changed
