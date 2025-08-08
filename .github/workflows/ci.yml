@@ -17,8 +17,30 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-
       - name: Build Project
         run: npm run build
       - name: Run tests
         run: npm test
+      - name: Get diff lines
+        id: diff
+        uses: Equip-Collaboration/diff-line-numbers@v1.0.0
+        with:
+          include: '["\\.ts$"]'
+      - name: Detecting files changed
+        id: files
+        uses: umani/changed-files@v4.0.0
+        with:
+          repo-token: ${{ github.token }}
+          pattern: '^.*\.ts$'  
+      - name: Check TypeScript Errors
+        uses: wallstead/action-check-typescript@v1.1.8
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          use-check: true
+          check-fail-mode: added
+          files-changed: ${{steps.files.outputs.files_updated}}
+          files-added: ${{steps.files.outputs.files_created}}
+          files-deleted: ${{steps.files.outputs.files_deleted}}
+          line-numbers: ${{steps.diff.outputs.lineNumbers}}
+          output-behaviour: both
+          comment-behaviour: new  
