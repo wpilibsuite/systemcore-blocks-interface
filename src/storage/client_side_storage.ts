@@ -22,6 +22,7 @@
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
 import * as storageNames from './names';
+import * as storageProject from './project';
 
 // Functions for saving blocks modules to client side storage.
 
@@ -126,9 +127,9 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async listProjects(): Promise<commonStorage.Project[]> {
+  async listProjects(): Promise<storageProject.Project[]> {
     return new Promise((resolve, reject) => {
-      const projects: {[key: string]: commonStorage.Project} = {}; // key is project name, value is Project
+      const projects: {[key: string]: storageProject.Project} = {}; // key is project name, value is Project
       // The mechanisms and opModes variables hold any Mechanisms and OpModes that
       // are read before the Project to which they belong is read.
       const mechanisms: {[key: string]: storageModule.Mechanism[]} = {}; // key is project name, value is list of Mechanisms
@@ -158,7 +159,7 @@ class ClientSideStorage implements commonStorage.Storage {
             const robot: storageModule.Robot = {
               ...module,
             };
-            const project: commonStorage.Project = {
+            const project: storageProject.Project = {
               projectName: module.projectName,
               robot: robot,
               mechanisms: [],
@@ -213,7 +214,7 @@ class ClientSideStorage implements commonStorage.Storage {
           cursor.continue();
         } else {
           // The cursor is done. We have finished reading all the modules.
-          const projectsToReturn: commonStorage.Project[] = [];
+          const projectsToReturn: storageProject.Project[] = [];
           const sortedProjectNames = Object.keys(projects).sort();
           sortedProjectNames.forEach((projectName) => {
             projectsToReturn.push(projects[projectName]);
@@ -569,7 +570,7 @@ class ClientSideStorage implements commonStorage.Storage {
         } else {
           // The cursor is done. We have finished collecting all the modules in the project.
           // Now create the blob for download.
-          const blobUrl = await commonStorage.produceDownloadProjectBlob(classNameToModuleContentText);
+          const blobUrl = await storageProject.produceDownloadProjectBlob(classNameToModuleContentText);
           resolve(blobUrl);
         }
       };
@@ -582,11 +583,11 @@ class ClientSideStorage implements commonStorage.Storage {
       let classNameToModuleType: {[className: string]: string}; // key is class name, value is module type
       let classNameToModuleContentText: {[className: string]: string}; // key is class name, value is module content
       try {
-        [classNameToModuleType, classNameToModuleContentText] = await commonStorage.processUploadedBlob(
+        [classNameToModuleType, classNameToModuleContentText] = await storageProject.processUploadedBlob(
             blobUrl);
       } catch (e) {
-        console.log('commonStorage.processUploadedBlob failed.');
-        reject(new Error('commonStorage.processUploadedBlob failed.'));
+        console.log('storageProject.processUploadedBlob failed.');
+        reject(new Error('storageProject.processUploadedBlob failed.'));
         return;
       }
 

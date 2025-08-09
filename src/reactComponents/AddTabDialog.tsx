@@ -25,6 +25,7 @@ import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
+import * as storageProject from '../storage/project';
 import ClassNameComponent from './ClassNameComponent';
 
 /** Represents a module item in the dialog. */
@@ -39,8 +40,8 @@ interface AddTabDialogProps {
   isOpen: boolean;
   onOk: (newTabs: TabItem[]) => void;
   onCancel: () => void;
-  project: commonStorage.Project | null;
-  setProject: (project: commonStorage.Project | null) => void;
+  project: storageProject.Project | null;
+  setProject: (project: storageProject.Project | null) => void;
   currentTabs: TabItem[];
   storage: commonStorage.Storage | null;
 }
@@ -132,10 +133,10 @@ export default function AddTabDialog(props: AddTabDialogProps) {
       storageModule.MODULE_TYPE_MECHANISM :
       storageModule.MODULE_TYPE_OPMODE;
 
-    await commonStorage.addModuleToProject(
+    await storageProject.addModuleToProject(
         props.storage, props.project, storageType, newClassName);
 
-    const newModule = commonStorage.findModuleByClassName(props.project, newClassName);
+    const newModule = storageProject.findModuleByClassName(props.project, newClassName);
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,

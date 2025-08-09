@@ -23,6 +23,7 @@ import * as React from 'react';
 import { RcFile, UploadRequestOption } from 'rc-upload/lib/interface';
 import * as commonStorage from '../storage/common_storage';
 import * as storageNames from '../storage/names';
+import * as storageProject from '../storage/project';
 import * as createPythonFiles from '../storage/create_python_files';
 import * as I18Next from 'react-i18next';
 import {TabType } from '../types/TabType';
@@ -56,9 +57,9 @@ export interface MenuProps {
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
   gotoTab: (tabKey: string) => void;
-  project: commonStorage.Project | null;
+  project: storageProject.Project | null;
   openWPIToolboxSettings: () => void;
-  setProject: (project: commonStorage.Project | null) => void;
+  setProject: (project: storageProject.Project | null) => void;
   theme: string;
   setTheme: (theme: string) => void;
 }
@@ -100,7 +101,7 @@ function getDivider(): MenuItem {
 /**
  * Generates menu items for a given project.
  */
-function getMenuItems(t: (key: string) => string, project: commonStorage.Project, currentLanguage: string): MenuItem[] {
+function getMenuItems(t: (key: string) => string, project: storageProject.Project, currentLanguage: string): MenuItem[] {
   const mechanisms: MenuItem[] = [];
   const opmodes: MenuItem[] = [];
 
@@ -176,7 +177,7 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
 export function Component(props: MenuProps): React.JSX.Element {
   const {t, i18n} = I18Next.useTranslation();
 
-  const [projects, setProjects] = React.useState<commonStorage.Project[]>([]);
+  const [projects, setProjects] = React.useState<storageProject.Project[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
   const [fileModalOpen, setFileModalOpen] = React.useState<boolean>(false);
   const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
@@ -191,7 +192,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   };
 
   /** Fetches the list of projects from storage. */
-  const fetchListOfProjects = async (): Promise<commonStorage.Project[]> => {
+  const fetchListOfProjects = async (): Promise<storageProject.Project[]> => {
     return new Promise(async (resolve, reject) => {
       if (!props.storage) {
         reject(new Error('Storage not available'));
@@ -252,7 +253,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   /** Handles menu item clicks. */
   const handleClick: Antd.MenuProps['onClick'] = ({key}): void => {
     const newModule = props.project ?
-      commonStorage.findModuleByModulePath(props.project, key) :
+      storageProject.findModuleByModulePath(props.project, key) :
       null;
 
     if (newModule) {
@@ -386,7 +387,7 @@ export function Component(props: MenuProps): React.JSX.Element {
             existingProjectNames.push(project.projectName);
           });
           const file = options.file as RcFile;
-          const uploadProjectName = commonStorage.makeUploadProjectName(file.name, existingProjectNames);
+          const uploadProjectName = storageProject.makeUploadProjectName(file.name, existingProjectNames);
           if (props.storage) {
             props.storage.uploadProject(uploadProjectName, dataUrl);
           }

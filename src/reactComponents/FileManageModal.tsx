@@ -24,6 +24,7 @@ import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
+import * as storageProject from '../storage/project';
 import {EditOutlined, DeleteOutlined, CopyOutlined} from '@ant-design/icons';
 import ClassNameComponent from './ClassNameComponent';
 
@@ -38,8 +39,8 @@ interface Module {
 interface FileManageModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  project: commonStorage.Project | null;
-  setProject: (project: commonStorage.Project | null) => void;
+  project: storageProject.Project | null;
+  setProject: (project: storageProject.Project | null) => void;
   gotoTab: (path: string) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
@@ -107,7 +108,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
 
     try {
-      const newModulePath = await commonStorage.renameModuleInProject(
+      const newModulePath = await storageProject.renameModuleInProject(
           props.storage,
           props.project,
           newClassName,
@@ -138,7 +139,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
 
     try {
-      const newModulePath = await commonStorage.copyModuleInProject(
+      const newModulePath = await storageProject.copyModuleInProject(
           props.storage,
           props.project,
           newClassName,
@@ -180,14 +181,14 @@ export default function FileManageModal(props: FileManageModalProps) {
       storageModule.MODULE_TYPE_MECHANISM :
       storageModule.MODULE_TYPE_OPMODE;
 
-    await commonStorage.addModuleToProject(
+    await storageProject.addModuleToProject(
         props.storage,
         props.project,
         storageType,
         newClassName
     );
 
-    const newModule = commonStorage.findModuleByClassName(props.project, newClassName);
+    const newModule = storageProject.findModuleByClassName(props.project, newClassName);
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,
@@ -206,7 +207,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     setModules(newModules);
 
     if (props.storage && props.project) {
-      await commonStorage.removeModuleFromProject(
+      await storageProject.removeModuleFromProject(
           props.storage,
           props.project,
           record.path

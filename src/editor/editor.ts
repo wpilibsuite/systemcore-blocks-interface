@@ -26,6 +26,7 @@ import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageNames from '../storage/names';
+import * as storageProject from '../storage/project';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
@@ -48,7 +49,7 @@ export class Editor {
   private generatorContext: GeneratorContext;
   private storage: commonStorage.Storage;
   private currentModule: storageModule.Module | null = null;
-  private currentProject: commonStorage.Project | null = null;
+  private currentProject: storageProject.Project | null = null;
   private modulePath: string = '';
   private robotPath: string = '';
   private moduleContentText: string = '';
@@ -122,7 +123,7 @@ export class Editor {
 
   public async loadModuleBlocks(
       currentModule: storageModule.Module | null,
-      currentProject: commonStorage.Project | null) {
+      currentProject: storageProject.Project | null) {
     this.generatorContext.setModule(currentModule);
     this.currentModule = currentModule;
     this.currentProject = currentProject;

@@ -24,6 +24,7 @@ import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
+import * as storageProject from '../storage/project';
 
 /** Props for the ClassNameComponent. */
 interface ClassNameComponentProps {
@@ -31,7 +32,7 @@ interface ClassNameComponentProps {
   newItemName: string;
   setNewItemName: (name: string) => void;
   onAddNewItem: () => void;
-  project: commonStorage.Project | null;
+  project: storageProject.Project | null;
   storage: commonStorage.Storage | null;
   buttonLabel: string;
 }
@@ -65,7 +66,7 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
       return;
     }
 
-    const {ok, error} = commonStorage.isClassNameOk(props.project, newClassName);
+    const {ok, error} = storageProject.isClassNameOk(props.project, newClassName);
     if (ok) {
       clearError();
       props.onAddNewItem();

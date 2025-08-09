@@ -22,6 +22,7 @@ import * as React from 'react';
 import * as Antd from 'antd';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
+import * as storageProject from '../storage/project';
 import * as I18Next from 'react-i18next';
 import {
   CloseOutlined,
@@ -46,8 +47,8 @@ export interface TabsProps {
   tabList: TabItem[];
   setTabList: (items: TabItem[]) => void;
   activeTab: string;
-  project: commonStorage.Project | null;
-  setProject: (project: commonStorage.Project | null) => void;
+  project: storageProject.Project | null;
+  setProject: (project: storageProject.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
   currentModule: storageModule.Module | null;
   setCurrentModule: (module: storageModule.Module | null) => void;
@@ -83,7 +84,7 @@ export function Component(props: TabsProps): React.JSX.Element {
   const handleTabChange = (key: string): void => {
     if (props.project) {
       const modulePath = key;
-      props.setCurrentModule(commonStorage.findModuleByModulePath(props.project, modulePath));
+      props.setCurrentModule(storageProject.findModuleByModulePath(props.project, modulePath));
       setActiveKey(key);
     }
   };
@@ -101,7 +102,7 @@ export function Component(props: TabsProps): React.JSX.Element {
     }
 
     const modulePath = key;
-    const module = commonStorage.findModuleByModulePath(props.project, modulePath);
+    const module = storageProject.findModuleByModulePath(props.project, modulePath);
     if (!module) {
       return;
     }
@@ -164,7 +165,7 @@ export function Component(props: TabsProps): React.JSX.Element {
     const oldModulePath = key;
 
     try {
-      const newModulePath = await commonStorage.renameModuleInProject(
+      const newModulePath = await storageProject.renameModuleInProject(
         props.storage,
         props.project,
         newClassName,
@@ -198,7 +199,7 @@ export function Component(props: TabsProps): React.JSX.Element {
     const oldModulePath = key;
 
     try {
-      const newModulePath = await commonStorage.copyModuleInProject(
+      const newModulePath = await storageProject.copyModuleInProject(
         props.storage,
         props.project,
         newClassName,
@@ -267,7 +268,7 @@ export function Component(props: TabsProps): React.JSX.Element {
         props.setTabList(newTabs);
 
         if (props.storage && props.project) {
-          await commonStorage.removeModuleFromProject(props.storage, props.project, tab.key);
+          await storageProject.removeModuleFromProject(props.storage, props.project, tab.key);
           triggerProjectUpdate();
         }
 

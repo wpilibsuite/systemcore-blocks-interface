@@ -19,7 +19,7 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Antd from 'antd';
-import * as commonStorage from '../storage/common_storage';
+import * as storageProject from '../storage/project';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +30,7 @@ type StringFunction = (input: string) => void;
 interface HeaderProps {
   alertErrorMessage: string;
   setAlertErrorMessage: StringFunction;
-  project: commonStorage.Project | null;
+  project: storageProject.Project | null;
 }
 
 /** Height of the logo image in pixels. */
