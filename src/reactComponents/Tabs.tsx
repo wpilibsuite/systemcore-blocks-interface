@@ -21,6 +21,7 @@
 import * as React from 'react';
 import * as Antd from 'antd';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import * as I18Next from 'react-i18next';
 import {
   CloseOutlined,
@@ -48,8 +49,8 @@ export interface TabsProps {
   project: commonStorage.Project | null;
   setProject: (project: commonStorage.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
-  currentModule: commonStorage.Module | null;
-  setCurrentModule: (module: commonStorage.Module | null) => void;
+  currentModule: storageModule.Module | null;
+  setCurrentModule: (module: storageModule.Module | null) => void;
   storage: commonStorage.Storage | null;
 }
 
@@ -106,10 +107,10 @@ export function Component(props: TabsProps): React.JSX.Element {
     }
 
     switch (module.moduleType) {
-      case commonStorage.MODULE_TYPE_MECHANISM:
+      case storageModule.MODULE_TYPE_MECHANISM:
         newTabs.push({ key, title: module.className, type: TabType.MECHANISM });
         break;
-      case commonStorage.MODULE_TYPE_OPMODE:
+      case storageModule.MODULE_TYPE_OPMODE:
         newTabs.push({ key, title: module.className, type: TabType.OPMODE });
         break;
       default:

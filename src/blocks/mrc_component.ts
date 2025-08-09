@@ -29,6 +29,7 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import * as storageNames from '../storage/names';
 import { createPortShadow } from './mrc_port';
 import { createNumberShadowValue } from './utils/value';
@@ -125,7 +126,7 @@ const COMPONENT = {
    */
   updateBlock_: function (this: ComponentBlock): void {
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-    if (editor && editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_ROBOT) {
+    if (editor && editor.getCurrentModuleType() === storageModule.MODULE_TYPE_ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)
@@ -194,7 +195,7 @@ export const pythonFromBlock = function (
     if (i != 0) {
       code += ', ';
     }
-    if (generator.getModuleType() === commonStorage.MODULE_TYPE_ROBOT) {
+    if (generator.getModuleType() === storageModule.MODULE_TYPE_ROBOT) {
       code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, 'ARG' + i, Order.NONE);
     } else {
       code += block.mrcArgs[i].name + ' = ' + block.getArgName(i);
@@ -247,7 +248,7 @@ function createComponentBlock(
       'name': argData.name,
       'type': argData.type,
     });
-    if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+    if (moduleType == storageModule.MODULE_TYPE_ROBOT) {
       if (argData.type === 'int') {
         const portType = getPortTypeForArgument(argData.name);
         if (portType) {

@@ -34,6 +34,7 @@ import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 
 
 // A block to call a python function.
@@ -552,7 +553,7 @@ const CALL_PYTHON_FUNCTION = {
       let foundComponent = false;
       const componentsInScope: commonStorage.Component[] = [];
       componentsInScope.push(...this.getComponentsFromRobot());
-      if (editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_MECHANISM) {
+      if (editor.getCurrentModuleType() === storageModule.MODULE_TYPE_MECHANISM) {
         componentsInScope.push(...editor.getComponentsFromWorkspace());
       }
       for (const component of componentsInScope) {
@@ -599,7 +600,7 @@ const CALL_PYTHON_FUNCTION = {
     // If the robot method has changed, update the block if possible or put a
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_ROBOT) {
-      if (editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_MECHANISM) {
+      if (editor.getCurrentModuleType() === storageModule.MODULE_TYPE_MECHANISM) {
         warnings.push('This block is not allowed to be used inside a mechanism.');
       } else {
         let foundRobotMethod = false;
@@ -645,7 +646,7 @@ const CALL_PYTHON_FUNCTION = {
     // If the method has changed, update the block if possible or put a
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_MECHANISM) {
-      if (editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_MECHANISM) {
+      if (editor.getCurrentModuleType() === storageModule.MODULE_TYPE_MECHANISM) {
         warnings.push('This block is not allowed to be used inside a mechanism.');
       } else {
         let foundMechanism = false;
@@ -790,11 +791,11 @@ export const pythonFromBlock = function(
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
-        case commonStorage.MODULE_TYPE_ROBOT:
-        case commonStorage.MODULE_TYPE_MECHANISM:
+        case storageModule.MODULE_TYPE_ROBOT:
+        case storageModule.MODULE_TYPE_MECHANISM:
           code = 'self.';
           break;
-        case commonStorage.MODULE_TYPE_OPMODE:
+        case storageModule.MODULE_TYPE_OPMODE:
           code = 'self.robot.';
           break;
       }
@@ -815,13 +816,13 @@ export const pythonFromBlock = function(
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
-        case commonStorage.MODULE_TYPE_ROBOT:
+        case storageModule.MODULE_TYPE_ROBOT:
           code = 'self.' + mechanismName;
           break;
-        case commonStorage.MODULE_TYPE_OPMODE:
+        case storageModule.MODULE_TYPE_OPMODE:
           code = 'self.robot.' + mechanismName;
           break;
-        case commonStorage.MODULE_TYPE_MECHANISM:
+        case storageModule.MODULE_TYPE_MECHANISM:
           // The INSTANCE_MECHANISM version should not be used in a mechanism.
           // TODO(lizlooney): What if the user copies a block from an robot or opmode and pastes
           // it into a mechanism?

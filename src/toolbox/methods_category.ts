@@ -22,7 +22,7 @@
 import * as Blockly from 'blockly/core';
 
 import * as toolboxItems from './items';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
 import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
@@ -61,7 +61,7 @@ export class MethodsCategory {
       const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
 
       switch (editor.getCurrentModuleType()) {
-        case commonStorage.MODULE_TYPE_ROBOT:
+        case storageModule.MODULE_TYPE_ROBOT:
           // TODO(lizlooney): We need a way to mark a method in python as not overridable.
           // For example, in RobotBase, define_hardware, register_event_handler,
           // unregister_event_handler, and fire_event should not be overridden in a user's robot.
@@ -76,13 +76,13 @@ export class MethodsCategory {
               'More Robot Methods', this.robotClassBlocks, methodNamesNotOverrideable,
               methodNamesAlreadyOverridden, contents);
           break;
-        case commonStorage.MODULE_TYPE_MECHANISM:
+        case storageModule.MODULE_TYPE_MECHANISM:
           // Add the methods for a Mechanism.
           this.addClassBlocksForCurrentModule(
               'More Mechanism Methods', this.mechanismClassBlocks, [],
               methodNamesAlreadyOverridden, contents);
           break;
-        case commonStorage.MODULE_TYPE_OPMODE:
+        case storageModule.MODULE_TYPE_OPMODE:
           // Add the methods for an OpMode.
           this.addClassBlocksForCurrentModule(
               'More OpMode Methods', this.opmodeClassBlocks, [],

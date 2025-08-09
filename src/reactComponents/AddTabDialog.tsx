@@ -24,6 +24,7 @@ import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import ClassNameComponent from './ClassNameComponent';
 
 /** Represents a module item in the dialog. */
@@ -128,8 +129,8 @@ export default function AddTabDialog(props: AddTabDialogProps) {
     }
 
     const storageType = tabType === TabType.MECHANISM ?
-      commonStorage.MODULE_TYPE_MECHANISM :
-      commonStorage.MODULE_TYPE_OPMODE;
+      storageModule.MODULE_TYPE_MECHANISM :
+      storageModule.MODULE_TYPE_OPMODE;
 
     await commonStorage.addModuleToProject(
         props.storage, props.project, storageType, newClassName);

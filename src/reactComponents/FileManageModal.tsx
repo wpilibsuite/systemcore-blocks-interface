@@ -23,6 +23,7 @@ import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import {EditOutlined, DeleteOutlined, CopyOutlined} from '@ant-design/icons';
 import ClassNameComponent from './ClassNameComponent';
 
@@ -176,8 +177,8 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
 
     const storageType = props.moduleType === TabType.MECHANISM ?
-      commonStorage.MODULE_TYPE_MECHANISM :
-      commonStorage.MODULE_TYPE_OPMODE;
+      storageModule.MODULE_TYPE_MECHANISM :
+      storageModule.MODULE_TYPE_OPMODE;
 
     await commonStorage.addModuleToProject(
         props.storage,

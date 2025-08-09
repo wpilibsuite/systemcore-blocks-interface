@@ -26,6 +26,7 @@ import * as ChangeFramework from './utils/change_framework';
 import { getLegalName } from './utils/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { MechanismBlock } from './mrc_mechanism';
@@ -251,10 +252,10 @@ export const pythonFromBlock = function (
     block: MechanismComponentHolderBlock,
     generator: ExtendedPythonGenerator) {
   switch (generator.getModuleType()) {
-    case commonStorage.MODULE_TYPE_ROBOT:
+    case storageModule.MODULE_TYPE_ROBOT:
       pythonFromBlockInRobot(block, generator);
       break;
-    case commonStorage.MODULE_TYPE_MECHANISM:
+    case storageModule.MODULE_TYPE_MECHANISM:
       pythonFromBlockInMechanism(block, generator);
       break;
   }

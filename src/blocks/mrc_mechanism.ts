@@ -29,6 +29,7 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import * as storageNames from '../storage/names';
 import * as value from './utils/value';
 import { renameMethodCallers } from './mrc_call_python_function'
@@ -172,7 +173,7 @@ const MECHANISM = {
       // each module JSON file so we can track mechanisms, etc, even if the name changes.
       // Then here, we'd look for the mechanism with the marching UUID, and we'd update the
       // FIELD_TYPE value if the mechanism's class name had changed.
-      let foundMechanism: commonStorage.Mechanism | null = null;
+      let foundMechanism: storageModule.Mechanism | null = null;
       const components: commonStorage.Component[] = []
       for (const mechanism of editor.getMechanisms()) {
         if (mechanism.className === this.getFieldValue(FIELD_TYPE)) {
@@ -246,7 +247,7 @@ export const pythonFromBlock = function (
 }
 
 export function createMechanismBlock(
-    mechanism: commonStorage.Mechanism, components: commonStorage.Component[]): toolboxItems.Block {
+    mechanism: storageModule.Mechanism, components: commonStorage.Component[]): toolboxItems.Block {
   const snakeCaseName = storageNames.pascalCaseToSnakeCase(mechanism.className);
   const mechanismName = 'my_' + snakeCaseName;
   const extraState: MechanismExtraState = {

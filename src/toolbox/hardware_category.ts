@@ -20,7 +20,7 @@
  */
 
 import * as Blockly from 'blockly/core';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import * as toolboxItems from './items';
 import { createMechanismBlock } from '../blocks/mrc_mechanism';
 import { getAllPossibleComponents } from '../blocks/mrc_component';
@@ -31,9 +31,9 @@ import {
 import { addRobotEventHandlerBlocks } from '../blocks/mrc_event_handler';
 import { Editor } from '../editor/editor';
 
-export function getHardwareCategory(currentModule: commonStorage.Module): toolboxItems.Category {
+export function getHardwareCategory(currentModule: storageModule.Module): toolboxItems.Category {
   switch (currentModule.moduleType) {
-    case commonStorage.MODULE_TYPE_ROBOT:
+    case storageModule.MODULE_TYPE_ROBOT:
       return {
         kind: 'category',
         name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
@@ -42,9 +42,9 @@ export function getHardwareCategory(currentModule: commonStorage.Module): toolbo
           getComponentsCategory(currentModule.moduleType),
         ]
       };
-    case commonStorage.MODULE_TYPE_MECHANISM:
+    case storageModule.MODULE_TYPE_MECHANISM:
       return getComponentsCategory(currentModule.moduleType);
-    case commonStorage.MODULE_TYPE_OPMODE:
+    case storageModule.MODULE_TYPE_OPMODE:
       return {
         kind: 'category',
         name: Blockly.Msg['MRC_CATEGORY_ROBOT'],
@@ -59,7 +59,7 @@ export function getHardwareCategory(currentModule: commonStorage.Module): toolbo
   throw new Error('currentModule.moduleType has unexpected value: ' + currentModule.moduleType)
 }
 
-function getRobotMechanismsCategory(currentModule: commonStorage.Module): toolboxItems.Category {
+function getRobotMechanismsCategory(currentModule: storageModule.Module): toolboxItems.Category {
   // getRobotMechanismsCategory is called when the user is editing the robot or an opmode.
   // If the user is editing the robot, it allows the user to add a mechanism to
   // the robot or use an existing mechanism.
@@ -71,7 +71,7 @@ function getRobotMechanismsCategory(currentModule: commonStorage.Module): toolbo
   const editor = Editor.getCurrentEditor();
 
   // Include the "+ Mechanism" category if the user it editing the robot and there are any mechanism modules.
-  if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+  if (currentModule.moduleType === storageModule.MODULE_TYPE_ROBOT) {
     if (editor) {
       const mechanisms = editor.getMechanisms();
       if (mechanisms.length) {

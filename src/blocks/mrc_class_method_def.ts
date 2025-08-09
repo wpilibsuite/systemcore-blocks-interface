@@ -26,6 +26,7 @@ import { createFieldFlydown } from '../fields/field_flydown';
 import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
 import * as toolboxItems from '../toolbox/items';
 import { getClassData } from './utils/python';
@@ -424,7 +425,7 @@ export const pythonFromBlock = function (
 
     let params = block.mrcParameters;
     let paramString = "self";
-    if (generator.getModuleType() == commonStorage.MODULE_TYPE_MECHANISM && block.mrcPythonMethodName == '__init__') {
+    if (generator.getModuleType() == storageModule.MODULE_TYPE_MECHANISM && block.mrcPythonMethodName == '__init__') {
         const ports: string[] = generator.getComponentPortParameters();
         if (ports.length) {
             paramString += ', ' + ports.join(', ');
