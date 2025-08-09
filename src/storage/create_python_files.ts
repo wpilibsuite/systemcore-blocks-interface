@@ -27,8 +27,8 @@ import {
     Project,
     Module,
     Storage,
-    parseModuleContentText,
-    pascalCaseToSnakeCase } from './common_storage';
+    parseModuleContentText } from './common_storage';
+import { pascalCaseToSnakeCase } from './names';
 import JSZip from 'jszip';
 import { GeneratorContext } from '../editor/generator_context';
 

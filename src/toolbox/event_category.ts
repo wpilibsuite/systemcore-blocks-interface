@@ -22,7 +22,7 @@
 import * as Blockly from 'blockly/core';
 
 import * as toolboxItems from './items';
-import * as commonStorage from '../storage/common_storage';
+import * as storageNames from '../storage/names';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
 import { createCustomEventBlock } from '../blocks/mrc_event';
 import { addFireEventBlocks } from '../blocks/mrc_call_python_function';
@@ -59,7 +59,7 @@ export class EventsCategory {
           kind: 'label',
           text: 'Custom Events',
         },
-        createCustomEventBlock(commonStorage.makeUniqueName('my_event', eventNames))
+        createCustomEventBlock(storageNames.makeUniqueName('my_event', eventNames))
       );
 
       // Get blocks for firing methods defined in the current workspace.

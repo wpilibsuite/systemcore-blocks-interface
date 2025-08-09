@@ -22,6 +22,7 @@ import * as Antd from 'antd';
 import * as React from 'react';
 import { RcFile, UploadRequestOption } from 'rc-upload/lib/interface';
 import * as commonStorage from '../storage/common_storage';
+import * as storageNames from '../storage/names';
 import * as createPythonFiles from '../storage/create_python_files';
 import * as I18Next from 'react-i18next';
 import {TabType } from '../types/TabType';
@@ -335,7 +336,7 @@ export function Component(props: MenuProps): React.JSX.Element {
 
     try {
       const blobUrl = await props.storage.downloadProject(props.project.projectName);
-      const filename = props.project.projectName + commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+      const filename = props.project.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
 
       // Create a temporary link to download the file
       const link = document.createElement('a');
@@ -361,9 +362,9 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
 
     const uploadProps: Antd.UploadProps = {
-      accept: commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION,
+      accept: storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION,
       beforeUpload: (file) => {
-        const isBlocks = file.name.endsWith(commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION)
+        const isBlocks = file.name.endsWith(storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION)
         if (!isBlocks) {
           // TODO: i18n
           props.setAlertErrorMessage(file.name + ' is not a blocks file');

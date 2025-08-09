@@ -29,6 +29,7 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
 import * as commonStorage from '../storage/common_storage';
+import * as storageNames from '../storage/names';
 import * as value from './utils/value';
 import { renameMethodCallers } from './mrc_call_python_function'
 
@@ -186,7 +187,7 @@ const MECHANISM = {
         if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {
           this.setFieldValue(foundMechanism.className, FIELD_TYPE);
         }
-        const importModule = commonStorage.pascalCaseToSnakeCase(foundMechanism.className);
+        const importModule = storageNames.pascalCaseToSnakeCase(foundMechanism.className);
         if (this.mrcImportModule !== importModule) {
           this.mrcImportModule = importModule;
         }
@@ -246,7 +247,7 @@ export const pythonFromBlock = function (
 
 export function createMechanismBlock(
     mechanism: commonStorage.Mechanism, components: commonStorage.Component[]): toolboxItems.Block {
-  const snakeCaseName = commonStorage.pascalCaseToSnakeCase(mechanism.className);
+  const snakeCaseName = storageNames.pascalCaseToSnakeCase(mechanism.className);
   const mechanismName = 'my_' + snakeCaseName;
   const extraState: MechanismExtraState = {
     importModule: snakeCaseName,

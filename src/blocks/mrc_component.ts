@@ -29,6 +29,7 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
 import * as commonStorage from '../storage/common_storage';
+import * as storageNames from '../storage/names';
 import { createPortShadow } from './mrc_port';
 import { createNumberShadowValue } from './utils/value';
 import { ClassData, FunctionData } from './utils/python_json_types';
@@ -216,7 +217,7 @@ export function getAllPossibleComponents(moduleType: string): toolboxItems.Conte
 
     const componentName = (
         'my_' +
-        commonStorage.pascalCaseToSnakeCase(
+        storageNames.pascalCaseToSnakeCase(
             componentType.substring(componentType.lastIndexOf('.') + 1)));
 
     classData.staticMethods.forEach(staticFunctionData => {

@@ -20,6 +20,7 @@
  */
 
 import * as commonStorage from './common_storage';
+import * as names from './names';
 
 // Functions for saving blocks modules to client side storage.
 
@@ -148,8 +149,8 @@ class ClientSideStorage implements commonStorage.Storage {
           const module: commonStorage.Module = {
             modulePath: path,
             moduleType: moduleType,
-            projectName: commonStorage.getProjectName(path),
-            className: commonStorage.getClassName(path),
+            projectName: names.getProjectName(path),
+            className: names.getClassName(path),
             dateModifiedMillis: value.dateModifiedMillis,
           }
           if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {
@@ -243,8 +244,8 @@ class ClientSideStorage implements commonStorage.Storage {
   }
 
   async createProject(projectName: string, robotContent: string, opmodeContent : string): Promise<void> {
-    const modulePath = commonStorage.makeRobotPath(projectName);
-    const opmodePath = commonStorage.makeModulePath(projectName, commonStorage.CLASS_NAME_TELEOP);
+    const modulePath = names.makeRobotPath(projectName);
+    const opmodePath = names.makeModulePath(projectName, names.CLASS_NAME_TELEOP);
 
     await this._saveModule(commonStorage.MODULE_TYPE_ROBOT, modulePath, robotContent);
     await this._saveModule(commonStorage.MODULE_TYPE_OPMODE, opmodePath, opmodeContent);
@@ -340,13 +341,13 @@ class ClientSideStorage implements commonStorage.Storage {
           const value = cursor.value;
           const path = value.path;
           const moduleType = value.type;
-          if (commonStorage.getProjectName(path) === oldProjectName) {
+          if (names.getProjectName(path) === oldProjectName) {
             let newPath;
             if (moduleType === commonStorage.MODULE_TYPE_ROBOT) {
-              newPath = commonStorage.makeRobotPath(newProjectName);
+              newPath = names.makeRobotPath(newProjectName);
             } else {
-              const className = commonStorage.getClassName(path);
-              newPath = commonStorage.makeModulePath(newProjectName, className);
+              const className = names.getClassName(path);
+              newPath = names.makeModulePath(newProjectName, className);
             }
             oldToNewModulePaths[path] = newPath;
           }
@@ -433,8 +434,8 @@ class ClientSideStorage implements commonStorage.Storage {
         reject(new Error('IndexedDB transaction aborted.'));
       };
       const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
-      const oldModulePath = commonStorage.makeModulePath(projectName, oldClassName);
-      const newModulePath = commonStorage.makeModulePath(projectName, newClassName);
+      const oldModulePath = names.makeModulePath(projectName, oldClassName);
+      const newModulePath = names.makeModulePath(projectName, newClassName);
       const getRequest = modulesObjectStore.get(oldModulePath);
       getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
@@ -496,7 +497,7 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           const path = value.path;
-          if (commonStorage.getProjectName(path) === projectName) {
+          if (names.getProjectName(path) === projectName) {
             modulePaths.push(path);
           }
           cursor.continue();
@@ -559,8 +560,8 @@ class ClientSideStorage implements commonStorage.Storage {
         const cursor = openCursorRequest.result;
         if (cursor) {
           const value = cursor.value;
-          if (commonStorage.getProjectName(value.path) === projectName) {
-            const className = commonStorage.getClassName(value.path);
+          if (names.getProjectName(value.path) === projectName) {
+            const className = names.getClassName(value.path);
             classNameToModuleContentText[className] = value.content;
           }
           cursor.continue();
@@ -602,7 +603,7 @@ class ClientSideStorage implements commonStorage.Storage {
       for (const className in classNameToModuleType) {
         const moduleType = classNameToModuleType[className];
         const moduleContentText = classNameToModuleContentText[className];
-        const modulePath = commonStorage.makeModulePath(projectName, className);
+        const modulePath = names.makeModulePath(projectName, className);
         const getRequest = modulesObjectStore.get(modulePath);
         getRequest.onerror = () => {
           console.log('IndexedDB get request failed. getRequest.error is...');

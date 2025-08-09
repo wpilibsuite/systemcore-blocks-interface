@@ -24,6 +24,7 @@ import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
+import * as storageNames from '../storage/names';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
@@ -382,7 +383,7 @@ export class Editor {
   public getMechanism(mechanismInRobot: commonStorage.MechanismInRobot): commonStorage.Mechanism | null {
     if (this.currentProject) {
       for (const mechanism of this.currentProject.mechanisms) {
-        const fullClassName = commonStorage.pascalCaseToSnakeCase(mechanism.className) + '.' + mechanism.className;
+        const fullClassName = storageNames.pascalCaseToSnakeCase(mechanism.className) + '.' + mechanism.className;
         if (fullClassName === mechanismInRobot.className) {
           return mechanism;
         }
