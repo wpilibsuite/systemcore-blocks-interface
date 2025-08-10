@@ -23,10 +23,9 @@
 
 import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from '../editor/extended_python_generator';
-import {
-    Storage,
-    parseModuleContentText } from './common_storage';
+import { Storage } from './common_storage';
 import { Module } from './module';
+import { parseModuleContentText } from './module_content';
 import { Project } from './project';
 import { pascalCaseToSnakeCase } from './names';
 import JSZip from 'jszip';

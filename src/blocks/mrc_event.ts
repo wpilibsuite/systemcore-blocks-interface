@@ -27,7 +27,7 @@ import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock }
 import * as ChangeFramework from './utils/change_framework';
 import { BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER } from './mrc_mechanism_component_holder';
 import * as toolboxItems from '../toolbox/items';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModuleContent from '../storage/module_content';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
 
 export const BLOCK_NAME = 'mrc_event';
@@ -210,8 +210,8 @@ const EVENT = {
         blockBlock.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
       }
     },
-    getEvent: function (this: EventBlock): commonStorage.Event {
-      const event: commonStorage.Event = {
+    getEvent: function (this: EventBlock): storageModuleContent.Event {
+      const event: storageModuleContent.Event = {
         blockId: this.id,
         name: this.getFieldValue(FIELD_EVENT_NAME),
         args: [],

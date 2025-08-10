@@ -28,8 +28,8 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
-import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
+import * as storageModuleContent from '../storage/module_content';
 import * as storageNames from '../storage/names';
 import { createPortShadow } from './mrc_port';
 import { createNumberShadowValue } from './utils/value';
@@ -150,7 +150,7 @@ const COMPONENT = {
     }
     return legalName;
   },
-  getComponent: function (this: ComponentBlock): commonStorage.Component | null {
+  getComponent: function (this: ComponentBlock): storageModuleContent.Component | null {
     const componentName = this.getFieldValue(FIELD_NAME);
     const componentType = this.getFieldValue(FIELD_TYPE);
     const ports: {[port: string]: string} = {};

@@ -23,6 +23,7 @@ import JSZip from 'jszip';
 
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
+import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 
 // Types, constants, and functions related to projects, regardless of where the projects are stored.
@@ -42,8 +43,8 @@ export type Project = {
  */
 export async function createProject(
   storage: commonStorage.Storage, newProjectName: string): Promise<void> {
-  const robotContent = commonStorage.newRobotContent(newProjectName);
-  const opmodeContent = commonStorage.newOpModeContent(newProjectName, storageNames.CLASS_NAME_TELEOP);
+  const robotContent = storageModuleContent.newRobotContent(newProjectName);
+  const opmodeContent = storageModuleContent.newOpModeContent(newProjectName, storageNames.CLASS_NAME_TELEOP);
   await storage.createProject(newProjectName, robotContent, opmodeContent);
 }
 
@@ -94,7 +95,7 @@ export async function addModuleToProject(
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName);
 
   if (moduleType === storageModule.MODULE_TYPE_MECHANISM) {
-    const mechanismContent = commonStorage.newMechanismContent(project.projectName, newClassName);
+    const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
     await storage.createModule(storageModule.MODULE_TYPE_MECHANISM, newModulePath, mechanismContent);
     project.mechanisms.push({
       modulePath: newModulePath,
@@ -103,7 +104,7 @@ export async function addModuleToProject(
       className: newClassName
     } as storageModule.Mechanism);
   } else if (moduleType === storageModule.MODULE_TYPE_OPMODE) {
-    const opModeContent = commonStorage.newOpModeContent(project.projectName, newClassName);
+    const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);
     await storage.createModule(storageModule.MODULE_TYPE_OPMODE, newModulePath, opModeContent);
     project.opModes.push({
       modulePath: newModulePath,
@@ -355,7 +356,7 @@ export async function processUploadedBlob(
 function processUploadedModule(
     filename: string, uploadedContent: string): [string, string, string] {
 
-  const moduleContent = commonStorage.parseModuleContentText(uploadedContent);
+  const moduleContent = storageModuleContent.parseModuleContentText(uploadedContent);
   const moduleType = moduleContent.getModuleType();
   const className = filename;
   const moduleContentText = moduleContent.getModuleContentText();

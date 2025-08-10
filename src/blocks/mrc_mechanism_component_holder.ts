@@ -25,8 +25,8 @@ import { MRC_STYLE_MECHANISMS } from '../themes/styles';
 import * as ChangeFramework from './utils/change_framework';
 import { getLegalName } from './utils/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
+import * as storageModuleContent from '../storage/module_content';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { MechanismBlock } from './mrc_mechanism';
@@ -133,8 +133,8 @@ const MECHANISM_COMPONENT_HOLDER = {
       }
     }
   },
-  getMechanisms: function (this: MechanismComponentHolderBlock): commonStorage.MechanismInRobot[] {
-    const mechanisms: commonStorage.MechanismInRobot[] = []
+  getMechanisms: function (this: MechanismComponentHolderBlock): storageModuleContent.MechanismInRobot[] {
+    const mechanisms: storageModuleContent.MechanismInRobot[] = []
 
     // Get mechanism blocks from the MECHANISMS input
     const mechanismsInput = this.getInput(INPUT_MECHANISMS);
@@ -155,8 +155,8 @@ const MECHANISM_COMPONENT_HOLDER = {
 
     return mechanisms;
   },
-  getComponents: function (this: MechanismComponentHolderBlock): commonStorage.Component[] {
-    const components: commonStorage.Component[] = []
+  getComponents: function (this: MechanismComponentHolderBlock): storageModuleContent.Component[] {
+    const components: storageModuleContent.Component[] = []
 
     // Get component blocks from the COMPONENTS input
     const componentsInput = this.getInput(INPUT_COMPONENTS);
@@ -177,8 +177,8 @@ const MECHANISM_COMPONENT_HOLDER = {
 
     return components;
   },
-  getEvents: function (this: MechanismComponentHolderBlock): commonStorage.Event[] {
-    const events: commonStorage.Event[] = []
+  getEvents: function (this: MechanismComponentHolderBlock): storageModuleContent.Event[] {
+    const events: storageModuleContent.Event[] = []
 
     // Get event blocks from the EVENTS input
     const eventsInput = this.getInput(INPUT_EVENTS);
@@ -308,10 +308,10 @@ export function getComponentPorts(workspace: Blockly.Workspace, ports: {[key: st
 
 export function getMechanisms(
     workspace: Blockly.Workspace,
-    mechanisms: commonStorage.MechanismInRobot[]): void {
+    mechanisms: storageModuleContent.MechanismInRobot[]): void {
   // Get the holder block and ask it for the mechanisms.
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    const mechanismsFromHolder: commonStorage.MechanismInRobot[] =
+    const mechanismsFromHolder: storageModuleContent.MechanismInRobot[] =
       (block as MechanismComponentHolderBlock).getMechanisms();
     mechanisms.push(...mechanismsFromHolder);
   });
@@ -319,10 +319,10 @@ export function getMechanisms(
 
 export function getComponents(
     workspace: Blockly.Workspace,
-    components: commonStorage.Component[]): void {
+    components: storageModuleContent.Component[]): void {
   // Get the holder block and ask it for the components.
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    const componentsFromHolder: commonStorage.Component[] =
+    const componentsFromHolder: storageModuleContent.Component[] =
       (block as MechanismComponentHolderBlock).getComponents();
     components.push(...componentsFromHolder);
   });
@@ -330,10 +330,10 @@ export function getComponents(
 
 export function getEvents(
     workspace: Blockly.Workspace,
-    events: commonStorage.Event[]): void {
+    events: storageModuleContent.Event[]): void {
   // Get the holder block and ask it for the events.
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    const eventsFromHolder: commonStorage.Event[] =
+    const eventsFromHolder: storageModuleContent.Event[] =
       (block as MechanismComponentHolderBlock).getEvents();
     events.push(...eventsFromHolder);
   });

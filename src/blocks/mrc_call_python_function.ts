@@ -33,8 +33,8 @@ import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
-import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
+import * as storageModuleContent from '../storage/module_content';
 
 
 // A block to call a python function.
@@ -497,11 +497,11 @@ const CALL_PYTHON_FUNCTION = {
   },
   mutateMethodCaller: function(
       this: CallPythonFunctionBlock,
-      methodOrEvent: commonStorage.Method | commonStorage.Event
+      methodOrEvent: storageModuleContent.Method | storageModuleContent.Event
   ): void {
     // mutateMethodCaller is called when the method or event definition block in the same module is modified.
     if (this.mrcFunctionKind == FunctionKind.EVENT) {
-      const event = methodOrEvent as commonStorage.Event;
+      const event = methodOrEvent as storageModuleContent.Event;
       this.mrcArgs = [];
       event.args.forEach((arg) => {
         this.mrcArgs.push({
@@ -510,7 +510,7 @@ const CALL_PYTHON_FUNCTION = {
         });
       });
     } else if (this.mrcFunctionKind == FunctionKind.INSTANCE_WITHIN) {
-      const method = methodOrEvent as commonStorage.Method;
+      const method = methodOrEvent as storageModuleContent.Method;
       this.mrcReturnType = method.returnType;
       this.mrcArgs = [];
       // We don't include the arg for the self argument because we don't need a socket for it.
@@ -523,9 +523,9 @@ const CALL_PYTHON_FUNCTION = {
     }
     this.updateBlock_();
   },
-  getComponentsFromRobot: function(this: CallPythonFunctionBlock): commonStorage.Component[] {
+  getComponentsFromRobot: function(this: CallPythonFunctionBlock): storageModuleContent.Component[] {
     // Get the list of components whose type matches this.mrcComponentClassName.
-    const components: commonStorage.Component[] = [];
+    const components: storageModuleContent.Component[] = [];
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
     if (editor) {
       editor.getComponentsFromRobot().forEach(component => {
@@ -551,7 +551,7 @@ const CALL_PYTHON_FUNCTION = {
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
       let foundComponent = false;
-      const componentsInScope: commonStorage.Component[] = [];
+      const componentsInScope: storageModuleContent.Component[] = [];
       componentsInScope.push(...this.getComponentsFromRobot());
       if (editor.getCurrentModuleType() === storageModule.MODULE_TYPE_MECHANISM) {
         componentsInScope.push(...editor.getComponentsFromWorkspace());
@@ -662,7 +662,7 @@ const CALL_PYTHON_FUNCTION = {
 
             let foundMechanismMethod = false;
             const mechanism = editor.getMechanism(mechanismInRobot);
-            const mechanismMethods: commonStorage.Method[] = mechanism
+            const mechanismMethods: storageModuleContent.Method[] = mechanism
                 ? editor.getMethodsFromMechanism(mechanism) : [];
             for (const mechanismMethod of mechanismMethods) {
               if (mechanismMethod.blockId === this.mrcOtherBlockId) {
@@ -883,7 +883,7 @@ export function renameMethodCallers(workspace: Blockly.Workspace, otherBlockId: 
 }
 
 export function mutateMethodCallers(
-    workspace: Blockly.Workspace, otherBlockId: string, methodOrEvent: commonStorage.Method | commonStorage.Event) {
+    workspace: Blockly.Workspace, otherBlockId: string, methodOrEvent: storageModuleContent.Method | storageModuleContent.Event) {
   const oldRecordUndo = Blockly.Events.getRecordUndo();
 
   getMethodCallers(workspace, otherBlockId).forEach(block => {
@@ -1071,14 +1071,14 @@ function createInstanceMethodBlock(
 }
 
 export function addInstanceWithinBlocks(
-    methods: commonStorage.Method[],
+    methods: storageModuleContent.Method[],
     contents: toolboxItems.ContentsType[]) {
   methods.forEach(method => {
     contents.push(createInstanceWithinBlock(method));
   });
 }
 
-function createInstanceWithinBlock(method: commonStorage.Method): toolboxItems.Block {
+function createInstanceWithinBlock(method: storageModuleContent.Method): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_WITHIN,
     returnType: method.returnType,
@@ -1089,7 +1089,7 @@ function createInstanceWithinBlock(method: commonStorage.Method): toolboxItems.B
   const fields: {[key: string]: any} = {};
   fields[FIELD_FUNCTION_NAME] = method.visibleName;
   const inputs: {[key: string]: any} = {};
-  // Convert method.args from commonStorage.MethodArg[] to ArgData[].
+  // Convert method.args from storageModuleContent.MethodArg[] to ArgData[].
   const args: ArgData[] = [];
   // We don't include the arg for the self argument because we don't need a socket for it.
   for (let i = 1; i < method.args.length; i++) {
@@ -1104,7 +1104,7 @@ function createInstanceWithinBlock(method: commonStorage.Method): toolboxItems.B
 }
 
 export function getInstanceComponentBlocks(
-    component: commonStorage.Component): toolboxItems.ContentsType[] {
+    component: storageModuleContent.Component): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
@@ -1132,7 +1132,7 @@ export function getInstanceComponentBlocks(
 }
 
 function createInstanceComponentBlock(
-    component: commonStorage.Component, functionData: FunctionData): toolboxItems.Block {
+    component: storageModuleContent.Component, functionData: FunctionData): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_COMPONENT,
     returnType: functionData.returnType,
@@ -1156,14 +1156,14 @@ function createInstanceComponentBlock(
 }
 
 export function addInstanceRobotBlocks(
-    methods: commonStorage.Method[],
+    methods: storageModuleContent.Method[],
     contents: toolboxItems.ContentsType[]) {
   methods.forEach(method => {
     contents.push(createInstanceRobotBlock(method));
   });
 }
 
-function createInstanceRobotBlock(method: commonStorage.Method): toolboxItems.Block {
+function createInstanceRobotBlock(method: storageModuleContent.Method): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_ROBOT,
     returnType: method.returnType,
@@ -1174,7 +1174,7 @@ function createInstanceRobotBlock(method: commonStorage.Method): toolboxItems.Bl
   const fields: {[key: string]: any} = {};
   fields[FIELD_FUNCTION_NAME] = method.visibleName;
   const inputs: {[key: string]: any} = {};
-  // Convert method.args from commonStorage.MethodArg[] to ArgData[].
+  // Convert method.args from storageModuleContent.MethodArg[] to ArgData[].
   const args: ArgData[] = [];
   // We don't include the arg for the self argument because we don't need a socket for it.
   for (let i = 1; i < method.args.length; i++) {
@@ -1189,8 +1189,8 @@ function createInstanceRobotBlock(method: commonStorage.Method): toolboxItems.Bl
 }
 
 export function addInstanceMechanismBlocks(
-    mechanismInRobot: commonStorage.MechanismInRobot,
-    methods: commonStorage.Method[],
+    mechanismInRobot: storageModuleContent.MechanismInRobot,
+    methods: storageModuleContent.Method[],
     contents: toolboxItems.ContentsType[]) {
   methods.forEach(method => {
     contents.push(createInstanceMechanismBlock(mechanismInRobot, method));
@@ -1198,8 +1198,8 @@ export function addInstanceMechanismBlocks(
 }
 
 function createInstanceMechanismBlock(
-    mechanismInRobot: commonStorage.MechanismInRobot,
-    method: commonStorage.Method): toolboxItems.Block {
+    mechanismInRobot: storageModuleContent.MechanismInRobot,
+    method: storageModuleContent.Method): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_MECHANISM,
     returnType: method.returnType,
@@ -1213,7 +1213,7 @@ function createInstanceMechanismBlock(
   fields[FIELD_MECHANISM_NAME] = mechanismInRobot.name;
   fields[FIELD_FUNCTION_NAME] = method.visibleName;
   const inputs: {[key: string]: any} = {};
-  // Convert method.args from commonStorage.MethodArg[] to ArgData[].
+  // Convert method.args from storageModuleContent.MethodArg[] to ArgData[].
   const args: ArgData[] = [];
   // For INSTANCE_MECHANISM functions, the 0 argument is 'self', but
   // self is represented by the FIELD_MECHANISM_NAME field.
@@ -1230,14 +1230,14 @@ function createInstanceMechanismBlock(
 }
 
 export function addFireEventBlocks(
-    events: commonStorage.Event[],
+    events: storageModuleContent.Event[],
     contents: toolboxItems.ContentsType[]) {
   events.forEach(event => {
     contents.push(createFireEventBlock(event));
   });
 }
 
-function createFireEventBlock(event: commonStorage.Event): toolboxItems.Block {
+function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.EVENT,
     returnType: RETURN_TYPE_NONE,
@@ -1247,7 +1247,7 @@ function createFireEventBlock(event: commonStorage.Event): toolboxItems.Block {
   const fields: {[key: string]: any} = {};
   fields[FIELD_EVENT_NAME] = event.name;
   const inputs: {[key: string]: any} = {};
-  // Convert event.args from commonStorage.MethodArg[] to ArgData[].
+  // Convert event.args from storageModuleContent.MethodArg[] to ArgData[].
   const args: ArgData[] = [];
   event.args.forEach(methodArg => {
     args.push({
