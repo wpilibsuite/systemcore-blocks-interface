@@ -28,7 +28,9 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
+import * as storageModuleContent from '../storage/module_content';
+import * as storageNames from '../storage/names';
 import * as value from './utils/value';
 import { renameMethodCallers } from './mrc_call_python_function'
 
@@ -151,7 +153,7 @@ const MECHANISM = {
     }
     return legalName;
   },
-  getMechanism: function (this: MechanismBlock): commonStorage.MechanismInRobot | null {
+  getMechanism: function (this: MechanismBlock): storageModuleContent.MechanismInRobot | null {
     const mechanismName = this.getFieldValue(FIELD_NAME);
     const mechanismType = this.mrcImportModule + '.' + this.getFieldValue(FIELD_TYPE);
     return {
@@ -171,8 +173,8 @@ const MECHANISM = {
       // each module JSON file so we can track mechanisms, etc, even if the name changes.
       // Then here, we'd look for the mechanism with the marching UUID, and we'd update the
       // FIELD_TYPE value if the mechanism's class name had changed.
-      let foundMechanism: commonStorage.Mechanism | null = null;
-      const components: commonStorage.Component[] = []
+      let foundMechanism: storageModule.Mechanism | null = null;
+      const components: storageModuleContent.Component[] = []
       for (const mechanism of editor.getMechanisms()) {
         if (mechanism.className === this.getFieldValue(FIELD_TYPE)) {
           foundMechanism = mechanism;
@@ -186,7 +188,7 @@ const MECHANISM = {
         if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {
           this.setFieldValue(foundMechanism.className, FIELD_TYPE);
         }
-        const importModule = commonStorage.pascalCaseToSnakeCase(foundMechanism.className);
+        const importModule = storageNames.pascalCaseToSnakeCase(foundMechanism.className);
         if (this.mrcImportModule !== importModule) {
           this.mrcImportModule = importModule;
         }
@@ -245,8 +247,8 @@ export const pythonFromBlock = function (
 }
 
 export function createMechanismBlock(
-    mechanism: commonStorage.Mechanism, components: commonStorage.Component[]): toolboxItems.Block {
-  const snakeCaseName = commonStorage.pascalCaseToSnakeCase(mechanism.className);
+    mechanism: storageModule.Mechanism, components: storageModuleContent.Component[]): toolboxItems.Block {
+  const snakeCaseName = storageNames.pascalCaseToSnakeCase(mechanism.className);
   const mechanismName = 'my_' + snakeCaseName;
   const extraState: MechanismExtraState = {
     importModule: snakeCaseName,

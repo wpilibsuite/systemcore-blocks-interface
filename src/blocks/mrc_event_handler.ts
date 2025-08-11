@@ -29,7 +29,7 @@ import { createFieldFlydown } from '../fields/field_flydown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_EVENT_HANDLER } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModuleContent from '../storage/module_content';
 
 export const BLOCK_NAME = 'mrc_event_handler';
 
@@ -290,7 +290,7 @@ export function pythonFromBlock(
 // Functions used for creating blocks for the toolbox.
 
 export function addRobotEventHandlerBlocks(
-    events: commonStorage.Event[],
+    events: storageModuleContent.Event[],
     contents: toolboxItems.ContentsType[]) {
   events.forEach(event => {
     contents.push(createRobotEventHandlerBlock(event));
@@ -298,7 +298,7 @@ export function addRobotEventHandlerBlocks(
 }
 
 function createRobotEventHandlerBlock(
-    event: commonStorage.Event): toolboxItems.Block  {
+    event: storageModuleContent.Event): toolboxItems.Block  {
   const extraState: EventHandlerExtraState = {
     // TODO(lizlooney): ask Alan what pathOfSender is for.
     pathOfSender: '',

@@ -21,15 +21,16 @@
 import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
-import * as commonStorage from '../storage/common_storage';
+import * as storageNames from '../storage/names';
+import * as storageProject from '../storage/project';
 
 /** Props for the ProjectNameComponent. */
 interface ProjectNameComponentProps {
   newItemName: string;
   setNewItemName: (name: string) => void;
   onAddNewItem: () => void;
-  projects: commonStorage.Project[] | null;
-  setProjects: (projects: commonStorage.Project[]) => void;
+  projects: storageProject.Project[] | null;
+  setProjects: (projects: storageProject.Project[]) => void;
 }
 
 /** Full width style for input components. */
@@ -63,7 +64,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
       return;
     }
 
-    if (!commonStorage.isValidClassName(newProjectName)) {
+    if (!storageNames.isValidClassName(newProjectName)) {
       showError(newProjectName + INVALID_NAME_MESSAGE_SUFFIX);
       return;
     }

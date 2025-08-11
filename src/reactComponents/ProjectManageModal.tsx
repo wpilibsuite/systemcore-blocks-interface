@@ -22,6 +22,7 @@ import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
+import * as storageProject from '../storage/project';
 import {EditOutlined, DeleteOutlined, CopyOutlined, SelectOutlined} from '@ant-design/icons';
 import ProjectNameComponent from './ProjectNameComponent';
 
@@ -30,7 +31,7 @@ interface ProjectManageModalProps {
   isOpen: boolean;
   noProjects: boolean;
   onCancel: () => void;
-  setProject: (project: commonStorage.Project | null) => void;
+  setProject: (project: storageProject.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
 }
@@ -62,9 +63,9 @@ const CONTAINER_PADDING = '12px';
  */
 export default function ProjectManageModal(props: ProjectManageModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
-  const [allProjects, setAllProjects] = React.useState<commonStorage.Project[]>([]);
+  const [allProjects, setAllProjects] = React.useState<storageProject.Project[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
-  const [currentRecord, setCurrentRecord] = React.useState<commonStorage.Project | null>(null);
+  const [currentRecord, setCurrentRecord] = React.useState<storageProject.Project | null>(null);
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
@@ -84,13 +85,13 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   };
 
   /** Handles renaming a project. */
-  const handleRename = async (origProject: commonStorage.Project, newUserVisibleName: string): Promise<void> => {
+  const handleRename = async (origProject: storageProject.Project, newUserVisibleName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
     try {
-      await commonStorage.renameProject(
+      await storageProject.renameProject(
           props.storage,
           origProject,
           newUserVisibleName
@@ -105,13 +106,13 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   };
 
   /** Handles copying a project. */
-  const handleCopy = async (origProject: commonStorage.Project, newUserVisibleName: string): Promise<void> => {
+  const handleCopy = async (origProject: storageProject.Project, newUserVisibleName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
     try {
-      await commonStorage.copyProject(
+      await storageProject.copyProject(
           props.storage,
           origProject,
           newUserVisibleName
@@ -133,7 +134,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     }
 
     try {
-      await commonStorage.createProject(
+      await storageProject.createProject(
           props.storage,
           newUserVisibleName
       );
@@ -147,7 +148,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   };
 
   /** Handles project deletion with proper cleanup. */
-  const handleDeleteProject = async (record: commonStorage.Project): Promise<void> => {
+  const handleDeleteProject = async (record: storageProject.Project): Promise<void> => {
     if (!props.storage) {
       return;
     }
@@ -170,7 +171,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     }
 
     try {
-      await commonStorage.deleteProject(props.storage, record);
+      await storageProject.deleteProject(props.storage, record);
     } catch (e) {
       console.error('Failed to delete the project:', e);
       props.setAlertErrorMessage('Failed to delete the project.');
@@ -178,20 +179,20 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   };
 
   /** Handles project selection. */
-  const handleSelectProject = (record: commonStorage.Project): void => {
+  const handleSelectProject = (record: storageProject.Project): void => {
     props.setProject(record);
     props.onCancel();
   };
 
   /** Opens the rename modal for a specific project. */
-  const openRenameModal = (record: commonStorage.Project): void => {
+  const openRenameModal = (record: storageProject.Project): void => {
     setCurrentRecord(record);
     setName(record.projectName);
     setRenameModalOpen(true);
   };
 
   /** Opens the copy modal for a specific project. */
-  const openCopyModal = (record: commonStorage.Project): void => {
+  const openCopyModal = (record: storageProject.Project): void => {
     setCurrentRecord(record);
     setName(record.projectName + COPY_SUFFIX);
     setCopyModalOpen(true);
@@ -221,7 +222,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   });
 
   /** Table column configuration. */
-  const columns: Antd.TableProps<commonStorage.Project>['columns'] = [
+  const columns: Antd.TableProps<storageProject.Project>['columns'] = [
     {
       title: 'Name',
       dataIndex: 'projectName',
@@ -239,7 +240,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       title: 'Actions',
       key: 'actions',
       width: ACTIONS_COLUMN_WIDTH,
-      render: (_, record: commonStorage.Project) => (
+      render: (_, record: storageProject.Project) => (
         <Antd.Space size="small">
           <Antd.Tooltip title={t('Select')}>
             <Antd.Button
@@ -382,7 +383,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
           />
         </div>
         {!props.noProjects && (
-          <Antd.Table<commonStorage.Project>
+          <Antd.Table<storageProject.Project>
             columns={columns}
             dataSource={allProjects}
             rowKey="projectName"

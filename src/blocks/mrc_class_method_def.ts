@@ -25,7 +25,8 @@ import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
 import { createFieldFlydown } from '../fields/field_flydown';
 import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
+import * as storageModuleContent from '../storage/module_content';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
 import * as toolboxItems from '../toolbox/items';
 import { getClassData } from './utils/python';
@@ -266,8 +267,8 @@ const CLASS_METHOD_DEF = {
         }
         return legalName;
     },
-    getMethod: function (this: ClassMethodDefBlock): commonStorage.Method | null {
-        const method: commonStorage.Method = {
+    getMethod: function (this: ClassMethodDefBlock): storageModuleContent.Method | null {
+        const method: storageModuleContent.Method = {
             blockId: this.id,
             visibleName: this.getFieldValue(FIELD_METHOD_NAME),
             pythonName: this.mrcFuncName ? this.mrcFuncName : '',
@@ -288,13 +289,13 @@ const CLASS_METHOD_DEF = {
         });
         return method;
     },
-    getMethodForWithin: function (this: ClassMethodDefBlock): commonStorage.Method | null {
+    getMethodForWithin: function (this: ClassMethodDefBlock): storageModuleContent.Method | null {
         if (this.mrcCanBeCalledWithinClass) {
             return this.getMethod();
         }
         return null;
     },
-    getMethodForOutside: function (this: ClassMethodDefBlock): commonStorage.Method | null {
+    getMethodForOutside: function (this: ClassMethodDefBlock): storageModuleContent.Method | null {
         if (this.mrcCanBeCalledOutsideClass) {
             return this.getMethod();
         }
@@ -424,7 +425,7 @@ export const pythonFromBlock = function (
 
     let params = block.mrcParameters;
     let paramString = "self";
-    if (generator.getModuleType() == commonStorage.MODULE_TYPE_MECHANISM && block.mrcPythonMethodName == '__init__') {
+    if (generator.getModuleType() == storageModule.MODULE_TYPE_MECHANISM && block.mrcPythonMethodName == '__init__') {
         const ports: string[] = generator.getComponentPortParameters();
         if (ports.length) {
             paramString += ', ' + ports.join(', ');
@@ -452,7 +453,7 @@ export const pythonFromBlock = function (
     code = generator.scrub_(block, code);
     generator.addClassMethodDefinition(funcName, code);
 
-    // Save the name of the function we just generated so we can use it to create the commonStorage.Method.
+    // Save the name of the function we just generated so we can use it to create the storageModuleContent.Method.
     // in the getMethod function.
     block.mrcFuncName = funcName;
 
@@ -518,7 +519,7 @@ function createClassMethodDefBlock(
 
 export function getMethodsForWithin(
     workspace: Blockly.Workspace,
-    methods: commonStorage.Method[]): void {
+    methods: storageModuleContent.Method[]): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     const method = (block as ClassMethodDefBlock).getMethodForWithin();
     if (method) {
@@ -529,7 +530,7 @@ export function getMethodsForWithin(
 
 export function getMethodsForOutside(
     workspace: Blockly.Workspace,
-    methods: commonStorage.Method[]): void {
+    methods: storageModuleContent.Method[]): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     const method = (block as ClassMethodDefBlock).getMethodForOutside();
     if (method) {

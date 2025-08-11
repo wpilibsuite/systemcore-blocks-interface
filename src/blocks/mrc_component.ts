@@ -28,7 +28,9 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
+import * as storageModuleContent from '../storage/module_content';
+import * as storageNames from '../storage/names';
 import { createPortShadow } from './mrc_port';
 import { createNumberShadowValue } from './utils/value';
 import { ClassData, FunctionData } from './utils/python_json_types';
@@ -124,7 +126,7 @@ const COMPONENT = {
    */
   updateBlock_: function (this: ComponentBlock): void {
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-    if (editor && editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_ROBOT) {
+    if (editor && editor.getCurrentModuleType() === storageModule.MODULE_TYPE_ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)
@@ -148,7 +150,7 @@ const COMPONENT = {
     }
     return legalName;
   },
-  getComponent: function (this: ComponentBlock): commonStorage.Component | null {
+  getComponent: function (this: ComponentBlock): storageModuleContent.Component | null {
     const componentName = this.getFieldValue(FIELD_NAME);
     const componentType = this.getFieldValue(FIELD_TYPE);
     const ports: {[port: string]: string} = {};
@@ -193,7 +195,7 @@ export const pythonFromBlock = function (
     if (i != 0) {
       code += ', ';
     }
-    if (generator.getModuleType() === commonStorage.MODULE_TYPE_ROBOT) {
+    if (generator.getModuleType() === storageModule.MODULE_TYPE_ROBOT) {
       code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, 'ARG' + i, Order.NONE);
     } else {
       code += block.mrcArgs[i].name + ' = ' + block.getArgName(i);
@@ -216,7 +218,7 @@ export function getAllPossibleComponents(moduleType: string): toolboxItems.Conte
 
     const componentName = (
         'my_' +
-        commonStorage.pascalCaseToSnakeCase(
+        storageNames.pascalCaseToSnakeCase(
             componentType.substring(componentType.lastIndexOf('.') + 1)));
 
     classData.staticMethods.forEach(staticFunctionData => {
@@ -246,7 +248,7 @@ function createComponentBlock(
       'name': argData.name,
       'type': argData.type,
     });
-    if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+    if (moduleType == storageModule.MODULE_TYPE_ROBOT) {
       if (argData.type === 'int') {
         const portType = getPortTypeForArgument(argData.name);
         if (portType) {

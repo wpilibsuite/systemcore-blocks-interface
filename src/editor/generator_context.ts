@@ -19,7 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
 
 
@@ -28,9 +28,9 @@ export function createGeneratorContext(): GeneratorContext {
 }
 
 export class GeneratorContext {
-  private module: commonStorage.Module | null = null;
+  private module: storageModule.Module | null = null;
 
-  setModule(module: commonStorage.Module | null) {
+  setModule(module: storageModule.Module | null) {
     this.module = module;
   }
 
@@ -52,13 +52,13 @@ export class GeneratorContext {
     if (!this.module) {
       throw new Error('getParentClassName: this.module is null.');
     }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+    if (this.module.moduleType === storageModule.MODULE_TYPE_ROBOT) {
       return CLASS_NAME_ROBOT_BASE;
     }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
+    if (this.module.moduleType === storageModule.MODULE_TYPE_OPMODE) {
       return CLASS_NAME_OPMODE;
     }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+    if (this.module.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
       return CLASS_NAME_MECHANISM;
     }
     return '';

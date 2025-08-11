@@ -1,15 +1,15 @@
 import * as Blockly from 'blockly/core';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import * as common from './toolbox_common'
 import { getHardwareCategory } from './hardware_category';
 import { getCategory as eventCategory } from './event_category';
 
 export function getToolboxJSON(
     shownPythonToolboxCategories: Set<string> | null,
-    currentModule: commonStorage.Module): Blockly.utils.toolbox.ToolboxDefinition {
+    currentModule: storageModule.Module): Blockly.utils.toolbox.ToolboxDefinition {
     switch (currentModule.moduleType) {
-        case commonStorage.MODULE_TYPE_ROBOT:
-        case commonStorage.MODULE_TYPE_MECHANISM:
+        case storageModule.MODULE_TYPE_ROBOT:
+        case storageModule.MODULE_TYPE_MECHANISM:
             return {
                 kind: 'categoryToolbox',
                 contents: [
@@ -19,7 +19,7 @@ export function getToolboxJSON(
                     eventCategory(),
                 ]
             };
-        case commonStorage.MODULE_TYPE_OPMODE:
+        case storageModule.MODULE_TYPE_OPMODE:
             return {
                 kind: 'categoryToolbox',
                 contents: [

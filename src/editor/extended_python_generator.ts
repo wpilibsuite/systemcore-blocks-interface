@@ -29,7 +29,7 @@ import {
     CLASS_NAME_OPMODE,
     getClassData,
 } from '../blocks/utils/python';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 
 export class OpModeDetails {
   constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
@@ -112,7 +112,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   generateInitStatements() : string {
     let initStatements = '';
 
-    if (this.getModuleType() === commonStorage.MODULE_TYPE_MECHANISM && this.hasAnyComponents) {
+    if (this.getModuleType() === storageModule.MODULE_TYPE_MECHANISM && this.hasAnyComponents) {
       initStatements += this.INDENT + 'self.define_hardware(' +
           this.getComponentPortParameters().join(', ') + ')\n';
     }
@@ -135,7 +135,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     this.hasAnyComponents = false;
     this.componentPorts = Object.create(null);
-    if (this.getModuleType() ===  commonStorage.MODULE_TYPE_MECHANISM) {
+    if (this.getModuleType() ===  storageModule.MODULE_TYPE_MECHANISM) {
       this.hasAnyComponents = mechanismContainerHolder.hasAnyComponents(this.workspace);
       mechanismContainerHolder.getComponentPorts(this.workspace, this.componentPorts);
     }
