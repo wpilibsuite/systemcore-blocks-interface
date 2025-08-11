@@ -167,9 +167,9 @@ async function renameOrCopyProject(
     const className = storageNames.getClassName(modulePath);
     const newModulePath = storageNames.makeModulePath(newProjectName, className);
     const moduleContentText = pathToModuleContent[modulePath].getModuleContentText();
-    storage.saveModule(newModulePath, moduleContentText);
+    await storage.saveModule(newModulePath, moduleContentText);
     if (rename) {
-      storage.deleteModule(modulePath);
+      await storage.deleteModule(modulePath);
     }
   }
 }
@@ -244,67 +244,80 @@ export async function removeModuleFromProject(
  * @param project The project containing the module to rename.
  * @param newClassName The new name for the module. For example, GamePieceShooter.
  * @param oldModulePath The current path of the module.
- * @returns A promise that resolves when the module has been renamed.
+ * @returns The new path of the module, as a promise that resolves when the module has been copied.
  */
 export async function renameModuleInProject(
-  storage: commonStorage.Storage, project: Project, newClassName: string, oldModulePath: string): Promise<string> {
+    storage: commonStorage.Storage, project: Project, newClassName: string, oldModulePath: string): Promise<string> {
   const module = findModuleByModulePath(project, oldModulePath);
-  if (module) {
-    if (module.moduleType == storageModule.MODULE_TYPE_ROBOT) {
-      throw new Error('Renaming the robot module is not allowed.');
-    }
-    const newModulePath = storageNames.makeModulePath(project.projectName, newClassName);
-    await storage.renameModule(module.moduleType, project.projectName, module.className, newClassName);
-    module.modulePath = newModulePath;
-    module.className = newClassName;
-    module.className = newClassName;
-
-    if (module.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
-      const mechanism = project.mechanisms.find(m => m.modulePath === module.modulePath);
-      if (mechanism) {
-        mechanism.modulePath = newModulePath;
-        mechanism.className = newClassName;
-        mechanism.className = newClassName;
-      }
-      return newModulePath;
-    } else if (module.moduleType === storageModule.MODULE_TYPE_OPMODE) {
-      const opMode = project.opModes.find(o => o.modulePath === module.modulePath);
-      if (opMode) {
-        opMode.modulePath = newModulePath;
-        opMode.className = newClassName;
-        opMode.className = newClassName;
-      }
-      return newModulePath
-    }
+  if (!module) {
+    throw new Error('Failed to find module with path ' + oldModulePath);
   }
-  return '';
+  if (module.moduleType == storageModule.MODULE_TYPE_ROBOT) {
+    throw new Error('Renaming the robot module is not allowed.');
+  }
+  return await renameOrCopyModule(storage, project, newClassName, module, true);
 }
+
 /**
  * Copies a module in the project.
  * @param storage The storage interface to use for copying the module.
  * @param project The project containing the module to copy.
  * @param newClassName The new name for the module. For example, GamePieceShooter.
  * @param oldModulePath The current path of the module.
- * @returns A promise that resolves when the module has been copied.
+ * @returns The new path of the module, as a promise that resolves when the module has been copied.
  */
 export async function copyModuleInProject(
-  storage: commonStorage.Storage, project: Project, newClassName: string, oldModulePath: string): Promise<string> {
+    storage: commonStorage.Storage, project: Project, newClassName: string, oldModulePath: string): Promise<string> {
   const module = findModuleByModulePath(project, oldModulePath);
-  if (module) {
-    if (module.moduleType == storageModule.MODULE_TYPE_ROBOT) {
-      throw new Error('Copying the robot module is not allowed.');
-    }
-    const newModulePath = storageNames.makeModulePath(project.projectName, newClassName);
-    await storage.copyModule(module.moduleType, project.projectName, module.className, newClassName);
+  if (!module) {
+    throw new Error('Failed to find module with path ' + oldModulePath);
+  }
+  if (module.moduleType == storageModule.MODULE_TYPE_ROBOT) {
+    throw new Error('Copying the robot module is not allowed.');
+  }
+  return await renameOrCopyModule(storage, project, newClassName, module, false);
+}
 
-    if (module.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
+async function renameOrCopyModule(
+    storage: commonStorage.Storage, project: Project, newClassName: string,
+    oldModule: storageModule.Module, rename: boolean): Promise<string> {
+  const pathToModuleContent = await storage.listModules(
+      (modulePath: string) => modulePath === oldModule.modulePath);
+  if (! (oldModule.modulePath in pathToModuleContent)) {
+    throw new Error('Failed to find module with path ' + oldModule.modulePath);
+  }
+
+  const newModulePath = storageNames.makeModulePath(project.projectName, newClassName);
+  const moduleContentText = pathToModuleContent[oldModule.modulePath].getModuleContentText();
+  await storage.saveModule(newModulePath, moduleContentText);
+  if (rename) {
+    // For rename, delete the old module.
+    await storage.deleteModule(oldModule.modulePath);
+
+    // Update the project's mechanisms or opModes.
+    if (oldModule.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
+      const mechanism = project.mechanisms.find(m => m.modulePath === oldModule.modulePath);
+      if (mechanism) {
+        mechanism.modulePath = newModulePath;
+        mechanism.className = newClassName;
+      }
+    } else if (oldModule.moduleType === storageModule.MODULE_TYPE_OPMODE) {
+      const opMode = project.opModes.find(o => o.modulePath === oldModule.modulePath);
+      if (opMode) {
+        opMode.modulePath = newModulePath;
+        opMode.className = newClassName;
+      }
+    }
+  } else {
+    // Update the project's mechanisms or opModes.
+    if (oldModule.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
       project.mechanisms.push({
         modulePath: newModulePath,
         moduleType: storageModule.MODULE_TYPE_MECHANISM,
         projectName: project.projectName,
         className: newClassName
       } as storageModule.Mechanism);
-    } else if (module.moduleType === storageModule.MODULE_TYPE_OPMODE) {
+    } else if (oldModule.moduleType === storageModule.MODULE_TYPE_OPMODE) {
       project.opModes.push({
         modulePath: newModulePath,
         moduleType: storageModule.MODULE_TYPE_OPMODE,
@@ -312,9 +325,9 @@ export async function copyModuleInProject(
         className: newClassName
       } as storageModule.OpMode);
     }
-    return newModulePath;
   }
-  return '';
+
+  return newModulePath;
 }
 
 /**

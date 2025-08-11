@@ -30,8 +30,6 @@ export interface Storage {
   fetchModuleDateModifiedMillis(modulePath: string): Promise<number>;
   fetchModuleContentText(modulePath: string): Promise<string>;
   saveModule(modulePath: string, moduleContentText: string): Promise<void>;
-  renameModule(moduleType: string, projectName: string, oldClassName: string, newClassName: string): Promise<void>;
-  copyModule(moduleType: string, projectName: string, oldClassName: string, newClassName: string): Promise<void>;
   deleteProject(projectName: string): Promise<void>;
   deleteModule(modulePath: string): Promise<void>;
   downloadProject(projectName: string): Promise<string>;
