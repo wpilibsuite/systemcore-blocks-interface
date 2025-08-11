@@ -140,8 +140,8 @@ export async function createProject(
  * @returns A promise that resolves when the project has been renamed.
  */
 export async function renameProject(
-  storage: commonStorage.Storage, project: Project, newProjectName: string): Promise<void> {
-  await storage.renameProject(project.projectName, newProjectName);
+    storage: commonStorage.Storage, project: Project, newProjectName: string): Promise<void> {
+  await renameOrCopyProject(storage, project, newProjectName, true);
 }
 
 /**
@@ -152,8 +152,26 @@ export async function renameProject(
  * @returns A promise that resolves when the project has been copied.
  */
 export async function copyProject(
-  storage: commonStorage.Storage, project: Project, newProjectName: string): Promise<void> {
-  await storage.copyProject(project.projectName, newProjectName);
+    storage: commonStorage.Storage, project: Project, newProjectName: string): Promise<void> {
+  await renameOrCopyProject(storage, project, newProjectName, false);
+}
+
+async function renameOrCopyProject(
+    storage: commonStorage.Storage, project: Project, newProjectName: string,
+    rename: boolean): Promise<void> {
+  const modulePathPrefix = storageNames.makeModulePathPrefix(project.projectName);
+  const pathToModuleContent = await storage.listModules(
+      (modulePath: string) => modulePath.startsWith(modulePathPrefix));
+
+  for (const modulePath in pathToModuleContent) {
+    const className = storageNames.getClassName(modulePath);
+    const newModulePath = storageNames.makeModulePath(newProjectName, className);
+    const moduleContentText = pathToModuleContent[modulePath].getModuleContentText();
+    storage.saveModule(newModulePath, moduleContentText);
+    if (rename) {
+      storage.deleteModule(modulePath);
+    }
+  }
 }
 
 /**
@@ -211,7 +229,7 @@ export async function removeModuleFromProject(
     if (module.moduleType == storageModule.MODULE_TYPE_ROBOT) {
       throw new Error('Removing the robot module from the project is not allowed.');
     }
-    await storage.deleteModule(module.moduleType, modulePath);
+    await storage.deleteModule(modulePath);
     if (module.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
       project.mechanisms = project.mechanisms.filter(m => m.modulePath !== modulePath);
     } else if (module.moduleType === storageModule.MODULE_TYPE_OPMODE) {

@@ -21,19 +21,19 @@
 
 import * as storageModuleContent from './module_content';
 
+export type ModulePathFilter = (modulePath: string) => boolean;
+
 export interface Storage {
   saveEntry(entryKey: string, entryValue: string): Promise<void>;
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
-  listModules(): Promise<{[path: string]: storageModuleContent.ModuleContent}>;
+  listModules(opt_modulePathFilter?: ModulePathFilter): Promise<{[path: string]: storageModuleContent.ModuleContent}>;
   fetchModuleDateModifiedMillis(modulePath: string): Promise<number>;
   fetchModuleContentText(modulePath: string): Promise<string>;
   saveModule(modulePath: string, moduleContentText: string): Promise<void>;
-  renameProject(oldProjectName: string, newProjectName: string): Promise<void>;
-  copyProject(oldProjectName: string, newProjectName: string): Promise<void>;
   renameModule(moduleType: string, projectName: string, oldClassName: string, newClassName: string): Promise<void>;
   copyModule(moduleType: string, projectName: string, oldClassName: string, newClassName: string): Promise<void>;
   deleteProject(projectName: string): Promise<void>;
-  deleteModule(moduleType: string, modulePath: string): Promise<void>;
+  deleteModule(modulePath: string): Promise<void>;
   downloadProject(projectName: string): Promise<string>;
   uploadProject(projectName: string, blobUrl: string): Promise<void>;
 }
