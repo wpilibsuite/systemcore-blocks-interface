@@ -260,37 +260,6 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async downloadProject(projectName: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      // Collect all the modules in the project.
-      const classNameToModuleContentText: {[className: string]: string} = {}; // key is class name, value is module content
-      const openCursorRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
-          .objectStore(MODULES_STORE_NAME)
-          .openCursor();
-      openCursorRequest.onerror = () => {
-        console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
-        console.log(openCursorRequest.error);
-        reject(new Error('IndexedDB openCursor request failed.'));
-      };
-      openCursorRequest.onsuccess = async () => {
-        const cursor = openCursorRequest.result;
-        if (cursor) {
-          const value = cursor.value;
-          if (storageNames.getProjectName(value.path) === projectName) {
-            const className = storageNames.getClassName(value.path);
-            classNameToModuleContentText[className] = value.content;
-          }
-          cursor.continue();
-        } else {
-          // The cursor is done. We have finished collecting all the modules in the project.
-          // Now create the blob for download.
-          const blobUrl = await storageProject.produceDownloadProjectBlob(classNameToModuleContentText);
-          resolve(blobUrl);
-        }
-      };
-    });
-  }
-
   async uploadProject(projectName: string, blobUrl: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       // Process the uploaded blob to get the module types and contents.

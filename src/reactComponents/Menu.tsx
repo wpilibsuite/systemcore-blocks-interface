@@ -336,7 +336,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
 
     try {
-      const blobUrl = await props.storage.downloadProject(props.project.projectName);
+      const blobUrl = await storageProject.downloadProject(props.storage, props.project.projectName);
       const filename = props.project.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
 
       // Create a temporary link to download the file

@@ -402,8 +402,19 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
 /**
  * Produce the blob for downloading a project.
  */
-export async function produceDownloadProjectBlob(
-    classNameToModuleContentText: { [key: string]: string }): Promise<string> {
+export async function downloadProject(
+    storage: commonStorage.Storage, projectName: string): Promise<string> {
+  const modulePathPrefix = storageNames.makeModulePathPrefix(projectName);
+  const pathToModuleContent = await storage.listModules(
+      (modulePath: string) => modulePath.startsWith(modulePathPrefix));
+
+  const classNameToModuleContentText: {[className: string]: string} = {}; // value is module content text
+  for (const modulePath in pathToModuleContent) {
+    const className = storageNames.getClassName(modulePath);
+    const moduleContentText = pathToModuleContent[modulePath].getModuleContentText();
+    classNameToModuleContentText[className] = moduleContentText;
+  }
+
   const zip = new JSZip();
   for (const className in classNameToModuleContentText) {
     const moduleContentText = classNameToModuleContentText[className];
@@ -411,8 +422,7 @@ export async function produceDownloadProjectBlob(
     zip.file(filename, moduleContentText);
   }
   const content = await zip.generateAsync({ type: "blob" });
-  const blobUrl = URL.createObjectURL(content);
-  return blobUrl;
+  return URL.createObjectURL(content);
 }
 
 /**
