@@ -76,10 +76,17 @@ export function snakeCaseToPascalCase(snakeCaseName: string): string {
 }
 
 /**
+ * Returns the module path prefix for the given project name.
+ */
+export function makeModulePathPrefix(projectName: string): string {
+  return projectName + '/';
+}
+
+/**
  * Returns the module path for the given project name and class name.
  */
 export function makeModulePath(projectName: string, className: string): string {
-  return projectName + '/' + className + JSON_FILE_EXTENSION;;
+  return projectName + '/' + className + JSON_FILE_EXTENSION;
 }
 
 /**

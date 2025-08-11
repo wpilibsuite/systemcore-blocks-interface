@@ -72,7 +72,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
 
   /** Loads projects from storage and sorts them alphabetically. */
   const loadProjects = async (storage: commonStorage.Storage): Promise<void> => {
-    const projects = await storage.listProjects();
+    const projects = await storageProject.listProjects(storage);
 
     // Sort projects alphabetically by name
     projects.sort((a, b) => a.projectName.localeCompare(b.projectName));

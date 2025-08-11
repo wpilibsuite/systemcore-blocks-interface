@@ -199,7 +199,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         return;
       }
       try {
-        const array = await props.storage.listProjects();
+        const array = await storageProject.listProjects(props.storage);
         setProjects(array);
         resolve(array);
       } catch (e) {
@@ -336,7 +336,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
 
     try {
-      const blobUrl = await props.storage.downloadProject(props.project.projectName);
+      const blobUrl = await storageProject.downloadProject(props.storage, props.project.projectName);
       const filename = props.project.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
 
       // Create a temporary link to download the file
@@ -389,7 +389,7 @@ export function Component(props: MenuProps): React.JSX.Element {
           const file = options.file as RcFile;
           const uploadProjectName = storageProject.makeUploadProjectName(file.name, existingProjectNames);
           if (props.storage) {
-            props.storage.uploadProject(uploadProjectName, dataUrl);
+            storageProject.uploadProject(props.storage, uploadProjectName, dataUrl);
           }
         };
         reader.onerror = (_error) => {
