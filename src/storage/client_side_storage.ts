@@ -238,51 +238,6 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async deleteProject(projectName: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
-      transaction.oncomplete = () => {
-        resolve();
-      };
-      transaction.onabort = () => {
-        console.log('IndexedDB transaction aborted.');
-        reject(new Error('IndexedDB transaction aborted.'));
-      };
-      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
-      // First get the list of modulePaths in the project.
-      const modulePaths: string[] = [];
-      const openCursorRequest = modulesObjectStore.openCursor();
-      openCursorRequest.onerror = () => {
-        console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
-        console.log(openCursorRequest.error);
-        throw new Error('IndexedDB openCursor request failed.');
-      };
-      openCursorRequest.onsuccess = () => {
-        const cursor = openCursorRequest.result;
-        if (cursor) {
-          const value = cursor.value;
-          const path = value.path;
-          if (storageNames.getProjectName(path) === projectName) {
-            modulePaths.push(path);
-          }
-          cursor.continue();
-        } else {
-          // Now delete each of the modules.
-          modulePaths.forEach((modulePath) => {
-            const deleteRequest = modulesObjectStore.delete(modulePath);
-            deleteRequest.onerror = () => {
-              console.log('IndexedDB delete request failed. deleteRequest.error is...');
-              console.log(deleteRequest.error);
-              throw new Error('IndexedDB delete request failed.');
-            };
-            deleteRequest.onsuccess = () => {
-            };
-          });
-        }
-      };
-    });
-  }
-
   async deleteModule(modulePath: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');

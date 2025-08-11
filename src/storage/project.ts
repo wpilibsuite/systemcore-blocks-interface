@@ -181,8 +181,13 @@ async function renameOrCopyProject(
  * @returns A promise that resolves when the project has been deleted.
  */
 export async function deleteProject(
-  storage: commonStorage.Storage, project: Project): Promise<void> {
-  await storage.deleteProject(project.projectName);
+    storage: commonStorage.Storage, project: Project): Promise<void> {
+  const modulePathPrefix = storageNames.makeModulePathPrefix(project.projectName);
+  const pathToModuleContent = await storage.listModules(
+      (modulePath: string) => modulePath.startsWith(modulePathPrefix));
+  for (const modulePath in pathToModuleContent) {
+    await storage.deleteModule(modulePath);
+  }
 }
 
 /**
