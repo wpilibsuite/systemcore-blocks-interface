@@ -144,6 +144,7 @@ class ClientSideStorage implements commonStorage.Storage {
         if (cursor) {
           const value = cursor.value;
           const moduleContent = storageModuleContent.parseModuleContentText(value.content);
+          // TODO(lizlooney): do we need value.path? Is there another way to get the path?
           pathToModuleContent[value.path] = moduleContent;
           cursor.continue();
         } else {
@@ -194,26 +195,7 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async createProject(projectName: string, robotContent: string, opmodeContent : string): Promise<void> {
-    const modulePath = storageNames.makeRobotPath(projectName);
-    const opmodePath = storageNames.makeModulePath(projectName, storageNames.CLASS_NAME_TELEOP);
-
-    await this._saveModule(storageModule.MODULE_TYPE_ROBOT, modulePath, robotContent);
-    await this._saveModule(storageModule.MODULE_TYPE_OPMODE, opmodePath, opmodeContent);
-  }
-
-  async createModule(moduleType: string, modulePath: string, moduleContentText: string): Promise<void> {
-    return this._saveModule(moduleType, modulePath, moduleContentText);
-  }
-
   async saveModule(modulePath: string, moduleContentText: string): Promise<void> {
-    return this._saveModule('', modulePath, moduleContentText);
-  }
-
-  private async _saveModule(moduleType: string, modulePath: string, moduleContentText: string)
-      : Promise<void> {
-    // When creating a new module, moduleType must be truthy.
-    // When saving an existing module, the moduleType must be falsy.
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
@@ -233,26 +215,11 @@ class ClientSideStorage implements commonStorage.Storage {
       getRequest.onsuccess = () => {
         let value;
         if (getRequest.result === undefined) {
-          // The module does not exist.
-          // Let's make sure that's what we expected.
-          if (!moduleType) {
-            // If moduleType is not truthy, we are trying to save an existing module.
-            // It is unexpected that the module does not exist.
-            console.log('IndexedDB get request succeeded, but the module does not exist.');
-            throw new Error('IndexedDB get request succeeded, but the module does not exist.');
-          }
+          // The module does not exist. Create it now.
           value = Object.create(null);
           value.path = modulePath;
-          value.type = moduleType;
         } else {
           // The module already exists.
-          // Let's make sure if that's what we expected.
-          if (moduleType) {
-            // Since moduleType is truthy, we are trying to create a new module.
-            // It is unexpected that the module already exists.
-            console.log('IndexedDB get request succeeded, but the module already exist.');
-            throw new Error('IndexedDB get request succeeded, but the module already exists.');
-          }
           value = getRequest.result;
         }
         value.content = moduleContentText;

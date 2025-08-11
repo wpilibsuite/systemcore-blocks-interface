@@ -27,8 +27,6 @@ export interface Storage {
   listModules(): Promise<{[path: string]: storageModuleContent.ModuleContent}>;
   fetchModuleDateModifiedMillis(modulePath: string): Promise<number>;
   fetchModuleContentText(modulePath: string): Promise<string>;
-  createProject(projectName: string, robotContent: string, opmodeContent: string): Promise<void>;
-  createModule(moduleType: string, modulePath: string, moduleContentText: string): Promise<void>;
   saveModule(modulePath: string, moduleContentText: string): Promise<void>;
   renameProject(oldProjectName: string, newProjectName: string): Promise<void>;
   copyProject(oldProjectName: string, newProjectName: string): Promise<void>;

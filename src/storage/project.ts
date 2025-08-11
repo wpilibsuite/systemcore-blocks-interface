@@ -122,10 +122,14 @@ export async function listProjects(storage: commonStorage.Storage): Promise<Proj
  * @returns A promise that resolves when the project has been created.
  */
 export async function createProject(
-  storage: commonStorage.Storage, newProjectName: string): Promise<void> {
+    storage: commonStorage.Storage, newProjectName: string): Promise<void> {
+  const modulePath = storageNames.makeRobotPath(newProjectName);
   const robotContent = storageModuleContent.newRobotContent(newProjectName);
+  await storage.saveModule(modulePath, robotContent);
+
+  const opmodePath = storageNames.makeModulePath(newProjectName, storageNames.CLASS_NAME_TELEOP);
   const opmodeContent = storageModuleContent.newOpModeContent(newProjectName, storageNames.CLASS_NAME_TELEOP);
-  await storage.createProject(newProjectName, robotContent, opmodeContent);
+  await storage.saveModule(opmodePath, opmodeContent);
 }
 
 /**
@@ -176,7 +180,7 @@ export async function addModuleToProject(
 
   if (moduleType === storageModule.MODULE_TYPE_MECHANISM) {
     const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
-    await storage.createModule(storageModule.MODULE_TYPE_MECHANISM, newModulePath, mechanismContent);
+    await storage.saveModule(newModulePath, mechanismContent);
     project.mechanisms.push({
       modulePath: newModulePath,
       moduleType: storageModule.MODULE_TYPE_MECHANISM,
@@ -185,7 +189,7 @@ export async function addModuleToProject(
     } as storageModule.Mechanism);
   } else if (moduleType === storageModule.MODULE_TYPE_OPMODE) {
     const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);
-    await storage.createModule(storageModule.MODULE_TYPE_OPMODE, newModulePath, opModeContent);
+    await storage.saveModule(newModulePath, opModeContent);
     project.opModes.push({
       modulePath: newModulePath,
       moduleType: storageModule.MODULE_TYPE_OPMODE,
