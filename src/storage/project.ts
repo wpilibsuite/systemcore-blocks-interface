@@ -435,13 +435,23 @@ export function makeUploadProjectName(
   return storageNames.makeUniqueName(preferredName, existingProjectNames);
 }
 
+export async function uploadProject(
+    storage: commonStorage.Storage, projectName: string, blobUrl: string): Promise<void> {
+  // Process the uploaded blob to get the module types and contents.
+  const classNameToModuleContentText = await processUploadedBlob(blobUrl);
+
+  // Save each module.
+  for (const className in classNameToModuleContentText) {
+    const moduleContentText = classNameToModuleContentText[className];
+    const modulePath = storageNames.makeModulePath(projectName, className);
+    await storage.saveModule(modulePath, moduleContentText);
+  }
+}
+
 /**
- * Process the uploaded blob to get the module types and contents.
- * Returns a promise of classNameToModuleType and classNameToModuleContentText.
+ * Process the uploaded blob to get the module class names and contents.
  */
-export async function processUploadedBlob(
-    blobUrl: string)
-    : Promise<[{ [className: string]: string }, { [className: string]: string }]> {
+async function processUploadedBlob(blobUrl: string): Promise<{ [className: string]: string }> {
 
   const prefix = 'data:application/octet-stream;base64,';
   if (!blobUrl.startsWith(prefix)) {
@@ -467,28 +477,21 @@ export async function processUploadedBlob(
   );
 
   // Process each module's content.
-  const classNameToModuleType: { [className: string]: string } = {}; // key is class name, value is module type
-  const classNameToModuleContentText: { [className: string]: string } = {}; // key is class name, value is module content text
+  let foundRobot = false;
+  const classNameToModuleContentText: { [className: string]: string } = {}; // value is module content text
   for (const filename in files) {
-    const uploadedContent = files[filename];
-    const [className, moduleType, moduleContent] = processUploadedModule(
-        filename, uploadedContent);
-    classNameToModuleType[className] = moduleType;
-    classNameToModuleContentText[className] = moduleContent;
+    const className = filename;
+    if (className === storageNames.CLASS_NAME_ROBOT) {
+      foundRobot = true;
+    }
+    // Make sure we can parse the content.
+    const moduleContent = storageModuleContent.parseModuleContentText(files[filename]);
+    classNameToModuleContentText[className] = moduleContent.getModuleContentText();
   }
 
-  return [classNameToModuleType, classNameToModuleContentText];
-}
+  if (!foundRobot) {
+    throw new Error('Uploaded file did not contain a Robot.');
+  }
 
-/**
- * Processes an uploaded module to get the class name, type, and content text.
- */
-function processUploadedModule(
-    filename: string, uploadedContent: string): [string, string, string] {
-
-  const moduleContent = storageModuleContent.parseModuleContentText(uploadedContent);
-  const moduleType = moduleContent.getModuleType();
-  const className = filename;
-  const moduleContentText = moduleContent.getModuleContentText();
-  return [className, moduleType, moduleContentText];
+  return classNameToModuleContentText;
 }

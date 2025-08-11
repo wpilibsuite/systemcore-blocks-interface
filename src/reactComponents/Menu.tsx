@@ -389,7 +389,7 @@ export function Component(props: MenuProps): React.JSX.Element {
           const file = options.file as RcFile;
           const uploadProjectName = storageProject.makeUploadProjectName(file.name, existingProjectNames);
           if (props.storage) {
-            props.storage.uploadProject(uploadProjectName, dataUrl);
+            storageProject.uploadProject(props.storage, uploadProjectName, dataUrl);
           }
         };
         reader.onerror = (_error) => {

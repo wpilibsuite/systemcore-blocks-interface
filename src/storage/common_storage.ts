@@ -31,5 +31,4 @@ export interface Storage {
   fetchModuleContentText(modulePath: string): Promise<string>;
   saveModule(modulePath: string, moduleContentText: string): Promise<void>;
   deleteModule(modulePath: string): Promise<void>;
-  uploadProject(projectName: string, blobUrl: string): Promise<void>;
 }

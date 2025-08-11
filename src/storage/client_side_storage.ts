@@ -21,8 +21,6 @@
 
 import * as commonStorage from './common_storage';
 import * as storageModuleContent from './module_content';
-import * as storageNames from './names';
-import * as storageProject from './project';
 
 // Functions for saving blocks modules to client side storage.
 
@@ -257,63 +255,6 @@ class ClientSideStorage implements commonStorage.Storage {
       };
       deleteRequest.onsuccess = () => {
       };
-    });
-  }
-
-  async uploadProject(projectName: string, blobUrl: string): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      // Process the uploaded blob to get the module types and contents.
-      let classNameToModuleType: {[className: string]: string}; // key is class name, value is module type
-      let classNameToModuleContentText: {[className: string]: string}; // key is class name, value is module content
-      try {
-        [classNameToModuleType, classNameToModuleContentText] = await storageProject.processUploadedBlob(
-            blobUrl);
-      } catch (e) {
-        console.log('storageProject.processUploadedBlob failed.');
-        reject(new Error('storageProject.processUploadedBlob failed.'));
-        return;
-      }
-
-      // Save each module.
-      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
-      transaction.oncomplete = () => {
-        resolve();
-      };
-      transaction.onabort = () => {
-        console.log('IndexedDB transaction aborted.');
-        reject(new Error('IndexedDB transaction aborted.'));
-      };
-      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
-
-      for (const className in classNameToModuleType) {
-        const moduleType = classNameToModuleType[className];
-        const moduleContentText = classNameToModuleContentText[className];
-        const modulePath = storageNames.makeModulePath(projectName, className);
-        const getRequest = modulesObjectStore.get(modulePath);
-        getRequest.onerror = () => {
-          console.log('IndexedDB get request failed. getRequest.error is...');
-          console.log(getRequest.error);
-          throw new Error('IndexedDB get request failed.');
-        };
-        getRequest.onsuccess = () => {
-          if (getRequest.result !== undefined) {
-            // The module already exists. That is not expected!
-            console.log('IndexedDB get request succeeded, but the module already exists.');
-            throw new Error('IndexedDB get request succeeded, but the module already exists.');
-          }
-          const value = Object.create(null);
-          value.path = modulePath;
-          value.type = moduleType;
-          value.content = moduleContentText;
-          value.dateModifiedMillis = Date.now();
-          const putRequest = modulesObjectStore.put(value);
-          putRequest.onerror = () => {
-            console.log('IndexedDB put request failed. putRequest.error is...');
-            console.log(putRequest.error);
-            throw new Error('IndexedDB put request failed.');
-          };
-        };
-      }
     });
   }
 }
