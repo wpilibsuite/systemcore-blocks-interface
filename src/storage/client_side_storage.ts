@@ -21,6 +21,7 @@
 
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
+import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
 
@@ -127,13 +128,9 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async listProjects(): Promise<storageProject.Project[]> {
+  async listModules(): Promise<{[path: string]: storageModuleContent.ModuleContent}> {
     return new Promise((resolve, reject) => {
-      const projects: {[key: string]: storageProject.Project} = {}; // key is project name, value is Project
-      // The mechanisms and opModes variables hold any Mechanisms and OpModes that
-      // are read before the Project to which they belong is read.
-      const mechanisms: {[key: string]: storageModule.Mechanism[]} = {}; // key is project name, value is list of Mechanisms
-      const opModes: {[key: string]: storageModule.OpMode[]} = {}; // key is project name, value is list of OpModes
+      const pathToModuleContent: {[path: string]: storageModuleContent.ModuleContent} = {};
       const openCursorRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
           .objectStore(MODULES_STORE_NAME)
           .openCursor();
@@ -146,81 +143,33 @@ class ClientSideStorage implements commonStorage.Storage {
         const cursor = openCursorRequest.result;
         if (cursor) {
           const value = cursor.value;
-          const path = value.path;
-          const moduleType = value.type;
-          const module: storageModule.Module = {
-            modulePath: path,
-            moduleType: moduleType,
-            projectName: storageNames.getProjectName(path),
-            className: storageNames.getClassName(path),
-            dateModifiedMillis: value.dateModifiedMillis,
-          }
-          if (moduleType === storageModule.MODULE_TYPE_ROBOT) {
-            const robot: storageModule.Robot = {
-              ...module,
-            };
-            const project: storageProject.Project = {
-              projectName: module.projectName,
-              robot: robot,
-              mechanisms: [],
-              opModes: [],
-            };
-            projects[project.projectName] = project;
-            // Add any Mechanisms that belong to this project that have already
-            // been read.
-            if (project.projectName in mechanisms) {
-              project.mechanisms = mechanisms[project.projectName];
-              delete mechanisms[project.projectName];
-            }
-            // Add any OpModes that belong to this project that have already been
-            // read.
-            if (project.projectName in opModes) {
-              project.opModes = opModes[project.projectName];
-              delete opModes[project.projectName];
-            }
-          } else if (moduleType === storageModule.MODULE_TYPE_MECHANISM) {
-            const mechanism: storageModule.Mechanism = {
-              ...module,
-            };
-            if (mechanism.projectName in projects) {
-              // If the Project to which this Mechanism belongs has already been read,
-              // add this Mechanism to it.
-              projects[mechanism.projectName].mechanisms.push(mechanism);
-            } else {
-              // Otherwise, add this Mechanism to the mechanisms local variable.
-              if (mechanism.projectName in mechanisms) {
-                mechanisms[mechanism.projectName].push(mechanism);
-              } else {
-                mechanisms[mechanism.projectName] = [mechanism];
-              }
-            }
-          } else if (moduleType === storageModule.MODULE_TYPE_OPMODE) {
-            const opMode: storageModule.OpMode = {
-              ...module,
-            };
-            if (opMode.projectName in projects) {
-              // If the Project to which this OpMode belongs has already been read,
-              // add this OpMode to it.
-              projects[opMode.projectName].opModes.push(opMode);
-            } else {
-              // Otherwise, add this OpMode to the opModes local variable.
-              if (opMode.projectName in opModes) {
-                opModes[opMode.projectName].push(opMode);
-              } else {
-                opModes[opMode.projectName] = [opMode];
-              }
-            }
-          }
+          const moduleContent = storageModuleContent.parseModuleContentText(value.content);
+          pathToModuleContent[value.path] = moduleContent;
           cursor.continue();
         } else {
           // The cursor is done. We have finished reading all the modules.
-          const projectsToReturn: storageProject.Project[] = [];
-          const sortedProjectNames = Object.keys(projects).sort();
-          sortedProjectNames.forEach((projectName) => {
-            projectsToReturn.push(projects[projectName]);
-          });
-          resolve(projectsToReturn);
+          resolve(pathToModuleContent);
         }
+      };
+    });
+  }
+
+  async fetchModuleDateModifiedMillis(modulePath: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const getRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
+          .objectStore(MODULES_STORE_NAME).get(modulePath);
+      getRequest.onerror = () => {
+        console.log('IndexedDB get request failed. getRequest.error is...');
+        console.log(getRequest.error);
+        reject(new Error('IndexedDB get request failed.'));
+      };
+      getRequest.onsuccess = () => {
+        if (getRequest.result === undefined) {
+          // Module does not exist.
+          reject(new Error('IndexedDB get request succeeded, but the module does not exist.'));
+          return;
+        }
+        resolve(getRequest.result.dateModifiedMillis);
       };
     });
   }

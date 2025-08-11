@@ -19,12 +19,13 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import * as storageProject from './project';
+import * as storageModuleContent from './module_content';
 
 export interface Storage {
   saveEntry(entryKey: string, entryValue: string): Promise<void>;
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
-  listProjects(): Promise<storageProject.Project[]>;
+  listModules(): Promise<{[path: string]: storageModuleContent.ModuleContent}>;
+  fetchModuleDateModifiedMillis(modulePath: string): Promise<number>;
   fetchModuleContentText(modulePath: string): Promise<string>;
   createProject(projectName: string, robotContent: string, opmodeContent: string): Promise<void>;
   createModule(moduleType: string, modulePath: string, moduleContentText: string): Promise<void>;
@@ -38,4 +39,3 @@ export interface Storage {
   downloadProject(projectName: string): Promise<string>;
   uploadProject(projectName: string, blobUrl: string): Promise<void>;
 }
-

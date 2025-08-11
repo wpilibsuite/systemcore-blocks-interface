@@ -199,7 +199,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         return;
       }
       try {
-        const array = await props.storage.listProjects();
+        const array = await storageProject.listProjects(props.storage);
         setProjects(array);
         resolve(array);
       } catch (e) {

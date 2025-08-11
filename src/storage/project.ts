@@ -35,6 +35,86 @@ export type Project = {
   opModes: storageModule.OpMode[],
 };
 
+export async function listProjects(storage: commonStorage.Storage): Promise<Project[]> {
+  const pathToModuleContent = await storage.listModules();
+
+  const projects: {[key: string]: Project} = {}; // key is project name, value is Project
+  // The mechanisms and opModes variables hold any Mechanisms and OpModes that
+  // are read before the Project to which they belong is read.
+  const mechanisms: {[key: string]: storageModule.Mechanism[]} = {}; // key is project name, value is list of Mechanisms
+  const opModes: {[key: string]: storageModule.OpMode[]} = {}; // key is project name, value is list of OpModes
+
+  for (const modulePath in pathToModuleContent) {
+    const moduleContent = pathToModuleContent[modulePath];
+    const moduleType = moduleContent.getModuleType();
+    const dateModifiedMillis = await storage.fetchModuleDateModifiedMillis(modulePath);
+    const module: storageModule.Module = {
+      modulePath: modulePath,
+      moduleType: moduleType,
+      projectName: storageNames.getProjectName(modulePath),
+      className: storageNames.getClassName(modulePath),
+      dateModifiedMillis: dateModifiedMillis,
+    };
+    if (moduleType === storageModule.MODULE_TYPE_ROBOT) {
+      const robot: storageModule.Robot = module as storageModule.Robot;
+      const project: Project = {
+        projectName: module.projectName,
+        robot: robot,
+        mechanisms: [],
+        opModes: [],
+      };
+      projects[project.projectName] = project;
+      // Add any Mechanisms that belong to this project that have already
+      // been read.
+      if (project.projectName in mechanisms) {
+        project.mechanisms = mechanisms[project.projectName];
+        delete mechanisms[project.projectName];
+      }
+      // Add any OpModes that belong to this project that have already been
+      // read.
+      if (project.projectName in opModes) {
+        project.opModes = opModes[project.projectName];
+        delete opModes[project.projectName];
+      }
+    } else if (moduleType === storageModule.MODULE_TYPE_MECHANISM) {
+      const mechanism: storageModule.Mechanism = module as storageModule.Mechanism;
+      if (mechanism.projectName in projects) {
+        // If the Project to which this Mechanism belongs has already been read,
+        // add this Mechanism to it.
+        projects[mechanism.projectName].mechanisms.push(mechanism);
+      } else {
+        // Otherwise, add this Mechanism to the mechanisms local variable.
+        if (mechanism.projectName in mechanisms) {
+          mechanisms[mechanism.projectName].push(mechanism);
+        } else {
+          mechanisms[mechanism.projectName] = [mechanism];
+        }
+      }
+    } else if (moduleType === storageModule.MODULE_TYPE_OPMODE) {
+      const opMode: storageModule.OpMode = module as storageModule.OpMode;
+      if (opMode.projectName in projects) {
+        // If the Project to which this OpMode belongs has already been read,
+        // add this OpMode to it.
+        projects[opMode.projectName].opModes.push(opMode);
+      } else {
+        // Otherwise, add this OpMode to the opModes local variable.
+        if (opMode.projectName in opModes) {
+          opModes[opMode.projectName].push(opMode);
+        } else {
+          opModes[opMode.projectName] = [opMode];
+        }
+      }
+    }
+  }
+
+  const projectsList: Project[] = [];
+  const sortedProjectNames = Object.keys(projects).sort();
+  sortedProjectNames.forEach((projectName) => {
+    projectsList.push(projects[projectName]);
+  });
+  return projectsList;
+}
+
 /**
  * Creates a new project.
  * @param storage The storage interface to use for creating the project.
