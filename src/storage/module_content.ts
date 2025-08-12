@@ -124,6 +124,7 @@ export function newOpModeContent(projectName: string, opModeClassName: string): 
 
 /**
  * Make the module content from the given python code and blocks content.
+ * If the given module has an empty moduleId field, it will be set to a valid id.
  */
 export function makeModuleContentText(
     module: storageModule.Module,
@@ -132,6 +133,9 @@ export function makeModuleContentText(
     components: Component[],
     events: Event[],
     methods: Method[]): string {
+  if (!module.moduleId) {
+    module.moduleId = Blockly.utils.idGenerator.genUid();
+  }
   const moduleContent = new ModuleContent(
       module.moduleType,
       module.moduleId,
@@ -145,8 +149,8 @@ export function makeModuleContentText(
 
 export function parseModuleContentText(moduleContentText: string): ModuleContent {
   const parsedContent = JSON.parse(moduleContentText);
-  if (!parsedContent.moduleId) {
-    parsedContent.moduleId = Blockly.utils.idGenerator.genUid();
+  if (!('moduleId' in parsedContent)) {
+    parsedContent.moduleId = '';
   }
   return new ModuleContent(
       parsedContent.moduleType,

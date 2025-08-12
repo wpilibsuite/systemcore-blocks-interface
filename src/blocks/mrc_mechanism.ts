@@ -175,16 +175,32 @@ const MECHANISM = {
     if (editor) {
       // Find the mechanism.
       let foundMechanism: storageModule.Mechanism | null = null;
-      const components: storageModuleContent.Component[] = []
-      for (const mechanism of editor.getMechanisms()) {
-        if (mechanism.moduleId === this.mrcMechanismModuleId) {
-          foundMechanism = mechanism;
-          components.push(...editor.getComponentsFromMechanism(mechanism));
-          break;
+
+      if (this.mrcMechanismModuleId) {
+        // Find the mechanism by module id.
+        for (const mechanism of editor.getMechanisms()) {
+          if (mechanism.moduleId === this.mrcMechanismModuleId) {
+            foundMechanism = mechanism;
+            break;
+          }
+        }
+      } else {
+        // Find the mechanism by class name.
+        const className = this.getFieldValue(FIELD_TYPE);
+        for (const mechanism of editor.getMechanisms()) {
+          if (mechanism.className === className) {
+            // Grap the mechanism module id, so we have it for next time.
+            this.mrcMechanismModuleId = mechanism.moduleId;
+            foundMechanism = mechanism;
+            break;
+          }
         }
       }
 
       if (foundMechanism) {
+        const components: storageModuleContent.Component[] = [];
+        components.push(...editor.getComponentsFromMechanism(foundMechanism));
+
         // If the mechanism class name has changed, update this blcok.
         if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {
           this.setFieldValue(foundMechanism.className, FIELD_TYPE);
