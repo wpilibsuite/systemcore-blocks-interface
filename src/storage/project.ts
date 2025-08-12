@@ -159,9 +159,8 @@ export async function copyProject(
 async function renameOrCopyProject(
     storage: commonStorage.Storage, project: Project, newProjectName: string,
     rename: boolean): Promise<void> {
-  const modulePathPrefix = storageNames.makeModulePathPrefix(project.projectName);
   const pathToModuleContent = await storage.listModules(
-      (modulePath: string) => modulePath.startsWith(modulePathPrefix));
+      storageNames.makeModulePathRegexPattern(project.projectName));
 
   for (const modulePath in pathToModuleContent) {
     const className = storageNames.getClassName(modulePath);
@@ -182,9 +181,9 @@ async function renameOrCopyProject(
  */
 export async function deleteProject(
     storage: commonStorage.Storage, project: Project): Promise<void> {
-  const modulePathPrefix = storageNames.makeModulePathPrefix(project.projectName);
   const pathToModuleContent = await storage.listModules(
-      (modulePath: string) => modulePath.startsWith(modulePathPrefix));
+      storageNames.makeModulePathRegexPattern(project.projectName));
+
   for (const modulePath in pathToModuleContent) {
     await storage.deleteModule(modulePath);
   }
@@ -286,14 +285,8 @@ export async function copyModuleInProject(
 async function renameOrCopyModule(
     storage: commonStorage.Storage, project: Project, newClassName: string,
     oldModule: storageModule.Module, rename: boolean): Promise<string> {
-  const pathToModuleContent = await storage.listModules(
-      (modulePath: string) => modulePath === oldModule.modulePath);
-  if (! (oldModule.modulePath in pathToModuleContent)) {
-    throw new Error('Failed to find module with path ' + oldModule.modulePath);
-  }
-
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName);
-  const moduleContentText = pathToModuleContent[oldModule.modulePath].getModuleContentText();
+  const moduleContentText = await storage.fetchModuleContentText(oldModule.modulePath);
   await storage.saveModule(newModulePath, moduleContentText);
   if (rename) {
     // For rename, delete the old module.
@@ -404,9 +397,8 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
  */
 export async function downloadProject(
     storage: commonStorage.Storage, projectName: string): Promise<string> {
-  const modulePathPrefix = storageNames.makeModulePathPrefix(projectName);
   const pathToModuleContent = await storage.listModules(
-      (modulePath: string) => modulePath.startsWith(modulePathPrefix));
+      storageNames.makeModulePathRegexPattern(projectName));
 
   const classNameToModuleContentText: {[className: string]: string} = {}; // value is module content text
   for (const modulePath in pathToModuleContent) {
