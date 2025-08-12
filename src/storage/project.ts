@@ -396,9 +396,9 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
  * Produce the blob for downloading a project.
  */
 export async function downloadProject(
-    storage: commonStorage.Storage, projectName: string): Promise<string> {
+    storage: commonStorage.Storage, project: Project): Promise<string> {
   const pathToModuleContent = await storage.listModules(
-      storageNames.makeModulePathRegexPattern(projectName));
+      storageNames.makeModulePathRegexPattern(project.projectName));
 
   const classNameToModuleContentText: {[className: string]: string} = {}; // value is module content text
   for (const modulePath in pathToModuleContent) {
