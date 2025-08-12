@@ -19,6 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
+import * as Blockly from 'blockly/core';
 import * as storageModule from './module';
 import * as storageNames from './names';
 import startingOpModeBlocks from '../modules/opmode_start.json';
@@ -39,6 +40,7 @@ export type Method = {
 };
 
 export type MechanismInRobot = {
+  moduleId: string // ID of the mechanism module.
   blockId: string, // ID of the mrc_mechanism block that adds the mechanism to the robot.
   name: string,
   className: string, // Includes the module name, for example 'game_piece_shooter.GamePieceShooter'.
@@ -79,6 +81,7 @@ export function newRobotContent(projectName: string): string {
   const module: storageModule.Robot = {
     modulePath: storageNames.makeRobotPath(projectName),
     moduleType: storageModule.MODULE_TYPE_ROBOT,
+    moduleId: Blockly.utils.idGenerator.genUid(),
     projectName: projectName,
     className: storageNames.CLASS_NAME_ROBOT,
     dateModifiedMillis: 0,
@@ -94,6 +97,7 @@ export function newMechanismContent(projectName: string, mechanismClassName: str
   const module: storageModule.Mechanism = {
     modulePath: storageNames.makeModulePath(projectName, mechanismClassName),
     moduleType: storageModule.MODULE_TYPE_MECHANISM,
+    moduleId: Blockly.utils.idGenerator.genUid(),
     projectName: projectName,
     className: mechanismClassName,
     dateModifiedMillis: 0,
@@ -109,6 +113,7 @@ export function newOpModeContent(projectName: string, opModeClassName: string): 
   const module: storageModule.OpMode = {
     modulePath: storageNames.makeModulePath(projectName, opModeClassName),
     moduleType: storageModule.MODULE_TYPE_OPMODE,
+    moduleId: Blockly.utils.idGenerator.genUid(),
     projectName: projectName,
     className: opModeClassName,
     dateModifiedMillis: 0,
@@ -129,6 +134,7 @@ export function makeModuleContentText(
     methods: Method[]): string {
   const moduleContent = new ModuleContent(
       module.moduleType,
+      module.moduleId,
       blocks,
       mechanisms,
       components,
@@ -139,8 +145,12 @@ export function makeModuleContentText(
 
 export function parseModuleContentText(moduleContentText: string): ModuleContent {
   const parsedContent = JSON.parse(moduleContentText);
+  if (!parsedContent.moduleId) {
+    parsedContent.moduleId = Blockly.utils.idGenerator.genUid();
+  }
   return new ModuleContent(
       parsedContent.moduleType,
+      parsedContent.moduleId,
       parsedContent.blocks,
       parsedContent.mechanisms,
       parsedContent.components,
@@ -151,6 +161,7 @@ export function parseModuleContentText(moduleContentText: string): ModuleContent
 export class ModuleContent {
   constructor(
       private moduleType: string,
+      private moduleId: string,
       private blocks : { [key: string]: any },
       private mechanisms: MechanismInRobot[],
       private components: Component[],
@@ -164,6 +175,10 @@ export class ModuleContent {
 
   getModuleType(): string {
     return this.moduleType;
+  }
+
+  getModuleId(): string {
+    return this.moduleId;
   }
 
   getBlocks(): { [key: string]: any } {
