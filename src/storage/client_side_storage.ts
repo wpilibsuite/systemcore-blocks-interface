@@ -126,8 +126,12 @@ class ClientSideStorage implements commonStorage.Storage {
   }
 
   async listModules(
-      opt_modulePathFilter?: commonStorage.ModulePathFilter):
-      Promise<{[path: string]: storageModuleContent.ModuleContent}> {
+      opt_modulePathRegexPattern?: string
+  ): Promise<{[path: string]: storageModuleContent.ModuleContent}> {
+
+    const regExp = opt_modulePathRegexPattern
+        ? new RegExp(opt_modulePathRegexPattern)
+        : null;
     return new Promise((resolve, reject) => {
       const pathToModuleContent: {[path: string]: storageModuleContent.ModuleContent} = {};
       const openCursorRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
@@ -144,7 +148,7 @@ class ClientSideStorage implements commonStorage.Storage {
           const value = cursor.value;
           // TODO(lizlooney): do we need value.path? Is there another way to get the path?
           const modulePath = value.path;
-          if (!opt_modulePathFilter || opt_modulePathFilter(modulePath)) {
+          if (!regExp || regExp.test(modulePath)) {
             const moduleContent = storageModuleContent.parseModuleContentText(value.content);
             pathToModuleContent[modulePath] = moduleContent;
           }
