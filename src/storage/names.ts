@@ -76,10 +76,16 @@ export function snakeCaseToPascalCase(snakeCaseName: string): string {
 }
 
 /**
- * Returns the module path prefix for the given project name.
+ * Returns the module path regex pattern for modules in the given project.
  */
-export function makeModulePathPrefix(projectName: string): string {
-  return projectName + '/';
+export function makeModulePathRegexPattern(projectName: string): string {
+  const prefix = projectName + '/';
+  const suffix = JSON_FILE_EXTENSION;
+  return '^' + escapeRegExp(prefix) + '.*' + escapeRegExp(suffix) + '$';
+}
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**

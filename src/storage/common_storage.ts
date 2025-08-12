@@ -21,14 +21,20 @@
 
 import * as storageModuleContent from './module_content';
 
-export type ModulePathFilter = (modulePath: string) => boolean;
-
 export interface Storage {
   saveEntry(entryKey: string, entryValue: string): Promise<void>;
+
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
-  listModules(opt_modulePathFilter?: ModulePathFilter): Promise<{[path: string]: storageModuleContent.ModuleContent}>;
+
+  listModules(
+      opt_modulePathRegexPattern?: string
+  ): Promise<{[path: string]: storageModuleContent.ModuleContent}>;
+
   fetchModuleDateModifiedMillis(modulePath: string): Promise<number>;
+
   fetchModuleContentText(modulePath: string): Promise<string>;
+
   saveModule(modulePath: string, moduleContentText: string): Promise<void>;
+
   deleteModule(modulePath: string): Promise<void>;
 }
