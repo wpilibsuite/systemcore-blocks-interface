@@ -54,6 +54,7 @@
         "DISPLAY_NAME": "Display Name",
         "DISPLAY_GROUP": "Display Group",
         "PRINT": "print",
+        "NO_MECHANISM_CONTENTS": "No Mechanism Contents",
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
             "OPMODE_TYPE": "What sort of OpMode this is",

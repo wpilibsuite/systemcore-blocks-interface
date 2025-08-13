@@ -54,6 +54,7 @@
         "DISPLAY_NAME": "שם תצוגה",
         "DISPLAY_GROUP": "קבוצת תצוגה",
         "PRINT": "הדפס",
+        "NO_MECHANISM_CONTENTS": "אין תוכן מנגנון",
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "מריץ את הבלוק המחובר ומתעלם מהתוצאה. מאפשר לך לקרוא לפונקציה ולהתעלם מערך ההחזרה.",
             "OPMODE_TYPE": "איזה סוג של מצב פעולה זה",
