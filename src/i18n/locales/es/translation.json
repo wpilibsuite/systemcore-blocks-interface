@@ -54,6 +54,8 @@
         "ENABLED": "Habilitado",
         "DISPLAY_NAME": "Nombre a Mostrar",
         "DISPLAY_GROUP": "Grupo a Mostrar",
+        "PRINT": "imprimir",
+        "NO_MECHANISM_CONTENTS": "Sin Contenido de Mecanismo",
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Ejecuta el bloque conectado e ignora el resultado. Te permite llamar una función e ignorar el valor de retorno.",
             "OPMODE_TYPE": "Qué tipo de OpMode es este",

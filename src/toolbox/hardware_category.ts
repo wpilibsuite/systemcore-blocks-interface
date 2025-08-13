@@ -92,13 +92,18 @@ function getRobotMechanismsCategory(currentModule: storageModule.Module): toolbo
 
   if (editor) {
     editor.getMechanismsFromRobot().forEach(mechanismInRobot => {
-      const mechanismBlocks: toolboxItems.Block[] = [];
+      const mechanismBlocks: toolboxItems.Item[] = [];
 
       // Add the blocks for this mechanism's methods.
       const mechanism = editor.getMechanism(mechanismInRobot);
       if (mechanism) {
         const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
         addInstanceMechanismBlocks(mechanismInRobot, methodsFromMechanism, mechanismBlocks);
+
+        if(mechanismBlocks.length === 0){
+          const label : toolboxItems.Label = new toolboxItems.Label(Blockly.Msg['NO_MECHANISM_CONTENTS']);
+          mechanismBlocks.push( label );
+        }
 
         contents.push({
           kind: 'category',
