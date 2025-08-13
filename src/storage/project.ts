@@ -51,6 +51,7 @@ export async function listProjects(storage: commonStorage.Storage): Promise<Proj
     const module: storageModule.Module = {
       modulePath: modulePath,
       moduleType: moduleType,
+      moduleId: moduleContent.getModuleId(),
       projectName: storageNames.getProjectName(modulePath),
       className: storageNames.getClassName(modulePath),
       dateModifiedMillis: dateModifiedMillis,

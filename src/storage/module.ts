@@ -28,9 +28,9 @@ export const MODULE_TYPE_MECHANISM = 'mechanism';
 export const MODULE_TYPE_OPMODE = 'opmode';
 
 export type Module = {
-  // TODO(lizlooney): Add a uuid so we can keep track of mechanisms in the robot even if the user renames the mechamism
   modulePath: string,
   moduleType: string,
+  moduleId: string,
   projectName: string, // For example, WackyWheelerRobot
   className: string,   // For example, GamePieceShooter.
   dateModifiedMillis: number,
