@@ -21,11 +21,13 @@
 
 import * as Blockly from 'blockly/core';
 import * as toolboxItems from './items';
-import { addRobotEventHandlerBlocks } from '../blocks/mrc_event_handler';
+import * as storageModuleContent from '../storage/module_content';
+import { addMechanismEventHandlerBlocks, addRobotEventHandlerBlocks } from '../blocks/mrc_event_handler';
 import { Editor } from '../editor/editor';
 
-// The robot event handlers category is shown when the user is editing an opmode.
-// It allows the user to create event handlers for events previously defined in the Robot.
+// The event handlers category is shown when the user is editing an opmode.
+// It allows the user to create event handlers for events previously defined in the Robot or in a
+// mechanism.
 
 // The event handlers category is a custom category because it must be updated dynamically.
 // As the user places event handler blocks on the blockly workspace, we update the category so it
@@ -33,33 +35,109 @@ import { Editor } from '../editor/editor';
 // workspace.
 
 const CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT = 'EVENT_HANDLERS_ROBOT';
+const CUSTOM_CATEGORY_EVENT_HANDLERS_MECHANISM_PREFIX = 'EVENT_HANDLERS_MECHANISM_';
 
-export const getRobotEventHandlersCategory = () => ({
-  kind: 'category',
-  name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
-  custom: CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT,
-});
+function getCustomValue(mechanismInRobot: storageModuleContent.MechanismInRobot | null): string {
+  return (mechanismInRobot === null)
+      ? CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT
+      : CUSTOM_CATEGORY_EVENT_HANDLERS_MECHANISM_PREFIX + mechanismInRobot.name;
+}
 
-export class RobotEventHandlersCategory {
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
-    blocklyWorkspace.registerToolboxCategoryCallback(
-        CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT, this.robotEventHandlersFlyout.bind(this));
+export function registerRobotEventHandlersCategory(blocklyWorkspace: Blockly.WorkspaceSvg): void {
+  new EventHandlersCategory(blocklyWorkspace, null);
+}
+
+export function getRobotEventHandlersCategory(): toolboxItems.Category {
+  return {
+    kind: 'category',
+    name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
+    custom: getCustomValue(null),
+  };
+}
+
+export function registerMechanismEventHandlersCategory(
+    blocklyWorkspace: Blockly.WorkspaceSvg, mechanismInRobot: storageModuleContent.MechanismInRobot): void {
+  new EventHandlersCategory(blocklyWorkspace, mechanismInRobot);
+}
+
+export function getMechanismEventHandlersCategory(
+    mechanismInRobot: storageModuleContent.MechanismInRobot): toolboxItems.Category {
+  return {
+    kind: 'category',
+    name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
+    custom: getCustomValue(mechanismInRobot),
+  };
+}
+
+class EventHandlersCategory {
+  mechanismInRobot: storageModuleContent.MechanismInRobot | null;
+
+  constructor(
+      blocklyWorkspace: Blockly.WorkspaceSvg,
+      mechanismInRobot: storageModuleContent.MechanismInRobot | null) {
+    this.mechanismInRobot = mechanismInRobot;
+    if (mechanismInRobot === null) {
+      blocklyWorkspace.registerToolboxCategoryCallback(
+          getCustomValue(mechanismInRobot),
+          this.robotEventHandlersFlyout.bind(this));
+    } else {
+      blocklyWorkspace.registerToolboxCategoryCallback(
+          getCustomValue(mechanismInRobot),
+          this.mechanismEventHandlersFlyout.bind(this));
+    }
   }
 
   public robotEventHandlersFlyout(workspace: Blockly.WorkspaceSvg) {
     const contents: toolboxItems.ContentsType[] = [];
 
-    // Get the list of events from the robot and add the blocks for handling events.
-
     const editor = Editor.getEditorForBlocklyWorkspace(workspace);
     if (editor) {
+      // Get the list of events from the robot.
       const eventsFromRobot = editor.getEventsFromRobot();
       // Remove events if there is already a corresponding handler in the workspace.
-      const eventHandlerNames = editor.getEventHandlerNamesFromWorkspace();
+      const eventHandlerBlocks = editor.getRobotEventHandlersAlreadyInWorkspace();
+      const eventBlockIds: string[] = [];
+      eventHandlerBlocks.forEach(eventHandlerBlock => {
+        eventBlockIds.push(eventHandlerBlock.getEventBlockId());
+      });
       const eventsToShow = eventsFromRobot.filter(event => {
-        return !eventHandlerNames.includes(event.name);
+        return !eventBlockIds.includes(event.blockId);
       });
       addRobotEventHandlerBlocks(eventsToShow, contents);
+    }
+
+    const toolboxInfo = {
+      contents: contents,
+    };
+
+    return toolboxInfo;
+  }
+
+  public mechanismEventHandlersFlyout(workspace: Blockly.WorkspaceSvg) {
+    const contents: toolboxItems.ContentsType[] = [];
+
+    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
+    if (editor && this.mechanismInRobot) {
+      // Get the list of events from the mechanism.
+      const mechanism = editor.getMechanism(this.mechanismInRobot);
+      if (mechanism) {
+        const eventsFromMechanism = editor.getEventsFromMechanism(mechanism);
+        // Remove events if there is already a corresponding handler in the workspace.
+        const eventHandlerBlocks = editor.getMechanismEventHandlersAlreadyInWorkspace(
+            this.mechanismInRobot);
+        const eventBlockIds: string[] = [];
+        eventHandlerBlocks.forEach(eventHandlerBlock => {
+          eventBlockIds.push(eventHandlerBlock.getEventBlockId());
+        });
+        const eventsToShow = eventsFromMechanism.filter(event => {
+          return !eventBlockIds.includes(event.blockId);
+        });
+        addMechanismEventHandlerBlocks(this.mechanismInRobot, eventsToShow, contents);
+        if (contents.length === 0) {
+          const label : toolboxItems.Label = new toolboxItems.Label(Blockly.Msg['NO_MECHANISM_CONTENTS']);
+          contents.push(label);
+        }
+      }
     }
 
     const toolboxInfo = {

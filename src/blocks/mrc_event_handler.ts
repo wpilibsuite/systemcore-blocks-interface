@@ -278,6 +278,9 @@ const EVENT_HANDLER = {
       this.setWarningText(null, WARNING_ID_EVENT_CHANGED);
     }
   },
+  getEventBlockId: function(this: EventHandlerBlock): string {
+    return this.mrcOtherBlockId;
+  },
 };
 
 export function setup(): void {
@@ -423,10 +426,27 @@ export function getHasAnyEnabledEventHandlers(workspace: Blockly.Workspace): boo
   }).length > 0;
 }
 
-export function getEventHandlerNames(workspace: Blockly.Workspace, names: string[]): void {
-  // Here we collect the event names of the event handlers in the given
-  // workspace, regardless of whether the event handler is enabled.
+export function getRobotEventHandlerBlocks(
+    workspace: Blockly.Workspace,
+    blocks: EventHandlerBlock[]): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    names.push(block.getFieldValue(FIELD_EVENT_NAME));
+    const eventHandlerBlock = block as EventHandlerBlock;
+    if (eventHandlerBlock.mrcSenderType == SenderType.ROBOT) {
+      blocks.push(eventHandlerBlock);
+    }
+  });
+}
+
+export function getMechanismEventHandlerBlocks(
+    workspace: Blockly.Workspace,
+    mechanismBlockId: string,
+    blocks: EventHandlerBlock[]): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    const eventHandlerBlock = block as EventHandlerBlock;
+    if (eventHandlerBlock.mrcSenderType == SenderType.MECHANISM) {
+      if (eventHandlerBlock.mrcMechanismBlockId === mechanismBlockId) {
+        blocks.push(eventHandlerBlock);
+      }
+    }
   });
 }

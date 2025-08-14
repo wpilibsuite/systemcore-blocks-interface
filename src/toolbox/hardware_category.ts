@@ -22,7 +22,7 @@
 import * as Blockly from 'blockly/core';
 import * as storageModule from '../storage/module';
 import * as toolboxItems from './items';
-import { getRobotEventHandlersCategory } from './event_handlers_category';
+import { getRobotEventHandlersCategory, getMechanismEventHandlersCategory } from './event_handlers_category';
 import { createMechanismBlock } from '../blocks/mrc_mechanism';
 import { getAllPossibleComponents } from '../blocks/mrc_component';
 import {
@@ -92,23 +92,31 @@ function getRobotMechanismsCategory(currentModule: storageModule.Module): toolbo
 
   if (editor) {
     editor.getMechanismsFromRobot().forEach(mechanismInRobot => {
-      const mechanismBlocks: toolboxItems.Item[] = [];
-
-      // Add the blocks for this mechanism's methods.
+      // Add the blocks for this mechanism's methods and events.
       const mechanism = editor.getMechanism(mechanismInRobot);
       if (mechanism) {
-        const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
-        addInstanceMechanismBlocks(mechanismInRobot, methodsFromMechanism, mechanismBlocks);
+        const mechanismCategories: toolboxItems.Category[] = [];
 
-        if(mechanismBlocks.length === 0){
+        // Get the list of methods from the mechanism and add the blocks for calling the methods.
+        const mechanismMethodBlocks: toolboxItems.Item[] = [];
+        const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
+        addInstanceMechanismBlocks(mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks);
+        if (mechanismMethodBlocks.length === 0) {
           const label : toolboxItems.Label = new toolboxItems.Label(Blockly.Msg['NO_MECHANISM_CONTENTS']);
-          mechanismBlocks.push( label );
+          mechanismMethodBlocks.push(label);
         }
+        mechanismCategories.push({
+          kind: 'category',
+          name: Blockly.Msg['MRC_CATEGORY_METHODS'],
+          contents: mechanismMethodBlocks,
+        });
+
+        mechanismCategories.push(getMechanismEventHandlersCategory(mechanismInRobot));
 
         contents.push({
           kind: 'category',
           name: mechanismInRobot.name,
-          contents: mechanismBlocks,
+          contents: mechanismCategories,
         });
       }
     });
