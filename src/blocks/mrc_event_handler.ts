@@ -52,22 +52,26 @@ const WARNING_ID_EVENT_CHANGED = 'event changed';
 export type EventHandlerBlock = Blockly.Block & EventHandlerMixin & Blockly.BlockSvg;
 
 interface EventHandlerMixin extends EventHandlerMixinType {
-  mrcPathOfSender: string;
   mrcSenderType: SenderType;
   mrcParameters: Parameter[];
   mrcOtherBlockId: string,
+  mrcMechanismBlockId: string,
 }
 
 type EventHandlerMixinType = typeof EVENT_HANDLER;
 
 /** Extra state for serialising event handler blocks. */
 export interface EventHandlerExtraState {
-  pathOfSender: string;
   senderType: SenderType;
   /** The parameters of the event handler. */
   params: Parameter[];
   /** The id of the mrc_event block that defines the event. */
   otherBlockId: string,
+  /**
+   * The id of the mrc_mechanism block that adds the mechanism to the robot.
+   * Specified only if the sender type is MECHANISM.
+   */
+  mechanismBlockId?: string,
 }
 
 const EVENT_HANDLER = {
@@ -77,8 +81,8 @@ const EVENT_HANDLER = {
   init(this: EventHandlerBlock): void {
     this.appendDummyInput('TITLE')
         .appendField(Blockly.Msg.WHEN)
-        .appendField(createFieldNonEditableText('sender'), FIELD_SENDER)
-        .appendField(createFieldNonEditableText('eventName'), FIELD_EVENT_NAME);
+        .appendField(createFieldNonEditableText(''), FIELD_SENDER)
+        .appendField(createFieldNonEditableText(''), FIELD_EVENT_NAME);
     this.appendDummyInput('PARAMS')
         .appendField(Blockly.Msg.WITH);
     this.setOutput(false);
@@ -94,11 +98,13 @@ const EVENT_HANDLER = {
    */
   saveExtraState(this: EventHandlerBlock): EventHandlerExtraState {
     const extraState: EventHandlerExtraState = {
-      pathOfSender: this.mrcPathOfSender,
       senderType: this.mrcSenderType,
       params: [],
       otherBlockId: this.mrcOtherBlockId,
     };
+    if (this.mrcMechanismBlockId) {
+      extraState.mechanismBlockId = this.mrcMechanismBlockId;
+    }
 
     this.mrcParameters.forEach((param) => {
       extraState.params.push({
@@ -114,10 +120,11 @@ const EVENT_HANDLER = {
    * Applies the given state to this block.
    */
   loadExtraState(this: EventHandlerBlock, extraState: EventHandlerExtraState): void {
-    this.mrcPathOfSender = extraState.pathOfSender;
     this.mrcSenderType = extraState.senderType;
     this.mrcParameters = [];
     this.mrcOtherBlockId = extraState.otherBlockId;
+    this.mrcMechanismBlockId = extraState.mechanismBlockId
+        ? extraState.mechanismBlockId : '';
 
     extraState.params.forEach((param) => {
       this.mrcParameters.push({
@@ -158,29 +165,30 @@ const EVENT_HANDLER = {
       input.removeField(fieldName);
     });
   },
+
+  /**
+   * mrcOnLoad is called for each EventHandlerBlock when the blocks are loaded in the blockly
+   * workspace.
+   */
   mrcOnLoad: function(this: EventHandlerBlock): void {
-    // mrcOnLoad is called for each EventHandlerBlock when the blocks are loaded in the blockly workspace.
     const warnings: string[] = [];
 
-    // If this block is an event handler for a robot event, check that the robot event
-    // still exists and hasn't been changed.
-    // If the robot event doesn't exist, put a visible warning on this block.
-    // If the robot event has changed, update the block if possible or put a
-    // visible warning on it.
-    if (this.mrcSenderType === SenderType.ROBOT) {
-      let foundRobotEvent = false;
-      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-      if (editor) {
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    if (editor) {
+      if (this.mrcSenderType === SenderType.ROBOT) {
+        // This block is an event handler for a robot event.
+        // Check whether the robot event still exists and whether it has been changed.
+        // If the robot event doesn't exist, put a visible warning on this block.
+        // If the robot event has changed, update the block if possible or put a
+        // visible warning on it.
+        let foundRobotEvent = false;
         const robotEvents = editor.getEventsFromRobot();
         for (const robotEvent of robotEvents) {
           if (robotEvent.blockId === this.mrcOtherBlockId) {
             foundRobotEvent = true;
-
-            // If the event name has changed, we can fix this block.
             if (this.getFieldValue(FIELD_EVENT_NAME) !== robotEvent.name) {
               this.setFieldValue(robotEvent.name, FIELD_EVENT_NAME);
             }
-
             this.mrcParameters = [];
             robotEvent.args.forEach(arg => {
               this.mrcParameters.push({
@@ -196,6 +204,65 @@ const EVENT_HANDLER = {
         }
         if (!foundRobotEvent) {
           warnings.push('This block is an event handler for an event that no longer exists.');
+        }
+      }
+
+      if (this.mrcSenderType === SenderType.MECHANISM) {
+        // This block is an event handler for a mechanism event.
+        // Check whether the mechanism still exists, whether it has been
+        // changed, whether the event still exists, and whether the event has
+        // been changed.
+        // If the mechanism doesn't exist, put a visible warning on this block.
+        // If the mechanism has changed, update the block if possible or put a
+        // visible warning on it.
+        // If the event doesn't exist, put a visible warning on this block.
+        // If the event has changed, update the block if possible or put a
+        // visible warning on it.
+        let foundMechanism = false;
+        const mechanismsInRobot = editor.getMechanismsFromRobot();
+        for (const mechanismInRobot of mechanismsInRobot) {
+          if (mechanismInRobot.blockId === this.mrcMechanismBlockId) {
+            foundMechanism = true;
+
+            // If the mechanism name has changed, we can handle that.
+            if (this.getFieldValue(FIELD_SENDER) !== mechanismInRobot.name) {
+              this.setFieldValue(mechanismInRobot.name, FIELD_SENDER);
+            }
+
+            let foundMechanismEvent = false;
+            const mechanism = editor.getMechanism(mechanismInRobot);
+            const mechanismEvents: storageModuleContent.Event[] = mechanism
+                ? editor.getEventsFromMechanism(mechanism) : [];
+            for (const mechanismEvent of mechanismEvents) {
+              if (mechanismEvent.blockId === this.mrcOtherBlockId) {
+                foundMechanismEvent = true;
+                if (this.getFieldValue(FIELD_EVENT_NAME) !== mechanismEvent.name) {
+                  this.setFieldValue(mechanismEvent.name, FIELD_EVENT_NAME);
+                }
+
+                this.mrcParameters = [];
+                mechanismEvent.args.forEach(arg => {
+                  this.mrcParameters.push({
+                    name: arg.name,
+                    type: arg.type,
+                  });
+                });
+                this.mrcUpdateParams();
+
+                // Since we found the mechanism event, we can break out of the loop.
+                break;
+              }
+            }
+            if (!foundMechanismEvent) {
+              warnings.push('This block is an event handler for an event that no longer exists.');
+            }
+
+            // Since we found the mechanism, we can break out of the loop.
+            break;
+          }
+        }
+        if (!foundMechanism) {
+          warnings.push('This block is an event handler for an event in a mechanism that no longer exists.');
         }
       }
     }
@@ -298,10 +365,8 @@ export function addRobotEventHandlerBlocks(
 }
 
 function createRobotEventHandlerBlock(
-    event: storageModuleContent.Event): toolboxItems.Block  {
+    event: storageModuleContent.Event): toolboxItems.Block {
   const extraState: EventHandlerExtraState = {
-    // TODO(lizlooney): ask Alan what pathOfSender is for.
-    pathOfSender: '',
     senderType: SenderType.ROBOT,
     params: [],
     otherBlockId: event.blockId,
@@ -314,6 +379,37 @@ function createRobotEventHandlerBlock(
   });
   const fields: {[key: string]: any} = {};
   fields[FIELD_SENDER] = 'robot';
+  fields[FIELD_EVENT_NAME] = event.name;
+  const inputs: {[key: string]: any} = {};
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+}
+
+export function addMechanismEventHandlerBlocks(
+    mechanismInRobot: storageModuleContent.MechanismInRobot,
+    events: storageModuleContent.Event[],
+    contents: toolboxItems.ContentsType[]) {
+  events.forEach(event => {
+    contents.push(createMechanismEventHandlerBlock(mechanismInRobot, event));
+  });
+}
+
+function createMechanismEventHandlerBlock(
+    mechanismInRobot: storageModuleContent.MechanismInRobot,
+    event: storageModuleContent.Event): toolboxItems.Block {
+  const extraState: EventHandlerExtraState = {
+    senderType: SenderType.MECHANISM,
+    params: [],
+    otherBlockId: event.blockId,
+    mechanismBlockId: mechanismInRobot.blockId,
+  };
+  event.args.forEach(arg => {
+    extraState.params.push({
+      name: arg.name,
+      type: arg.type,
+    });
+  });
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_SENDER] = mechanismInRobot.name;
   fields[FIELD_EVENT_NAME] = event.name;
   const inputs: {[key: string]: any} = {};
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
