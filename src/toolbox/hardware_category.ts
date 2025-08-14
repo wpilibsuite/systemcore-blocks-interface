@@ -22,13 +22,13 @@
 import * as Blockly from 'blockly/core';
 import * as storageModule from '../storage/module';
 import * as toolboxItems from './items';
+import { getRobotEventHandlersCategory } from './event_handlers_category';
 import { createMechanismBlock } from '../blocks/mrc_mechanism';
 import { getAllPossibleComponents } from '../blocks/mrc_component';
 import {
     getInstanceComponentBlocks,
     addInstanceRobotBlocks,
     addInstanceMechanismBlocks } from '../blocks/mrc_call_python_function';
-import { addRobotEventHandlerBlocks } from '../blocks/mrc_event_handler';
 import { Editor } from '../editor/editor';
 
 export function getHardwareCategory(currentModule: storageModule.Module): toolboxItems.Category {
@@ -203,44 +203,4 @@ function getComponentsCategory(moduleType : string): toolboxItems.Category {
     name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
     contents,
   };
-}
-
-const CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT = 'EVENT_HANDLERS_ROBOT';
-
-// The robot event handlers category is shown when the user is editing an opmode.
-// It allows the user to create event handlers for events previously defined in the Robot.
-const getRobotEventHandlersCategory = () => ({
-  kind: 'category',
-  name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
-  custom: CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT,
-});
-
-export class RobotEventHandlersCategory {
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
-    blocklyWorkspace.registerToolboxCategoryCallback(
-        CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT, this.robotEventHandlersFlyout.bind(this));
-  }
-
-  public robotEventHandlersFlyout(workspace: Blockly.WorkspaceSvg) {
-    const contents: toolboxItems.ContentsType[] = [];
-
-    // Get the list of events from the robot and add the blocks for handling events.
-
-    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
-    if (editor) {
-      const eventsFromRobot = editor.getEventsFromRobot();
-      // Remove events if there is already a corresponding handler in the workspace.
-      const eventHandlerNames = editor.getEventHandlerNamesFromWorkspace();
-      const eventsToShow = eventsFromRobot.filter(event => {
-        return !eventHandlerNames.includes(event.name);
-      });
-      addRobotEventHandlerBlocks(eventsToShow, contents);
-    }
-
-    const toolboxInfo = {
-      contents: contents,
-    };
-
-    return toolboxInfo;
-  }
 }

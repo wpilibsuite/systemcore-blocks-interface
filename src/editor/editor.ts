@@ -34,7 +34,7 @@ import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_hol
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { MethodsCategory } from '../toolbox/methods_category';
 import { EventsCategory } from '../toolbox/event_category';
-import { RobotEventHandlersCategory } from '../toolbox/hardware_category';
+import { RobotEventHandlersCategory } from '../toolbox/event_handlers_category';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
