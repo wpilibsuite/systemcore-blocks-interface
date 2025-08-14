@@ -30,12 +30,14 @@ import { Editor } from '../editor/editor';
 
 const CUSTOM_CATEGORY_EVENTS = 'EVENTS';
 
-export const getCategory = () => ({
-  kind: 'category',
-  categorystyle: MRC_CATEGORY_STYLE_METHODS,
-  name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
-  custom: CUSTOM_CATEGORY_EVENTS,
-});
+export function getCategory(): toolboxItems.Category {
+  return {
+    kind: 'category',
+    categorystyle: MRC_CATEGORY_STYLE_METHODS,
+    name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
+    custom: CUSTOM_CATEGORY_EVENTS,
+  };
+}
 
 export class EventsCategory {
   constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
