@@ -34,7 +34,7 @@ import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_hol
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { MethodsCategory } from '../toolbox/methods_category';
 import { EventsCategory } from '../toolbox/event_category';
-import { RobotEventsCategory } from '../toolbox/hardware_category';
+import { RobotEventHandlersCategory } from '../toolbox/hardware_category';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
@@ -67,7 +67,7 @@ export class Editor {
     // Create the custom toolbox categories so they register their flyout callbacks.
     new MethodsCategory(blocklyWorkspace);
     new EventsCategory(blocklyWorkspace);
-    new RobotEventsCategory(blocklyWorkspace);
+    new RobotEventHandlersCategory(blocklyWorkspace);
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -150,6 +150,7 @@ export class Editor {
         promises[this.robotPath] = this.storage.fetchModuleContentText(this.robotPath)
       }
       for (const mechanism of this.currentProject.mechanisms) {
+        // Fetch the module content text for the mechanism.
         if (mechanism.modulePath !== this.modulePath) {
           promises[mechanism.modulePath] = this.storage.fetchModuleContentText(mechanism.modulePath)
         }
@@ -162,17 +163,16 @@ export class Editor {
         })
       );
       this.moduleContentText = modulePathToContentText[this.modulePath];
-      if (this.robotPath === this.modulePath) {
-        this.robotContent = storageModuleContent.parseModuleContentText(this.moduleContentText);
-      } else {
-        this.robotContent = storageModuleContent.parseModuleContentText(modulePathToContentText[this.robotPath]);
-      }
+      this.robotContent = storageModuleContent.parseModuleContentText(
+          (this.robotPath === this.modulePath)
+              ? this.moduleContentText
+              : modulePathToContentText[this.robotPath]);
       for (const mechanism of this.currentProject.mechanisms) {
-        if (mechanism.modulePath === this.modulePath) {
-          this.mechanismClassNameToModuleContent[mechanism.className] = storageModuleContent.parseModuleContentText(this.moduleContentText);
-        } else {
-          this.mechanismClassNameToModuleContent[mechanism.className] = storageModuleContent.parseModuleContentText(modulePathToContentText[mechanism.modulePath]);
-        }
+        this.mechanismClassNameToModuleContent[mechanism.className] =
+            storageModuleContent.parseModuleContentText(
+                (mechanism.modulePath === this.modulePath)
+                    ? this.moduleContentText
+                    : modulePathToContentText[mechanism.modulePath]);
       }
       this.loadBlocksIntoBlocklyWorkspace();
     }

@@ -52,7 +52,7 @@ export function getHardwareCategory(currentModule: storageModule.Module): toolbo
           getRobotMechanismsCategory(currentModule),
           getRobotComponentsCategory(),
           getRobotMethodsCategory(),
-          getRobotEventsCategory(),
+          getRobotEventHandlersCategory(),
         ]
       };
   }
@@ -205,22 +205,23 @@ function getComponentsCategory(moduleType : string): toolboxItems.Category {
   };
 }
 
-const CUSTOM_CATEGORY_ROBOT_EVENTS = 'ROBOT_EVENTS';
+const CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT = 'EVENT_HANDLERS_ROBOT';
 
-// The robot events category is shown when the user is editing an opmode.
+// The robot event handlers category is shown when the user is editing an opmode.
 // It allows the user to create event handlers for events previously defined in the Robot.
-const getRobotEventsCategory = () => ({
+const getRobotEventHandlersCategory = () => ({
   kind: 'category',
   name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
-  custom: CUSTOM_CATEGORY_ROBOT_EVENTS,
+  custom: CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT,
 });
 
-export class RobotEventsCategory {
+export class RobotEventHandlersCategory {
   constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
-    blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_ROBOT_EVENTS, this.robotEventsFlyout.bind(this));
+    blocklyWorkspace.registerToolboxCategoryCallback(
+        CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT, this.robotEventHandlersFlyout.bind(this));
   }
 
-  public robotEventsFlyout(workspace: Blockly.WorkspaceSvg) {
+  public robotEventHandlersFlyout(workspace: Blockly.WorkspaceSvg) {
     const contents: toolboxItems.ContentsType[] = [];
 
     // Get the list of events from the robot and add the blocks for handling events.
