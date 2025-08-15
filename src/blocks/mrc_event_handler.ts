@@ -29,6 +29,7 @@ import { createFieldFlydown } from '../fields/field_flydown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_EVENT_HANDLER } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
+import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 
 export const BLOCK_NAME = 'mrc_event_handler';
@@ -359,9 +360,35 @@ export function pythonFromBlock(
   code = generator.scrub_(block, code);
 
   generator.addClassMethodDefinition(funcName, code);
-  generator.addEventHandler(sender, eventName, funcName);
+  generateRegisterEventHandler(block, generator, sender, eventName, funcName);
 
   return '';
+}
+
+function generateRegisterEventHandler(
+    block: EventHandlerBlock,
+    generator: ExtendedPythonGenerator,
+    sender: string,
+    eventName: string,
+    funcName: string) {
+  // Create the line of code that will register this event handler.
+  let fullSender = '';
+  if (block.mrcSenderType === SenderType.ROBOT) {
+    fullSender = 'self.' + sender;
+  } else if (block.mrcSenderType === SenderType.MECHANISM) {
+    switch (generator.getModuleType()) {
+      case storageModule.MODULE_TYPE_ROBOT:
+        fullSender = 'self.' + sender;
+        break;
+      case storageModule.MODULE_TYPE_OPMODE:
+        fullSender = 'self.robot.' + sender;
+        break;
+    }
+  }
+  if (fullSender) {
+    generator.addRegisterEventHandlerStatement(
+        fullSender + '.register_event_handler("' + eventName + '", self.' + funcName + ')\n');
+  }
 }
 
 // Functions used for creating blocks for the toolbox.
