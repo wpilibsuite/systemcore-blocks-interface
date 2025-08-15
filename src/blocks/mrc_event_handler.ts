@@ -281,6 +281,13 @@ const EVENT_HANDLER = {
   getEventBlockId: function(this: EventHandlerBlock): string {
     return this.mrcOtherBlockId;
   },
+  renameMechanismName: function(this: EventHandlerBlock, mechanismBlockId: string, newName: string): void {
+    // renameMechanismName is called when a mechanism block in the same module is modified.
+    if (this.mrcSenderType === SenderType.MECHANISM &&
+        mechanismBlockId === this.mrcMechanismBlockId) {
+      this.setFieldValue(newName, FIELD_SENDER);
+    }
+  },
 };
 
 export function setup(): void {
@@ -448,5 +455,13 @@ export function getMechanismEventHandlerBlocks(
         blocks.push(eventHandlerBlock);
       }
     }
+  });
+}
+
+export function renameMechanismName(workspace: Blockly.Workspace, mechanismBlockId: string, newName: string): void {
+  const eventHandlerBlocks: EventHandlerBlock[] = [];
+  getMechanismEventHandlerBlocks(workspace, mechanismBlockId, eventHandlerBlocks);
+  eventHandlerBlocks.forEach(block => {
+    (block as EventHandlerBlock).renameMechanismName(mechanismBlockId, newName);
   });
 }
