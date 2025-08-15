@@ -32,8 +32,8 @@ import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
-import { MethodsCategory } from '../toolbox/methods_category';
-import { EventsCategory } from '../toolbox/event_category';
+import { registerCategory as registerMethodsCategory } from '../toolbox/methods_category';
+import { registerCategory as registerEventsCategory } from '../toolbox/event_category';
 import {
     registerRobotEventHandlersCategory,
     registerMechanismEventHandlersCategory
@@ -67,9 +67,9 @@ export class Editor {
     this.blocklyWorkspace = blocklyWorkspace;
     this.generatorContext = generatorContext;
     this.storage = storage;
-    // Create the custom toolbox categories so they register their flyout callbacks.
-    new MethodsCategory(blocklyWorkspace);
-    new EventsCategory(blocklyWorkspace);
+    // Register the custom toolbox categories.
+    registerMethodsCategory(blocklyWorkspace);
+    registerEventsCategory(blocklyWorkspace);
     registerRobotEventHandlersCategory(blocklyWorkspace);
   }
 

@@ -30,7 +30,11 @@ import { createCustomMethodBlock, getBaseClassBlocks, FIELD_METHOD_NAME } from '
 import { Editor } from '../editor/editor';
 
 
-const CUSTOM_CATEGORY_METHODS = 'METHODS';
+const CUSTOM_CATEGORY_METHODS = 'MRC_METHODS';
+
+export function registerCategory(blocklyWorkspace: Blockly.WorkspaceSvg): void {
+  new MethodsCategory(blocklyWorkspace);
+}
 
 export function getCategory(): toolboxItems.Category {
   return {
@@ -41,7 +45,7 @@ export function getCategory(): toolboxItems.Category {
   };
 }
 
-export class MethodsCategory {
+class MethodsCategory {
   private robotClassBlocks = getBaseClassBlocks(CLASS_NAME_ROBOT_BASE);
   private mechanismClassBlocks = getBaseClassBlocks(CLASS_NAME_MECHANISM);
   private opmodeClassBlocks = getBaseClassBlocks(CLASS_NAME_OPMODE);

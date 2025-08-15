@@ -28,7 +28,11 @@ import { createCustomEventBlock } from '../blocks/mrc_event';
 import { addFireEventBlocks } from '../blocks/mrc_call_python_function';
 import { Editor } from '../editor/editor';
 
-const CUSTOM_CATEGORY_EVENTS = 'EVENTS';
+const CUSTOM_CATEGORY_EVENTS = 'MRC_EVENTS';
+
+export function registerCategory(blocklyWorkspace: Blockly.WorkspaceSvg): void {
+  new EventsCategory(blocklyWorkspace);
+}
 
 export function getCategory(): toolboxItems.Category {
   return {
@@ -39,7 +43,7 @@ export function getCategory(): toolboxItems.Category {
   };
 }
 
-export class EventsCategory {
+class EventsCategory {
   constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
     blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_EVENTS, this.eventsFlyout.bind(this));
   }

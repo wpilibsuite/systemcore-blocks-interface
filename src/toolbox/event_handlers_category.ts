@@ -34,10 +34,11 @@ import { Editor } from '../editor/editor';
 // doesn't contain blocks for the event handlers that have already been added to the blockly
 // workspace.
 
-const CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT = 'EVENT_HANDLERS_ROBOT';
-const CUSTOM_CATEGORY_EVENT_HANDLERS_MECHANISM_PREFIX = 'EVENT_HANDLERS_MECHANISM_';
+const CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT = 'MRC_EVENT_HANDLERS_ROBOT';
+const CUSTOM_CATEGORY_EVENT_HANDLERS_MECHANISM_PREFIX = 'MRC_EVENT_HANDLERS_MECHANISM_';
 
 function getCustomValue(mechanismInRobot: storageModuleContent.MechanismInRobot | null): string {
+  // If the event is defined in the robot, mechanismInRobot is null.
   return (mechanismInRobot === null)
       ? CUSTOM_CATEGORY_EVENT_HANDLERS_ROBOT
       : CUSTOM_CATEGORY_EVENT_HANDLERS_MECHANISM_PREFIX + mechanismInRobot.name;
@@ -70,6 +71,7 @@ export function getMechanismEventHandlersCategory(
 }
 
 class EventHandlersCategory {
+  // If the event is defined in the robot, mechanismInRobot is null.
   mechanismInRobot: storageModuleContent.MechanismInRobot | null;
 
   constructor(
