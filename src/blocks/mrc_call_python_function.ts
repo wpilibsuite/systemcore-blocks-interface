@@ -141,7 +141,7 @@ type CallPythonFunctionExtraState = {
    * Specified only if the function kind is INSTANCE_MECHANISM.
    */
   mechanismBlockId?: string,
-};
+}
 
 const CALL_PYTHON_FUNCTION = {
   /**
@@ -697,7 +697,7 @@ const CALL_PYTHON_FUNCTION = {
           }
         }
         if (!foundMechanism) {
-          warnings.push('This block calls a method on a mechanism that no longer exists.');
+          warnings.push('This block calls a method in a mechanism that no longer exists.');
         }
       }
     }

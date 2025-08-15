@@ -33,6 +33,7 @@ import * as storageModuleContent from '../storage/module_content';
 import * as storageNames from '../storage/names';
 import * as value from './utils/value';
 import { renameMethodCallers } from './mrc_call_python_function'
+import { renameMechanismName as renameMechanismNameInEventHandlers } from './mrc_event_handler'
 
 export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';
@@ -154,6 +155,8 @@ const MECHANISM = {
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
       renameMethodCallers(this.workspace, this.id, legalName);
+      // Rename any event handlers
+      renameMechanismNameInEventHandlers(this.workspace, this.id, legalName);
     }
     return legalName;
   },

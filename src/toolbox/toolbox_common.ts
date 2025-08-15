@@ -47,7 +47,7 @@ export function getToolboxItems(
     );
   }
   const tCategory = testCategory();
-  if (tCategory.contents.length > 0) {
+  if (tCategory.contents && tCategory.contents.length > 0) {
     contents.push.apply(contents, [tCategory]);
   }
 
