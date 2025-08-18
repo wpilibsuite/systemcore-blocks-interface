@@ -32,9 +32,12 @@ import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
-import { MethodsCategory } from '../toolbox/methods_category';
-import { EventsCategory } from '../toolbox/event_category';
-import { RobotEventsCategory } from '../toolbox/hardware_category';
+import { registerCategory as registerMethodsCategory } from '../toolbox/methods_category';
+import { registerCategory as registerEventsCategory } from '../toolbox/event_category';
+import {
+    registerRobotEventHandlersCategory,
+    registerMechanismEventHandlersCategory
+} from '../toolbox/event_handlers_category';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
@@ -64,10 +67,10 @@ export class Editor {
     this.blocklyWorkspace = blocklyWorkspace;
     this.generatorContext = generatorContext;
     this.storage = storage;
-    // Create the custom toolbox categories so they register their flyout callbacks.
-    new MethodsCategory(blocklyWorkspace);
-    new EventsCategory(blocklyWorkspace);
-    new RobotEventsCategory(blocklyWorkspace);
+    // Register the custom toolbox categories.
+    registerMethodsCategory(blocklyWorkspace);
+    registerEventsCategory(blocklyWorkspace);
+    registerRobotEventHandlersCategory(blocklyWorkspace);
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -150,6 +153,7 @@ export class Editor {
         promises[this.robotPath] = this.storage.fetchModuleContentText(this.robotPath)
       }
       for (const mechanism of this.currentProject.mechanisms) {
+        // Fetch the module content text for the mechanism.
         if (mechanism.modulePath !== this.modulePath) {
           promises[mechanism.modulePath] = this.storage.fetchModuleContentText(mechanism.modulePath)
         }
@@ -162,18 +166,21 @@ export class Editor {
         })
       );
       this.moduleContentText = modulePathToContentText[this.modulePath];
-      if (this.robotPath === this.modulePath) {
-        this.robotContent = storageModuleContent.parseModuleContentText(this.moduleContentText);
-      } else {
-        this.robotContent = storageModuleContent.parseModuleContentText(modulePathToContentText[this.robotPath]);
-      }
+      this.robotContent = storageModuleContent.parseModuleContentText(
+          (this.robotPath === this.modulePath)
+              ? this.moduleContentText
+              : modulePathToContentText[this.robotPath]);
       for (const mechanism of this.currentProject.mechanisms) {
-        if (mechanism.modulePath === this.modulePath) {
-          this.mechanismClassNameToModuleContent[mechanism.className] = storageModuleContent.parseModuleContentText(this.moduleContentText);
-        } else {
-          this.mechanismClassNameToModuleContent[mechanism.className] = storageModuleContent.parseModuleContentText(modulePathToContentText[mechanism.modulePath]);
-        }
+        this.mechanismClassNameToModuleContent[mechanism.className] =
+            storageModuleContent.parseModuleContentText(
+                (mechanism.modulePath === this.modulePath)
+                    ? this.moduleContentText
+                    : modulePathToContentText[mechanism.modulePath]);
       }
+      // Register the custom toolbox categories for the mechanisms in the robot.
+      this.robotContent.getMechanisms().forEach(mechanismInRobot => {
+        registerMechanismEventHandlersCategory(this.blocklyWorkspace, mechanismInRobot);
+      });
       this.loadBlocksIntoBlocklyWorkspace();
     }
   }
@@ -305,10 +312,18 @@ export class Editor {
     return events;
   }
 
-  public getEventHandlerNamesFromWorkspace(): string[] {
-    const names: string[] = [];
-    eventHandler.getEventHandlerNames(this.blocklyWorkspace, names);
-    return names;
+  public getRobotEventHandlersAlreadyInWorkspace(): eventHandler.EventHandlerBlock[] {
+    const eventHandlerBlocks: eventHandler.EventHandlerBlock[] = [];
+    eventHandler.getRobotEventHandlerBlocks(this.blocklyWorkspace, eventHandlerBlocks);
+    return eventHandlerBlocks;
+  }
+
+  public getMechanismEventHandlersAlreadyInWorkspace(
+      mechanismInRobot: storageModuleContent.MechanismInRobot): eventHandler.EventHandlerBlock[] {
+    const eventHandlerBlocks: eventHandler.EventHandlerBlock[] = [];
+    eventHandler.getMechanismEventHandlerBlocks(
+        this.blocklyWorkspace, mechanismInRobot.blockId, eventHandlerBlocks);
+    return eventHandlerBlocks;
   }
 
   public async saveBlocks() {

@@ -30,16 +30,22 @@ import { createCustomMethodBlock, getBaseClassBlocks, FIELD_METHOD_NAME } from '
 import { Editor } from '../editor/editor';
 
 
-const CUSTOM_CATEGORY_METHODS = 'METHODS';
+const CUSTOM_CATEGORY_METHODS = 'MRC_METHODS';
 
-export const getCategory = () => ({
-  kind: 'category',
-  categorystyle: MRC_CATEGORY_STYLE_METHODS,
-  name: Blockly.Msg['MRC_CATEGORY_METHODS'],
-  custom: CUSTOM_CATEGORY_METHODS,
-});
+export function registerCategory(blocklyWorkspace: Blockly.WorkspaceSvg): void {
+  new MethodsCategory(blocklyWorkspace);
+}
 
-export class MethodsCategory {
+export function getCategory(): toolboxItems.Category {
+  return {
+    kind: 'category',
+    categorystyle: MRC_CATEGORY_STYLE_METHODS,
+    name: Blockly.Msg['MRC_CATEGORY_METHODS'],
+    custom: CUSTOM_CATEGORY_METHODS,
+  };
+}
+
+class MethodsCategory {
   private robotClassBlocks = getBaseClassBlocks(CLASS_NAME_ROBOT_BASE);
   private mechanismClassBlocks = getBaseClassBlocks(CLASS_NAME_MECHANISM);
   private opmodeClassBlocks = getBaseClassBlocks(CLASS_NAME_OPMODE);
