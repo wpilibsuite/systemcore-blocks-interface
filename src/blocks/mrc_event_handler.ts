@@ -55,8 +55,8 @@ export type EventHandlerBlock = Blockly.Block & EventHandlerMixin & Blockly.Bloc
 interface EventHandlerMixin extends EventHandlerMixinType {
   mrcSenderType: SenderType;
   mrcParameters: Parameter[];
-  mrcOtherBlockId: string,
-  mrcMechanismBlockId: string,
+  mrcEventId: string,
+  mrcMechanismId: string,
 }
 
 type EventHandlerMixinType = typeof EVENT_HANDLER;
@@ -67,11 +67,16 @@ export interface EventHandlerExtraState {
   /** The parameters of the event handler. */
   params: Parameter[];
   /** The mrcEventId of the mrc_event block that defines the event. */
-  otherBlockId: string,
+  eventId: string,
   /**
-   * The id of the mrc_mechanism block that adds the mechanism to the robot.
+   * The mrcMechanismId of the mrc_mechanism block that adds the mechanism to the robot.
    * Specified only if the sender type is MECHANISM.
    */
+  mechanismId?: string,
+
+  // The following fields allow Alan and Liz to load older projects.
+  // TODO(lizlooney): Remove these fields.
+  otherBlockId?: string,
   mechanismBlockId?: string,
 }
 
@@ -101,10 +106,10 @@ const EVENT_HANDLER = {
     const extraState: EventHandlerExtraState = {
       senderType: this.mrcSenderType,
       params: [],
-      otherBlockId: this.mrcOtherBlockId,
+      eventId: this.mrcEventId,
     };
-    if (this.mrcMechanismBlockId) {
-      extraState.mechanismBlockId = this.mrcMechanismBlockId;
+    if (this.mrcMechanismId) {
+      extraState.mechanismId = this.mrcMechanismId;
     }
 
     this.mrcParameters.forEach((param) => {
@@ -121,11 +126,11 @@ const EVENT_HANDLER = {
    * Applies the given state to this block.
    */
   loadExtraState(this: EventHandlerBlock, extraState: EventHandlerExtraState): void {
+    fixOldExtraState(extraState);
     this.mrcSenderType = extraState.senderType;
     this.mrcParameters = [];
-    this.mrcOtherBlockId = extraState.otherBlockId;
-    this.mrcMechanismBlockId = extraState.mechanismBlockId
-        ? extraState.mechanismBlockId : '';
+    this.mrcEventId = extraState.eventId;
+    this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : '';
 
     extraState.params.forEach((param) => {
       this.mrcParameters.push({
@@ -185,7 +190,7 @@ const EVENT_HANDLER = {
         let foundRobotEvent = false;
         const robotEvents = editor.getEventsFromRobot();
         for (const robotEvent of robotEvents) {
-          if (robotEvent.eventId === this.mrcOtherBlockId) {
+          if (robotEvent.eventId === this.mrcEventId) {
             foundRobotEvent = true;
             if (this.getFieldValue(FIELD_EVENT_NAME) !== robotEvent.name) {
               this.setFieldValue(robotEvent.name, FIELD_EVENT_NAME);
@@ -222,7 +227,7 @@ const EVENT_HANDLER = {
         let foundMechanism = false;
         const mechanismsInRobot = editor.getMechanismsFromRobot();
         for (const mechanismInRobot of mechanismsInRobot) {
-          if (mechanismInRobot.mechanismId === this.mrcMechanismBlockId) {
+          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
             foundMechanism = true;
 
             // If the mechanism name has changed, we can handle that.
@@ -235,7 +240,7 @@ const EVENT_HANDLER = {
             const mechanismEvents: storageModuleContent.Event[] = mechanism
                 ? editor.getEventsFromMechanism(mechanism) : [];
             for (const mechanismEvent of mechanismEvents) {
-              if (mechanismEvent.eventId === this.mrcOtherBlockId) {
+              if (mechanismEvent.eventId === this.mrcEventId) {
                 foundMechanismEvent = true;
                 if (this.getFieldValue(FIELD_EVENT_NAME) !== mechanismEvent.name) {
                   this.setFieldValue(mechanismEvent.name, FIELD_EVENT_NAME);
@@ -280,12 +285,12 @@ const EVENT_HANDLER = {
     }
   },
   getEventId: function(this: EventHandlerBlock): string {
-    return this.mrcOtherBlockId;
+    return this.mrcEventId;
   },
-  renameMechanismName: function(this: EventHandlerBlock, mechanismBlockId: string, newName: string): void {
+  renameMechanismName: function(this: EventHandlerBlock, mechanismId: string, newName: string): void {
     // renameMechanismName is called when a mechanism block in the same module is modified.
     if (this.mrcSenderType === SenderType.MECHANISM &&
-        mechanismBlockId === this.mrcMechanismBlockId) {
+        this.mrcMechanismId === mechanismId) {
       this.setFieldValue(newName, FIELD_SENDER);
     }
   },
@@ -293,11 +298,11 @@ const EVENT_HANDLER = {
    * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
    */
   mrcChangeIds: function (this: EventHandlerBlock, oldIdToNewId: { [oldId: string]: string }): void {
-    if (this.mrcOtherBlockId in oldIdToNewId) {
-      this.mrcOtherBlockId = oldIdToNewId[this.mrcOtherBlockId];
+    if (this.mrcEventId && this.mrcEventId in oldIdToNewId) {
+      this.mrcEventId = oldIdToNewId[this.mrcEventId];
     }
-    if (this.mrcMechanismBlockId && this.mrcMechanismBlockId in oldIdToNewId) {
-      this.mrcMechanismBlockId = oldIdToNewId[this.mrcMechanismBlockId];
+    if (this.mrcMechanismId && this.mrcMechanismId in oldIdToNewId) {
+      this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
     }
   },
 };
@@ -417,7 +422,7 @@ function createRobotEventHandlerBlock(
   const extraState: EventHandlerExtraState = {
     senderType: SenderType.ROBOT,
     params: [],
-    otherBlockId: event.eventId,
+    eventId: event.eventId,
   };
   event.args.forEach(arg => {
     extraState.params.push({
@@ -447,8 +452,8 @@ function createMechanismEventHandlerBlock(
   const extraState: EventHandlerExtraState = {
     senderType: SenderType.MECHANISM,
     params: [],
-    otherBlockId: event.eventId,
-    mechanismBlockId: mechanismInRobot.mechanismId,
+    eventId: event.eventId,
+    mechanismId: mechanismInRobot.mechanismId,
   };
   event.args.forEach(arg => {
     extraState.params.push({
@@ -484,22 +489,33 @@ export function getRobotEventHandlerBlocks(
 
 export function getMechanismEventHandlerBlocks(
     workspace: Blockly.Workspace,
-    mechanismBlockId: string,
+    mechanismId: string,
     blocks: EventHandlerBlock[]): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     const eventHandlerBlock = block as EventHandlerBlock;
     if (eventHandlerBlock.mrcSenderType == SenderType.MECHANISM) {
-      if (eventHandlerBlock.mrcMechanismBlockId === mechanismBlockId) {
+      if (eventHandlerBlock.mrcMechanismId === mechanismId) {
         blocks.push(eventHandlerBlock);
       }
     }
   });
 }
 
-export function renameMechanismName(workspace: Blockly.Workspace, mechanismBlockId: string, newName: string): void {
+export function renameMechanismName(workspace: Blockly.Workspace, mechanismId: string, newName: string): void {
   const eventHandlerBlocks: EventHandlerBlock[] = [];
-  getMechanismEventHandlerBlocks(workspace, mechanismBlockId, eventHandlerBlocks);
+  getMechanismEventHandlerBlocks(workspace, mechanismId, eventHandlerBlocks);
   eventHandlerBlocks.forEach(block => {
-    (block as EventHandlerBlock).renameMechanismName(mechanismBlockId, newName);
+    (block as EventHandlerBlock).renameMechanismName(mechanismId, newName);
   });
+}
+
+// The following function allows Alan and Liz to load older projects.
+// TODO(lizlooney): Remove this function.
+function fixOldExtraState(extraState: EventHandlerExtraState): void {
+  if (extraState.otherBlockId) {
+    extraState.eventId = extraState.otherBlockId;
+  }
+  if (extraState.mechanismBlockId) {
+    extraState.mechanismId = extraState.mechanismBlockId;
+  }
 }

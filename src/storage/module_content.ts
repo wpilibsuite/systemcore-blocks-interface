@@ -149,6 +149,20 @@ export function makeModuleContentText(
 
 export function parseModuleContentText(moduleContentText: string): ModuleContent {
   const parsedContent = JSON.parse(moduleContentText);
+  fixOldParsedContent(parsedContent);
+  return new ModuleContent(
+      parsedContent.moduleType,
+      parsedContent.moduleId,
+      parsedContent.blocks,
+      parsedContent.mechanisms,
+      parsedContent.components,
+      parsedContent.events,
+      parsedContent.methods);
+}
+
+// The following function allows Alan and Liz to load older projects.
+// TODO(lizlooney): Remove this function.
+function fixOldParsedContent(parsedContent: any): void {
   if (!('moduleId' in parsedContent)) {
     parsedContent.moduleId = '';
   }
@@ -176,14 +190,6 @@ export function parseModuleContentText(moduleContentText: string): ModuleContent
       delete method['blockId'];
     }
   });
-  return new ModuleContent(
-      parsedContent.moduleType,
-      parsedContent.moduleId,
-      parsedContent.blocks,
-      parsedContent.mechanisms,
-      parsedContent.components,
-      parsedContent.events,
-      parsedContent.methods);
 }
 
 export class ModuleContent {
