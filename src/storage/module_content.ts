@@ -32,7 +32,7 @@ export type MethodArg = {
 };
 
 export type Method = {
-  blockId: string, // ID of the mrc_class_method_def block that defines the method.
+  methodId: string, // The mrcMethodId of the mrc_class_method_def block that defines the method.
   visibleName: string,
   pythonName: string,
   returnType: string, // 'None' for no return value, '' for an untyped return value.
@@ -40,21 +40,21 @@ export type Method = {
 };
 
 export type MechanismInRobot = {
-  moduleId: string // ID of the mechanism module.
-  blockId: string, // ID of the mrc_mechanism block that adds the mechanism to the robot.
+  moduleId: string // The id of the mechanism module.
+  mechanismId: string, // The mrcMechanismId of the mrc_mechanism block that adds the mechanism to the robot.
   name: string,
   className: string, // Includes the module name, for example 'game_piece_shooter.GamePieceShooter'.
 }
 
 export type Component = {
-  blockId: string, // ID of the mrc_component block that adds the component to the robot or to a mechanism.
+  componentId: string, // The mrcComponentId of the mrc_component block that adds the component to the robot or to a mechanism.
   name: string,
   className: string, // Includes the module name, for example 'smart_motor.SmartMotor'.
   ports: {[port: string]: string}, // The value is the type.
 }
 
 export type Event = {
-  blockId: string, // ID of the mrc_event block that defines the event.
+  eventId: string, // The mrcEventId of the mrc_event block that defines the event.
   name: string,
   args: MethodArg[],
 };
@@ -152,6 +152,30 @@ export function parseModuleContentText(moduleContentText: string): ModuleContent
   if (!('moduleId' in parsedContent)) {
     parsedContent.moduleId = '';
   }
+  parsedContent.mechanisms.forEach((mechanism: any) => {
+    if (!('mechanismId' in mechanism) && ('blockId' in mechanism)) {
+      mechanism.mechanismId = mechanism['blockId'];
+      delete mechanism['blockId'];
+    }
+  });
+  parsedContent.components.forEach((component: any) => {
+    if (!('componentId' in component) && ('blockId' in component)) {
+      component.componentId = component['blockId'];
+      delete component['blockId'];
+    }
+  });
+  parsedContent.events.forEach((event: any) => {
+    if (!('eventId' in event) && ('blockId' in event)) {
+      event.eventId = event['blockId'];
+      delete event['blockId'];
+    }
+  });
+  parsedContent.methods.forEach((method: any) => {
+    if (!('methodId' in method) && ('blockId' in method)) {
+      method.methodId = method['blockId'];
+      delete method['blockId'];
+    }
+  });
   return new ModuleContent(
       parsedContent.moduleType,
       parsedContent.moduleId,
@@ -203,5 +227,60 @@ export class ModuleContent {
 
   getMethods(): Method[] {
     return this.methods;
+  }
+
+  changeIds(): void {
+    const oldIdToNewId: { [oldId: string]: string } = {}; // value is new id
+
+    // Change the ids for the mechanisms defined in this module.
+    this.mechanisms.forEach(mechanism => {
+      const oldMechanismId = mechanism.mechanismId;
+      mechanism.mechanismId = Blockly.utils.idGenerator.genUid();
+      oldIdToNewId[oldMechanismId] = mechanism.mechanismId;
+    });
+    // Change the ids for the components defined in this module.
+    this.components.forEach(component => {
+      const oldComponentId = component.componentId;
+      component.componentId = Blockly.utils.idGenerator.genUid();
+      oldIdToNewId[oldComponentId] = component.componentId;
+    });
+    // Change the ids for the events defined in this module.
+    this.events.forEach(event => {
+      const oldEventId = event.eventId;
+      event.eventId = Blockly.utils.idGenerator.genUid();
+      oldIdToNewId[oldEventId] = event.eventId;
+    });
+    // Change the ids for the methods defined in this module.
+    this.methods.forEach(method => {
+      const oldMethodId = method.methodId;
+      method.methodId = Blockly.utils.idGenerator.genUid();
+      oldIdToNewId[oldMethodId] = method.methodId;
+    });
+
+    // Change the ids in the blocks.
+    const workspace = new Blockly.Workspace();
+    const onChange = (event: Blockly.Events.Abstract) => {
+      if (event.type === Blockly.Events.BLOCK_CREATE) {
+        const blockCreateEvent = event as Blockly.Events.BlockCreate;
+        if (blockCreateEvent.ids) {
+          blockCreateEvent.ids.forEach(id => {
+            const block = workspace.getBlockById(id);
+            if (block) {
+              if ('mrcChangeIds' in block && typeof block.mrcChangeIds === "function") {
+                block.mrcChangeIds(oldIdToNewId);
+              }
+            }
+          });
+        }
+      }
+    };
+    workspace.addChangeListener(onChange);
+    Blockly.serialization.workspaces.load(this.blocks, workspace);
+    workspace.removeChangeListener(onChange);
+    this.blocks = Blockly.serialization.workspaces.save(workspace);
+
+    // Clean up the workspace
+    workspace.dispose();
+
   }
 }
