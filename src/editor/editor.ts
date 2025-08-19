@@ -322,7 +322,7 @@ export class Editor {
       mechanismInRobot: storageModuleContent.MechanismInRobot): eventHandler.EventHandlerBlock[] {
     const eventHandlerBlocks: eventHandler.EventHandlerBlock[] = [];
     eventHandler.getMechanismEventHandlerBlocks(
-        this.blocklyWorkspace, mechanismInRobot.blockId, eventHandlerBlocks);
+        this.blocklyWorkspace, mechanismInRobot.mechanismId, eventHandlerBlocks);
     return eventHandlerBlocks;
   }
 

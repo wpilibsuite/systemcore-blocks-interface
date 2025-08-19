@@ -98,12 +98,12 @@ class EventHandlersCategory {
       const eventsFromRobot = editor.getEventsFromRobot();
       // Remove events if there is already a corresponding handler in the workspace.
       const eventHandlerBlocks = editor.getRobotEventHandlersAlreadyInWorkspace();
-      const eventBlockIds: string[] = [];
+      const eventIds: string[] = [];
       eventHandlerBlocks.forEach(eventHandlerBlock => {
-        eventBlockIds.push(eventHandlerBlock.getEventBlockId());
+        eventIds.push(eventHandlerBlock.getEventId());
       });
       const eventsToShow = eventsFromRobot.filter(event => {
-        return !eventBlockIds.includes(event.blockId);
+        return !eventIds.includes(event.eventId);
       });
       addRobotEventHandlerBlocks(eventsToShow, contents);
     }
@@ -127,12 +127,12 @@ class EventHandlersCategory {
         // Remove events if there is already a corresponding handler in the workspace.
         const eventHandlerBlocks = editor.getMechanismEventHandlersAlreadyInWorkspace(
             this.mechanismInRobot);
-        const eventBlockIds: string[] = [];
+        const eventIds: string[] = [];
         eventHandlerBlocks.forEach(eventHandlerBlock => {
-          eventBlockIds.push(eventHandlerBlock.getEventBlockId());
+          eventIds.push(eventHandlerBlock.getEventId());
         });
         const eventsToShow = eventsFromMechanism.filter(event => {
-          return !eventBlockIds.includes(event.blockId);
+          return !eventIds.includes(event.eventId);
         });
         addMechanismEventHandlerBlocks(this.mechanismInRobot, eventsToShow, contents);
         if (contents.length === 0) {

@@ -222,7 +222,7 @@ const EVENT_HANDLER = {
         let foundMechanism = false;
         const mechanismsInRobot = editor.getMechanismsFromRobot();
         for (const mechanismInRobot of mechanismsInRobot) {
-          if (mechanismInRobot.blockId === this.mrcMechanismBlockId) {
+          if (mechanismInRobot.mechanismId === this.mrcMechanismBlockId) {
             foundMechanism = true;
 
             // If the mechanism name has changed, we can handle that.
@@ -235,7 +235,7 @@ const EVENT_HANDLER = {
             const mechanismEvents: storageModuleContent.Event[] = mechanism
                 ? editor.getEventsFromMechanism(mechanism) : [];
             for (const mechanismEvent of mechanismEvents) {
-              if (mechanismEvent.blockId === this.mrcOtherBlockId) {
+              if (mechanismEvent.eventId === this.mrcOtherBlockId) {
                 foundMechanismEvent = true;
                 if (this.getFieldValue(FIELD_EVENT_NAME) !== mechanismEvent.name) {
                   this.setFieldValue(mechanismEvent.name, FIELD_EVENT_NAME);
@@ -279,7 +279,7 @@ const EVENT_HANDLER = {
       this.setWarningText(null, WARNING_ID_EVENT_CHANGED);
     }
   },
-  getEventBlockId: function(this: EventHandlerBlock): string {
+  getEventId: function(this: EventHandlerBlock): string {
     return this.mrcOtherBlockId;
   },
   renameMechanismName: function(this: EventHandlerBlock, mechanismBlockId: string, newName: string): void {
@@ -447,8 +447,8 @@ function createMechanismEventHandlerBlock(
   const extraState: EventHandlerExtraState = {
     senderType: SenderType.MECHANISM,
     params: [],
-    otherBlockId: event.blockId,
-    mechanismBlockId: mechanismInRobot.blockId,
+    otherBlockId: event.eventId,
+    mechanismBlockId: mechanismInRobot.mechanismId,
   };
   event.args.forEach(arg => {
     extraState.params.push({
