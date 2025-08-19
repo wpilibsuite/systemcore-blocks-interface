@@ -48,6 +48,7 @@ type Parameter = {
 
 type MechanismExtraState = {
   mechanismModuleId?: string,
+  mechanismId?: string,
   importModule?: string,
   parameters?: Parameter[],
 }
@@ -57,6 +58,7 @@ const WARNING_ID_MECHANISM_CHANGED = 'mechanism changed';
 export type MechanismBlock = Blockly.Block & MechanismMixin & Blockly.BlockSvg;
 interface MechanismMixin extends MechanismMixinType {
   mrcMechanismModuleId: string
+  mrcMechanismId: string,
   mrcImportModule: string,
   mrcParameters: Parameter[],
 }
@@ -84,6 +86,7 @@ const MECHANISM = {
   saveExtraState: function (this: MechanismBlock): MechanismExtraState {
     const extraState: MechanismExtraState = {
       mechanismModuleId: this.mrcMechanismModuleId,
+      mechanismId: this.mrcMechanismId,
     };
     extraState.parameters = [];
     this.mrcParameters.forEach((arg) => {
@@ -102,6 +105,7 @@ const MECHANISM = {
   */
   loadExtraState: function (this: MechanismBlock, extraState: MechanismExtraState): void {
     this.mrcMechanismModuleId = extraState.mechanismModuleId ? extraState.mechanismModuleId : '';
+    this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : this.id;
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
     this.mrcParameters = [];
     if (extraState.parameters) {
@@ -154,9 +158,9 @@ const MECHANISM = {
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
-      renameMethodCallers(this.workspace, this.id, legalName);
+      renameMethodCallers(this.workspace, this.mrcMechanismId, legalName);
       // Rename any event handlers
-      renameMechanismNameInEventHandlers(this.workspace, this.id, legalName);
+      renameMechanismNameInEventHandlers(this.workspace, this.mrcMechanismId, legalName);
     }
     return legalName;
   },
@@ -165,7 +169,7 @@ const MECHANISM = {
     const mechanismType = this.mrcImportModule + '.' + this.getFieldValue(FIELD_TYPE);
     return {
       moduleId: this.mrcMechanismModuleId,
-      blockId: this.id,
+      mechanismId: this.mrcMechanismId,
       name: mechanismName,
       className: mechanismType,
     };
@@ -239,7 +243,15 @@ const MECHANISM = {
       this.setWarningText(null, WARNING_ID_MECHANISM_CHANGED);
     }
   },
-}
+  /**
+   * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
+   */
+  mrcChangeIds: function (this: MechanismBlock, oldIdToNewId: { [oldId: string]: string }): void {
+    if (this.mrcMechanismId in oldIdToNewId) {
+      this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
+    }
+  },
+};
 
 export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = MECHANISM;
