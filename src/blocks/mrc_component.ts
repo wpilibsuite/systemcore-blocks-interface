@@ -49,6 +49,7 @@ type ConstructorArg = {
 };
 
 type ComponentExtraState = {
+  componentId?: string,
   importModule?: string,
   // If staticFunctionName is not present, generate the constructor.
   staticFunctionName?: string,
@@ -57,6 +58,7 @@ type ComponentExtraState = {
 
 export type ComponentBlock = Blockly.Block & ComponentMixin;
 interface ComponentMixin extends ComponentMixinType {
+  mrcComponentId: string,
   mrcArgs: ConstructorArg[],
   mrcImportModule: string,
   mrcStaticFunctionName: string,
@@ -84,6 +86,7 @@ const COMPONENT = {
     */
   saveExtraState: function (this: ComponentBlock): ComponentExtraState {
     const extraState: ComponentExtraState = {
+      componentId: this.mrcComponentId,
     };
     extraState.params = [];
     if (this.mrcArgs){
@@ -106,6 +109,7 @@ const COMPONENT = {
    * Applies the given state to this block.
    */
   loadExtraState: function (this: ComponentBlock, extraState: ComponentExtraState): void {
+    this.mrcComponentId = extraState.componentId ? extraState.componentId : this.id;
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
     this.mrcStaticFunctionName = extraState.staticFunctionName ? extraState.staticFunctionName : '';
     this.mrcArgs = [];
@@ -146,7 +150,7 @@ const COMPONENT = {
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
-      renameMethodCallers(this.workspace, this.id, legalName);
+      renameMethodCallers(this.workspace, this.mrcComponentId, legalName);
     }
     return legalName;
   },
@@ -156,7 +160,7 @@ const COMPONENT = {
     const ports: {[port: string]: string} = {};
     this.getComponentPorts(ports);
     return {
-      blockId: this.id,
+      componentId: this.mrcComponentId,
       name: componentName,
       className: componentType,
       ports: ports,
@@ -172,7 +176,15 @@ const COMPONENT = {
       ports[argName] = this.mrcArgs[i].type;
     }
   },
-}
+  /**
+   * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
+   */
+  mrcChangeIds: function (this: ComponentBlock, oldIdToNewId: { [oldId: string]: string }): void {
+    if (this.mrcComponentId in oldIdToNewId) {
+      this.mrcComponentId = oldIdToNewId[this.mrcComponentId];
+    }
+  },
+};
 
 export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = COMPONENT;
