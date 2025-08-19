@@ -66,7 +66,7 @@ export interface EventHandlerExtraState {
   senderType: SenderType;
   /** The parameters of the event handler. */
   params: Parameter[];
-  /** The id of the mrc_event block that defines the event. */
+  /** The mrcEventId of the mrc_event block that defines the event. */
   otherBlockId: string,
   /**
    * The id of the mrc_mechanism block that adds the mechanism to the robot.
@@ -185,7 +185,7 @@ const EVENT_HANDLER = {
         let foundRobotEvent = false;
         const robotEvents = editor.getEventsFromRobot();
         for (const robotEvent of robotEvents) {
-          if (robotEvent.blockId === this.mrcOtherBlockId) {
+          if (robotEvent.eventId === this.mrcOtherBlockId) {
             foundRobotEvent = true;
             if (this.getFieldValue(FIELD_EVENT_NAME) !== robotEvent.name) {
               this.setFieldValue(robotEvent.name, FIELD_EVENT_NAME);
@@ -287,6 +287,17 @@ const EVENT_HANDLER = {
     if (this.mrcSenderType === SenderType.MECHANISM &&
         mechanismBlockId === this.mrcMechanismBlockId) {
       this.setFieldValue(newName, FIELD_SENDER);
+    }
+  },
+  /**
+   * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
+   */
+  mrcChangeIds: function (this: EventHandlerBlock, oldIdToNewId: { [oldId: string]: string }): void {
+    if (this.mrcOtherBlockId in oldIdToNewId) {
+      this.mrcOtherBlockId = oldIdToNewId[this.mrcOtherBlockId];
+    }
+    if (this.mrcMechanismBlockId && this.mrcMechanismBlockId in oldIdToNewId) {
+      this.mrcMechanismBlockId = oldIdToNewId[this.mrcMechanismBlockId];
     }
   },
 };
@@ -406,7 +417,7 @@ function createRobotEventHandlerBlock(
   const extraState: EventHandlerExtraState = {
     senderType: SenderType.ROBOT,
     params: [],
-    otherBlockId: event.blockId,
+    otherBlockId: event.eventId,
   };
   event.args.forEach(arg => {
     extraState.params.push({
