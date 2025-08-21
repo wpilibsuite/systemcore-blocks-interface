@@ -86,6 +86,8 @@ const MECHANISM_COMPONENT_HOLDER = {
     ChangeFramework.registerCallback(MRC_COMPONENT_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
     ChangeFramework.registerCallback(MRC_MECHANISM_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
     ChangeFramework.registerCallback(MRC_EVENT_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
+    // TODO: We also need an event handler for when a mechanism, component, or event is deleted or
+    // disconnected from the holder.
   },
   saveExtraState: function (this: MechanismComponentHolderBlock): MechanismComponentHolderExtraState {
     const extraState: MechanismComponentHolderExtraState = {
