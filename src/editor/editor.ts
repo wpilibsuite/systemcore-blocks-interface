@@ -32,12 +32,6 @@ import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
-import { registerCategory as registerMethodsCategory } from '../toolbox/methods_category';
-import { registerCategory as registerEventsCategory } from '../toolbox/event_category';
-import {
-    registerRobotEventHandlersCategory,
-    registerMechanismEventHandlersCategory
-} from '../toolbox/event_handlers_category';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
@@ -67,10 +61,6 @@ export class Editor {
     this.blocklyWorkspace = blocklyWorkspace;
     this.generatorContext = generatorContext;
     this.storage = storage;
-    // Register the custom toolbox categories.
-    registerMethodsCategory(blocklyWorkspace);
-    registerEventsCategory(blocklyWorkspace);
-    registerRobotEventHandlersCategory(blocklyWorkspace);
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -177,10 +167,6 @@ export class Editor {
                     ? this.moduleContentText
                     : modulePathToContentText[mechanism.modulePath]);
       }
-      // Register the custom toolbox categories for the mechanisms in the robot.
-      this.robotContent.getMechanisms().forEach(mechanismInRobot => {
-        registerMechanismEventHandlersCategory(this.blocklyWorkspace, mechanismInRobot);
-      });
       this.loadBlocksIntoBlocklyWorkspace();
     }
   }
@@ -220,9 +206,7 @@ export class Editor {
         }, 50);
         return;
       }
-      this.setToolbox(
-        getToolboxJSON(
-          shownPythonToolboxCategories, this.currentModule));
+      this.setToolbox(getToolboxJSON(shownPythonToolboxCategories, this));
     }
   }
 
@@ -239,6 +223,10 @@ export class Editor {
     return this.getModuleContentText() !== this.moduleContentText;
   }
 
+  public getBlocklyWorkspace(): Blockly.WorkspaceSvg {
+    return this.blocklyWorkspace;
+  }
+
   public getCurrentModuleType(): string {
     if (this.currentModule) {
       return this.currentModule.moduleType;
@@ -252,6 +240,7 @@ export class Editor {
     }
 
     // Generate python because some parts of components, events, and methods are affected.
+    extendedPythonGenerator.init(this.blocklyWorkspace);
     extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.generatorContext);
 
     const blocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
