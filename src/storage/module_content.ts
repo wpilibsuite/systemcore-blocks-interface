@@ -263,30 +263,19 @@ export class ModuleContent {
       oldIdToNewId[oldMethodId] = method.methodId;
     });
 
-    // Change the ids in the blocks.
-    const workspace = new Blockly.Workspace();
-    const onChange = (event: Blockly.Events.Abstract) => {
-      if (event.type === Blockly.Events.BLOCK_CREATE) {
-        const blockCreateEvent = event as Blockly.Events.BlockCreate;
-        if (blockCreateEvent.ids) {
-          blockCreateEvent.ids.forEach(id => {
-            const block = workspace.getBlockById(id);
-            if (block) {
-              if ('mrcChangeIds' in block && typeof block.mrcChangeIds === "function") {
-                block.mrcChangeIds(oldIdToNewId);
-              }
-            }
-          });
+    if (Object.keys(oldIdToNewId).length) {
+      // Change the ids in the blocks.
+      const workspace = new Blockly.Workspace();
+      Blockly.serialization.workspaces.load(this.blocks, workspace);
+      workspace.getAllBlocks().forEach(block => {
+        if ('mrcChangeIds' in block && typeof block.mrcChangeIds === "function") {
+          block.mrcChangeIds(oldIdToNewId);
         }
-      }
-    };
-    workspace.addChangeListener(onChange);
-    Blockly.serialization.workspaces.load(this.blocks, workspace);
-    workspace.removeChangeListener(onChange);
-    this.blocks = Blockly.serialization.workspaces.save(workspace);
+      });
+      this.blocks = Blockly.serialization.workspaces.save(workspace);
 
-    // Clean up the workspace
-    workspace.dispose();
-
+      // Clean up the workspace
+      workspace.dispose();
+    }
   }
 }
