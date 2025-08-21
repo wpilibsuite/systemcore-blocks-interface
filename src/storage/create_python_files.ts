@@ -73,10 +73,8 @@ async function generatePythonForModule(module: Module, storage: Storage): Promis
     const generatorContext = new GeneratorContext();
     generatorContext.setModule(module);
 
-    // Initialize the generator if not already done
-    if (!extendedPythonGenerator.isInitialized) {
-      extendedPythonGenerator.init(workspace);
-    }
+    // Initialize the generator
+    extendedPythonGenerator.init(workspace);
 
     // Generate Python code using the same method as the editor
     const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(workspace, generatorContext);
@@ -170,11 +168,7 @@ async function generatePythonFilesMap(project: Project, storage: Storage): Promi
  * @returns Promise that resolves to a blob URL for downloading the zip file
  */
 export async function producePythonProjectBlob(project: Project, storage: Storage): Promise<string> {
-  // Initialize the generator first
-  initializeHeadlessBlockly();
-
   const pythonFilesMap = await generatePythonFilesMap(project, storage);
-
 
   if (pythonFilesMap.size === 0) {
     throw new Error('No Python files were generated successfully');
@@ -188,14 +182,4 @@ export async function producePythonProjectBlob(project: Project, storage: Storag
   const content = await zip.generateAsync({ type: "blob" });
   const blobUrl = URL.createObjectURL(content);
   return blobUrl;
-}
-
-/**
- * Initialize Blockly for headless operation
- * This should be called once before using the generation functions
- */
-function initializeHeadlessBlockly(): void {
-  // Initialize Blockly for headless operation
-  // This ensures all necessary generators and blocks are loaded
-  extendedPythonGenerator.init(new Blockly.Workspace());
 }
