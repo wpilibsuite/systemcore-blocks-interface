@@ -287,7 +287,13 @@ async function renameOrCopyModule(
     storage: commonStorage.Storage, project: Project, newClassName: string,
     oldModule: storageModule.Module, rename: boolean): Promise<string> {
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName);
-  const moduleContentText = await storage.fetchModuleContentText(oldModule.modulePath);
+  let moduleContentText = await storage.fetchModuleContentText(oldModule.modulePath);
+  if (!rename) {
+    // Change the ids in the module.
+    const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
+    moduleContent.changeIds();
+    moduleContentText = moduleContent.getModuleContentText();
+  }
   await storage.saveModule(newModulePath, moduleContentText);
   if (rename) {
     // For rename, delete the old module.
@@ -462,7 +468,7 @@ async function processUploadedBlob(blobUrl: string): Promise<{ [className: strin
   });
 
   // Wait for all promises to resolve.
-  const files: { [key: string]: string } = {}; // key is file name, value is content
+  const files: { [fileName: string]: string } = {}; // value is file content
   await Promise.all(
     Object.entries(promises).map(async ([filename, promise]) => {
       files[filename] = await promise;

@@ -4,25 +4,23 @@
         "blocks": [
             {
                 "type": "mrc_opmode_details",
-                "id": "ElbONc{)gh,UprTW(|1C",
                 "x": 10,
                 "y": 10,
-                "editable": false,
                 "deletable": false,
+                "editable": false,
                 "fields": {
-                    "NAME": "",
-                    "GROUP": "",
                     "TYPE": "Teleop",
-                    "ENABLED": true 
+                    "ENABLED": true,
+                    "NAME": "",
+                    "GROUP": ""
                 }
             },
             {
                 "type": "mrc_class_method_def",
-                "id": "ElbONc{)s(,UprTW(|1C",
                 "x": 10,
-                "y": 120,
-                "editable": false,
+                "y": 110,
                 "deletable": false,
+                "editable": false,
                 "extraState": {
                     "canChangeSignature": false,
                     "canBeCalledWithinClass": false,
@@ -37,16 +35,16 @@
                     "pythonMethodName": "__init__"
                 },
                 "fields": {
-                    "NAME": "init"
+                    "NAME": "init",
+                    "PARAM_robot": "robot"
                 }
             },
             {
                 "type": "mrc_class_method_def",
-                "id": "wxFAh6eaR1|3fTuV:UAd",
                 "x": 10,
-                "y": 300,
-                "editable": false,
+                "y": 190,
                 "deletable": false,
+                "editable": false,
                 "extraState": {
                     "canChangeSignature": false,
                     "canBeCalledWithinClass": false,

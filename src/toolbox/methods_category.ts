@@ -32,11 +32,14 @@ import { Editor } from '../editor/editor';
 
 const CUSTOM_CATEGORY_METHODS = 'MRC_METHODS';
 
-export function registerCategory(blocklyWorkspace: Blockly.WorkspaceSvg): void {
-  new MethodsCategory(blocklyWorkspace);
-}
+export function getCategory(editor: Editor): toolboxItems.Category {
+  const blocklyWorkspace = editor.getBlocklyWorkspace();
 
-export function getCategory(): toolboxItems.Category {
+  // If this category hasn't been register yet, do it now.
+  if (!blocklyWorkspace.getToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS)) {
+    const category = new MethodsCategory();
+    blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS, category.methodsFlyout.bind(category));
+  }
   return {
     kind: 'category',
     categorystyle: MRC_CATEGORY_STYLE_METHODS,
@@ -50,51 +53,49 @@ class MethodsCategory {
   private mechanismClassBlocks = getBaseClassBlocks(CLASS_NAME_MECHANISM);
   private opmodeClassBlocks = getBaseClassBlocks(CLASS_NAME_OPMODE);
 
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
-    blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS, this.methodsFlyout.bind(this));
-  }
-
   public methodsFlyout(workspace: Blockly.WorkspaceSvg) {
+    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
+    if (!editor) {
+      throw new Error('No editor for blockly workspace');
+    }
+
     const contents: toolboxItems.ContentsType[] = [];
 
     // Add blocks for defining any methods that can be defined in the current
     // module. For example, if the current module is an OpMode, add blocks to
     // define the methods declared in the OpMode class.
 
-    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
-    if (editor) {
-      // Collect the method names that are already overridden in the blockly workspace.
-      const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
+    // Collect the method names that are already overridden in the blockly workspace.
+    const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
 
-      switch (editor.getCurrentModuleType()) {
-        case storageModule.MODULE_TYPE_ROBOT:
-          // TODO(lizlooney): We need a way to mark a method in python as not overridable.
-          // For example, in RobotBase, define_hardware, register_event_handler,
-          // unregister_event_handler, and fire_event should not be overridden in a user's robot.
-          const methodNamesNotOverrideable: string[] = [
-            'define_hardware',
-            'fire_event',
-            'register_event_handler',
-            'unregister_event_handler',
-          ];
-          // Add the methods for a Robot.
-          this.addClassBlocksForCurrentModule(
-              'More Robot Methods', this.robotClassBlocks, methodNamesNotOverrideable,
-              methodNamesAlreadyOverridden, contents);
-          break;
-        case storageModule.MODULE_TYPE_MECHANISM:
-          // Add the methods for a Mechanism.
-          this.addClassBlocksForCurrentModule(
-              'More Mechanism Methods', this.mechanismClassBlocks, [],
-              methodNamesAlreadyOverridden, contents);
-          break;
-        case storageModule.MODULE_TYPE_OPMODE:
-          // Add the methods for an OpMode.
-          this.addClassBlocksForCurrentModule(
-              'More OpMode Methods', this.opmodeClassBlocks, [],
-              methodNamesAlreadyOverridden, contents);
-          break;
-      }
+    switch (editor.getCurrentModuleType()) {
+      case storageModule.MODULE_TYPE_ROBOT:
+        // TODO(lizlooney): We need a way to mark a method in python as not overridable.
+        // For example, in RobotBase, define_hardware, register_event_handler,
+        // unregister_event_handler, and fire_event should not be overridden in a user's robot.
+        const methodNamesNotOverrideable: string[] = [
+          'define_hardware',
+          'fire_event',
+          'register_event_handler',
+          'unregister_event_handler',
+        ];
+        // Add the methods for a Robot.
+        this.addClassBlocksForCurrentModule(
+            'More Robot Methods', this.robotClassBlocks, methodNamesNotOverrideable,
+            methodNamesAlreadyOverridden, contents);
+        break;
+      case storageModule.MODULE_TYPE_MECHANISM:
+        // Add the methods for a Mechanism.
+        this.addClassBlocksForCurrentModule(
+            'More Mechanism Methods', this.mechanismClassBlocks, [],
+            methodNamesAlreadyOverridden, contents);
+        break;
+      case storageModule.MODULE_TYPE_OPMODE:
+        // Add the methods for an OpMode.
+        this.addClassBlocksForCurrentModule(
+            'More OpMode Methods', this.opmodeClassBlocks, [],
+            methodNamesAlreadyOverridden, contents);
+        break;
     }
 
     // Add a block that lets the user define a new method.
@@ -107,10 +108,8 @@ class MethodsCategory {
     );
 
     // Get blocks for calling methods defined in the current workspace.
-    if (editor) {
-      const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
-      addInstanceWithinBlocks(methodsFromWorkspace, contents);
-    }
+    const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
+    addInstanceWithinBlocks(methodsFromWorkspace, contents);
 
     const toolboxInfo = {
       contents: contents,

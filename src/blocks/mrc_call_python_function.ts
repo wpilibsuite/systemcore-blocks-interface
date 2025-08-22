@@ -51,7 +51,7 @@ enum FunctionKind {
   INSTANCE_COMPONENT = 'instance_component',
   INSTANCE_ROBOT = 'instance_robot',
   INSTANCE_MECHANISM = 'instance_mechanism',
-  EVENT = 'event',
+  EVENT = 'event', // For firing an event.
 }
 
 const RETURN_TYPE_NONE = 'None';
@@ -77,11 +77,13 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcTooltip: string,
   mrcImportModule: string,
   mrcActualFunctionName: string,
-  mrcOtherBlockId: string,
+  mrcMethodId?: string,
+  mrcComponentId?: string,
+  mrcEventId: string,
+  mrcMechanismId: string,
   mrcComponentClassName: string,
   mrcOriginalComponentName: string,
   mrcMechanismClassName: string,
-  mrcMechanismBlockId: string,
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
 
@@ -117,13 +119,25 @@ type CallPythonFunctionExtraState = {
    */
   actualFunctionName?: string,
   /**
-   * The id of the block that defines the method, component, or event.
-   * For INSTANCE_WITHIN, INSTANCE_ROBOT, or INSTANCE_MECHANISM, this is the id of an
-   * mrc_class_method_def block.
-   * For INSTANCE_COMPONENT, this is the id of an mrc_component block.
-   * For EVENT, this is the id of an mrc_event block.
+   * The mrcMethodId of the mrc_class_method_def block that declares the method.
+   * Specified only if the function kind is INSTANCE_WITHIN, INSTANCE_ROBOT, or INSTANCE_MECHANISM
    */
-  otherBlockId?: string,
+  methodId?: string,
+  /**
+   * The mrcComponentId of the mrc_component block that adds the component to the robot or a mechanism.
+   * Specified only if the function kind is INSTANCE_COMPONENT.
+   */
+  componentId?: string,
+  /**
+   * The mrcEventId of the mrc_event block that defines the event.
+   * Specified only if the function kind is EVENT.
+   */
+  eventId?: string,
+  /**
+   * The mrcMechanismId of the mrc_mechanism block that adds the mechanism to the robot.
+   * Specified only if the function kind is INSTANCE_MECHANISM.
+   */
+  mechanismId?: string,
   /**
    * The component name. Specified only if the function kind is INSTANCE_COMPONENT.
    */
@@ -136,10 +150,10 @@ type CallPythonFunctionExtraState = {
    * The mechanism class name. Specified only if the function kind is INSTANCE_MECHANISM.
    */
   mechanismClassName?: string,
-  /**
-   * The id of the mrc_mechanism block that adds the mechanism to the robot.
-   * Specified only if the function kind is INSTANCE_MECHANISM.
-   */
+
+  // The following fields allow Alan and Liz to load older projects.
+  // TODO(lizlooney): Remove these fields.
+  otherBlockId?: string,
   mechanismBlockId?: string,
 }
 
@@ -246,8 +260,17 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcActualFunctionName) {
       extraState.actualFunctionName = this.mrcActualFunctionName;
     }
-    if (this.mrcOtherBlockId) {
-      extraState.otherBlockId = this.mrcOtherBlockId;
+    if (this.mrcMethodId) {
+      extraState.methodId = this.mrcMethodId;
+    }
+    if (this.mrcComponentId) {
+      extraState.componentId = this.mrcComponentId;
+    }
+    if (this.mrcEventId) {
+      extraState.eventId = this.mrcEventId;
+    }
+    if (this.mrcMechanismId) {
+      extraState.mechanismId = this.mrcMechanismId;
     }
     if (this.mrcComponentClassName) {
       extraState.componentClassName = this.mrcComponentClassName;
@@ -258,11 +281,11 @@ const CALL_PYTHON_FUNCTION = {
       // components of the same type. For example, they can easily switch from a motor component
       // name "left_motor" to a motor component named "right_motor".
       if (extraState.componentName !== this.mrcOriginalComponentName) {
-        // The user has chosen a different component name. We need to get the block id of the
-        // mrc_component block that defines the component that the user has chosen.
+        // The user has chosen a different component name. We need to get the componentId of the
+        // component that the user has chosen.
         for (const component of this.getComponentsFromRobot()) {
           if (component.name == extraState.componentName) {
-            extraState.otherBlockId = component.blockId;
+            extraState.componentId = component.componentId;
             break;
           }
         }
@@ -270,9 +293,6 @@ const CALL_PYTHON_FUNCTION = {
     }
     if (this.mrcMechanismClassName) {
       extraState.mechanismClassName = this.mrcMechanismClassName;
-    }
-    if (this.mrcMechanismBlockId) {
-      extraState.mechanismBlockId = this.mrcMechanismBlockId;
     }
     return extraState;
   },
@@ -283,6 +303,7 @@ const CALL_PYTHON_FUNCTION = {
       this: CallPythonFunctionBlock,
       extraState: CallPythonFunctionExtraState
   ): void {
+    fixOldExtraState(extraState);
     this.mrcFunctionKind = extraState.functionKind as FunctionKind;
     this.mrcReturnType = extraState.returnType;
     this.mrcArgs = [];
@@ -293,31 +314,16 @@ const CALL_PYTHON_FUNCTION = {
       });
     });
     this.mrcTooltip = extraState.tooltip ? extraState.tooltip : '';
-    this.mrcImportModule = extraState.importModule
-        ? extraState.importModule : '';
-    this.mrcActualFunctionName = extraState.actualFunctionName
-        ? extraState.actualFunctionName : '';
-    this.mrcOtherBlockId = extraState.otherBlockId
-        ? extraState.otherBlockId : '';
-    // TODO(lizlooney: Remove this if statement after Alan and I have updated our projects.
-    if (!this.mrcOtherBlockId) {
-      const oldExtraState = extraState as any;
-      if (oldExtraState.classMethodDefBlockId) {
-        this.mrcOtherBlockId = oldExtraState.classMethodDefBlockId;
-      } else if (oldExtraState.componentBlockId) {
-        this.mrcOtherBlockId = oldExtraState.componentBlockId;
-      } else if (oldExtraState.eventBlockId) {
-        this.mrcOtherBlockId = oldExtraState.eventBlockId;
-      }
-    }
-    this.mrcComponentClassName = extraState.componentClassName
-        ? extraState.componentClassName : '';
+    this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
+    this.mrcActualFunctionName = extraState.actualFunctionName ? extraState.actualFunctionName : '';
+    this.mrcMethodId = extraState.methodId ? extraState.methodId : '';
+    this.mrcComponentId = extraState.componentId ? extraState.componentId : '';
+    this.mrcEventId = extraState.eventId ? extraState.eventId : '';
+    this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : '';
+    this.mrcComponentClassName = extraState.componentClassName ? extraState.componentClassName : '';
     this.mrcOriginalComponentName = extraState.componentName
         ? extraState.componentName : '';
-    this.mrcMechanismClassName = extraState.mechanismClassName
-        ? extraState.mechanismClassName : '';
-    this.mrcMechanismBlockId = extraState.mechanismBlockId
-        ? extraState.mechanismBlockId : '';
+    this.mrcMechanismClassName = extraState.mechanismClassName ? extraState.mechanismClassName : '';
     this.updateBlock_();
   },
   /**
@@ -455,41 +461,35 @@ const CALL_PYTHON_FUNCTION = {
       this.removeInput('ARG' + i);
     }
   },
-  renameMethodCaller: function(this: CallPythonFunctionBlock, blockId: string, newName: string): void {
+  renameMethodCaller: function(this: CallPythonFunctionBlock, id: string, newName: string): void {
     // renameMethodCaller is called when a component, mechanism, event, or
     // method block in the same module is modified.
     switch (this.mrcFunctionKind) {
       case FunctionKind.INSTANCE_WITHIN:
-        if (blockId === this.mrcOtherBlockId) {
-          // For INSTANCE_WITHIN this.mrcOtherBlockId is the id of an mrc_class_method_def block.
+        if (id === this.mrcMethodId) {
           this.setFieldValue(newName, FIELD_FUNCTION_NAME);
           // mrcActualFunctionName does not need to be updated because it is not used for INSTANCE_WITHIN.
         }
         break;
       case FunctionKind.INSTANCE_COMPONENT:
-        if (blockId === this.mrcOtherBlockId) {
-          // For INSTANCE_COMPONENT this.mrcOtherBlockId is the id of an mrc_component block.
+        if (id === this.mrcComponentId) {
           this.setFieldValue(newName, FIELD_COMPONENT_NAME);
         }
         break;
       case FunctionKind.INSTANCE_ROBOT:
-        if (blockId === this.mrcOtherBlockId) {
-          // For INSTANCE_ROBOT this.mrcOtherBlockId is the id of an mrc_class_method_def block.
+        if (id === this.mrcMethodId) {
           this.setFieldValue(newName, FIELD_FUNCTION_NAME);
         }
         break;
       case FunctionKind.INSTANCE_MECHANISM:
-        if (blockId === this.mrcOtherBlockId) {
-          // For INSTANCE_MECHANISM this.mrcOtherBlockId is the id of an mrc_class_method_def block.
+        if (id === this.mrcMethodId) {
           this.setFieldValue(newName, FIELD_FUNCTION_NAME);
-        } else if (blockId === this.mrcMechanismBlockId) {
-          // For INSTANCE_MECHANISM this.mrcMechanismBlockId is the id of an mrc_mechanism block.
+        } else if (id === this.mrcMechanismId) {
           this.setFieldValue(newName, FIELD_MECHANISM_NAME);
         }
         break;
       case FunctionKind.EVENT:
-        if (blockId === this.mrcOtherBlockId) {
-          // For EVENT, this.mrcOtherBlockId is the id of an mrc_event block.
+        if (id === this.mrcEventId) {
           this.setFieldValue(newName, FIELD_EVENT_NAME);
         }
         break;
@@ -557,7 +557,7 @@ const CALL_PYTHON_FUNCTION = {
         componentsInScope.push(...editor.getComponentsFromWorkspace());
       }
       for (const component of componentsInScope) {
-        if (component.blockId === this.mrcOtherBlockId) {
+        if (component.componentId === this.mrcComponentId) {
           foundComponent = true;
 
           // If the component name has changed, we can handle that.
@@ -606,7 +606,7 @@ const CALL_PYTHON_FUNCTION = {
         let foundRobotMethod = false;
         const robotMethods = editor.getMethodsFromRobot();
         for (const robotMethod of robotMethods) {
-          if (robotMethod.blockId === this.mrcOtherBlockId) {
+          if (robotMethod.methodId === this.mrcMethodId) {
             foundRobotMethod = true;
             if (this.mrcActualFunctionName !== robotMethod.pythonName) {
               this.mrcActualFunctionName = robotMethod.pythonName;
@@ -652,7 +652,7 @@ const CALL_PYTHON_FUNCTION = {
         let foundMechanism = false;
         const mechanismsInRobot = editor.getMechanismsFromRobot();
         for (const mechanismInRobot of mechanismsInRobot) {
-          if (mechanismInRobot.blockId === this.mrcMechanismBlockId) {
+          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
             foundMechanism = true;
 
             // If the mechanism name has changed, we can handle that.
@@ -665,7 +665,7 @@ const CALL_PYTHON_FUNCTION = {
             const mechanismMethods: storageModuleContent.Method[] = mechanism
                 ? editor.getMethodsFromMechanism(mechanism) : [];
             for (const mechanismMethod of mechanismMethods) {
-              if (mechanismMethod.blockId === this.mrcOtherBlockId) {
+              if (mechanismMethod.methodId === this.mrcMethodId) {
                 foundMechanismMethod = true;
                 if (this.mrcActualFunctionName !== mechanismMethod.pythonName) {
                   this.mrcActualFunctionName = mechanismMethod.pythonName;
@@ -713,45 +713,60 @@ const CALL_PYTHON_FUNCTION = {
       this.setWarningText(null, WARNING_ID_FUNCTION_CHANGED);
     }
   },
+  /**
+   * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
+   */
+  mrcChangeIds: function (this: CallPythonFunctionBlock, oldIdToNewId: { [oldId: string]: string }): void {
+    if (this.mrcMethodId && this.mrcMethodId in oldIdToNewId) {
+      this.mrcMethodId = oldIdToNewId[this.mrcMethodId];
+    }
+    if (this.mrcComponentId && this.mrcComponentId in oldIdToNewId) {
+      this.mrcComponentId = oldIdToNewId[this.mrcComponentId];
+    }
+    if (this.mrcEventId && this.mrcEventId in oldIdToNewId) {
+      this.mrcEventId = oldIdToNewId[this.mrcEventId];
+    }
+    if (this.mrcMechanismId && this.mrcMechanismId in oldIdToNewId) {
+      this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
+    }
+  },
 };
 
-export const setup = function() {
+export function setup(): void {
   Blockly.Blocks[BLOCK_NAME] = CALL_PYTHON_FUNCTION;
-};
+}
 
-export const pythonFromBlock = function(
-    block: Blockly.Block,
+export function pythonFromBlock(
+    block: CallPythonFunctionBlock,
     generator: ExtendedPythonGenerator,
 ) {
-  const callPythonFunctionBlock = block as CallPythonFunctionBlock;
-  if (callPythonFunctionBlock.mrcImportModule) {
-    generator.addImport(callPythonFunctionBlock.mrcImportModule);
+  if (block.mrcImportModule) {
+    generator.addImport(block.mrcImportModule);
   }
   let code = '';
   let needOpenParen = true;
   let delimiterBeforeArgs = '';
   let argStartIndex = 0;
-  switch (callPythonFunctionBlock.mrcFunctionKind) {
+  switch (block.mrcFunctionKind) {
     case FunctionKind.BUILT_IN: {
-      const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
-          ? callPythonFunctionBlock.mrcActualFunctionName
+      const functionName = (block.mrcActualFunctionName)
+          ? block.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = functionName;
       break;
     }
     case FunctionKind.MODULE: {
       const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-      const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
-          ? callPythonFunctionBlock.mrcActualFunctionName
+      const functionName = (block.mrcActualFunctionName)
+          ? block.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = moduleName + '.' + functionName;
       break;
     }
     case FunctionKind.STATIC: {
-      const callPythonFunctionBlock = block as CallPythonFunctionBlock;
       const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-      const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
-          ? callPythonFunctionBlock.mrcActualFunctionName
+      const functionName = (block.mrcActualFunctionName)
+          ? block.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = className + '.' + functionName;
       break;
@@ -762,10 +777,9 @@ export const pythonFromBlock = function(
       break;
     }
     case FunctionKind.INSTANCE: {
-      const callPythonFunctionBlock = block as CallPythonFunctionBlock;
       const selfValue = generator.valueToCode(block, 'ARG0', Order.MEMBER);
-      const functionName = (callPythonFunctionBlock.mrcActualFunctionName)
-          ? callPythonFunctionBlock.mrcActualFunctionName
+      const functionName = (block.mrcActualFunctionName)
+          ? block.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = selfValue + '.' + functionName;
       argStartIndex = 1; // Skip the self argument.
@@ -786,8 +800,8 @@ export const pythonFromBlock = function(
     }
     case FunctionKind.INSTANCE_COMPONENT: {
       const componentName = block.getFieldValue(FIELD_COMPONENT_NAME);
-      const functionName = callPythonFunctionBlock.mrcActualFunctionName
-          ? callPythonFunctionBlock.mrcActualFunctionName
+      const functionName = block.mrcActualFunctionName
+          ? block.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
@@ -803,16 +817,16 @@ export const pythonFromBlock = function(
       break;
     }
     case FunctionKind.INSTANCE_ROBOT: {
-      const functionName = callPythonFunctionBlock.mrcActualFunctionName
-          ? callPythonFunctionBlock.mrcActualFunctionName
+      const functionName = block.mrcActualFunctionName
+          ? block.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = 'self.robot.' + functionName;
       break;
     }
     case FunctionKind.INSTANCE_MECHANISM: {
       const mechanismName = block.getFieldValue(FIELD_MECHANISM_NAME);
-      const functionName = callPythonFunctionBlock.mrcActualFunctionName
-          ? callPythonFunctionBlock.mrcActualFunctionName
+      const functionName = block.mrcActualFunctionName
+          ? block.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
@@ -832,12 +846,12 @@ export const pythonFromBlock = function(
       break;
     }
     default:
-      throw new Error('mrcFunctionKind has unexpected value: ' + callPythonFunctionBlock.mrcFunctionKind)
+      throw new Error('mrcFunctionKind has unexpected value: ' + block.mrcFunctionKind)
   }
   if (needOpenParen) {
     code += '(';
   }
-  const codeForArgs = generateCodeForArguments(callPythonFunctionBlock, generator, argStartIndex);
+  const codeForArgs = generateCodeForArguments(block, generator, argStartIndex);
   if (codeForArgs) {
     code += delimiterBeforeArgs + codeForArgs;
   }
@@ -868,25 +882,28 @@ function generateCodeForArguments(
   return code;
 }
 
-function getMethodCallers(workspace: Blockly.Workspace, otherBlockId: string): Blockly.Block[] {
+function getMethodCallers(workspace: Blockly.Workspace, id: string): Blockly.Block[] {
   return workspace.getBlocksByType(BLOCK_NAME).filter((block) => {
+    const callPythonFunctionBlock = block as CallPythonFunctionBlock;
     return (
-        (block as CallPythonFunctionBlock).mrcOtherBlockId === otherBlockId ||
-        (block as CallPythonFunctionBlock).mrcMechanismBlockId === otherBlockId);
+        callPythonFunctionBlock.mrcMethodId === id ||
+        callPythonFunctionBlock.mrcComponentId === id ||
+        callPythonFunctionBlock.mrcEventId === id ||
+        callPythonFunctionBlock.mrcMechanismId === id);
   });
 }
 
-export function renameMethodCallers(workspace: Blockly.Workspace, otherBlockId: string, newName: string): void {
-  getMethodCallers(workspace, otherBlockId).forEach(block => {
-    (block as CallPythonFunctionBlock).renameMethodCaller(otherBlockId, newName);
+export function renameMethodCallers(workspace: Blockly.Workspace, id: string, newName: string): void {
+  getMethodCallers(workspace, id).forEach(block => {
+    (block as CallPythonFunctionBlock).renameMethodCaller(id, newName);
   });
 }
 
 export function mutateMethodCallers(
-    workspace: Blockly.Workspace, otherBlockId: string, methodOrEvent: storageModuleContent.Method | storageModuleContent.Event) {
+    workspace: Blockly.Workspace, id: string, methodOrEvent: storageModuleContent.Method | storageModuleContent.Event) {
   const oldRecordUndo = Blockly.Events.getRecordUndo();
 
-  getMethodCallers(workspace, otherBlockId).forEach(block => {
+  getMethodCallers(workspace, id).forEach(block => {
     const callBlock = block as CallPythonFunctionBlock;
     // Get the extra state before changing the call block.
     const oldExtraState = callBlock.saveExtraState();
@@ -1084,7 +1101,7 @@ function createInstanceWithinBlock(method: storageModuleContent.Method): toolbox
     returnType: method.returnType,
     actualFunctionName: method.pythonName,
     args: [],
-    otherBlockId: method.blockId,
+    methodId: method.methodId,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_FUNCTION_NAME] = method.visibleName;
@@ -1141,7 +1158,7 @@ function createInstanceComponentBlock(
     importModule: '',
     componentClassName: component.className,
     componentName: component.name,
-    otherBlockId: component.blockId,
+    componentId: component.componentId,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_COMPONENT_NAME] = component.name;
@@ -1169,7 +1186,7 @@ function createInstanceRobotBlock(method: storageModuleContent.Method): toolboxI
     returnType: method.returnType,
     actualFunctionName: method.pythonName,
     args: [],
-    otherBlockId: method.blockId,
+    methodId: method.methodId,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_FUNCTION_NAME] = method.visibleName;
@@ -1205,9 +1222,9 @@ function createInstanceMechanismBlock(
     returnType: method.returnType,
     actualFunctionName: method.pythonName,
     args: [],
-    otherBlockId: method.blockId,
+    methodId: method.methodId,
     mechanismClassName: mechanismInRobot.className,
-    mechanismBlockId: mechanismInRobot.blockId,
+    mechanismId: mechanismInRobot.mechanismId,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_MECHANISM_NAME] = mechanismInRobot.name;
@@ -1242,7 +1259,7 @@ function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.B
     functionKind: FunctionKind.EVENT,
     returnType: RETURN_TYPE_NONE,
     args: [],
-    otherBlockId: event.blockId,
+    eventId: event.eventId,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_EVENT_NAME] = event.name;
@@ -1258,4 +1275,27 @@ function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.B
   });
   processArgs(args, extraState, inputs);
   return createBlock(extraState, fields, inputs);
+}
+
+// The following function allows Alan and Liz to load older projects.
+// TODO(lizlooney): Remove this function.
+function fixOldExtraState(extraState: CallPythonFunctionExtraState): void {
+  if (extraState.otherBlockId) {
+    switch (extraState.functionKind as FunctionKind) {
+      case FunctionKind.INSTANCE_WITHIN:
+      case FunctionKind.INSTANCE_ROBOT:
+      case FunctionKind.INSTANCE_MECHANISM:
+        extraState.methodId = extraState.otherBlockId;
+        break;
+      case FunctionKind.INSTANCE_COMPONENT:
+        extraState.componentId = extraState.otherBlockId;
+        break;
+      case FunctionKind.EVENT:
+        extraState.eventId = extraState.otherBlockId;
+        break;
+    }
+  }
+  if (extraState.mechanismBlockId) {
+    extraState.mechanismId = extraState.mechanismBlockId;
+  }
 }

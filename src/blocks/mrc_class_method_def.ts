@@ -46,6 +46,7 @@ type Parameter = {
 
 export type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin & Blockly.BlockSvg;
 interface ClassMethodDefMixin extends ClassMethodDefMixinType {
+    mrcMethodId: string,
     mrcCanChangeSignature: boolean,
     mrcCanBeCalledWithinClass: boolean,
     mrcCanBeCalledOutsideClass: boolean,
@@ -58,6 +59,10 @@ type ClassMethodDefMixinType = typeof CLASS_METHOD_DEF;
 
 /** Extra state for serialising call_python_* blocks. */
 type ClassMethodDefExtraState = {
+    /**
+     * The id that identifies this method definition.
+     */
+    methodId?: string,
     /**
      * Can change name and parameters and return type
      */
@@ -109,6 +114,7 @@ const CLASS_METHOD_DEF = {
     saveExtraState: function (
         this: ClassMethodDefBlock): ClassMethodDefExtraState {
         const extraState: ClassMethodDefExtraState = {
+            methodId: this.mrcMethodId,
             canChangeSignature: this.mrcCanChangeSignature,
             canBeCalledWithinClass: this.mrcCanBeCalledWithinClass,
             canBeCalledOutsideClass: this.mrcCanBeCalledOutsideClass,
@@ -134,6 +140,7 @@ const CLASS_METHOD_DEF = {
         this: ClassMethodDefBlock,
         extraState: ClassMethodDefExtraState
     ): void {
+        this.mrcMethodId = extraState.methodId ? extraState.methodId : this.id;
         this.mrcCanChangeSignature = extraState.canChangeSignature;
         this.mrcCanBeCalledWithinClass = extraState.canBeCalledWithinClass;
         this.mrcCanBeCalledOutsideClass = extraState.canBeCalledOutsideClass;
@@ -196,7 +203,7 @@ const CLASS_METHOD_DEF = {
         if (this.mrcCanBeCalledWithinClass) {
           const methodForWithin = this.getMethodForWithin();
           if (methodForWithin) {
-            mutateMethodCallers(this.workspace, this.id, methodForWithin);
+            mutateMethodCallers(this.workspace, this.mrcMethodId, methodForWithin);
           }
         }
     },
@@ -263,13 +270,13 @@ const CLASS_METHOD_DEF = {
         const oldName = nameField.getValue();
         if (oldName && oldName !== name && oldName !== legalName) {
             // Rename any callers.
-            renameMethodCallers(this.workspace, this.id, legalName);
+            renameMethodCallers(this.workspace, this.mrcMethodId, legalName);
         }
         return legalName;
     },
     getMethod: function (this: ClassMethodDefBlock): storageModuleContent.Method | null {
         const method: storageModuleContent.Method = {
-            blockId: this.id,
+            methodId: this.mrcMethodId,
             visibleName: this.getFieldValue(FIELD_METHOD_NAME),
             pythonName: this.mrcFuncName ? this.mrcFuncName : '',
             returnType: this.mrcReturnType,
@@ -306,6 +313,14 @@ const CLASS_METHOD_DEF = {
     },
     getMethodName: function (this: ClassMethodDefBlock): string {
         return this.getFieldValue(FIELD_METHOD_NAME);
+    },
+    /**
+     * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
+     */
+    mrcChangeIds: function (this: ClassMethodDefBlock, oldIdToNewId: { [oldId: string]: string }): void {
+        if (this.mrcMethodId in oldIdToNewId) {
+            this.mrcMethodId = oldIdToNewId[this.mrcMethodId];
+        }
     },
 };
 

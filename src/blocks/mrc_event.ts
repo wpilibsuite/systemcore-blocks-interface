@@ -41,20 +41,22 @@ type Parameter = {
 };
 
 type EventExtraState = {
+  eventId?: string,
   params?: Parameter[],
 }
 
 export type EventBlock = Blockly.Block & EventMixin & Blockly.BlockSvg;
 
 interface EventMixin extends EventMixinType {
+  mrcEventId: string,
   mrcParameters: Parameter[],
 }
 type EventMixinType = typeof EVENT;
 
 const EVENT = {
   /**
-    * Block initialization.
-    */
+   * Block initialization.
+   */
   init: function (this: EventBlock): void {
     this.setStyle(MRC_STYLE_EVENTS);
     this.appendDummyInput("TITLE")
@@ -66,10 +68,11 @@ const EVENT = {
   },
 
   /**
-    * Returns the state of this block as a JSON serializable object.
-    */
+   * Returns the state of this block as a JSON serializable object.
+   */
   saveExtraState: function (this: EventBlock): EventExtraState {
     const extraState: EventExtraState = {
+      eventId: this.mrcEventId,
     };
     extraState.params = [];
     if (this.mrcParameters) {
@@ -83,9 +86,10 @@ const EVENT = {
     return extraState;
   },
   /**
-  * Applies the given state to this block.
-  */
+   * Applies the given state to this block.
+   */
   loadExtraState: function (this: EventBlock, extraState: EventExtraState): void {
+    this.mrcEventId = extraState.eventId ? extraState.eventId : this.id;
     this.mrcParameters = [];
 
     if (extraState.params) {
@@ -100,8 +104,8 @@ const EVENT = {
     this.updateBlock_();
   },
   /**
-     * Update the block to reflect the newly loaded extra state.
-     */
+   * Update the block to reflect the newly loaded extra state.
+   */
   updateBlock_: function (this: EventBlock): void {
     const name = this.getFieldValue(FIELD_EVENT_NAME);
     const input = this.getInput('TITLE');
@@ -136,7 +140,7 @@ const EVENT = {
         paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
     }
     this.mrcUpdateParams();
-    mutateMethodCallers(this.workspace, this.id, this.getEvent());
+    mutateMethodCallers(this.workspace, this.mrcEventId, this.getEvent());
   },
   decompose: function (this: EventBlock, workspace: Blockly.Workspace) {
     // This is a special sub-block that only gets created in the mutator UI.
@@ -189,42 +193,50 @@ const EVENT = {
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
-      renameMethodCallers(this.workspace, this.id, legalName);
+      renameMethodCallers(this.workspace, this.mrcEventId, legalName);
     }
     return legalName;
   },
   onBlockChanged(block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase): void {
-      const blockBlock = block as Blockly.Block;
+    const blockBlock = block as Blockly.Block;
   
-      if (blockEvent.type === Blockly.Events.BLOCK_MOVE) {
-        const parent = ChangeFramework.getParentOfType(block, MRC_MECHANISM_COMPONENT_HOLDER);
+    if (blockEvent.type === Blockly.Events.BLOCK_MOVE) {
+      const parent = ChangeFramework.getParentOfType(block, MRC_MECHANISM_COMPONENT_HOLDER);
         
-        if (parent) {
-              // If it is, we allow it to stay.
-              blockBlock.setWarningText(null);
-              return;
-            }
-        // If we end up here it shouldn't be allowed
-        block.unplug(true);
-        blockBlock.setWarningText('Events can only go in the events section of the robot or mechanism');
-        blockBlock.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+      if (parent) {
+        // If it is, we allow it to stay.
+        blockBlock.setWarningText(null);
+        return;
       }
-    },
-    getEvent: function (this: EventBlock): storageModuleContent.Event {
-      const event: storageModuleContent.Event = {
-        blockId: this.id,
-        name: this.getFieldValue(FIELD_EVENT_NAME),
-        args: [],
-      };
-      this.mrcParameters.forEach(param => {
-        event.args.push({
-          name: param.name,
-          type: param.type ? param.type : '',
-        });
+      // If we end up here it shouldn't be allowed
+      block.unplug(true);
+      blockBlock.setWarningText('Events can only go in the events section of the robot or mechanism');
+      blockBlock.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+    }
+  },
+  getEvent: function (this: EventBlock): storageModuleContent.Event {
+    const event: storageModuleContent.Event = {
+      eventId: this.mrcEventId,
+      name: this.getFieldValue(FIELD_EVENT_NAME),
+      args: [],
+    };
+    this.mrcParameters.forEach(param => {
+      event.args.push({
+        name: param.name,
+        type: param.type ? param.type : '',
       });
-      return event;
-    },
-}
+    });
+    return event;
+  },
+  /**
+   * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
+   */
+  mrcChangeIds: function (this: EventBlock, oldIdToNewId: { [oldId: string]: string }): void {
+    if (this.mrcEventId in oldIdToNewId) {
+      this.mrcEventId = oldIdToNewId[this.mrcEventId];
+    }
+  },
+};
 
 export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = EVENT;
