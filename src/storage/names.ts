@@ -25,17 +25,17 @@ export const CLASS_NAME_TELEOP = 'Teleop';
 export const JSON_FILE_EXTENSION = '.json';
 export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 
-/**
- * Regular expression to extract the project name and the class name from a module path.
- */
-const REGEX_MODULE_PATH = '^([A-Za-z_][A-Za-z0-9_]*)/([A-Za-z_][A-Za-z0-9_]*).json$';
+const REGEX_PROJECT_OR_CLASS_NAME_PART = '[A-Z][A-Za-z0-9]*';
+const REGEX_CLASS_NAME = '^' + REGEX_PROJECT_OR_CLASS_NAME_PART + '$';
+const REGEX_MODULE_PATH = '^(' + REGEX_PROJECT_OR_CLASS_NAME_PART + ')/(' +
+    REGEX_PROJECT_OR_CLASS_NAME_PART + ')' + escapeRegExp(JSON_FILE_EXTENSION) + '$';
 
 /**
  * Returns true if the given name is a valid class name.
  */
 export function isValidClassName(name: string): boolean {
   if (name) {
-    return /^[A-Z][A-Za-z0-9]*$/.test(name);
+    return new RegExp(REGEX_CLASS_NAME).test(name);
   }
   return false;
 }
@@ -79,9 +79,8 @@ export function snakeCaseToPascalCase(snakeCaseName: string): string {
  * Returns the module path regex pattern for modules in the given project.
  */
 export function makeModulePathRegexPattern(projectName: string): string {
-  const prefix = projectName + '/';
-  const suffix = JSON_FILE_EXTENSION;
-  return '^' + escapeRegExp(prefix) + '.*' + escapeRegExp(suffix) + '$';
+  return '^' + escapeRegExp(projectName) + '/' + REGEX_PROJECT_OR_CLASS_NAME_PART +
+      escapeRegExp(JSON_FILE_EXTENSION) + '$';
 }
 
 function escapeRegExp(text: string): string {
