@@ -217,7 +217,8 @@ export const pythonFromBlock = function (
   return code;
 }
 
-export function getAllPossibleComponents(moduleType: string): toolboxItems.ContentsType[] {
+export function getAllPossibleComponents(
+    moduleType: storageModule.ModuleType): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
   // Iterate through all the components subclasses and add definition blocks.
   const componentTypes = getSubclassNames('component.Component');
@@ -244,7 +245,10 @@ export function getAllPossibleComponents(moduleType: string): toolboxItems.Conte
 }
 
 function createComponentBlock(
-    componentName: string, classData: ClassData, staticFunctionData: FunctionData, moduleType: string): toolboxItems.Block {
+    componentName: string,
+    classData: ClassData,
+    staticFunctionData: FunctionData,
+    moduleType: storageModule.ModuleType): toolboxItems.Block {
   const extraState: ComponentExtraState = {
     importModule: classData.moduleName,
     staticFunctionName: staticFunctionData.functionName,

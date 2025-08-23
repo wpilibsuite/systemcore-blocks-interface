@@ -147,7 +147,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     return code;
   }
 
-  getModuleType(): string | null {
+  getModuleType(): storageModule.ModuleType | null {
     if (this.context) {
       return this.context.getModuleType();
     }

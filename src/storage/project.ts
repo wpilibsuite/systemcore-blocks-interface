@@ -132,8 +132,10 @@ export async function createProject(
   const robotContent = storageModuleContent.newRobotContent(newProjectName);
   await storage.saveModule(modulePath, robotContent);
 
-  const opmodePath = storageNames.makeModulePath(newProjectName, storageNames.CLASS_NAME_TELEOP);
-  const opmodeContent = storageModuleContent.newOpModeContent(newProjectName, storageNames.CLASS_NAME_TELEOP);
+  const opmodePath = storageNames.makeModulePath(
+      newProjectName, storageNames.CLASS_NAME_TELEOP, storageModule.ModuleType.OPMODE);
+  const opmodeContent = storageModuleContent.newOpModeContent(
+      newProjectName, storageNames.CLASS_NAME_TELEOP);
   await storage.saveModule(opmodePath, opmodeContent);
 }
 
@@ -169,7 +171,8 @@ async function renameOrCopyProject(
 
   for (const modulePath in pathToModuleContent) {
     const className = storageNames.getClassName(modulePath);
-    const newModulePath = storageNames.makeModulePath(newProjectName, className);
+    const moduleType = pathToModuleContent[modulePath].getModuleType()
+    const newModulePath = storageNames.makeModulePath(newProjectName, className, moduleType);
     const moduleContentText = pathToModuleContent[modulePath].getModuleContentText();
     await storage.saveModule(newModulePath, moduleContentText);
     if (rename) {
@@ -202,8 +205,11 @@ export async function deleteProject(
  * @param newClassName The name of the class. For example, GamePieceShooter.
  */
 export async function addModuleToProject(
-  storage: commonStorage.Storage, project: Project, moduleType: string, newClassName: string): Promise<void> {
-  const newModulePath = storageNames.makeModulePath(project.projectName, newClassName);
+    storage: commonStorage.Storage,
+    project: Project,
+    moduleType: storageModule.ModuleType,
+    newClassName: string): Promise<void> {
+  const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, moduleType);
 
   switch (moduleType) {
     case storageModule.ModuleType.MECHANISM:
@@ -295,7 +301,7 @@ export async function copyModuleInProject(
 async function renameOrCopyModule(
     storage: commonStorage.Storage, project: Project, newClassName: string,
     oldModule: storageModule.Module, rename: boolean): Promise<string> {
-  const newModulePath = storageNames.makeModulePath(project.projectName, newClassName);
+  const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, oldModule.moduleType);
   let moduleContentText = await storage.fetchModuleContentText(oldModule.modulePath);
   if (!rename) {
     // Change the ids in the module.
@@ -448,12 +454,15 @@ export function makeUploadProjectName(
 export async function uploadProject(
     storage: commonStorage.Storage, projectName: string, blobUrl: string): Promise<void> {
   // Process the uploaded blob to get the module types and contents.
-  const classNameToModuleContentText = await processUploadedBlob(blobUrl);
+  const classNameToModuleContentText: { [className: string]: string } = {}; // value is module content text.
+  const classNameToModuleType: { [className: string]: storageModule.ModuleType } = {};
+  await processUploadedBlob(blobUrl, classNameToModuleContentText, classNameToModuleType);
 
   // Save each module.
   for (const className in classNameToModuleContentText) {
     const moduleContentText = classNameToModuleContentText[className];
-    const modulePath = storageNames.makeModulePath(projectName, className);
+    const moduleType = classNameToModuleType[className];
+    const modulePath = storageNames.makeModulePath(projectName, className, moduleType);
     await storage.saveModule(modulePath, moduleContentText);
   }
 }
@@ -461,7 +470,10 @@ export async function uploadProject(
 /**
  * Process the uploaded blob to get the module class names and contents.
  */
-async function processUploadedBlob(blobUrl: string): Promise<{ [className: string]: string }> {
+async function processUploadedBlob(
+    blobUrl: string,
+    classNameToModuleContentText: { [className: string]: string }, // value is module content text.
+    classNameToModuleType: { [className: string]: storageModule.ModuleType }): Promise<void> {
 
   const prefix = 'data:application/octet-stream;base64,';
   if (!blobUrl.startsWith(prefix)) {
@@ -488,7 +500,6 @@ async function processUploadedBlob(blobUrl: string): Promise<{ [className: strin
 
   // Process each module's content.
   let foundRobot = false;
-  const classNameToModuleContentText: { [className: string]: string } = {}; // value is module content text
   for (const filename in files) {
     const className = filename;
     if (className === storageNames.CLASS_NAME_ROBOT) {
@@ -497,11 +508,10 @@ async function processUploadedBlob(blobUrl: string): Promise<{ [className: strin
     // Make sure we can parse the content.
     const moduleContent = storageModuleContent.parseModuleContentText(files[filename]);
     classNameToModuleContentText[className] = moduleContent.getModuleContentText();
+    classNameToModuleType[className] = moduleContent.getModuleType();
   }
 
   if (!foundRobot) {
     throw new Error('Uploaded file did not contain a Robot.');
   }
-
-  return classNameToModuleContentText;
 }

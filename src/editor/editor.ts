@@ -227,11 +227,11 @@ export class Editor {
     return this.blocklyWorkspace;
   }
 
-  public getCurrentModuleType(): string {
+  public getCurrentModuleType(): storageModule.ModuleType | null {
     if (this.currentModule) {
       return this.currentModule.moduleType;
     }
-    return '';
+    return null;
   }
 
   private getModuleContentText(): string {

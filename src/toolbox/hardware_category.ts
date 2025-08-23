@@ -42,11 +42,11 @@ export function getHardwareCategory(
         name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
         contents: [
           getRobotMechanismsCategory(editor),
-          getComponentsCategory(editor),
+          getComponentsCategory(editor, moduleType),
         ],
       };
     case storageModule.ModuleType.MECHANISM:
-      return getComponentsCategory(editor);
+      return getComponentsCategory(editor, moduleType);
     case storageModule.ModuleType.OPMODE:
       return {
         kind: 'category',
@@ -168,7 +168,9 @@ function getRobotMethodsCategory(editor: Editor): toolboxItems.Category {
   };
 }
 
-function getComponentsCategory(editor: Editor): toolboxItems.Category {
+function getComponentsCategory(
+    editor: Editor,
+    moduleType: storageModule.ModuleType): toolboxItems.Category {
   // getComponentsCategory is called when the user is editing the robot or a
   // mechanism. It allows the user to add a component or use an existing component.
 
@@ -178,7 +180,7 @@ function getComponentsCategory(editor: Editor): toolboxItems.Category {
   contents.push({
     kind: 'category',
     name: Blockly.Msg['MRC_CATEGORY_ADD_COMPONENT'],
-    contents: getAllPossibleComponents(editor.getCurrentModuleType()),
+    contents: getAllPossibleComponents(moduleType),
   });
 
   // Get components from the current workspace.

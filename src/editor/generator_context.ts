@@ -34,7 +34,7 @@ export class GeneratorContext {
     this.module = module;
   }
 
-  getModuleType(): string | null {
+  getModuleType(): storageModule.ModuleType | null {
     if (this.module) {
       return this.module.moduleType;
     }

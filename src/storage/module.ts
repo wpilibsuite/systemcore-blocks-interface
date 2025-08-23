@@ -29,7 +29,7 @@ export enum ModuleType {
 
 export type Module = {
   modulePath: string,
-  moduleType: string,
+  moduleType: ModuleType,
   moduleId: string,
   projectName: string, // For example, WackyWheelerRobot
   className: string,   // For example, GamePieceShooter.

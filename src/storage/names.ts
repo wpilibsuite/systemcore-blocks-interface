@@ -19,6 +19,9 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
+import * as storageModule from './module';
+
+
 export const CLASS_NAME_ROBOT = 'Robot';
 export const CLASS_NAME_TELEOP = 'Teleop';
 
@@ -90,7 +93,8 @@ function escapeRegExp(text: string): string {
 /**
  * Returns the module path for the given project name and class name.
  */
-export function makeModulePath(projectName: string, className: string): string {
+export function makeModulePath(
+    projectName: string, className: string, _moduleType: storageModule.ModuleType): string {
   return projectName + '/' + className + JSON_FILE_EXTENSION;
 }
 
@@ -98,7 +102,7 @@ export function makeModulePath(projectName: string, className: string): string {
  * Returns the robot module path for the given project names.
  */
 export function makeRobotPath(projectName: string): string {
-  return makeModulePath(projectName, CLASS_NAME_ROBOT);
+  return makeModulePath(projectName, CLASS_NAME_ROBOT, storageModule.ModuleType.ROBOT);
 }
 
 /**
