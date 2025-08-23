@@ -553,7 +553,7 @@ const CALL_PYTHON_FUNCTION = {
       let foundComponent = false;
       const componentsInScope: storageModuleContent.Component[] = [];
       componentsInScope.push(...this.getComponentsFromRobot());
-      if (editor.getCurrentModuleType() === storageModule.MODULE_TYPE_MECHANISM) {
+      if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
         componentsInScope.push(...editor.getComponentsFromWorkspace());
       }
       for (const component of componentsInScope) {
@@ -600,7 +600,7 @@ const CALL_PYTHON_FUNCTION = {
     // If the robot method has changed, update the block if possible or put a
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_ROBOT) {
-      if (editor.getCurrentModuleType() === storageModule.MODULE_TYPE_MECHANISM) {
+      if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
         warnings.push('This block is not allowed to be used inside a mechanism.');
       } else {
         let foundRobotMethod = false;
@@ -646,7 +646,7 @@ const CALL_PYTHON_FUNCTION = {
     // If the method has changed, update the block if possible or put a
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_MECHANISM) {
-      if (editor.getCurrentModuleType() === storageModule.MODULE_TYPE_MECHANISM) {
+      if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
         warnings.push('This block is not allowed to be used inside a mechanism.');
       } else {
         let foundMechanism = false;
@@ -805,11 +805,11 @@ export function pythonFromBlock(
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
-        case storageModule.MODULE_TYPE_ROBOT:
-        case storageModule.MODULE_TYPE_MECHANISM:
+        case storageModule.ModuleType.ROBOT:
+        case storageModule.ModuleType.MECHANISM:
           code = 'self.';
           break;
-        case storageModule.MODULE_TYPE_OPMODE:
+        case storageModule.ModuleType.OPMODE:
           code = 'self.robot.';
           break;
       }
@@ -830,13 +830,13 @@ export function pythonFromBlock(
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
-        case storageModule.MODULE_TYPE_ROBOT:
+        case storageModule.ModuleType.ROBOT:
           code = 'self.' + mechanismName;
           break;
-        case storageModule.MODULE_TYPE_OPMODE:
+        case storageModule.ModuleType.OPMODE:
           code = 'self.robot.' + mechanismName;
           break;
-        case storageModule.MODULE_TYPE_MECHANISM:
+        case storageModule.ModuleType.MECHANISM:
           // The INSTANCE_MECHANISM version should not be used in a mechanism.
           // TODO(lizlooney): What if the user copies a block from an robot or opmode and pastes
           // it into a mechanism?

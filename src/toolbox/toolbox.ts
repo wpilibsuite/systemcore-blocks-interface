@@ -10,8 +10,8 @@ export function getToolboxJSON(
     editor: Editor): Blockly.utils.toolbox.ToolboxDefinition {
 
   switch (editor.getCurrentModuleType()) {
-    case storageModule.MODULE_TYPE_ROBOT:
-    case storageModule.MODULE_TYPE_MECHANISM:
+    case storageModule.ModuleType.ROBOT:
+    case storageModule.ModuleType.MECHANISM:
       return {
         kind: 'categoryToolbox',
         contents: [
@@ -21,7 +21,7 @@ export function getToolboxJSON(
           getEventCategory(editor),
         ]
       };
-    case storageModule.MODULE_TYPE_OPMODE:
+    case storageModule.ModuleType.OPMODE:
       return {
         kind: 'categoryToolbox',
         contents: [

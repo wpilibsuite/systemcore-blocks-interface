@@ -36,7 +36,7 @@ export function getHardwareCategory(
 
   const moduleType = editor.getCurrentModuleType();
   switch (moduleType) {
-    case storageModule.MODULE_TYPE_ROBOT:
+    case storageModule.ModuleType.ROBOT:
       return {
         kind: 'category',
         name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
@@ -45,9 +45,9 @@ export function getHardwareCategory(
           getComponentsCategory(editor),
         ],
       };
-    case storageModule.MODULE_TYPE_MECHANISM:
+    case storageModule.ModuleType.MECHANISM:
       return getComponentsCategory(editor);
-    case storageModule.MODULE_TYPE_OPMODE:
+    case storageModule.ModuleType.OPMODE:
       return {
         kind: 'category',
         name: Blockly.Msg['MRC_CATEGORY_ROBOT'],
@@ -72,7 +72,7 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
   const contents: toolboxItems.ContentsType[] = [];
 
   // Include the "+ Mechanism" category if the user it editing the robot and there are any mechanism modules.
-  if (editor.getCurrentModuleType() === storageModule.MODULE_TYPE_ROBOT) {
+  if (editor.getCurrentModuleType() === storageModule.ModuleType.ROBOT) {
     const mechanisms = editor.getMechanisms();
     if (mechanisms.length) {
       const mechanismBlocks: toolboxItems.Block[] = [];

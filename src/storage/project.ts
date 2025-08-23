@@ -56,55 +56,59 @@ export async function listProjects(storage: commonStorage.Storage): Promise<Proj
       className: storageNames.getClassName(modulePath),
       dateModifiedMillis: dateModifiedMillis,
     };
-    if (moduleType === storageModule.MODULE_TYPE_ROBOT) {
-      const robot: storageModule.Robot = module as storageModule.Robot;
-      const project: Project = {
-        projectName: module.projectName,
-        robot: robot,
-        mechanisms: [],
-        opModes: [],
-      };
-      projects[project.projectName] = project;
-      // Add any Mechanisms that belong to this project that have already
-      // been read.
-      if (project.projectName in mechanisms) {
-        project.mechanisms = mechanisms[project.projectName];
-        delete mechanisms[project.projectName];
-      }
-      // Add any OpModes that belong to this project that have already been
-      // read.
-      if (project.projectName in opModes) {
-        project.opModes = opModes[project.projectName];
-        delete opModes[project.projectName];
-      }
-    } else if (moduleType === storageModule.MODULE_TYPE_MECHANISM) {
-      const mechanism: storageModule.Mechanism = module as storageModule.Mechanism;
-      if (mechanism.projectName in projects) {
-        // If the Project to which this Mechanism belongs has already been read,
-        // add this Mechanism to it.
-        projects[mechanism.projectName].mechanisms.push(mechanism);
-      } else {
-        // Otherwise, add this Mechanism to the mechanisms local variable.
-        if (mechanism.projectName in mechanisms) {
-          mechanisms[mechanism.projectName].push(mechanism);
-        } else {
-          mechanisms[mechanism.projectName] = [mechanism];
+    switch (moduleType) {
+      case storageModule.ModuleType.ROBOT:
+        const robot: storageModule.Robot = module as storageModule.Robot;
+        const project: Project = {
+          projectName: module.projectName,
+          robot: robot,
+          mechanisms: [],
+          opModes: [],
+        };
+        projects[project.projectName] = project;
+        // Add any Mechanisms that belong to this project that have already
+        // been read.
+        if (project.projectName in mechanisms) {
+          project.mechanisms = mechanisms[project.projectName];
+          delete mechanisms[project.projectName];
         }
-      }
-    } else if (moduleType === storageModule.MODULE_TYPE_OPMODE) {
-      const opMode: storageModule.OpMode = module as storageModule.OpMode;
-      if (opMode.projectName in projects) {
-        // If the Project to which this OpMode belongs has already been read,
-        // add this OpMode to it.
-        projects[opMode.projectName].opModes.push(opMode);
-      } else {
-        // Otherwise, add this OpMode to the opModes local variable.
-        if (opMode.projectName in opModes) {
-          opModes[opMode.projectName].push(opMode);
-        } else {
-          opModes[opMode.projectName] = [opMode];
+        // Add any OpModes that belong to this project that have already been
+        // read.
+        if (project.projectName in opModes) {
+          project.opModes = opModes[project.projectName];
+          delete opModes[project.projectName];
         }
-      }
+        break;
+      case storageModule.ModuleType.MECHANISM:
+        const mechanism: storageModule.Mechanism = module as storageModule.Mechanism;
+        if (mechanism.projectName in projects) {
+          // If the Project to which this Mechanism belongs has already been read,
+          // add this Mechanism to it.
+          projects[mechanism.projectName].mechanisms.push(mechanism);
+        } else {
+          // Otherwise, add this Mechanism to the mechanisms local variable.
+          if (mechanism.projectName in mechanisms) {
+            mechanisms[mechanism.projectName].push(mechanism);
+          } else {
+            mechanisms[mechanism.projectName] = [mechanism];
+          }
+        }
+        break;
+      case storageModule.ModuleType.OPMODE:
+        const opMode: storageModule.OpMode = module as storageModule.OpMode;
+        if (opMode.projectName in projects) {
+          // If the Project to which this OpMode belongs has already been read,
+          // add this OpMode to it.
+          projects[opMode.projectName].opModes.push(opMode);
+        } else {
+          // Otherwise, add this OpMode to the opModes local variable.
+          if (opMode.projectName in opModes) {
+            opModes[opMode.projectName].push(opMode);
+          } else {
+            opModes[opMode.projectName] = [opMode];
+          }
+        }
+        break;
     }
   }
 
@@ -201,24 +205,27 @@ export async function addModuleToProject(
   storage: commonStorage.Storage, project: Project, moduleType: string, newClassName: string): Promise<void> {
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName);
 
-  if (moduleType === storageModule.MODULE_TYPE_MECHANISM) {
-    const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
-    await storage.saveModule(newModulePath, mechanismContent);
-    project.mechanisms.push({
-      modulePath: newModulePath,
-      moduleType: storageModule.MODULE_TYPE_MECHANISM,
-      projectName: project.projectName,
-      className: newClassName
-    } as storageModule.Mechanism);
-  } else if (moduleType === storageModule.MODULE_TYPE_OPMODE) {
-    const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);
-    await storage.saveModule(newModulePath, opModeContent);
-    project.opModes.push({
-      modulePath: newModulePath,
-      moduleType: storageModule.MODULE_TYPE_OPMODE,
-      projectName: project.projectName,
-      className: newClassName
-    } as storageModule.OpMode);
+  switch (moduleType) {
+    case storageModule.ModuleType.MECHANISM:
+      const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
+      await storage.saveModule(newModulePath, mechanismContent);
+      project.mechanisms.push({
+        modulePath: newModulePath,
+        moduleType: storageModule.ModuleType.MECHANISM,
+        projectName: project.projectName,
+        className: newClassName
+      } as storageModule.Mechanism);
+      break;
+    case storageModule.ModuleType.OPMODE:
+      const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);
+      await storage.saveModule(newModulePath, opModeContent);
+      project.opModes.push({
+        modulePath: newModulePath,
+        moduleType: storageModule.ModuleType.OPMODE,
+        projectName: project.projectName,
+        className: newClassName
+      } as storageModule.OpMode);
+      break;
   }
 }
 /**
@@ -231,15 +238,17 @@ export async function removeModuleFromProject(
   storage: commonStorage.Storage, project: Project, modulePath: string): Promise<void> {
   const module = findModuleByModulePath(project, modulePath);
   if (module) {
-    if (module.moduleType == storageModule.MODULE_TYPE_ROBOT) {
-      throw new Error('Removing the robot module from the project is not allowed.');
+    switch (module.moduleType) {
+      case storageModule.ModuleType.ROBOT:
+        throw new Error('Removing the robot module from the project is not allowed.');
+      case storageModule.ModuleType.MECHANISM:
+        project.mechanisms = project.mechanisms.filter(m => m.modulePath !== modulePath);
+        break;
+      case storageModule.ModuleType.OPMODE:
+        project.opModes = project.opModes.filter(o => o.modulePath !== modulePath);
+        break;
     }
     await storage.deleteModule(modulePath);
-    if (module.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
-      project.mechanisms = project.mechanisms.filter(m => m.modulePath !== modulePath);
-    } else if (module.moduleType === storageModule.MODULE_TYPE_OPMODE) {
-      project.opModes = project.opModes.filter(o => o.modulePath !== modulePath);
-    }
   }
 }
 
@@ -257,7 +266,7 @@ export async function renameModuleInProject(
   if (!module) {
     throw new Error('Failed to find module with path ' + oldModulePath);
   }
-  if (module.moduleType == storageModule.MODULE_TYPE_ROBOT) {
+  if (module.moduleType == storageModule.ModuleType.ROBOT) {
     throw new Error('Renaming the robot module is not allowed.');
   }
   return await renameOrCopyModule(storage, project, newClassName, module, true);
@@ -277,7 +286,7 @@ export async function copyModuleInProject(
   if (!module) {
     throw new Error('Failed to find module with path ' + oldModulePath);
   }
-  if (module.moduleType == storageModule.MODULE_TYPE_ROBOT) {
+  if (module.moduleType == storageModule.ModuleType.ROBOT) {
     throw new Error('Copying the robot module is not allowed.');
   }
   return await renameOrCopyModule(storage, project, newClassName, module, false);
@@ -300,35 +309,37 @@ async function renameOrCopyModule(
     await storage.deleteModule(oldModule.modulePath);
 
     // Update the project's mechanisms or opModes.
-    if (oldModule.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
-      const mechanism = project.mechanisms.find(m => m.modulePath === oldModule.modulePath);
-      if (mechanism) {
-        mechanism.modulePath = newModulePath;
-        mechanism.className = newClassName;
-      }
-    } else if (oldModule.moduleType === storageModule.MODULE_TYPE_OPMODE) {
-      const opMode = project.opModes.find(o => o.modulePath === oldModule.modulePath);
-      if (opMode) {
-        opMode.modulePath = newModulePath;
-        opMode.className = newClassName;
-      }
+    switch (oldModule.moduleType) {
+      case storageModule.ModuleType.MECHANISM:
+        const mechanism = project.mechanisms.find(m => m.modulePath === oldModule.modulePath);
+        if (mechanism) {
+          mechanism.modulePath = newModulePath;
+          mechanism.className = newClassName;
+        }
+        break;
+      case storageModule.ModuleType.OPMODE:
+        const opMode = project.opModes.find(o => o.modulePath === oldModule.modulePath);
+        if (opMode) {
+          opMode.modulePath = newModulePath;
+          opMode.className = newClassName;
+        }
+        break;
     }
-  } else {
+  } else { // copy
     // Update the project's mechanisms or opModes.
-    if (oldModule.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
-      project.mechanisms.push({
-        modulePath: newModulePath,
-        moduleType: storageModule.MODULE_TYPE_MECHANISM,
-        projectName: project.projectName,
-        className: newClassName
-      } as storageModule.Mechanism);
-    } else if (oldModule.moduleType === storageModule.MODULE_TYPE_OPMODE) {
-      project.opModes.push({
-        modulePath: newModulePath,
-        moduleType: storageModule.MODULE_TYPE_OPMODE,
-        projectName: project.projectName,
-        className: newClassName
-      } as storageModule.OpMode);
+    const newModule = {
+      modulePath: newModulePath,
+      moduleType: oldModule.moduleType,
+      projectName: project.projectName,
+      className: newClassName
+    };
+    switch (oldModule.moduleType) {
+      case storageModule.ModuleType.MECHANISM:
+        project.mechanisms.push(newModule as storageModule.Mechanism);
+        break;
+      case storageModule.ModuleType.OPMODE:
+        project.opModes.push(newModule as storageModule.OpMode);
+        break;
     }
   }
 

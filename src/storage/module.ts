@@ -21,11 +21,11 @@
 
 // Types, constants, and functions related to modules, regardless of where the modules are stored.
 
-// TODO(lizlooney): Make a ModuleType enum.
-export const MODULE_TYPE_UNKNOWN = 'unknown';
-export const MODULE_TYPE_ROBOT = 'robot';
-export const MODULE_TYPE_MECHANISM = 'mechanism';
-export const MODULE_TYPE_OPMODE = 'opmode';
+export enum ModuleType {
+  ROBOT = 'robot',
+  MECHANISM = 'mechanism',
+  OPMODE = 'opmode',
+}
 
 export type Module = {
   modulePath: string,

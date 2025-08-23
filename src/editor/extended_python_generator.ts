@@ -111,7 +111,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   generateInitStatements() : string {
     let initStatements = '';
 
-    if (this.getModuleType() === storageModule.MODULE_TYPE_MECHANISM && this.hasAnyComponents) {
+    if (this.getModuleType() === storageModule.ModuleType.MECHANISM && this.hasAnyComponents) {
       initStatements += this.INDENT + 'self.define_hardware(' +
           this.getComponentPortParameters().join(', ') + ')\n';
     }
@@ -134,7 +134,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     this.hasAnyComponents = false;
     this.componentPorts = Object.create(null);
-    if (this.getModuleType() ===  storageModule.MODULE_TYPE_MECHANISM) {
+    if (this.getModuleType() ===  storageModule.ModuleType.MECHANISM) {
       this.hasAnyComponents = mechanismContainerHolder.hasAnyComponents(this.workspace);
       mechanismContainerHolder.getComponentPorts(this.workspace, this.componentPorts);
     }
