@@ -171,7 +171,7 @@ async function renameOrCopyProject(
 
   for (const modulePath in pathToModuleContent) {
     const className = storageNames.getClassName(modulePath);
-    const moduleType = pathToModuleContent[modulePath].getModuleType()
+    const moduleType = storageNames.getModuleType(modulePath);
     const newModulePath = storageNames.makeModulePath(newProjectName, className, moduleType);
     const moduleContentText = pathToModuleContent[modulePath].getModuleContentText();
     await storage.saveModule(newModulePath, moduleContentText);
@@ -424,18 +424,17 @@ export async function downloadProject(
   const pathToModuleContent = await storage.listModules(
       storageNames.makeModulePathRegexPattern(project.projectName));
 
-  const classNameToModuleContentText: {[className: string]: string} = {}; // value is module content text
+  const fileNameToModuleContentText: {[fileName: string]: string} = {}; // value is module content text
   for (const modulePath in pathToModuleContent) {
-    const className = storageNames.getClassName(modulePath);
+    const fileName = storageNames.getFileName(modulePath);
     const moduleContentText = pathToModuleContent[modulePath].getModuleContentText();
-    classNameToModuleContentText[className] = moduleContentText;
+    fileNameToModuleContentText[fileName] = moduleContentText;
   }
 
   const zip = new JSZip();
-  for (const className in classNameToModuleContentText) {
-    const moduleContentText = classNameToModuleContentText[className];
-    const filename = className + storageNames.JSON_FILE_EXTENSION;
-    zip.file(filename, moduleContentText);
+  for (const fileName in fileNameToModuleContentText) {
+    const moduleContentText = fileNameToModuleContentText[fileName];
+    zip.file(fileName, moduleContentText);
   }
   const content = await zip.generateAsync({ type: "blob" });
   return URL.createObjectURL(content);
@@ -453,15 +452,14 @@ export function makeUploadProjectName(
 
 export async function uploadProject(
     storage: commonStorage.Storage, projectName: string, blobUrl: string): Promise<void> {
-  // Process the uploaded blob to get the module types and contents.
-  const classNameToModuleContentText: { [className: string]: string } = {}; // value is module content text.
-  const classNameToModuleType: { [className: string]: storageModule.ModuleType } = {};
-  await processUploadedBlob(blobUrl, classNameToModuleContentText, classNameToModuleType);
+  // Process the uploaded blob to get the file names and contents.
+  const fileNameToModuleContentText = await processUploadedBlob(blobUrl);
 
   // Save each module.
-  for (const className in classNameToModuleContentText) {
-    const moduleContentText = classNameToModuleContentText[className];
-    const moduleType = classNameToModuleType[className];
+  for (const fileName in fileNameToModuleContentText) {
+    const moduleContentText = fileNameToModuleContentText[fileName];
+    const className = storageNames.getClassName(fileName);
+    const moduleType = storageNames.getModuleType(fileName);
     const modulePath = storageNames.makeModulePath(projectName, className, moduleType);
     await storage.saveModule(modulePath, moduleContentText);
   }
@@ -470,10 +468,7 @@ export async function uploadProject(
 /**
  * Process the uploaded blob to get the module class names and contents.
  */
-async function processUploadedBlob(
-    blobUrl: string,
-    classNameToModuleContentText: { [className: string]: string }, // value is module content text.
-    classNameToModuleType: { [className: string]: storageModule.ModuleType }): Promise<void> {
+async function processUploadedBlob(blobUrl: string): Promise<{ [className: string]: string }> {
 
   const prefix = 'data:application/octet-stream;base64,';
   if (!blobUrl.startsWith(prefix)) {
@@ -483,35 +478,34 @@ async function processUploadedBlob(
 
   const zip = await JSZip.loadAsync(data, { base64: true });
   const promises: { [key: string]: Promise<string> } = {};
-  zip.forEach((filename, zipEntry) => {
-    const className = filename.endsWith(storageNames.JSON_FILE_EXTENSION)
-        ? filename.substring(0, filename.length - storageNames.JSON_FILE_EXTENSION.length)
-        : filename;
-    promises[className] = zipEntry.async('text');
+  zip.forEach((fileName, zipEntry) => {
+    promises[fileName] = zipEntry.async('text');
   });
 
   // Wait for all promises to resolve.
   const files: { [fileName: string]: string } = {}; // value is file content
   await Promise.all(
-    Object.entries(promises).map(async ([filename, promise]) => {
-      files[filename] = await promise;
+    Object.entries(promises).map(async ([fileName, promise]) => {
+      files[fileName] = await promise;
     })
   );
 
   // Process each module's content.
   let foundRobot = false;
-  for (const filename in files) {
-    const className = filename;
-    if (className === storageNames.CLASS_NAME_ROBOT) {
+  const fileNameToModuleContentText: { [fileName: string]: string } = {}; // value is module content text
+  for (const fileName in files) {
+    const moduleType = storageNames.getModuleType(fileName);
+    if (moduleType === storageModule.ModuleType.ROBOT) {
       foundRobot = true;
     }
     // Make sure we can parse the content.
-    const moduleContent = storageModuleContent.parseModuleContentText(files[filename]);
-    classNameToModuleContentText[className] = moduleContent.getModuleContentText();
-    classNameToModuleType[className] = moduleContent.getModuleType();
+    const moduleContent = storageModuleContent.parseModuleContentText(files[fileName]);
+    fileNameToModuleContentText[fileName] = moduleContent.getModuleContentText();
   }
 
   if (!foundRobot) {
     throw new Error('Uploaded file did not contain a Robot.');
   }
+
+  return fileNameToModuleContentText;
 }

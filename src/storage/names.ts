@@ -30,9 +30,13 @@ export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 
 const REGEX_PROJECT_NAME_PART = '[A-Z][A-Za-z0-9]*';
 const REGEX_CLASS_NAME_PART = '[A-Z][A-Za-z0-9]*';
-const REGEX_MODULE_TYPE = '\.(robot|mechanism|opmode)';
+const REGEX_MODULE_TYPE_PART = '\.(robot|mechanism|opmode)';
 const REGEX_MODULE_PATH = '^(' + REGEX_PROJECT_NAME_PART + ')/(' + REGEX_CLASS_NAME_PART + ')' +
-    REGEX_MODULE_TYPE + escapeRegExp(JSON_FILE_EXTENSION) + '$';
+    REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
+const REGEX_MODULE_PATH_TO_FILE_NAME = '^' + REGEX_PROJECT_NAME_PART + '/(' + REGEX_CLASS_NAME_PART +
+    REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + ')$';
+const REGEX_FILE_NAME = '^(' + REGEX_CLASS_NAME_PART + ')' +
+    REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
 
 /**
  * Returns true if the given name is a valid class name.
@@ -84,7 +88,7 @@ export function snakeCaseToPascalCase(snakeCaseName: string): string {
  */
 export function makeModulePathRegexPattern(projectName: string): string {
   return '^' + escapeRegExp(projectName) + '/' + REGEX_CLASS_NAME_PART +
-      REGEX_MODULE_TYPE + escapeRegExp(JSON_FILE_EXTENSION) + '$';
+      REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
 }
 
 function escapeRegExp(text: string): string {
@@ -107,7 +111,7 @@ export function makeRobotPath(projectName: string): string {
 }
 
 /**
- * Returns the project path for given module path.
+ * Returns the project name for given module path.
  */
 export function getProjectName(modulePath: string): string {
   const regex = new RegExp(REGEX_MODULE_PATH);
@@ -119,34 +123,49 @@ export function getProjectName(modulePath: string): string {
 }
 
 /**
- * Returns the class name for given module path.
+ * Returns the file name for given module path.
  */
-export function getClassName(modulePath: string): string {
-  const regex = new RegExp(REGEX_MODULE_PATH);
+export function getFileName(modulePath: string): string {
+  const regex = new RegExp(REGEX_MODULE_PATH_TO_FILE_NAME);
   const result = regex.exec(modulePath)
   if (!result) {
-    throw new Error('Unable to extract the class name from "' + modulePath + '"');
+    throw new Error('Unable to extract the project name from "' + modulePath + '"');
   }
-  return result[2];
+  return result[1];
 }
 
 /**
- * Returns the module type for given module path.
+ * Returns the class name for given module path or file name.
  */
-export function getModuleType(modulePath: string): storageModule.ModuleType {
-  const regex = new RegExp(REGEX_MODULE_PATH);
-  const result = regex.exec(modulePath)
-  if (!result) {
-    throw new Error('Unable to extract the module type from "' + modulePath + '"');
+export function getClassName(modulePathOrFileName: string): string {
+  let regex = new RegExp(REGEX_MODULE_PATH);
+  let result = regex.exec(modulePathOrFileName);
+  if (result) {
+    return result[2];
   }
-
-  const str = result[2];
-  const moduleType = storageModule.ModuleType[str as keyof typeof storageModule.ModuleType];
-  if (!Object.values(storageModule.ModuleType).includes(moduleType)) {
-    throw new Error('Unable to extract the module type from "' + modulePath + '"');
+  regex = new RegExp(REGEX_FILE_NAME);
+  result = regex.exec(modulePathOrFileName);
+  if (result) {
+    return result[1];
   }
+  throw new Error('Unable to extract the class name from "' + modulePathOrFileName + '"');
+}
 
-  return moduleType;
+/**
+ * Returns the module type for given module path or file name.
+ */
+export function getModuleType(modulePathOrFileName: string): storageModule.ModuleType {
+  let regex = new RegExp(REGEX_MODULE_PATH);
+  let result = regex.exec(modulePathOrFileName);
+  if (result) {
+    return storageModule.stringToModuleType(result[3]);
+  }
+  regex = new RegExp(REGEX_FILE_NAME);
+  result = regex.exec(modulePathOrFileName);
+  if (result) {
+    return storageModule.stringToModuleType(result[2]);
+  }
+  throw new Error('Unable to extract the module type from "' + modulePathOrFileName + '"');
 }
 
 /**
