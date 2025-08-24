@@ -38,15 +38,15 @@ export type Project = {
 export async function listProjects(storage: commonStorage.Storage): Promise<Project[]> {
   const pathToModuleContent = await storage.listModules();
 
-  const projects: {[key: string]: Project} = {}; // key is project name, value is Project
+  const projects: {[projectName: string]: Project} = {};
   // The mechanisms and opModes variables hold any Mechanisms and OpModes that
-  // are read before the Project to which they belong is read.
-  const mechanisms: {[key: string]: storageModule.Mechanism[]} = {}; // key is project name, value is list of Mechanisms
-  const opModes: {[key: string]: storageModule.OpMode[]} = {}; // key is project name, value is list of OpModes
+  // are read before the Robot of the Project to which they belong is read.
+  const mechanisms: {[projectName: string]: storageModule.Mechanism[]} = {};
+  const opModes: {[projectName: string]: storageModule.OpMode[]} = {};
 
   for (const modulePath in pathToModuleContent) {
     const moduleContent = pathToModuleContent[modulePath];
-    const moduleType = moduleContent.getModuleType();
+    const moduleType = storageNames.getModuleType(modulePath);
     const dateModifiedMillis = await storage.fetchModuleDateModifiedMillis(modulePath);
     const module: storageModule.Module = {
       modulePath: modulePath,
