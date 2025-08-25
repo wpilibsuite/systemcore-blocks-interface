@@ -130,7 +130,7 @@ const COMPONENT = {
    */
   updateBlock_: function (this: ComponentBlock): void {
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-    if (editor && editor.getCurrentModuleType() === storageModule.MODULE_TYPE_ROBOT) {
+    if (editor && editor.getCurrentModuleType() === storageModule.ModuleType.ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)
@@ -207,7 +207,7 @@ export const pythonFromBlock = function (
     if (i != 0) {
       code += ', ';
     }
-    if (generator.getModuleType() === storageModule.MODULE_TYPE_ROBOT) {
+    if (generator.getModuleType() === storageModule.ModuleType.ROBOT) {
       code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, 'ARG' + i, Order.NONE);
     } else {
       code += block.mrcArgs[i].name + ' = ' + block.getArgName(i);
@@ -217,7 +217,8 @@ export const pythonFromBlock = function (
   return code;
 }
 
-export function getAllPossibleComponents(moduleType: string): toolboxItems.ContentsType[] {
+export function getAllPossibleComponents(
+    moduleType: storageModule.ModuleType): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
   // Iterate through all the components subclasses and add definition blocks.
   const componentTypes = getSubclassNames('component.Component');
@@ -244,7 +245,10 @@ export function getAllPossibleComponents(moduleType: string): toolboxItems.Conte
 }
 
 function createComponentBlock(
-    componentName: string, classData: ClassData, staticFunctionData: FunctionData, moduleType: string): toolboxItems.Block {
+    componentName: string,
+    classData: ClassData,
+    staticFunctionData: FunctionData,
+    moduleType: storageModule.ModuleType): toolboxItems.Block {
   const extraState: ComponentExtraState = {
     importModule: classData.moduleName,
     staticFunctionName: staticFunctionData.functionName,
@@ -260,7 +264,7 @@ function createComponentBlock(
       'name': argData.name,
       'type': argData.type,
     });
-    if (moduleType == storageModule.MODULE_TYPE_ROBOT) {
+    if (moduleType == storageModule.ModuleType.ROBOT) {
       if (argData.type === 'int') {
         const portType = getPortTypeForArgument(argData.name);
         if (portType) {

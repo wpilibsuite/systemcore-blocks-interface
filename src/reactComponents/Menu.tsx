@@ -181,7 +181,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
   const [fileModalOpen, setFileModalOpen] = React.useState<boolean>(false);
   const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
-  const [moduleType, setModuleType] = React.useState<TabType>(TabType.MECHANISM);
+  const [tabType, setTabType] = React.useState<TabType>(TabType.MECHANISM);
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
@@ -265,7 +265,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     if (key === 'manageMechanisms') {
       console.log('Opening mechanisms modal');
       setFileModalOpen(false);
-      setModuleType(TabType.MECHANISM);
+      setTabType(TabType.MECHANISM);
       setTimeout(() => {
         console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
@@ -273,7 +273,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     } else if (key === 'manageOpmodes') {
       console.log('Opening opmodes modal');
       setFileModalOpen(false);
-      setModuleType(TabType.OPMODE);
+      setTabType(TabType.OPMODE);
       setTimeout(() => {
         console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
@@ -443,7 +443,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         onCancel={handleFileModalClose}
         project={props.project}
         storage={props.storage}
-        moduleType={moduleType}
+        tabType={tabType}
         setProject={props.setProject}
         setAlertErrorMessage={props.setAlertErrorMessage}
         gotoTab={props.gotoTab}

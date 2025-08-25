@@ -393,10 +393,10 @@ function generateRegisterEventHandler(
     fullSender = 'self.' + sender;
   } else if (block.mrcSenderType === SenderType.MECHANISM) {
     switch (generator.getModuleType()) {
-      case storageModule.MODULE_TYPE_ROBOT:
+      case storageModule.ModuleType.ROBOT:
         fullSender = 'self.' + sender;
         break;
-      case storageModule.MODULE_TYPE_OPMODE:
+      case storageModule.ModuleType.OPMODE:
         fullSender = 'self.robot.' + sender;
         break;
     }

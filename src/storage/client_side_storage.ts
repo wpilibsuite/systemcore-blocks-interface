@@ -21,6 +21,7 @@
 
 import * as commonStorage from './common_storage';
 import * as storageModuleContent from './module_content';
+import * as storageNames from './names';
 
 // Functions for saving blocks modules to client side storage.
 
@@ -57,7 +58,62 @@ export async function openClientSideStorage(): Promise<commonStorage.Storage> {
     };
     openRequest.onsuccess = () => {
       const db = openRequest.result;
-      resolve(ClientSideStorage.create(db));
+      fixOldModules(db).then(() => {
+        resolve(ClientSideStorage.create(db));
+      })
+    };
+  });
+}
+
+// The following function allows Alan and Liz to load older projects.
+// TODO(lizlooney): Remove this function.
+async function fixOldModules(db: IDBDatabase): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([MODULES_STORE_NAME], 'readwrite');
+    transaction.oncomplete = () => {
+      resolve();
+    };
+    transaction.onabort = () => {
+      console.log('IndexedDB transaction aborted.');
+      reject(new Error('IndexedDB transaction aborted.'));
+    };
+    const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
+    const openCursorRequest = modulesObjectStore.openCursor();
+    openCursorRequest.onerror = () => {
+      console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
+      console.log(openCursorRequest.error);
+      reject(new Error('IndexedDB openCursor request failed.'));
+    };
+    openCursorRequest.onsuccess = () => {
+      const cursor = openCursorRequest.result;
+      if (cursor) {
+        const value = cursor.value;
+        const regexForOldModulePath = new RegExp('^([A-Z][A-Za-z0-9]*)/([A-Z][A-Za-z0-9]*).json$');
+        const result = regexForOldModulePath.exec(value.path);
+        if (result) {
+          const oldModulePath = value.path;
+          const projectName = result[1];
+          const className = result[2];
+          const moduleType = storageModuleContent.parseModuleContentText(value.content).getModuleType();
+          value.path = storageNames.makeModulePath(projectName, className, moduleType);
+          const putRequest = modulesObjectStore.put(value);
+          putRequest.onerror = () => {
+           console.log('IndexedDB put request failed. putRequest.error is...');
+            console.log(putRequest.error);
+            throw new Error('IndexedDB put request failed.');
+          };
+          const deleteRequest = modulesObjectStore.delete(oldModulePath);
+          deleteRequest.onerror = () => {
+            console.log('IndexedDB delete request failed. deleteRequest.error is...');
+            console.log(deleteRequest.error);
+            throw new Error('IndexedDB delete request failed.');
+          };
+        }
+        cursor.continue();
+      } else {
+        // The cursor is done. We have finished reading all the modules.
+        resolve();
+      }
     };
   });
 }
@@ -256,8 +312,6 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB delete request failed. deleteRequest.error is...');
         console.log(deleteRequest.error);
         throw new Error('IndexedDB delete request failed.');
-      };
-      deleteRequest.onsuccess = () => {
       };
     });
   }

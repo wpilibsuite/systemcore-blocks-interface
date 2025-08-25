@@ -108,10 +108,10 @@ export function Component(props: TabsProps): React.JSX.Element {
     }
 
     switch (module.moduleType) {
-      case storageModule.MODULE_TYPE_MECHANISM:
+      case storageModule.ModuleType.MECHANISM:
         newTabs.push({ key, title: module.className, type: TabType.MECHANISM });
         break;
-      case storageModule.MODULE_TYPE_OPMODE:
+      case storageModule.ModuleType.OPMODE:
         newTabs.push({ key, title: module.className, type: TabType.OPMODE });
         break;
       default:

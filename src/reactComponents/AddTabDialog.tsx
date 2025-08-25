@@ -129,12 +129,12 @@ export default function AddTabDialog(props: AddTabDialogProps) {
       return;
     }
 
-    const storageType = tabType === TabType.MECHANISM ?
-      storageModule.MODULE_TYPE_MECHANISM :
-      storageModule.MODULE_TYPE_OPMODE;
+    const moduleType = (tabType === TabType.MECHANISM)
+      ? storageModule.ModuleType.MECHANISM
+      : storageModule.ModuleType.OPMODE;
 
     await storageProject.addModuleToProject(
-        props.storage, props.project, storageType, newClassName);
+        props.storage, props.project, moduleType, newClassName);
 
     const newModule = storageProject.findModuleByClassName(props.project, newClassName);
     if (newModule) {

@@ -422,7 +422,7 @@ export const pythonFromBlock = function (
         // After executing the function body, revisit this block for the return.
         xfix2 = xfix1;
     }
-    if (block.mrcPythonMethodName == '__init__') {
+    if (block.mrcPythonMethodName === '__init__') {
         let class_specific = generator.getClassSpecificForInit();
         branch = generator.INDENT + 'super().__init__(' + class_specific + ')\n' +
             generator.generateInitStatements() + branch;
@@ -440,7 +440,7 @@ export const pythonFromBlock = function (
 
     let params = block.mrcParameters;
     let paramString = "self";
-    if (generator.getModuleType() == storageModule.MODULE_TYPE_MECHANISM && block.mrcPythonMethodName == '__init__') {
+    if (generator.getModuleType() === storageModule.ModuleType.MECHANISM && block.mrcPythonMethodName === '__init__') {
         const ports: string[] = generator.getComponentPortParameters();
         if (ports.length) {
             paramString += ', ' + ports.join(', ');

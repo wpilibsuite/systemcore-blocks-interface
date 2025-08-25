@@ -254,10 +254,10 @@ export const pythonFromBlock = function (
     block: MechanismComponentHolderBlock,
     generator: ExtendedPythonGenerator) {
   switch (generator.getModuleType()) {
-    case storageModule.MODULE_TYPE_ROBOT:
+    case storageModule.ModuleType.ROBOT:
       pythonFromBlockInRobot(block, generator);
       break;
-    case storageModule.MODULE_TYPE_MECHANISM:
+    case storageModule.ModuleType.MECHANISM:
       pythonFromBlockInMechanism(block, generator);
       break;
   }

@@ -34,7 +34,7 @@ export class GeneratorContext {
     this.module = module;
   }
 
-  getModuleType(): string | null {
+  getModuleType(): storageModule.ModuleType | null {
     if (this.module) {
       return this.module.moduleType;
     }
@@ -52,14 +52,13 @@ export class GeneratorContext {
     if (!this.module) {
       throw new Error('getParentClassName: this.module is null.');
     }
-    if (this.module.moduleType === storageModule.MODULE_TYPE_ROBOT) {
-      return CLASS_NAME_ROBOT_BASE;
-    }
-    if (this.module.moduleType === storageModule.MODULE_TYPE_OPMODE) {
-      return CLASS_NAME_OPMODE;
-    }
-    if (this.module.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
-      return CLASS_NAME_MECHANISM;
+    switch (this.module.moduleType) {
+      case storageModule.ModuleType.ROBOT:
+        return CLASS_NAME_ROBOT_BASE;
+      case storageModule.ModuleType.OPMODE:
+        return CLASS_NAME_OPMODE;
+      case storageModule.ModuleType.MECHANISM:
+        return CLASS_NAME_MECHANISM;
     }
     return '';
   }
