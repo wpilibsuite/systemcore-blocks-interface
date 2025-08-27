@@ -22,15 +22,13 @@ import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as storageNames from '../storage/names';
-import * as storageProject from '../storage/project';
 
 /** Props for the ProjectNameComponent. */
 interface ProjectNameComponentProps {
   newItemName: string;
   setNewItemName: (name: string) => void;
   onAddNewItem: () => void;
-  projects: storageProject.Project[] | null;
-  setProjects: (projects: storageProject.Project[]) => void;
+  projectNames: string[];
 }
 
 /** Full width style for input components. */
@@ -60,7 +58,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
   /** Handles adding a new item with validation. */
   const handleAddNewItem = (): void => {
     const newProjectName = props.newItemName.trim();
-    if (!newProjectName || !props.projects) {
+    if (!newProjectName) {
       return;
     }
 
@@ -69,7 +67,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
       return;
     }
 
-    if (props.projects.some((project) => project.projectName === newProjectName)) {
+    if (props.projectNames.includes(newProjectName)) {
       showError(DUPLICATE_NAME_MESSAGE_PREFIX + newProjectName + DUPLICATE_NAME_MESSAGE_SUFFIX);
       return;
     }

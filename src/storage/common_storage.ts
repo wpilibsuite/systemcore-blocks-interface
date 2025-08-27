@@ -19,18 +19,16 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import * as storageModuleContent from './module_content';
-
 export interface Storage {
+  // Functions for storing key/value entries.
+
   saveEntry(entryKey: string, entryValue: string): Promise<void>;
 
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
 
-  listModules(
-      opt_modulePathRegexPattern?: string
-  ): Promise<{[path: string]: storageModuleContent.ModuleContent}>;
-
-  fetchModuleDateModifiedMillis(modulePath: string): Promise<number>;
+  // Functions for storing modules.
+  
+  listModulePaths(opt_modulePathRegexPattern?: string): Promise<string[]>;
 
   fetchModuleContentText(modulePath: string): Promise<string>;
 
