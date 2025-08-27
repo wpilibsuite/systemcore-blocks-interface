@@ -95,6 +95,7 @@ class ToolboxTestData {
     if (this.index < this.jsonBlocks.length) {
       setTimeout(this.testCallback.bind(this), 0);
     } else {
+      this.blocklyWorkspace.dispose();
       if (this.onFinish) {
         this.onFinish();
       }

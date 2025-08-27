@@ -51,13 +51,15 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
     const lastDot = path.lastIndexOf('.');
     const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
 
+    const contents: toolboxItems.ContentsType[] = [];
+    addModuleBlocks(moduleData, contents);
+
     const moduleCategory: toolboxItems.PythonModuleCategory = {
       kind: 'category',
       name: name,
       moduleName: moduleData.moduleName,
-      contents: [],
+      contents: contents,
     };
-    addModuleBlocks(moduleData, moduleCategory.contents);
     allCategories[path] = moduleCategory;
     moduleCategories[path] = moduleCategory;
   }
@@ -68,13 +70,14 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
     const lastDot = path.lastIndexOf('.');
     const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
 
+    const contents: toolboxItems.ContentsType[] = [];
+    addClassBlocks(classData, contents);
     const classCategory: toolboxItems.PythonClassCategory = {
       kind: 'category',
       name: name,
       className: classData.className,
-      contents: [],
+      contents: contents,
     };
-    addClassBlocks(classData, classCategory.contents);
     allCategories[path] = classCategory;
     classCategories[path] = classCategory;
   }

@@ -28,7 +28,9 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
+import * as storageModuleContent from '../storage/module_content';
+import * as storageNames from '../storage/names';
 import { createPortShadow } from './mrc_port';
 import { createNumberShadowValue } from './utils/value';
 import { ClassData, FunctionData } from './utils/python_json_types';
@@ -47,6 +49,7 @@ type ConstructorArg = {
 };
 
 type ComponentExtraState = {
+  componentId?: string,
   importModule?: string,
   // If staticFunctionName is not present, generate the constructor.
   staticFunctionName?: string,
@@ -55,6 +58,7 @@ type ComponentExtraState = {
 
 export type ComponentBlock = Blockly.Block & ComponentMixin;
 interface ComponentMixin extends ComponentMixinType {
+  mrcComponentId: string,
   mrcArgs: ConstructorArg[],
   mrcImportModule: string,
   mrcStaticFunctionName: string,
@@ -82,6 +86,7 @@ const COMPONENT = {
     */
   saveExtraState: function (this: ComponentBlock): ComponentExtraState {
     const extraState: ComponentExtraState = {
+      componentId: this.mrcComponentId,
     };
     extraState.params = [];
     if (this.mrcArgs){
@@ -104,6 +109,7 @@ const COMPONENT = {
    * Applies the given state to this block.
    */
   loadExtraState: function (this: ComponentBlock, extraState: ComponentExtraState): void {
+    this.mrcComponentId = extraState.componentId ? extraState.componentId : this.id;
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
     this.mrcStaticFunctionName = extraState.staticFunctionName ? extraState.staticFunctionName : '';
     this.mrcArgs = [];
@@ -124,7 +130,7 @@ const COMPONENT = {
    */
   updateBlock_: function (this: ComponentBlock): void {
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-    if (editor && editor.getCurrentModuleType() === commonStorage.MODULE_TYPE_ROBOT) {
+    if (editor && editor.getCurrentModuleType() === storageModule.ModuleType.ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)
@@ -144,17 +150,17 @@ const COMPONENT = {
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
-      renameMethodCallers(this.workspace, this.id, legalName);
+      renameMethodCallers(this.workspace, this.mrcComponentId, legalName);
     }
     return legalName;
   },
-  getComponent: function (this: ComponentBlock): commonStorage.Component | null {
+  getComponent: function (this: ComponentBlock): storageModuleContent.Component | null {
     const componentName = this.getFieldValue(FIELD_NAME);
     const componentType = this.getFieldValue(FIELD_TYPE);
     const ports: {[port: string]: string} = {};
     this.getComponentPorts(ports);
     return {
-      blockId: this.id,
+      componentId: this.mrcComponentId,
       name: componentName,
       className: componentType,
       ports: ports,
@@ -170,7 +176,15 @@ const COMPONENT = {
       ports[argName] = this.mrcArgs[i].type;
     }
   },
-}
+  /**
+   * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
+   */
+  mrcChangeIds: function (this: ComponentBlock, oldIdToNewId: { [oldId: string]: string }): void {
+    if (this.mrcComponentId in oldIdToNewId) {
+      this.mrcComponentId = oldIdToNewId[this.mrcComponentId];
+    }
+  },
+};
 
 export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = COMPONENT;
@@ -193,7 +207,7 @@ export const pythonFromBlock = function (
     if (i != 0) {
       code += ', ';
     }
-    if (generator.getModuleType() === commonStorage.MODULE_TYPE_ROBOT) {
+    if (generator.getModuleType() === storageModule.ModuleType.ROBOT) {
       code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, 'ARG' + i, Order.NONE);
     } else {
       code += block.mrcArgs[i].name + ' = ' + block.getArgName(i);
@@ -203,7 +217,8 @@ export const pythonFromBlock = function (
   return code;
 }
 
-export function getAllPossibleComponents(moduleType: string): toolboxItems.ContentsType[] {
+export function getAllPossibleComponents(
+    moduleType: storageModule.ModuleType): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
   // Iterate through all the components subclasses and add definition blocks.
   const componentTypes = getSubclassNames('component.Component');
@@ -216,7 +231,7 @@ export function getAllPossibleComponents(moduleType: string): toolboxItems.Conte
 
     const componentName = (
         'my_' +
-        commonStorage.pascalCaseToSnakeCase(
+        storageNames.pascalCaseToSnakeCase(
             componentType.substring(componentType.lastIndexOf('.') + 1)));
 
     classData.staticMethods.forEach(staticFunctionData => {
@@ -230,7 +245,10 @@ export function getAllPossibleComponents(moduleType: string): toolboxItems.Conte
 }
 
 function createComponentBlock(
-    componentName: string, classData: ClassData, staticFunctionData: FunctionData, moduleType: string): toolboxItems.Block {
+    componentName: string,
+    classData: ClassData,
+    staticFunctionData: FunctionData,
+    moduleType: storageModule.ModuleType): toolboxItems.Block {
   const extraState: ComponentExtraState = {
     importModule: classData.moduleName,
     staticFunctionName: staticFunctionData.functionName,
@@ -246,7 +264,7 @@ function createComponentBlock(
       'name': argData.name,
       'type': argData.type,
     });
-    if (moduleType == commonStorage.MODULE_TYPE_ROBOT) {
+    if (moduleType == storageModule.ModuleType.ROBOT) {
       if (argData.type === 'int') {
         const portType = getPortTypeForArgument(argData.name);
         if (portType) {

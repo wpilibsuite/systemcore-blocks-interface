@@ -47,6 +47,10 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+    backend: {
+      // Path to the translation files
+      loadPath: import.meta.env.BASE_URL + "locales/{{lng}}/{{ns}}.json",
+    },
   });
 
 export default i18n;
