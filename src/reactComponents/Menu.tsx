@@ -54,12 +54,12 @@ type MenuItem = Required<Antd.MenuProps>['items'][number];
 
 /** Props for the Menu component. */
 export interface MenuProps {
-  setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
+  setAlertErrorMessage: (message: string) => void;
   gotoTab: (tabKey: string) => void;
   project: storageProject.Project | null;
-  openWPIToolboxSettings: () => void;
   setProject: (project: storageProject.Project | null) => void;
+  openWPIToolboxSettings: () => void;
   theme: string;
   setTheme: (theme: string) => void;
 }
@@ -67,8 +67,8 @@ export interface MenuProps {
 /** Default selected menu keys. */
 const DEFAULT_SELECTED_KEYS = ['1'];
 
-/** Storage key for the most recent project. */
-const MOST_RECENT_PROJECT_KEY = 'mostRecentProject';
+/** Storage key for the most recent project name. */
+const MOST_RECENT_PROJECT_NAME_KEY = 'mostRecentProject';
 
 /**
  * Creates a menu item with the specified properties.
@@ -177,7 +177,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
 export function Component(props: MenuProps): React.JSX.Element {
   const {t, i18n} = I18Next.useTranslation();
 
-  const [projects, setProjects] = React.useState<storageProject.Project[]>([]);
+  const [projectNames, setProjectNames] = React.useState<string[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
   const [fileModalOpen, setFileModalOpen] = React.useState<boolean>(false);
   const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
@@ -191,28 +191,28 @@ export function Component(props: MenuProps): React.JSX.Element {
     props.setTheme(newTheme);
   };
 
-  /** Fetches the list of projects from storage. */
-  const fetchListOfProjects = async (): Promise<storageProject.Project[]> => {
+  /** Fetches the list of project names from storage. */
+  const fetchListOfProjectNames = async (): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
       if (!props.storage) {
         reject(new Error('Storage not available'));
         return;
       }
       try {
-        const array = await storageProject.listProjects(props.storage);
-        setProjects(array);
+        const array = await storageProject.listProjectNames(props.storage);
+        setProjectNames(array);
         resolve(array);
       } catch (e) {
-        console.error('Failed to load the list of projects:', e);
+        console.error('Failed to load the list of project names:', e);
         props.setAlertErrorMessage(t('fail_list_projects'));
         reject(new Error(t('fail_list_projects')));
       }
     });
   };
 
-  /** Initializes the projects and handles empty project state. */
-  const initializeProjects = async (): Promise<void> => {
-    const array = await fetchListOfProjects();
+  /** Initializes the project names and handles no projects state. */
+  const initializeProjectNames = async (): Promise<void> => {
+    const array = await fetchListOfProjectNames();
     if (array.length === 0) {
       setNoProjects(true);
       setProjectModalOpen(true);
@@ -221,30 +221,29 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   /** Fetches and sets the most recent project. */
   const fetchMostRecentProject = async (): Promise<void> => {
-    let found = false;
-
     if (props.storage) {
-      const mostRecentProject = await props.storage.fetchEntry(
-          MOST_RECENT_PROJECT_KEY,
+      const mostRecentProjectName = await props.storage.fetchEntry(
+          MOST_RECENT_PROJECT_NAME_KEY,
           ''
       );
-      projects.forEach((project) => {
-        if (project.projectName === mostRecentProject) {
-          props.setProject(project);
-          found = true;
-        }
-      });
-      if (!found && projects.length > 0) {
-        props.setProject(projects[0]);
+      let projectNameToFetch: string = '';
+      if (projectNames.includes(mostRecentProjectName)) {
+        projectNameToFetch = mostRecentProjectName;
+      } else if (projectNames.length) {
+        projectNameToFetch = projectNames[0];
+      }
+      if (projectNameToFetch) {
+        const project = await storageProject.fetchProject(props.storage, projectNameToFetch);
+        props.setProject(project);
       }
     }
   };
 
-  /** Saves the most recent project to storage. */
-  const setMostRecentProject = async (): Promise<void> => {
+  /** Saves the most recent project name to storage. */
+  const setMostRecentProjectName = async (): Promise<void> => {
     if (props.storage) {
       await props.storage.saveEntry(
-          MOST_RECENT_PROJECT_KEY,
+          MOST_RECENT_PROJECT_NAME_KEY,
           props.project?.projectName || ''
       );
     }
@@ -288,11 +287,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     } else if (key === 'theme') {
       setThemeModalOpen(true);
     } else if (key == 'deploy') {
-      if (props.project && props.storage) {
-        handleDeploy();
-      } else {
-        props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
-      }
+      handleDeploy();
     } else if (key.startsWith('setlang:')) {
       const lang = key.split(':')[1];
       i18n.changeLanguage(lang);
@@ -305,13 +300,17 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   /** Handles the deploy action to generate and download Python files. */
   const handleDeploy = async (): Promise<void> => {
-    if (!props.project || !props.storage) {
+    if (!props.project) {
+      props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
+      return;
+    }
+    if (!props.storage) {
       return;
     }
 
     try {
       const blobUrl = await createPythonFiles.producePythonProjectBlob(props.project, props.storage);
-      
+
       // Create a temporary link to download the file
       const link = document.createElement('a');
       link.href = blobUrl;
@@ -331,12 +330,16 @@ export function Component(props: MenuProps): React.JSX.Element {
   // TODO: Add UI for the download action.
   /** Handles the download action to generate and download json files. */
   const handleDownload = async (): Promise<void> => {
-    if (!props.project || !props.storage) {
+    if (!props.project) {
+      props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
+      return;
+    }
+    if (!props.storage) {
       return;
     }
 
     try {
-      const blobUrl = await storageProject.downloadProject(props.storage, props.project);
+      const blobUrl = await storageProject.downloadProject(props.storage, props.project.projectName);
       const filename = props.project.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
 
       // Create a temporary link to download the file
@@ -383,8 +386,8 @@ export function Component(props: MenuProps): React.JSX.Element {
           }
           const dataUrl = event.target.result as string;
           const existingProjectNames: string[] = [];
-          projects.forEach(project => {
-            existingProjectNames.push(project.projectName);
+          projectNames.forEach(projectName => {
+            existingProjectNames.push(projectName);
           });
           const file = options.file as RcFile;
           const uploadProjectName = storageProject.makeUploadProjectName(file.name, existingProjectNames);
@@ -414,23 +417,23 @@ export function Component(props: MenuProps): React.JSX.Element {
     setProjectModalOpen(false);
   };
 
-  // Initialize projects when storage is available
+  // Initialize project names when storage is available
   React.useEffect(() => {
     if (!props.storage) {
       return;
     }
-    initializeProjects();
+    initializeProjectNames();
   }, [props.storage]);
 
-  // Fetch most recent project when projects change
+  // Fetch most recent project when projectNames change
   React.useEffect(() => {
     fetchMostRecentProject();
-  }, [projects]);
+  }, [projectNames]);
 
   // Update menu items and save project when project or language changes
   React.useEffect(() => {
     if (props.project) {
-      setMostRecentProject();
+      setMostRecentProjectName();
       setMenuItems(getMenuItems(t, props.project, i18n.language));
       setNoProjects(false);
     }

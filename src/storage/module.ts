@@ -33,7 +33,6 @@ export type Module = {
   moduleId: string,
   projectName: string, // For example, WackyWheelerRobot
   className: string,   // For example, GamePieceShooter.
-  dateModifiedMillis: number,
 };
 
 export type Robot = Module;

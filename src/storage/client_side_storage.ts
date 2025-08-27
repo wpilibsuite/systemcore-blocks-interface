@@ -181,58 +181,33 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async listModules(
-      opt_modulePathRegexPattern?: string
-  ): Promise<{[path: string]: storageModuleContent.ModuleContent}> {
+  async listModulePaths(opt_modulePathRegexPattern?: string): Promise<string[]> {
 
     const regExp = opt_modulePathRegexPattern
         ? new RegExp(opt_modulePathRegexPattern)
         : null;
     return new Promise((resolve, reject) => {
-      const pathToModuleContent: {[path: string]: storageModuleContent.ModuleContent} = {};
-      const openCursorRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
+      const modulePaths: string[] = [];
+      const openKeyCursorRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
           .objectStore(MODULES_STORE_NAME)
-          .openCursor();
-      openCursorRequest.onerror = () => {
-        console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
-        console.log(openCursorRequest.error);
-        reject(new Error('IndexedDB openCursor request failed.'));
+          .openKeyCursor();
+      openKeyCursorRequest.onerror = () => {
+        console.log('IndexedDB openKeyCursor request failed. openKeyCursorRequest.error is...');
+        console.log(openKeyCursorRequest.error);
+        reject(new Error('IndexedDB openKeyCursor request failed.'));
       };
-      openCursorRequest.onsuccess = () => {
-        const cursor = openCursorRequest.result;
-        if (cursor) {
-          const value = cursor.value;
-          // TODO(lizlooney): do we need value.path? Is there another way to get the path?
-          const modulePath = value.path;
+      openKeyCursorRequest.onsuccess = () => {
+        const cursor = openKeyCursorRequest.result;
+        if (cursor && cursor.key) {
+          const modulePath: string = cursor.key as string;
           if (!regExp || regExp.test(modulePath)) {
-            const moduleContent = storageModuleContent.parseModuleContentText(value.content);
-            pathToModuleContent[modulePath] = moduleContent;
+            modulePaths.push(modulePath);
           }
           cursor.continue();
         } else {
           // The cursor is done. We have finished reading all the modules.
-          resolve(pathToModuleContent);
+          resolve(modulePaths);
         }
-      };
-    });
-  }
-
-  async fetchModuleDateModifiedMillis(modulePath: string): Promise<number> {
-    return new Promise((resolve, reject) => {
-      const getRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
-          .objectStore(MODULES_STORE_NAME).get(modulePath);
-      getRequest.onerror = () => {
-        console.log('IndexedDB get request failed. getRequest.error is...');
-        console.log(getRequest.error);
-        reject(new Error('IndexedDB get request failed.'));
-      };
-      getRequest.onsuccess = () => {
-        if (getRequest.result === undefined) {
-          // Module does not exist.
-          reject(new Error('IndexedDB get request succeeded, but the module does not exist.'));
-          return;
-        }
-        resolve(getRequest.result.dateModifiedMillis);
       };
     });
   }
@@ -285,7 +260,6 @@ class ClientSideStorage implements commonStorage.Storage {
           value = getRequest.result;
         }
         value.content = moduleContentText;
-        value.dateModifiedMillis = Date.now();
         const putRequest = modulesObjectStore.put(value);
         putRequest.onerror = () => {
           console.log('IndexedDB put request failed. putRequest.error is...');

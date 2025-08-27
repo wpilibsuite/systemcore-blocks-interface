@@ -36,6 +36,10 @@ interface ProjectManageModalProps {
   storage: commonStorage.Storage | null;
 }
 
+type ProjectRecord = {
+  projectName: string,
+};
+
 /** Default page size for table pagination. */
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -63,29 +67,38 @@ const CONTAINER_PADDING = '12px';
  */
 export default function ProjectManageModal(props: ProjectManageModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
-  const [allProjects, setAllProjects] = React.useState<storageProject.Project[]>([]);
+  const [allProjectNames, setAllProjectNames] = React.useState<string[]>([]);
+  const [allProjectRecords, setAllProjectRecords] = React.useState<ProjectRecord[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
-  const [currentRecord, setCurrentRecord] = React.useState<storageProject.Project | null>(null);
+  const [currentRecord, setCurrentRecord] = React.useState<ProjectRecord | null>(null);
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
-  /** Loads projects from storage and sorts them alphabetically. */
-  const loadProjects = async (storage: commonStorage.Storage): Promise<void> => {
-    const projects = await storageProject.listProjects(storage);
+  /** Loads project names from storage and sorts them alphabetically. */
+  const loadProjectNames = async (storage: commonStorage.Storage): Promise<void> => {
+    const projectNames = await storageProject.listProjectNames(storage);
+    projectNames.sort();
+    setAllProjectNames(projectNames);
 
-    // Sort projects alphabetically by name
-    projects.sort((a, b) => a.projectName.localeCompare(b.projectName));
-    setAllProjects(projects);
-    
-    if (projects.length > 0 && props.noProjects) {
-      props.setProject(projects[0]); // Set the first project as the current project
+    const projectRecords: ProjectRecord[] = [];
+    projectNames.forEach(projectName => {
+      projectRecords.push({
+        projectName: projectName,
+      });
+    });
+    setAllProjectRecords(projectRecords);
+
+    if (projectNames.length > 0 && props.noProjects) {
+      // Set the first project as the current project
+      const project = await storageProject.fetchProject(storage, projectNames[0]);
+      props.setProject(project);
       props.onCancel(); // Close the modal after selecting
     }
   };
 
   /** Handles renaming a project. */
-  const handleRename = async (origProject: storageProject.Project, newUserVisibleName: string): Promise<void> => {
+  const handleRename = async (origProjectName: string, newProjectName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
@@ -93,10 +106,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     try {
       await storageProject.renameProject(
           props.storage,
-          origProject,
-          newUserVisibleName
+          origProjectName,
+          newProjectName
       );
-      await loadProjects(props.storage);
+      await loadProjectNames(props.storage);
     } catch (error) {
       console.error('Error renaming project:', error);
       props.setAlertErrorMessage('Failed to rename project');
@@ -106,7 +119,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   };
 
   /** Handles copying a project. */
-  const handleCopy = async (origProject: storageProject.Project, newUserVisibleName: string): Promise<void> => {
+  const handleCopy = async (origProjectName: string, newProjectName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
@@ -114,10 +127,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     try {
       await storageProject.copyProject(
           props.storage,
-          origProject,
-          newUserVisibleName
+          origProjectName,
+          newProjectName
       );
-      await loadProjects(props.storage);
+      await loadProjectNames(props.storage);
     } catch (error) {
       console.error('Error copying project:', error);
       props.setAlertErrorMessage('Failed to copy project');
@@ -128,15 +141,15 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
 
   /** Handles adding a new project. */
   const handleAddNewItem = async (): Promise<void> => {
-    const newUserVisibleName = newItemName.trim();
-    if (!newUserVisibleName || !props.storage) {
+    const newProjectName = newItemName.trim();
+    if (!newProjectName || !props.storage) {
       return;
     }
 
     try {
       await storageProject.createProject(
           props.storage,
-          newUserVisibleName
+          newProjectName
       );
     } catch (e) {
       console.error('Failed to create a new project:', e);
@@ -144,22 +157,25 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     }
 
     setNewItemName('');
-    await loadProjects(props.storage);
+    await loadProjectNames(props.storage);
   };
 
   /** Handles project deletion with proper cleanup. */
-  const handleDeleteProject = async (record: storageProject.Project): Promise<void> => {
+  const handleDeleteProject = async (projectNameToDelete: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
-    const newProjects = allProjects.filter((m) => m.projectName !== record.projectName);
-    setAllProjects(newProjects);
+    const updatedProjectNames = allProjectNames.filter(projectName => projectName !== projectNameToDelete);
+    setAllProjectNames(updatedProjectNames);
+    const updatedProjectRecords = allProjectRecords.filter((r) => r.projectName !== projectNameToDelete);
+    setAllProjectRecords(updatedProjectRecords);
 
     // Find another project to set as current
     let foundAnotherProject = false;
-    for (const project of allProjects) {
-      if (project.projectName !== record.projectName) {
+    for (const projectName of allProjectNames) {
+      if (projectName !== projectNameToDelete) {
+        const project = await storageProject.fetchProject(props.storage, projectName);
         props.setProject(project);
         foundAnotherProject = true;
         break;
@@ -171,7 +187,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     }
 
     try {
-      await storageProject.deleteProject(props.storage, record);
+      await storageProject.deleteProject(props.storage, projectNameToDelete);
     } catch (e) {
       console.error('Failed to delete the project:', e);
       props.setAlertErrorMessage('Failed to delete the project.');
@@ -179,20 +195,25 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   };
 
   /** Handles project selection. */
-  const handleSelectProject = (record: storageProject.Project): void => {
-    props.setProject(record);
+  const handleSelectProject = async (projectName: string): Promise<void> => {
+    if (!props.storage) {
+      return;
+    }
+
+    const project = await storageProject.fetchProject(props.storage, projectName);
+    props.setProject(project);
     props.onCancel();
   };
 
   /** Opens the rename modal for a specific project. */
-  const openRenameModal = (record: storageProject.Project): void => {
+  const openRenameModal = (record: ProjectRecord): void => {
     setCurrentRecord(record);
     setName(record.projectName);
     setRenameModalOpen(true);
   };
 
   /** Opens the copy modal for a specific project. */
-  const openCopyModal = (record: storageProject.Project): void => {
+  const openCopyModal = (record: ProjectRecord): void => {
     setCurrentRecord(record);
     setName(record.projectName + COPY_SUFFIX);
     setCopyModalOpen(true);
@@ -222,7 +243,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   });
 
   /** Table column configuration. */
-  const columns: Antd.TableProps<storageProject.Project>['columns'] = [
+  const columns: Antd.TableProps<ProjectRecord>['columns'] = [
     {
       title: 'Name',
       dataIndex: 'projectName',
@@ -240,14 +261,14 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       title: 'Actions',
       key: 'actions',
       width: ACTIONS_COLUMN_WIDTH,
-      render: (_, record: storageProject.Project) => (
+      render: (_, record: ProjectRecord) => (
         <Antd.Space size="small">
           <Antd.Tooltip title={t('Select')}>
             <Antd.Button
               type="text"
               size="small"
               icon={<SelectOutlined />}
-              onClick={() => handleSelectProject(record)}
+              onClick={() => handleSelectProject(record.projectName)}
             />
           </Antd.Tooltip>
           <Antd.Tooltip title={t('Rename')}>
@@ -266,12 +287,12 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
               onClick={() => openCopyModal(record)}
             />
           </Antd.Tooltip>
-          {allProjects.length > 1 && (
+          {allProjectRecords.length > 1 && (
             <Antd.Tooltip title={t('Delete')}>
               <Antd.Popconfirm
                 title={`Delete ${record.projectName}?`}
                 description="This action cannot be undone."
-                onConfirm={() => handleDeleteProject(record)}
+                onConfirm={() => handleDeleteProject(record.projectName)}
                 okText={t('Delete')}
                 cancelText={t('Cancel')}
                 okType="danger"
@@ -290,10 +311,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     },
   ];
 
-  // Load projects when storage becomes available or modal opens
+  // Load project names when storage becomes available or modal opens
   React.useEffect(() => {
     if (props.storage) {
-      loadProjects(props.storage);
+      loadProjectNames(props.storage);
     }
   }, [props.storage, props.isOpen]);
 
@@ -305,7 +326,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
         onCancel={() => setRenameModalOpen(false)}
         onOk={() => {
           if (currentRecord) {
-            handleRename(currentRecord, name);
+            handleRename(currentRecord.projectName, name);
           }
         }}
         okText={t('Rename')}
@@ -317,11 +338,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             setNewItemName={setName}
             onAddNewItem={() => {
               if (currentRecord) {
-                handleRename(currentRecord, name);
+                handleRename(currentRecord.projectName, name);
               }
             }}
-            projects={allProjects}
-            setProjects={setAllProjects}
+            projectNames={allProjectNames}
           />
         )}
       </Antd.Modal>
@@ -332,7 +352,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
         onCancel={() => setCopyModalOpen(false)}
         onOk={() => {
           if (currentRecord) {
-            handleCopy(currentRecord, name);
+            handleCopy(currentRecord.projectName, name);
           }
         }}
         okText={t('Copy')}
@@ -344,11 +364,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             setNewItemName={setName}
             onAddNewItem={() => {
               if (currentRecord) {
-                handleCopy(currentRecord, name);
+                handleCopy(currentRecord.projectName, name);
               }
             }}
-            projects={allProjects}
-            setProjects={setAllProjects}
+            projectNames={allProjectNames}
           />
         )}
       </Antd.Modal>
@@ -378,17 +397,16 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             newItemName={newItemName}
             setNewItemName={setNewItemName}
             onAddNewItem={handleAddNewItem}
-            projects={allProjects}
-            setProjects={setAllProjects}
+            projectNames={allProjectNames}
           />
         </div>
         {!props.noProjects && (
-          <Antd.Table<storageProject.Project>
+          <Antd.Table<ProjectRecord>
             columns={columns}
-            dataSource={allProjects}
+            dataSource={allProjectRecords}
             rowKey="projectName"
             size="small"
-            pagination={allProjects.length > DEFAULT_PAGE_SIZE ? {
+            pagination={allProjectRecords.length > DEFAULT_PAGE_SIZE ? {
               pageSize: DEFAULT_PAGE_SIZE,
               showSizeChanger: false,
               showQuickJumper: false,
@@ -400,7 +418,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
               emptyText: 'No projects found',
             }}
             onRow={(record) => ({
-              onDoubleClick: () => handleSelectProject(record),
+              onDoubleClick: () => handleSelectProject(record.projectName),
             })}
           />
         )}

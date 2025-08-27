@@ -84,7 +84,6 @@ export function newRobotContent(projectName: string): string {
     moduleId: Blockly.utils.idGenerator.genUid(),
     projectName: projectName,
     className: storageNames.CLASS_NAME_ROBOT,
-    dateModifiedMillis: 0,
   };
 
   return startingBlocksToModuleContentText(module, startingRobotBlocks);
@@ -100,7 +99,6 @@ export function newMechanismContent(projectName: string, mechanismClassName: str
     moduleId: Blockly.utils.idGenerator.genUid(),
     projectName: projectName,
     className: mechanismClassName,
-    dateModifiedMillis: 0,
   };
 
   return startingBlocksToModuleContentText(module, startingMechanismBlocks);
@@ -116,7 +114,6 @@ export function newOpModeContent(projectName: string, opModeClassName: string): 
     moduleId: Blockly.utils.idGenerator.genUid(),
     projectName: projectName,
     className: opModeClassName,
-    dateModifiedMillis: 0,
   };
 
   return startingBlocksToModuleContentText(module, startingOpModeBlocks);
