@@ -19,23 +19,31 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
+import * as storageModule from './module';
+
+
 export const CLASS_NAME_ROBOT = 'Robot';
 export const CLASS_NAME_TELEOP = 'Teleop';
 
 export const JSON_FILE_EXTENSION = '.json';
 export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 
-/**
- * Regular expression to extract the project name and the class name from a module path.
- */
-const REGEX_MODULE_PATH = '^([A-Za-z_][A-Za-z0-9_]*)/([A-Za-z_][A-Za-z0-9_]*).json$';
+const REGEX_PROJECT_NAME_PART = '[A-Z][A-Za-z0-9]*';
+const REGEX_CLASS_NAME_PART = '[A-Z][A-Za-z0-9]*';
+const REGEX_MODULE_TYPE_PART = '\.(robot|mechanism|opmode)';
+const REGEX_MODULE_PATH = '^(' + REGEX_PROJECT_NAME_PART + ')/(' + REGEX_CLASS_NAME_PART + ')' +
+    REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
+const REGEX_MODULE_PATH_TO_FILE_NAME = '^' + REGEX_PROJECT_NAME_PART + '/(' + REGEX_CLASS_NAME_PART +
+    REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + ')$';
+const REGEX_FILE_NAME = '^(' + REGEX_CLASS_NAME_PART + ')' +
+    REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
 
 /**
  * Returns true if the given name is a valid class name.
  */
 export function isValidClassName(name: string): boolean {
   if (name) {
-    return /^[A-Z][A-Za-z0-9]*$/.test(name);
+    return new RegExp('^' + REGEX_CLASS_NAME_PART + '$').test(name);
   }
   return false;
 }
@@ -79,9 +87,8 @@ export function snakeCaseToPascalCase(snakeCaseName: string): string {
  * Returns the module path regex pattern for modules in the given project.
  */
 export function makeModulePathRegexPattern(projectName: string): string {
-  const prefix = projectName + '/';
-  const suffix = JSON_FILE_EXTENSION;
-  return '^' + escapeRegExp(prefix) + '.*' + escapeRegExp(suffix) + '$';
+  return '^' + escapeRegExp(projectName) + '/' + REGEX_CLASS_NAME_PART +
+      REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
 }
 
 function escapeRegExp(text: string): string {
@@ -91,19 +98,20 @@ function escapeRegExp(text: string): string {
 /**
  * Returns the module path for the given project name and class name.
  */
-export function makeModulePath(projectName: string, className: string): string {
-  return projectName + '/' + className + JSON_FILE_EXTENSION;
+export function makeModulePath(
+    projectName: string, className: string, moduleType: storageModule.ModuleType): string {
+  return projectName + '/' + className + '.' + moduleType + JSON_FILE_EXTENSION;
 }
 
 /**
  * Returns the robot module path for the given project names.
  */
 export function makeRobotPath(projectName: string): string {
-  return makeModulePath(projectName, CLASS_NAME_ROBOT);
+  return makeModulePath(projectName, CLASS_NAME_ROBOT, storageModule.ModuleType.ROBOT);
 }
 
 /**
- * Returns the project path for given module path.
+ * Returns the project name for given module path.
  */
 export function getProjectName(modulePath: string): string {
   const regex = new RegExp(REGEX_MODULE_PATH);
@@ -115,15 +123,49 @@ export function getProjectName(modulePath: string): string {
 }
 
 /**
- * Returns the class name for given module path.
+ * Returns the file name for given module path.
  */
-export function getClassName(modulePath: string): string {
-  const regex = new RegExp(REGEX_MODULE_PATH);
+export function getFileName(modulePath: string): string {
+  const regex = new RegExp(REGEX_MODULE_PATH_TO_FILE_NAME);
   const result = regex.exec(modulePath)
   if (!result) {
-    throw new Error('Unable to extract the class name from "' + modulePath + '"');
+    throw new Error('Unable to extract the project name from "' + modulePath + '"');
   }
-  return result[2];
+  return result[1];
+}
+
+/**
+ * Returns the class name for given module path or file name.
+ */
+export function getClassName(modulePathOrFileName: string): string {
+  let regex = new RegExp(REGEX_MODULE_PATH);
+  let result = regex.exec(modulePathOrFileName);
+  if (result) {
+    return result[2];
+  }
+  regex = new RegExp(REGEX_FILE_NAME);
+  result = regex.exec(modulePathOrFileName);
+  if (result) {
+    return result[1];
+  }
+  throw new Error('Unable to extract the class name from "' + modulePathOrFileName + '"');
+}
+
+/**
+ * Returns the module type for given module path or file name.
+ */
+export function getModuleType(modulePathOrFileName: string): storageModule.ModuleType {
+  let regex = new RegExp(REGEX_MODULE_PATH);
+  let result = regex.exec(modulePathOrFileName);
+  if (result) {
+    return storageModule.stringToModuleType(result[3]);
+  }
+  regex = new RegExp(REGEX_FILE_NAME);
+  result = regex.exec(modulePathOrFileName);
+  if (result) {
+    return storageModule.stringToModuleType(result[2]);
+  }
+  throw new Error('Unable to extract the module type from "' + modulePathOrFileName + '"');
 }
 
 /**

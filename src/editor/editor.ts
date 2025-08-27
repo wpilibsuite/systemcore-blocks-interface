@@ -227,11 +227,11 @@ export class Editor {
     return this.blocklyWorkspace;
   }
 
-  public getCurrentModuleType(): string {
+  public getCurrentModuleType(): storageModule.ModuleType | null {
     if (this.currentModule) {
       return this.currentModule.moduleType;
     }
-    return storageModule.MODULE_TYPE_UNKNOWN;
+    return null;
   }
 
   private getModuleContentText(): string {
@@ -248,8 +248,8 @@ export class Editor {
     const components: storageModuleContent.Component[] = this.getComponentsFromWorkspace();
     const events: storageModuleContent.Event[] = this.getEventsFromWorkspace();
     const methods: storageModuleContent.Method[] = (
-        this.currentModule?.moduleType === storageModule.MODULE_TYPE_ROBOT ||
-        this.currentModule?.moduleType === storageModule.MODULE_TYPE_MECHANISM)
+        this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
+        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM)
         ? this.getMethodsForOutsideFromWorkspace()
         : [];
     return storageModuleContent.makeModuleContentText(
@@ -258,7 +258,7 @@ export class Editor {
 
   public getMechanismsFromWorkspace(): storageModuleContent.MechanismInRobot[] {
     const mechanisms: storageModuleContent.MechanismInRobot[] = [];
-    if (this.currentModule?.moduleType === storageModule.MODULE_TYPE_ROBOT) {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       mechanismComponentHolder.getMechanisms(this.blocklyWorkspace, mechanisms);
     }
     return mechanisms;
@@ -266,8 +266,8 @@ export class Editor {
 
   public getComponentsFromWorkspace(): storageModuleContent.Component[] {
     const components: storageModuleContent.Component[] = [];
-    if (this.currentModule?.moduleType === storageModule.MODULE_TYPE_ROBOT ||
-        this.currentModule?.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
+        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getComponents(this.blocklyWorkspace, components);
     }
     return components;
@@ -294,8 +294,8 @@ export class Editor {
 
   public getEventsFromWorkspace(): storageModuleContent.Event[] {
     const events: storageModuleContent.Event[] = [];
-    if (this.currentModule?.moduleType === storageModule.MODULE_TYPE_ROBOT ||
-        this.currentModule?.moduleType === storageModule.MODULE_TYPE_MECHANISM) {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
+        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getEvents(this.blocklyWorkspace, events);
     }
     return events;
@@ -329,7 +329,7 @@ export class Editor {
    * Returns the mechanisms defined in the robot.
    */
   public getMechanismsFromRobot(): storageModuleContent.MechanismInRobot[] {
-    if (this.currentModule?.moduleType === storageModule.MODULE_TYPE_ROBOT) {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getMechanismsFromWorkspace();
     }
     if (this.robotContent) {
@@ -342,7 +342,7 @@ export class Editor {
    * Returns the components defined in the robot.
    */
   public getComponentsFromRobot(): storageModuleContent.Component[] {
-    if (this.currentModule?.moduleType === storageModule.MODULE_TYPE_ROBOT) {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getComponentsFromWorkspace();
     }
     if (this.robotContent) {
@@ -355,7 +355,7 @@ export class Editor {
    * Returns the events defined in the robot.
    */
   public getEventsFromRobot(): storageModuleContent.Event[] {
-    if (this.currentModule?.moduleType === storageModule.MODULE_TYPE_ROBOT) {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getEventsFromWorkspace();
     }
     if (this.robotContent) {
@@ -368,7 +368,7 @@ export class Editor {
    * Returns the methods defined in the robot.
    */
   public getMethodsFromRobot(): storageModuleContent.Method[] {
-    if (this.currentModule?.moduleType === storageModule.MODULE_TYPE_ROBOT) {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getMethodsForWithinFromWorkspace();
     }
     if (this.robotContent) {

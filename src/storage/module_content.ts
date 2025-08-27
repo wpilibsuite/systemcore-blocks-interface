@@ -80,7 +80,7 @@ function startingBlocksToModuleContentText(
 export function newRobotContent(projectName: string): string {
   const module: storageModule.Robot = {
     modulePath: storageNames.makeRobotPath(projectName),
-    moduleType: storageModule.MODULE_TYPE_ROBOT,
+    moduleType: storageModule.ModuleType.ROBOT,
     moduleId: Blockly.utils.idGenerator.genUid(),
     projectName: projectName,
     className: storageNames.CLASS_NAME_ROBOT,
@@ -95,8 +95,8 @@ export function newRobotContent(projectName: string): string {
  */
 export function newMechanismContent(projectName: string, mechanismClassName: string): string {
   const module: storageModule.Mechanism = {
-    modulePath: storageNames.makeModulePath(projectName, mechanismClassName),
-    moduleType: storageModule.MODULE_TYPE_MECHANISM,
+    modulePath: storageNames.makeModulePath(projectName, mechanismClassName, storageModule.ModuleType.MECHANISM),
+    moduleType: storageModule.ModuleType.MECHANISM,
     moduleId: Blockly.utils.idGenerator.genUid(),
     projectName: projectName,
     className: mechanismClassName,
@@ -111,8 +111,8 @@ export function newMechanismContent(projectName: string, mechanismClassName: str
  */
 export function newOpModeContent(projectName: string, opModeClassName: string): string {
   const module: storageModule.OpMode = {
-    modulePath: storageNames.makeModulePath(projectName, opModeClassName),
-    moduleType: storageModule.MODULE_TYPE_OPMODE,
+    modulePath: storageNames.makeModulePath(projectName, opModeClassName, storageModule.ModuleType.OPMODE),
+    moduleType: storageModule.ModuleType.OPMODE,
     moduleId: Blockly.utils.idGenerator.genUid(),
     projectName: projectName,
     className: opModeClassName,
@@ -194,7 +194,7 @@ function fixOldParsedContent(parsedContent: any): void {
 
 export class ModuleContent {
   constructor(
-      private moduleType: string,
+      private moduleType: storageModule.ModuleType,
       private moduleId: string,
       private blocks : { [key: string]: any },
       private mechanisms: MechanismInRobot[],
@@ -207,7 +207,7 @@ export class ModuleContent {
     return JSON.stringify(this, null, 2);
   }
 
-  getModuleType(): string {
+  getModuleType(): storageModule.ModuleType {
     return this.moduleType;
   }
 
