@@ -24,6 +24,7 @@
     "react-dom": "^19.1.0",
     "react-i18next": "^15.6.0",
     "react-syntax-highlighter": "^15.6.1",
+    "typescript": "^5.9.2",
     "web-vitals": "^5.0.3"
   },
   "scripts": {
@@ -32,7 +33,7 @@
     "test": "vitest",
     "gen": "node src/Blockly/gen.js",
     "dev": "vite",
-    "tscheck": "tsc -b --noEmit"
+    "tscheck": "npx tsc -b --noEmit"
   },
   "eslintConfig": {
     "extends": [
