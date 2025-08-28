@@ -561,6 +561,7 @@ async function fetchProjectInfo(
   return projectInfo;
 }
 
+// TODO(lizlooney): Move updateProjectIfNecessary to it's own file.
 async function updateProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
   const projectInfo = await fetchProjectInfo(storage, projectName);
