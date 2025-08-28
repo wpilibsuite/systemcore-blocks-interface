@@ -20,6 +20,7 @@
  */
 
 import JSZip from 'jszip';
+import * as semver from 'semver';
 
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
@@ -35,6 +36,7 @@ export type Project = {
   opModes: storageModule.OpMode[],
 };
 
+const NO_VERSION = '0.0.0';
 const CURRENT_VERSION = '0.0.1';
 
 type ProjectInfo = {
@@ -60,6 +62,8 @@ export async function listProjectNames(storage: commonStorage.Storage): Promise<
  */
 export async function fetchProject(
     storage: commonStorage.Storage, projectName: string): Promise<Project> {
+  await updateProjectIfNecessary(storage, projectName);
+
   const modulePaths: string[] = await storage.listFilePaths(
       storageNames.makeModulePathRegexPattern(projectName));
 
@@ -539,4 +543,35 @@ async function deleteProjectInfo(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
   const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
   await storage.deleteFile(projectInfoPath);
+}
+
+async function fetchProjectInfo(
+    storage: commonStorage.Storage, projectName: string): Promise<ProjectInfo> {
+  const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
+  let projectInfo: ProjectInfo;
+  try {
+    const projectInfoContentText = await storage.fetchFileContentText(projectInfoPath);
+    projectInfo = parseProjectInfoContentText(projectInfoContentText);
+  } catch (error) {
+    // The file doesn't exist.
+    projectInfo = {
+      version: NO_VERSION,
+    };
+  }
+  return projectInfo;
+}
+
+async function updateProjectIfNecessary(
+    storage: commonStorage.Storage, projectName: string): Promise<void> {
+  const projectInfo = await fetchProjectInfo(storage, projectName);
+  if (semver.lt(projectInfo.version, CURRENT_VERSION)) {
+    switch (projectInfo.version) {
+      case '0.0.0':
+        // Project was saved without a project.info.json file.
+        // Nothing needs to be done to update to '0.0.1';
+        projectInfo.version = '0.0.1';
+        break;
+    }
+    await saveProjectInfo(storage, projectName);
+  }
 }
