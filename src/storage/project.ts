@@ -35,11 +35,17 @@ export type Project = {
   opModes: storageModule.OpMode[],
 };
 
+const CURRENT_VERSION = '0.0.1';
+
+type ProjectInfo = {
+  version: string,
+};
+
 /**
  * Returns the list of project names.
  */
 export async function listProjectNames(storage: commonStorage.Storage): Promise<string[]> {
-  const filePathRegexPattern = '.*/Robot\.robot\.json$';
+  const filePathRegexPattern = storageNames.REGEX_ROBOT_MODULE_PATH;
   const robotModulePaths: string[] = await storage.listFilePaths(filePathRegexPattern);
 
   const projectNames: string[] = [];
@@ -119,6 +125,7 @@ export async function createProject(
   const opmodeContent = storageModuleContent.newOpModeContent(
       newProjectName, storageNames.CLASS_NAME_TELEOP);
   await storage.saveFile(opmodePath, opmodeContent);
+  await saveProjectInfo(storage, newProjectName);
 }
 
 /**
@@ -161,6 +168,10 @@ async function renameOrCopyProject(
       await storage.deleteFile(modulePath);
     }
   }
+  await saveProjectInfo(storage, newProjectName);
+  if (rename) {
+    await deleteProjectInfo(storage, projectName);
+  }
 }
 
 /**
@@ -177,6 +188,7 @@ export async function deleteProject(
   for (const modulePath of modulePaths) {
     await storage.deleteFile(modulePath);
   }
+  await deleteProjectInfo(storage, projectName);
 }
 
 /**
@@ -215,6 +227,7 @@ export async function addModuleToProject(
       } as storageModule.OpMode);
       break;
   }
+  await saveProjectInfo(storage, project.projectName);
 }
 
 /**
@@ -238,6 +251,7 @@ export async function removeModuleFromProject(
         break;
     }
     await storage.deleteFile(modulePath);
+    await saveProjectInfo(storage, project.projectName);
   }
 }
 
@@ -331,6 +345,7 @@ async function renameOrCopyModule(
         break;
     }
   }
+  await saveProjectInfo(storage, project.projectName);
 
   return newModulePath;
 }
@@ -404,20 +419,20 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
  */
 export async function downloadProject(
     storage: commonStorage.Storage, projectName: string): Promise<string> {
-  const modulePaths: string[] = await storage.listFilePaths(
-      storageNames.makeModulePathRegexPattern(projectName));
+  const filePaths: string[] = await storage.listFilePaths(
+      storageNames.makeFilePathRegexPattern(projectName));
 
-  const fileNameToModuleContentText: {[fileName: string]: string} = {}; // value is module content text
-  for (const modulePath of modulePaths) {
-    const fileName = storageNames.getFileName(modulePath);
-    const moduleContentText = await storage.fetchFileContentText(modulePath);
-    fileNameToModuleContentText[fileName] = moduleContentText;
+  const fileNameToFileContentText: {[fileName: string]: string} = {}; // value is file content text
+  for (const filePath of filePaths) {
+    const fileName = storageNames.getFileName(filePath);
+    const fileContentText = await storage.fetchFileContentText(filePath);
+    fileNameToFileContentText[fileName] = fileContentText;
   }
 
   const zip = new JSZip();
-  for (const fileName in fileNameToModuleContentText) {
-    const moduleContentText = fileNameToModuleContentText[fileName];
-    zip.file(fileName, moduleContentText);
+  for (const fileName in fileNameToFileContentText) {
+    const fileContentText = fileNameToFileContentText[fileName];
+    zip.file(fileName, fileContentText);
   }
   const content = await zip.generateAsync({ type: "blob" });
   return URL.createObjectURL(content);
@@ -436,20 +451,19 @@ export function makeUploadProjectName(
 export async function uploadProject(
     storage: commonStorage.Storage, projectName: string, blobUrl: string): Promise<void> {
   // Process the uploaded blob to get the file names and contents.
-  const fileNameToModuleContentText = await processUploadedBlob(blobUrl);
+  const fileNameToFileContentText = await processUploadedBlob(blobUrl);
 
-  // Save each module.
-  for (const fileName in fileNameToModuleContentText) {
-    const moduleContentText = fileNameToModuleContentText[fileName];
-    const className = storageNames.getClassName(fileName);
-    const moduleType = storageNames.getModuleType(fileName);
-    const modulePath = storageNames.makeModulePath(projectName, className, moduleType);
-    await storage.saveFile(modulePath, moduleContentText);
+  // Save each file.
+  for (const fileName in fileNameToFileContentText) {
+    const fileContentText = fileNameToFileContentText[fileName];
+    const filePath = storageNames.makeFilePath(projectName, fileName);
+    await storage.saveFile(filePath, fileContentText);
   }
+  await saveProjectInfo(storage, projectName);
 }
 
 /**
- * Process the uploaded blob to get the module file names and file contents.
+ * Process the uploaded blob to get the file names and file contents.
  */
 async function processUploadedBlob(blobUrl: string): Promise<{ [fileName: string]: string }> {
 
@@ -473,22 +487,56 @@ async function processUploadedBlob(blobUrl: string): Promise<{ [fileName: string
     })
   );
 
-  // Process each module's content.
+  // Process each file's content.
   let foundRobot = false;
-  const fileNameToModuleContentText: { [fileName: string]: string } = {}; // value is module content text
+  const fileNameToFileContentText: { [fileName: string]: string } = {}; // value is file content text
   for (const fileName in files) {
-    const moduleType = storageNames.getModuleType(fileName);
-    if (moduleType === storageModule.ModuleType.ROBOT) {
-      foundRobot = true;
+    if (storageNames.isValidProjectInfoFileName(fileName)) {
+      // Make sure we can parse the content.
+      parseProjectInfoContentText(files[fileName]);
+    } else if (storageNames.isValidModuleFileName(fileName)) {
+      const moduleType = storageNames.getModuleType(fileName);
+      if (moduleType === storageModule.ModuleType.ROBOT) {
+        foundRobot = true;
+      }
+      // Make sure we can parse the content.
+      storageModuleContent.parseModuleContentText(files[fileName]);
+    } else {
+      throw new Error('Uploaded project file contains one or more unexpected files.');
     }
-    // Make sure we can parse the content.
-    const moduleContent = storageModuleContent.parseModuleContentText(files[fileName]);
-    fileNameToModuleContentText[fileName] = moduleContent.getModuleContentText();
+    fileNameToFileContentText[fileName] = files[fileName];
   }
 
   if (!foundRobot) {
-    throw new Error('Uploaded file did not contain a Robot.');
+    throw new Error('Uploaded project file did not contain a Robot.');
   }
 
-  return fileNameToModuleContentText;
+  return fileNameToFileContentText;
+}
+
+export async function saveProjectInfo(
+    storage: commonStorage.Storage, projectName: string): Promise<void> {
+  const projectInfo: ProjectInfo = {
+    version: CURRENT_VERSION,
+  };
+  const projectInfoContentText = JSON.stringify(projectInfo, null, 2);
+  const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
+  await storage.saveFile(projectInfoPath, projectInfoContentText);
+}
+
+function parseProjectInfoContentText(projectInfoContentText: string): ProjectInfo {
+  const parsedContent = JSON.parse(projectInfoContentText);
+  if (!('version' in parsedContent)) {
+    throw new Error('Project info content text is not valid.');
+  }
+  const projectInfo: ProjectInfo = {
+    version: parsedContent.version,
+  };
+  return projectInfo;
+}
+
+async function deleteProjectInfo(
+    storage: commonStorage.Storage, projectName: string): Promise<void> {
+  const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
+  await storage.deleteFile(projectInfoPath);
 }

@@ -320,6 +320,9 @@ export class Editor {
     try {
       await this.storage.saveFile(this.modulePath, moduleContentText);
       this.moduleContentText = moduleContentText;
+      if (this.currentProject) {
+        await storageProject.saveProjectInfo(this.storage, this.currentProject.projectName);
+      }
     } catch (e) {
       throw e;
     }
