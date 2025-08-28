@@ -20,6 +20,7 @@
  */
 
 import JSZip from 'jszip';
+import * as semver from 'semver';
 
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
@@ -35,12 +36,19 @@ export type Project = {
   opModes: storageModule.OpMode[],
 };
 
+const NO_VERSION = '0.0.0';
+const CURRENT_VERSION = '0.0.1';
+
+type ProjectInfo = {
+  version: string,
+};
+
 /**
  * Returns the list of project names.
  */
 export async function listProjectNames(storage: commonStorage.Storage): Promise<string[]> {
-  const modulePathRegexPattern = '.*\.robot\.json$';
-  const robotModulePaths: string[] = await storage.listModulePaths(modulePathRegexPattern);
+  const filePathRegexPattern = storageNames.REGEX_ROBOT_MODULE_PATH;
+  const robotModulePaths: string[] = await storage.listFilePaths(filePathRegexPattern);
 
   const projectNames: string[] = [];
   for (const robotModulePath of robotModulePaths) {
@@ -54,7 +62,9 @@ export async function listProjectNames(storage: commonStorage.Storage): Promise<
  */
 export async function fetchProject(
     storage: commonStorage.Storage, projectName: string): Promise<Project> {
-  const modulePaths: string[] = await storage.listModulePaths(
+  await updateProjectIfNecessary(storage, projectName);
+
+  const modulePaths: string[] = await storage.listFilePaths(
       storageNames.makeModulePathRegexPattern(projectName));
 
   let project: Project | null = null;
@@ -62,7 +72,7 @@ export async function fetchProject(
   const opModes: storageModule.OpMode[] = [];
 
   for (const modulePath of modulePaths) {
-    const moduleContentText = await storage.fetchModuleContentText(modulePath);
+    const moduleContentText = await storage.fetchFileContentText(modulePath);
     const moduleContent: storageModuleContent.ModuleContent =
         storageModuleContent.parseModuleContentText(moduleContentText);
     const moduleType = storageNames.getModuleType(modulePath);
@@ -112,13 +122,14 @@ export async function createProject(
     storage: commonStorage.Storage, newProjectName: string): Promise<void> {
   const modulePath = storageNames.makeRobotPath(newProjectName);
   const robotContent = storageModuleContent.newRobotContent(newProjectName);
-  await storage.saveModule(modulePath, robotContent);
+  await storage.saveFile(modulePath, robotContent);
 
   const opmodePath = storageNames.makeModulePath(
       newProjectName, storageNames.CLASS_NAME_TELEOP, storageModule.ModuleType.OPMODE);
   const opmodeContent = storageModuleContent.newOpModeContent(
       newProjectName, storageNames.CLASS_NAME_TELEOP);
-  await storage.saveModule(opmodePath, opmodeContent);
+  await storage.saveFile(opmodePath, opmodeContent);
+  await saveProjectInfo(storage, newProjectName);
 }
 
 /**
@@ -148,18 +159,22 @@ export async function copyProject(
 async function renameOrCopyProject(
     storage: commonStorage.Storage, projectName: string, newProjectName: string,
     rename: boolean): Promise<void> {
-  const modulePaths: string[] = await storage.listModulePaths(
+  const modulePaths: string[] = await storage.listFilePaths(
       storageNames.makeModulePathRegexPattern(projectName));
 
   for (const modulePath of modulePaths) {
     const className = storageNames.getClassName(modulePath);
     const moduleType = storageNames.getModuleType(modulePath);
     const newModulePath = storageNames.makeModulePath(newProjectName, className, moduleType);
-    const moduleContentText = await storage.fetchModuleContentText(modulePath);
-    await storage.saveModule(newModulePath, moduleContentText);
+    const moduleContentText = await storage.fetchFileContentText(modulePath);
+    await storage.saveFile(newModulePath, moduleContentText);
     if (rename) {
-      await storage.deleteModule(modulePath);
+      await storage.deleteFile(modulePath);
     }
+  }
+  await saveProjectInfo(storage, newProjectName);
+  if (rename) {
+    await deleteProjectInfo(storage, projectName);
   }
 }
 
@@ -171,12 +186,13 @@ async function renameOrCopyProject(
  */
 export async function deleteProject(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
-  const modulePaths: string[] = await storage.listModulePaths(
+  const modulePaths: string[] = await storage.listFilePaths(
       storageNames.makeModulePathRegexPattern(projectName));
 
   for (const modulePath of modulePaths) {
-    await storage.deleteModule(modulePath);
+    await storage.deleteFile(modulePath);
   }
+  await deleteProjectInfo(storage, projectName);
 }
 
 /**
@@ -196,7 +212,7 @@ export async function addModuleToProject(
   switch (moduleType) {
     case storageModule.ModuleType.MECHANISM:
       const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
-      await storage.saveModule(newModulePath, mechanismContent);
+      await storage.saveFile(newModulePath, mechanismContent);
       project.mechanisms.push({
         modulePath: newModulePath,
         moduleType: storageModule.ModuleType.MECHANISM,
@@ -206,7 +222,7 @@ export async function addModuleToProject(
       break;
     case storageModule.ModuleType.OPMODE:
       const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);
-      await storage.saveModule(newModulePath, opModeContent);
+      await storage.saveFile(newModulePath, opModeContent);
       project.opModes.push({
         modulePath: newModulePath,
         moduleType: storageModule.ModuleType.OPMODE,
@@ -215,7 +231,9 @@ export async function addModuleToProject(
       } as storageModule.OpMode);
       break;
   }
+  await saveProjectInfo(storage, project.projectName);
 }
+
 /**
  * Removes a module from the project.
  * @param storage The storage interface to use for deleting the module.
@@ -236,7 +254,8 @@ export async function removeModuleFromProject(
         project.opModes = project.opModes.filter(o => o.modulePath !== modulePath);
         break;
     }
-    await storage.deleteModule(modulePath);
+    await storage.deleteFile(modulePath);
+    await saveProjectInfo(storage, project.projectName);
   }
 }
 
@@ -284,17 +303,17 @@ async function renameOrCopyModule(
     storage: commonStorage.Storage, project: Project, newClassName: string,
     oldModule: storageModule.Module, rename: boolean): Promise<string> {
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, oldModule.moduleType);
-  let moduleContentText = await storage.fetchModuleContentText(oldModule.modulePath);
+  let moduleContentText = await storage.fetchFileContentText(oldModule.modulePath);
   if (!rename) {
     // Change the ids in the module.
     const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
     moduleContent.changeIds();
     moduleContentText = moduleContent.getModuleContentText();
   }
-  await storage.saveModule(newModulePath, moduleContentText);
+  await storage.saveFile(newModulePath, moduleContentText);
   if (rename) {
     // For rename, delete the old module.
-    await storage.deleteModule(oldModule.modulePath);
+    await storage.deleteFile(oldModule.modulePath);
 
     // Update the project's mechanisms or opModes.
     switch (oldModule.moduleType) {
@@ -330,6 +349,7 @@ async function renameOrCopyModule(
         break;
     }
   }
+  await saveProjectInfo(storage, project.projectName);
 
   return newModulePath;
 }
@@ -403,20 +423,20 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
  */
 export async function downloadProject(
     storage: commonStorage.Storage, projectName: string): Promise<string> {
-  const modulePaths: string[] = await storage.listModulePaths(
-      storageNames.makeModulePathRegexPattern(projectName));
+  const filePaths: string[] = await storage.listFilePaths(
+      storageNames.makeFilePathRegexPattern(projectName));
 
-  const fileNameToModuleContentText: {[fileName: string]: string} = {}; // value is module content text
-  for (const modulePath of modulePaths) {
-    const fileName = storageNames.getFileName(modulePath);
-    const moduleContentText = await storage.fetchModuleContentText(modulePath);
-    fileNameToModuleContentText[fileName] = moduleContentText;
+  const fileNameToFileContentText: {[fileName: string]: string} = {}; // value is file content text
+  for (const filePath of filePaths) {
+    const fileName = storageNames.getFileName(filePath);
+    const fileContentText = await storage.fetchFileContentText(filePath);
+    fileNameToFileContentText[fileName] = fileContentText;
   }
 
   const zip = new JSZip();
-  for (const fileName in fileNameToModuleContentText) {
-    const moduleContentText = fileNameToModuleContentText[fileName];
-    zip.file(fileName, moduleContentText);
+  for (const fileName in fileNameToFileContentText) {
+    const fileContentText = fileNameToFileContentText[fileName];
+    zip.file(fileName, fileContentText);
   }
   const content = await zip.generateAsync({ type: "blob" });
   return URL.createObjectURL(content);
@@ -435,22 +455,21 @@ export function makeUploadProjectName(
 export async function uploadProject(
     storage: commonStorage.Storage, projectName: string, blobUrl: string): Promise<void> {
   // Process the uploaded blob to get the file names and contents.
-  const fileNameToModuleContentText = await processUploadedBlob(blobUrl);
+  const fileNameToFileContentText = await processUploadedBlob(blobUrl);
 
-  // Save each module.
-  for (const fileName in fileNameToModuleContentText) {
-    const moduleContentText = fileNameToModuleContentText[fileName];
-    const className = storageNames.getClassName(fileName);
-    const moduleType = storageNames.getModuleType(fileName);
-    const modulePath = storageNames.makeModulePath(projectName, className, moduleType);
-    await storage.saveModule(modulePath, moduleContentText);
+  // Save each file.
+  for (const fileName in fileNameToFileContentText) {
+    const fileContentText = fileNameToFileContentText[fileName];
+    const filePath = storageNames.makeFilePath(projectName, fileName);
+    await storage.saveFile(filePath, fileContentText);
   }
+  await saveProjectInfo(storage, projectName);
 }
 
 /**
- * Process the uploaded blob to get the module class names and contents.
+ * Process the uploaded blob to get the file names and file contents.
  */
-async function processUploadedBlob(blobUrl: string): Promise<{ [className: string]: string }> {
+async function processUploadedBlob(blobUrl: string): Promise<{ [fileName: string]: string }> {
 
   const prefix = 'data:application/octet-stream;base64,';
   if (!blobUrl.startsWith(prefix)) {
@@ -472,22 +491,88 @@ async function processUploadedBlob(blobUrl: string): Promise<{ [className: strin
     })
   );
 
-  // Process each module's content.
+  // Process each file's content.
   let foundRobot = false;
-  const fileNameToModuleContentText: { [fileName: string]: string } = {}; // value is module content text
+  const fileNameToFileContentText: { [fileName: string]: string } = {}; // value is file content text
   for (const fileName in files) {
-    const moduleType = storageNames.getModuleType(fileName);
-    if (moduleType === storageModule.ModuleType.ROBOT) {
-      foundRobot = true;
+    if (storageNames.isValidProjectInfoFileName(fileName)) {
+      // Make sure we can parse the content.
+      parseProjectInfoContentText(files[fileName]);
+    } else if (storageNames.isValidModuleFileName(fileName)) {
+      const moduleType = storageNames.getModuleType(fileName);
+      if (moduleType === storageModule.ModuleType.ROBOT) {
+        foundRobot = true;
+      }
+      // Make sure we can parse the content.
+      storageModuleContent.parseModuleContentText(files[fileName]);
+    } else {
+      throw new Error('Uploaded project file contains one or more unexpected files.');
     }
-    // Make sure we can parse the content.
-    const moduleContent = storageModuleContent.parseModuleContentText(files[fileName]);
-    fileNameToModuleContentText[fileName] = moduleContent.getModuleContentText();
+    fileNameToFileContentText[fileName] = files[fileName];
   }
 
   if (!foundRobot) {
-    throw new Error('Uploaded file did not contain a Robot.');
+    throw new Error('Uploaded project file did not contain a Robot.');
   }
 
-  return fileNameToModuleContentText;
+  return fileNameToFileContentText;
+}
+
+export async function saveProjectInfo(
+    storage: commonStorage.Storage, projectName: string): Promise<void> {
+  const projectInfo: ProjectInfo = {
+    version: CURRENT_VERSION,
+  };
+  const projectInfoContentText = JSON.stringify(projectInfo, null, 2);
+  const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
+  await storage.saveFile(projectInfoPath, projectInfoContentText);
+}
+
+function parseProjectInfoContentText(projectInfoContentText: string): ProjectInfo {
+  const parsedContent = JSON.parse(projectInfoContentText);
+  if (!('version' in parsedContent)) {
+    throw new Error('Project info content text is not valid.');
+  }
+  const projectInfo: ProjectInfo = {
+    version: parsedContent.version,
+  };
+  return projectInfo;
+}
+
+async function deleteProjectInfo(
+    storage: commonStorage.Storage, projectName: string): Promise<void> {
+  const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
+  await storage.deleteFile(projectInfoPath);
+}
+
+async function fetchProjectInfo(
+    storage: commonStorage.Storage, projectName: string): Promise<ProjectInfo> {
+  const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
+  let projectInfo: ProjectInfo;
+  try {
+    const projectInfoContentText = await storage.fetchFileContentText(projectInfoPath);
+    projectInfo = parseProjectInfoContentText(projectInfoContentText);
+  } catch (error) {
+    // The file doesn't exist.
+    projectInfo = {
+      version: NO_VERSION,
+    };
+  }
+  return projectInfo;
+}
+
+// TODO(lizlooney): Move updateProjectIfNecessary to it's own file.
+async function updateProjectIfNecessary(
+    storage: commonStorage.Storage, projectName: string): Promise<void> {
+  const projectInfo = await fetchProjectInfo(storage, projectName);
+  if (semver.lt(projectInfo.version, CURRENT_VERSION)) {
+    switch (projectInfo.version) {
+      case '0.0.0':
+        // Project was saved without a project.info.json file.
+        // Nothing needs to be done to update to '0.0.1';
+        projectInfo.version = '0.0.1';
+        break;
+    }
+    await saveProjectInfo(storage, projectName);
+  }
 }

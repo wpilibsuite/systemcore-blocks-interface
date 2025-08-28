@@ -147,6 +147,15 @@ export function makeModuleContentText(
 export function parseModuleContentText(moduleContentText: string): ModuleContent {
   const parsedContent = JSON.parse(moduleContentText);
   fixOldParsedContent(parsedContent);
+  if (!('moduleType' in parsedContent) ||
+      !('moduleId' in parsedContent) ||
+      !('blocks' in parsedContent) ||
+      !('mechanisms' in parsedContent) ||
+      !('components' in parsedContent) ||
+      !('events' in parsedContent) ||
+      !('methods' in parsedContent)) {
+    throw new Error('Module content text is not valid.');
+  }
   return new ModuleContent(
       parsedContent.moduleType,
       parsedContent.moduleId,
