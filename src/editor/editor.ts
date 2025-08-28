@@ -137,15 +137,15 @@ export class Editor {
     if (this.currentModule && this.currentProject) {
       // Fetch the content for the current module, the robot, and the mechanisms.
       const promises: { [modulePath: string]: Promise<string> } = {}; // value is promise of module content.
-      promises[this.modulePath] = this.storage.fetchModuleContentText(this.modulePath);
+      promises[this.modulePath] = this.storage.fetchFileContentText(this.modulePath);
       if (this.robotPath !== this.modulePath) {
         // Also fetch the robot module content. It contains components, etc, that can be used in OpModes.
-        promises[this.robotPath] = this.storage.fetchModuleContentText(this.robotPath)
+        promises[this.robotPath] = this.storage.fetchFileContentText(this.robotPath)
       }
       for (const mechanism of this.currentProject.mechanisms) {
         // Fetch the module content text for the mechanism.
         if (mechanism.modulePath !== this.modulePath) {
-          promises[mechanism.modulePath] = this.storage.fetchModuleContentText(mechanism.modulePath)
+          promises[mechanism.modulePath] = this.storage.fetchFileContentText(mechanism.modulePath);
         }
       }
 
@@ -318,7 +318,7 @@ export class Editor {
   public async saveBlocks() {
     const moduleContentText = this.getModuleContentText();
     try {
-      await this.storage.saveModule(this.modulePath, moduleContentText);
+      await this.storage.saveFile(this.modulePath, moduleContentText);
       this.moduleContentText = moduleContentText;
     } catch (e) {
       throw e;

@@ -39,8 +39,8 @@ export type Project = {
  * Returns the list of project names.
  */
 export async function listProjectNames(storage: commonStorage.Storage): Promise<string[]> {
-  const modulePathRegexPattern = '.*\.robot\.json$';
-  const robotModulePaths: string[] = await storage.listModulePaths(modulePathRegexPattern);
+  const filePathRegexPattern = '.*/Robot\.robot\.json$';
+  const robotModulePaths: string[] = await storage.listFilePaths(filePathRegexPattern);
 
   const projectNames: string[] = [];
   for (const robotModulePath of robotModulePaths) {
@@ -54,7 +54,7 @@ export async function listProjectNames(storage: commonStorage.Storage): Promise<
  */
 export async function fetchProject(
     storage: commonStorage.Storage, projectName: string): Promise<Project> {
-  const modulePaths: string[] = await storage.listModulePaths(
+  const modulePaths: string[] = await storage.listFilePaths(
       storageNames.makeModulePathRegexPattern(projectName));
 
   let project: Project | null = null;
@@ -62,7 +62,7 @@ export async function fetchProject(
   const opModes: storageModule.OpMode[] = [];
 
   for (const modulePath of modulePaths) {
-    const moduleContentText = await storage.fetchModuleContentText(modulePath);
+    const moduleContentText = await storage.fetchFileContentText(modulePath);
     const moduleContent: storageModuleContent.ModuleContent =
         storageModuleContent.parseModuleContentText(moduleContentText);
     const moduleType = storageNames.getModuleType(modulePath);
@@ -112,13 +112,13 @@ export async function createProject(
     storage: commonStorage.Storage, newProjectName: string): Promise<void> {
   const modulePath = storageNames.makeRobotPath(newProjectName);
   const robotContent = storageModuleContent.newRobotContent(newProjectName);
-  await storage.saveModule(modulePath, robotContent);
+  await storage.saveFile(modulePath, robotContent);
 
   const opmodePath = storageNames.makeModulePath(
       newProjectName, storageNames.CLASS_NAME_TELEOP, storageModule.ModuleType.OPMODE);
   const opmodeContent = storageModuleContent.newOpModeContent(
       newProjectName, storageNames.CLASS_NAME_TELEOP);
-  await storage.saveModule(opmodePath, opmodeContent);
+  await storage.saveFile(opmodePath, opmodeContent);
 }
 
 /**
@@ -148,17 +148,17 @@ export async function copyProject(
 async function renameOrCopyProject(
     storage: commonStorage.Storage, projectName: string, newProjectName: string,
     rename: boolean): Promise<void> {
-  const modulePaths: string[] = await storage.listModulePaths(
+  const modulePaths: string[] = await storage.listFilePaths(
       storageNames.makeModulePathRegexPattern(projectName));
 
   for (const modulePath of modulePaths) {
     const className = storageNames.getClassName(modulePath);
     const moduleType = storageNames.getModuleType(modulePath);
     const newModulePath = storageNames.makeModulePath(newProjectName, className, moduleType);
-    const moduleContentText = await storage.fetchModuleContentText(modulePath);
-    await storage.saveModule(newModulePath, moduleContentText);
+    const moduleContentText = await storage.fetchFileContentText(modulePath);
+    await storage.saveFile(newModulePath, moduleContentText);
     if (rename) {
-      await storage.deleteModule(modulePath);
+      await storage.deleteFile(modulePath);
     }
   }
 }
@@ -171,11 +171,11 @@ async function renameOrCopyProject(
  */
 export async function deleteProject(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
-  const modulePaths: string[] = await storage.listModulePaths(
+  const modulePaths: string[] = await storage.listFilePaths(
       storageNames.makeModulePathRegexPattern(projectName));
 
   for (const modulePath of modulePaths) {
-    await storage.deleteModule(modulePath);
+    await storage.deleteFile(modulePath);
   }
 }
 
@@ -196,7 +196,7 @@ export async function addModuleToProject(
   switch (moduleType) {
     case storageModule.ModuleType.MECHANISM:
       const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
-      await storage.saveModule(newModulePath, mechanismContent);
+      await storage.saveFile(newModulePath, mechanismContent);
       project.mechanisms.push({
         modulePath: newModulePath,
         moduleType: storageModule.ModuleType.MECHANISM,
@@ -206,7 +206,7 @@ export async function addModuleToProject(
       break;
     case storageModule.ModuleType.OPMODE:
       const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);
-      await storage.saveModule(newModulePath, opModeContent);
+      await storage.saveFile(newModulePath, opModeContent);
       project.opModes.push({
         modulePath: newModulePath,
         moduleType: storageModule.ModuleType.OPMODE,
@@ -216,6 +216,7 @@ export async function addModuleToProject(
       break;
   }
 }
+
 /**
  * Removes a module from the project.
  * @param storage The storage interface to use for deleting the module.
@@ -236,7 +237,7 @@ export async function removeModuleFromProject(
         project.opModes = project.opModes.filter(o => o.modulePath !== modulePath);
         break;
     }
-    await storage.deleteModule(modulePath);
+    await storage.deleteFile(modulePath);
   }
 }
 
@@ -284,17 +285,17 @@ async function renameOrCopyModule(
     storage: commonStorage.Storage, project: Project, newClassName: string,
     oldModule: storageModule.Module, rename: boolean): Promise<string> {
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, oldModule.moduleType);
-  let moduleContentText = await storage.fetchModuleContentText(oldModule.modulePath);
+  let moduleContentText = await storage.fetchFileContentText(oldModule.modulePath);
   if (!rename) {
     // Change the ids in the module.
     const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
     moduleContent.changeIds();
     moduleContentText = moduleContent.getModuleContentText();
   }
-  await storage.saveModule(newModulePath, moduleContentText);
+  await storage.saveFile(newModulePath, moduleContentText);
   if (rename) {
     // For rename, delete the old module.
-    await storage.deleteModule(oldModule.modulePath);
+    await storage.deleteFile(oldModule.modulePath);
 
     // Update the project's mechanisms or opModes.
     switch (oldModule.moduleType) {
@@ -403,13 +404,13 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
  */
 export async function downloadProject(
     storage: commonStorage.Storage, projectName: string): Promise<string> {
-  const modulePaths: string[] = await storage.listModulePaths(
+  const modulePaths: string[] = await storage.listFilePaths(
       storageNames.makeModulePathRegexPattern(projectName));
 
   const fileNameToModuleContentText: {[fileName: string]: string} = {}; // value is module content text
   for (const modulePath of modulePaths) {
     const fileName = storageNames.getFileName(modulePath);
-    const moduleContentText = await storage.fetchModuleContentText(modulePath);
+    const moduleContentText = await storage.fetchFileContentText(modulePath);
     fileNameToModuleContentText[fileName] = moduleContentText;
   }
 
@@ -443,14 +444,14 @@ export async function uploadProject(
     const className = storageNames.getClassName(fileName);
     const moduleType = storageNames.getModuleType(fileName);
     const modulePath = storageNames.makeModulePath(projectName, className, moduleType);
-    await storage.saveModule(modulePath, moduleContentText);
+    await storage.saveFile(modulePath, moduleContentText);
   }
 }
 
 /**
- * Process the uploaded blob to get the module class names and contents.
+ * Process the uploaded blob to get the module file names and file contents.
  */
-async function processUploadedBlob(blobUrl: string): Promise<{ [className: string]: string }> {
+async function processUploadedBlob(blobUrl: string): Promise<{ [fileName: string]: string }> {
 
   const prefix = 'data:application/octet-stream;base64,';
   if (!blobUrl.startsWith(prefix)) {
