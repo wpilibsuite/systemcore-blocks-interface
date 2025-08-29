@@ -268,7 +268,7 @@ function createComponentBlock(
       if (argData.type === 'int') {
         const portType = getPortTypeForArgument(argData.name);
         if (portType) {
-          inputs['ARG' + i] = createPortShadow(portType, 1);
+          inputs['ARG' + i] = createPortShadow(portType);
         } else {
           inputs['ARG' + i] = createNumberShadowValue(1);
         }
