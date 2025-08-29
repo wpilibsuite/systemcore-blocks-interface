@@ -40,7 +40,7 @@ import * as toolboxItems from '../toolbox/items';
 
 export const BLOCK_NAME = 'mrc_get_python_variable';
 
-enum VariableKind {
+export enum VariableKind {
   MODULE = 'module',
   CLASS = 'class',
   INSTANCE = 'instance',
