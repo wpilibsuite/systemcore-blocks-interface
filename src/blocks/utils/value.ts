@@ -50,9 +50,7 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
       break;
     case 'str':
       if (argDefaultValue === 'None') {
-        // TODO(lizlooney): Make a block for python None
-        // In RobotPy function hal.report(), the arg named feature has a default value of None.
-        return null;
+        return createNoneShadowValue()
       }
       // If argDefaultValue is surrounded by single or double quotes, it's a literal string.
       if (argDefaultValue.startsWith("'") && argDefaultValue.endsWith("'") ||
@@ -102,6 +100,14 @@ export function createBooleanShadowValue(boolValue: boolean): any {
       'fields': {
         'BOOL': (boolValue ? 'TRUE' : 'FALSE'),
       },
+    },
+  }
+}
+
+export function createNoneShadowValue(): any {
+  return {
+    'shadow': {
+      'type': 'mrc_none',
     },
   }
 }
