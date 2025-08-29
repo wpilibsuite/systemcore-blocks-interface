@@ -20,12 +20,12 @@
  */
 
 import JSZip from 'jszip';
-import * as semver from 'semver';
 
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
+import { upgradeProjectIfNecessary } from './upgrade_project';
 
 // Types, constants, and functions related to projects, regardless of where the projects are stored.
 
@@ -37,7 +37,7 @@ export type Project = {
 };
 
 const NO_VERSION = '0.0.0';
-const CURRENT_VERSION = '0.0.1';
+export const CURRENT_VERSION = '0.0.1';
 
 type ProjectInfo = {
   version: string,
@@ -62,7 +62,7 @@ export async function listProjectNames(storage: commonStorage.Storage): Promise<
  */
 export async function fetchProject(
     storage: commonStorage.Storage, projectName: string): Promise<Project> {
-  await updateProjectIfNecessary(storage, projectName);
+  await upgradeProjectIfNecessary(storage, projectName);
 
   const modulePaths: string[] = await storage.listFilePaths(
       storageNames.makeModulePathRegexPattern(projectName));
@@ -545,7 +545,7 @@ async function deleteProjectInfo(
   await storage.deleteFile(projectInfoPath);
 }
 
-async function fetchProjectInfo(
+export async function fetchProjectInfo(
     storage: commonStorage.Storage, projectName: string): Promise<ProjectInfo> {
   const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
   let projectInfo: ProjectInfo;
@@ -559,20 +559,4 @@ async function fetchProjectInfo(
     };
   }
   return projectInfo;
-}
-
-// TODO(lizlooney): Move updateProjectIfNecessary to it's own file.
-async function updateProjectIfNecessary(
-    storage: commonStorage.Storage, projectName: string): Promise<void> {
-  const projectInfo = await fetchProjectInfo(storage, projectName);
-  if (semver.lt(projectInfo.version, CURRENT_VERSION)) {
-    switch (projectInfo.version) {
-      case '0.0.0':
-        // Project was saved without a project.info.json file.
-        // Nothing needs to be done to update to '0.0.1';
-        projectInfo.version = '0.0.1';
-        break;
-    }
-    await saveProjectInfo(storage, projectName);
-  }
 }
