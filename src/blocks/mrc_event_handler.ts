@@ -73,11 +73,6 @@ export interface EventHandlerExtraState {
    * Specified only if the sender type is MECHANISM.
    */
   mechanismId?: string,
-
-  // The following fields allow Alan and Liz to load older projects.
-  // TODO(lizlooney): Remove these fields.
-  otherBlockId?: string,
-  mechanismBlockId?: string,
 }
 
 const EVENT_HANDLER = {
@@ -126,7 +121,6 @@ const EVENT_HANDLER = {
    * Applies the given state to this block.
    */
   loadExtraState(this: EventHandlerBlock, extraState: EventHandlerExtraState): void {
-    fixOldExtraState(extraState);
     this.mrcSenderType = extraState.senderType;
     this.mrcParameters = [];
     this.mrcEventId = extraState.eventId;
@@ -507,15 +501,4 @@ export function renameMechanismName(workspace: Blockly.Workspace, mechanismId: s
   eventHandlerBlocks.forEach(block => {
     (block as EventHandlerBlock).renameMechanismName(mechanismId, newName);
   });
-}
-
-// The following function allows Alan and Liz to load older projects.
-// TODO(lizlooney): Remove this function.
-function fixOldExtraState(extraState: EventHandlerExtraState): void {
-  if (extraState.otherBlockId) {
-    extraState.eventId = extraState.otherBlockId;
-  }
-  if (extraState.mechanismBlockId) {
-    extraState.mechanismId = extraState.mechanismBlockId;
-  }
 }
