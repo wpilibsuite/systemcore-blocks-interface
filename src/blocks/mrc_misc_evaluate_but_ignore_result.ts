@@ -16,7 +16,7 @@
  */
 
 /**
- * @fileoverview Miscellaneous blocks.
+ * @fileoverview Blocks for evaluating something, but ignoring the result.
  * @author lizlooney@google.com (Liz Looney)
  */
 
