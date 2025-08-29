@@ -76,8 +76,7 @@ export function varNameForType(type: string): string {
   }
   if (type.includes('[')) {
     // The type is an array.
-    // TODO(lizlooney): What's a good name for an array variable?
-    return '';
+    return 'myArray';
   }
   // If the type has a dot, it is an object and we should provide a variable
   // block for this type.
