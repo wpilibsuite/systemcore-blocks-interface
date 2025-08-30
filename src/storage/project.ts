@@ -68,14 +68,18 @@ export async function fetchProject(
     storage: commonStorage.Storage, projectName: string): Promise<Project> {
   await upgradeProjectIfNecessary(storage, projectName);
 
-  const modulePaths: string[] = await storage.listFilePaths(
-      storageNames.makeModulePathRegexPattern(projectName));
+  const projectFileNames: string[] = await storage.list(
+      storageNames.makeProjectDirectoryPath(projectName));
 
   let project: Project | null = null;
-  const mechanisms: storageModule.Mechanism[] = []
+  const mechanisms: storageModule.Mechanism[] = [];
   const opModes: storageModule.OpMode[] = [];
 
-  for (const modulePath of modulePaths) {
+  for (const projectFileName of projectFileNames) {
+    if (!storageNames.isValidModuleFileName(projectFileName)) {
+      continue;
+    }
+    const modulePath = storageNames.makeFilePath(projectName, projectFileName);
     const moduleContentText = await storage.fetchFileContentText(modulePath);
     const moduleContent: storageModuleContent.ModuleContent =
         storageModuleContent.parseModuleContentText(moduleContentText);
