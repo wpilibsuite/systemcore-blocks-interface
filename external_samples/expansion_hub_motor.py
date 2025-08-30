@@ -28,7 +28,7 @@ import wpimath
 
 class ExpansionHubMotor(Component):
     def __init__(self, port : Port):
-        super().__init___(port, PortType.EXPANSION_HUB_MOTOR)
+        super().__init__(port, PortType.EXPANSION_HUB_MOTOR)
         self.expansion_hub_motor = expansion_hub.ExpansionHubMotor(self.port.port1.location, self.port.port2.location)
 
     def get_manufacturer(self) -> str:

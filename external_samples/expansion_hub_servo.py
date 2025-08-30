@@ -27,7 +27,7 @@ import expansion_hub
 
 class ExpansionHubServo(Component):
     def __init__(self, port : Port):
-        super().__init___(port, PortType.EXPANSION_HUB_SERVO)
+        super().__init__(port, PortType.EXPANSION_HUB_SERVO)
         self.expansion_hub_servo = expansion_hub.ExpansionHubServo(self.port.port1.location, self.port.port2.location)
 
     def get_manufacturer(self) -> str:

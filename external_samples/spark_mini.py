@@ -31,7 +31,7 @@ import wpiutil
 class SparkMini(Component):
     def __init__(self, port : Port):
         # TODO(alan412): I don't think this is the correct type        
-        super().__init___(port, PortType.SMART_MOTOR_PORT)
+        super().__init__(port, PortType.SMART_MOTOR_PORT)
 
         # TODO(lizlooney): When we upgrade to 2027 robotpy, change PWMSparkMax to SparkMini.
         self.spark_mini = wpilib.PWMSparkMax(port) # wpilib.SparkMini(port)

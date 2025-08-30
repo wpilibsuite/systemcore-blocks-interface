@@ -22,7 +22,7 @@ from port import Port, PortType
 
 class SmartMotor(Component):
     def __init__(self, port : Port):
-        super().__init___(port, PortType.SMART_MOTOR_PORT)
+        super().__init__(port, PortType.SMART_MOTOR_PORT)
 
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 
