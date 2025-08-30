@@ -163,17 +163,15 @@ export async function renameProject(
  */
 export async function copyProject(
     storage: commonStorage.Storage, projectName: string, newProjectName: string): Promise<void> {
-  const modulePaths: string[] = await storage.listFilePaths(
-      storageNames.makeModulePathRegexPattern(projectName));
+  const projectFileNames: string[] = await storage.list(
+      storageNames.makeProjectDirectoryPath(projectName));
 
-  for (const modulePath of modulePaths) {
-    const className = storageNames.getClassName(modulePath);
-    const moduleType = storageNames.getModuleType(modulePath);
-    const newModulePath = storageNames.makeModulePath(newProjectName, className, moduleType);
-    const moduleContentText = await storage.fetchFileContentText(modulePath);
-    await storage.saveFile(newModulePath, moduleContentText);
+  for (const projectFileName of projectFileNames) {
+    const filePath = storageNames.makeFilePath(projectName, projectFileName);
+    const newFilePath = storageNames.makeFilePath(newProjectName, projectFileName);
+    const fileContentText = await storage.fetchFileContentText(filePath);
+    await storage.saveFile(newFilePath, fileContentText);
   }
-  await saveProjectInfo(storage, newProjectName);
 }
 
 /**
