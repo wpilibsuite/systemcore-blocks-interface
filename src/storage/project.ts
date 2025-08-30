@@ -413,12 +413,12 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
  */
 export async function downloadProject(
     storage: commonStorage.Storage, projectName: string): Promise<string> {
-  const filePaths: string[] = await storage.listFilePaths(
-      storageNames.makeFilePathRegexPattern(projectName));
+  const fileNames: string[] = await storage.list(
+      storageNames.makeProjectDirectoryPath(projectName));
 
   const fileNameToFileContentText: {[fileName: string]: string} = {}; // value is file content text
-  for (const filePath of filePaths) {
-    const fileName = storageNames.getFileName(filePath);
+  for (const fileName of fileNames) {
+    const filePath = storageNames.makeFilePath(projectName, fileName);
     const fileContentText = await storage.fetchFileContentText(filePath);
     fileNameToFileContentText[fileName] = fileContentText;
   }

@@ -138,15 +138,6 @@ export function snakeCaseToPascalCase(snakeCaseName: string): string {
 }
 
 /**
- * Returns a regex pattern that matches all file paths in the given project.
- */
-// TODO(lizlooney): remove this.
-export function makeFilePathRegexPattern(projectName: string): string {
-  return '^/projects/' + escapeRegExp(projectName) + '/' +
-      '.*' + escapeRegExp(JSON_FILE_EXTENSION) + '$';
-}
-
-/**
  * Escapes the given text so it can be used literally in a regular expression.
  */
 function escapeRegExp(text: string): string {
