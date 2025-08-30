@@ -23,6 +23,7 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
+import { VariableKind } from './mrc_get_python_variable';
 import { getAllowedTypesForSetCheck } from './utils/python';
 import * as variable from './utils/variable';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
@@ -35,14 +36,6 @@ import * as toolboxItems from '../toolbox/items';
 // A block to set a python variable.
 
 export const BLOCK_NAME = 'mrc_set_python_variable';
-
-// TODO(lizlooney): Consider combining VariableKind here with VariableKind in
-// mrc_get_python_variable.ts. They are identical.
-enum VariableKind {
-  MODULE = 'module',
-  CLASS = 'class',
-  INSTANCE = 'instance',
-}
 
 const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
 const FIELD_VARIABLE_NAME = 'VAR';

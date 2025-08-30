@@ -150,11 +150,6 @@ type CallPythonFunctionExtraState = {
    * The mechanism class name. Specified only if the function kind is INSTANCE_MECHANISM.
    */
   mechanismClassName?: string,
-
-  // The following fields allow Alan and Liz to load older projects.
-  // TODO(lizlooney): Remove these fields.
-  otherBlockId?: string,
-  mechanismBlockId?: string,
 }
 
 const CALL_PYTHON_FUNCTION = {
@@ -303,7 +298,6 @@ const CALL_PYTHON_FUNCTION = {
       this: CallPythonFunctionBlock,
       extraState: CallPythonFunctionExtraState
   ): void {
-    fixOldExtraState(extraState);
     this.mrcFunctionKind = extraState.functionKind as FunctionKind;
     this.mrcReturnType = extraState.returnType;
     this.mrcArgs = [];
@@ -1275,27 +1269,4 @@ function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.B
   });
   processArgs(args, extraState, inputs);
   return createBlock(extraState, fields, inputs);
-}
-
-// The following function allows Alan and Liz to load older projects.
-// TODO(lizlooney): Remove this function.
-function fixOldExtraState(extraState: CallPythonFunctionExtraState): void {
-  if (extraState.otherBlockId) {
-    switch (extraState.functionKind as FunctionKind) {
-      case FunctionKind.INSTANCE_WITHIN:
-      case FunctionKind.INSTANCE_ROBOT:
-      case FunctionKind.INSTANCE_MECHANISM:
-        extraState.methodId = extraState.otherBlockId;
-        break;
-      case FunctionKind.INSTANCE_COMPONENT:
-        extraState.componentId = extraState.otherBlockId;
-        break;
-      case FunctionKind.EVENT:
-        extraState.eventId = extraState.otherBlockId;
-        break;
-    }
-  }
-  if (extraState.mechanismBlockId) {
-    extraState.mechanismId = extraState.mechanismBlockId;
-  }
 }
