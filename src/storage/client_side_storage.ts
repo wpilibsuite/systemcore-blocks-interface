@@ -174,6 +174,42 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
+  async list(path: string): Promise<string[]> {
+    if (!path.endsWith('/')) {
+      path += '/';
+    }
+    return new Promise((resolve, reject) => {
+      const results: string[] = [];
+      const openKeyCursorRequest = this.db.transaction([FILES_STORE_NAME], 'readonly')
+          .objectStore(FILES_STORE_NAME)
+          .openKeyCursor();
+      openKeyCursorRequest.onerror = () => {
+        console.log('IndexedDB openKeyCursor request failed. openKeyCursorRequest.error is...');
+        console.log(openKeyCursorRequest.error);
+        reject(new Error('IndexedDB openKeyCursor request failed.'));
+      };
+      openKeyCursorRequest.onsuccess = () => {
+        const cursor = openKeyCursorRequest.result;
+        if (cursor && cursor.key) {
+          const filePath: string = cursor.key as string;
+          if (filePath.startsWith(path)) {
+            const relativePath = filePath.substring(path.length);
+            const slash = relativePath.indexOf('/');
+            const result = (slash != -1)
+                ? relativePath.substring(0, slash + 1) // Include the trailing slash.
+                : relativePath;
+            results.push(result);
+          }
+          cursor.continue();
+        } else {
+          // The cursor is done. We have finished reading all the files.
+          resolve(results);
+        }
+      };
+    });
+  }
+
+  // TODO(lizlooney): remove listFilePaths
   async listFilePaths(opt_filePathRegexPattern?: string): Promise<string[]> {
 
     const regExp = opt_filePathRegexPattern
