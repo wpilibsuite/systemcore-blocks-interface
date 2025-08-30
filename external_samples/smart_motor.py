@@ -18,13 +18,11 @@
 
 from typing import Self
 from component import Component, PortType, InvalidPortException
+from port import Port, PortType
 
 class SmartMotor(Component):
-    def __init__(self, ports : list[tuple[PortType, int]]):
-        portType, port = ports[0]
-        if portType != PortType.SMART_MOTOR_PORT:
-            raise InvalidPortException
-        self.port = port
+    def __init__(self, port : Port):
+        super.__init___(port, PortType.SMART_MOTOR_PORT)
 
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 
@@ -48,8 +46,8 @@ class SmartMotor(Component):
     def reset(self) -> None:
         pass
 
-    def get_connection_port_type(self) -> list[PortType]:
-        return [PortType.SMART_MOTOR_PORT]
+    def get_connection_port_type(self) -> PortType | None:
+        return self.port.get_type()
 
     def periodic(self) -> None:
         pass
@@ -57,7 +55,7 @@ class SmartMotor(Component):
     # Alternative constructor to create an instance from a smart motor port
     @classmethod
     def from_smart_motor_port(cls: type[Self], smart_motor_port: int) -> Self:
-        return cls([(PortType.SMART_MOTOR_PORT, smart_motor_port)])
+        return cls(Port(port_type = PortType.SMART_MOTOR_PORT_PORT, location = smart_motor_port))
     
     # Component specific methods
 
