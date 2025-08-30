@@ -56,16 +56,13 @@ export const CLASS_NAME_ROBOT = 'Robot';
 export const CLASS_NAME_TELEOP = 'Teleop';
 
 // The extension of all JSON files is .json.
-export const JSON_FILE_EXTENSION = '.json';
+const JSON_FILE_EXTENSION = '.json';
 
 // The extension of a downloaded project is .blocks.
 export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 
 // The file name of the project info file.
 const PROJECT_INFO_FILE_NAME = 'project.info.json';
-
-// The file name of the project info file.
-const ROBOT_MODULE_FILE_NAME = 'Robot.robot.json';
 
 // A project name starts with an uppercase letter, followed by alphanumeric characters.
 const REGEX_PROJECT_NAME_PART = '[A-Z][A-Za-z0-9]*';
@@ -81,9 +78,9 @@ const REGEX_MODULE_TYPE_PART = '\.(robot|mechanism|opmode)';
 
 export const PROJECTS_DIRECTORY_PATH = '/projects/';
 
-// This regex is used to extract the project name and file name from a file path.
+// This regex is used to extract the project name from a file path.
 const REGEX_FILE_PATH = '^' + escapeRegExp(PROJECTS_DIRECTORY_PATH) +
-    '(' + REGEX_PROJECT_NAME_PART + ')/(.*' + escapeRegExp(JSON_FILE_EXTENSION) + ')$';
+    '(' + REGEX_PROJECT_NAME_PART + ')/.*' + escapeRegExp(JSON_FILE_EXTENSION) + '$';
 
 // This regex is used to extract the class name from a module path.
 const REGEX_MODULE_PATH = '^' + escapeRegExp(PROJECTS_DIRECTORY_PATH) +
@@ -190,18 +187,6 @@ export function getProjectName(filePath: string): string {
     throw new Error('Unable to extract the project name from "' + filePath + '"');
   }
   return result[1];
-}
-
-/**
- * Returns the file name for given file path.
- */
-export function getFileName(filePath: string): string {
-  const regex = new RegExp(REGEX_FILE_PATH);
-  const result = regex.exec(filePath)
-  if (!result) {
-    throw new Error('Unable to extract the file name from "' + filePath + '"');
-  }
-  return result[2];
 }
 
 /**

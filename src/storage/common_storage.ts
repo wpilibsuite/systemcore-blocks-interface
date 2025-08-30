@@ -30,9 +30,6 @@ export interface Storage {
   
   list(path: string): Promise<string[]>;
 
-  // TODO(lizlooney): remove listFilePaths
-  listFilePaths(opt_filePathRegexPattern?: string): Promise<string[]>;
-
   rename(oldPath: string, newPath: string): Promise<void>;
 
   fetchFileContentText(filePath: string): Promise<string>;

@@ -209,38 +209,6 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  // TODO(lizlooney): remove listFilePaths
-  async listFilePaths(opt_filePathRegexPattern?: string): Promise<string[]> {
-
-    const regExp = opt_filePathRegexPattern
-        ? new RegExp(opt_filePathRegexPattern)
-        : null;
-    return new Promise((resolve, reject) => {
-      const filePaths: string[] = [];
-      const openKeyCursorRequest = this.db.transaction([FILES_STORE_NAME], 'readonly')
-          .objectStore(FILES_STORE_NAME)
-          .openKeyCursor();
-      openKeyCursorRequest.onerror = () => {
-        console.log('IndexedDB openKeyCursor request failed. openKeyCursorRequest.error is...');
-        console.log(openKeyCursorRequest.error);
-        reject(new Error('IndexedDB openKeyCursor request failed.'));
-      };
-      openKeyCursorRequest.onsuccess = () => {
-        const cursor = openKeyCursorRequest.result;
-        if (cursor && cursor.key) {
-          const filePath: string = cursor.key as string;
-          if (!regExp || regExp.test(filePath)) {
-            filePaths.push(filePath);
-          }
-          cursor.continue();
-        } else {
-          // The cursor is done. We have finished reading all the files.
-          resolve(filePaths);
-        }
-      };
-    });
-  }
-
   async rename(oldPath: string, newPath: string): Promise<void> {
     if (oldPath.endsWith('/')) {
       return this.renameDirectory(oldPath, newPath);
