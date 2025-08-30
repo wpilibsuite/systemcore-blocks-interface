@@ -147,15 +147,6 @@ export function makeFilePathRegexPattern(projectName: string): string {
 }
 
 /**
- * Returns a regex pattern that matches all module paths in the given project.
- */
-// TODO(lizlooney): remove this.
-export function makeModulePathRegexPattern(projectName: string): string {
-  return '^/projects/' + escapeRegExp(projectName) + '/' +
-      REGEX_CLASS_NAME_PART + REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
-}
-
-/**
  * Escapes the given text so it can be used literally in a regular expression.
  */
 function escapeRegExp(text: string): string {

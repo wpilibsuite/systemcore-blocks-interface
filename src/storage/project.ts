@@ -182,13 +182,13 @@ export async function copyProject(
  */
 export async function deleteProject(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
-  const modulePaths: string[] = await storage.listFilePaths(
-      storageNames.makeModulePathRegexPattern(projectName));
+  const projectFileNames: string[] = await storage.list(
+      storageNames.makeProjectDirectoryPath(projectName));
 
-  for (const modulePath of modulePaths) {
-    await storage.deleteFile(modulePath);
+  for (const projectFileName of projectFileNames) {
+    const filePath = storageNames.makeFilePath(projectName, projectFileName);
+    await storage.deleteFile(filePath);
   }
-  await deleteProjectInfo(storage, projectName);
 }
 
 /**
@@ -527,12 +527,6 @@ function parseProjectInfoContentText(projectInfoContentText: string): ProjectInf
     version: parsedContent.version,
   };
   return projectInfo;
-}
-
-async function deleteProjectInfo(
-    storage: commonStorage.Storage, projectName: string): Promise<void> {
-  const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
-  await storage.deleteFile(projectInfoPath);
 }
 
 export async function fetchProjectInfo(
