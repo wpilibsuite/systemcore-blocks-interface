@@ -34,7 +34,7 @@ class PortType(Enum):
     EXPANSION_HUB_SERVO = BASE_COMPOUND + 3
     
 class Port:
-    def __init__(self, port_type=None, location=None, port1=None, port2=None):
+    def __init__(self, port_type : PortType = None, location : int = None, port1 : type[Self] = None, port2 : type[Self] = None):
         """
         Create a port that can be either simple (type + location) or compound (two other ports).
         
