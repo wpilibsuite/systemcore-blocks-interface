@@ -146,7 +146,6 @@ export function makeModuleContentText(
 
 export function parseModuleContentText(moduleContentText: string): ModuleContent {
   const parsedContent = JSON.parse(moduleContentText);
-  fixOldParsedContent(parsedContent);
   if (!('moduleType' in parsedContent) ||
       !('moduleId' in parsedContent) ||
       !('blocks' in parsedContent) ||
@@ -164,38 +163,6 @@ export function parseModuleContentText(moduleContentText: string): ModuleContent
       parsedContent.components,
       parsedContent.events,
       parsedContent.methods);
-}
-
-// The following function allows Alan and Liz to load older projects.
-// TODO(lizlooney): Remove this function.
-function fixOldParsedContent(parsedContent: any): void {
-  if (!('moduleId' in parsedContent)) {
-    parsedContent.moduleId = '';
-  }
-  parsedContent.mechanisms.forEach((mechanism: any) => {
-    if (!('mechanismId' in mechanism) && ('blockId' in mechanism)) {
-      mechanism.mechanismId = mechanism['blockId'];
-      delete mechanism['blockId'];
-    }
-  });
-  parsedContent.components.forEach((component: any) => {
-    if (!('componentId' in component) && ('blockId' in component)) {
-      component.componentId = component['blockId'];
-      delete component['blockId'];
-    }
-  });
-  parsedContent.events.forEach((event: any) => {
-    if (!('eventId' in event) && ('blockId' in event)) {
-      event.eventId = event['blockId'];
-      delete event['blockId'];
-    }
-  });
-  parsedContent.methods.forEach((method: any) => {
-    if (!('methodId' in method) && ('blockId' in method)) {
-      method.methodId = method['blockId'];
-      delete method['blockId'];
-    }
-  });
 }
 
 export class ModuleContent {
