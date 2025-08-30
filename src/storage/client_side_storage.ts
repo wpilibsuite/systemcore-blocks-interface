@@ -56,7 +56,57 @@ export async function openClientSideStorage(): Promise<commonStorage.Storage> {
     };
     openRequest.onsuccess = () => {
       const db = openRequest.result;
-      resolve(ClientSideStorage.create(db));
+      fixOldFiles(db).then(() => {
+        resolve(ClientSideStorage.create(db));
+      })
+    };
+  });
+}
+
+// The following function allows Alan and Liz to load older projects.
+// TODO(lizlooney): Remove this function.
+async function fixOldFiles(db: IDBDatabase): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([FILES_STORE_NAME], 'readwrite');
+    transaction.oncomplete = () => {
+      resolve();
+    };
+    transaction.onabort = () => {
+      console.log('IndexedDB transaction aborted.');
+      reject(new Error('IndexedDB transaction aborted.'));
+    };
+    const filesObjectStore = transaction.objectStore(FILES_STORE_NAME);
+    const openCursorRequest = filesObjectStore.openCursor();
+    openCursorRequest.onerror = () => {
+      console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
+      console.log(openCursorRequest.error);
+      reject(new Error('IndexedDB openCursor request failed.'));
+    };
+    openCursorRequest.onsuccess = () => {
+      const cursor = openCursorRequest.result;
+      if (cursor) {
+        const value = cursor.value;
+        if (!value.path.startsWith('/projects/')) {
+          const oldFilePath = value.path;
+          value.path = '/projects/' + value.path;
+          const putRequest = filesObjectStore.put(value);
+          putRequest.onerror = () => {
+            console.log('IndexedDB put request failed. putRequest.error is...');
+            console.log(putRequest.error);
+            throw new Error('IndexedDB put request failed.');
+          };
+          const deleteRequest = filesObjectStore.delete(oldFilePath);
+          deleteRequest.onerror = () => {
+            console.log('IndexedDB delete request failed. deleteRequest.error is...');
+            console.log(deleteRequest.error);
+            throw new Error('IndexedDB delete request failed.');
+          };
+        }
+        cursor.continue();
+      } else {
+        // The cursor is done. We have finished reading all the files.
+        resolve();
+      }
     };
   });
 }

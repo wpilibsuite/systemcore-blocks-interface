@@ -25,7 +25,9 @@ import * as storageModule from './module';
 /**
  * Paths and file names for Blocks Projects
  *
- * Files in a project are stored in a directory whose name is the project name. All files have
+ * All projects are stored in a directory called '/projects/'.
+ *
+ * Files in a project are stored in a subdirectory whose name is the project name. All files have
  * the extension '.json' and contain JSON text.
  *
  * Project information is stored in a file called 'project.info.json'.
@@ -43,8 +45,8 @@ import * as storageModule from './module';
  *     zero or more mechanisms, with the extension '.mechanism.json'
  *     zero or more opmodes, with the extension '.opmode.json'
  *
- * The file path of the project info file is <ProjectName>/project.info.json.
- * The file path of a module is <ProjectName>/<ClassName>.<ModuleType>.json.
+ * The file path of the project info file is /projects/<ProjectName>/project.info.json.
+ * The file path of a module is /projects/<ProjectName>/<ClassName>.<ModuleType>.json.
  */
 
 // The class name of the Robot module that is created automatically when a new project is created.
@@ -78,13 +80,13 @@ const REGEX_CLASS_NAME = '^' + REGEX_CLASS_NAME_PART + '$'
 const REGEX_MODULE_TYPE_PART = '\.(robot|mechanism|opmode)';
 
 // This regex is used to match the robot module path in any project.
-export const REGEX_ROBOT_MODULE_PATH = '^' + REGEX_PROJECT_NAME_PART + '/' + escapeRegExp(ROBOT_MODULE_FILE_NAME) + '$';
+export const REGEX_ROBOT_MODULE_PATH = '^/projects/' + REGEX_PROJECT_NAME_PART + '/' + escapeRegExp(ROBOT_MODULE_FILE_NAME) + '$';
 
 // This regex is used to extract the project name and file name from a file path.
-const REGEX_FILE_PATH = '^(' + REGEX_PROJECT_NAME_PART + ')/(.*' + escapeRegExp(JSON_FILE_EXTENSION) + ')$';
+const REGEX_FILE_PATH = '^/projects/(' + REGEX_PROJECT_NAME_PART + ')/(.*' + escapeRegExp(JSON_FILE_EXTENSION) + ')$';
 
 // This regex is used to extract the class name from a module path.
-const REGEX_MODULE_PATH = '^' + REGEX_PROJECT_NAME_PART + '/(' + REGEX_CLASS_NAME_PART + ')' +
+const REGEX_MODULE_PATH = '^/projects/' + REGEX_PROJECT_NAME_PART + '/(' + REGEX_CLASS_NAME_PART + ')' +
     REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
 
 // This regex is used to extract the class name from a module file name.
@@ -137,7 +139,7 @@ export function snakeCaseToPascalCase(snakeCaseName: string): string {
  * Returns a regex pattern that matches all file paths in the given project.
  */
 export function makeFilePathRegexPattern(projectName: string): string {
-  return '^' + escapeRegExp(projectName) + '/' +
+  return '^/projects/' + escapeRegExp(projectName) + '/' +
       '.*' + escapeRegExp(JSON_FILE_EXTENSION) + '$';
 }
 
@@ -145,7 +147,7 @@ export function makeFilePathRegexPattern(projectName: string): string {
  * Returns a regex pattern that matches all module paths in the given project.
  */
 export function makeModulePathRegexPattern(projectName: string): string {
-  return '^' + escapeRegExp(projectName) + '/' +
+  return '^/projects/' + escapeRegExp(projectName) + '/' +
       REGEX_CLASS_NAME_PART + REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
 }
 
@@ -160,7 +162,7 @@ function escapeRegExp(text: string): string {
  * Returns the file path for the given project name and file name.
  */
 export function makeFilePath(projectName: string, fileName: string): string {
-  return projectName + '/' + fileName;
+  return '/projects/' + projectName + '/' + fileName;
 }
 
 /**
