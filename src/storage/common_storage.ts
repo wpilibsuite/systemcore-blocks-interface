@@ -28,7 +28,9 @@ export interface Storage {
 
   // Functions for storing files.
   
-  listFilePaths(opt_filePathRegexPattern?: string): Promise<string[]>;
+  list(path: string): Promise<string[]>;
+
+  rename(oldPath: string, newPath: string): Promise<void>;
 
   fetchFileContentText(filePath: string): Promise<string>;
 
