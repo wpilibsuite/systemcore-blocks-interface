@@ -179,7 +179,7 @@ class ClientSideStorage implements commonStorage.Storage {
       path += '/';
     }
     return new Promise((resolve, reject) => {
-      const results: string[] = [];
+      const resultsSet: Set<string> = new Set();
       const openKeyCursorRequest = this.db.transaction([FILES_STORE_NAME], 'readonly')
           .objectStore(FILES_STORE_NAME)
           .openKeyCursor();
@@ -198,12 +198,12 @@ class ClientSideStorage implements commonStorage.Storage {
             const result = (slash != -1)
                 ? relativePath.substring(0, slash + 1) // Include the trailing slash.
                 : relativePath;
-            results.push(result);
+            resultsSet.add(result);
           }
           cursor.continue();
         } else {
           // The cursor is done. We have finished reading all the files.
-          resolve(results);
+          resolve([...resultsSet]);
         }
       };
     });
