@@ -79,15 +79,17 @@ const REGEX_CLASS_NAME = '^' + REGEX_CLASS_NAME_PART + '$'
 // The module type of a module path is either .robot, .mechanism, or .opmode.
 const REGEX_MODULE_TYPE_PART = '\.(robot|mechanism|opmode)';
 
-// This regex is used to match the robot module path in any project.
-export const REGEX_ROBOT_MODULE_PATH = '^/projects/' + REGEX_PROJECT_NAME_PART + '/' + escapeRegExp(ROBOT_MODULE_FILE_NAME) + '$';
+export const PROJECTS_DIRECTORY_PATH = '/projects/';
 
 // This regex is used to extract the project name and file name from a file path.
-const REGEX_FILE_PATH = '^/projects/(' + REGEX_PROJECT_NAME_PART + ')/(.*' + escapeRegExp(JSON_FILE_EXTENSION) + ')$';
+const REGEX_FILE_PATH = '^' + escapeRegExp(PROJECTS_DIRECTORY_PATH) +
+    '(' + REGEX_PROJECT_NAME_PART + ')/(.*' + escapeRegExp(JSON_FILE_EXTENSION) + ')$';
 
 // This regex is used to extract the class name from a module path.
-const REGEX_MODULE_PATH = '^/projects/' + REGEX_PROJECT_NAME_PART + '/(' + REGEX_CLASS_NAME_PART + ')' +
-    REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
+const REGEX_MODULE_PATH = '^' + escapeRegExp(PROJECTS_DIRECTORY_PATH) +
+    REGEX_PROJECT_NAME_PART + '/' +
+    '(' + REGEX_CLASS_NAME_PART + ')' + REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) +
+    '$';
 
 // This regex is used to extract the class name from a module file name.
 const REGEX_MODULE_FILE_NAME = '^(' + REGEX_CLASS_NAME_PART + ')' +
@@ -138,6 +140,7 @@ export function snakeCaseToPascalCase(snakeCaseName: string): string {
 /**
  * Returns a regex pattern that matches all file paths in the given project.
  */
+// TODO(lizlooney): remove this.
 export function makeFilePathRegexPattern(projectName: string): string {
   return '^/projects/' + escapeRegExp(projectName) + '/' +
       '.*' + escapeRegExp(JSON_FILE_EXTENSION) + '$';
@@ -146,6 +149,7 @@ export function makeFilePathRegexPattern(projectName: string): string {
 /**
  * Returns a regex pattern that matches all module paths in the given project.
  */
+// TODO(lizlooney): remove this.
 export function makeModulePathRegexPattern(projectName: string): string {
   return '^/projects/' + escapeRegExp(projectName) + '/' +
       REGEX_CLASS_NAME_PART + REGEX_MODULE_TYPE_PART + escapeRegExp(JSON_FILE_EXTENSION) + '$';
@@ -162,7 +166,7 @@ function escapeRegExp(text: string): string {
  * Returns the project directory path for the given project name.
  */
 export function makeProjectDirectoryPath(projectName: string): string {
-  return '/projects/' + projectName + '/';
+  return PROJECTS_DIRECTORY_PATH + projectName + '/';
 }
 
 /**

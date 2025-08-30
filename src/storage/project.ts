@@ -32,7 +32,7 @@ import { upgradeProjectIfNecessary } from './upgrade_project';
 export type Project = {
   projectName: string, // For example, WackyWheelerRobot
   robot: storageModule.Robot,
-  mechanisms: storageModule.Mechanism[]
+  mechanisms: storageModule.Mechanism[],
   opModes: storageModule.OpMode[],
 };
 
@@ -47,12 +47,16 @@ type ProjectInfo = {
  * Returns the list of project names.
  */
 export async function listProjectNames(storage: commonStorage.Storage): Promise<string[]> {
-  const filePathRegexPattern = storageNames.REGEX_ROBOT_MODULE_PATH;
-  const robotModulePaths: string[] = await storage.listFilePaths(filePathRegexPattern);
+  const projectDirectoryNames: string[] = await storage.list(storageNames.PROJECTS_DIRECTORY_PATH);
 
   const projectNames: string[] = [];
-  for (const robotModulePath of robotModulePaths) {
-    projectNames.push(storageNames.getProjectName(robotModulePath))
+  for (const projectDirectoryName of projectDirectoryNames) {
+    if (projectDirectoryName.endsWith('/')) {
+      // TODO(lizlooney): Should we check that the Robot.robot.json and project.info.json files
+      // exist in the directory?
+      const projectName = projectDirectoryName.slice(0, projectDirectoryName.length - 1);
+      projectNames.push(projectName);
+    }
   }
   return projectNames;
 }
