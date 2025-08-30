@@ -159,10 +159,17 @@ function escapeRegExp(text: string): string {
 }
 
 /**
+ * Returns the project directory path for the given project name.
+ */
+export function makeProjectDirectoryPath(projectName: string): string {
+  return '/projects/' + projectName + '/';
+}
+
+/**
  * Returns the file path for the given project name and file name.
  */
 export function makeFilePath(projectName: string, fileName: string): string {
-  return '/projects/' + projectName + '/' + fileName;
+  return makeProjectDirectoryPath(projectName) + fileName;
 }
 
 /**
