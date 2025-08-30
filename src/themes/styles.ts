@@ -26,6 +26,7 @@ export const MRC_STYLE_ENUM = 'mrc_style_enum';
 export const MRC_STYLE_VARIABLES = 'mrc_style_variables';
 export const MRC_STYLE_COMMENTS = 'mrc_style_comments';
 export const MRC_STYLE_MISC = 'mrc_style_misc';
+export const MRC_STYLE_NONE = 'mrc_style_none';
 export const MRC_STYLE_CLASS_BLOCKS = 'mrc_style_class_blocks';
 export const MRC_CATEGORY_STYLE_METHODS = 'mrc_category_style_methods';
 export const MRC_STYLE_MECHANISMS = 'mrc_style_mechanisms';
@@ -38,6 +39,7 @@ export const MRC_CATEGORY_STYLE_COMPONENTS = 'mrc_category_style_components';
 export const add_mrc_styles = function (theme: Blockly.Theme): Blockly.Theme {
     const procedureStyle = theme.blockStyles['procedure_blocks'];
     const variableStyle = theme.blockStyles['variable_blocks'];
+    const logicStyle = theme.blockStyles['logic_blocks'];
 
     theme.setBlockStyle(MRC_STYLE_FUNCTIONS, {
         ...procedureStyle
@@ -74,12 +76,14 @@ export const add_mrc_styles = function (theme: Blockly.Theme): Blockly.Theme {
         colourTertiary: "#494984",
         hat: ""
     });
+    theme.setBlockStyle(MRC_STYLE_NONE, {
+        ...logicStyle
+    });
     theme.setBlockStyle(MRC_STYLE_MECHANISMS, {
         colourPrimary: "#5b61a5",
         colourSecondary: "#dedfed",
         colourTertiary: "#494e84",
         hat: ""
-
     });
     theme.setBlockStyle(MRC_STYLE_COMPONENTS, {
         colourPrimary: "#5b80a5",

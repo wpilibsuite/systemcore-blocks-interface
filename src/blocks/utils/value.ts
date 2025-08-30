@@ -21,6 +21,7 @@
 
 import { getAlias } from './python';
 import * as variable from './variable';
+import { createNoneShadowValue } from '../mrc_none';
 
 
 export function valueForFunctionArgInput(argType: string, argDefaultValue: string): any {
@@ -100,14 +101,6 @@ export function createBooleanShadowValue(boolValue: boolean): any {
       'fields': {
         'BOOL': (boolValue ? 'TRUE' : 'FALSE'),
       },
-    },
-  }
-}
-
-export function createNoneShadowValue(): any {
-  return {
-    'shadow': {
-      'type': 'mrc_none',
     },
   }
 }

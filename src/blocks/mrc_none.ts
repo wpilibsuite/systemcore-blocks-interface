@@ -22,8 +22,8 @@
 
 
 import * as Blockly from 'blockly';
+import { MRC_STYLE_NONE } from '../themes/styles'
 import { Order, PythonGenerator } from 'blockly/python';
-import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 
 export const BLOCK_NAME = 'mrc_none';
 
@@ -32,8 +32,8 @@ export function setup() {
     init: function() {
       this.setOutput(true); // no type for None
       this.appendDummyInput()
-          .appendField(createFieldNonEditableText(Blockly.Msg.NONE));
-      this.setStyle('logic_blocks');
+          .appendField(Blockly.Msg.NONE);
+      this.setStyle(MRC_STYLE_NONE);
       this.setTooltip(Blockly.Msg.NONE_TOOLTIP);
     },
   };
@@ -44,4 +44,12 @@ export function pythonFromBlock(
     _generator: PythonGenerator,
 ): [string, Order] {
   return ['None', Order.ATOMIC];
+}
+
+export function createNoneShadowValue(): any {
+  return {
+    'shadow': {
+      'type': 'mrc_none',
+    },
+  }
 }
