@@ -48,12 +48,7 @@ class Servo(Component):
 
     def periodic(self) -> None:
         pass
-
-    # Alternative constructor to create an instance from an servo port
-    @classmethod
-    def from_servo_port(cls: type[Self], servo_port: int) -> Self:
-        return cls(Port(PortType.SERVO_PORT, servo_port))
-    
+   
     # Component specific methods
 
     def set_position(self, pos: float) -> None:

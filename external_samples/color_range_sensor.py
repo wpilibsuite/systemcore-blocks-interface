@@ -54,12 +54,7 @@ class ColorRangeSensor(Component):
 
     def periodic(self) -> None:
         pass
-
-    # Alternative constructor to create an instance from an i2c port
-    @classmethod
-    def from_i2c_port(cls: type[Self], i2c_port: int) -> Self:
-        return cls(Port(port_type = PortType.I2C_PORT, location = i2c_port))
-    
+   
     # Component specific methods
 
     def get_color_rgb(self) -> tuple[int, int, int]:

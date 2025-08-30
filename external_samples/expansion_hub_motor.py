@@ -59,13 +59,6 @@ class ExpansionHubMotor(Component):
     def periodic(self) -> None:
         pass
 
-    # Alternative constructor to create an instance from a hub number and a motor port.
-    @classmethod
-    def from_hub_number_and_motor_number(cls: type[Self], hub_number: int, motor_number: int) -> Self:
-        return cls(Port(PortType.EXPANSION_HUB_MOTOR, 
-                        port1 = Port(PortType.USB_PORT, hub_number),
-                        port2 = Port(PortType.EXPANSION_HUB_MOTOR_PORT, motor_number)))
-
     # Component specific methods
 
     # Methods from expansion_hub.ExpansionHubMotor

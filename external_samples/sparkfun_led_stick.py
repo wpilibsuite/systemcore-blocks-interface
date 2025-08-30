@@ -46,11 +46,6 @@ class SparkFunLEDStick(Component):
 
     def periodic(self) -> None:
         pass
-
-    # Alternative constructor to create an instance from an i2c port
-    @classmethod
-    def from_i2c_port(cls: type[Self], i2c_port: int) -> Self:
-        return cls(Port(PortType.I2C_PORT, i2c_port))
     
     # SparkFunLEDStick methods
 

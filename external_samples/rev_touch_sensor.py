@@ -56,12 +56,7 @@ class RevTouchSensor(Component):
                 self.pressed_callback()
             elif old and self.released_callback:
                 self.released_callback()
-
-    # Alternative constructor to create an instance from a smart io port
-    @classmethod
-    def from_smart_io_port(cls: type[Self], smart_io_port: int) -> Self:
-        return cls(Port(port_type = PortType.SMART_IO_PORT, location = smart_io_port))
-    
+   
     # Component specific methods
 
     def _read_hardware(self):

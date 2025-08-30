@@ -60,11 +60,6 @@ class SparkMini(Component):
 
     def periodic(self) -> None:
         pass
-
-    # Alternative constructor to create an instance from a smart motor port
-    @classmethod
-    def from_smart_motor_port(cls: type[Self], smart_motor_port: int) -> Self:
-        return cls(Port(PortType.SMART_MOTOR_PORT, smart_motor_port))
     
     # Component specific methods
 
