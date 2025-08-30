@@ -132,19 +132,11 @@ export function createPortShadow(portType : string) {
   //TODO: Based off of the port type, create the right number and type of ports
   const ports : MrcPortType[] = [];
   switch(portType){
-    case 'I2C_PORT':
-      ports.push({ portType: 'i2c', portNumber: 1 });
+    case 'CAN_PORT':
+      ports.push({ portType: 'can', portNumber: 1 });
       break;
     case 'SMART_IO_PORT':
       ports.push({ portType: 'smartio', portNumber: 1 });
-      break;
-    case 'EXPANSION_MOTOR_PORT':
-      ports.push({ portType: 'usb', portNumber: 1 });
-      ports.push({ portType: 'motor', portNumber: 1 });
-      break;
-    case 'EXPANSION_SERVO_PORT':
-      ports.push({ portType: 'usb', portNumber: 1 });
-      ports.push({ portType: 'servo', portNumber: 1 });
       break;
     case 'SMART_MOTOR_PORT':
       ports.push({ portType: 'MotionCore port', portNumber: 1 });
@@ -152,8 +144,37 @@ export function createPortShadow(portType : string) {
     case 'SERVO_PORT':
       ports.push({ portType: 'servo', portNumber: 1 });
       break;
+    case 'I2C_PORT':
+      ports.push({ portType: 'i2c', portNumber: 1 });
+      break;
+    case 'USB_PORT':
+      ports.push({ portType: 'usb', portNumber: 1 });
+      break;
+    case 'EXPANSION_HUB_MOTOR_PORT':
+      ports.push({ portType: 'motor', portNumber: 1 });
+      break;
+    case 'EXPANSION_HUB_SERVO_PORT':
+      ports.push({ portType: 'servo', portNumber: 1 });
+      break;
+    case 'SMART_MOTOR_PORT':
+      ports.push({ portType: 'MotionCore port', portNumber: 1 });
+      break;
+    case 'USB_HUB':
+      ports.push({ portType: 'usb in', portNumber: 1 });
+      ports.push({ portType: 'usb out', portNumber: 1 });
+      break;
+    case 'EXPANSION_HUB_MOTOR':
+      ports.push({ portType: 'usb in', portNumber: 1 });
+      ports.push({ portType: 'motor', portNumber: 1 });
+      break;
+    case 'EXPANSION_HUB_SERVO':
+      ports.push({ portType: 'usb in', portNumber: 1 });
+      ports.push({ portType: 'servo', portNumber: 1 });
+      break;
+    default:
+      ports.push({ portType: 'unknown', portNumber: 1 });
+      break;
   }
-
   return {
     shadow: {
       type: 'mrc_port',
