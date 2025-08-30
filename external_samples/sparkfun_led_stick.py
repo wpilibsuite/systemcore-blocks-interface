@@ -21,7 +21,7 @@ import wpilib
 
 class SparkFunLEDStick(Component):    
     def __init__(self, port : Port):
-        super.__init___(port, PortType.I2C_PORT)
+        super().__init___(port, PortType.I2C_PORT)
 
     def get_manufacturer(self) -> str:   
         return "SparkFun" 

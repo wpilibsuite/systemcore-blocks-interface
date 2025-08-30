@@ -22,7 +22,7 @@ from port import Port, PortType
 
 class Servo(Component):    
     def __init__(self, port : Port):
-        super.__init__(port, PortType.SERVO_PORT)
+        super().__init__(port, PortType.SERVO_PORT)
 
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 

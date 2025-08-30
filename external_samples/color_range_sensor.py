@@ -32,7 +32,7 @@ class ColorCallable(Protocol):
 
 class ColorRangeSensor(Component):    
     def __init__(self, port : Port):
-        super.__init__( port, PortType.I2C_PORT)
+        super().__init__( port, expectedType = PortType.I2C_PORT)
 
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 

@@ -22,7 +22,7 @@ from port import Port, PortType
 
 class RevTouchSensor(Component):
     def __init__(self, port : Port):
-        super.__init___(port, PortType.SMART_IO_PORT)
+        super().__init___(port, PortType.SMART_IO_PORT)
         self.is_pressed = None
 
     def get_manufacturer(self) -> str:   
