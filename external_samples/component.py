@@ -33,7 +33,7 @@ class InvalidPortException(Exception):
 class Component(ABC):
     def __init__(self, port : Port, expectedType : PortType):
         """This has the port it is attached to, and the expected type of the port"""
-        if port.get_type != expectedType:
+        if port.get_type() != expectedType:
             raise InvalidPortException
 
         self.port = port
