@@ -229,15 +229,10 @@ export function getAllPossibleComponents(
       throw new Error('Could not find classData for ' + componentType);
     }
 
-    const componentName = (
-        'my_' +
-        storageNames.pascalCaseToSnakeCase(
-            componentType.substring(componentType.lastIndexOf('.') + 1)));
+    const componentName = 'my_' + classData.moduleName;
 
-    classData.staticMethods.forEach(staticFunctionData => {
-      if (staticFunctionData.returnType === componentType) {
-        contents.push(createComponentBlock(componentName, classData, staticFunctionData, moduleType));
-      }
+    classData.constructors.forEach(constructor => {
+       contents.push(createComponentBlock(componentName, classData, constructor, moduleType));
     });
   });
 
@@ -247,32 +242,27 @@ export function getAllPossibleComponents(
 function createComponentBlock(
     componentName: string,
     classData: ClassData,
-    staticFunctionData: FunctionData,
+    constructorData: FunctionData,
     moduleType: storageModule.ModuleType): toolboxItems.Block {
   const extraState: ComponentExtraState = {
     importModule: classData.moduleName,
-    staticFunctionName: staticFunctionData.functionName,
+    //TODO(ags): Remove this because we know what the constructor name is
+    staticFunctionName: constructorData.functionName,
     params: [],
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_NAME] = componentName;
   fields[FIELD_TYPE] = classData.className;
   const inputs: {[key: string]: any} = {};
-  for (let i = 0; i < staticFunctionData.args.length; i++) {
-    const argData = staticFunctionData.args[i];
+
+  if (constructorData.expectedPortType) {
     extraState.params!.push({
-      'name': argData.name,
-      'type': argData.type,
+      //TODO(Alan): Make this a localized version of the port type
+      'name': constructorData.expectedPortType,
+      'type': 'Port',
     });
-    if (moduleType == storageModule.ModuleType.ROBOT) {
-      if (argData.type === 'int') {
-        const portType = getPortTypeForArgument(argData.name);
-        if (portType) {
-          inputs['ARG' + i] = createPortShadow(portType);
-        } else {
-          inputs['ARG' + i] = createNumberShadowValue(1);
-        }
-      }
+    if ( moduleType == storageModule.ModuleType.ROBOT ) {
+      inputs['ARG0'] = createPortShadow(constructorData.expectedPortType);
     }
   }
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
