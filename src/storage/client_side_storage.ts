@@ -56,7 +56,57 @@ export async function openClientSideStorage(): Promise<commonStorage.Storage> {
     };
     openRequest.onsuccess = () => {
       const db = openRequest.result;
-      resolve(ClientSideStorage.create(db));
+      fixOldFiles(db).then(() => {
+        resolve(ClientSideStorage.create(db));
+      })
+    };
+  });
+}
+
+// The following function allows Alan and Liz to load older projects.
+// TODO(lizlooney): Remove this function.
+async function fixOldFiles(db: IDBDatabase): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([FILES_STORE_NAME], 'readwrite');
+    transaction.oncomplete = () => {
+      resolve();
+    };
+    transaction.onabort = () => {
+      console.log('IndexedDB transaction aborted.');
+      reject(new Error('IndexedDB transaction aborted.'));
+    };
+    const filesObjectStore = transaction.objectStore(FILES_STORE_NAME);
+    const openCursorRequest = filesObjectStore.openCursor();
+    openCursorRequest.onerror = () => {
+      console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
+      console.log(openCursorRequest.error);
+      reject(new Error('IndexedDB openCursor request failed.'));
+    };
+    openCursorRequest.onsuccess = () => {
+      const cursor = openCursorRequest.result;
+      if (cursor) {
+        const value = cursor.value;
+        if (!value.path.startsWith('/projects/')) {
+          const oldFilePath = value.path;
+          value.path = '/projects/' + value.path;
+          const putRequest = filesObjectStore.put(value);
+          putRequest.onerror = () => {
+            console.log('IndexedDB put request failed. putRequest.error is...');
+            console.log(putRequest.error);
+            throw new Error('IndexedDB put request failed.');
+          };
+          const deleteRequest = filesObjectStore.delete(oldFilePath);
+          deleteRequest.onerror = () => {
+            console.log('IndexedDB delete request failed. deleteRequest.error is...');
+            console.log(deleteRequest.error);
+            throw new Error('IndexedDB delete request failed.');
+          };
+        }
+        cursor.continue();
+      } else {
+        // The cursor is done. We have finished reading all the files.
+        resolve();
+      }
     };
   });
 }
@@ -124,13 +174,12 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async listFilePaths(opt_filePathRegexPattern?: string): Promise<string[]> {
-
-    const regExp = opt_filePathRegexPattern
-        ? new RegExp(opt_filePathRegexPattern)
-        : null;
+  async list(path: string): Promise<string[]> {
+    if (!path.endsWith('/')) {
+      path += '/';
+    }
     return new Promise((resolve, reject) => {
-      const filePaths: string[] = [];
+      const resultsSet: Set<string> = new Set();
       const openKeyCursorRequest = this.db.transaction([FILES_STORE_NAME], 'readonly')
           .objectStore(FILES_STORE_NAME)
           .openKeyCursor();
@@ -143,14 +192,118 @@ class ClientSideStorage implements commonStorage.Storage {
         const cursor = openKeyCursorRequest.result;
         if (cursor && cursor.key) {
           const filePath: string = cursor.key as string;
-          if (!regExp || regExp.test(filePath)) {
-            filePaths.push(filePath);
+          if (filePath.startsWith(path)) {
+            const relativePath = filePath.substring(path.length);
+            const slash = relativePath.indexOf('/');
+            const result = (slash != -1)
+                ? relativePath.substring(0, slash + 1) // Include the trailing slash.
+                : relativePath;
+            resultsSet.add(result);
           }
           cursor.continue();
         } else {
           // The cursor is done. We have finished reading all the files.
-          resolve(filePaths);
+          resolve([...resultsSet]);
         }
+      };
+    });
+  }
+
+  async rename(oldPath: string, newPath: string): Promise<void> {
+    if (oldPath.endsWith('/')) {
+      return this.renameDirectory(oldPath, newPath);
+    }
+    return this.renameFile(oldPath, newPath);
+  }
+
+  private async renameDirectory(oldPath: string, newPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
+      transaction.oncomplete = () => {
+        resolve();
+      };
+      transaction.onabort = () => {
+        console.log('IndexedDB transaction aborted.');
+        reject(new Error('IndexedDB transaction aborted.'));
+      };
+      const filesObjectStore = transaction.objectStore(FILES_STORE_NAME);
+      const openCursorRequest = filesObjectStore.openCursor();
+      openCursorRequest.onerror = () => {
+        console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
+        console.log(openCursorRequest.error);
+        throw new Error('IndexedDB openCursor request failed.');
+      };
+      openCursorRequest.onsuccess = () => {
+        const cursor = openCursorRequest.result;
+        if (cursor) {
+          const value = cursor.value;
+          if (value.path.startsWith(oldPath)) {
+            const relativePath = value.path.substring(oldPath.length);
+            const oldFilePath = value.path;
+            value.path = newPath + relativePath;
+            const putRequest = filesObjectStore.put(value);
+            putRequest.onerror = () => {
+              console.log('IndexedDB put request failed. putRequest.error is...');
+              console.log(putRequest.error);
+              throw new Error('IndexedDB put request failed.');
+            };
+            putRequest.onsuccess = () => {
+              const deleteRequest = filesObjectStore.delete(oldFilePath);
+              deleteRequest.onerror = () => {
+                console.log('IndexedDB delete request failed. deleteRequest.error is...');
+                console.log(deleteRequest.error);
+                throw new Error('IndexedDB delete request failed.');
+              };
+            }
+          }
+          cursor.continue();
+        } else {
+          // The cursor is done. We have finished reading all the files.
+          resolve();
+        }
+      };
+    });
+  }
+
+  private async renameFile(oldPath: string, newPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
+      transaction.oncomplete = () => {
+        resolve();
+      };
+      transaction.onabort = () => {
+        console.log('IndexedDB transaction aborted.');
+        reject(new Error('IndexedDB transaction aborted.'));
+      };
+      const filesObjectStore = transaction.objectStore(FILES_STORE_NAME);
+      const getRequest = filesObjectStore.get(oldPath);
+      getRequest.onerror = () => {
+        console.log('IndexedDB get request failed. getRequest.error is...');
+        console.log(getRequest.error);
+        throw new Error('IndexedDB get request failed.');
+      };
+      getRequest.onsuccess = () => {
+        if (getRequest.result === undefined) {
+          console.log('IndexedDB get request succeeded, but the file does not exist.');
+          throw new Error('IndexedDB get request succeeded, but the file does not exist.');
+          return;
+        }
+        const value = getRequest.result;
+        value.path = newPath;
+        const putRequest = filesObjectStore.put(value);
+        putRequest.onerror = () => {
+          console.log('IndexedDB put request failed. putRequest.error is...');
+          console.log(putRequest.error);
+          throw new Error('IndexedDB put request failed.');
+        };
+        putRequest.onsuccess = () => {
+          const deleteRequest = filesObjectStore.delete(oldPath);
+          deleteRequest.onerror = () => {
+            console.log('IndexedDB delete request failed. deleteRequest.error is...');
+            console.log(deleteRequest.error);
+            throw new Error('IndexedDB delete request failed.');
+          };
+        };
       };
     });
   }
@@ -213,7 +366,52 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async deleteFile(filePath: string): Promise<void> {
+  async delete(path: string): Promise<void> {
+    if (path.endsWith('/')) {
+      return this.deleteDirectory(path);
+    }
+    return this.deleteFile(path);
+  }
+
+  private async deleteDirectory(path: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
+      transaction.oncomplete = () => {
+        resolve();
+      };
+      transaction.onabort = () => {
+        console.log('IndexedDB transaction aborted.');
+        reject(new Error('IndexedDB transaction aborted.'));
+      };
+      const filesObjectStore = transaction.objectStore(FILES_STORE_NAME);
+      const openKeyCursorRequest = filesObjectStore.openKeyCursor();
+      openKeyCursorRequest.onerror = () => {
+        console.log('IndexedDB openKeyCursor request failed. openKeyCursorRequest.error is...');
+        console.log(openKeyCursorRequest.error);
+        throw new Error('IndexedDB openKeyCursor request failed.');
+      };
+      openKeyCursorRequest.onsuccess = () => {
+        const cursor = openKeyCursorRequest.result;
+        if (cursor && cursor.key) {
+          const filePath: string = cursor.key as string;
+          if (filePath.startsWith(path)) {
+            const deleteRequest = filesObjectStore.delete(filePath);
+            deleteRequest.onerror = () => {
+              console.log('IndexedDB delete request failed. deleteRequest.error is...');
+              console.log(deleteRequest.error);
+              throw new Error('IndexedDB delete request failed.');
+            };
+          }
+          cursor.continue();
+        } else {
+          // The cursor is done. We have finished reading all the files.
+          resolve();
+        }
+      };
+    });
+  }
+
+  private async deleteFile(filePath: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {

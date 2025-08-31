@@ -32,7 +32,7 @@ import { upgradeProjectIfNecessary } from './upgrade_project';
 export type Project = {
   projectName: string, // For example, WackyWheelerRobot
   robot: storageModule.Robot,
-  mechanisms: storageModule.Mechanism[]
+  mechanisms: storageModule.Mechanism[],
   opModes: storageModule.OpMode[],
 };
 
@@ -47,12 +47,16 @@ type ProjectInfo = {
  * Returns the list of project names.
  */
 export async function listProjectNames(storage: commonStorage.Storage): Promise<string[]> {
-  const filePathRegexPattern = storageNames.REGEX_ROBOT_MODULE_PATH;
-  const robotModulePaths: string[] = await storage.listFilePaths(filePathRegexPattern);
+  const projectDirectoryNames: string[] = await storage.list(storageNames.PROJECTS_DIRECTORY_PATH);
 
   const projectNames: string[] = [];
-  for (const robotModulePath of robotModulePaths) {
-    projectNames.push(storageNames.getProjectName(robotModulePath))
+  for (const projectDirectoryName of projectDirectoryNames) {
+    if (projectDirectoryName.endsWith('/')) {
+      // TODO(lizlooney): Should we check that the Robot.robot.json and project.info.json files
+      // exist in the directory?
+      const projectName = projectDirectoryName.slice(0, projectDirectoryName.length - 1);
+      projectNames.push(projectName);
+    }
   }
   return projectNames;
 }
@@ -64,14 +68,18 @@ export async function fetchProject(
     storage: commonStorage.Storage, projectName: string): Promise<Project> {
   await upgradeProjectIfNecessary(storage, projectName);
 
-  const modulePaths: string[] = await storage.listFilePaths(
-      storageNames.makeModulePathRegexPattern(projectName));
+  const projectFileNames: string[] = await storage.list(
+      storageNames.makeProjectDirectoryPath(projectName));
 
   let project: Project | null = null;
-  const mechanisms: storageModule.Mechanism[] = []
+  const mechanisms: storageModule.Mechanism[] = [];
   const opModes: storageModule.OpMode[] = [];
 
-  for (const modulePath of modulePaths) {
+  for (const projectFileName of projectFileNames) {
+    if (!storageNames.isValidModuleFileName(projectFileName)) {
+      continue;
+    }
+    const modulePath = storageNames.makeFilePath(projectName, projectFileName);
     const moduleContentText = await storage.fetchFileContentText(modulePath);
     const moduleContent: storageModuleContent.ModuleContent =
         storageModuleContent.parseModuleContentText(moduleContentText);
@@ -141,7 +149,9 @@ export async function createProject(
  */
 export async function renameProject(
     storage: commonStorage.Storage, projectName: string, newProjectName: string): Promise<void> {
-  await renameOrCopyProject(storage, projectName, newProjectName, true);
+  const oldPath = storageNames.makeProjectDirectoryPath(projectName);
+  const newPath = storageNames.makeProjectDirectoryPath(newProjectName);
+  await storage.rename(oldPath, newPath);
 }
 
 /**
@@ -153,28 +163,14 @@ export async function renameProject(
  */
 export async function copyProject(
     storage: commonStorage.Storage, projectName: string, newProjectName: string): Promise<void> {
-  await renameOrCopyProject(storage, projectName, newProjectName, false);
-}
+  const projectFileNames: string[] = await storage.list(
+      storageNames.makeProjectDirectoryPath(projectName));
 
-async function renameOrCopyProject(
-    storage: commonStorage.Storage, projectName: string, newProjectName: string,
-    rename: boolean): Promise<void> {
-  const modulePaths: string[] = await storage.listFilePaths(
-      storageNames.makeModulePathRegexPattern(projectName));
-
-  for (const modulePath of modulePaths) {
-    const className = storageNames.getClassName(modulePath);
-    const moduleType = storageNames.getModuleType(modulePath);
-    const newModulePath = storageNames.makeModulePath(newProjectName, className, moduleType);
-    const moduleContentText = await storage.fetchFileContentText(modulePath);
-    await storage.saveFile(newModulePath, moduleContentText);
-    if (rename) {
-      await storage.deleteFile(modulePath);
-    }
-  }
-  await saveProjectInfo(storage, newProjectName);
-  if (rename) {
-    await deleteProjectInfo(storage, projectName);
+  for (const projectFileName of projectFileNames) {
+    const filePath = storageNames.makeFilePath(projectName, projectFileName);
+    const newFilePath = storageNames.makeFilePath(newProjectName, projectFileName);
+    const fileContentText = await storage.fetchFileContentText(filePath);
+    await storage.saveFile(newFilePath, fileContentText);
   }
 }
 
@@ -186,13 +182,7 @@ async function renameOrCopyProject(
  */
 export async function deleteProject(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
-  const modulePaths: string[] = await storage.listFilePaths(
-      storageNames.makeModulePathRegexPattern(projectName));
-
-  for (const modulePath of modulePaths) {
-    await storage.deleteFile(modulePath);
-  }
-  await deleteProjectInfo(storage, projectName);
+  await storage.delete(storageNames.makeProjectDirectoryPath(projectName));
 }
 
 /**
@@ -254,7 +244,7 @@ export async function removeModuleFromProject(
         project.opModes = project.opModes.filter(o => o.modulePath !== modulePath);
         break;
     }
-    await storage.deleteFile(modulePath);
+    await storage.delete(modulePath);
     await saveProjectInfo(storage, project.projectName);
   }
 }
@@ -269,14 +259,36 @@ export async function removeModuleFromProject(
  */
 export async function renameModuleInProject(
     storage: commonStorage.Storage, project: Project, newClassName: string, oldModulePath: string): Promise<string> {
-  const module = findModuleByModulePath(project, oldModulePath);
-  if (!module) {
+  const oldModule = findModuleByModulePath(project, oldModulePath);
+  if (!oldModule) {
     throw new Error('Failed to find module with path ' + oldModulePath);
   }
-  if (module.moduleType == storageModule.ModuleType.ROBOT) {
+  if (oldModule.moduleType == storageModule.ModuleType.ROBOT) {
     throw new Error('Renaming the robot module is not allowed.');
   }
-  return await renameOrCopyModule(storage, project, newClassName, module, true);
+  const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, oldModule.moduleType);
+  await storage.rename(oldModulePath, newModulePath);
+
+  // Update the project's mechanisms or opModes.
+  switch (oldModule.moduleType) {
+    case storageModule.ModuleType.MECHANISM:
+      const mechanism = project.mechanisms.find(m => m.modulePath === oldModule.modulePath);
+      if (mechanism) {
+        mechanism.modulePath = newModulePath;
+        mechanism.className = newClassName;
+      }
+      break;
+    case storageModule.ModuleType.OPMODE:
+      const opMode = project.opModes.find(o => o.modulePath === oldModule.modulePath);
+      if (opMode) {
+        opMode.modulePath = newModulePath;
+        opMode.className = newClassName;
+      }
+      break;
+  }
+  await saveProjectInfo(storage, project.projectName);
+
+  return newModulePath;
 }
 
 /**
@@ -289,65 +301,37 @@ export async function renameModuleInProject(
  */
 export async function copyModuleInProject(
     storage: commonStorage.Storage, project: Project, newClassName: string, oldModulePath: string): Promise<string> {
-  const module = findModuleByModulePath(project, oldModulePath);
-  if (!module) {
+  const oldModule = findModuleByModulePath(project, oldModulePath);
+  if (!oldModule) {
     throw new Error('Failed to find module with path ' + oldModulePath);
   }
-  if (module.moduleType == storageModule.ModuleType.ROBOT) {
+  if (oldModule.moduleType == storageModule.ModuleType.ROBOT) {
     throw new Error('Copying the robot module is not allowed.');
   }
-  return await renameOrCopyModule(storage, project, newClassName, module, false);
-}
-
-async function renameOrCopyModule(
-    storage: commonStorage.Storage, project: Project, newClassName: string,
-    oldModule: storageModule.Module, rename: boolean): Promise<string> {
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, oldModule.moduleType);
-  let moduleContentText = await storage.fetchFileContentText(oldModule.modulePath);
-  if (!rename) {
-    // Change the ids in the module.
-    const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
-    moduleContent.changeIds();
-    moduleContentText = moduleContent.getModuleContentText();
-  }
-  await storage.saveFile(newModulePath, moduleContentText);
-  if (rename) {
-    // For rename, delete the old module.
-    await storage.deleteFile(oldModule.modulePath);
 
-    // Update the project's mechanisms or opModes.
-    switch (oldModule.moduleType) {
-      case storageModule.ModuleType.MECHANISM:
-        const mechanism = project.mechanisms.find(m => m.modulePath === oldModule.modulePath);
-        if (mechanism) {
-          mechanism.modulePath = newModulePath;
-          mechanism.className = newClassName;
-        }
-        break;
-      case storageModule.ModuleType.OPMODE:
-        const opMode = project.opModes.find(o => o.modulePath === oldModule.modulePath);
-        if (opMode) {
-          opMode.modulePath = newModulePath;
-          opMode.className = newClassName;
-        }
-        break;
-    }
-  } else { // copy
-    // Update the project's mechanisms or opModes.
-    const newModule = {
-      modulePath: newModulePath,
-      moduleType: oldModule.moduleType,
-      projectName: project.projectName,
-      className: newClassName
-    };
-    switch (oldModule.moduleType) {
-      case storageModule.ModuleType.MECHANISM:
-        project.mechanisms.push(newModule as storageModule.Mechanism);
-        break;
-      case storageModule.ModuleType.OPMODE:
-        project.opModes.push(newModule as storageModule.OpMode);
-        break;
-    }
+  // Change the ids in the module.
+  let moduleContentText = await storage.fetchFileContentText(oldModule.modulePath);
+  const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
+  moduleContent.changeIds();
+  moduleContentText = moduleContent.getModuleContentText();
+
+  await storage.saveFile(newModulePath, moduleContentText);
+
+  // Update the project's mechanisms or opModes.
+  const newModule = {
+    modulePath: newModulePath,
+    moduleType: oldModule.moduleType,
+    projectName: project.projectName,
+    className: newClassName
+  };
+  switch (oldModule.moduleType) {
+    case storageModule.ModuleType.MECHANISM:
+      project.mechanisms.push(newModule as storageModule.Mechanism);
+      break;
+    case storageModule.ModuleType.OPMODE:
+      project.opModes.push(newModule as storageModule.OpMode);
+      break;
   }
   await saveProjectInfo(storage, project.projectName);
 
@@ -423,12 +407,12 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
  */
 export async function downloadProject(
     storage: commonStorage.Storage, projectName: string): Promise<string> {
-  const filePaths: string[] = await storage.listFilePaths(
-      storageNames.makeFilePathRegexPattern(projectName));
+  const fileNames: string[] = await storage.list(
+      storageNames.makeProjectDirectoryPath(projectName));
 
   const fileNameToFileContentText: {[fileName: string]: string} = {}; // value is file content text
-  for (const filePath of filePaths) {
-    const fileName = storageNames.getFileName(filePath);
+  for (const fileName of fileNames) {
+    const filePath = storageNames.makeFilePath(projectName, fileName);
     const fileContentText = await storage.fetchFileContentText(filePath);
     fileNameToFileContentText[fileName] = fileContentText;
   }
@@ -537,12 +521,6 @@ function parseProjectInfoContentText(projectInfoContentText: string): ProjectInf
     version: parsedContent.version,
   };
   return projectInfo;
-}
-
-async function deleteProjectInfo(
-    storage: commonStorage.Storage, projectName: string): Promise<void> {
-  const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
-  await storage.deleteFile(projectInfoPath);
 }
 
 export async function fetchProjectInfo(
