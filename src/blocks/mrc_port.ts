@@ -36,16 +36,14 @@ export type MrcPortType = {
 
 type PortBlock = Blockly.Block & PortMixin;
 interface PortMixin extends PortMixinType {
+  portType_ : string,
   ports_ : MrcPortType[],
 }
 type PortMixinType = typeof PORT;
 
 type PortExtraState = {
-  /**
-   * The ports.
-   * For instance methods, args[0].name is the self label and args[0].type is
-   * the self type.
-   */
+  //TODO(Alan) - Figure out how to not have this duplicated for a simple port
+  portType: string,
   ports: MrcPortType[],
 }
 
@@ -63,6 +61,7 @@ const PORT = {
    */
   saveExtraState: function (this: PortBlock): PortExtraState {
     const state: PortExtraState = {
+      portType: this.portType_,
       ports: this.ports_
     };
 
@@ -73,6 +72,7 @@ const PORT = {
    * Load the ports from the block's extra state.
    */
   loadExtraState: function (this: PortBlock, state: PortExtraState): void {
+    this.portType_ = state.portType || '';
     this.ports_ = state.ports || [];
     this.updateShape_();
   },
@@ -123,12 +123,38 @@ export const pythonFromBlock = function (
       }
     }
   }
+  let code = `Port(port_type = PortType.${block.portType_}, `;
   
-  const code = ports.length === 1 ? ports[0] : `[${ports.join(', ')}]`;
+  if ( ports.length === 1 ) {
+     code += `location = ${ports[0]})`;
+  }
+  else if ( ports.length === 2 ) {
+    let port1Type = 'UNKNOWN';
+    let port2Type = 'UNKNOWN';
+
+    switch(block.portType_){
+      case 'USB_HUB':
+        port1Type = 'USB_PORT';
+        port2Type = 'USB_PORT';
+        break;
+      case 'EXPANSION_HUB_MOTOR':
+        port1Type = 'USB_PORT';
+        port2Type = 'MOTOR_PORT';
+        break;
+      case 'EXPANSION_HUB_SERVO':
+        port1Type = 'USB_PORT';
+        port2Type = 'SERVO_PORT';
+        break;
+    }
+
+    code += `\\ \n${_generator.INDENT}port1 = Port(port_type = PortType.${port1Type}, location = ${ports[0]}), `;
+    code += `\\ \n${_generator.INDENT}port2 = Port(port_type = PortType.${port2Type}, location = ${ports[1]}))`;
+  }
+
   return [code, Order.ATOMIC];
 }
 
-export function createPortShadow(portType : string) {
+export function createPort(portType : string) {
   //TODO: Based off of the port type, create the right number and type of ports
   const ports : MrcPortType[] = [];
   switch(portType){
@@ -172,13 +198,14 @@ export function createPortShadow(portType : string) {
       ports.push({ portType: 'servo', portNumber: 1 });
       break;
     default:
-      ports.push({ portType: 'unknown', portNumber: 1 });
+      ports.push({ portType: 'unknown:' + portType, portNumber: 1 });
       break;
   }
   return {
-    shadow: {
+    block: {
       type: 'mrc_port',
       extraState: {
+        portType: portType,
         ports: ports.map(port => ({
           portType: port.portType,
           portNumber: port.portNumber

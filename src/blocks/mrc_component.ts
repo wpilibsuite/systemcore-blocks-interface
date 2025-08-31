@@ -31,7 +31,7 @@ import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import * as storageNames from '../storage/names';
-import { createPortShadow } from './mrc_port';
+import { createPort } from './mrc_port';
 import { createNumberShadowValue } from './utils/value';
 import { ClassData, FunctionData } from './utils/python_json_types';
 import { renameMethodCallers } from './mrc_call_python_function'
@@ -167,13 +167,15 @@ const COMPONENT = {
     };
   },
   getArgName: function (this: ComponentBlock, i: number): string {
-    return this.getFieldValue(FIELD_NAME) + '__' + this.mrcArgs[i].name;
+    return this.getFieldValue(FIELD_NAME) + '__' + 'port';
   },
+
+  
   getComponentPorts: function (this: ComponentBlock, ports: {[argName: string]: string}): void {
     // Collect the ports for this component block.
     for (let i = 0; i < this.mrcArgs.length; i++) {
       const argName = this.getArgName(i);
-      ports[argName] = this.mrcArgs[i].type;
+      ports[argName] = this.mrcArgs[i].name;  
     }
   },
   /**
@@ -197,20 +199,16 @@ export const pythonFromBlock = function (
   if (block.mrcImportModule) {
     generator.addImport(block.mrcImportModule);
   }
-  let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.getFieldValue(FIELD_TYPE);
-  if (block.mrcStaticFunctionName) {
-    code += '.' + block.mrcStaticFunctionName;
-  }
-  code += '(';
+  let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.getFieldValue(FIELD_TYPE) + "(";
 
   for (let i = 0; i < block.mrcArgs.length; i++) {
     if (i != 0) {
       code += ', ';
     }
     if (generator.getModuleType() === storageModule.ModuleType.ROBOT) {
-      code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, 'ARG' + i, Order.NONE);
+      code += generator.valueToCode(block, 'ARG' + i, Order.NONE);
     } else {
-      code += block.mrcArgs[i].name + ' = ' + block.getArgName(i);
+      code += block.getArgName(i);
     }
   }
   code += ')\n' + 'self.hardware.append(self.' + block.getFieldValue(FIELD_NAME) + ')\n';
@@ -257,12 +255,11 @@ function createComponentBlock(
 
   if (constructorData.expectedPortType) {
     extraState.params!.push({
-      //TODO(Alan): Make this a localized version of the port type
       'name': constructorData.expectedPortType,
       'type': 'Port',
     });
     if ( moduleType == storageModule.ModuleType.ROBOT ) {
-      inputs['ARG0'] = createPortShadow(constructorData.expectedPortType);
+      inputs['ARG0'] = createPort(constructorData.expectedPortType);
     }
   }
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);

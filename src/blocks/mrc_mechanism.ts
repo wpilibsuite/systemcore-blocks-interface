@@ -34,6 +34,7 @@ import * as storageNames from '../storage/names';
 import * as value from './utils/value';
 import { renameMethodCallers } from './mrc_call_python_function'
 import { renameMechanismName as renameMechanismNameInEventHandlers } from './mrc_event_handler'
+import { createPort } from './mrc_port';
 
 export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';
@@ -296,8 +297,7 @@ export function createMechanismBlock(
         name: port,
         type: parameterType,
       });
-      const defaultValue = (parameterType === 'int') ? '0' : '';
-      inputs['ARG' + i] = value.valueForFunctionArgInput(parameterType, defaultValue);
+      inputs['ARG' + i] = createPort(parameterType);
       i++;
     }
   });
