@@ -58,7 +58,7 @@ async function generatePythonForModule(module: Module, storage: Storage): Promis
 
   try {
     // Fetch the module content from storage
-    const moduleContentText = await storage.fetchModuleContentText(module.modulePath);
+    const moduleContentText = await storage.fetchFileContentText(module.modulePath);
     const moduleContent = parseModuleContentText(moduleContentText);
 
     // Create a headless workspace

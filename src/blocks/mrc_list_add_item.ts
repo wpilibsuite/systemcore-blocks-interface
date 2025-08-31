@@ -16,7 +16,7 @@
  */
 
 /**
- * @fileoverview Miscellaneous blocks.
+ * @fileoverview Block to add an item to the end of a list.
  * @author lizlooney@google.com (Liz Looney)
  */
 

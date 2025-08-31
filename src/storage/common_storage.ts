@@ -26,13 +26,13 @@ export interface Storage {
 
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
 
-  // Functions for storing modules.
+  // Functions for storing files.
   
-  listModulePaths(opt_modulePathRegexPattern?: string): Promise<string[]>;
+  listFilePaths(opt_filePathRegexPattern?: string): Promise<string[]>;
 
-  fetchModuleContentText(modulePath: string): Promise<string>;
+  fetchFileContentText(filePath: string): Promise<string>;
 
-  saveModule(modulePath: string, moduleContentText: string): Promise<void>;
+  saveFile(filePath: string, fileContentText: string): Promise<void>;
 
-  deleteModule(modulePath: string): Promise<void>;
+  deleteFile(filePath: string): Promise<void>;
 }

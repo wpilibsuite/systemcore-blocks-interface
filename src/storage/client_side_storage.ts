@@ -20,18 +20,16 @@
  */
 
 import * as commonStorage from './common_storage';
-import * as storageModuleContent from './module_content';
-import * as storageNames from './names';
 
-// Functions for saving blocks modules to client side storage.
+// Functions for saving blocks files to client side storage.
 
 const DATABASE_NAME = 'systemcore-blocks-interface';
 
 const ENTRIES_STORE_NAME = 'entries';
 const ENTRIES_KEY = 'key';
 
-const MODULES_STORE_NAME = 'modules';
-const MODULES_KEY = 'path';
+const FILES_STORE_NAME = 'modules';
+const FILES_KEY = 'path';
 
 export async function openClientSideStorage(): Promise<commonStorage.Storage> {
   return new Promise((resolve, reject) => {
@@ -51,69 +49,14 @@ export async function openClientSideStorage(): Promise<commonStorage.Storage> {
         db.createObjectStore(ENTRIES_STORE_NAME, { keyPath: ENTRIES_KEY });
       }
 
-      if (!stores.contains(MODULES_STORE_NAME)) {
-        // Create the object store for modules.
-        db.createObjectStore(MODULES_STORE_NAME, { keyPath: MODULES_KEY });
+      if (!stores.contains(FILES_STORE_NAME)) {
+        // Create the object store for files.
+        db.createObjectStore(FILES_STORE_NAME, { keyPath: FILES_KEY });
       }
     };
     openRequest.onsuccess = () => {
       const db = openRequest.result;
-      fixOldModules(db).then(() => {
-        resolve(ClientSideStorage.create(db));
-      })
-    };
-  });
-}
-
-// The following function allows Alan and Liz to load older projects.
-// TODO(lizlooney): Remove this function.
-async function fixOldModules(db: IDBDatabase): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction([MODULES_STORE_NAME], 'readwrite');
-    transaction.oncomplete = () => {
-      resolve();
-    };
-    transaction.onabort = () => {
-      console.log('IndexedDB transaction aborted.');
-      reject(new Error('IndexedDB transaction aborted.'));
-    };
-    const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
-    const openCursorRequest = modulesObjectStore.openCursor();
-    openCursorRequest.onerror = () => {
-      console.log('IndexedDB openCursor request failed. openCursorRequest.error is...');
-      console.log(openCursorRequest.error);
-      reject(new Error('IndexedDB openCursor request failed.'));
-    };
-    openCursorRequest.onsuccess = () => {
-      const cursor = openCursorRequest.result;
-      if (cursor) {
-        const value = cursor.value;
-        const regexForOldModulePath = new RegExp('^([A-Z][A-Za-z0-9]*)/([A-Z][A-Za-z0-9]*).json$');
-        const result = regexForOldModulePath.exec(value.path);
-        if (result) {
-          const oldModulePath = value.path;
-          const projectName = result[1];
-          const className = result[2];
-          const moduleType = storageModuleContent.parseModuleContentText(value.content).getModuleType();
-          value.path = storageNames.makeModulePath(projectName, className, moduleType);
-          const putRequest = modulesObjectStore.put(value);
-          putRequest.onerror = () => {
-           console.log('IndexedDB put request failed. putRequest.error is...');
-            console.log(putRequest.error);
-            throw new Error('IndexedDB put request failed.');
-          };
-          const deleteRequest = modulesObjectStore.delete(oldModulePath);
-          deleteRequest.onerror = () => {
-            console.log('IndexedDB delete request failed. deleteRequest.error is...');
-            console.log(deleteRequest.error);
-            throw new Error('IndexedDB delete request failed.');
-          };
-        }
-        cursor.continue();
-      } else {
-        // The cursor is done. We have finished reading all the modules.
-        resolve();
-      }
+      resolve(ClientSideStorage.create(db));
     };
   });
 }
@@ -181,15 +124,15 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async listModulePaths(opt_modulePathRegexPattern?: string): Promise<string[]> {
+  async listFilePaths(opt_filePathRegexPattern?: string): Promise<string[]> {
 
-    const regExp = opt_modulePathRegexPattern
-        ? new RegExp(opt_modulePathRegexPattern)
+    const regExp = opt_filePathRegexPattern
+        ? new RegExp(opt_filePathRegexPattern)
         : null;
     return new Promise((resolve, reject) => {
-      const modulePaths: string[] = [];
-      const openKeyCursorRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
-          .objectStore(MODULES_STORE_NAME)
+      const filePaths: string[] = [];
+      const openKeyCursorRequest = this.db.transaction([FILES_STORE_NAME], 'readonly')
+          .objectStore(FILES_STORE_NAME)
           .openKeyCursor();
       openKeyCursorRequest.onerror = () => {
         console.log('IndexedDB openKeyCursor request failed. openKeyCursorRequest.error is...');
@@ -199,23 +142,23 @@ class ClientSideStorage implements commonStorage.Storage {
       openKeyCursorRequest.onsuccess = () => {
         const cursor = openKeyCursorRequest.result;
         if (cursor && cursor.key) {
-          const modulePath: string = cursor.key as string;
-          if (!regExp || regExp.test(modulePath)) {
-            modulePaths.push(modulePath);
+          const filePath: string = cursor.key as string;
+          if (!regExp || regExp.test(filePath)) {
+            filePaths.push(filePath);
           }
           cursor.continue();
         } else {
-          // The cursor is done. We have finished reading all the modules.
-          resolve(modulePaths);
+          // The cursor is done. We have finished reading all the files.
+          resolve(filePaths);
         }
       };
     });
   }
 
-  async fetchModuleContentText(modulePath: string): Promise<string> {
+  async fetchFileContentText(filePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      const getRequest = this.db.transaction([MODULES_STORE_NAME], 'readonly')
-          .objectStore(MODULES_STORE_NAME).get(modulePath);
+      const getRequest = this.db.transaction([FILES_STORE_NAME], 'readonly')
+          .objectStore(FILES_STORE_NAME).get(filePath);
       getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
         console.log(getRequest.error);
@@ -223,8 +166,8 @@ class ClientSideStorage implements commonStorage.Storage {
       };
       getRequest.onsuccess = () => {
         if (getRequest.result === undefined) {
-          // Module does not exist.
-          reject(new Error('IndexedDB get request succeeded, but the module does not exist.'));
+          // File does not exist.
+          reject(new Error('IndexedDB get request succeeded, but the file does not exist.'));
           return;
         }
         resolve(getRequest.result.content);
@@ -232,9 +175,9 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async saveModule(modulePath: string, moduleContentText: string): Promise<void> {
+  async saveFile(filePath: string, fileContentText: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
+      const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
         resolve();
       };
@@ -242,8 +185,8 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB transaction aborted.');
         reject(new Error('IndexedDB transaction aborted.'));
       };
-      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
-      const getRequest = modulesObjectStore.get(modulePath);
+      const filesObjectStore = transaction.objectStore(FILES_STORE_NAME);
+      const getRequest = filesObjectStore.get(filePath);
       getRequest.onerror = () => {
         console.log('IndexedDB get request failed. getRequest.error is...');
         console.log(getRequest.error);
@@ -252,15 +195,15 @@ class ClientSideStorage implements commonStorage.Storage {
       getRequest.onsuccess = () => {
         let value;
         if (getRequest.result === undefined) {
-          // The module does not exist. Create it now.
+          // The file does not exist. Create it now.
           value = Object.create(null);
-          value.path = modulePath;
+          value.path = filePath;
         } else {
-          // The module already exists.
+          // The file already exists.
           value = getRequest.result;
         }
-        value.content = moduleContentText;
-        const putRequest = modulesObjectStore.put(value);
+        value.content = fileContentText;
+        const putRequest = filesObjectStore.put(value);
         putRequest.onerror = () => {
           console.log('IndexedDB put request failed. putRequest.error is...');
           console.log(putRequest.error);
@@ -270,9 +213,9 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async deleteModule(modulePath: string): Promise<void> {
+  async deleteFile(filePath: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([MODULES_STORE_NAME], 'readwrite');
+      const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
         resolve();
       };
@@ -280,8 +223,8 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB transaction aborted.');
         reject(new Error('IndexedDB transaction aborted.'));
       };
-      const modulesObjectStore = transaction.objectStore(MODULES_STORE_NAME);
-      const deleteRequest = modulesObjectStore.delete(modulePath);
+      const filesObjectStore = transaction.objectStore(FILES_STORE_NAME);
+      const deleteRequest = filesObjectStore.delete(filePath);
       deleteRequest.onerror = () => {
         console.log('IndexedDB delete request failed. deleteRequest.error is...');
         console.log(deleteRequest.error);
