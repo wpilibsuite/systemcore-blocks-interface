@@ -26,13 +26,11 @@ import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
+import { getAllowedTypesForSetCheck, getClassData, getSubclassNames } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
-import * as storageNames from '../storage/names';
 import { createPort } from './mrc_port';
-import { createNumberShadowValue } from './utils/value';
 import { ClassData, FunctionData } from './utils/python_json_types';
 import { renameMethodCallers } from './mrc_call_python_function'
 
@@ -166,11 +164,11 @@ const COMPONENT = {
       ports: ports,
     };
   },
-  getArgName: function (this: ComponentBlock, i: number): string {
+  getArgName: function (this: ComponentBlock, _: number): string {
     return this.getFieldValue(FIELD_NAME) + '__' + 'port';
   },
 
-  
+
   getComponentPorts: function (this: ComponentBlock, ports: {[argName: string]: string}): void {
     // Collect the ports for this component block.
     for (let i = 0; i < this.mrcArgs.length; i++) {
@@ -263,23 +261,4 @@ function createComponentBlock(
     }
   }
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
-}
-
-function getPortTypeForArgument(argName: string): string | null {
-  const argNameLower = argName.toLowerCase();
-  const moduleData = getModuleData('component');
-  if (moduleData) {
-    for (const enumData of moduleData.enums) {
-      if (enumData.enumClassName ===  'component.PortType') {
-      for (const value of enumData.enumValues) {
-        if (argNameLower === value.toLowerCase()) {
-          return value;
-        }
-      }
-      break;
-      }
-    }
-  }
-
-  return null;
 }
