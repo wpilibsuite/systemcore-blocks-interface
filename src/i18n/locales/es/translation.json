@@ -50,6 +50,7 @@
         "COMPONENTS": "Componentes",
         "EVENTS": "Eventos",
         "EVALUATE_BUT_IGNORE_RESULT": "evaluar pero ignorar resultado",
+        "NONE": "None",
         "TYPE": "Tipo",
         "ENABLED": "Habilitado",
         "DISPLAY_NAME": "Nombre a Mostrar",
@@ -58,6 +59,7 @@
         "NO_MECHANISM_CONTENTS": "Sin Contenido de Mecanismo",
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Ejecuta el bloque conectado e ignora el resultado. Te permite llamar una función e ignorar el valor de retorno.",
+            "NONE": "No devuelve ninguno.",
             "OPMODE_TYPE": "Qué tipo de OpMode es este",
             "OPMODE_ENABLED": "Si el OpMode se muestra en la Estación del Conductor",
             "OPMODE_NAME": "El nombre mostrado en la Estación del Conductor. Si está en blanco usará el nombre de la clase.",
