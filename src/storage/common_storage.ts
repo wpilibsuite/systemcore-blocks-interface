@@ -36,5 +36,5 @@ export interface Storage {
 
   saveFile(filePath: string, fileContentText: string): Promise<void>;
 
-  deleteFile(filePath: string): Promise<void>;
+  delete(path: string): Promise<void>;
 }

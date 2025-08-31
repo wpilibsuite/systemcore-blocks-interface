@@ -216,7 +216,7 @@ class ClientSideStorage implements commonStorage.Storage {
     return this.renameFile(oldPath, newPath);
   }
 
-  async renameDirectory(oldPath: string, newPath: string): Promise<void> {
+  private async renameDirectory(oldPath: string, newPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
@@ -265,7 +265,7 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async renameFile(oldPath: string, newPath: string): Promise<void> {
+  private async renameFile(oldPath: string, newPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
@@ -366,7 +366,52 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
-  async deleteFile(filePath: string): Promise<void> {
+  async delete(path: string): Promise<void> {
+    if (path.endsWith('/')) {
+      return this.deleteDirectory(path);
+    }
+    return this.deleteFile(path);
+  }
+
+  private async deleteDirectory(path: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
+      transaction.oncomplete = () => {
+        resolve();
+      };
+      transaction.onabort = () => {
+        console.log('IndexedDB transaction aborted.');
+        reject(new Error('IndexedDB transaction aborted.'));
+      };
+      const filesObjectStore = transaction.objectStore(FILES_STORE_NAME);
+      const openKeyCursorRequest = filesObjectStore.openKeyCursor();
+      openKeyCursorRequest.onerror = () => {
+        console.log('IndexedDB openKeyCursor request failed. openKeyCursorRequest.error is...');
+        console.log(openKeyCursorRequest.error);
+        throw new Error('IndexedDB openKeyCursor request failed.');
+      };
+      openKeyCursorRequest.onsuccess = () => {
+        const cursor = openKeyCursorRequest.result;
+        if (cursor && cursor.key) {
+          const filePath: string = cursor.key as string;
+          if (filePath.startsWith(path)) {
+            const deleteRequest = filesObjectStore.delete(filePath);
+            deleteRequest.onerror = () => {
+              console.log('IndexedDB delete request failed. deleteRequest.error is...');
+              console.log(deleteRequest.error);
+              throw new Error('IndexedDB delete request failed.');
+            };
+          }
+          cursor.continue();
+        } else {
+          // The cursor is done. We have finished reading all the files.
+          resolve();
+        }
+      };
+    });
+  }
+
+  private async deleteFile(filePath: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([FILES_STORE_NAME], 'readwrite');
       transaction.oncomplete = () => {
