@@ -25,13 +25,13 @@ class PortType(Enum):
     SERVO_PORT = 4
     I2C_PORT = 5
     USB_PORT = 6
-    EXPANSION_HUB_MOTOR_PORT = 7
-    EXPANSION_HUB_SERVO_PORT = 8
+    EXPANSION_HUB_MOTOR_PORT = 7  # This is the port on the expansion hub
+    EXPANSION_HUB_SERVO_PORT = 8  # This is the port on the expansion hub
 
     BASE_COMPOUND = 256
     USB_HUB = BASE_COMPOUND + 1
-    EXPANSION_HUB_MOTOR = BASE_COMPOUND + 2
-    EXPANSION_HUB_SERVO = BASE_COMPOUND + 3
+    EXPANSION_HUB_MOTOR = BASE_COMPOUND + 2   # This is combination expansion hub and motor
+    EXPANSION_HUB_SERVO = BASE_COMPOUND + 3   # This is combination expansion hub and servo
 
 class Port:
     def __init__(self, port_type: PortType = None, location: int = None, port1: type[Self] = None, port2: type[Self] = None):

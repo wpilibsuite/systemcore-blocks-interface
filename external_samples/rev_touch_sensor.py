@@ -45,9 +45,6 @@ class RevTouchSensor(Component):
         self.released_callback = None
         pass
 
-    def get_connection_port_type(self) -> PortType | None:
-        return self.port.get_type
-
     def periodic(self) -> None:
         old = self.is_pressed
         self._read_hardware()

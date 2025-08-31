@@ -360,7 +360,6 @@ class JsonGenerator:
         constructor_data[_KEY_FUNCTION_ARGS] = args
         constructor_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = declaring_class_name
         constructor_data[_KEY_FUNCTION_RETURN_TYPE] = declaring_class_name
-        # This is where I check to see if
         expectedPortType = python_util.getPortTypeFromConstructor(value)
         if expectedPortType:
           constructor_data[_KEY_PORT_EXPECTED_TYPE] = python_util.getPortTypeFromConstructor(value)

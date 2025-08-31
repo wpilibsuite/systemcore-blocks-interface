@@ -46,9 +46,6 @@ class SmartMotor(Component):
     def reset(self) -> None:
         pass
 
-    def get_connection_port_type(self) -> PortType | None:
-        return self.port.get_type()
-
     def periodic(self) -> None:
         pass
     
