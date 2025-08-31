@@ -1226,7 +1226,7 @@
                     "declaringClassName": "port.Port",
                     "functionName": "__init__",
                     "returnType": "port.Port",
-                    "tooltip": "\nCreate a port that can be either simple (type + location) or compound (two other ports).\n\nArgs:\n    port_type: PortType or CompoundPortType for this port\n    location: int location for simple ports\n    port1: First Port for compound ports\n    port2: Second Port for compound ports\n"
+                    "tooltip": "\n        Create a port that can be either simple (type + location) or compound (two other ports).\n\n        Args:\n            port_type: PortType or CompoundPortType for this port\n            location: int location for simple ports\n            port1: First Port for compound ports\n            port2: Second Port for compound ports\n        "
                 }
             ],
             "enums": [],
@@ -1241,7 +1241,7 @@
                     ],
                     "declaringClassName": "port.Port",
                     "functionName": "get_all_ports",
-                    "returnType": "None",
+                    "returnType": "list[tuple[port.PortType, int]]",
                     "tooltip": "Return a list of all simple ports contained in this port."
                 },
                 {
@@ -1254,8 +1254,8 @@
                     ],
                     "declaringClassName": "port.Port",
                     "functionName": "get_type",
-                    "returnType": "None",
-                    "tooltip": "This returns the type if it is simple or the type of the last one in the chain if compound"
+                    "returnType": "port.PortType",
+                    "tooltip": "Returns the port type"
                 }
             ],
             "instanceVariables": [],

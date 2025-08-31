@@ -111,9 +111,11 @@ export const setup = function () {
 
 export const pythonFromBlock = function (
     block: PortBlock,
-    _generator: ExtendedPythonGenerator) {
-  const ports: string[] = [];
+    generator: ExtendedPythonGenerator) {
+  generator.addImport('port');
   
+  const ports: string[] = [];
+
   for (let i = 0; i < block.inputList.length; i++) {
     const input = block.inputList[i];
     if (input.name.startsWith('PORT_')) {
@@ -123,32 +125,32 @@ export const pythonFromBlock = function (
       }
     }
   }
-  let code = `Port(port_type = PortType.${block.portType_}, `;
+  let code = `port.Port(port_type = port.PortType.${block.portType_}, `;
   
-  if ( ports.length === 1 ) {
+  if (ports.length === 1) {
      code += `location = ${ports[0]})`;
-  }
-  else if ( ports.length === 2 ) {
+
+  } else if (ports.length === 2) {
     let port1Type = 'UNKNOWN';
     let port2Type = 'UNKNOWN';
 
-    switch(block.portType_){
+    switch (block.portType_) {
       case 'USB_HUB':
         port1Type = 'USB_PORT';
         port2Type = 'USB_PORT';
         break;
       case 'EXPANSION_HUB_MOTOR':
         port1Type = 'USB_PORT';
-        port2Type = 'MOTOR_PORT';
+        port2Type = 'EXPANSION_HUB_MOTOR_PORT';
         break;
       case 'EXPANSION_HUB_SERVO':
         port1Type = 'USB_PORT';
-        port2Type = 'SERVO_PORT';
+        port2Type = 'EXPANSION_HUB_SERVO_PORT';
         break;
     }
 
-    code += `\\ \n${_generator.INDENT}port1 = Port(port_type = PortType.${port1Type}, location = ${ports[0]}), `;
-    code += `\\ \n${_generator.INDENT}port2 = Port(port_type = PortType.${port2Type}, location = ${ports[1]}))`;
+    code += `\\ \n${generator.INDENT}port1 = port.Port(port_type = port.PortType.${port1Type}, location = ${ports[0]}), `;
+    code += `\\ \n${generator.INDENT}port2 = port.Port(port_type = port.PortType.${port2Type}, location = ${ports[1]}))`;
   }
 
   return [code, Order.ATOMIC];
