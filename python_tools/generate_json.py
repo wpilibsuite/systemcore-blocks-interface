@@ -61,6 +61,7 @@ import color_range_sensor
 import component
 import expansion_hub_motor
 import expansion_hub_servo
+import port
 import rev_touch_sensor
 import servo
 import smart_motor
@@ -123,6 +124,7 @@ def main(argv):
     component,
     expansion_hub_motor,
     expansion_hub_servo,
+    port,
     rev_touch_sensor,
     servo,
     smart_motor,
