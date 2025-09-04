@@ -19,11 +19,12 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "ports",
-                            "type": "list[tuple[component.PortType, int]]"
+                            "name": "port",
+                            "type": "port.Port"
                         }
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
+                    "expectedPortType": "I2C_PORT",
                     "functionName": "__init__",
                     "returnType": "color_range_sensor.ColorRangeSensor",
                     "tooltip": ""
@@ -67,7 +68,7 @@
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[component.PortType]",
+                    "returnType": "port.PortType | None",
                     "tooltip": ""
                 },
                 {
@@ -295,21 +296,7 @@
             ],
             "instanceVariables": [],
             "moduleName": "color_range_sensor",
-            "staticMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "i2c_port",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "from_i2c_port",
-                    "returnType": "color_range_sensor.ColorRangeSensor",
-                    "tooltip": ""
-                }
-            ]
+            "staticMethods": []
         },
         {
             "className": "color_range_sensor.DistanceCallable",
@@ -329,14 +316,19 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "ports",
-                            "type": "list[tuple[component.PortType, int]]"
+                            "name": "port",
+                            "type": "port.Port"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "expectedType",
+                            "type": "port.PortType"
                         }
                     ],
                     "declaringClassName": "component.Component",
                     "functionName": "__init__",
                     "returnType": "component.Component",
-                    "tooltip": ""
+                    "tooltip": "This has the port it is attached to, and the expected type of the port"
                 }
             ],
             "enums": [],
@@ -351,7 +343,7 @@
                     ],
                     "declaringClassName": "component.Component",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[component.PortType]",
+                    "returnType": "port.PortType | None",
                     "tooltip": ""
                 },
                 {
@@ -536,11 +528,12 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "ports",
-                            "type": "list[tuple[component.PortType, int]]"
+                            "name": "port",
+                            "type": "port.Port"
                         }
                     ],
                     "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "expectedPortType": "EXPANSION_HUB_MOTOR",
                     "functionName": "__init__",
                     "returnType": "expansion_hub_motor.ExpansionHubMotor",
                     "tooltip": ""
@@ -623,7 +616,7 @@
                     ],
                     "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[component.PortType]",
+                    "returnType": "port.PortType | None",
                     "tooltip": ""
                 },
                 {
@@ -929,26 +922,7 @@
             ],
             "instanceVariables": [],
             "moduleName": "expansion_hub_motor",
-            "staticMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "hub_number",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "motor_number",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "from_hub_number_and_motor_number",
-                    "returnType": "expansion_hub_motor.ExpansionHubMotor",
-                    "tooltip": ""
-                }
-            ]
+            "staticMethods": []
         },
         {
             "className": "expansion_hub_servo.ExpansionHubServo",
@@ -958,11 +932,12 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "ports",
-                            "type": "list[tuple[component.PortType, int]]"
+                            "name": "port",
+                            "type": "port.Port"
                         }
                     ],
                     "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "expectedPortType": "EXPANSION_HUB_SERVO",
                     "functionName": "__init__",
                     "returnType": "expansion_hub_servo.ExpansionHubServo",
                     "tooltip": ""
@@ -980,7 +955,7 @@
                     ],
                     "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[component.PortType]",
+                    "returnType": "list[port.PortType]",
                     "tooltip": ""
                 },
                 {
@@ -1219,26 +1194,175 @@
             ],
             "instanceVariables": [],
             "moduleName": "expansion_hub_servo",
-            "staticMethods": [
+            "staticMethods": []
+        },
+        {
+            "className": "port.CompoundPort",
+            "classVariables": [],
+            "constructors": [
                 {
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "hub_number",
-                            "type": "int"
+                            "name": "port_type",
+                            "type": "port.PortType"
                         },
                         {
                             "defaultValue": "",
-                            "name": "servo_number",
+                            "name": "port1",
+                            "type": "port.Port"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "port2",
+                            "type": "port.Port"
+                        }
+                    ],
+                    "declaringClassName": "port.CompoundPort",
+                    "functionName": "__init__",
+                    "returnType": "port.CompoundPort",
+                    "tooltip": "\n        Create a compound port from two other ports.\n\n        Args:\n            port_type: PortType for this port (must be a compound type)\n            port1: First Port for compound ports\n            port2: Second Port for compound ports\n        "
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.CompoundPort"
+                        }
+                    ],
+                    "declaringClassName": "port.CompoundPort",
+                    "functionName": "get_all_ports",
+                    "returnType": "list[tuple[port.PortType, int]]",
+                    "tooltip": "Return a list of all simple ports contained in this compound port."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.CompoundPort"
+                        }
+                    ],
+                    "declaringClassName": "port.CompoundPort",
+                    "functionName": "get_type",
+                    "returnType": "port.PortType",
+                    "tooltip": "Returns the port type"
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "port",
+            "staticMethods": []
+        },
+        {
+            "className": "port.Port",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "port_type",
+                            "type": "port.PortType"
+                        }
+                    ],
+                    "declaringClassName": "port.Port",
+                    "functionName": "__init__",
+                    "returnType": "port.Port",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.Port"
+                        }
+                    ],
+                    "declaringClassName": "port.Port",
+                    "functionName": "get_all_ports",
+                    "returnType": "list[tuple[port.PortType, int]]",
+                    "tooltip": "Return a list of all simple ports contained in this port."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.Port"
+                        }
+                    ],
+                    "declaringClassName": "port.Port",
+                    "functionName": "get_type",
+                    "returnType": "port.PortType",
+                    "tooltip": "Returns the port type"
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "port",
+            "staticMethods": []
+        },
+        {
+            "className": "port.SimplePort",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "port_type",
+                            "type": "port.PortType"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "location",
                             "type": "int"
                         }
                     ],
-                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "from_hub_number_and_servo_number",
-                    "returnType": "expansion_hub_servo.ExpansionHubServo",
-                    "tooltip": ""
+                    "declaringClassName": "port.SimplePort",
+                    "functionName": "__init__",
+                    "returnType": "port.SimplePort",
+                    "tooltip": "\n        Create a simple port with a type and location.\n\n        Args:\n            port_type: PortType for this port (must be a simple type)\n            location: int location for this port\n        "
                 }
-            ]
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.SimplePort"
+                        }
+                    ],
+                    "declaringClassName": "port.SimplePort",
+                    "functionName": "get_all_ports",
+                    "returnType": "list[tuple[port.PortType, int]]",
+                    "tooltip": "Return a list containing this simple port."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.SimplePort"
+                        }
+                    ],
+                    "declaringClassName": "port.SimplePort",
+                    "functionName": "get_type",
+                    "returnType": "port.PortType",
+                    "tooltip": "Returns the port type"
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "port",
+            "staticMethods": []
         },
         {
             "className": "rev_touch_sensor.RevTouchSensor",
@@ -1248,11 +1372,12 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "ports",
-                            "type": "list[tuple[component.PortType, int]]"
+                            "name": "port",
+                            "type": "port.Port"
                         }
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
+                    "expectedPortType": "SMART_IO_PORT",
                     "functionName": "__init__",
                     "returnType": "rev_touch_sensor.RevTouchSensor",
                     "tooltip": ""
@@ -1270,7 +1395,7 @@
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[component.PortType]",
+                    "returnType": "port.PortType | None",
                     "tooltip": ""
                 },
                 {
@@ -1455,21 +1580,7 @@
             ],
             "instanceVariables": [],
             "moduleName": "rev_touch_sensor",
-            "staticMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "smart_io_port",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "from_smart_io_port",
-                    "returnType": "rev_touch_sensor.RevTouchSensor",
-                    "tooltip": ""
-                }
-            ]
+            "staticMethods": []
         },
         {
             "className": "servo.Servo",
@@ -1479,11 +1590,12 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "ports",
-                            "type": "list[tuple[component.PortType, int]]"
+                            "name": "port",
+                            "type": "port.Port"
                         }
                     ],
                     "declaringClassName": "servo.Servo",
+                    "expectedPortType": "SERVO_PORT",
                     "functionName": "__init__",
                     "returnType": "servo.Servo",
                     "tooltip": ""
@@ -1501,7 +1613,7 @@
                     ],
                     "declaringClassName": "servo.Servo",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[component.PortType]",
+                    "returnType": "port.PortType | None",
                     "tooltip": ""
                 },
                 {
@@ -1673,21 +1785,7 @@
             ],
             "instanceVariables": [],
             "moduleName": "servo",
-            "staticMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "servo_port",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "from_servo_port",
-                    "returnType": "servo.Servo",
-                    "tooltip": ""
-                }
-            ]
+            "staticMethods": []
         },
         {
             "className": "smart_motor.SmartMotor",
@@ -1697,11 +1795,12 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "ports",
-                            "type": "list[tuple[component.PortType, int]]"
+                            "name": "port",
+                            "type": "port.Port"
                         }
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
+                    "expectedPortType": "SMART_MOTOR_PORT",
                     "functionName": "__init__",
                     "returnType": "smart_motor.SmartMotor",
                     "tooltip": ""
@@ -1732,7 +1831,7 @@
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[component.PortType]",
+                    "returnType": "port.PortType | None",
                     "tooltip": ""
                 },
                 {
@@ -1930,21 +2029,7 @@
             ],
             "instanceVariables": [],
             "moduleName": "smart_motor",
-            "staticMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "smart_motor_port",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "smart_motor.SmartMotor",
-                    "functionName": "from_smart_motor_port",
-                    "returnType": "smart_motor.SmartMotor",
-                    "tooltip": ""
-                }
-            ]
+            "staticMethods": []
         },
         {
             "className": "spark_mini.SparkMini",
@@ -1954,11 +2039,12 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "ports",
-                            "type": "list[tuple[component.PortType, int]]"
+                            "name": "port",
+                            "type": "port.Port"
                         }
                     ],
                     "declaringClassName": "spark_mini.SparkMini",
+                    "expectedPortType": "SMART_MOTOR_PORT",
                     "functionName": "__init__",
                     "returnType": "spark_mini.SparkMini",
                     "tooltip": ""
@@ -2077,7 +2163,7 @@
                     ],
                     "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[component.PortType]",
+                    "returnType": "port.PortType | None",
                     "tooltip": ""
                 },
                 {
@@ -2419,19 +2505,6 @@
                     "functionName": "check_motors",
                     "returnType": "None",
                     "tooltip": "Check the motors to see if any have timed out.\n\nThis static method is called periodically to poll all the motors and stop\nany that have timed out."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "smart_motor_port",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "spark_mini.SparkMini",
-                    "functionName": "from_smart_motor_port",
-                    "returnType": "spark_mini.SparkMini",
-                    "tooltip": ""
                 }
             ]
         },
@@ -2443,11 +2516,12 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "ports",
-                            "type": "list[tuple[component.PortType, int]]"
+                            "name": "port",
+                            "type": "port.Port"
                         }
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
+                    "expectedPortType": "I2C_PORT",
                     "functionName": "__init__",
                     "returnType": "sparkfun_led_stick.SparkFunLEDStick",
                     "tooltip": ""
@@ -2465,7 +2539,7 @@
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[component.PortType]",
+                    "returnType": "port.PortType | None",
                     "tooltip": ""
                 },
                 {
@@ -2668,21 +2742,7 @@
             ],
             "instanceVariables": [],
             "moduleName": "sparkfun_led_stick",
-            "staticMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "i2c_port",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
-                    "functionName": "from_i2c_port",
-                    "returnType": "sparkfun_led_stick.SparkFunLEDStick",
-                    "tooltip": ""
-                }
-            ]
+            "staticMethods": []
         }
     ],
     "modules": [
@@ -2693,21 +2753,7 @@
             "moduleVariables": []
         },
         {
-            "enums": [
-                {
-                    "enumClassName": "component.PortType",
-                    "enumValues": [
-                        "CAN_PORT",
-                        "I2C_PORT",
-                        "SERVO_PORT",
-                        "SMART_IO_PORT",
-                        "SMART_MOTOR_PORT",
-                        "USB_PORT"
-                    ],
-                    "moduleName": "component",
-                    "tooltip": ""
-                }
-            ],
+            "enums": [],
             "functions": [],
             "moduleName": "component",
             "moduleVariables": []
@@ -2722,6 +2768,32 @@
             "enums": [],
             "functions": [],
             "moduleName": "expansion_hub_servo",
+            "moduleVariables": []
+        },
+        {
+            "enums": [
+                {
+                    "enumClassName": "port.PortType",
+                    "enumValues": [
+                        "BASE_COMPOUND",
+                        "CAN_PORT",
+                        "EXPANSION_HUB_MOTOR",
+                        "EXPANSION_HUB_MOTOR_PORT",
+                        "EXPANSION_HUB_SERVO",
+                        "EXPANSION_HUB_SERVO_PORT",
+                        "I2C_PORT",
+                        "SERVO_PORT",
+                        "SMART_IO_PORT",
+                        "SMART_MOTOR_PORT",
+                        "USB_HUB",
+                        "USB_PORT"
+                    ],
+                    "moduleName": "port",
+                    "tooltip": ""
+                }
+            ],
+            "functions": [],
+            "moduleName": "port",
             "moduleVariables": []
         },
         {
@@ -2765,6 +2837,10 @@
             "smart_motor.SmartMotor",
             "spark_mini.SparkMini",
             "sparkfun_led_stick.SparkFunLEDStick"
+        ],
+        "port.Port": [
+            "port.CompoundPort",
+            "port.SimplePort"
         ]
     }
 }

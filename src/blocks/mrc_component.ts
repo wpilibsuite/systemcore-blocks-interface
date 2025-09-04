@@ -26,13 +26,11 @@ import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { getAllowedTypesForSetCheck, getClassData, getModuleData, getSubclassNames } from './utils/python';
+import { getAllowedTypesForSetCheck, getClassData, getSubclassNames } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
-import * as storageNames from '../storage/names';
-import { createPortShadow } from './mrc_port';
-import { createNumberShadowValue } from './utils/value';
+import { createPort } from './mrc_port';
 import { ClassData, FunctionData } from './utils/python_json_types';
 import { renameMethodCallers } from './mrc_call_python_function'
 
@@ -166,14 +164,16 @@ const COMPONENT = {
       ports: ports,
     };
   },
-  getArgName: function (this: ComponentBlock, i: number): string {
-    return this.getFieldValue(FIELD_NAME) + '__' + this.mrcArgs[i].name;
+  getArgName: function (this: ComponentBlock, _: number): string {
+    return this.getFieldValue(FIELD_NAME) + '__' + 'port';
   },
+
+
   getComponentPorts: function (this: ComponentBlock, ports: {[argName: string]: string}): void {
     // Collect the ports for this component block.
     for (let i = 0; i < this.mrcArgs.length; i++) {
       const argName = this.getArgName(i);
-      ports[argName] = this.mrcArgs[i].type;
+      ports[argName] = this.mrcArgs[i].name;  
     }
   },
   /**
@@ -197,20 +197,16 @@ export const pythonFromBlock = function (
   if (block.mrcImportModule) {
     generator.addImport(block.mrcImportModule);
   }
-  let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.getFieldValue(FIELD_TYPE);
-  if (block.mrcStaticFunctionName) {
-    code += '.' + block.mrcStaticFunctionName;
-  }
-  code += '(';
+  let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.getFieldValue(FIELD_TYPE) + "(";
 
   for (let i = 0; i < block.mrcArgs.length; i++) {
     if (i != 0) {
       code += ', ';
     }
     if (generator.getModuleType() === storageModule.ModuleType.ROBOT) {
-      code += block.mrcArgs[i].name + ' = ' + generator.valueToCode(block, 'ARG' + i, Order.NONE);
+      code += generator.valueToCode(block, 'ARG' + i, Order.NONE);
     } else {
-      code += block.mrcArgs[i].name + ' = ' + block.getArgName(i);
+      code += block.getArgName(i);
     }
   }
   code += ')\n' + 'self.hardware.append(self.' + block.getFieldValue(FIELD_NAME) + ')\n';
@@ -229,15 +225,10 @@ export function getAllPossibleComponents(
       throw new Error('Could not find classData for ' + componentType);
     }
 
-    const componentName = (
-        'my_' +
-        storageNames.pascalCaseToSnakeCase(
-            componentType.substring(componentType.lastIndexOf('.') + 1)));
+    const componentName = 'my_' + classData.moduleName;
 
-    classData.staticMethods.forEach(staticFunctionData => {
-      if (staticFunctionData.returnType === componentType) {
-        contents.push(createComponentBlock(componentName, classData, staticFunctionData, moduleType));
-      }
+    classData.constructors.forEach(constructor => {
+       contents.push(createComponentBlock(componentName, classData, constructor, moduleType));
     });
   });
 
@@ -247,52 +238,27 @@ export function getAllPossibleComponents(
 function createComponentBlock(
     componentName: string,
     classData: ClassData,
-    staticFunctionData: FunctionData,
+    constructorData: FunctionData,
     moduleType: storageModule.ModuleType): toolboxItems.Block {
   const extraState: ComponentExtraState = {
     importModule: classData.moduleName,
-    staticFunctionName: staticFunctionData.functionName,
+    //TODO(ags): Remove this because we know what the constructor name is
+    staticFunctionName: constructorData.functionName,
     params: [],
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_NAME] = componentName;
   fields[FIELD_TYPE] = classData.className;
   const inputs: {[key: string]: any} = {};
-  for (let i = 0; i < staticFunctionData.args.length; i++) {
-    const argData = staticFunctionData.args[i];
+
+  if (constructorData.expectedPortType) {
     extraState.params!.push({
-      'name': argData.name,
-      'type': argData.type,
+      'name': constructorData.expectedPortType,
+      'type': 'Port',
     });
-    if (moduleType == storageModule.ModuleType.ROBOT) {
-      if (argData.type === 'int') {
-        const portType = getPortTypeForArgument(argData.name);
-        if (portType) {
-          inputs['ARG' + i] = createPortShadow(portType, 1);
-        } else {
-          inputs['ARG' + i] = createNumberShadowValue(1);
-        }
-      }
+    if ( moduleType == storageModule.ModuleType.ROBOT ) {
+      inputs['ARG0'] = createPort(constructorData.expectedPortType);
     }
   }
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
-}
-
-function getPortTypeForArgument(argName: string): string | null {
-  const argNameLower = argName.toLowerCase();
-  const moduleData = getModuleData('component');
-  if (moduleData) {
-    for (const enumData of moduleData.enums) {
-      if (enumData.enumClassName ===  'component.PortType') {
-      for (const value of enumData.enumValues) {
-        if (argNameLower === value.toLowerCase()) {
-          return value;
-        }
-      }
-      break;
-      }
-    }
-  }
-
-  return null;
 }

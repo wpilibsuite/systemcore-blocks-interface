@@ -17,7 +17,8 @@
 # @author alan@porpoiseful.com (Alan Smith)
 
 from typing import Protocol, Self
-from component import Component, PortType, InvalidPortException
+from component import Component, InvalidPortException
+from port import Port, PortType
 
 class DistanceCallable(Protocol):
     def __call__(self, distance : float) -> None:
@@ -30,11 +31,8 @@ class ColorCallable(Protocol):
 
 
 class ColorRangeSensor(Component):    
-    def __init__(self, ports : list[tuple[PortType, int]]):
-        portType, port = ports[0]
-        if portType != PortType.I2C_PORT:
-            raise InvalidPortException
-        self.port = port
+    def __init__(self, port : Port):
+        super().__init__( port, expectedType = PortType.I2C_PORT)
 
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 
@@ -54,17 +52,9 @@ class ColorRangeSensor(Component):
     def reset(self) -> None:
         pass
 
-    def get_connection_port_type(self) -> list[PortType]:
-        return [PortType.I2C_PORT]
-
     def periodic(self) -> None:
         pass
-
-    # Alternative constructor to create an instance from an i2c port
-    @classmethod
-    def from_i2c_port(cls: type[Self], i2c_port: int) -> Self:
-        return cls([(PortType.I2C_PORT, i2c_port)])
-    
+   
     # Component specific methods
 
     def get_color_rgb(self) -> tuple[int, int, int]:

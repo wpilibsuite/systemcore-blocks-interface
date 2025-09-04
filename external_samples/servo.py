@@ -18,13 +18,11 @@
 
 from typing import Self
 from component import Component, PortType, InvalidPortException
+from port import Port, PortType
 
 class Servo(Component):    
-    def __init__(self, ports : list[tuple[PortType, int]]):
-        portType, port = ports[0]
-        if portType != PortType.SERVO_PORT:
-            raise InvalidPortException
-        self.port = port
+    def __init__(self, port : Port):
+        super().__init__(port, PortType.SERVO_PORT)
 
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 
@@ -48,17 +46,9 @@ class Servo(Component):
     def reset(self) -> None:
         pass
 
-    def get_connection_port_type(self) -> list[PortType]:
-        return [PortType.SERVO_PORT]
-
     def periodic(self) -> None:
         pass
-
-    # Alternative constructor to create an instance from an servo port
-    @classmethod
-    def from_servo_port(cls: type[Self], servo_port: int) -> Self:
-        return cls([(PortType.SERVO_PORT, servo_port)])
-    
+   
     # Component specific methods
 
     def set_position(self, pos: float) -> None:

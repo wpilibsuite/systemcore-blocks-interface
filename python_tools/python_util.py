@@ -579,3 +579,23 @@ def collectSubclasses(classes: list[type]) -> dict[str, list[str]]:
       if subclass_name not in subclass_names:
         subclass_names.append(subclass_name)
   return dict_class_name_to_subclass_names
+
+
+def getPortTypeFromConstructor(constructor) -> str:
+  """Extract portType value from constructor that calls super() with portType parameter."""
+  if not mightBeConstructor(constructor):
+    return None
+  
+  try:
+    source = inspect.getsource(constructor)
+    # Look for super().__init__(xxx PortType.XXXX) pattern using regex
+    pattern = r'super\(\)\.__init__\([^,]*,.*PortType\.(\w+)\)'
+    match = re.search(pattern, source)
+    if match:
+      port_type = match.group(1).strip()
+      return port_type
+  except:
+    # If we can't parse the source, return empty string
+    pass
+  
+  return ""

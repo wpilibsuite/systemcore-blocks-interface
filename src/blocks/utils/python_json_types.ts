@@ -59,6 +59,8 @@ export class FunctionData {
   returnType: string = '';
   args: ArgData[] = [];
   declaringClassName?: string = '';
+  // TODO: Make this less hacky...
+  expectedPortType?: string = '';
 }
 
 export class ArgData {

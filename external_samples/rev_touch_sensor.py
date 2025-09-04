@@ -18,14 +18,12 @@
 
 from typing import Self
 from component import Component, PortType, InvalidPortException, EmptyCallable
+from port import Port, PortType
 
 class RevTouchSensor(Component):
-    def __init__(self, ports : list[tuple[PortType, int]]):
+    def __init__(self, port : Port):
+        super().__init__(port, PortType.SMART_IO_PORT)
         self.is_pressed = None
-        portType, port = ports[0]
-        if portType != PortType.SMART_IO_PORT:
-            raise InvalidPortException
-        self.port = port
 
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 
@@ -47,9 +45,6 @@ class RevTouchSensor(Component):
         self.released_callback = None
         pass
 
-    def get_connection_port_type(self) -> list[PortType]:
-        return [PortType.SMART_IO_PORT]
-
     def periodic(self) -> None:
         old = self.is_pressed
         self._read_hardware()
@@ -58,12 +53,7 @@ class RevTouchSensor(Component):
                 self.pressed_callback()
             elif old and self.released_callback:
                 self.released_callback()
-
-    # Alternative constructor to create an instance from a smart io port
-    @classmethod
-    def from_smart_io_port(cls: type[Self], smart_io_port: int) -> Self:
-        return cls([(PortType.SMART_IO_PORT, smart_io_port)])
-    
+   
     # Component specific methods
 
     def _read_hardware(self):

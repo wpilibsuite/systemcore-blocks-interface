@@ -21,21 +21,15 @@ support for a motor connected to a REV Expansion Hub.
 __author__ = "lizlooney@google.com (Liz Looney)"
 
 from typing import Self
-from component import Component, PortType, InvalidPortException
+from component import Component, InvalidPortException
+from port import Port, PortType
 import expansion_hub
 import wpimath
 
-# TODO(lizlooney): Update port types.
-
 class ExpansionHubMotor(Component):
-    def __init__(self, ports : list[tuple[PortType, int]]):
-        port_type, hub_number = ports[0]
-        if port_type != PortType.USB_PORT:
-            raise InvalidPortException
-        port_type, motor_number = ports[1]
-        if port_type != PortType.USB_PORT:
-            raise InvalidPortException
-        self.expansion_hub_motor = expansion_hub.ExpansionHubMotor(hub_number, motor_number)
+    def __init__(self, port : Port):
+        super().__init__(port, PortType.EXPANSION_HUB_MOTOR)
+        self.expansion_hub_motor = expansion_hub.ExpansionHubMotor(self.port.port1.location, self.port.port2.location)
 
     def get_manufacturer(self) -> str:
         return "REV Robotics"
@@ -62,16 +56,8 @@ class ExpansionHubMotor(Component):
     def reset(self) -> None:
         pass
 
-    def get_connection_port_type(self) -> list[PortType]:
-        return [PortType.USB_PORT, PortType.USB_PORT]
-
     def periodic(self) -> None:
         pass
-
-    # Alternative constructor to create an instance from a hub number and a motor port.
-    @classmethod
-    def from_hub_number_and_motor_number(cls: type[Self], hub_number: int, motor_number: int) -> Self:
-        return cls([(PortType.USB_PORT, hub_number), (PortType.USB_PORT, motor_number)])
 
     # Component specific methods
 
