@@ -15,6 +15,7 @@
 
 # @fileoverview This is a class to handle port types
 # @author alan@porpoiseful.com (Alan Smith)
+from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Self
 
@@ -33,51 +34,61 @@ class PortType(Enum):
     EXPANSION_HUB_MOTOR = BASE_COMPOUND + 2   # This is combination expansion hub and motor
     EXPANSION_HUB_SERVO = BASE_COMPOUND + 3   # This is combination expansion hub and servo
 
-class Port:
-    def __init__(self, port_type: PortType = None, location: int = None, port1: type[Self] = None, port2: type[Self] = None):
-        """
-        Create a port that can be either simple (type + location) or compound (two other ports).
-
-        Args:
-            port_type: PortType or CompoundPortType for this port
-            location: int location for simple ports
-            port1: First Port for compound ports
-            port2: Second Port for compound ports
-        """
-        if port1 is not None and port2 is not None:
-            # Compound port
-            if port_type.value < PortType.BASE_COMPOUND.value:
-                raise ValueError("Port must be of a compound type")
-            self.is_compound = True
-            self.type = port_type
-            self.port1 = port1
-            self.port2 = port2
-            self.location = None
-        elif port_type is not None and location is not None:
-            # Simple port
-            if port_type.value > PortType.BASE_COMPOUND.value:
-                raise ValueError("Port must be of a simple type")
-            self.is_compound = False
-            self.type = port_type
-            self.location = location
-            self.port1 = None
-            self.port2 = None
-        else:
-            raise ValueError("Port must be either simple (type + location) or compound (port1 + port2)")
-
+class Port(ABC):
+    """Abstract base class for all port types."""
+    
+    def __init__(self, port_type: PortType):
+        self.type = port_type
+    
+    @abstractmethod
     def get_all_ports(self) -> list[tuple[PortType, int]]:
         """Return a list of all simple ports contained in this port."""
-        if self.is_compound:
-            return self.port1.get_all_ports() + self.port2.get_all_ports()
-        else:
-            return [(self.type, self.location)]
-
+        pass
+    
     def get_type(self) -> PortType:
         """Returns the port type"""
         return self.type
 
+class SimplePort(Port):
+    def __init__(self, port_type: PortType, location: int):
+        """
+        Create a simple port with a type and location.
+
+        Args:
+            port_type: PortType for this port (must be a simple type)
+            location: int location for this port
+        """
+        if port_type.value >= PortType.BASE_COMPOUND.value:
+            raise ValueError("Port must be of a simple type")
+        super().__init__(port_type)
+        self.location = location
+
+    def get_all_ports(self) -> list[tuple[PortType, int]]:
+        """Return a list containing this simple port."""
+        return [(self.type, self.location)]
+
     def __str__(self) -> str:
-        if self.is_compound:
-            return f"CompoundPort({self.type}: {self.port1}, {self.port2})"
-        else:
-            return f"Port({self.type}, {self.location})"
+        return f"SimplePort({self.type}, {self.location})"
+
+class CompoundPort(Port):
+    def __init__(self, port_type: PortType, port1: Port, port2: Port):
+        """
+        Create a compound port from two other ports.
+
+        Args:
+            port_type: PortType for this port (must be a compound type)
+            port1: First Port for compound ports
+            port2: Second Port for compound ports
+        """
+        if port_type.value < PortType.BASE_COMPOUND.value:
+            raise ValueError("Port must be of a compound type")
+        super().__init__(port_type)
+        self.port1 = port1
+        self.port2 = port2
+
+    def get_all_ports(self) -> list[tuple[PortType, int]]:
+        """Return a list of all simple ports contained in this compound port."""
+        return self.port1.get_all_ports() + self.port2.get_all_ports()
+
+    def __str__(self) -> str:
+        return f"CompoundPort({self.type}: {self.port1}, {self.port2})"

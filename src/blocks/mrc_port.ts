@@ -125,10 +125,10 @@ export const pythonFromBlock = function (
       }
     }
   }
-  let code = `port.Port(port_type = port.PortType.${block.portType_}, `;
+  let code = 'port.';
   
   if (ports.length === 1) {
-     code += `location = ${ports[0]})`;
+     code += `SimplePort(port_type = port.PortType.${block.portType_}, location = ${ports[0]})`;
 
   } else if (ports.length === 2) {
     let port1Type = 'UNKNOWN';
@@ -148,7 +148,7 @@ export const pythonFromBlock = function (
         port2Type = 'EXPANSION_HUB_SERVO_PORT';
         break;
     }
-
+    code += `CompoundPort(port_type = port.PortType.${block.portType_},`;
     code += `\\ \n${generator.INDENT}port1 = port.Port(port_type = port.PortType.${port1Type}, location = ${ports[0]}), `;
     code += `\\ \n${generator.INDENT}port2 = port.Port(port_type = port.PortType.${port2Type}, location = ${ports[1]}))`;
   }
