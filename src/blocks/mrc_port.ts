@@ -149,8 +149,8 @@ export const pythonFromBlock = function (
         break;
     }
     code += `CompoundPort(port_type = port.PortType.${block.portType_},`;
-    code += `\\ \n${generator.INDENT}port1 = port.Port(port_type = port.PortType.${port1Type}, location = ${ports[0]}), `;
-    code += `\\ \n${generator.INDENT}port2 = port.Port(port_type = port.PortType.${port2Type}, location = ${ports[1]}))`;
+    code += `\\ \n${generator.INDENT}port1 = port.SimplePort(port_type = port.PortType.${port1Type}, location = ${ports[0]}), `;
+    code += `\\ \n${generator.INDENT}port2 = port.SimplePort(port_type = port.PortType.${port2Type}, location = ${ports[1]}))`;
   }
 
   return [code, Order.ATOMIC];
