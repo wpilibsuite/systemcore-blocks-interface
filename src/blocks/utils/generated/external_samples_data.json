@@ -1197,7 +1197,7 @@
             "staticMethods": []
         },
         {
-            "className": "port.Port",
+            "className": "port.CompoundPort",
             "classVariables": [],
             "constructors": [
                 {
@@ -1209,24 +1209,70 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "location",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "port1",
-                            "type": "type[typing.Self]"
+                            "type": "port.Port"
                         },
                         {
                             "defaultValue": "",
                             "name": "port2",
-                            "type": "type[typing.Self]"
+                            "type": "port.Port"
+                        }
+                    ],
+                    "declaringClassName": "port.CompoundPort",
+                    "functionName": "__init__",
+                    "returnType": "port.CompoundPort",
+                    "tooltip": "\n        Create a compound port from two other ports.\n\n        Args:\n            port_type: PortType for this port (must be a compound type)\n            port1: First Port for compound ports\n            port2: Second Port for compound ports\n        "
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.CompoundPort"
+                        }
+                    ],
+                    "declaringClassName": "port.CompoundPort",
+                    "functionName": "get_all_ports",
+                    "returnType": "list[tuple[port.PortType, int]]",
+                    "tooltip": "Return a list of all simple ports contained in this compound port."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.CompoundPort"
+                        }
+                    ],
+                    "declaringClassName": "port.CompoundPort",
+                    "functionName": "get_type",
+                    "returnType": "port.PortType",
+                    "tooltip": "Returns the port type"
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "port",
+            "staticMethods": []
+        },
+        {
+            "className": "port.Port",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "port_type",
+                            "type": "port.PortType"
                         }
                     ],
                     "declaringClassName": "port.Port",
                     "functionName": "__init__",
                     "returnType": "port.Port",
-                    "tooltip": "\n        Create a port that can be either simple (type + location) or compound (two other ports).\n\n        Args:\n            port_type: PortType or CompoundPortType for this port\n            location: int location for simple ports\n            port1: First Port for compound ports\n            port2: Second Port for compound ports\n        "
+                    "tooltip": ""
                 }
             ],
             "enums": [],
@@ -1253,6 +1299,62 @@
                         }
                     ],
                     "declaringClassName": "port.Port",
+                    "functionName": "get_type",
+                    "returnType": "port.PortType",
+                    "tooltip": "Returns the port type"
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "port",
+            "staticMethods": []
+        },
+        {
+            "className": "port.SimplePort",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "port_type",
+                            "type": "port.PortType"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "location",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "port.SimplePort",
+                    "functionName": "__init__",
+                    "returnType": "port.SimplePort",
+                    "tooltip": "\n        Create a simple port with a type and location.\n\n        Args:\n            port_type: PortType for this port (must be a simple type)\n            location: int location for this port\n        "
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.SimplePort"
+                        }
+                    ],
+                    "declaringClassName": "port.SimplePort",
+                    "functionName": "get_all_ports",
+                    "returnType": "list[tuple[port.PortType, int]]",
+                    "tooltip": "Return a list containing this simple port."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "port.SimplePort"
+                        }
+                    ],
+                    "declaringClassName": "port.SimplePort",
                     "functionName": "get_type",
                     "returnType": "port.PortType",
                     "tooltip": "Returns the port type"
@@ -2669,6 +2771,32 @@
             "moduleVariables": []
         },
         {
+            "enums": [
+                {
+                    "enumClassName": "port.PortType",
+                    "enumValues": [
+                        "BASE_COMPOUND",
+                        "CAN_PORT",
+                        "EXPANSION_HUB_MOTOR",
+                        "EXPANSION_HUB_MOTOR_PORT",
+                        "EXPANSION_HUB_SERVO",
+                        "EXPANSION_HUB_SERVO_PORT",
+                        "I2C_PORT",
+                        "SERVO_PORT",
+                        "SMART_IO_PORT",
+                        "SMART_MOTOR_PORT",
+                        "USB_HUB",
+                        "USB_PORT"
+                    ],
+                    "moduleName": "port",
+                    "tooltip": ""
+                }
+            ],
+            "functions": [],
+            "moduleName": "port",
+            "moduleVariables": []
+        },
+        {
             "enums": [],
             "functions": [],
             "moduleName": "rev_touch_sensor",
@@ -2709,6 +2837,10 @@
             "smart_motor.SmartMotor",
             "spark_mini.SparkMini",
             "sparkfun_led_stick.SparkFunLEDStick"
+        ],
+        "port.Port": [
+            "port.CompoundPort",
+            "port.SimplePort"
         ]
     }
 }

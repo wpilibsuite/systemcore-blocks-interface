@@ -149,15 +149,15 @@ export const pythonFromBlock = function (
         break;
     }
     code += `CompoundPort(port_type = port.PortType.${block.portType_},`;
-    code += `\\ \n${generator.INDENT}port1 = port.Port(port_type = port.PortType.${port1Type}, location = ${ports[0]}), `;
-    code += `\\ \n${generator.INDENT}port2 = port.Port(port_type = port.PortType.${port2Type}, location = ${ports[1]}))`;
+    code += `\\ \n${generator.INDENT}port1 = port.SimplePort(port_type = port.PortType.${port1Type}, location = ${ports[0]}), `;
+    code += `\\ \n${generator.INDENT}port2 = port.SimplePort(port_type = port.PortType.${port2Type}, location = ${ports[1]}))`;
   }
 
   return [code, Order.ATOMIC];
 }
 
 export function createPort(portType : string) {
-  //TODO: Based off of the port type, create the right number and type of ports
+  // Based off of the port type, create the right number and type of ports
   const ports : MrcPortType[] = [];
   switch(portType){
     case 'CAN_PORT':
@@ -184,9 +184,6 @@ export function createPort(portType : string) {
     case 'EXPANSION_HUB_SERVO_PORT':
       ports.push({ portType: 'servo', portNumber: 1 });
       break;
-    case 'SMART_MOTOR_PORT':
-      ports.push({ portType: 'MotionCore port', portNumber: 1 });
-      break;
     case 'USB_HUB':
       ports.push({ portType: 'usb in', portNumber: 1 });
       ports.push({ portType: 'usb out', portNumber: 1 });
@@ -200,7 +197,7 @@ export function createPort(portType : string) {
       ports.push({ portType: 'servo', portNumber: 1 });
       break;
     default:
-      ports.push({ portType: 'unknown:' + portType, portNumber: 1 });
+      ports.push({ portType: 'unknown' + portType, portNumber: 1 });
       break;
   }
   return {
