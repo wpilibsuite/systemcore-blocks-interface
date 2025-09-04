@@ -25,6 +25,7 @@ import { Order } from 'blockly/python';
 import { MRC_STYLE_PORTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { createFieldNumberDropdown } from '../fields/field_number_dropdown';
 
 export const BLOCK_NAME = 'mrc_port';
 export const OUTPUT_NAME = 'mrc_port';
@@ -99,7 +100,7 @@ const PORT = {
       const port = this.ports_[i];
       this.appendDummyInput('PORT_' + i)
         .appendField(createFieldNonEditableText(port.portType), 'TYPE_' + i)
-        .appendField(new Blockly.FieldTextInput(port.portNumber.toString()), 'PORT_NUM_' + i)
+        .appendField(createFieldDropdownForPortType(port.portType, port.portNumber), 'PORT_' + i)
         .setAlign(Blockly.inputs.Align.RIGHT);
     }
   },
@@ -154,6 +155,27 @@ export const pythonFromBlock = function (
   }
 
   return [code, Order.ATOMIC];
+}
+
+function createFieldDropdownForPortType( portType : string, defaultVal : number) : Blockly.Field {
+  switch(portType){
+    case 'can':
+      return createFieldNumberDropdown(0, 4, 1, defaultVal);
+    case 'smartio':
+      return createFieldNumberDropdown(0, 5, 1, defaultVal);
+    case 'MotionCore port':
+      return createFieldNumberDropdown(1, 6, 1, defaultVal);
+    case 'i2c':
+      return createFieldNumberDropdown(0, 1, 1, defaultVal);
+    case 'usb in':
+      return createFieldNumberDropdown(0, 3, 1, defaultVal);
+    case 'motor':
+      return createFieldNumberDropdown(1, 6, 1, defaultVal);
+    case 'servo':
+      return createFieldNumberDropdown(1, 6, 1, defaultVal);
+    default:
+      return createFieldNumberDropdown(0, 99, 1, defaultVal);
+  }
 }
 
 export function createPort(portType : string) {
