@@ -1,31 +1,27 @@
-# Project and Module Management API
+# Storage API
 
-A Flask-based REST API for managing projects and modules with JSON content, using SQLite as the database.
+A Flask-based REST API for providing storage capabilities (key-value pairs and file storage) using SQLite as the database.
 
 ## Features
 
-- **Projects**: Create, read, update, and delete projects
-- **Modules**: Create, read, update, and delete modules within projects
-- **JSON Content**: Each module stores JSON content as a string
+- **Key-Value Storage**: Store and retrieve key-value pairs
+- **File Storage**: Store, retrieve, list, rename, and delete files and directories
 - **SQLite Database**: Persistent storage using SQLite
+- **CORS Support**: Cross-origin resource sharing for frontend integration
 
 ## API Endpoints
 
-### Projects
+### Key-Value Storage (Entries)
 
-- `GET /projects` - Get list of all projects
-- `POST /projects` - Create a new project
-- `GET /projects/<project_id>` - Get a specific project with module list
-- `PUT /projects/<project_id>` - Update a project
-- `DELETE /projects/<project_id>` - Delete a project and all its modules
+- `GET /entries/<entry_key>` - Fetch entry value by key (supports `?default=value` query param)
+- `POST /entries/<entry_key>` - Save entry value
 
-### Modules
+### File and Directory Operations
 
-- `GET /projects/<project_id>/modules` - Get all modules for a project
-- `POST /projects/<project_id>/modules` - Create a new module in a project
-- `GET /projects/<project_id>/modules/<module_id>` - Get a specific module
-- `PUT /projects/<project_id>/modules/<module_id>` - Update a module
-- `DELETE /projects/<project_id>/modules/<module_id>` - Delete a module
+- `GET /storage/<path>` - List directory contents (if path ends with `/`) or fetch file content (if path doesn't end with `/`)
+- `POST /storage/<path>` - Save file content (path must not end with `/`)
+- `DELETE /storage/<path>` - Delete file or directory
+- `POST /storage/rename` - Rename file or directory
 
 ## Running the Application
 
@@ -43,51 +39,107 @@ A Flask-based REST API for managing projects and modules with JSON content, usin
 
 ## Example Usage
 
-### Create a Project
+### Key-Value Operations (Entries)
+
+#### Save an Entry
 ```bash
-curl -X POST http://localhost:5001/projects \
+curl -X POST http://localhost:5001/entries/user_settings \
   -H "Content-Type: application/json" \
-  -d '{"name": "Robot Controller", "description": "Main robot control project"}'
+  -d '{"value": "{\"theme\": \"dark\", \"language\": \"en\"}"}'
 ```
 
-### Create a Module
+#### Fetch an Entry
 ```bash
-curl -X POST http://localhost:5001/projects/1/modules \
+curl http://localhost:5001/entries/user_settings
+```
+
+#### Fetch an Entry with Default Value
+```bash
+curl "http://localhost:5001/entries/missing_key?default=default_value"
+```
+
+### File and Directory Operations
+
+#### Save a File
+```bash
+curl -X POST http://localhost:5001/storage/projects/robot1/main.py \
   -H "Content-Type: application/json" \
-  -d '{"name": "motor_controller", "json_content": {"type": "motor", "settings": {"speed": 100}}}'
+  -d '{"content": "# Robot main file\nprint(\"Hello Robot!\")"}'
 ```
 
-### Get All Projects
+#### Fetch a File
 ```bash
-curl http://localhost:5001/projects
+curl http://localhost:5001/storage/projects/robot1/main.py
 ```
 
-### Get Project Modules
+#### List Files in Directory
 ```bash
-curl http://localhost:5001/projects/1/modules
+curl http://localhost:5001/storage/projects/
 ```
 
-### Update Module Content
+#### Rename a File
 ```bash
-curl -X PUT http://localhost:5001/projects/1/modules/1 \
+curl -X POST http://localhost:5001/storage/rename \
   -H "Content-Type: application/json" \
-  -d '{"json_content": {"type": "motor", "settings": {"speed": 150}}}'
+  -d '{"old_path": "projects/robot1/main.py", "new_path": "projects/robot1/robot_main.py"}'
+```
+
+#### Rename a Directory
+```bash
+curl -X POST http://localhost:5001/storage/rename \
+  -H "Content-Type: application/json" \
+  -d '{"old_path": "projects/robot1/", "new_path": "projects/my_robot/"}'
+```
+
+#### Delete a File
+```bash
+curl -X DELETE http://localhost:5001/storage/projects/robot1/old_file.py
+```
+
+#### Delete a Directory
+```bash
+curl -X DELETE http://localhost:5001/storage/projects/old_project/
 ```
 
 ## Data Models
 
-### Project
+### StorageEntry (Key-Value Storage)
 - `id`: Integer (Primary Key)
-- `name`: String (Unique, Required)
-- `description`: Text (Optional)
-- `modules`: Relationship to Module objects
+- `entry_key`: String (Unique, Required)
+- `entry_value`: Text (Required)
 
-### Module
+### StorageFile (File Storage)
 - `id`: Integer (Primary Key)
-- `name`: String (Required, Unique per project)
-- `project_id`: Integer (Foreign Key)
-- `json_content`: Text (Required, stored as JSON string)
+- `file_path`: String (Unique, Required)
+- `file_content`: Text (Required)
 
 ## Database
 
-The application creates a SQLite database file `projects.db` in the backend directory automatically when first run.
+The application creates a SQLite database file `storage.db` in the backend directory automatically when first run.
+
+## CORS Support
+
+The API includes CORS (Cross-Origin Resource Sharing) headers to allow frontend applications running on different ports to access the API. This is essential for development when the frontend runs on a different port than the backend.
+
+## Frontend Integration
+
+The server-side storage implementation in `src/storage/server_side_storage.ts` provides a TypeScript interface that connects to this Flask backend. It implements the `Storage` interface with methods for:
+
+- Key-value storage (`saveEntry`, `fetchEntry`)
+- File operations (`saveFile`, `fetchFileContentText`, `list`, `rename`, `delete`)
+
+Example usage in TypeScript:
+```typescript
+import { ServerSideStorage } from './storage/server_side_storage';
+
+const storage = new ServerSideStorage();
+
+// Save and fetch key-value data
+await storage.saveEntry('user_settings', JSON.stringify({theme: 'dark'}));
+const settings = await storage.fetchEntry('user_settings', '{}');
+
+// File operations
+await storage.saveFile('projects/robot1/main.py', 'print("Hello Robot!")');
+const content = await storage.fetchFileContentText('projects/robot1/main.py');
+const files = await storage.list('projects/');
+```
