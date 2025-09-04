@@ -24,6 +24,8 @@
     "react-dom": "^19.1.0",
     "react-i18next": "^15.6.0",
     "react-syntax-highlighter": "^15.6.1",
+    "semver": "^7.7.2",
+    "typescript": "^5.9.2",
     "web-vitals": "^5.0.3"
   },
   "scripts": {
@@ -31,7 +33,8 @@
     "build": "vite build",
     "test": "vitest",
     "gen": "node src/Blockly/gen.js",
-    "dev": "vite"
+    "dev": "vite",
+    "tscheck": "npx tsc -b --noEmit"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +59,7 @@
     "@shadcn/ui": "^0.0.4",
     "@types/node": "^24.0.15",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/semver": "^7.7.0",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
     "playwright": "^1.54.1",

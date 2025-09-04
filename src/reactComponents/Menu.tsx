@@ -22,6 +22,8 @@ import * as Antd from 'antd';
 import * as React from 'react';
 import { RcFile, UploadRequestOption } from 'rc-upload/lib/interface';
 import * as commonStorage from '../storage/common_storage';
+import * as storageNames from '../storage/names';
+import * as storageProject from '../storage/project';
 import * as createPythonFiles from '../storage/create_python_files';
 import * as I18Next from 'react-i18next';
 import {TabType } from '../types/TabType';
@@ -52,12 +54,12 @@ type MenuItem = Required<Antd.MenuProps>['items'][number];
 
 /** Props for the Menu component. */
 export interface MenuProps {
-  setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
+  setAlertErrorMessage: (message: string) => void;
   gotoTab: (tabKey: string) => void;
-  project: commonStorage.Project | null;
+  project: storageProject.Project | null;
+  setProject: (project: storageProject.Project | null) => void;
   openWPIToolboxSettings: () => void;
-  setProject: (project: commonStorage.Project | null) => void;
   theme: string;
   setTheme: (theme: string) => void;
 }
@@ -65,8 +67,8 @@ export interface MenuProps {
 /** Default selected menu keys. */
 const DEFAULT_SELECTED_KEYS = ['1'];
 
-/** Storage key for the most recent project. */
-const MOST_RECENT_PROJECT_KEY = 'mostRecentProject';
+/** Storage key for the most recent project name. */
+const MOST_RECENT_PROJECT_NAME_KEY = 'mostRecentProject';
 
 /**
  * Creates a menu item with the specified properties.
@@ -99,7 +101,7 @@ function getDivider(): MenuItem {
 /**
  * Generates menu items for a given project.
  */
-function getMenuItems(t: (key: string) => string, project: commonStorage.Project, currentLanguage: string): MenuItem[] {
+function getMenuItems(t: (key: string) => string, project: storageProject.Project, currentLanguage: string): MenuItem[] {
   const mechanisms: MenuItem[] = [];
   const opmodes: MenuItem[] = [];
 
@@ -175,11 +177,11 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
 export function Component(props: MenuProps): React.JSX.Element {
   const {t, i18n} = I18Next.useTranslation();
 
-  const [projects, setProjects] = React.useState<commonStorage.Project[]>([]);
+  const [projectNames, setProjectNames] = React.useState<string[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
   const [fileModalOpen, setFileModalOpen] = React.useState<boolean>(false);
   const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
-  const [moduleType, setModuleType] = React.useState<TabType>(TabType.MECHANISM);
+  const [tabType, setTabType] = React.useState<TabType>(TabType.MECHANISM);
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
@@ -189,28 +191,28 @@ export function Component(props: MenuProps): React.JSX.Element {
     props.setTheme(newTheme);
   };
 
-  /** Fetches the list of projects from storage. */
-  const fetchListOfProjects = async (): Promise<commonStorage.Project[]> => {
+  /** Fetches the list of project names from storage. */
+  const fetchListOfProjectNames = async (): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
       if (!props.storage) {
         reject(new Error('Storage not available'));
         return;
       }
       try {
-        const array = await props.storage.listProjects();
-        setProjects(array);
+        const array = await storageProject.listProjectNames(props.storage);
+        setProjectNames(array);
         resolve(array);
       } catch (e) {
-        console.error('Failed to load the list of projects:', e);
+        console.error('Failed to load the list of project names:', e);
         props.setAlertErrorMessage(t('fail_list_projects'));
         reject(new Error(t('fail_list_projects')));
       }
     });
   };
 
-  /** Initializes the projects and handles empty project state. */
-  const initializeProjects = async (): Promise<void> => {
-    const array = await fetchListOfProjects();
+  /** Initializes the project names and handles no projects state. */
+  const initializeProjectNames = async (): Promise<void> => {
+    const array = await fetchListOfProjectNames();
     if (array.length === 0) {
       setNoProjects(true);
       setProjectModalOpen(true);
@@ -219,30 +221,29 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   /** Fetches and sets the most recent project. */
   const fetchMostRecentProject = async (): Promise<void> => {
-    let found = false;
-
     if (props.storage) {
-      const mostRecentProject = await props.storage.fetchEntry(
-          MOST_RECENT_PROJECT_KEY,
+      const mostRecentProjectName = await props.storage.fetchEntry(
+          MOST_RECENT_PROJECT_NAME_KEY,
           ''
       );
-      projects.forEach((project) => {
-        if (project.projectName === mostRecentProject) {
-          props.setProject(project);
-          found = true;
-        }
-      });
-      if (!found && projects.length > 0) {
-        props.setProject(projects[0]);
+      let projectNameToFetch: string = '';
+      if (projectNames.includes(mostRecentProjectName)) {
+        projectNameToFetch = mostRecentProjectName;
+      } else if (projectNames.length) {
+        projectNameToFetch = projectNames[0];
+      }
+      if (projectNameToFetch) {
+        const project = await storageProject.fetchProject(props.storage, projectNameToFetch);
+        props.setProject(project);
       }
     }
   };
 
-  /** Saves the most recent project to storage. */
-  const setMostRecentProject = async (): Promise<void> => {
+  /** Saves the most recent project name to storage. */
+  const setMostRecentProjectName = async (): Promise<void> => {
     if (props.storage) {
       await props.storage.saveEntry(
-          MOST_RECENT_PROJECT_KEY,
+          MOST_RECENT_PROJECT_NAME_KEY,
           props.project?.projectName || ''
       );
     }
@@ -251,7 +252,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   /** Handles menu item clicks. */
   const handleClick: Antd.MenuProps['onClick'] = ({key}): void => {
     const newModule = props.project ?
-      commonStorage.findModuleByModulePath(props.project, key) :
+      storageProject.findModuleByModulePath(props.project, key) :
       null;
 
     if (newModule) {
@@ -263,7 +264,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     if (key === 'manageMechanisms') {
       console.log('Opening mechanisms modal');
       setFileModalOpen(false);
-      setModuleType(TabType.MECHANISM);
+      setTabType(TabType.MECHANISM);
       setTimeout(() => {
         console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
@@ -271,7 +272,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     } else if (key === 'manageOpmodes') {
       console.log('Opening opmodes modal');
       setFileModalOpen(false);
-      setModuleType(TabType.OPMODE);
+      setTabType(TabType.OPMODE);
       setTimeout(() => {
         console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
@@ -286,11 +287,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     } else if (key === 'theme') {
       setThemeModalOpen(true);
     } else if (key == 'deploy') {
-      if (props.project && props.storage) {
-        handleDeploy();
-      } else {
-        props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
-      }
+      handleDeploy();
     } else if (key.startsWith('setlang:')) {
       const lang = key.split(':')[1];
       i18n.changeLanguage(lang);
@@ -303,13 +300,17 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   /** Handles the deploy action to generate and download Python files. */
   const handleDeploy = async (): Promise<void> => {
-    if (!props.project || !props.storage) {
+    if (!props.project) {
+      props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
+      return;
+    }
+    if (!props.storage) {
       return;
     }
 
     try {
       const blobUrl = await createPythonFiles.producePythonProjectBlob(props.project, props.storage);
-      
+
       // Create a temporary link to download the file
       const link = document.createElement('a');
       link.href = blobUrl;
@@ -329,13 +330,17 @@ export function Component(props: MenuProps): React.JSX.Element {
   // TODO: Add UI for the download action.
   /** Handles the download action to generate and download json files. */
   const handleDownload = async (): Promise<void> => {
-    if (!props.project || !props.storage) {
+    if (!props.project) {
+      props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
+      return;
+    }
+    if (!props.storage) {
       return;
     }
 
     try {
-      const blobUrl = await props.storage.downloadProject(props.project.projectName);
-      const filename = props.project.projectName + commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+      const blobUrl = await storageProject.downloadProject(props.storage, props.project.projectName);
+      const filename = props.project.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
 
       // Create a temporary link to download the file
       const link = document.createElement('a');
@@ -361,9 +366,9 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
 
     const uploadProps: Antd.UploadProps = {
-      accept: commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION,
+      accept: storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION,
       beforeUpload: (file) => {
-        const isBlocks = file.name.endsWith(commonStorage.UPLOAD_DOWNLOAD_FILE_EXTENSION)
+        const isBlocks = file.name.endsWith(storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION)
         if (!isBlocks) {
           // TODO: i18n
           props.setAlertErrorMessage(file.name + ' is not a blocks file');
@@ -381,13 +386,13 @@ export function Component(props: MenuProps): React.JSX.Element {
           }
           const dataUrl = event.target.result as string;
           const existingProjectNames: string[] = [];
-          projects.forEach(project => {
-            existingProjectNames.push(project.projectName);
+          projectNames.forEach(projectName => {
+            existingProjectNames.push(projectName);
           });
           const file = options.file as RcFile;
-          const uploadProjectName = commonStorage.makeUploadProjectName(file.name, existingProjectNames);
+          const uploadProjectName = storageProject.makeUploadProjectName(file.name, existingProjectNames);
           if (props.storage) {
-            props.storage.uploadProject(uploadProjectName, dataUrl);
+            storageProject.uploadProject(props.storage, uploadProjectName, dataUrl);
           }
         };
         reader.onerror = (_error) => {
@@ -412,23 +417,23 @@ export function Component(props: MenuProps): React.JSX.Element {
     setProjectModalOpen(false);
   };
 
-  // Initialize projects when storage is available
+  // Initialize project names when storage is available
   React.useEffect(() => {
     if (!props.storage) {
       return;
     }
-    initializeProjects();
+    initializeProjectNames();
   }, [props.storage]);
 
-  // Fetch most recent project when projects change
+  // Fetch most recent project when projectNames change
   React.useEffect(() => {
     fetchMostRecentProject();
-  }, [projects]);
+  }, [projectNames]);
 
   // Update menu items and save project when project or language changes
   React.useEffect(() => {
     if (props.project) {
-      setMostRecentProject();
+      setMostRecentProjectName();
       setMenuItems(getMenuItems(t, props.project, i18n.language));
       setNoProjects(false);
     }
@@ -441,7 +446,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         onCancel={handleFileModalClose}
         project={props.project}
         storage={props.storage}
-        moduleType={moduleType}
+        tabType={tabType}
         setProject={props.setProject}
         setAlertErrorMessage={props.setAlertErrorMessage}
         gotoTab={props.gotoTab}

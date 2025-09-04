@@ -23,6 +23,8 @@ import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
+import * as storageProject from '../storage/project';
 import {EditOutlined, DeleteOutlined, CopyOutlined} from '@ant-design/icons';
 import ClassNameComponent from './ClassNameComponent';
 
@@ -37,12 +39,12 @@ interface Module {
 interface FileManageModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  project: commonStorage.Project | null;
-  setProject: (project: commonStorage.Project | null) => void;
+  project: storageProject.Project | null;
+  setProject: (project: storageProject.Project | null) => void;
   gotoTab: (path: string) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
-  moduleType: TabType;
+  tabType: TabType;
 }
 
 /** Default page size for table pagination. */
@@ -73,20 +75,20 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
   }
   React.useEffect(() => {
-    if (!props.project || props.moduleType === null) {
+    if (!props.project || props.tabType === null) {
       setModules([]);
       return;
     }
 
     let moduleList: Module[] = [];
 
-    if (props.moduleType === TabType.MECHANISM) {
+    if (props.tabType === TabType.MECHANISM) {
       moduleList = props.project.mechanisms.map((m) => ({
         path: m.modulePath,
         title: m.className,
         type: TabType.MECHANISM,
       }));
-    } else if (props.moduleType === TabType.OPMODE) {
+    } else if (props.tabType === TabType.OPMODE) {
       moduleList = props.project.opModes.map((o) => ({
         path: o.modulePath,
         title: o.className,
@@ -97,7 +99,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     // Sort modules alphabetically by title
     moduleList.sort((a, b) => a.title.localeCompare(b.title));
     setModules(moduleList);
-  }, [props.project, props.moduleType]);
+  }, [props.project, props.tabType]);
 
   /** Handles renaming a module. */
   const handleRename = async (origModule: Module, newClassName: string): Promise<void> => {
@@ -106,7 +108,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
 
     try {
-      const newModulePath = await commonStorage.renameModuleInProject(
+      const newModulePath = await storageProject.renameModuleInProject(
           props.storage,
           props.project,
           newClassName,
@@ -137,7 +139,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
 
     try {
-      const newModulePath = await commonStorage.copyModuleInProject(
+      const newModulePath = await storageProject.copyModuleInProject(
           props.storage,
           props.project,
           newClassName,
@@ -175,23 +177,23 @@ export default function FileManageModal(props: FileManageModalProps) {
       return;
     }
 
-    const storageType = props.moduleType === TabType.MECHANISM ?
-      commonStorage.MODULE_TYPE_MECHANISM :
-      commonStorage.MODULE_TYPE_OPMODE;
+    const moduleType = (props.tabType === TabType.MECHANISM)
+      ? storageModule.ModuleType.MECHANISM
+      : storageModule.ModuleType.OPMODE;
 
-    await commonStorage.addModuleToProject(
+    await storageProject.addModuleToProject(
         props.storage,
         props.project,
-        storageType,
+        moduleType,
         newClassName
     );
 
-    const newModule = commonStorage.findModuleByClassName(props.project, newClassName);
+    const newModule = storageProject.findModuleByClassName(props.project, newClassName);
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,
         title: newModule.className,
-        type: props.moduleType,
+        type: props.tabType,
       };
       setModules([...modules, module]);
     }
@@ -205,7 +207,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     setModules(newModules);
 
     if (props.storage && props.project) {
-      await commonStorage.removeModuleFromProject(
+      await storageProject.removeModuleFromProject(
           props.storage,
           props.project,
           record.path
@@ -307,7 +309,7 @@ export default function FileManageModal(props: FileManageModalProps) {
 
   /** Gets the modal title based on module type. */
   const getModalTitle = (): string => {
-    return `${TabTypeUtils.toString(props.moduleType)} Management`;
+    return `${TabTypeUtils.toString(props.tabType)} Management`;
   };
 
   /** Gets the rename modal title. */
@@ -326,10 +328,10 @@ export default function FileManageModal(props: FileManageModalProps) {
     return `Copy ${TabTypeUtils.toString(currentRecord.type)}: ${currentRecord.title}`;
   };
 
-  /** Gets the empty table text based on module type. */
+  /** Gets the empty table text based on tab type. */
   const getEmptyText = (): string => {
-    const moduleTypeString = TabTypeUtils.toString(props.moduleType || TabType.OPMODE);
-    return `No ${moduleTypeString.toLowerCase()} files found`;
+    const tabTypeString = TabTypeUtils.toString(props.tabType || TabType.OPMODE);
+    return `No ${tabTypeString.toLowerCase()} files found`;
   };
 
   return (
@@ -410,7 +412,7 @@ export default function FileManageModal(props: FileManageModalProps) {
           padding: '12px',
         }}>
           <ClassNameComponent
-            tabType={props.moduleType}
+            tabType={props.tabType}
             newItemName={newItemName}
             setNewItemName={setNewItemName}
             onAddNewItem={handleAddNewItem}

@@ -59,6 +59,7 @@ _KEY_ARGUMENT_TYPE = 'type'
 _KEY_ARGUMENT_DEFAULT_VALUE = 'defaultValue'
 _KEY_ALIASES = 'aliases'
 _KEY_SUBCLASSES = 'subclasses'
+_KEY_PORT_EXPECTED_TYPE = 'expectedPortType'
 
 
 def ignoreModule(module_name: str) -> bool:
@@ -359,6 +360,10 @@ class JsonGenerator:
         constructor_data[_KEY_FUNCTION_ARGS] = args
         constructor_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = declaring_class_name
         constructor_data[_KEY_FUNCTION_RETURN_TYPE] = declaring_class_name
+        expectedPortType = python_util.getPortTypeFromConstructor(value)
+        if expectedPortType:
+          constructor_data[_KEY_PORT_EXPECTED_TYPE] = python_util.getPortTypeFromConstructor(value)
+
         constructors.append(constructor_data)
     class_data[_KEY_CONSTRUCTORS] = constructors
 

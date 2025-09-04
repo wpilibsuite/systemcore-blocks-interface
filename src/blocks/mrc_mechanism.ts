@@ -28,9 +28,12 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
-import * as commonStorage from '../storage/common_storage';
-import * as value from './utils/value';
+import * as storageModule from '../storage/module';
+import * as storageModuleContent from '../storage/module_content';
+import * as storageNames from '../storage/names';
 import { renameMethodCallers } from './mrc_call_python_function'
+import { renameMechanismName as renameMechanismNameInEventHandlers } from './mrc_event_handler'
+import { createPort } from './mrc_port';
 
 export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';
@@ -44,6 +47,8 @@ type Parameter = {
 };
 
 type MechanismExtraState = {
+  mechanismModuleId?: string,
+  mechanismId?: string,
   importModule?: string,
   parameters?: Parameter[],
 }
@@ -52,6 +57,8 @@ const WARNING_ID_MECHANISM_CHANGED = 'mechanism changed';
 
 export type MechanismBlock = Blockly.Block & MechanismMixin & Blockly.BlockSvg;
 interface MechanismMixin extends MechanismMixinType {
+  mrcMechanismModuleId: string
+  mrcMechanismId: string,
   mrcImportModule: string,
   mrcParameters: Parameter[],
 }
@@ -78,6 +85,8 @@ const MECHANISM = {
     */
   saveExtraState: function (this: MechanismBlock): MechanismExtraState {
     const extraState: MechanismExtraState = {
+      mechanismModuleId: this.mrcMechanismModuleId,
+      mechanismId: this.mrcMechanismId,
     };
     extraState.parameters = [];
     this.mrcParameters.forEach((arg) => {
@@ -95,6 +104,8 @@ const MECHANISM = {
   * Applies the given state to this block.
   */
   loadExtraState: function (this: MechanismBlock, extraState: MechanismExtraState): void {
+    this.mrcMechanismModuleId = extraState.mechanismModuleId ? extraState.mechanismModuleId : '';
+    this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : this.id;
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
     this.mrcParameters = [];
     if (extraState.parameters) {
@@ -147,15 +158,18 @@ const MECHANISM = {
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
-      renameMethodCallers(this.workspace, this.id, legalName);
+      renameMethodCallers(this.workspace, this.mrcMechanismId, legalName);
+      // Rename any event handlers
+      renameMechanismNameInEventHandlers(this.workspace, this.mrcMechanismId, legalName);
     }
     return legalName;
   },
-  getMechanism: function (this: MechanismBlock): commonStorage.MechanismInRobot | null {
+  getMechanism: function (this: MechanismBlock): storageModuleContent.MechanismInRobot | null {
     const mechanismName = this.getFieldValue(FIELD_NAME);
     const mechanismType = this.mrcImportModule + '.' + this.getFieldValue(FIELD_TYPE);
     return {
-      blockId: this.id,
+      moduleId: this.mrcMechanismModuleId,
+      mechanismId: this.mrcMechanismId,
       name: mechanismName,
       className: mechanismType,
     };
@@ -167,26 +181,38 @@ const MECHANISM = {
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
     if (editor) {
       // Find the mechanism.
-      // TODO(lizlooney): The user can rename the mechanism. We need to store a UUID in
-      // each module JSON file so we can track mechanisms, etc, even if the name changes.
-      // Then here, we'd look for the mechanism with the marching UUID, and we'd update the
-      // FIELD_TYPE value if the mechanism's class name had changed.
-      let foundMechanism: commonStorage.Mechanism | null = null;
-      const components: commonStorage.Component[] = []
-      for (const mechanism of editor.getMechanisms()) {
-        if (mechanism.className === this.getFieldValue(FIELD_TYPE)) {
-          foundMechanism = mechanism;
-          components.push(...editor.getComponentsFromMechanism(mechanism));
-          break;
+      let foundMechanism: storageModule.Mechanism | null = null;
+
+      if (this.mrcMechanismModuleId) {
+        // Find the mechanism by module id.
+        for (const mechanism of editor.getMechanisms()) {
+          if (mechanism.moduleId === this.mrcMechanismModuleId) {
+            foundMechanism = mechanism;
+            break;
+          }
+        }
+      } else {
+        // Find the mechanism by class name.
+        const className = this.getFieldValue(FIELD_TYPE);
+        for (const mechanism of editor.getMechanisms()) {
+          if (mechanism.className === className) {
+            // Grap the mechanism module id, so we have it for next time.
+            this.mrcMechanismModuleId = mechanism.moduleId;
+            foundMechanism = mechanism;
+            break;
+          }
         }
       }
 
       if (foundMechanism) {
+        const components: storageModuleContent.Component[] = [];
+        components.push(...editor.getComponentsFromMechanism(foundMechanism));
+
         // If the mechanism class name has changed, update this blcok.
         if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {
           this.setFieldValue(foundMechanism.className, FIELD_TYPE);
         }
-        const importModule = commonStorage.pascalCaseToSnakeCase(foundMechanism.className);
+        const importModule = storageNames.pascalCaseToSnakeCase(foundMechanism.className);
         if (this.mrcImportModule !== importModule) {
           this.mrcImportModule = importModule;
         }
@@ -217,7 +243,15 @@ const MECHANISM = {
       this.setWarningText(null, WARNING_ID_MECHANISM_CHANGED);
     }
   },
-}
+  /**
+   * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
+   */
+  mrcChangeIds: function (this: MechanismBlock, oldIdToNewId: { [oldId: string]: string }): void {
+    if (this.mrcMechanismId in oldIdToNewId) {
+      this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
+    }
+  },
+};
 
 export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = MECHANISM;
@@ -245,10 +279,11 @@ export const pythonFromBlock = function (
 }
 
 export function createMechanismBlock(
-    mechanism: commonStorage.Mechanism, components: commonStorage.Component[]): toolboxItems.Block {
-  const snakeCaseName = commonStorage.pascalCaseToSnakeCase(mechanism.className);
+    mechanism: storageModule.Mechanism, components: storageModuleContent.Component[]): toolboxItems.Block {
+  const snakeCaseName = storageNames.pascalCaseToSnakeCase(mechanism.className);
   const mechanismName = 'my_' + snakeCaseName;
   const extraState: MechanismExtraState = {
+    mechanismModuleId: mechanism.moduleId,
     importModule: snakeCaseName,
     parameters: [],
   };
@@ -261,8 +296,7 @@ export function createMechanismBlock(
         name: port,
         type: parameterType,
       });
-      const defaultValue = (parameterType === 'int') ? '0' : '';
-      inputs['ARG' + i] = value.valueForFunctionArgInput(parameterType, defaultValue);
+      inputs['ARG' + i] = createPort(parameterType);
       i++;
     }
   });

@@ -22,19 +22,13 @@ __author__ = "lizlooney@google.com (Liz Looney)"
 
 from typing import Self
 from component import Component, PortType, InvalidPortException
+from port import Port, PortType
 import expansion_hub
 
-# TODO(lizlooney): Update port types.
-
 class ExpansionHubServo(Component):
-    def __init__(self, ports : list[tuple[PortType, int]]):
-        port_type, hub_number = ports[0]
-        if port_type != PortType.USB_PORT:
-            raise InvalidPortException
-        port_type, servo_number = ports[1]
-        if port_type != PortType.USB_PORT:
-            raise InvalidPortException
-        self.expansion_hub_servo = expansion_hub.ExpansionHubServo(hub_number, servo_number)
+    def __init__(self, port : Port):
+        super().__init__(port, PortType.EXPANSION_HUB_SERVO)
+        self.expansion_hub_servo = expansion_hub.ExpansionHubServo(self.port.port1.location, self.port.port2.location)
 
     def get_manufacturer(self) -> str:
         return "REV Robotics"
@@ -68,11 +62,6 @@ class ExpansionHubServo(Component):
     def periodic(self) -> None:
         pass
 
-    # Alternative constructor to create an instance from a hub number and a servo port.
-    @classmethod
-    def from_hub_number_and_servo_number(cls: type[Self], hub_number: int, servo_number: int) -> Self:
-        return cls([(PortType.USB_PORT, hub_number), (PortType.USB_PORT, servo_number)])
-    
     # Component specific methods
 
     # Methods from expansion_hub.ExpansionHubServo

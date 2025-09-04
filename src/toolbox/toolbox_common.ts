@@ -22,18 +22,20 @@
 import * as robotPyToolbox from './robotpy_toolbox';
 import * as toolboxItems from './items';
 import * as Blockly from 'blockly/core';
-import { getCategory as logicCategory } from './logic_category';
-import { getCategory as loopCategory } from './loop_category';
-import { getCategory as mathCategory } from './math_category';
-import { getCategory as textCategory } from './text_category';
-import { getCategory as listsCategory } from './lists_category';
-import { getCategory as miscCategory } from './misc_category';
-import { getCategory as methodsCategory } from './methods_category';
-import { getCategory as testCategory } from './test_category';
+import { getCategory as getLogicCategory } from './logic_category';
+import { getCategory as getLoopCategory } from './loop_category';
+import { getCategory as getMathCategory } from './math_category';
+import { getCategory as getTextCategory } from './text_category';
+import { getCategory as getListsCategory } from './lists_category';
+import { getCategory as getMiscCategory } from './misc_category';
+import { getCategory as getMethodsCategory } from './methods_category';
+import { getCategory as getTestCategory } from './test_category';
+import { Editor } from '../editor/editor';
 
 
 export function getToolboxItems(
-  shownPythonToolboxCategories: Set<string> | null) {
+    shownPythonToolboxCategories: Set<string> | null,
+    editor: Editor): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
 
   const robotPyCategories: toolboxItems.ContentsType[] = robotPyToolbox.getToolboxCategories(shownPythonToolboxCategories);
@@ -43,23 +45,23 @@ export function getToolboxItems(
     contents.push.apply(contents, [
       {
         kind: 'sep',
-      },]
-    );
+      },
+    ]);
   }
-  const tCategory = testCategory();
-  if (tCategory.contents.length > 0) {
-    contents.push.apply(contents, [tCategory]);
+  const testCategory = getTestCategory();
+  if (testCategory.contents && testCategory.contents.length > 0) {
+    contents.push.apply(contents, [testCategory]);
   }
 
   contents.push.apply(
     contents,
     [
-      logicCategory(),
-      loopCategory(),
-      mathCategory(),
-      textCategory(),
-      listsCategory(),
-      miscCategory(),
+      getLogicCategory(),
+      getLoopCategory(),
+      getMathCategory(),
+      getTextCategory(),
+      getListsCategory(),
+      getMiscCategory(),
       {
         kind: 'sep',
       },
@@ -69,7 +71,7 @@ export function getToolboxItems(
         categorystyle: 'variable_category',
         custom: 'VARIABLE',
       },
-      methodsCategory(),
+      getMethodsCategory(editor),
 
     ],
   );

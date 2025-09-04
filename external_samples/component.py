@@ -17,21 +17,12 @@
 # @author alan@porpoiseful.com (Alan Smith)
 
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import Protocol
+from port import Port, PortType
 
 class EmptyCallable(Protocol):
     def __call__(self) -> None:
         pass
-
-
-class PortType(Enum):
-    CAN_PORT = 1
-    SMART_IO_PORT = 2
-    SMART_MOTOR_PORT = 3
-    SERVO_PORT = 4
-    I2C_PORT = 5
-    USB_PORT = 6
 
 
 class InvalidPortException(Exception):
@@ -40,9 +31,12 @@ class InvalidPortException(Exception):
 
 # This is an abstract class
 class Component(ABC):
-    @abstractmethod
-    def __init__(self, ports : list[tuple[PortType, int]]):
-        pass
+    def __init__(self, port : Port, expectedType : PortType):
+        """This has the port it is attached to, and the expected type of the port"""
+        if port.get_type() != expectedType:
+            raise InvalidPortException
+
+        self.port = port
 
     # Returns the manufacturer of the component
     @abstractmethod
@@ -87,11 +81,11 @@ class Component(ABC):
     def reset(self) -> None:
         pass
 
-    # Returns a list (can be empty, one, or multiple) of the ports this connects to
-    # of the PortType enumeration
-    @abstractmethod
-    def get_connection_port_type(self) -> list[PortType]:
-        pass
+    # Returns the port this connects to of the PortType enumeration
+    def get_connection_port_type(self) -> PortType | None:
+        if self.port:
+            return self.port.get_type()
+        return None
 
     # This is called periodically when an opmode is running. The component might use this
     # to talk to hardware and then call callbacks

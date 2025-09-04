@@ -38,6 +38,8 @@ import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
 
 import * as commonStorage from './storage/common_storage';
+import * as storageModule from './storage/module';
+import * as storageProject from './storage/project';
 import * as clientSideStorage from './storage/client_side_storage';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
@@ -129,7 +131,7 @@ const App: React.FC = (): React.JSX.Element => {
  * App wrapper that manages project state and provides it to UserSettingsProvider.
  */
 const AppWithUserSettings: React.FC<{ storage: commonStorage.Storage }> = ({ storage }) => {
-  const [project, setProject] = React.useState<commonStorage.Project | null>(null);
+  const [project, setProject] = React.useState<storageProject.Project | null>(null);
 
   return (
     <UserSettingsProvider
@@ -145,8 +147,8 @@ const AppWithUserSettings: React.FC<{ storage: commonStorage.Storage }> = ({ sto
  * Inner application content component that has access to UserSettings context.
  */
 interface AppContentProps {
-  project: commonStorage.Project | null;
-  setProject: React.Dispatch<React.SetStateAction<commonStorage.Project | null>>;
+  project: storageProject.Project | null;
+  setProject: React.Dispatch<React.SetStateAction<storageProject.Project | null>>;
 }
 
 const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.JSX.Element => {
@@ -154,7 +156,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const { settings, updateLanguage, updateTheme, storage, isLoading } = useUserSettings();
 
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
-  const [currentModule, setCurrentModule] = React.useState<commonStorage.Module | null>(null);
+  const [currentModule, setCurrentModule] = React.useState<storageModule.Module | null>(null);
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
@@ -340,7 +342,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   };
 
   /** Changes current module with automatic saving if modified. */
-  const changeModule = async (module: commonStorage.Module | null): Promise<void> => {
+  const changeModule = async (module: storageModule.Module | null): Promise<void> => {
     if (currentModule && areBlocksModified()) {
       await saveBlocks();
     }
@@ -359,7 +361,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   };
 
   /** Creates tab items from project data. */
-  const createTabItemsFromProject = (projectData: commonStorage.Project): Tabs.TabItem[] => {
+  const createTabItemsFromProject = (projectData: storageProject.Project): Tabs.TabItem[] => {
     const tabs: Tabs.TabItem[] = [
       {
         key: projectData.robot.modulePath,

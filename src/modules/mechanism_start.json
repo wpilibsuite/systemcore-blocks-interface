@@ -4,11 +4,10 @@
         "blocks": [
             {
                 "type": "mrc_class_method_def",
-                "id": "ElbONc{)s(,UprTW(|1C",
                 "x": 10,
-                "y": 210,
-                "editable": false,
+                "y": 110,
                 "deletable": false,
+                "editable": false,
                 "extraState": {
                     "canChangeSignature": false,
                     "canBeCalledWithinClass": false,
@@ -23,11 +22,10 @@
             },
             {
                 "type": "mrc_class_method_def",
-                "id": "wxFAh6eaR1|3fTuV:UAd",
                 "x": 10,
-                "y": 410,
-                "editable": false,
+                "y": 190,
                 "deletable": false,
+                "editable": false,
                 "extraState": {
                     "canChangeSignature": false,
                     "canBeCalledWithinClass": false,
@@ -41,11 +39,10 @@
             },
             {
                 "type": "mrc_mechanism_component_holder",
-                "id": "ElbOAb{)s(,UprTW(|1C",
                 "x": 10,
                 "y": 10,
-                "editable": false,
                 "deletable": false,
+                "editable": false,
                 "extraState":{
                     "hideMechanisms" : true
                 }

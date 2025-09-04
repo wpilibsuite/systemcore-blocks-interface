@@ -22,15 +22,17 @@ __author__ = "lizlooney@google.com (Liz Looney)"
 
 from typing import Self
 from component import Component, PortType, InvalidPortException
+from port import Port, PortType
+
 import wpilib
 import wpimath
 import wpiutil
 
 class SparkMini(Component):
-    def __init__(self, ports : list[tuple[PortType, int]]):
-        portType, port = ports[0]
-        if portType != PortType.SMART_MOTOR_PORT:
-            raise InvalidPortException
+    def __init__(self, port : Port):
+        # TODO(alan412): I don't think this is the correct type        
+        super().__init__(port, PortType.SMART_MOTOR_PORT)
+
         # TODO(lizlooney): When we upgrade to 2027 robotpy, change PWMSparkMax to SparkMini.
         self.spark_mini = wpilib.PWMSparkMax(port) # wpilib.SparkMini(port)
 
@@ -56,16 +58,8 @@ class SparkMini(Component):
     def reset(self) -> None:
         pass
 
-    def get_connection_port_type(self) -> list[PortType]:
-        return [PortType.SMART_MOTOR_PORT]
-
     def periodic(self) -> None:
         pass
-
-    # Alternative constructor to create an instance from a smart motor port
-    @classmethod
-    def from_smart_motor_port(cls: type[Self], smart_motor_port: int) -> Self:
-        return cls([(PortType.SMART_MOTOR_PORT, smart_motor_port)])
     
     # Component specific methods
 

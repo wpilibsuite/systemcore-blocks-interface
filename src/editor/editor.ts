@@ -24,13 +24,14 @@ import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from './extended_python_generator';
 import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
+import * as storageModuleContent from '../storage/module_content';
+import * as storageNames from '../storage/names';
+import * as storageProject from '../storage/project';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
-import { MethodsCategory } from '../toolbox/methods_category';
-import { EventsCategory } from '../toolbox/event_category';
-import { RobotEventsCategory } from '../toolbox/hardware_category';
 import { getToolboxJSON } from '../toolbox/toolbox';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
@@ -45,13 +46,13 @@ export class Editor {
   private blocklyWorkspace: Blockly.WorkspaceSvg;
   private generatorContext: GeneratorContext;
   private storage: commonStorage.Storage;
-  private currentModule: commonStorage.Module | null = null;
-  private currentProject: commonStorage.Project | null = null;
+  private currentModule: storageModule.Module | null = null;
+  private currentProject: storageProject.Project | null = null;
   private modulePath: string = '';
   private robotPath: string = '';
   private moduleContentText: string = '';
-  private robotContent: commonStorage.ModuleContent | null = null;
-  private mechanismClassNameToModuleContent: {[mechanismClassName: string]: commonStorage.ModuleContent} = {};
+  private robotContent: storageModuleContent.ModuleContent | null = null;
+  private mechanismClassNameToModuleContent: {[mechanismClassName: string]: storageModuleContent.ModuleContent} = {};
   private bindedOnChange: any = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
@@ -60,10 +61,6 @@ export class Editor {
     this.blocklyWorkspace = blocklyWorkspace;
     this.generatorContext = generatorContext;
     this.storage = storage;
-    // Create the custom toolbox categories so they register their flyout callbacks.
-    new MethodsCategory(blocklyWorkspace);
-    new EventsCategory(blocklyWorkspace);
-    new RobotEventsCategory(blocklyWorkspace);
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -119,8 +116,8 @@ export class Editor {
   }
 
   public async loadModuleBlocks(
-      currentModule: commonStorage.Module | null,
-      currentProject: commonStorage.Project | null) {
+      currentModule: storageModule.Module | null,
+      currentProject: storageProject.Project | null) {
     this.generatorContext.setModule(currentModule);
     this.currentModule = currentModule;
     this.currentProject = currentProject;
@@ -140,14 +137,15 @@ export class Editor {
     if (this.currentModule && this.currentProject) {
       // Fetch the content for the current module, the robot, and the mechanisms.
       const promises: { [modulePath: string]: Promise<string> } = {}; // value is promise of module content.
-      promises[this.modulePath] = this.storage.fetchModuleContentText(this.modulePath);
+      promises[this.modulePath] = this.storage.fetchFileContentText(this.modulePath);
       if (this.robotPath !== this.modulePath) {
         // Also fetch the robot module content. It contains components, etc, that can be used in OpModes.
-        promises[this.robotPath] = this.storage.fetchModuleContentText(this.robotPath)
+        promises[this.robotPath] = this.storage.fetchFileContentText(this.robotPath)
       }
       for (const mechanism of this.currentProject.mechanisms) {
+        // Fetch the module content text for the mechanism.
         if (mechanism.modulePath !== this.modulePath) {
-          promises[mechanism.modulePath] = this.storage.fetchModuleContentText(mechanism.modulePath)
+          promises[mechanism.modulePath] = this.storage.fetchFileContentText(mechanism.modulePath);
         }
       }
 
@@ -158,17 +156,16 @@ export class Editor {
         })
       );
       this.moduleContentText = modulePathToContentText[this.modulePath];
-      if (this.robotPath === this.modulePath) {
-        this.robotContent = commonStorage.parseModuleContentText(this.moduleContentText);
-      } else {
-        this.robotContent = commonStorage.parseModuleContentText(modulePathToContentText[this.robotPath]);
-      }
+      this.robotContent = storageModuleContent.parseModuleContentText(
+          (this.robotPath === this.modulePath)
+              ? this.moduleContentText
+              : modulePathToContentText[this.robotPath]);
       for (const mechanism of this.currentProject.mechanisms) {
-        if (mechanism.modulePath === this.modulePath) {
-          this.mechanismClassNameToModuleContent[mechanism.className] = commonStorage.parseModuleContentText(this.moduleContentText);
-        } else {
-          this.mechanismClassNameToModuleContent[mechanism.className] = commonStorage.parseModuleContentText(modulePathToContentText[mechanism.modulePath]);
-        }
+        this.mechanismClassNameToModuleContent[mechanism.className] =
+            storageModuleContent.parseModuleContentText(
+                (mechanism.modulePath === this.modulePath)
+                    ? this.moduleContentText
+                    : modulePathToContentText[mechanism.modulePath]);
       }
       this.loadBlocksIntoBlocklyWorkspace();
     }
@@ -196,7 +193,7 @@ export class Editor {
     // Add the while-loading listener.
     this.bindedOnChange = this.onChangeWhileLoading.bind(this);
     this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
-    const moduleContent = commonStorage.parseModuleContentText(this.moduleContentText);
+    const moduleContent = storageModuleContent.parseModuleContentText(this.moduleContentText);
     Blockly.serialization.workspaces.load(moduleContent.getBlocks(), this.blocklyWorkspace);
   }
 
@@ -209,9 +206,7 @@ export class Editor {
         }, 50);
         return;
       }
-      this.setToolbox(
-        getToolboxJSON(
-          shownPythonToolboxCategories, this.currentModule));
+      this.setToolbox(getToolboxJSON(shownPythonToolboxCategories, this));
     }
   }
 
@@ -228,11 +223,15 @@ export class Editor {
     return this.getModuleContentText() !== this.moduleContentText;
   }
 
-  public getCurrentModuleType(): string {
+  public getBlocklyWorkspace(): Blockly.WorkspaceSvg {
+    return this.blocklyWorkspace;
+  }
+
+  public getCurrentModuleType(): storageModule.ModuleType | null {
     if (this.currentModule) {
       return this.currentModule.moduleType;
     }
-    return commonStorage.MODULE_TYPE_UNKNOWN;
+    return null;
   }
 
   private getModuleContentText(): string {
@@ -241,46 +240,47 @@ export class Editor {
     }
 
     // Generate python because some parts of components, events, and methods are affected.
+    extendedPythonGenerator.init(this.blocklyWorkspace);
     extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.generatorContext);
 
     const blocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
-    const mechanisms: commonStorage.MechanismInRobot[] = this.getMechanismsFromWorkspace();
-    const components: commonStorage.Component[] = this.getComponentsFromWorkspace();
-    const events: commonStorage.Event[] = this.getEventsFromWorkspace();
-    const methods: commonStorage.Method[] = (
-        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
-        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM)
+    const mechanisms: storageModuleContent.MechanismInRobot[] = this.getMechanismsFromWorkspace();
+    const components: storageModuleContent.Component[] = this.getComponentsFromWorkspace();
+    const events: storageModuleContent.Event[] = this.getEventsFromWorkspace();
+    const methods: storageModuleContent.Method[] = (
+        this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
+        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM)
         ? this.getMethodsForOutsideFromWorkspace()
         : [];
-    return commonStorage.makeModuleContentText(
+    return storageModuleContent.makeModuleContentText(
       this.currentModule, blocks, mechanisms, components, events, methods);
   }
 
-  public getMechanismsFromWorkspace(): commonStorage.MechanismInRobot[] {
-    const mechanisms: commonStorage.MechanismInRobot[] = [];
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+  public getMechanismsFromWorkspace(): storageModuleContent.MechanismInRobot[] {
+    const mechanisms: storageModuleContent.MechanismInRobot[] = [];
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       mechanismComponentHolder.getMechanisms(this.blocklyWorkspace, mechanisms);
     }
     return mechanisms;
   }
 
-  public getComponentsFromWorkspace(): commonStorage.Component[] {
-    const components: commonStorage.Component[] = [];
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
-        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+  public getComponentsFromWorkspace(): storageModuleContent.Component[] {
+    const components: storageModuleContent.Component[] = [];
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
+        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getComponents(this.blocklyWorkspace, components);
     }
     return components;
   }
 
-  public getMethodsForWithinFromWorkspace(): commonStorage.Method[] {
-    const methods: commonStorage.Method[] = [];
+  public getMethodsForWithinFromWorkspace(): storageModuleContent.Method[] {
+    const methods: storageModuleContent.Method[] = [];
     classMethodDef.getMethodsForWithin(this.blocklyWorkspace, methods);
     return methods;
   }
 
-  public getMethodsForOutsideFromWorkspace(): commonStorage.Method[] {
-    const methods: commonStorage.Method[] = [];
+  public getMethodsForOutsideFromWorkspace(): storageModuleContent.Method[] {
+    const methods: storageModuleContent.Method[] = [];
     classMethodDef.getMethodsForOutside(this.blocklyWorkspace, methods);
     return methods;
   }
@@ -292,26 +292,37 @@ export class Editor {
     return methodNamesAlreadyOverridden;
   }
 
-  public getEventsFromWorkspace(): commonStorage.Event[] {
-    const events: commonStorage.Event[] = [];
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT ||
-        this.currentModule?.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
+  public getEventsFromWorkspace(): storageModuleContent.Event[] {
+    const events: storageModuleContent.Event[] = [];
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
+        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getEvents(this.blocklyWorkspace, events);
     }
     return events;
   }
 
-  public getEventHandlerNamesFromWorkspace(): string[] {
-    const names: string[] = [];
-    eventHandler.getEventHandlerNames(this.blocklyWorkspace, names);
-    return names;
+  public getRobotEventHandlersAlreadyInWorkspace(): eventHandler.EventHandlerBlock[] {
+    const eventHandlerBlocks: eventHandler.EventHandlerBlock[] = [];
+    eventHandler.getRobotEventHandlerBlocks(this.blocklyWorkspace, eventHandlerBlocks);
+    return eventHandlerBlocks;
+  }
+
+  public getMechanismEventHandlersAlreadyInWorkspace(
+      mechanismInRobot: storageModuleContent.MechanismInRobot): eventHandler.EventHandlerBlock[] {
+    const eventHandlerBlocks: eventHandler.EventHandlerBlock[] = [];
+    eventHandler.getMechanismEventHandlerBlocks(
+        this.blocklyWorkspace, mechanismInRobot.mechanismId, eventHandlerBlocks);
+    return eventHandlerBlocks;
   }
 
   public async saveBlocks() {
     const moduleContentText = this.getModuleContentText();
     try {
-      await this.storage.saveModule(this.modulePath, moduleContentText);
+      await this.storage.saveFile(this.modulePath, moduleContentText);
       this.moduleContentText = moduleContentText;
+      if (this.currentProject) {
+        await storageProject.saveProjectInfo(this.storage, this.currentProject.projectName);
+      }
     } catch (e) {
       throw e;
     }
@@ -320,8 +331,8 @@ export class Editor {
   /**
    * Returns the mechanisms defined in the robot.
    */
-  public getMechanismsFromRobot(): commonStorage.MechanismInRobot[] {
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+  public getMechanismsFromRobot(): storageModuleContent.MechanismInRobot[] {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getMechanismsFromWorkspace();
     }
     if (this.robotContent) {
@@ -333,8 +344,8 @@ export class Editor {
   /**
    * Returns the components defined in the robot.
    */
-  public getComponentsFromRobot(): commonStorage.Component[] {
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+  public getComponentsFromRobot(): storageModuleContent.Component[] {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getComponentsFromWorkspace();
     }
     if (this.robotContent) {
@@ -346,8 +357,8 @@ export class Editor {
   /**
    * Returns the events defined in the robot.
    */
-  public getEventsFromRobot(): commonStorage.Event[] {
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+  public getEventsFromRobot(): storageModuleContent.Event[] {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getEventsFromWorkspace();
     }
     if (this.robotContent) {
@@ -359,8 +370,8 @@ export class Editor {
   /**
    * Returns the methods defined in the robot.
    */
-  public getMethodsFromRobot(): commonStorage.Method[] {
-    if (this.currentModule?.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
+  public getMethodsFromRobot(): storageModuleContent.Method[] {
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getMethodsForWithinFromWorkspace();
     }
     if (this.robotContent) {
@@ -372,17 +383,17 @@ export class Editor {
   /**
    * Returns the mechanisms in this project.
    */
-  public getMechanisms(): commonStorage.Mechanism[] {
+  public getMechanisms(): storageModule.Mechanism[] {
     return this.currentProject ? this.currentProject.mechanisms : [];
   }
 
   /**
    * Returns the Mechanism matching the given MechanismInRobot.
    */
-  public getMechanism(mechanismInRobot: commonStorage.MechanismInRobot): commonStorage.Mechanism | null {
+  public getMechanism(mechanismInRobot: storageModuleContent.MechanismInRobot): storageModule.Mechanism | null {
     if (this.currentProject) {
       for (const mechanism of this.currentProject.mechanisms) {
-        const fullClassName = commonStorage.pascalCaseToSnakeCase(mechanism.className) + '.' + mechanism.className;
+        const fullClassName = storageNames.pascalCaseToSnakeCase(mechanism.className) + '.' + mechanism.className;
         if (fullClassName === mechanismInRobot.className) {
           return mechanism;
         }
@@ -394,7 +405,7 @@ export class Editor {
   /**
    * Returns the components defined in the given mechanism.
    */
-  public getComponentsFromMechanism(mechanism: commonStorage.Mechanism): commonStorage.Component[] {
+  public getComponentsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Component[] {
     if (this.currentModule?.modulePath === mechanism.modulePath) {
       return this.getComponentsFromWorkspace();
     }
@@ -407,7 +418,7 @@ export class Editor {
   /**
    * Returns the events defined in the given mechanism.
    */
-  public getEventsFromMechanism(mechanism: commonStorage.Mechanism): commonStorage.Event[] {
+  public getEventsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Event[] {
     if (this.currentModule?.modulePath === mechanism.modulePath) {
       return this.getEventsFromWorkspace();
     }
@@ -420,7 +431,7 @@ export class Editor {
   /**
    * Returns the methods defined in the given mechanism.
    */
-  public getMethodsFromMechanism(mechanism: commonStorage.Mechanism): commonStorage.Method[] {
+  public getMethodsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Method[] {
     if (this.currentModule?.modulePath === mechanism.modulePath) {
       return this.getMethodsForWithinFromWorkspace();
     }

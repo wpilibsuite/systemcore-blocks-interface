@@ -29,7 +29,7 @@ import {
     CLASS_NAME_OPMODE,
     getClassData,
 } from '../blocks/utils/python';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 
 export class OpModeDetails {
   constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
@@ -79,8 +79,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private hasAnyEventHandlers = false;
 
   private classMethods: {[key: string]: string} = Object.create(null);
-  // For eventHandlers, the keys are the function name.
-  private eventHandlers: {[key: string]: {sender: string, eventName: string}} = Object.create(null);
+  private registerEventHandlerStatements: string[] = [];
   // Opmode details
   private details : OpModeDetails | null  = null;
 
@@ -112,7 +111,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   generateInitStatements() : string {
     let initStatements = '';
 
-    if (this.getModuleType() === commonStorage.MODULE_TYPE_MECHANISM && this.hasAnyComponents) {
+    if (this.getModuleType() === storageModule.ModuleType.MECHANISM && this.hasAnyComponents) {
       initStatements += this.INDENT + 'self.define_hardware(' +
           this.getComponentPortParameters().join(', ') + ')\n';
     }
@@ -135,7 +134,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     this.hasAnyComponents = false;
     this.componentPorts = Object.create(null);
-    if (this.getModuleType() ===  commonStorage.MODULE_TYPE_MECHANISM) {
+    if (this.getModuleType() ===  storageModule.ModuleType.MECHANISM) {
       this.hasAnyComponents = mechanismContainerHolder.hasAnyComponents(this.workspace);
       mechanismContainerHolder.getComponentPorts(this.workspace, this.componentPorts);
     }
@@ -148,7 +147,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     return code;
   }
 
-  getModuleType(): string | null {
+  getModuleType(): storageModule.ModuleType | null {
     if (this.context) {
       return this.context.getModuleType();
     }
@@ -180,11 +179,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.classMethods[methodName] = code;
   }
 
-  addEventHandler(sender: string, eventName: string, funcName: string): void {
-    this.eventHandlers[funcName] = {
-      'sender': sender,
-      'eventName': eventName
-    }
+  addRegisterEventHandlerStatement(registerEventHandlerStatement: string): void {
+    this.registerEventHandlerStatements.push(registerEventHandlerStatement);
   }
 
   getComponentPortParameters(): string[] {
@@ -214,12 +210,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       const classDef = 'class ' + className + '(' + simpleBaseClassName + '):\n';
       const classMethods = [];
 
-      if (this.eventHandlers && Object.keys(this.eventHandlers).length > 0) {
+      if (this.registerEventHandlerStatements && this.registerEventHandlerStatements.length > 0) {
         let code = 'def register_event_handlers(self):\n';
-        for (const funcName in this.eventHandlers) {
-          const event = this.eventHandlers[funcName];
-          code += this.INDENT + 'self.' + event.sender + '.register_event_handler("' +
-              event.eventName + '", self.' + funcName + ')\n';
+        for (const registerEventHandlerStatement of this.registerEventHandlerStatements) {
+          code += this.INDENT + registerEventHandlerStatement;
         }
         classMethods.push(code);
       }
@@ -233,8 +227,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         }
         classMethods.push(this.classMethods[name])
       }
-      this.eventHandlers = Object.create(null);
       this.classMethods = Object.create(null);
+      this.registerEventHandlerStatements = [];
       this.componentPorts = Object.create(null);
       code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
       if (decorations){

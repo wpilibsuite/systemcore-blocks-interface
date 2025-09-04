@@ -20,46 +20,49 @@
  */
 
 import * as Blockly from 'blockly/core';
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
 import * as toolboxItems from './items';
+import { getRobotEventHandlersCategory, getMechanismEventHandlersCategory } from './event_handlers_category';
 import { createMechanismBlock } from '../blocks/mrc_mechanism';
 import { getAllPossibleComponents } from '../blocks/mrc_component';
 import {
     getInstanceComponentBlocks,
     addInstanceRobotBlocks,
     addInstanceMechanismBlocks } from '../blocks/mrc_call_python_function';
-import { addRobotEventHandlerBlocks } from '../blocks/mrc_event_handler';
 import { Editor } from '../editor/editor';
 
-export function getHardwareCategory(currentModule: commonStorage.Module): toolboxItems.Category {
-  switch (currentModule.moduleType) {
-    case commonStorage.MODULE_TYPE_ROBOT:
+export function getHardwareCategory(
+    editor: Editor): toolboxItems.Category {
+
+  const moduleType = editor.getCurrentModuleType();
+  switch (moduleType) {
+    case storageModule.ModuleType.ROBOT:
       return {
         kind: 'category',
         name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
         contents: [
-          getRobotMechanismsCategory(currentModule),
-          getComponentsCategory(currentModule.moduleType),
-        ]
+          getRobotMechanismsCategory(editor),
+          getComponentsCategory(editor, moduleType),
+        ],
       };
-    case commonStorage.MODULE_TYPE_MECHANISM:
-      return getComponentsCategory(currentModule.moduleType);
-    case commonStorage.MODULE_TYPE_OPMODE:
+    case storageModule.ModuleType.MECHANISM:
+      return getComponentsCategory(editor, moduleType);
+    case storageModule.ModuleType.OPMODE:
       return {
         kind: 'category',
         name: Blockly.Msg['MRC_CATEGORY_ROBOT'],
         contents: [
-          getRobotMechanismsCategory(currentModule),
-          getRobotComponentsCategory(),
-          getRobotMethodsCategory(),
-          getRobotEventsCategory(),
-        ]
+          getRobotMechanismsCategory(editor),
+          getRobotComponentsCategory(editor),
+          getRobotMethodsCategory(editor),
+          getRobotEventHandlersCategory(editor),
+        ],
       };
   }
-  throw new Error('currentModule.moduleType has unexpected value: ' + currentModule.moduleType)
+  throw new Error('moduleType has unexpected value: ' + moduleType);
 }
 
-function getRobotMechanismsCategory(currentModule: commonStorage.Module): toolboxItems.Category {
+function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
   // getRobotMechanismsCategory is called when the user is editing the robot or an opmode.
   // If the user is editing the robot, it allows the user to add a mechanism to
   // the robot or use an existing mechanism.
@@ -68,46 +71,53 @@ function getRobotMechanismsCategory(currentModule: commonStorage.Module): toolbo
 
   const contents: toolboxItems.ContentsType[] = [];
 
-  const editor = Editor.getCurrentEditor();
-
   // Include the "+ Mechanism" category if the user it editing the robot and there are any mechanism modules.
-  if (currentModule.moduleType === commonStorage.MODULE_TYPE_ROBOT) {
-    if (editor) {
-      const mechanisms = editor.getMechanisms();
-      if (mechanisms.length) {
-        const mechanismBlocks: toolboxItems.Block[] = [];
-        mechanisms.forEach(mechanism => {
-          const components = editor.getComponentsFromMechanism(mechanism);
-          mechanismBlocks.push(createMechanismBlock(mechanism, components));
-        });
+  if (editor.getCurrentModuleType() === storageModule.ModuleType.ROBOT) {
+    const mechanisms = editor.getMechanisms();
+    if (mechanisms.length) {
+      const mechanismBlocks: toolboxItems.Block[] = [];
+      mechanisms.forEach(mechanism => {
+        const components = editor.getComponentsFromMechanism(mechanism);
+        mechanismBlocks.push(createMechanismBlock(mechanism, components));
+      });
 
-        contents.push({
-          kind: 'category',
-          name: Blockly.Msg['MRC_CATEGORY_ADD_MECHANISM'],
-          contents: mechanismBlocks,
-        });
-      }
+      contents.push({
+        kind: 'category',
+        name: Blockly.Msg['MRC_CATEGORY_ADD_MECHANISM'],
+        contents: mechanismBlocks,
+      });
     }
   }
 
-  if (editor) {
-    editor.getMechanismsFromRobot().forEach(mechanismInRobot => {
-      const mechanismBlocks: toolboxItems.Block[] = [];
+  editor.getMechanismsFromRobot().forEach(mechanismInRobot => {
+    // Add the blocks for this mechanism's methods and events.
+    const mechanism = editor.getMechanism(mechanismInRobot);
+    if (mechanism) {
+      const mechanismCategories: toolboxItems.Category[] = [];
 
-      // Add the blocks for this mechanism's methods.
-      const mechanism = editor.getMechanism(mechanismInRobot);
-      if (mechanism) {
-        const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
-        addInstanceMechanismBlocks(mechanismInRobot, methodsFromMechanism, mechanismBlocks);
-
-        contents.push({
-          kind: 'category',
-          name: mechanismInRobot.name,
-          contents: mechanismBlocks,
-        });
+      // Get the list of methods from the mechanism and add the blocks for calling the methods.
+      const mechanismMethodBlocks: toolboxItems.Item[] = [];
+      const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
+      addInstanceMechanismBlocks(mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks);
+      if (mechanismMethodBlocks.length === 0) {
+        const label : toolboxItems.Label = new toolboxItems.Label(Blockly.Msg['NO_MECHANISM_CONTENTS']);
+        mechanismMethodBlocks.push(label);
       }
-    });
-  }
+      mechanismCategories.push({
+        kind: 'category',
+        name: Blockly.Msg['MRC_CATEGORY_METHODS'],
+        contents: mechanismMethodBlocks,
+      });
+
+      mechanismCategories.push(getMechanismEventHandlersCategory(editor, mechanismInRobot));
+
+      contents.push({
+        kind: 'category',
+        name: mechanismInRobot.name,
+        contents: mechanismCategories,
+      });
+    }
+  });
 
   return {
     kind: 'category',
@@ -116,27 +126,22 @@ function getRobotMechanismsCategory(currentModule: commonStorage.Module): toolbo
   };
 }
 
-function getRobotComponentsCategory(): toolboxItems.Category {
+function getRobotComponentsCategory(editor: Editor): toolboxItems.Category {
   // getRobotComponentsCategory is called when the user is editing an opmode.
   // It allows the user to use a component that was previously added to the Robot.
 
   const contents: toolboxItems.ContentsType[] = [];
 
-  const editor = Editor.getCurrentEditor();
-
   // Get the list of components from the robot and add the blocks for calling the
   // component functions.
-  if (editor) {
-    const componentsFromRobot = editor.getComponentsFromRobot();
-    componentsFromRobot.forEach(component => {
-      // Get the blocks for this specific component.
-      contents.push({
-        kind: 'category',
-        name: component.name,
-        contents: getInstanceComponentBlocks(component),
-      });
+  editor.getComponentsFromRobot().forEach(component => {
+    // Get the blocks for this specific component.
+    contents.push({
+      kind: 'category',
+      name: component.name,
+      contents: getInstanceComponentBlocks(component),
     });
-  }
+  });
 
   return {
     kind: 'category',
@@ -145,19 +150,16 @@ function getRobotComponentsCategory(): toolboxItems.Category {
   };
 }
 
-function getRobotMethodsCategory(): toolboxItems.Category {
+function getRobotMethodsCategory(editor: Editor): toolboxItems.Category {
   // getRobotMethodsCategory is called when the user is editing an opmode.
-  // It allows the user to use methods there previously defined in the Robot.
+  // It allows the user to use methods that were previously defined in the Robot.
 
   const contents: toolboxItems.ContentsType[] = [];
 
   // Get the list of methods from the robot and add the blocks for calling the
   // robot functions.
-  const editor = Editor.getCurrentEditor();
-  if (editor) {
-    const methodsFromRobot = editor.getMethodsFromRobot();
-    addInstanceRobotBlocks(methodsFromRobot, contents);
-  }
+  const methodsFromRobot = editor.getMethodsFromRobot();
+  addInstanceRobotBlocks(methodsFromRobot, contents);
 
   return {
     kind: 'category',
@@ -166,7 +168,9 @@ function getRobotMethodsCategory(): toolboxItems.Category {
   };
 }
 
-function getComponentsCategory(moduleType : string): toolboxItems.Category {
+function getComponentsCategory(
+    editor: Editor,
+    moduleType: storageModule.ModuleType): toolboxItems.Category {
   // getComponentsCategory is called when the user is editing the robot or a
   // mechanism. It allows the user to add a component or use an existing component.
 
@@ -180,61 +184,18 @@ function getComponentsCategory(moduleType : string): toolboxItems.Category {
   });
 
   // Get components from the current workspace.
-  const editor = Editor.getCurrentEditor();
-  if (editor) {
-    const componentsFromWorkspace = editor.getComponentsFromWorkspace();
-    componentsFromWorkspace.forEach(component => {
-      // Get the blocks for this specific component
-      contents.push({
-        kind: 'category',
-        name: component.name,
-        contents: getInstanceComponentBlocks(component),
-      });
+  editor.getComponentsFromWorkspace().forEach(component => {
+    // Get the blocks for this specific component
+    contents.push({
+      kind: 'category',
+      name: component.name,
+      contents: getInstanceComponentBlocks(component),
     });
-  }
+  });
 
   return {
     kind: 'category',
     name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
     contents,
   };
-}
-
-const CUSTOM_CATEGORY_ROBOT_EVENTS = 'ROBOT_EVENTS';
-
-// The robot events category is shown when the user is editing an opmode.
-// It allows the user to create event handlers for events previously defined in the Robot.
-const getRobotEventsCategory = () => ({
-  kind: 'category',
-  name: Blockly.Msg['MRC_CATEGORY_EVENTS'],
-  custom: CUSTOM_CATEGORY_ROBOT_EVENTS,
-});
-
-export class RobotEventsCategory {
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
-    blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_ROBOT_EVENTS, this.robotEventsFlyout.bind(this));
-  }
-
-  public robotEventsFlyout(workspace: Blockly.WorkspaceSvg) {
-    const contents: toolboxItems.ContentsType[] = [];
-
-    // Get the list of events from the robot and add the blocks for handling events.
-
-    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
-    if (editor) {
-      const eventsFromRobot = editor.getEventsFromRobot();
-      // Remove events if there is already a corresponding handler in the workspace.
-      const eventHandlerNames = editor.getEventHandlerNamesFromWorkspace();
-      const eventsToShow = eventsFromRobot.filter(event => {
-        return !eventHandlerNames.includes(event.name);
-      });
-      addRobotEventHandlerBlocks(eventsToShow, contents);
-    }
-
-    const toolboxInfo = {
-      contents: contents,
-    };
-
-    return toolboxInfo;
-  }
 }

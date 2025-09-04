@@ -16,14 +16,12 @@ __author__ = "lizlooney@google.com (Liz Looney)"
 
 from typing import Self
 from component import Component, PortType, InvalidPortException
+from port import Port, PortType
 import wpilib
 
 class SparkFunLEDStick(Component):    
-    def __init__(self, ports : list[tuple[PortType, int]]):
-        portType, port = ports[0]
-        if portType != PortType.I2C_PORT:
-            raise InvalidPortException
-        self.port = port
+    def __init__(self, port : Port):
+        super().__init__(port, PortType.I2C_PORT)
 
     def get_manufacturer(self) -> str:   
         return "SparkFun" 
@@ -46,16 +44,8 @@ class SparkFunLEDStick(Component):
     def reset(self) -> None:
         pass
 
-    def get_connection_port_type(self) -> list[PortType]:
-        return [PortType.I2C_PORT]
-
     def periodic(self) -> None:
         pass
-
-    # Alternative constructor to create an instance from an i2c port
-    @classmethod
-    def from_i2c_port(cls: type[Self], i2c_port: int) -> Self:
-        return cls([(PortType.I2C_PORT, i2c_port)])
     
     # SparkFunLEDStick methods
 

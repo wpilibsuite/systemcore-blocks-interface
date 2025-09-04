@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,33 +16,40 @@
  */
 
 /**
- * @fileoverview Block for a comment.
+ * @fileoverview Block for Python's None keyword.
  * @author lizlooney@google.com (Liz Looney)
  */
 
 
 import * as Blockly from 'blockly';
-import { PythonGenerator } from 'blockly/python';
-import { MRC_STYLE_COMMENTS } from '../themes/styles';
+import { MRC_STYLE_NONE } from '../themes/styles'
+import { Order, PythonGenerator } from 'blockly/python';
 
-export const BLOCK_NAME = 'mrc_misc_comment';
+export const BLOCK_NAME = 'mrc_none';
 
-export const setup = function() {
+export function setup() {
   Blockly.Blocks[BLOCK_NAME] = {
     init: function() {
+      this.setOutput(true); // no type for None
       this.appendDummyInput()
-          .appendField(new Blockly.FieldTextInput(''), 'COMMENT');
-      this.getField('COMMENT').maxDisplayLength = 140;
-      this.setPreviousStatement(true);
-      this.setNextStatement(true);
-      this.setStyle(MRC_STYLE_COMMENTS);
+          .appendField(Blockly.Msg.NONE);
+      this.setStyle(MRC_STYLE_NONE);
+      this.setTooltip(Blockly.Msg.NONE_TOOLTIP);
     },
   };
-};
+}
 
-export const pythonFromBlock = function(
-    block: Blockly.Block,
-    _: PythonGenerator,
-) {
-  return '# ' + block.getFieldValue('COMMENT') + '\n';
-};
+export function pythonFromBlock(
+    _block: Blockly.Block,
+    _generator: PythonGenerator,
+): [string, Order] {
+  return ['None', Order.ATOMIC];
+}
+
+export function createNoneShadowValue(): any {
+  return {
+    'shadow': {
+      'type': 'mrc_none',
+    },
+  }
+}

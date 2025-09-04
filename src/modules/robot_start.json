@@ -4,11 +4,10 @@
         "blocks": [
             {
                 "type": "mrc_class_method_def",
-                "id": "ElbONc{)s(,UprTW(|1C",
                 "x": 10,
-                "y": 210,
-                "editable": false,
+                "y": 150,
                 "deletable": false,
+                "editable": false,
                 "extraState": {
                     "canChangeSignature": false,
                     "canBeCalledWithinClass": false,
@@ -23,11 +22,11 @@
             },
             {
                 "type": "mrc_mechanism_component_holder",
-                "id": "ElbOAb{)s(,UprTW(|1C",
                 "x": 10,
                 "y": 10,
+                "deletable": false,
                 "editable": false,
-                "deletable": false
+                "extraState": {}
             }
         ]
     }

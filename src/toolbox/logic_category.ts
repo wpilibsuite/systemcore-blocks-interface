@@ -43,7 +43,7 @@ export const getCategory = () => (
         },
         {
             kind: 'block',
-            type: 'logic_null',
+            type: 'mrc_none',
         },
         {
             kind: 'block',
