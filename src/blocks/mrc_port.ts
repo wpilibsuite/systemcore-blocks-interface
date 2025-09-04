@@ -157,7 +157,7 @@ export const pythonFromBlock = function (
 }
 
 export function createPort(portType : string) {
-  //TODO: Based off of the port type, create the right number and type of ports
+  // Based off of the port type, create the right number and type of ports
   const ports : MrcPortType[] = [];
   switch(portType){
     case 'CAN_PORT':
@@ -184,9 +184,6 @@ export function createPort(portType : string) {
     case 'EXPANSION_HUB_SERVO_PORT':
       ports.push({ portType: 'servo', portNumber: 1 });
       break;
-    case 'SMART_MOTOR_PORT':
-      ports.push({ portType: 'MotionCore port', portNumber: 1 });
-      break;
     case 'USB_HUB':
       ports.push({ portType: 'usb in', portNumber: 1 });
       ports.push({ portType: 'usb out', portNumber: 1 });
@@ -200,7 +197,7 @@ export function createPort(portType : string) {
       ports.push({ portType: 'servo', portNumber: 1 });
       break;
     default:
-      ports.push({ portType: 'unknown:' + portType, portNumber: 1 });
+      ports.push({ portType: 'unknown' + portType, portNumber: 1 });
       break;
   }
   return {
