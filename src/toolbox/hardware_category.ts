@@ -27,6 +27,7 @@ import { createMechanismBlock } from '../blocks/mrc_mechanism';
 import { getAllPossibleComponents } from '../blocks/mrc_component';
 import {
     getInstanceComponentBlocks,
+    getInstanceMechanismComponentBlocks,
     addInstanceRobotBlocks,
     addInstanceMechanismBlocks } from '../blocks/mrc_call_python_function';
 import { Editor } from '../editor/editor';
@@ -117,7 +118,7 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
           componentBlocks.push({
             kind: 'category',
             name: component.name,
-            contents: getInstanceComponentBlocks(component),
+            contents: getInstanceMechanismComponentBlocks(component, mechanismInRobot),
           });
         });
         mechanismCategories.push({

@@ -1142,6 +1142,34 @@ export function getInstanceComponentBlocks(
   return contents;
 }
 
+export function getInstanceMechanismComponentBlocks(
+    component: storageModuleContent.Component, mechanismInRobot: storageModuleContent.MechanismInRobot): toolboxItems.ContentsType[] {
+  const contents: toolboxItems.ContentsType[] = [];
+
+  const classData = getClassData(component.className);
+  if (!classData) {
+    throw new Error('Could not find classData for ' + component.className);
+  }
+  const functions = classData.instanceMethods;
+
+  const componentClassData = getClassData('component.Component');
+  if (!componentClassData) {
+    throw new Error('Could not find classData for component.Component');
+  }
+  const componentFunctions = componentClassData.instanceMethods;
+
+  for (const functionData of functions) {
+    // Skip the functions that are also defined in componentFunctions.
+    if (findSuperFunctionData(functionData, componentFunctions)) {
+      continue;
+    }
+    const block = createInstanceMechanismComponentBlock(component, functionData, mechanismInRobot);
+    contents.push(block);
+  }
+
+  return contents;
+}
+
 function createInstanceComponentBlock(
     component: storageModuleContent.Component, functionData: FunctionData): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
@@ -1156,6 +1184,32 @@ function createInstanceComponentBlock(
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_COMPONENT_NAME] = component.name;
+  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
+  const inputs: {[key: string]: any} = {};
+  // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
+  // self is represented by the FIELD_COMPONENT_NAME field.
+  // We don't include the arg for the self argument because we don't need a socket for it.
+  const argsWithoutSelf = functionData.args.slice(1);
+  processArgs(argsWithoutSelf, extraState, inputs);
+  return createBlock(extraState, fields, inputs);
+}
+
+function createInstanceMechanismComponentBlock(
+    component: storageModuleContent.Component, 
+    functionData: FunctionData, 
+    mechanismInRobot: storageModuleContent.MechanismInRobot): toolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: FunctionKind.INSTANCE_COMPONENT,
+    returnType: functionData.returnType,
+    args: [],
+    tooltip: functionData.tooltip,
+    importModule: '',
+    componentClassName: component.className,
+    componentName: mechanismInRobot.name + '.' + component.name, // Prefix with mechanism name
+    componentId: component.componentId,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_COMPONENT_NAME] = mechanismInRobot.name + '.' + component.name; // Prefix with mechanism name
   fields[FIELD_FUNCTION_NAME] = functionData.functionName;
   const inputs: {[key: string]: any} = {};
   // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
