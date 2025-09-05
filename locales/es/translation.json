@@ -36,7 +36,6 @@
     "COPY": "Copiar",
     "addTabDialog": {
         "title": "Agregar Pestaña",
-        "newItemPlaceholder": "Agregar Módulo",
         "search": "Buscar..."
     },
     "MECHANISMS": "Mecanismos",

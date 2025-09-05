@@ -17,7 +17,6 @@
     "example_project": "For example: WackyWheelerRobot",
     "addTabDialog": {
         "title": "Add Tab",
-        "newItemPlaceholder": "Add Module",
         "search": "Search..."
     },
     "PROJECT": "Project",
