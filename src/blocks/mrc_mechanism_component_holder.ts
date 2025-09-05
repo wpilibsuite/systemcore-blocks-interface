@@ -82,8 +82,16 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.setInputsInline(false);
     this.appendStatementInput(INPUT_MECHANISMS).setCheck(MECHANISM_OUTPUT).appendField(Blockly.Msg.MECHANISMS);
     this.appendStatementInput(INPUT_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.COMPONENTS);
-    this.appendStatementInput(INPUT_PRIVATE_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.PRIVATE_COMPONENTS);
+    const privateComponentsInput = this.appendStatementInput(INPUT_PRIVATE_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.PRIVATE_COMPONENTS);
+    // Set tooltip on the private components field
+    const privateComponentsField = privateComponentsInput.fieldRow[0];
+    if (privateComponentsField) {
+      privateComponentsField.setTooltip(Blockly.Msg.PRIVATE_COMPONENTS_TOOLTIP);
+    }
     this.appendStatementInput(INPUT_EVENTS).setCheck(EVENT_OUTPUT).appendField(Blockly.Msg.EVENTS);
+    
+    // Update components tooltip based on private components visibility
+    this.updateComponentsTooltip_();
 
     this.setOutput(false);
     this.setStyle(MRC_STYLE_MECHANISMS);
@@ -113,6 +121,21 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.updateBlock_();
   },
   /**
+   * Update the components tooltip based on private components visibility.
+   */
+  updateComponentsTooltip_: function (this: MechanismComponentHolderBlock): void {
+    const componentsInput = this.getInput(INPUT_COMPONENTS);
+    if (componentsInput && componentsInput.fieldRow[0]) {
+      const componentsField = componentsInput.fieldRow[0];
+      // Only show tooltip if private components are also visible (not hidden)
+      if (!this.mrcHidePrivateComponents) {
+        componentsField.setTooltip(Blockly.Msg.COMPONENTS_TOOLTIP);
+      } else {
+        componentsField.setTooltip('');
+      }
+    }
+  },
+  /**
      * Update the block to reflect the newly loaded extra state.
      */
   updateBlock_: function (this: MechanismComponentHolderBlock): void {
@@ -137,10 +160,18 @@ const MECHANISM_COMPONENT_HOLDER = {
     }
     else {
       if (this.getInput(INPUT_PRIVATE_COMPONENTS) == null) {
-        this.appendStatementInput(INPUT_PRIVATE_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.PRIVATE_COMPONENTS);
+        const privateComponentsInput = this.appendStatementInput(INPUT_PRIVATE_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.PRIVATE_COMPONENTS);
+        // Set tooltip on the field
+        const privateComponentsField = privateComponentsInput.fieldRow[0];
+        if (privateComponentsField) {
+          privateComponentsField.setTooltip(Blockly.Msg.PRIVATE_COMPONENTS_TOOLTIP);
+        }
         this.moveInputBefore(INPUT_PRIVATE_COMPONENTS, INPUT_EVENTS)
       }
     }
+    
+    // Update components tooltip based on private components visibility
+    this.updateComponentsTooltip_();
   },
   onBlockChanged: function (block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase) {
     if (blockEvent.type == Blockly.Events.BLOCK_MOVE) {

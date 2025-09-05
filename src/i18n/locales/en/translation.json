@@ -62,7 +62,9 @@
             "OPMODE_TYPE": "What sort of OpMode this is",
             "OPMODE_ENABLED": "Whether the OpMode is shown on Driver Station",
             "OPMODE_NAME": "The name shown on the Driver Station.  If blank will use the class name.",
-            "OPMODE_GROUP": "An optional group to group OpModes on Driver Station"
+            "OPMODE_GROUP": "An optional group to group OpModes on Driver Station",
+            "COMPONENTS": "These components are visible in this mechanism, the robot, and all opmodes.",
+            "PRIVATE_COMPONENTS": "These components will not be visible in the robot or opmodes. They are only accessible within this mechanism."
         },
         "CATEGORY":{
             "LISTS": "Lists",
