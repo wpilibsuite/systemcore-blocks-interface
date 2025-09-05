@@ -121,7 +121,6 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
   const renderInput = (): React.JSX.Element => (
     <Antd.Input
       style={{width: getInputWidth()}}
-      placeholder={t('addTabDialog.newItemPlaceholder')}
       value={props.newItemName}
       onChange={handleInputChange}
       onPressEnter={handleAddNewItem}

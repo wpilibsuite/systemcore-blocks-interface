@@ -109,7 +109,6 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
   const renderInput = (): React.JSX.Element => (
     <Antd.Input
       style={FULL_WIDTH_STYLE}
-      placeholder={t('addTabDialog.newItemPlaceholder')}
       value={props.newItemName}
       onChange={handleInputChange}
       onPressEnter={handleAddNewItem}
