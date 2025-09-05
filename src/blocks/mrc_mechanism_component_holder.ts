@@ -25,7 +25,6 @@ import { MRC_STYLE_MECHANISMS } from '../themes/styles';
 import * as ChangeFramework from './utils/change_framework';
 import { getLegalName } from './utils/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { Editor } from '../editor/editor';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
