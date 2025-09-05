@@ -17,7 +17,6 @@
     "example_project": "לדוגמה: WackyWheelerRobot",
     "addTabDialog": {
         "title": "הוסף כרטיסייה",
-        "newItemPlaceholder": "הוסף מודול",
         "search": "חיפוש..."
     },
     "PROJECT": "פרויקט",
