@@ -47,6 +47,7 @@
         "PARAMETER": "parámetro",
         "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "Los parámetros solo pueden ir en el bloque de su método",
         "COMPONENTS": "Componentes",
+        "PRIVATE_COMPONENTS": "Componentes Privados",
         "EVENTS": "Eventos",
         "EVALUATE_BUT_IGNORE_RESULT": "evaluar pero ignorar resultado",
         "NONE": "None",

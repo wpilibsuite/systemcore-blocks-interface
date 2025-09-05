@@ -77,7 +77,7 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
     if (mechanisms.length) {
       const mechanismBlocks: toolboxItems.Block[] = [];
       mechanisms.forEach(mechanism => {
-        const components = editor.getComponentsFromMechanism(mechanism);
+        const components = editor.getAllComponentsFromMechanism(mechanism);
         mechanismBlocks.push(createMechanismBlock(mechanism, components));
       });
 
@@ -108,6 +108,24 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
         name: Blockly.Msg['MRC_CATEGORY_METHODS'],
         contents: mechanismMethodBlocks,
       });
+
+      // Get the public components from the mechanism and add the blocks for calling the component functions.
+      const componentsFromMechanism = editor.getComponentsFromMechanism(mechanism);
+      if (componentsFromMechanism.length > 0) {
+        const componentBlocks: toolboxItems.ContentsType[] = [];
+        componentsFromMechanism.forEach(component => {
+          componentBlocks.push({
+            kind: 'category',
+            name: component.name,
+            contents: getInstanceComponentBlocks(component),
+          });
+        });
+        mechanismCategories.push({
+          kind: 'category',
+          name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
+          contents: componentBlocks,
+        });
+      }
 
       mechanismCategories.push(getMechanismEventHandlersCategory(editor, mechanismInRobot));
 
@@ -184,7 +202,11 @@ function getComponentsCategory(
   });
 
   // Get components from the current workspace.
-  editor.getComponentsFromWorkspace().forEach(component => {
+  const componentsToShow = moduleType === storageModule.ModuleType.MECHANISM 
+    ? editor.getAllComponentsFromWorkspace() // Show all components (including private) when editing mechanisms
+    : editor.getComponentsFromWorkspace();   // Show only regular components when editing robots
+  
+  componentsToShow.forEach(component => {
     // Get the blocks for this specific component
     contents.push({
       kind: 'category',

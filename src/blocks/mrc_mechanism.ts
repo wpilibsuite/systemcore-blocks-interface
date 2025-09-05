@@ -206,7 +206,7 @@ const MECHANISM = {
 
       if (foundMechanism) {
         const components: storageModuleContent.Component[] = [];
-        components.push(...editor.getComponentsFromMechanism(foundMechanism));
+        components.push(...editor.getAllComponentsFromMechanism(foundMechanism));
 
         // If the mechanism class name has changed, update this blcok.
         if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {

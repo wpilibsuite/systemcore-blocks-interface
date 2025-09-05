@@ -46,6 +46,7 @@
         "PARAMETER": "פרמטר",
         "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "פרמטרים יכולים להיכנס רק בבלוק השיטה שלהם",
         "COMPONENTS": "רכיבים",
+        "PRIVATE_COMPONENTS": "רכיבים פרטיים",
         "EVENTS": "אירועים",
         "EVALUATE_BUT_IGNORE_RESULT": "הערך אך התעלם מהתוצאה",
         "NONE": "אַף לֹא אֶחָד",
