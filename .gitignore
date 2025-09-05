@@ -10,6 +10,7 @@
 
 # production
 /build
+/dist
 
 # python stuff
 __pycache__/
