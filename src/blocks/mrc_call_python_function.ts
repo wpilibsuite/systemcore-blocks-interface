@@ -547,6 +547,25 @@ const CALL_PYTHON_FUNCTION = {
       let foundComponent = false;
       const componentsInScope: storageModuleContent.Component[] = [];
       componentsInScope.push(...this.getComponentsFromRobot());
+      
+      // If we're in a robot context, also include components from mechanisms
+      if (editor.getCurrentModuleType() === storageModule.ModuleType.ROBOT) {
+        editor.getMechanismsFromRobot().forEach(mechanismInRobot => {
+          const mechanism = editor.getMechanism(mechanismInRobot);
+          if (mechanism) {
+            const mechanismComponents = editor.getComponentsFromMechanism(mechanism);
+            mechanismComponents.forEach(component => {
+              // Create a copy of the component with the mechanism-prefixed name
+              const prefixedComponent = {
+                ...component,
+                name: mechanismInRobot.name + '.' + component.name
+              };
+              componentsInScope.push(prefixedComponent);
+            });
+          }
+        });
+      }
+      
       if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
         componentsInScope.push(...editor.getComponentsFromWorkspace());
       }
