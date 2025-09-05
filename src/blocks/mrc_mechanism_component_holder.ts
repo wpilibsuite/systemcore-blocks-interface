@@ -41,17 +41,20 @@ export const BLOCK_NAME = 'mrc_mechanism_component_holder';
 
 const INPUT_MECHANISMS = 'MECHANISMS';
 const INPUT_COMPONENTS = 'COMPONENTS';
+const INPUT_PRIVATE_COMPONENTS = 'PRIVATE_COMPONENTS';
 const INPUT_EVENTS = 'EVENTS';
 
 export const TOOLBOX_UPDATE_EVENT = 'toolbox-update-requested';
 
 type MechanismComponentHolderExtraState = {
   hideMechanisms?: boolean;
+  hidePrivateComponents?: boolean;
 }
 
 export type MechanismComponentHolderBlock = Blockly.Block & MechanismComponentHolderMixin;
 interface MechanismComponentHolderMixin extends MechanismComponentHolderMixinType {
   mrcHideMechanisms: boolean;
+  mrcHidePrivateComponents: boolean;
 }
 type MechanismComponentHolderMixinType = typeof MECHANISM_COMPONENT_HOLDER;
 
@@ -78,8 +81,16 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.setInputsInline(false);
     this.appendStatementInput(INPUT_MECHANISMS).setCheck(MECHANISM_OUTPUT).appendField(Blockly.Msg.MECHANISMS);
     this.appendStatementInput(INPUT_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.COMPONENTS);
+    const privateComponentsInput = this.appendStatementInput(INPUT_PRIVATE_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.PRIVATE_COMPONENTS);
+    // Set tooltip on the private components field
+    const privateComponentsField = privateComponentsInput.fieldRow[0];
+    if (privateComponentsField) {
+      privateComponentsField.setTooltip(Blockly.Msg.PRIVATE_COMPONENTS_TOOLTIP);
+    }
     this.appendStatementInput(INPUT_EVENTS).setCheck(EVENT_OUTPUT).appendField(Blockly.Msg.EVENTS);
-
+    
+    // Update components tooltip based on private components visibility
+    this.updateComponentsTooltip_();
 
     this.setOutput(false);
     this.setStyle(MRC_STYLE_MECHANISMS);
@@ -95,6 +106,9 @@ const MECHANISM_COMPONENT_HOLDER = {
     if (this.mrcHideMechanisms == true) {
       extraState.hideMechanisms = this.mrcHideMechanisms;
     }
+    if (this.mrcHidePrivateComponents == true) {
+      extraState.hidePrivateComponents = this.mrcHidePrivateComponents;
+    }
     return extraState;
   },
   /**
@@ -102,12 +116,29 @@ const MECHANISM_COMPONENT_HOLDER = {
   */
   loadExtraState: function (this: MechanismComponentHolderBlock, extraState: MechanismComponentHolderExtraState): void {
     this.mrcHideMechanisms = (extraState.hideMechanisms == undefined) ? false : extraState.hideMechanisms;
+    this.mrcHidePrivateComponents = (extraState.hidePrivateComponents == undefined) ? false : extraState.hidePrivateComponents;
     this.updateBlock_();
+  },
+  /**
+   * Update the components tooltip based on private components visibility.
+   */
+  updateComponentsTooltip_: function (this: MechanismComponentHolderBlock): void {
+    const componentsInput = this.getInput(INPUT_COMPONENTS);
+    if (componentsInput && componentsInput.fieldRow[0]) {
+      const componentsField = componentsInput.fieldRow[0];
+      // Only show tooltip if private components are also visible (not hidden)
+      if (!this.mrcHidePrivateComponents) {
+        componentsField.setTooltip(Blockly.Msg.COMPONENTS_TOOLTIP);
+      } else {
+        componentsField.setTooltip('');
+      }
+    }
   },
   /**
      * Update the block to reflect the newly loaded extra state.
      */
   updateBlock_: function (this: MechanismComponentHolderBlock): void {
+    // Handle mechanisms input visibility
     if (this.mrcHideMechanisms) {
       if (this.getInput(INPUT_MECHANISMS)) {
         this.removeInput(INPUT_MECHANISMS)
@@ -115,10 +146,31 @@ const MECHANISM_COMPONENT_HOLDER = {
     }
     else {
       if (this.getInput(INPUT_MECHANISMS) == null) {
-        this.appendStatementInput(INPUT_MECHANISMS).setCheck(MECHANISM_OUTPUT).appendField('Mechanisms');
+        this.appendStatementInput(INPUT_MECHANISMS).setCheck(MECHANISM_OUTPUT).appendField(Blockly.Msg.MECHANISMS);
         this.moveInputBefore(INPUT_MECHANISMS, INPUT_COMPONENTS)
       }
     }
+
+    // Handle private components input visibility
+    if (this.mrcHidePrivateComponents) {
+      if (this.getInput(INPUT_PRIVATE_COMPONENTS)) {
+        this.removeInput(INPUT_PRIVATE_COMPONENTS)
+      }
+    }
+    else {
+      if (this.getInput(INPUT_PRIVATE_COMPONENTS) == null) {
+        const privateComponentsInput = this.appendStatementInput(INPUT_PRIVATE_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.PRIVATE_COMPONENTS);
+        // Set tooltip on the field
+        const privateComponentsField = privateComponentsInput.fieldRow[0];
+        if (privateComponentsField) {
+          privateComponentsField.setTooltip(Blockly.Msg.PRIVATE_COMPONENTS_TOOLTIP);
+        }
+        this.moveInputBefore(INPUT_PRIVATE_COMPONENTS, INPUT_EVENTS)
+      }
+    }
+    
+    // Update components tooltip based on private components visibility
+    this.updateComponentsTooltip_();
   },
   onBlockChanged: function (block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase) {
     if (blockEvent.type == Blockly.Events.BLOCK_MOVE) {
@@ -165,6 +217,28 @@ const MECHANISM_COMPONENT_HOLDER = {
     if (componentsInput && componentsInput.connection) {
       // Walk through all connected component blocks.
       let componentBlock = componentsInput.connection.targetBlock();
+      while (componentBlock) {
+        if (componentBlock.type === MRC_COMPONENT_NAME) {
+          const component = (componentBlock as ComponentBlock).getComponent();
+          if (component) {
+            components.push(component);
+          }
+        }
+        // Move to the next block in the chain
+        componentBlock = componentBlock.getNextBlock();
+      }
+    }
+
+    return components;
+  },
+  getPrivateComponents: function (this: MechanismComponentHolderBlock): storageModuleContent.Component[] {
+    const components: storageModuleContent.Component[] = []
+
+    // Get component blocks from the PRIVATE_COMPONENTS input
+    const privateComponentsInput = this.getInput(INPUT_PRIVATE_COMPONENTS);
+    if (privateComponentsInput && privateComponentsInput.connection) {
+      // Walk through all connected component blocks.
+      let componentBlock = privateComponentsInput.connection.targetBlock();
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME) {
           const component = (componentBlock as ComponentBlock).getComponent();
@@ -243,9 +317,11 @@ function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, genera
   code += '):\n';
 
   const components = generator.statementToCode(block, INPUT_COMPONENTS);
+  const privateComponents = generator.statementToCode(block, INPUT_PRIVATE_COMPONENTS);
 
-  if (components) {
-    code += components;
+  const body = components + privateComponents;
+  if (body) {
+    code += body;
     generator.addClassMethodDefinition('define_hardware', code);
   }
 }
@@ -272,10 +348,25 @@ export const pythonFromBlock = function (
  */
 export function hasAnyComponents(workspace: Blockly.Workspace): boolean {
   for (const block of workspace.getBlocksByType(BLOCK_NAME)) {
+    // Check regular components
     const componentsInput = block.getInput(INPUT_COMPONENTS);
     if (componentsInput && componentsInput.connection) {
       // Walk through all connected component blocks.
       let componentBlock = componentsInput.connection.targetBlock();
+      while (componentBlock) {
+        if (componentBlock.type === MRC_COMPONENT_NAME && componentBlock.isEnabled()) {
+          return true;
+        }
+        // Move to the next block in the chain
+        componentBlock = componentBlock.getNextBlock();
+      }
+    }
+
+    // Check private components
+    const privateComponentsInput = block.getInput(INPUT_PRIVATE_COMPONENTS);
+    if (privateComponentsInput && privateComponentsInput.connection) {
+      // Walk through all connected private component blocks.
+      let componentBlock = privateComponentsInput.connection.targetBlock();
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME && componentBlock.isEnabled()) {
           return true;
@@ -297,6 +388,20 @@ export function getComponentPorts(workspace: Blockly.Workspace, ports: {[key: st
     if (componentsInput && componentsInput.connection) {
       // Walk through all connected component blocks.
       let componentBlock = componentsInput.connection.targetBlock();
+      while (componentBlock) {
+        if (componentBlock.type === MRC_COMPONENT_NAME && componentBlock.isEnabled()) {
+          (componentBlock as ComponentBlock).getComponentPorts(ports);
+        }
+        // Move to the next block in the chain
+        componentBlock = componentBlock.getNextBlock();
+      }
+    }
+
+    // Also include private components for port collection
+    const privateComponentsInput = block.getInput(INPUT_PRIVATE_COMPONENTS);
+    if (privateComponentsInput && privateComponentsInput.connection) {
+      // Walk through all connected private component blocks.
+      let componentBlock = privateComponentsInput.connection.targetBlock();
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME && componentBlock.isEnabled()) {
           (componentBlock as ComponentBlock).getComponentPorts(ports);
@@ -328,6 +433,25 @@ export function getComponents(
       (block as MechanismComponentHolderBlock).getComponents();
     components.push(...componentsFromHolder);
   });
+}
+
+export function getPrivateComponents(
+    workspace: Blockly.Workspace,
+    components: storageModuleContent.Component[]): void {
+  // Get the holder block and ask it for the private components.
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    const privateComponentsFromHolder: storageModuleContent.Component[] =
+      (block as MechanismComponentHolderBlock).getPrivateComponents();
+    components.push(...privateComponentsFromHolder);
+  });
+}
+
+export function getAllComponents(
+    workspace: Blockly.Workspace,
+    components: storageModuleContent.Component[]): void {
+  // Get both regular and private components for when creating a mechanism
+  getComponents(workspace, components);
+  getPrivateComponents(workspace, components);
 }
 
 export function getEvents(

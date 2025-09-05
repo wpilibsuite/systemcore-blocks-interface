@@ -273,6 +273,15 @@ export class Editor {
     return components;
   }
 
+  public getAllComponentsFromWorkspace(): storageModuleContent.Component[] {
+    const components: storageModuleContent.Component[] = [];
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
+        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
+      mechanismComponentHolder.getAllComponents(this.blocklyWorkspace, components);
+    }
+    return components;
+  }
+
   public getMethodsForWithinFromWorkspace(): storageModuleContent.Method[] {
     const methods: storageModuleContent.Method[] = [];
     classMethodDef.getMethodsForWithin(this.blocklyWorkspace, methods);
@@ -413,6 +422,37 @@ export class Editor {
       return this.mechanismClassNameToModuleContent[mechanism.className].getComponents();
     }
     throw new Error('getComponentsFromMechanism: mechanism not found: ' + mechanism.className);
+  }
+
+  /**
+   * Returns ALL components (including private components) defined in the given mechanism.
+   * This is used when creating mechanism blocks that need all components for port parameters.
+   */
+  public getAllComponentsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Component[] {
+    if (this.currentModule?.modulePath === mechanism.modulePath) {
+      return this.getAllComponentsFromWorkspace();
+    }
+    if (mechanism.className in this.mechanismClassNameToModuleContent) {
+      // For saved mechanisms, we need to reconstruct all components from the blocks
+      // since only public components are saved in the module content
+      const moduleContent = this.mechanismClassNameToModuleContent[mechanism.className];
+      const blocks = moduleContent.getBlocks();
+      
+      // Create a temporary workspace to load the mechanism's blocks
+      const tempWorkspace = new Blockly.Workspace();
+      try {
+        Blockly.serialization.workspaces.load(blocks, tempWorkspace);
+        
+        // Extract all components (public and private) from the temporary workspace
+        const allComponents: storageModuleContent.Component[] = [];
+        mechanismComponentHolder.getAllComponents(tempWorkspace, allComponents);
+        
+        return allComponents;
+      } finally {
+        tempWorkspace.dispose();
+      }
+    }
+    throw new Error('getAllComponentsFromMechanism: mechanism not found: ' + mechanism.className);
   }
 
   /**
