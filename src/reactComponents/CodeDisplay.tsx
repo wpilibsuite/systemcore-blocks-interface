@@ -81,7 +81,7 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
   const getSyntaxHighlighterStyle = (): React.CSSProperties => ({
     backgroundColor: token.colorBgContainer,
     width: '100%',
-    overflowX: 'hidden',
+    overflowX: 'auto',
     overflowY: 'auto',
   });
 
