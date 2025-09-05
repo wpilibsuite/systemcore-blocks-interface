@@ -100,7 +100,7 @@ const PORT = {
       const port = this.ports_[i];
       this.appendDummyInput('PORT_' + i)
         .appendField(createFieldNonEditableText(port.portType), 'TYPE_' + i)
-        .appendField(createFieldDropdownForPortType(port.portType, port.portNumber), 'PORT_' + i)
+        .appendField(createFieldDropdownForPortType(port.portType, port.portNumber), 'PORT_NUM_' + i)
         .setAlign(Blockly.inputs.Align.RIGHT);
     }
   },
@@ -157,31 +157,31 @@ export const pythonFromBlock = function (
   return [code, Order.ATOMIC];
 }
 
-function createFieldDropdownForPortType( portType : string, defaultVal : number) : Blockly.Field {
-  switch(portType){
+function createFieldDropdownForPortType(portType: string, defaultVal: number): Blockly.Field {
+  switch (portType) {
     case 'can':
-      return createFieldNumberDropdown(0, 4, 1, defaultVal);
+      return createFieldNumberDropdown(0, 4, defaultVal);
     case 'smartio':
-      return createFieldNumberDropdown(0, 5, 1, defaultVal);
+      return createFieldNumberDropdown(0, 5, defaultVal);
     case 'MotionCore port':
-      return createFieldNumberDropdown(1, 6, 1, defaultVal);
+      return createFieldNumberDropdown(1, 6, defaultVal);
     case 'i2c':
-      return createFieldNumberDropdown(0, 1, 1, defaultVal);
+      return createFieldNumberDropdown(0, 1, defaultVal);
     case 'usb in':
-      return createFieldNumberDropdown(0, 3, 1, defaultVal);
+      return createFieldNumberDropdown(0, 3, defaultVal);
     case 'motor':
-      return createFieldNumberDropdown(1, 6, 1, defaultVal);
+      return createFieldNumberDropdown(1, 6, defaultVal);
     case 'servo':
-      return createFieldNumberDropdown(1, 6, 1, defaultVal);
+      return createFieldNumberDropdown(1, 6, defaultVal);
     default:
-      return createFieldNumberDropdown(0, 99, 1, defaultVal);
+      return createFieldNumberDropdown(0, 99, defaultVal);
   }
 }
 
-export function createPort(portType : string) {
+export function createPort(portType: string) {
   // Based off of the port type, create the right number and type of ports
-  const ports : MrcPortType[] = [];
-  switch(portType){
+  const ports: MrcPortType[] = [];
+  switch (portType) {
     case 'CAN_PORT':
       ports.push({ portType: 'can', portNumber: 1 });
       break;

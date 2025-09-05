@@ -23,9 +23,9 @@
 import * as Blockly from 'blockly/core';
 import { createFieldDropdown } from './FieldDropdown';
 
-export function createFieldNumberDropdown(min : number, max : number, precision : number, defaultVal : number): Blockly.Field {
+export function createFieldNumberDropdown(min: number, max: number, defaultVal: number): Blockly.Field {
   const items: string[] = [];
-  for (let i = min; i <= max; i += precision) {
+  for (let i = min; i <= max; i++) {
     items.push(i.toString());
   }
   const field = createFieldDropdown(items);
