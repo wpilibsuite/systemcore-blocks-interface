@@ -25,18 +25,39 @@ export class Item {
   }
 }
 
+// TODO(lizlooney): Use new toolboxItems.Sep() to create separators in other files.
+
 export class Sep extends Item {
   constructor() {
     super('sep');
   }
 }
 
+// TODO(lizlooney): Use new toolboxItems.Label() to create labels in other files.
+
 export class Label extends Item {
   text: string;
 
-  constructor(text: string) {
+  constructor(text: string, webClass?: string) {
     super('label');
     this.text = text;
+    if (webClass) {
+      (this as any)['web-class'] = webClass;
+    }
+  }
+}
+
+export class Button extends Item {
+  text: string;
+  callbackkey: string;
+
+  constructor(text: string, callbackkey: string, webClass?: string) {
+    super('button');
+    this.text = text;
+    this.callbackkey = callbackkey;
+    if (webClass) {
+      (this as any)['web-class'] = webClass;
+    }
   }
 }
 
@@ -68,22 +89,33 @@ export class Block extends Item {
   }
 }
 
-export type ContentsType = Sep | Label | Block | Category;
+export type ContentsType = Sep | Label | Button | Block | Category;
+
+export enum ExpandedState {
+  COLLAPSED,
+  EXPANDED,
+}
+
+// TODO(lizlooney): Use new toolboxItems.Category() to create categories in other files.
 
 export class Category extends Item  {
   /** The category name. */
   name: string;
+  expanded?: boolean;
   categorystyle?: string;
   custom?: string;
 
   /** The blocks for this category. */
   contents?: ContentsType[] = [];
 
-  constructor(name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {
+  constructor(name: string, contents: ContentsType[], expandedState?: ExpandedState, categorystyle?: string, custom?: string) {
     super('category');
     this.name = name;
     if (contents) {
       this.contents = contents;
+    }
+    if (expandedState === ExpandedState.EXPANDED) {
+      this.expanded = true;
     }
     if (categorystyle) {
       this.categorystyle = categorystyle;
@@ -97,14 +129,14 @@ export class Category extends Item  {
 export class PythonModuleCategory extends Category {
   moduleName: string;
 
-  constructor(moduleName: string, name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {
-    super(name, contents);
-    if (categorystyle) {
-      this.categorystyle = categorystyle;
-    }
-    if (custom) {
-      this.custom = custom;
-    }
+  constructor(
+      moduleName: string,
+      name: string,
+      contents: ContentsType[],
+      expandedState?: ExpandedState,
+      categorystyle?: string,
+      custom?: string) {
+    super(name, contents, expandedState, categorystyle, custom);
     this.moduleName = moduleName;
   }
 }
@@ -112,15 +144,14 @@ export class PythonModuleCategory extends Category {
 export class PythonClassCategory extends Category {
   className: string;
 
-  constructor(className: string, name: string, contents: ContentsType[]);
-  constructor(className: string, name: string, contents: ContentsType[], categorystyle?: string, custom?: string) {
-    super(name, contents);
-    if (categorystyle) {
-      this.categorystyle = categorystyle;
-    }
-    if (custom) {
-      this.custom = custom;
-    }
+  constructor(
+      className: string,
+      name: string,
+      contents: ContentsType[],
+      expandedState?: ExpandedState,
+      categorystyle?: string,
+      custom?: string) {
+    super(name, contents, expandedState, categorystyle, custom);
     this.className = className;
   }
 }

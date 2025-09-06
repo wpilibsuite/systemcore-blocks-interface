@@ -174,6 +174,7 @@ export class Editor {
   private clearBlocklyWorkspace() {
     if (this.bindedOnChange) {
       this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
+      this.bindedOnChange = null;
     }
     this.blocklyWorkspace.hideChaff();
     this.blocklyWorkspace.clear();

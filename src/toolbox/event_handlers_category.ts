@@ -96,16 +96,8 @@ class EventHandlersCategory {
 
     // Get the list of events from the robot.
     const eventsFromRobot = editor.getEventsFromRobot();
-    // Remove events if there is already a corresponding handler in the workspace.
     const eventHandlerBlocks = editor.getRobotEventHandlersAlreadyInWorkspace();
-    const eventIds: string[] = [];
-    eventHandlerBlocks.forEach(eventHandlerBlock => {
-      eventIds.push(eventHandlerBlock.getEventId());
-    });
-    const eventsToShow = eventsFromRobot.filter(event => {
-      return !eventIds.includes(event.eventId);
-    });
-    addRobotEventHandlerBlocks(eventsToShow, contents);
+    addRobotEventHandlerBlocks(eventsFromRobot, eventHandlerBlocks, contents);
 
     const toolboxInfo = {
       contents: contents,
@@ -129,17 +121,10 @@ class EventHandlersCategory {
     const mechanism = editor.getMechanism(this.mechanismInRobot);
     if (mechanism) {
       const eventsFromMechanism = editor.getEventsFromMechanism(mechanism);
-      // Remove events if there is already a corresponding handler in the workspace.
       const eventHandlerBlocks = editor.getMechanismEventHandlersAlreadyInWorkspace(
           this.mechanismInRobot);
-      const eventIds: string[] = [];
-      eventHandlerBlocks.forEach(eventHandlerBlock => {
-        eventIds.push(eventHandlerBlock.getEventId());
-      });
-      const eventsToShow = eventsFromMechanism.filter(event => {
-        return !eventIds.includes(event.eventId);
-      });
-      addMechanismEventHandlerBlocks(this.mechanismInRobot, eventsToShow, contents);
+      addMechanismEventHandlerBlocks(
+          this.mechanismInRobot, eventsFromMechanism, eventHandlerBlocks, contents);
       if (contents.length === 0) {
         const label : toolboxItems.Label = new toolboxItems.Label(Blockly.Msg['NO_MECHANISM_CONTENTS']);
         contents.push(label);
