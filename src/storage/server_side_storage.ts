@@ -24,7 +24,7 @@ import * as commonStorage from './common_storage';
 
 const API_BASE_URL = 'http://localhost:5001';
 
-async function isServerAvailable(): Promise<boolean> {
+export async function isServerAvailable(): Promise<boolean> {
   try {
     // Create a timeout promise
     const timeoutPromise = new Promise<never>((_, reject) => {
@@ -33,7 +33,7 @@ async function isServerAvailable(): Promise<boolean> {
     
     // Race between the fetch and timeout
     const response = await Promise.race([
-      fetch(`${API_BASE_URL}/`, { method: 'GET' }),
+      fetch(`${API_BASE_URL}/`),
       timeoutPromise
     ]);
     
@@ -44,7 +44,7 @@ async function isServerAvailable(): Promise<boolean> {
   }
 }
 
-class ServerSideStorage implements commonStorage.Storage {
+export class ServerSideStorage implements commonStorage.Storage {
 
   async saveEntry(entryKey: string, entryValue: string): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/entries/${encodeURIComponent(entryKey)}`, {
@@ -86,13 +86,6 @@ class ServerSideStorage implements commonStorage.Storage {
   }
 
   async rename(oldPath: string, newPath: string): Promise<void> {
-    if (oldPath.endsWith('/')) {
-      return this.renameDirectory(oldPath, newPath);
-    }
-    return this.renameFile(oldPath, newPath);
-  }
-
-  private async renameDirectory(oldPath: string, newPath: string): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/storage/rename`, {
       method: 'POST',
       headers: {
@@ -102,21 +95,7 @@ class ServerSideStorage implements commonStorage.Storage {
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to rename directory: ${response.statusText}`);
-    }
-  }
-
-  private async renameFile(oldPath: string, newPath: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/storage/rename`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ old_path: oldPath, new_path: newPath }),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to rename file: ${response.statusText}`);
+      throw new Error(`Failed to rename: ${response.statusText}`);
     }
   }
 
@@ -149,34 +128,12 @@ class ServerSideStorage implements commonStorage.Storage {
   }
 
   async delete(path: string): Promise<void> {
-    if (path.endsWith('/')) {
-      return this.deleteDirectory(path);
-    }
-    return this.deleteFile(path);
-  }
-
-  private async deleteDirectory(path: string): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/storage/${encodeURIComponent(path)}`, {
       method: 'DELETE',
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to delete directory: ${response.statusText}`);
-    }
-  }
-
-  private async deleteFile(filePath: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/storage/${encodeURIComponent(filePath)}`, {
-      method: 'DELETE',
-    });
-    
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error(`File not found: ${filePath}`);
-      }
-      throw new Error(`Failed to delete file: ${response.statusText}`);
+      throw new Error(`Failed to delete: ${response.statusText}`);
     }
   }
 }
-
-export { ServerSideStorage, isServerAvailable };

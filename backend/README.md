@@ -23,19 +23,17 @@ A Flask-based REST API for providing storage capabilities (key-value pairs and f
 - `DELETE /storage/<path>` - Delete file or directory
 - `POST /storage/rename` - Rename file or directory
 
+## Setup
+    1. cd <your repo>/backend
+    2. python3.12 -m venv ./venv
+    3. source ./venv/bin/activate
+    4. python3.12 -m pip install -r requirements.txt
+    5. deactivate
+
 ## Running the Application
-
-1. Install dependencies:
-   ```bash
-   pip install flask flask-restful flask-sqlalchemy
-   ```
-
-2. Run the application:
-   ```bash
-   python main.py
-   ```
-
-3. The API will be available at `http://localhost:5001`
+    1. source ./venv/bin/activate
+    2. python main.py
+    3. The API will be available at `http://localhost:5001`
 
 ## Example Usage
 
