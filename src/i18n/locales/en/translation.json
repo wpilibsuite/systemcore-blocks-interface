@@ -45,6 +45,7 @@
         "WHEN": "when",
         "PARAMETER": "parameter",
         "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "Parameters can only go in their method's block",
+        "EVENT_HANDLER_ALREADY_ON_WORKSPACE": "This event handler is already on the workspace.",
         "COMPONENTS": "Components",
         "EVENTS": "Events",
         "EVALUATE_BUT_IGNORE_RESULT": "evaluate but ignore result",

@@ -23,6 +23,7 @@
 import * as Blockly from 'blockly';
 import {Order} from 'blockly/python';
 
+import type { MessageInstance } from 'antd/es/message/interface';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldFlydown } from '../fields/field_flydown';
@@ -33,6 +34,9 @@ import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 
 export const BLOCK_NAME = 'mrc_event_handler';
+
+const BUTTON_CALLBACK_KEY = 'EVENT_HANDLER_ALREADY_ON_WORKSPACE';
+const BUTTON_STYLE = 'eventHandlerButtonStyle';
 
 const FIELD_SENDER = 'SENDER';
 const FIELD_EVENT_NAME = 'EVENT_NAME';
@@ -48,6 +52,7 @@ export interface Parameter {
   type?: string;
 }
 
+const SENDER_VALUE_ROBOT = 'robot';
 const WARNING_ID_EVENT_CHANGED = 'event changed';
 
 export type EventHandlerBlock = Blockly.Block & EventHandlerMixin & Blockly.BlockSvg;
@@ -405,9 +410,22 @@ function generateRegisterEventHandler(
 
 export function addRobotEventHandlerBlocks(
     events: storageModuleContent.Event[],
+    eventHandlerBlocks: EventHandlerBlock[],
     contents: toolboxItems.ContentsType[]) {
+  // Collect the ids of events for which there is already an event handler.
+  const eventIds: string[] = [];
+  eventHandlerBlocks.forEach(eventHandlerBlock => {
+    eventIds.push(eventHandlerBlock.getEventId());
+  });
   events.forEach(event => {
-    contents.push(createRobotEventHandlerBlock(event));
+    if (eventIds.includes(event.eventId)) {
+      // If there is already an event handler for this event, put a button in the toolbox.
+      const text = '\u00A0\u00A0when\u00A0\u00A0' + SENDER_VALUE_ROBOT + '\u00A0\u00A0' + event.name + '\u00A0\u00A0';
+      const button = new toolboxItems.Button(text, BUTTON_CALLBACK_KEY, BUTTON_STYLE);
+      contents.push(button);
+    } else {
+      contents.push(createRobotEventHandlerBlock(event));
+    }
   });
 }
 
@@ -425,7 +443,7 @@ function createRobotEventHandlerBlock(
     });
   });
   const fields: {[key: string]: any} = {};
-  fields[FIELD_SENDER] = 'robot';
+  fields[FIELD_SENDER] = SENDER_VALUE_ROBOT;
   fields[FIELD_EVENT_NAME] = event.name;
   const inputs: {[key: string]: any} = {};
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
@@ -434,9 +452,22 @@ function createRobotEventHandlerBlock(
 export function addMechanismEventHandlerBlocks(
     mechanismInRobot: storageModuleContent.MechanismInRobot,
     events: storageModuleContent.Event[],
+    eventHandlerBlocks: EventHandlerBlock[],
     contents: toolboxItems.ContentsType[]) {
+  // Collect the ids of events for which there is already an event handler.
+  const eventIds: string[] = [];
+  eventHandlerBlocks.forEach(eventHandlerBlock => {
+    eventIds.push(eventHandlerBlock.getEventId());
+  });
   events.forEach(event => {
-    contents.push(createMechanismEventHandlerBlock(mechanismInRobot, event));
+    if (eventIds.includes(event.eventId)) {
+      // If there is already an event handler for this event, put a button in the toolbox.
+      const text = 'when ' + mechanismInRobot.name + ' ' + event.name;
+      const button = new toolboxItems.Button(text, BUTTON_CALLBACK_KEY, BUTTON_STYLE);
+      contents.push(button);
+    } else {
+      contents.push(createMechanismEventHandlerBlock(mechanismInRobot, event));
+    }
   });
 }
 
@@ -500,5 +531,11 @@ export function renameMechanismName(workspace: Blockly.Workspace, mechanismId: s
   getMechanismEventHandlerBlocks(workspace, mechanismId, eventHandlerBlocks);
   eventHandlerBlocks.forEach(block => {
     (block as EventHandlerBlock).renameMechanismName(mechanismId, newName);
+  });
+}
+
+export function registerToolboxButton(workspace: Blockly.WorkspaceSvg, messageApi: MessageInstance) {
+  workspace.registerButtonCallback(BUTTON_CALLBACK_KEY, function (_button) {
+    messageApi.info(Blockly.Msg.EVENT_HANDLER_ALREADY_ON_WORKSPACE);
   });
 }
