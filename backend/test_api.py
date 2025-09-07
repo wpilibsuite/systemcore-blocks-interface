@@ -57,6 +57,12 @@ class TestStorageAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIsInstance(data, (list, dict))
+
+        # Make sure directory shows up
+        response = requests.get(f"{self.base_url}/storage/")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIsInstance(data, (list, dict))
     
     def test_storage_rename_operation(self):
         """Test storage rename endpoint"""
