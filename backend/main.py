@@ -89,22 +89,40 @@ class StorageEntryResource(Resource):
 class StorageResource(Resource):
     def get(self, path):
         """Get file content or list directory based on path"""
-        if path.endswith('/'):
+        # Handle empty path as root directory
+        if not path:
+            path = ""
+        
+        if path.endswith('/') or path == "":
             # List directory
-            # Find all files that start with this path
-            files = StorageFile.query.filter(StorageFile.file_path.like(f'{path}%')).all()
-            
-            # Extract immediate children (not nested)
-            children = set()
-            for file in files:
-                relative_path = file.file_path[len(path):]
-                if '/' in relative_path:
-                    # It's in a subdirectory, add the directory name
-                    dir_name = relative_path.split('/')[0] + '/'
-                    children.add(dir_name)
-                else:
-                    # It's a direct child file
-                    children.add(relative_path)
+            # For root directory, find all files
+            if path == "":
+                files = StorageFile.query.all()
+                # Extract top-level files and directories
+                children = set()
+                for file in files:
+                    if '/' in file.file_path:
+                        # It's in a subdirectory, add the directory name
+                        dir_name = file.file_path.split('/')[0] + '/'
+                        children.add(dir_name)
+                    else:
+                        # It's a top-level file
+                        children.add(file.file_path)
+            else:
+                # Find all files that start with this path
+                files = StorageFile.query.filter(StorageFile.file_path.like(f'{path}%')).all()
+                
+                # Extract immediate children (not nested)
+                children = set()
+                for file in files:
+                    relative_path = file.file_path[len(path):]
+                    if '/' in relative_path:
+                        # It's in a subdirectory, add the directory name
+                        dir_name = relative_path.split('/')[0] + '/'
+                        children.add(dir_name)
+                    else:
+                        # It's a direct child file
+                        children.add(relative_path)
             
             return {'files': sorted(list(children))}
         else:
@@ -189,10 +207,28 @@ class StorageFileRenameResource(Resource):
             db.session.rollback()
             return {'error': 'Failed to rename'}, 500
 
+class StorageRootResource(Resource):
+    def get(self):
+        """List all top-level files and directories"""
+        files = StorageFile.query.all()
+        # Extract top-level files and directories
+        children = set()
+        for file in files:
+            if '/' in file.file_path:
+                # It's in a subdirectory, add the directory name
+                dir_name = file.file_path.split('/')[0] + '/'
+                children.add(dir_name)
+            else:
+                # It's a top-level file
+                children.add(file.file_path)
+        
+        return {'files': sorted(list(children))}
+
 # Register API routes
 # Storage API routes (more specific routes first)
 api.add_resource(StorageEntryResource, '/entries/<path:entry_key>')
 api.add_resource(StorageFileRenameResource, '/storage/rename')
+api.add_resource(StorageRootResource, '/storage/')
 api.add_resource(StorageResource, '/storage/<path:path>')
 
 @app.route('/')
