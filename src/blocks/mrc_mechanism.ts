@@ -205,8 +205,9 @@ const MECHANISM = {
       }
 
       if (foundMechanism) {
-        const components: storageModuleContent.Component[] = [];
-        components.push(...editor.getAllComponentsFromMechanism(foundMechanism));
+        // Here we need all the components (regular and private) from the mechanism because we need
+        // to create port parameters for all the components.
+        const components = editor.getAllComponentsFromMechanism(foundMechanism);
 
         // If the mechanism class name has changed, update this blcok.
         if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {

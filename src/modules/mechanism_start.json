@@ -5,7 +5,7 @@
             {
                 "type": "mrc_class_method_def",
                 "x": 10,
-                "y": 110,
+                "y": 150,
                 "deletable": false,
                 "editable": false,
                 "extraState": {
@@ -23,7 +23,7 @@
             {
                 "type": "mrc_class_method_def",
                 "x": 10,
-                "y": 190,
+                "y": 230,
                 "deletable": false,
                 "editable": false,
                 "extraState": {

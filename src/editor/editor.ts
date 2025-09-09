@@ -246,6 +246,7 @@ export class Editor {
     const blocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
     const mechanisms: storageModuleContent.MechanismInRobot[] = this.getMechanismsFromWorkspace();
     const components: storageModuleContent.Component[] = this.getComponentsFromWorkspace();
+    const privateComponents: storageModuleContent.Component[] = this.getPrivateComponentsFromWorkspace();
     const events: storageModuleContent.Event[] = this.getEventsFromWorkspace();
     const methods: storageModuleContent.Method[] = (
         this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
@@ -253,10 +254,10 @@ export class Editor {
         ? this.getMethodsForOutsideFromWorkspace()
         : [];
     return storageModuleContent.makeModuleContentText(
-      this.currentModule, blocks, mechanisms, components, events, methods);
+      this.currentModule, blocks, mechanisms, components, privateComponents, events, methods);
   }
 
-  public getMechanismsFromWorkspace(): storageModuleContent.MechanismInRobot[] {
+  private getMechanismsFromWorkspace(): storageModuleContent.MechanismInRobot[] {
     const mechanisms: storageModuleContent.MechanismInRobot[] = [];
     if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       mechanismComponentHolder.getMechanisms(this.blocklyWorkspace, mechanisms);
@@ -264,11 +265,19 @@ export class Editor {
     return mechanisms;
   }
 
-  public getComponentsFromWorkspace(): storageModuleContent.Component[] {
+  private getComponentsFromWorkspace(): storageModuleContent.Component[] {
     const components: storageModuleContent.Component[] = [];
     if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
         this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getComponents(this.blocklyWorkspace, components);
+    }
+    return components;
+  }
+
+  private getPrivateComponentsFromWorkspace(): storageModuleContent.Component[] {
+    const components: storageModuleContent.Component[] = [];
+    if (this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
+      mechanismComponentHolder.getPrivateComponents(this.blocklyWorkspace, components);
     }
     return components;
   }
@@ -288,7 +297,7 @@ export class Editor {
     return methods;
   }
 
-  public getMethodsForOutsideFromWorkspace(): storageModuleContent.Method[] {
+  private getMethodsForOutsideFromWorkspace(): storageModuleContent.Method[] {
     const methods: storageModuleContent.Method[] = [];
     classMethodDef.getMethodsForOutside(this.blocklyWorkspace, methods);
     return methods;
@@ -433,24 +442,12 @@ export class Editor {
       return this.getAllComponentsFromWorkspace();
     }
     if (mechanism.className in this.mechanismClassNameToModuleContent) {
-      // For saved mechanisms, we need to reconstruct all components from the blocks
-      // since only public components are saved in the module content
       const moduleContent = this.mechanismClassNameToModuleContent[mechanism.className];
-      const blocks = moduleContent.getBlocks();
-      
-      // Create a temporary workspace to load the mechanism's blocks
-      const tempWorkspace = new Blockly.Workspace();
-      try {
-        Blockly.serialization.workspaces.load(blocks, tempWorkspace);
-        
-        // Extract all components (public and private) from the temporary workspace
-        const allComponents: storageModuleContent.Component[] = [];
-        mechanismComponentHolder.getAllComponents(tempWorkspace, allComponents);
-        
-        return allComponents;
-      } finally {
-        tempWorkspace.dispose();
-      }
+      const allComponents: storageModuleContent.Component[] = [
+        ...moduleContent.getComponents(),
+        ...moduleContent.getPrivateComponents(),
+      ]
+      return allComponents;
     }
     throw new Error('getAllComponentsFromMechanism: mechanism not found: ' + mechanism.className);
   }
