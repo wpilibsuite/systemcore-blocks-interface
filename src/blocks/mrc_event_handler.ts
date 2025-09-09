@@ -36,7 +36,7 @@ import * as storageModuleContent from '../storage/module_content';
 export const BLOCK_NAME = 'mrc_event_handler';
 
 const BUTTON_CALLBACK_KEY = 'EVENT_HANDLER_ALREADY_ON_WORKSPACE';
-const BUTTON_STYLE = 'eventHandlerButtonStyle';
+const BUTTON_STYLE_PREFIX = 'eventHandlerButtonStyle_';
 
 const FIELD_SENDER = 'SENDER';
 const FIELD_EVENT_NAME = 'EVENT_NAME';
@@ -421,9 +421,7 @@ export function addRobotEventHandlerBlocks(
   events.forEach(event => {
     if (eventIds.includes(event.eventId)) {
       // If there is already an event handler for this event, put a button in the toolbox.
-      const text = makeButtonText(workspace, SENDER_VALUE_ROBOT, event.name);
-      const button = new toolboxItems.Button(text, BUTTON_CALLBACK_KEY, BUTTON_STYLE);
-      contents.push(button);
+      contents.push(createButton(workspace, SENDER_VALUE_ROBOT, event.name));
     } else {
       contents.push(createRobotEventHandlerBlock(event));
     }
@@ -464,23 +462,22 @@ export function addMechanismEventHandlerBlocks(
   events.forEach(event => {
     if (eventIds.includes(event.eventId)) {
       // If there is already an event handler for this event, put a button in the toolbox.
-      const text = makeButtonText(workspace, mechanismInRobot.name, event.name);
-      const button = new toolboxItems.Button(text, BUTTON_CALLBACK_KEY, BUTTON_STYLE);
-      contents.push(button);
+      contents.push(createButton(workspace, mechanismInRobot.name, event.name));
     } else {
       contents.push(createMechanismEventHandlerBlock(mechanismInRobot, event));
     }
   });
 }
 
-function makeButtonText(
-    workspace: Blockly.WorkspaceSvg, senderName: string, eventName: string): string {
-  // Add non-breakable spaces so it looks more like an event handler block.
+function createButton(
+    workspace: Blockly.WorkspaceSvg, senderName: string, eventName: string): toolboxItems.Button {
+  // Use non-breakable spaces so it looks more like an event handler block.
   const spaces = '\u00A0\u00A0';
-  if (workspace.RTL) {
-    return spaces + eventName + spaces + senderName + spaces + Blockly.Msg.WHEN + spaces;
-  }
-  return spaces + Blockly.Msg.WHEN + spaces + senderName + spaces + eventName + spaces;
+  const text = workspace.RTL
+      ? (spaces + eventName + spaces + senderName + spaces + Blockly.Msg.WHEN + spaces)
+      : (spaces + Blockly.Msg.WHEN + spaces + senderName + spaces + eventName + spaces);
+  const style = BUTTON_STYLE_PREFIX + workspace.getTheme().name;
+  return new toolboxItems.Button(text, BUTTON_CALLBACK_KEY, style);
 }
 
 function createMechanismEventHandlerBlock(

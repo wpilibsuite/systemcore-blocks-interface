@@ -62,7 +62,3 @@ code {
 .blocklyToolboxContents {
   scroll-behavior: smooth !important;
 }
-
-.eventHandlerButtonStyle {
-    fill: #995ba5;
-}

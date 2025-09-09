@@ -4,7 +4,7 @@ import DeuteranopiaTheme from '@blockly/theme-deuteranopia';
 import TritanopiaTheme from '@blockly/theme-tritanopia';
 import HighContrastTheme from '@blockly/theme-highcontrast';
 
-import { add_mrc_styles } from './styles';
+import { add_mrc_styles, MRC_STYLE_EVENT_HANDLER } from './styles';
 
 export const DARK_THEME_NAME = 'mrc_theme_dark';
 export const LIGHT_THEME_NAME = 'mrc_theme_light';
@@ -39,7 +39,7 @@ const create_theme = function (name: string, base: Blockly.Theme, dark: boolean 
 };
 
 const create_themes = function (): Blockly.Theme[] {
-    return [
+    const themes: Blockly.Theme[] = [
         create_theme(DARK_THEME_NAME, Blockly.Themes.Classic, true),
         create_theme(LIGHT_THEME_NAME, Blockly.Themes.Classic),
         create_theme(DEUTERANOPIA_THEME_NAME, DeuteranopiaTheme),
@@ -49,6 +49,30 @@ const create_themes = function (): Blockly.Theme[] {
         create_theme(TRITANOPIA_DARK_THEME_NAME, TritanopiaTheme, true),
         create_theme(HIGHCONTRAST_DARK_THEME_NAME, HighContrastTheme, true),
     ];
+
+    // Create CSS classes for event handler buttons, which are placed in the toolbox when an event
+    // handler already exists on the workspace.
+    let cssClasses = '';
+    themes.forEach(theme => {
+        let fill = theme.blockStyles[MRC_STYLE_EVENT_HANDLER].colourPrimary;
+        if (!fill.startsWith('#')) {
+            try {
+                fill = Blockly.utils.colour.hueToHex(Number(fill));
+            } catch (e) {
+                console.error(
+                    'Unable to determine event handler block color for theme ' + theme.name);
+            }
+        }
+        cssClasses +=
+            '.eventHandlerButtonStyle_' + theme.name + ' {\n' +
+            '    fill: ' + fill + ';\n' +
+            '}\n';
+    });
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = cssClasses;
+    document.head.appendChild(styleElement);
+
+    return themes;
 };
 
 export const themes = create_themes();
