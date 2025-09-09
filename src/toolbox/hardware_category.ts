@@ -78,6 +78,8 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
     if (mechanisms.length) {
       const mechanismBlocks: toolboxItems.Block[] = [];
       mechanisms.forEach(mechanism => {
+        // Here we need all the components (regular and private) from the mechanism because we need
+        // to create port parameters for all the components.
         const components = editor.getAllComponentsFromMechanism(mechanism);
         mechanismBlocks.push(createMechanismBlock(mechanism, components));
       });
@@ -110,11 +112,13 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
         contents: mechanismMethodBlocks,
       });
 
-      // Get the public components from the mechanism and add the blocks for calling the component functions.
+      // Get the public components from the mechanism and add the blocks for calling the
+      // component functions.
       const componentsFromMechanism = editor.getComponentsFromMechanism(mechanism);
       if (componentsFromMechanism.length > 0) {
         const componentBlocks: toolboxItems.ContentsType[] = [];
         componentsFromMechanism.forEach(component => {
+          // Get the blocks for this specific component.
           componentBlocks.push({
             kind: 'category',
             name: component.name,
@@ -202,12 +206,13 @@ function getComponentsCategory(
     contents: getAllPossibleComponents(moduleType),
   });
 
-  // Get components from the current workspace.
-  const componentsToShow = moduleType === storageModule.ModuleType.MECHANISM 
-    ? editor.getAllComponentsFromWorkspace() // Show all components (including private) when editing mechanisms
-    : editor.getComponentsFromWorkspace();   // Show only regular components when editing robots
-  
-  componentsToShow.forEach(component => {
+  // Get all (regular and private) components from the current workspace.
+  // For a robot module, we can only have regular components. For a mechanism module, we can have
+  // regular and/or private components. Rather than checking what the current module type is, it's
+  // simpler to just call getAllComponentsFromWorkspace for both robot and mechanism modules. Since
+  // robot modules don't have private components, getAllComponentsFromWorkspace is equivalent to
+  // getComponentsFromWorkspace for a robot module.
+  editor.getAllComponentsFromWorkspace().forEach(component => {
     // Get the blocks for this specific component
     contents.push({
       kind: 'category',
