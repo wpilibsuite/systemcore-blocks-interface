@@ -97,7 +97,7 @@ class EventHandlersCategory {
     // Get the list of events from the robot.
     const eventsFromRobot = editor.getEventsFromRobot();
     const eventHandlerBlocks = editor.getRobotEventHandlersAlreadyInWorkspace();
-    addRobotEventHandlerBlocks(eventsFromRobot, eventHandlerBlocks, contents);
+    addRobotEventHandlerBlocks(workspace, eventsFromRobot, eventHandlerBlocks, contents);
 
     const toolboxInfo = {
       contents: contents,
@@ -124,7 +124,7 @@ class EventHandlersCategory {
       const eventHandlerBlocks = editor.getMechanismEventHandlersAlreadyInWorkspace(
           this.mechanismInRobot);
       addMechanismEventHandlerBlocks(
-          this.mechanismInRobot, eventsFromMechanism, eventHandlerBlocks, contents);
+          workspace, this.mechanismInRobot, eventsFromMechanism, eventHandlerBlocks, contents);
       if (contents.length === 0) {
         const label : toolboxItems.Label = new toolboxItems.Label(Blockly.Msg['NO_MECHANISM_CONTENTS']);
         contents.push(label);
