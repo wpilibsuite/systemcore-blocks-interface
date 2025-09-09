@@ -47,6 +47,7 @@
         "PARAMETER": "parámetro",
         "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "Los parámetros solo pueden ir en el bloque de su método",
         "COMPONENTS": "Componentes",
+        "PRIVATE_COMPONENTS": "Componentes Privados",
         "EVENTS": "Eventos",
         "EVALUATE_BUT_IGNORE_RESULT": "evaluar pero ignorar resultado",
         "NONE": "None",
@@ -62,7 +63,9 @@
             "OPMODE_TYPE": "Qué tipo de OpMode es este",
             "OPMODE_ENABLED": "Si el OpMode se muestra en la Estación del Conductor",
             "OPMODE_NAME": "El nombre mostrado en la Estación del Conductor. Si está en blanco usará el nombre de la clase.",
-            "OPMODE_GROUP": "Un grupo opcional para agrupar OpModes en la Estación del Conductor"
+            "OPMODE_GROUP": "Un grupo opcional para agrupar OpModes en la Estación del Conductor",
+            "COMPONENTS": "Estos componentes son visibles en este mecanismo, el robot y todos los opmodes.",
+            "PRIVATE_COMPONENTS": "Estos componentes no serán visibles en el robot o en los opmodes. Solo son accesibles dentro de este mecanismo."
         },
         "CATEGORY": {
             "LISTS": "Listas",
