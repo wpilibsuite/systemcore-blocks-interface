@@ -45,6 +45,7 @@
         "WHEN": "כאשר",
         "PARAMETER": "פרמטר",
         "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "פרמטרים יכולים להיכנס רק בבלוק השיטה שלהם",
+        "EVENT_HANDLER_ALREADY_ON_WORKSPACE": "מטפל אירועים זה כבר נמצא בסביבת העבודה.",
         "COMPONENTS": "רכיבים",
         "PRIVATE_COMPONENTS": "רכיבים פרטיים",
         "EVENTS": "אירועים",
