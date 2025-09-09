@@ -20,8 +20,13 @@
  */
 
 import * as semver from 'semver';
+import * as Blockly from 'blockly/core';
 
+import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 import * as commonStorage from './common_storage';
+import * as storageModule from './module';
+import * as storageModuleContent from './module_content';
+import * as storageNames from './names';
 import * as storageProject from './project';
 
 
@@ -30,12 +35,60 @@ export async function upgradeProjectIfNecessary(
   const projectInfo = await storageProject.fetchProjectInfo(storage, projectName);
   if (semver.lt(projectInfo.version, storageProject.CURRENT_VERSION)) {
     switch (projectInfo.version) {
+      // @ts-ignore
       case '0.0.0':
-        // Project was saved without a project.info.json file.
-        // Nothing needs to be done to upgrade to '0.0.1';
-        projectInfo.version = '0.0.1';
-        break;
+        upgradeFrom_000_to_001(storage, projectName, projectInfo)
+        // Intentional fallthrough
+      case '0.0.1':
+        upgradeFrom_001_to_002(storage, projectName, projectInfo);
     }
     await storageProject.saveProjectInfo(storage, projectName);
   }
+}
+
+async function upgradeFrom_000_to_001(
+    _storage: commonStorage.Storage,
+    _projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // Project was saved without a project.info.json file.
+  // Nothing needs to be done to upgrade to '0.0.1';
+  projectInfo.version = '0.0.1';
+}
+
+async function upgradeFrom_001_to_002(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // Modules were saved without private components.
+  // The Robot's mrc_mechanism_component_holder block was saved without hidePrivateComponents.
+  const projectFileNames: string[] = await storage.list(
+    storageNames.makeProjectDirectoryPath(projectName));
+  for (const projectFileName of projectFileNames) {
+    const modulePath = storageNames.makeFilePath(projectName, projectFileName);
+    let moduleContentText = await storage.fetchFileContentText(modulePath);
+
+    // Add private components to the module content.
+    moduleContentText = storageModuleContent.addPrivateComponents(moduleContentText);
+
+    if (storageNames.getModuleType(modulePath) === storageModule.ModuleType.ROBOT) {
+      // If this module is the robot, hide the private components part of the
+      // mrc_mechanism_component_holder block.
+      const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
+      let blocks = moduleContent.getBlocks();
+      // Create a temporary workspace to upgrade the blocks.
+      const headlessWorkspace = new Blockly.Workspace();
+      try {
+        Blockly.serialization.workspaces.load(blocks, headlessWorkspace);
+        mechanismComponentHolder.hidePrivateComponents(headlessWorkspace);
+        blocks = Blockly.serialization.workspaces.save(headlessWorkspace);
+      } finally {
+        headlessWorkspace.dispose();
+      }
+      moduleContent.setBlocks(blocks);
+      moduleContentText = moduleContent.getModuleContentText();
+    }
+
+    await storage.saveFile(modulePath, moduleContentText);
+  }
+  projectInfo.version = '0.0.2';
 }

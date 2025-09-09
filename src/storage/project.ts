@@ -37,9 +37,9 @@ export type Project = {
 };
 
 const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.1';
+export const CURRENT_VERSION = '0.0.2';
 
-type ProjectInfo = {
+export type ProjectInfo = {
   version: string,
 };
 

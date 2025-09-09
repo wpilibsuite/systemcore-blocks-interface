@@ -246,6 +246,7 @@ export class Editor {
     const blocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
     const mechanisms: storageModuleContent.MechanismInRobot[] = this.getMechanismsFromWorkspace();
     const components: storageModuleContent.Component[] = this.getComponentsFromWorkspace();
+    const privateComponents: storageModuleContent.Component[] = this.getPrivateComponentsFromWorkspace();
     const events: storageModuleContent.Event[] = this.getEventsFromWorkspace();
     const methods: storageModuleContent.Method[] = (
         this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
@@ -253,10 +254,10 @@ export class Editor {
         ? this.getMethodsForOutsideFromWorkspace()
         : [];
     return storageModuleContent.makeModuleContentText(
-      this.currentModule, blocks, mechanisms, components, events, methods);
+      this.currentModule, blocks, mechanisms, components, privateComponents, events, methods);
   }
 
-  public getMechanismsFromWorkspace(): storageModuleContent.MechanismInRobot[] {
+  private getMechanismsFromWorkspace(): storageModuleContent.MechanismInRobot[] {
     const mechanisms: storageModuleContent.MechanismInRobot[] = [];
     if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
       mechanismComponentHolder.getMechanisms(this.blocklyWorkspace, mechanisms);
@@ -264,11 +265,28 @@ export class Editor {
     return mechanisms;
   }
 
-  public getComponentsFromWorkspace(): storageModuleContent.Component[] {
+  private getComponentsFromWorkspace(): storageModuleContent.Component[] {
     const components: storageModuleContent.Component[] = [];
     if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
         this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getComponents(this.blocklyWorkspace, components);
+    }
+    return components;
+  }
+
+  private getPrivateComponentsFromWorkspace(): storageModuleContent.Component[] {
+    const components: storageModuleContent.Component[] = [];
+    if (this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
+      mechanismComponentHolder.getPrivateComponents(this.blocklyWorkspace, components);
+    }
+    return components;
+  }
+
+  public getAllComponentsFromWorkspace(): storageModuleContent.Component[] {
+    const components: storageModuleContent.Component[] = [];
+    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
+        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
+      mechanismComponentHolder.getAllComponents(this.blocklyWorkspace, components);
     }
     return components;
   }
@@ -279,7 +297,7 @@ export class Editor {
     return methods;
   }
 
-  public getMethodsForOutsideFromWorkspace(): storageModuleContent.Method[] {
+  private getMethodsForOutsideFromWorkspace(): storageModuleContent.Method[] {
     const methods: storageModuleContent.Method[] = [];
     classMethodDef.getMethodsForOutside(this.blocklyWorkspace, methods);
     return methods;
@@ -413,6 +431,25 @@ export class Editor {
       return this.mechanismClassNameToModuleContent[mechanism.className].getComponents();
     }
     throw new Error('getComponentsFromMechanism: mechanism not found: ' + mechanism.className);
+  }
+
+  /**
+   * Returns ALL components (including private components) defined in the given mechanism.
+   * This is used when creating mechanism blocks that need all components for port parameters.
+   */
+  public getAllComponentsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Component[] {
+    if (this.currentModule?.modulePath === mechanism.modulePath) {
+      return this.getAllComponentsFromWorkspace();
+    }
+    if (mechanism.className in this.mechanismClassNameToModuleContent) {
+      const moduleContent = this.mechanismClassNameToModuleContent[mechanism.className];
+      const allComponents: storageModuleContent.Component[] = [
+        ...moduleContent.getComponents(),
+        ...moduleContent.getPrivateComponents(),
+      ]
+      return allComponents;
+    }
+    throw new Error('getAllComponentsFromMechanism: mechanism not found: ' + mechanism.className);
   }
 
   /**

@@ -60,9 +60,10 @@ export type Event = {
 };
 
 function startingBlocksToModuleContentText(
-    module: storageModule.Module, startingBlocks: { [key: string]: any }): string {
+    module: storageModule.Module, startingBlocks: {[key: string]: any}): string {
   const mechanisms: MechanismInRobot[] = [];
   const components: Component[] = [];
+  const privateComponents: Component[] = [];
   const events: Event[] = [];
   const methods: Method[] = [];
   return makeModuleContentText(
@@ -70,6 +71,7 @@ function startingBlocksToModuleContentText(
       startingBlocks,
       mechanisms,
       components,
+      privateComponents,
       events,
       methods);
 }
@@ -125,9 +127,10 @@ export function newOpModeContent(projectName: string, opModeClassName: string): 
  */
 export function makeModuleContentText(
     module: storageModule.Module,
-    blocks: { [key: string]: any },
+    blocks: {[key: string]: any},
     mechanisms: MechanismInRobot[],
     components: Component[],
+    privateComponents: Component[],
     events: Event[],
     methods: Method[]): string {
   if (!module.moduleId) {
@@ -139,6 +142,7 @@ export function makeModuleContentText(
       blocks,
       mechanisms,
       components,
+      privateComponents,
       events,
       methods);
   return moduleContent.getModuleContentText();
@@ -151,6 +155,7 @@ export function parseModuleContentText(moduleContentText: string): ModuleContent
       !('blocks' in parsedContent) ||
       !('mechanisms' in parsedContent) ||
       !('components' in parsedContent) ||
+      !('privateComponents' in parsedContent) ||
       !('events' in parsedContent) ||
       !('methods' in parsedContent)) {
     throw new Error('Module content text is not valid.');
@@ -161,6 +166,7 @@ export function parseModuleContentText(moduleContentText: string): ModuleContent
       parsedContent.blocks,
       parsedContent.mechanisms,
       parsedContent.components,
+      parsedContent.privateComponents,
       parsedContent.events,
       parsedContent.methods);
 }
@@ -169,9 +175,10 @@ export class ModuleContent {
   constructor(
       private moduleType: storageModule.ModuleType,
       private moduleId: string,
-      private blocks : { [key: string]: any },
+      private blocks : {[key: string]: any},
       private mechanisms: MechanismInRobot[],
       private components: Component[],
+      private privateComponents: Component[],
       private events: Event[],
       private methods: Method[]) {
   }
@@ -188,8 +195,12 @@ export class ModuleContent {
     return this.moduleId;
   }
 
-  getBlocks(): { [key: string]: any } {
+  getBlocks(): {[key: string]: any} {
     return this.blocks;
+  }
+
+  setBlocks(blocks: {[key: string]: any}): void {
+    this.blocks = blocks;
   }
 
   getMechanisms(): MechanismInRobot[] {
@@ -198,6 +209,10 @@ export class ModuleContent {
 
   getComponents(): Component[] {
     return this.components;
+  }
+
+  getPrivateComponents(): Component[] {
+    return this.privateComponents;
   }
 
   getEvents(): Event[] {
@@ -251,4 +266,16 @@ export class ModuleContent {
       workspace.dispose();
     }
   }
+}
+
+/**
+ * Add privateComponents field.
+ * This function should only called when upgrading old projects.
+ */
+export function addPrivateComponents(moduleContentText: string): string {
+  const parsedContent = JSON.parse(moduleContentText);
+  if (!('privateComponents' in parsedContent)) {
+    parsedContent.privateComponents = [];
+  }
+  return JSON.stringify(parsedContent, null, 2);
 }
