@@ -32,33 +32,29 @@ import {
     addInstanceMechanismBlocks } from '../blocks/mrc_call_python_function';
 import { Editor } from '../editor/editor';
 
-export function getHardwareCategory(
-    editor: Editor): toolboxItems.Category {
-
+export function getHardwareCategory(editor: Editor): toolboxItems.Category {
   const moduleType = editor.getCurrentModuleType();
   switch (moduleType) {
     case storageModule.ModuleType.ROBOT:
-      return {
-        kind: 'category',
-        name: Blockly.Msg['MRC_CATEGORY_HARDWARE'],
-        contents: [
-          getRobotMechanismsCategory(editor),
-          getComponentsCategory(editor, moduleType),
-        ],
-      };
+      return new toolboxItems.Category(
+          Blockly.Msg['MRC_CATEGORY_HARDWARE'],
+          [
+            getRobotMechanismsCategory(editor),
+            getComponentsCategory(editor, moduleType),
+          ],
+          toolboxItems.ExpandedState.EXPANDED);
     case storageModule.ModuleType.MECHANISM:
       return getComponentsCategory(editor, moduleType);
     case storageModule.ModuleType.OPMODE:
-      return {
-        kind: 'category',
-        name: Blockly.Msg['MRC_CATEGORY_ROBOT'],
-        contents: [
-          getRobotMechanismsCategory(editor),
-          getRobotComponentsCategory(editor),
-          getRobotMethodsCategory(editor),
-          getRobotEventHandlersCategory(editor),
-        ],
-      };
+      return new toolboxItems.Category(
+          Blockly.Msg['MRC_CATEGORY_ROBOT'],
+          [
+            getRobotMechanismsCategory(editor),
+            getRobotComponentsCategory(editor),
+            getRobotMethodsCategory(editor),
+            getRobotEventHandlersCategory(editor),
+          ],
+          toolboxItems.ExpandedState.EXPANDED);
   }
   throw new Error('moduleType has unexpected value: ' + moduleType);
 }
