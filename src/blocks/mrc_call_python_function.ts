@@ -56,6 +56,7 @@ enum FunctionKind {
 
 const RETURN_TYPE_NONE = 'None';
 
+const INPUT_TITLE = 'TITLE';
 const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
 const FIELD_FUNCTION_NAME = 'FUNC';
 const FIELD_EVENT_NAME = 'EVENT';
@@ -77,13 +78,15 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcTooltip: string,
   mrcImportModule: string,
   mrcActualFunctionName: string,
-  mrcMethodId?: string,
-  mrcComponentId?: string,
+  mrcMethodId: string,
+  mrcComponentId: string,
   mrcEventId: string,
   mrcMechanismId: string,
   mrcComponentClassName: string,
   mrcOriginalComponentName: string,
   mrcMechanismClassName: string,
+  mrcComponentNames: string[],
+  mrcMapComponentNameToId: {[componentName: string]: string},
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
 
@@ -135,7 +138,8 @@ type CallPythonFunctionExtraState = {
   eventId?: string,
   /**
    * The mrcMechanismId of the mrc_mechanism block that adds the mechanism to the robot.
-   * Specified only if the function kind is INSTANCE_MECHANISM.
+   * Specified only if the function kind is INSTANCE_MECHANISM, or INSTANCE_COMPONENT if the
+   * component belongs to a mechanism.
    */
   mechanismId?: string,
   /**
@@ -202,8 +206,14 @@ const CALL_PYTHON_FUNCTION = {
         case FunctionKind.INSTANCE_COMPONENT: {
           const className = this.mrcComponentClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = 'Calls the instance method ' + className + '.' + functionName +
-              ' on the component named ' + this.getFieldValue(FIELD_COMPONENT_NAME) + '.';
+          if (this.mrcMechanismId) {
+            tooltip = 'Calls the instance method ' + className + '.' + functionName +
+                ' on the component named ' + this.getFieldValue(FIELD_COMPONENT_NAME) +
+                ' in the mechanism named ' + this.getFieldValue(FIELD_MECHANISM_NAME) + '.';
+          } else {
+            tooltip = 'Calls the instance method ' + className + '.' + functionName +
+                ' on the component named ' + this.getFieldValue(FIELD_COMPONENT_NAME) + '.';
+          }
           break;
         }
         case FunctionKind.INSTANCE_ROBOT: {
@@ -260,6 +270,14 @@ const CALL_PYTHON_FUNCTION = {
     }
     if (this.mrcComponentId) {
       extraState.componentId = this.mrcComponentId;
+      if (this.getField(FIELD_COMPONENT_NAME)) {
+        // Since the user may have chosen a different component name from the dropdown, we need to get
+        // the componentId of the component that the user has chosen.
+        const componentName = this.getFieldValue(FIELD_COMPONENT_NAME);
+        if (componentName in this.mrcMapComponentNameToId) {
+          extraState.componentId = this.mrcMapComponentNameToId[componentName];
+        }
+      }
     }
     if (this.mrcEventId) {
       extraState.eventId = this.mrcEventId;
@@ -269,22 +287,6 @@ const CALL_PYTHON_FUNCTION = {
     }
     if (this.mrcComponentClassName) {
       extraState.componentClassName = this.mrcComponentClassName;
-    }
-    if (this.getField(FIELD_COMPONENT_NAME)) {
-      extraState.componentName = this.getFieldValue(FIELD_COMPONENT_NAME);
-      // The component name field is a drop down where the user can choose between different
-      // components of the same type. For example, they can easily switch from a motor component
-      // name "left_motor" to a motor component named "right_motor".
-      if (extraState.componentName !== this.mrcOriginalComponentName) {
-        // The user has chosen a different component name. We need to get the componentId of the
-        // component that the user has chosen.
-        for (const component of this.getComponentsFromRobot()) {
-          if (component.name == extraState.componentName) {
-            extraState.componentId = component.componentId;
-            break;
-          }
-        }
-      }
     }
     if (this.mrcMechanismClassName) {
       extraState.mechanismClassName = this.mrcMechanismClassName;
@@ -315,9 +317,10 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcEventId = extraState.eventId ? extraState.eventId : '';
     this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : '';
     this.mrcComponentClassName = extraState.componentClassName ? extraState.componentClassName : '';
-    this.mrcOriginalComponentName = extraState.componentName
-        ? extraState.componentName : '';
     this.mrcMechanismClassName = extraState.mechanismClassName ? extraState.mechanismClassName : '';
+    // Initialize mrcComponentNames and mrcMapComponentNameToId here. They will be filled during mrcOnLoad.
+    this.mrcComponentNames = [];
+    this.mrcMapComponentNameToId = {};
     this.updateBlock_();
   },
   /**
@@ -341,73 +344,76 @@ const CALL_PYTHON_FUNCTION = {
       this.setOutput(false);
     }
 
-    if (!this.getInput('TITLE')) {
+    if (!this.getInput(INPUT_TITLE)) {
       // Add the dummy input.
       switch (this.mrcFunctionKind) {
         case FunctionKind.BUILT_IN:
-          this.appendDummyInput('TITLE')
+          this.appendDummyInput(INPUT_TITLE)
               .appendField('call')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.MODULE:
-          this.appendDummyInput('TITLE')
+          this.appendDummyInput(INPUT_TITLE)
               .appendField('call')
               .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.STATIC:
-          this.appendDummyInput('TITLE')
+          this.appendDummyInput(INPUT_TITLE)
               .appendField('call')
               .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.CONSTRUCTOR:
-          this.appendDummyInput('TITLE')
+          this.appendDummyInput(INPUT_TITLE)
               .appendField('create')
               .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME);
           break;
         case FunctionKind.INSTANCE:
-          this.appendDummyInput('TITLE')
+          this.appendDummyInput(INPUT_TITLE)
               .appendField('call')
               .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.INSTANCE_WITHIN: {
-          const input = this.getInput('TITLE');
+          const input = this.getInput(INPUT_TITLE);
           if (!input) {
-            this.appendDummyInput('TITLE')
+            this.appendDummyInput(INPUT_TITLE)
                 .appendField('call')
                 .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           }
           break;
         }
         case FunctionKind.EVENT: {
-          const input = this.getInput('TITLE');
+          const input = this.getInput(INPUT_TITLE);
           if (!input) {
-            this.appendDummyInput('TITLE')
+            this.appendDummyInput(INPUT_TITLE)
                 .appendField('fire')
                 .appendField(createFieldNonEditableText(''), FIELD_EVENT_NAME);
           }
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
-          const componentNameChoices : string[] = [];
-          this.getComponentsFromRobot().forEach(component => componentNameChoices.push(component.name));
-          if (!componentNameChoices.includes(this.mrcOriginalComponentName)) {
-            componentNameChoices.push(this.mrcOriginalComponentName);
+          const titleInput = this.appendDummyInput(INPUT_TITLE)
+              .appendField('call');
+          if (this.mrcMechanismId) {
+            titleInput
+                .appendField(createFieldNonEditableText(''), FIELD_MECHANISM_NAME)
+                .appendField('.');
           }
-          this.appendDummyInput('TITLE')
-              .appendField('call')
-              .appendField(createFieldDropdown(componentNameChoices), FIELD_COMPONENT_NAME)
+          // Here we create a text field for the component name.
+          // Later, in mrcOnLoad, we will replace it with a dropdown.
+          titleInput
+              .appendField(createFieldNonEditableText(''), FIELD_COMPONENT_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         }
         case FunctionKind.INSTANCE_ROBOT: {
-          this.appendDummyInput('TITLE')
+          this.appendDummyInput(INPUT_TITLE)
               .appendField('call')
               .appendField(createFieldNonEditableText('robot'))
               .appendField('.')
@@ -415,7 +421,7 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.INSTANCE_MECHANISM: {
-          this.appendDummyInput('TITLE')
+          this.appendDummyInput(INPUT_TITLE)
               .appendField('call')
               .appendField(createFieldNonEditableText(''), FIELD_MECHANISM_NAME)
               .appendField('.')
@@ -469,6 +475,11 @@ const CALL_PYTHON_FUNCTION = {
         if (id === this.mrcComponentId) {
           this.setFieldValue(newName, FIELD_COMPONENT_NAME);
         }
+        if (this.mrcMechanismId) {
+          if (id === this.mrcMechanismId) {
+            this.setFieldValue(newName, FIELD_MECHANISM_NAME);
+          }
+        }
         break;
       case FunctionKind.INSTANCE_ROBOT:
         if (id === this.mrcMethodId) {
@@ -517,12 +528,36 @@ const CALL_PYTHON_FUNCTION = {
     }
     this.updateBlock_();
   },
-  getComponentsFromRobot: function(this: CallPythonFunctionBlock): storageModuleContent.Component[] {
+  getComponents: function(this: CallPythonFunctionBlock): storageModuleContent.Component[] {
     // Get the list of components whose type matches this.mrcComponentClassName.
     const components: storageModuleContent.Component[] = [];
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
     if (editor) {
-      editor.getComponentsFromRobot().forEach(component => {
+      let componentsToConsider: storageModuleContent.Component[] = [];
+      if (this.mrcMechanismId) {
+        // Only consider components that belong to the mechanism.
+        // this.mrcMechanismId is the mechanismId from the MechanismInRobot.
+        // We need to get the MechanismInRobot with that id, then get the mechanism, and then get
+        // the public components defined in that mechanism.
+        for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
+          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+            for (const mechanism of editor.getMechanisms()) {
+              if (mechanism.moduleId === mechanismInRobot.moduleId) {
+                componentsToConsider = editor.getComponentsFromMechanism(mechanism);
+                break;
+              }
+            }
+            break;
+          }
+        }
+      } else if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
+        // Only consider components (regular and private) in the current workspace.
+        componentsToConsider = editor.getAllComponentsFromWorkspace();
+      } else {
+        // Only consider components in the robot.
+        componentsToConsider = editor.getComponentsFromRobot();
+      }
+      componentsToConsider.forEach(component => {
         if (component.className === this.mrcComponentClassName) {
           components.push(component);
         }
@@ -543,58 +578,43 @@ const CALL_PYTHON_FUNCTION = {
     // If the component doesn't exist, put a visible warning on this block.
     // If the component has changed, update the block if possible or put a
     // visible warning on it.
+    // If the component belongs to a mechanism, also check whether the mechanism
+    // still exists and whether it has been changed.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
+      this.getComponents().forEach(component => {
+        this.mrcComponentNames.push(component.name);
+        this.mrcMapComponentNameToId[component.name] = component.componentId;
+      });
       let foundComponent = false;
-      const componentsInScope: storageModuleContent.Component[] = [];
-      componentsInScope.push(...this.getComponentsFromRobot());
-      
-      // If we're in a robot context, also include components from mechanisms
-      if (editor.getCurrentModuleType() === storageModule.ModuleType.ROBOT) {
-        editor.getMechanismsFromRobot().forEach(mechanismInRobot => {
-          const mechanism = editor.getMechanism(mechanismInRobot);
-          if (mechanism) {
-            const mechanismComponents = editor.getComponentsFromMechanism(mechanism);
-            mechanismComponents.forEach(component => {
-              // Create a copy of the component with the mechanism-prefixed name
-              const prefixedComponent = {
-                ...component,
-                name: mechanismInRobot.name + '.' + component.name
-              };
-              componentsInScope.push(prefixedComponent);
-            });
-          }
-        });
-      }
-      
-      if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
-        componentsInScope.push(...editor.getComponentsFromWorkspace());
-      }
-      for (const component of componentsInScope) {
-        if (component.componentId === this.mrcComponentId) {
+      for (const componentName of this.mrcComponentNames) {
+        const componentId = this.mrcMapComponentNameToId[componentName];
+        if (componentId === this.mrcComponentId) {
           foundComponent = true;
 
-          // If the component name has changed, we can handle that.
-          if (this.getFieldValue(FIELD_COMPONENT_NAME) !== component.name) {
-            // Replace the FIELD_COMPONENT_NAME field.
-            const titleInput = this.getInput('TITLE')
-            if (titleInput) {
-              let indexOfComponentName = -1;
-              for (let i = 0, field; (field = titleInput.fieldRow[i]); i++) {
-                if (field.name === FIELD_COMPONENT_NAME) {
-                  indexOfComponentName = i;
-                  break;
-                }
-              }
-              if (indexOfComponentName != -1) {
-                const componentNameChoices : string[] = [];
-                componentsInScope.forEach(component => componentNameChoices.push(component.name));
-                titleInput.removeField(FIELD_COMPONENT_NAME);
-                titleInput.insertFieldAt(indexOfComponentName,
-                    createFieldDropdown(componentNameChoices), FIELD_COMPONENT_NAME);
-              }
-              this.setFieldValue(component.name, FIELD_COMPONENT_NAME);
+          // Replace the text field for the component name with a dropdown where the user can choose
+          // between different components of the same type. For example, they can easily switch from
+          // a motor component name "left_motor" to a motor component named "right_motor".
+          const titleInput = this.getInput(INPUT_TITLE)
+          if (!titleInput) {
+            throw new Error('Could not find the title input');
+          }
+          let indexOfComponentNameField = -1;
+          for (let i = 0, field; (field = titleInput.fieldRow[i]); i++) {
+            if (field.name === FIELD_COMPONENT_NAME) {
+              indexOfComponentNameField = i;
+              break;
             }
           }
+          if (indexOfComponentNameField == -1) {
+            throw new Error('Could not find the component name field');
+          }
+          titleInput.removeField(FIELD_COMPONENT_NAME);
+          titleInput.insertFieldAt(indexOfComponentNameField,
+              createFieldDropdown(this.mrcComponentNames), FIELD_COMPONENT_NAME);
+          // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
+          // items in the dropdown if the user adds or removes a component.
+
+          this.setFieldValue(componentName, FIELD_COMPONENT_NAME);
 
           // Since we found the component, we can break out of the loop.
           break;
@@ -602,6 +622,27 @@ const CALL_PYTHON_FUNCTION = {
       }
       if (!foundComponent) {
         warnings.push('This block calls a method on a component that no longer exists.');
+      }
+
+      if (this.mrcMechanismId) {
+        let foundMechanism = false;
+        const mechanismsInRobot = editor.getMechanismsFromRobot();
+        for (const mechanismInRobot of mechanismsInRobot) {
+          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+            foundMechanism = true;
+
+            // If the mechanism name has changed, we can handle that.
+            if (this.getFieldValue(FIELD_MECHANISM_NAME) !== mechanismInRobot.name) {
+              this.setFieldValue(mechanismInRobot.name, FIELD_MECHANISM_NAME);
+            }
+            break;
+          }
+        }
+        if (!foundMechanism) {
+          warnings.push(
+              'This block calls a method on a component that belongs to a mechanism that no ' +
+              'longer exists.');
+        }
       }
 
       // TODO(lizlooney): Could the component's method have change or been deleted?
@@ -812,10 +853,6 @@ export function pythonFromBlock(
       break;
     }
     case FunctionKind.INSTANCE_COMPONENT: {
-      const componentName = block.getFieldValue(FIELD_COMPONENT_NAME);
-      const functionName = block.mrcActualFunctionName
-          ? block.mrcActualFunctionName
-          : block.getFieldValue(FIELD_FUNCTION_NAME);
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
         case storageModule.ModuleType.ROBOT:
@@ -826,6 +863,14 @@ export function pythonFromBlock(
           code = 'self.robot.';
           break;
       }
+      if (block.mrcMechanismId) {
+        const mechanismName = block.getFieldValue(FIELD_MECHANISM_NAME);
+        code += mechanismName + '.';
+      }
+      const componentName = block.getFieldValue(FIELD_COMPONENT_NAME);
+      const functionName = block.mrcActualFunctionName
+          ? block.mrcActualFunctionName
+          : block.getFieldValue(FIELD_FUNCTION_NAME);
       code += componentName + '.' + functionName;
       break;
     }
@@ -1214,7 +1259,7 @@ function createInstanceComponentBlock(
 }
 
 function createInstanceMechanismComponentBlock(
-    component: storageModuleContent.Component, 
+    component: storageModuleContent.Component,
     functionData: FunctionData, 
     mechanismInRobot: storageModuleContent.MechanismInRobot): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
@@ -1224,11 +1269,13 @@ function createInstanceMechanismComponentBlock(
     tooltip: functionData.tooltip,
     importModule: '',
     componentClassName: component.className,
-    componentName: mechanismInRobot.name + '.' + component.name, // Prefix with mechanism name
+    componentName: component.name,
     componentId: component.componentId,
+    mechanismId: mechanismInRobot.mechanismId,
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_COMPONENT_NAME] = mechanismInRobot.name + '.' + component.name; // Prefix with mechanism name
+  fields[FIELD_MECHANISM_NAME] = mechanismInRobot.name;
+  fields[FIELD_COMPONENT_NAME] = component.name;
   fields[FIELD_FUNCTION_NAME] = functionData.functionName;
   const inputs: {[key: string]: any} = {};
   // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
