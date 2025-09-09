@@ -75,23 +75,10 @@ function setName(block: Blockly.BlockSvg){
 
 const MECHANISM_COMPONENT_HOLDER = {
   /**
-    * Block initialization.
-    */
+   * Block initialization.
+   */
   init: function (this: MechanismComponentHolderBlock): void {
     this.setInputsInline(false);
-    this.appendStatementInput(INPUT_MECHANISMS).setCheck(MECHANISM_OUTPUT).appendField(Blockly.Msg.MECHANISMS);
-    this.appendStatementInput(INPUT_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.COMPONENTS);
-    const privateComponentsInput = this.appendStatementInput(INPUT_PRIVATE_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.PRIVATE_COMPONENTS);
-    // Set tooltip on the private components field
-    const privateComponentsField = privateComponentsInput.fieldRow[0];
-    if (privateComponentsField) {
-      privateComponentsField.setTooltip(Blockly.Msg.PRIVATE_COMPONENTS_TOOLTIP);
-    }
-    this.appendStatementInput(INPUT_EVENTS).setCheck(EVENT_OUTPUT).appendField(Blockly.Msg.EVENTS);
-    
-    // Update components tooltip based on private components visibility
-    this.updateComponentsTooltip_();
-
     this.setOutput(false);
     this.setStyle(MRC_STYLE_MECHANISMS);
     ChangeFramework.registerCallback(MRC_COMPONENT_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
@@ -112,65 +99,43 @@ const MECHANISM_COMPONENT_HOLDER = {
     return extraState;
   },
   /**
-  * Applies the given state to this block.
-  */
+   * Applies the given state to this block.
+   */
   loadExtraState: function (this: MechanismComponentHolderBlock, extraState: MechanismComponentHolderExtraState): void {
     this.mrcHideMechanisms = (extraState.hideMechanisms == undefined) ? false : extraState.hideMechanisms;
     this.mrcHidePrivateComponents = (extraState.hidePrivateComponents == undefined) ? false : extraState.hidePrivateComponents;
     this.updateBlock_();
   },
   /**
-   * Update the components tooltip based on private components visibility.
+   * Update the block to reflect the newly loaded extra state.
    */
-  updateComponentsTooltip_: function (this: MechanismComponentHolderBlock): void {
-    const componentsInput = this.getInput(INPUT_COMPONENTS);
-    if (componentsInput && componentsInput.fieldRow[0]) {
-      const componentsField = componentsInput.fieldRow[0];
-      // Only show tooltip if private components are also visible (not hidden)
-      if (!this.mrcHidePrivateComponents) {
-        componentsField.setTooltip(Blockly.Msg.COMPONENTS_TOOLTIP);
-      } else {
-        componentsField.setTooltip('');
-      }
-    }
-  },
-  /**
-     * Update the block to reflect the newly loaded extra state.
-     */
   updateBlock_: function (this: MechanismComponentHolderBlock): void {
     // Handle mechanisms input visibility
-    if (this.mrcHideMechanisms) {
-      if (this.getInput(INPUT_MECHANISMS)) {
-        this.removeInput(INPUT_MECHANISMS)
-      }
-    }
-    else {
-      if (this.getInput(INPUT_MECHANISMS) == null) {
-        this.appendStatementInput(INPUT_MECHANISMS).setCheck(MECHANISM_OUTPUT).appendField(Blockly.Msg.MECHANISMS);
-        this.moveInputBefore(INPUT_MECHANISMS, INPUT_COMPONENTS)
-      }
+    if (!this.mrcHideMechanisms) {
+      this.appendStatementInput(INPUT_MECHANISMS)
+          .setCheck(MECHANISM_OUTPUT)
+          .appendField(Blockly.Msg.MECHANISMS);
     }
 
+    const componentsField = new Blockly.FieldLabel(Blockly.Msg.COMPONENTS);
+    this.appendStatementInput(INPUT_COMPONENTS)
+        .setCheck(COMPONENT_OUTPUT)
+        .appendField(componentsField);
+
     // Handle private components input visibility
-    if (this.mrcHidePrivateComponents) {
-      if (this.getInput(INPUT_PRIVATE_COMPONENTS)) {
-        this.removeInput(INPUT_PRIVATE_COMPONENTS)
-      }
+    if (!this.mrcHidePrivateComponents) {
+        const privateComponentsField = new Blockly.FieldLabel(Blockly.Msg.PRIVATE_COMPONENTS);
+        this.appendStatementInput(INPUT_PRIVATE_COMPONENTS)
+            .setCheck(COMPONENT_OUTPUT)
+            .appendField(privateComponentsField);
+        // Set tooltips on both componentsField and privateComponentsField.
+        componentsField.setTooltip(Blockly.Msg.COMPONENTS_TOOLTIP);
+        privateComponentsField.setTooltip(Blockly.Msg.PRIVATE_COMPONENTS_TOOLTIP);
     }
-    else {
-      if (this.getInput(INPUT_PRIVATE_COMPONENTS) == null) {
-        const privateComponentsInput = this.appendStatementInput(INPUT_PRIVATE_COMPONENTS).setCheck(COMPONENT_OUTPUT).appendField(Blockly.Msg.PRIVATE_COMPONENTS);
-        // Set tooltip on the field
-        const privateComponentsField = privateComponentsInput.fieldRow[0];
-        if (privateComponentsField) {
-          privateComponentsField.setTooltip(Blockly.Msg.PRIVATE_COMPONENTS_TOOLTIP);
-        }
-        this.moveInputBefore(INPUT_PRIVATE_COMPONENTS, INPUT_EVENTS)
-      }
-    }
-    
-    // Update components tooltip based on private components visibility
-    this.updateComponentsTooltip_();
+
+    this.appendStatementInput(INPUT_EVENTS)
+        .setCheck(EVENT_OUTPUT)
+        .appendField(Blockly.Msg.EVENTS);
   },
   onBlockChanged: function (block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase) {
     if (blockEvent.type == Blockly.Events.BLOCK_MOVE) {
@@ -319,9 +284,9 @@ function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, genera
   const components = generator.statementToCode(block, INPUT_COMPONENTS);
   const privateComponents = generator.statementToCode(block, INPUT_PRIVATE_COMPONENTS);
 
-  const body = components + privateComponents;
-  if (body) {
-    code += body;
+  const allComponents = components + privateComponents;
+  if (allComponents) {
+    code += allComponents;
     generator.addClassMethodDefinition('define_hardware', code);
   }
 }
@@ -342,7 +307,7 @@ export const pythonFromBlock = function (
 
 // Misc
 
-/**n
+/**
  * Returns true if the given workspace has a mrc_mechanism_component_holder
  * block that contains at least one component.
  */
@@ -462,5 +427,19 @@ export function getEvents(
     const eventsFromHolder: storageModuleContent.Event[] =
       (block as MechanismComponentHolderBlock).getEvents();
     events.push(...eventsFromHolder);
+  });
+}
+
+/**
+ * Hide private components.
+ * This function should only be called when upgrading old projects.
+ */
+export function hidePrivateComponents(workspace: Blockly.Workspace) {
+  // Make sure the workspace is headless.
+  if (workspace.rendered) {
+    throw new Error('hidePrivateComponents should never be called with a rendered workspace.');
+  }
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as MechanismComponentHolderBlock).mrcHidePrivateComponents = true;
   });
 }
