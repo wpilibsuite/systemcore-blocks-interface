@@ -24,6 +24,7 @@ venv/
 .env.test.local
 .env.production.local
 .vscode 
+projects.db
 
 npm-debug.log*
 yarn-debug.log*
