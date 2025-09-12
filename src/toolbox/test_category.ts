@@ -22,13 +22,7 @@ export function getCategory(): toolboxItems.Category {
 
   contents.push({
     kind: 'block',
-    type: 'mrc_port',
-    extraState: {
-      ports: [
-        { portType: 'USB Port', portNumber: 1 },
-        { portType: 'Expansion Hub Motor Port', portNumber: 2 },
-      ],
-    },
+    type: 'mrc_steps',
   });
 
   return {
