@@ -161,6 +161,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+  const [modulePathToContentText, setModulePathToContentText] = React.useState<{[modulePath: string]: string}>({});
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [activeTab, setActiveTab] = React.useState('');
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
@@ -208,7 +209,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       // Save current blocks before language change
       if (currentModule && areBlocksModified()) {
         try {
-          await saveBlocks();
+          await saveModule();
         } catch (e) {
           console.error('Failed to save blocks before language change:', e);
         }
@@ -303,15 +304,17 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   };
 
   /** Saves blocks to storage with success/error messaging. */
-  const saveBlocks = async (): Promise<boolean> => {
+  const saveModule = async (): Promise<boolean> => {
     return new Promise(async (resolve, reject) => {
-      if (!blocksEditor.current) {
+      if (!currentModule ||
+          !blocksEditor.current) {
         reject(new Error('Blocks editor not initialized'));
         return;
       }
 
       try {
-        await blocksEditor.current.saveBlocks();
+        const moduleContentText = await blocksEditor.current.saveModule();
+        modulePathToContentText[currentModule.modulePath] = moduleContentText;
         messageApi.open({
           type: 'success',
           content: SAVE_SUCCESS_MESSAGE,
@@ -346,7 +349,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   /** Changes current module with automatic saving if modified. */
   const changeModule = async (module: storageModule.Module | null): Promise<void> => {
     if (currentModule && areBlocksModified()) {
-      await saveBlocks();
+      await saveModule();
     }
     setCurrentModule(module);
   };
@@ -424,8 +427,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     if (generatorContext.current) {
       generatorContext.current.setModule(currentModule);
     }
-    if (blocksEditor.current) {
-      blocksEditor.current.loadModuleBlocks(currentModule, project);
+    if (blocksEditor.current && currentModule) {
+      blocksEditor.current.loadModuleBlocks(currentModule, project, modulePathToContentText);
     }
   }, [currentModule]);
 
@@ -434,7 +437,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   };
 
   const setupWorkspace = (newWorkspace: Blockly.WorkspaceSvg) => {
-    if (!blocklyComponent.current || !storage) {
+    if (!blocklyComponent.current || !storage || !generatorContext.current) {
       return;
     }
     // Recreate workspace when Blockly component is ready
@@ -456,7 +459,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
     // Set the current module in the editor after creating it
     if (currentModule) {
-      blocksEditor.current.loadModuleBlocks(currentModule, project);
+      blocksEditor.current.loadModuleBlocks(currentModule, project, modulePathToContentText);
     }
 
     blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
@@ -494,14 +497,38 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     }
   }, [currentModule, shownPythonToolboxCategories]);
 
-  // Update tab items when project changes
+  // Fetch modules when project changes.
+  React.useEffect(() => {
+    if (project && storage) {
+      const fetchModules = async () => {
+        const promises: {[modulePath: string]: Promise<string>} = {}; // value is promise of module content.
+        promises[project.robot.modulePath] = storage.fetchFileContentText(project.robot.modulePath);
+        project.mechanisms.forEach(mechanism => {
+          promises[mechanism.modulePath] = storage.fetchFileContentText(mechanism.modulePath);
+        });
+        project.opModes.forEach(opmode => {
+          promises[opmode.modulePath] = storage.fetchFileContentText(opmode.modulePath);
+        });
+        const modulePathToContentText: {[modulePath: string]: string} = {}; // value is module content text
+        await Promise.all(
+          Object.entries(promises).map(async ([modulePath, promise]) => {
+            modulePathToContentText[modulePath] = await promise;
+          })
+        );
+        setModulePathToContentText(modulePathToContentText);
+      };
+      fetchModules();
+    }
+  }, [project]);
+
+  // Update tab items when fetching modules is done.
   React.useEffect(() => {
     if (project) {
       const tabs = createTabItemsFromProject(project);
       setTabItems(tabs);
       setActiveTab(project.robot.modulePath);
     }
-  }, [project]);
+  }, [modulePathToContentText]);
 
   const { Sider, Content } = Antd.Layout;
 

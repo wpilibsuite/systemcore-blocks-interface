@@ -48,6 +48,7 @@ export class Editor {
   private storage: commonStorage.Storage;
   private module: storageModule.Module | null = null;
   private project: storageProject.Project | null = null;
+  private modulePathToModuleContent: {[modulePath: string]: storageModuleContent.ModuleContent} = {};
   private modulePath: string = '';
   private robotPath: string = '';
   private moduleContentText: string = '';
@@ -117,57 +118,43 @@ export class Editor {
 
   public async loadModuleBlocks(
       module: storageModule.Module | null,
-      project: storageProject.Project | null) {
+      project: storageProject.Project | null,
+      modulePathToContentText: {[modulePath: string]: string}) {
     this.generatorContext.setModule(module);
     this.module = module;
     this.project = project;
 
-    if (this.module && this.project) {
-      this.modulePath = this.module.modulePath;
-      this.robotPath = this.project.robot.modulePath;
+    if (module && project) {
+      this.modulePath = module.modulePath;
+      this.robotPath = project.robot.modulePath;
+      this.moduleContentText = modulePathToContentText[this.modulePath];
     } else {
       this.modulePath = '';
       this.robotPath = '';
+      this.moduleContentText = '';
     }
-    this.moduleContentText = '';
-    this.robotContent = null;
-    this.mechanismClassNameToModuleContent = {}
+    this.parseModules(modulePathToContentText);
     this.clearBlocklyWorkspace();
+    this.loadBlocksIntoBlocklyWorkspace();
+  }
 
-    if (this.module && this.project) {
-      // Fetch the content for the current module, the robot, and the mechanisms.
-      const promises: { [modulePath: string]: Promise<string> } = {}; // value is promise of module content.
-      promises[this.modulePath] = this.storage.fetchFileContentText(this.modulePath);
-      if (this.robotPath !== this.modulePath) {
-        // Also fetch the robot module content. It contains components, etc, that can be used in OpModes.
-        promises[this.robotPath] = this.storage.fetchFileContentText(this.robotPath)
-      }
-      for (const mechanism of this.project.mechanisms) {
-        // Fetch the module content text for the mechanism.
-        if (mechanism.modulePath !== this.modulePath) {
-          promises[mechanism.modulePath] = this.storage.fetchFileContentText(mechanism.modulePath);
-        }
-      }
+  private parseModules(modulePathToContentText: {[modulePath: string]: string}) {
+    // Parse the modules.
+    this.modulePathToModuleContent = {}
+    for (const modulePath in modulePathToContentText) {
+      const moduleContentText = modulePathToContentText[modulePath];
+      this.modulePathToModuleContent[modulePath] = storageModuleContent.parseModuleContentText(
+          moduleContentText);
+    }
 
-      const modulePathToContentText: { [modulePath: string]: string } = {}; // value is module content
-      await Promise.all(
-        Object.entries(promises).map(async ([modulePath, promise]) => {
-          modulePathToContentText[modulePath] = await promise;
-        })
-      );
-      this.moduleContentText = modulePathToContentText[this.modulePath];
-      this.robotContent = storageModuleContent.parseModuleContentText(
-          (this.robotPath === this.modulePath)
-              ? this.moduleContentText
-              : modulePathToContentText[this.robotPath]);
+    this.robotContent = this.robotPath ? this.modulePathToModuleContent[this.robotPath] : null;
+
+    this.mechanismClassNameToModuleContent = {};
+    if (this.project) {
       for (const mechanism of this.project.mechanisms) {
         this.mechanismClassNameToModuleContent[mechanism.className] =
-            storageModuleContent.parseModuleContentText(
-                (mechanism.modulePath === this.modulePath)
-                    ? this.moduleContentText
-                    : modulePathToContentText[mechanism.modulePath]);
+            this.modulePathToModuleContent[mechanism.modulePath];
       }
-      this.loadBlocksIntoBlocklyWorkspace();
     }
   }
 
@@ -194,7 +181,7 @@ export class Editor {
     // Add the while-loading listener.
     this.bindedOnChange = this.onChangeWhileLoading.bind(this);
     this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
-    const moduleContent = storageModuleContent.parseModuleContentText(this.moduleContentText);
+    const moduleContent = this.modulePathToModuleContent[this.modulePath];
     Blockly.serialization.workspaces.load(moduleContent.getBlocks(), this.blocklyWorkspace);
   }
 
@@ -334,7 +321,7 @@ export class Editor {
     return eventHandlerBlocks;
   }
 
-  public async saveBlocks() {
+  public async saveModule(): Promise<string> {
     const moduleContentText = this.getModuleContentText();
     try {
       await this.storage.saveFile(this.modulePath, moduleContentText);
@@ -345,6 +332,7 @@ export class Editor {
     } catch (e) {
       throw e;
     }
+    return moduleContentText;
   }
 
   /**
