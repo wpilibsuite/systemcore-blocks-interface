@@ -171,8 +171,9 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
 
-  const blocksEditor = React.useRef<editor.Editor | null>(null);
   const generatorContext = React.useRef<GeneratorContext | null>(null);
+
+  const blocksEditor = React.useRef<editor.Editor | null>(null);
   const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
 
   /** Initialize language from UserSettings when app first starts. */
@@ -411,6 +412,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   // Initialize blocks when app loads
   React.useEffect(() => {
     initializeBlocks();
+    generatorContext.current = createGeneratorContext();
   }, []);
 
   React.useEffect(() => {
@@ -441,8 +443,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     newWorkspace.addChangeListener(handleBlocksChanged);
 
     registerToolboxButton(newWorkspace, messageApi);
-
-    generatorContext.current = createGeneratorContext();
 
     if (currentModule) {
       generatorContext.current.setModule(currentModule);
