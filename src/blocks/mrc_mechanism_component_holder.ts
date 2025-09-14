@@ -142,13 +142,13 @@ const MECHANISM_COMPONENT_HOLDER = {
       let blockMoveEvent = blockEvent as Blockly.Events.BlockMove;
       if (blockMoveEvent.reason?.includes('connect')) {
         setName(block);
-        updateToolboxAfterDelay();
+        updateToolboxAfterDelay(block);
       }
     }
     else {
       if (blockEvent.type == Blockly.Events.BLOCK_CHANGE) {
         setName(block);
-        updateToolboxAfterDelay();
+        updateToolboxAfterDelay(block);
       }
     }
   },
@@ -243,13 +243,17 @@ const MECHANISM_COMPONENT_HOLDER = {
 }
 
 let toolboxUpdateTimeout: NodeJS.Timeout | null = null;
-export function updateToolboxAfterDelay(){
+
+function updateToolboxAfterDelay(block: Blockly.BlockSvg) {
   if (toolboxUpdateTimeout) {
     clearTimeout(toolboxUpdateTimeout);
   }
   toolboxUpdateTimeout = setTimeout(() => {
     const event = new CustomEvent(TOOLBOX_UPDATE_EVENT, {
-      detail: { timestamp: Date.now() }
+      detail: {
+        timestamp: Date.now(),
+        workspaceId: block.workspace.id,
+      }
     });
     window.dispatchEvent(event);
     toolboxUpdateTimeout = null;

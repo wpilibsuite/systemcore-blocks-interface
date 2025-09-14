@@ -495,6 +495,11 @@ export class Editor {
     return null;
   }
 
+  public static getEditorForBlocklyWorkspaceId(workspaceId: string): Editor | null {
+    const workspace = Blockly.Workspace.getById(workspaceId);
+    return workspace ? Editor.getEditorForBlocklyWorkspace(workspace) : null;
+  }
+
   public static getCurrentEditor(): Editor | null {
     return Editor.currentEditor;
   }

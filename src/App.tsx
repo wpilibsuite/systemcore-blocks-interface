@@ -391,11 +391,13 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   };
 
   /** Handles toolbox update requests from blocks */
-  const handleToolboxUpdateRequest = React.useCallback(() => {
-    if (blocksEditor.current && currentModule) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+  const handleToolboxUpdateRequest = React.useCallback((e: Event) => {
+    const workspaceId = (e as CustomEvent).detail.workspaceId;
+    const correspondingEditor = editor.Editor.getEditorForBlocklyWorkspaceId(workspaceId);
+    if (correspondingEditor) {
+      correspondingEditor.updateToolbox(shownPythonToolboxCategories);
     }
-  }, [currentModule, shownPythonToolboxCategories, i18n.language]);
+  }, [shownPythonToolboxCategories, i18n.language]);
 
   // Add event listener for toolbox updates
   React.useEffect(() => {
