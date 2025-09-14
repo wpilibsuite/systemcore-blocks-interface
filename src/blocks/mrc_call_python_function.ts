@@ -531,7 +531,7 @@ const CALL_PYTHON_FUNCTION = {
   getComponents: function(this: CallPythonFunctionBlock): storageModuleContent.Component[] {
     // Get the list of components whose type matches this.mrcComponentClassName.
     const components: storageModuleContent.Component[] = [];
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace) || Editor.getCurrentEditor();
     if (editor) {
       let componentsToConsider: storageModuleContent.Component[] = [];
       if (this.mrcMechanismId) {
@@ -567,7 +567,7 @@ const CALL_PYTHON_FUNCTION = {
   },
   mrcOnLoad: function(this: CallPythonFunctionBlock): void {
     // mrcOnLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly workspace.
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace) || Editor.getCurrentEditor();
     if (!editor) {
       return;
     }

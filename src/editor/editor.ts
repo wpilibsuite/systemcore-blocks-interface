@@ -484,16 +484,15 @@ export class Editor {
       return Editor.workspaceIdToEditor[workspace.id];
     }
 
-    // If the workspace id was not found, it might be because the workspace is associated with a block mutator's flyout.
-    // Try this workspaces's root workspace.
+    // If the workspace id was not found, it might be because the workspace is associated with a
+    // block mutator's flyout. Try this workspaces's root workspace.
     const rootWorkspace = workspace.getRootWorkspace();
     if (rootWorkspace &&
         rootWorkspace.id in Editor.workspaceIdToEditor) {
       return Editor.workspaceIdToEditor[rootWorkspace.id];
     }
 
-    // Otherwise, return the current editor.
-    return Editor.currentEditor;
+    return null;
   }
 
   public static getCurrentEditor(): Editor | null {

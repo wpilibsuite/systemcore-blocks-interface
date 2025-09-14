@@ -127,7 +127,7 @@ const COMPONENT = {
    * Update the block to reflect the newly loaded extra state.
    */
   updateBlock_: function (this: ComponentBlock): void {
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace) || Editor.getCurrentEditor();
     if (editor && editor.getModuleType() === storageModule.ModuleType.ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
