@@ -128,7 +128,7 @@ const COMPONENT = {
    */
   updateBlock_: function (this: ComponentBlock): void {
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
-    if (editor && editor.getCurrentModuleType() === storageModule.ModuleType.ROBOT) {
+    if (editor && editor.getModuleType() === storageModule.ModuleType.ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)

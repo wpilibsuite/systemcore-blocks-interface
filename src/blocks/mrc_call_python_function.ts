@@ -550,7 +550,7 @@ const CALL_PYTHON_FUNCTION = {
             break;
           }
         }
-      } else if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
+      } else if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
         // Only consider components (regular and private) in the current workspace.
         componentsToConsider = editor.getAllComponentsFromWorkspace();
       } else {
@@ -654,7 +654,7 @@ const CALL_PYTHON_FUNCTION = {
     // If the robot method has changed, update the block if possible or put a
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_ROBOT) {
-      if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
+      if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
         warnings.push('This block is not allowed to be used inside a mechanism.');
       } else {
         let foundRobotMethod = false;
@@ -700,7 +700,7 @@ const CALL_PYTHON_FUNCTION = {
     // If the method has changed, update the block if possible or put a
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_MECHANISM) {
-      if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
+      if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
         warnings.push('This block is not allowed to be used inside a mechanism.');
       } else {
         let foundMechanism = false;
