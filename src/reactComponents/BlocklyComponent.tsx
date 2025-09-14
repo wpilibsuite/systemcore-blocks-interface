@@ -39,6 +39,7 @@ export interface BlocklyComponentType {
 
 /** Interface for props passed to the BlocklyComponent. */
 export interface BlocklyComponentProps {
+  onBlocklyComponentCreated: (blocklyComponent: BlocklyComponentType) => void;
   theme: string;
   onWorkspaceRecreated: (workspace: Blockly.WorkspaceSvg) => void;
 }
@@ -80,8 +81,8 @@ const WORKSPACE_STYLE: React.CSSProperties = {
  * React component that renders a Blockly workspace with proper initialization,
  * cleanup, and resize handling.
  */
-const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyComponentProps>(
-    (props, ref): React.JSX.Element => {
+export default function BlocklyComponent(props: BlocklyComponentProps): React.JSX.Element {
+// TODO(lizlooney): Fix indentation in a separate commit.
       const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
       const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
 
@@ -249,6 +250,12 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
 
       // Initialize Blockly workspace
       React.useEffect(() => {
+        if (props.onBlocklyComponentCreated) {
+          const blocklyComponent: BlocklyComponentType = {
+            getBlocklyWorkspace,
+          };
+          props.onBlocklyComponentCreated(blocklyComponent);
+        }
         initializeWorkspace();
         return cleanupWorkspace;
       }, []);
@@ -270,23 +277,9 @@ const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyCo
         return setupResizeObserver();
       }, []);
 
-      // Expose methods through ref
-      React.useImperativeHandle(
-          ref,
-          (): BlocklyComponentType => ({
-            getBlocklyWorkspace,
-          }),
-          []
-      );
-
       return (
         <div className="blockly-workspace-container" style={FULL_SIZE_STYLE}>
           <div ref={blocklyDiv} style={WORKSPACE_STYLE} />
         </div>
       );
     }
-);
-
-BlocklyComponent.displayName = 'BlocklyComponent';
-
-export default BlocklyComponent;

@@ -425,6 +425,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     }
   }, [currentModule]);
 
+  const setupBlocklyComponent = (newBlocklyComponent: BlocklyComponentType) => {
+    blocklyComponent.current = newBlocklyComponent;
+  };
+
   const setupWorkspace = (newWorkspace: Blockly.WorkspaceSvg) => {
     if (!blocklyComponent.current || !storage) {
       return;
@@ -547,9 +551,9 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               <Antd.Layout>
                 <Content>
                   <BlocklyComponent
+                    onBlocklyComponentCreated={setupBlocklyComponent}
                     theme={theme}
                     onWorkspaceRecreated={setupWorkspace}
-                    ref={blocklyComponent}
                   />
                 </Content>
                 <Sider
