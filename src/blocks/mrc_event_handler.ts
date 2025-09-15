@@ -178,7 +178,7 @@ const EVENT_HANDLER = {
   mrcOnLoad: function(this: EventHandlerBlock): void {
     const warnings: string[] = [];
 
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace) || Editor.getCurrentEditor();
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
     if (editor) {
       if (this.mrcSenderType === SenderType.ROBOT) {
         // This block is an event handler for a robot event.
