@@ -41,13 +41,15 @@ const STEPS = {
         this.appendDummyInput()
             .appendField(createFieldNonEditableText('steps'));
         this.appendDummyInput()
-            .appendField(new Blockly.FieldTextInput('Step 0'));
+            .appendField('Step')
+            .appendField(new Blockly.FieldTextInput('0'));
         this.appendStatementInput('STEP_0');
         this.appendValueInput('CONDITION_0')
             .setCheck('Boolean')
             .appendField('Advance when');
         this.appendDummyInput()
-            .appendField(new Blockly.FieldTextInput('Step 1'));
+            .appendField('Step')
+            .appendField(new Blockly.FieldTextInput('1'));
         this.appendStatementInput('STEP_1');
         this.appendValueInput('CONDITION_1')
             .setCheck('Boolean')
