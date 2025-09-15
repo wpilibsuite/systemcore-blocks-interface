@@ -22,7 +22,6 @@
 import * as Blockly from 'blockly/core';
 
 import { extendedPythonGenerator } from './extended_python_generator';
-import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
@@ -46,7 +45,6 @@ export class Editor {
   private readonly blocklyWorkspace: Blockly.WorkspaceSvg;
   private readonly module: storageModule.Module;
   private readonly projectName: string;
-  private readonly generatorContext: GeneratorContext;
   private readonly storage: commonStorage.Storage;
   private readonly modulePath: string;
   private readonly robotPath: string;
@@ -63,13 +61,11 @@ export class Editor {
       blocklyWorkspace: Blockly.WorkspaceSvg,
       module: storageModule.Module,
       project: storageProject.Project,
-      generatorContext: GeneratorContext,
       storage: commonStorage.Storage,
       modulePathToContentText: {[modulePath: string]: string}) {
     this.blocklyWorkspace = blocklyWorkspace;
     this.module = module;
     this.projectName = project.projectName;
-    this.generatorContext = generatorContext;
     this.storage = storage;
     this.modulePath = module.modulePath;
     this.robotPath = project.robot.modulePath;
@@ -228,9 +224,7 @@ export class Editor {
     }
 
     // Generate python because some parts of components, events, and methods are affected.
-    this.generatorContext.setModule(this.module);
-    extendedPythonGenerator.init(this.blocklyWorkspace);
-    extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.generatorContext);
+    extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.module);
 
     const blocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
     const mechanisms: storageModuleContent.MechanismInRobot[] = this.getMechanismsFromWorkspace();

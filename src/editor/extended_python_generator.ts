@@ -21,7 +21,7 @@
 
 import * as Blockly from 'blockly/core';
 import { PythonGenerator } from 'blockly/python';
-import { GeneratorContext } from './generator_context';
+import { createGeneratorContext, GeneratorContext } from './generator_context';
 import * as mechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import {
@@ -69,7 +69,7 @@ export class OpModeDetails {
 
 export class ExtendedPythonGenerator extends PythonGenerator {
   private workspace: Blockly.Workspace | null = null;
-  private context: GeneratorContext | null = null;
+  private readonly context: GeneratorContext;
 
   // Fields related to generating the __init__ for a mechanism.
   private hasAnyComponents = false;
@@ -85,6 +85,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   constructor() {
     super('Python');
+    this.context = createGeneratorContext();
   }
 
   init(workspace: Blockly.Workspace){
@@ -128,22 +129,24 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     return "self." + varName;
   }
 
-  mrcWorkspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
+  mrcWorkspaceToCode(workspace: Blockly.Workspace, module: storageModule.Module): string {
     this.workspace = workspace;
-    this.context = context;
+
+    this.context.setModule(module);
+    this.init(workspace);
 
     this.hasAnyComponents = false;
     this.componentPorts = Object.create(null);
     if (this.getModuleType() ===  storageModule.ModuleType.MECHANISM) {
-      this.hasAnyComponents = mechanismContainerHolder.hasAnyComponents(this.workspace);
-      mechanismContainerHolder.getComponentPorts(this.workspace, this.componentPorts);
+      this.hasAnyComponents = mechanismContainerHolder.hasAnyComponents(workspace);
+      mechanismContainerHolder.getComponentPorts(workspace, this.componentPorts);
     }
-    this.hasAnyEventHandlers = eventHandler.getHasAnyEnabledEventHandlers(this.workspace);
+    this.hasAnyEventHandlers = eventHandler.getHasAnyEnabledEventHandlers(workspace);
 
     const code = super.workspaceToCode(workspace);
 
-    this.workspace = workspace;
-    this.context = null;
+    this.context.setModule(null);
+    this.workspace = null;
     return code;
   }
 
@@ -192,7 +195,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   finish(code: string): string {
-    if (this.context && this.workspace) {
+    if (this.workspace) {
       const className = this.context.getClassName();
       const baseClassName = this.context.getBaseClassName();
       const decorations = this.details?.decorations(className);

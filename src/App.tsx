@@ -33,7 +33,6 @@ import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
 import { TabType } from './types/TabType';
 
-import { createGeneratorContext, GeneratorContext } from './editor/generator_context';
 import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
 
@@ -171,8 +170,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [theme, setTheme] = React.useState('dark');
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
-
-  const generatorContext = React.useRef<GeneratorContext | null>(null);
 
   /** modulePaths controls how BlocklyComponents are created. */
   const modulePaths = React.useRef<string[]>([]);
@@ -434,7 +431,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   // Initialize blocks when app loads
   React.useEffect(() => {
     initializeBlocks();
-    generatorContext.current = createGeneratorContext();
   }, []);
 
   React.useEffect(() => {
@@ -443,9 +439,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
   // Update generator context and load module blocks when current module changes
   React.useEffect(() => {
-    if (generatorContext.current) {
-      generatorContext.current.setModule(currentModule);
-    }
     if (currentModule) {
       if (modulePaths.current.includes(currentModule.modulePath)) {
         activateEditor();
@@ -459,9 +452,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const activateEditor = () => {
     if (!project || !currentModule) {
       return;
-    }
-    if (generatorContext.current) {
-      generatorContext.current.setModule(currentModule);
     }
     for (const modulePath in modulePathToBlocklyComponent.current) {
       const blocklyComponent = modulePathToBlocklyComponent.current[modulePath];
@@ -485,7 +475,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   };
 
   const setupWorkspace = (modulePath: string, newWorkspace: Blockly.WorkspaceSvg) => {
-    if (!project || !storage || !generatorContext.current) {
+    if (!project || !storage) {
       return;
     }
     const module = storageProject.findModuleByModulePath(project, modulePath);
@@ -506,7 +496,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     }
 
     const newEditor = new editor.Editor(
-        newWorkspace, module, project, generatorContext.current, storage, modulePathToContentText);
+        newWorkspace, module, project, storage, modulePathToContentText);
     modulePathToEditor.current[modulePath] = newEditor;
     newEditor.loadModuleBlocks();
     newEditor.updateToolbox(shownPythonToolboxCategories);
@@ -519,11 +509,11 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   // Generate code when module or regeneration trigger changes
   React.useEffect(() => {
     let generatedCode = '';
-    if (currentModule && generatorContext.current) {
+    if (currentModule) {
       if (currentModule.modulePath in modulePathToBlocklyComponent.current) {
         const blocklyComponent = modulePathToBlocklyComponent.current[currentModule.modulePath];
         generatedCode = extendedPythonGenerator.mrcWorkspaceToCode(
-            blocklyComponent.getBlocklyWorkspace(), generatorContext.current);
+            blocklyComponent.getBlocklyWorkspace(), currentModule);
       }
     }
     setGeneratedCode(generatedCode);
