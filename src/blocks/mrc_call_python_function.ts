@@ -531,7 +531,7 @@ const CALL_PYTHON_FUNCTION = {
   getComponents: function(this: CallPythonFunctionBlock): storageModuleContent.Component[] {
     // Get the list of components whose type matches this.mrcComponentClassName.
     const components: storageModuleContent.Component[] = [];
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
     if (editor) {
       let componentsToConsider: storageModuleContent.Component[] = [];
       if (this.mrcMechanismId) {
@@ -550,7 +550,7 @@ const CALL_PYTHON_FUNCTION = {
             break;
           }
         }
-      } else if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
+      } else if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
         // Only consider components (regular and private) in the current workspace.
         componentsToConsider = editor.getAllComponentsFromWorkspace();
       } else {
@@ -567,7 +567,7 @@ const CALL_PYTHON_FUNCTION = {
   },
   mrcOnLoad: function(this: CallPythonFunctionBlock): void {
     // mrcOnLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly workspace.
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
     if (!editor) {
       return;
     }
@@ -654,7 +654,7 @@ const CALL_PYTHON_FUNCTION = {
     // If the robot method has changed, update the block if possible or put a
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_ROBOT) {
-      if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
+      if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
         warnings.push('This block is not allowed to be used inside a mechanism.');
       } else {
         let foundRobotMethod = false;
@@ -700,7 +700,7 @@ const CALL_PYTHON_FUNCTION = {
     // If the method has changed, update the block if possible or put a
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_MECHANISM) {
-      if (editor.getCurrentModuleType() === storageModule.ModuleType.MECHANISM) {
+      if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
         warnings.push('This block is not allowed to be used inside a mechanism.');
       } else {
         let foundMechanism = false;

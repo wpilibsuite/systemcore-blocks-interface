@@ -33,7 +33,6 @@ import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
 import { TabType } from './types/TabType';
 
-import { createGeneratorContext, GeneratorContext } from './editor/generator_context';
 import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
 
@@ -161,6 +160,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+  const [modulePathToContentText, setModulePathToContentText] = React.useState<{[modulePath: string]: string}>({});
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [activeTab, setActiveTab] = React.useState('');
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
@@ -171,9 +171,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
 
-  const blocksEditor = React.useRef<editor.Editor | null>(null);
-  const generatorContext = React.useRef<GeneratorContext | null>(null);
-  const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
+  /** modulePaths controls how BlocklyComponents are created. */
+  const modulePaths = React.useRef<string[]>([]);
+  const modulePathToBlocklyComponent = React.useRef<{[modulePath: string]: BlocklyComponentType}>({});
+  const modulePathToEditor = React.useRef<{[modulePath: string]: editor.Editor}>({});
 
   /** Initialize language from UserSettings when app first starts. */
   React.useEffect(() => {
@@ -207,7 +208,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       // Save current blocks before language change
       if (currentModule && areBlocksModified()) {
         try {
-          await saveBlocks();
+          await saveModule();
         } catch (e) {
           console.error('Failed to save blocks before language change:', e);
         }
@@ -222,9 +223,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         }
       }
 
-      // Update toolbox after language change
-      if (blocksEditor.current) {
-        blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+      // Update toolbox in all editors after language change.
+      for (const modulePath in modulePathToEditor.current) {
+        const editor = modulePathToEditor.current[modulePath];
+        editor.updateToolbox(shownPythonToolboxCategories);
       }
     };
 
@@ -298,19 +300,32 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       return;
     }
 
+    // Check whether this blockly workspace is for the current module.
+    if (!currentModule ||
+        !(currentModule.modulePath in modulePathToBlocklyComponent.current)) {
+      return;
+    }
+    const blocklyComponent = modulePathToBlocklyComponent.current[currentModule.modulePath];
+    if (event.workspaceId != blocklyComponent.getBlocklyWorkspace().id) {
+      return;
+    }
+
     setTriggerPythonRegeneration(Date.now());
   };
 
   /** Saves blocks to storage with success/error messaging. */
-  const saveBlocks = async (): Promise<boolean> => {
+  const saveModule = async (): Promise<boolean> => {
     return new Promise(async (resolve, reject) => {
-      if (!blocksEditor.current) {
+      if (!currentModule ||
+          !(currentModule.modulePath in modulePathToEditor.current)) {
         reject(new Error('Blocks editor not initialized'));
         return;
       }
+      const editor = modulePathToEditor.current[currentModule.modulePath];
 
       try {
-        await blocksEditor.current.saveBlocks();
+        const moduleContentText = await editor.saveModule();
+        modulePathToContentText[currentModule.modulePath] = moduleContentText;
         messageApi.open({
           type: 'success',
           content: SAVE_SUCCESS_MESSAGE,
@@ -339,13 +354,18 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
   /** Checks if blocks have been modified. */
   const areBlocksModified = (): boolean => {
-    return blocksEditor.current ? blocksEditor.current.isModified() : false;
+    if (currentModule &&
+        currentModule.modulePath in modulePathToEditor.current) {
+      const editor = modulePathToEditor.current[currentModule.modulePath];
+      return editor.isModified();
+    }
+    return false;
   };
 
   /** Changes current module with automatic saving if modified. */
   const changeModule = async (module: storageModule.Module | null): Promise<void> => {
     if (currentModule && areBlocksModified()) {
-      await saveBlocks();
+      await saveModule();
     }
     setCurrentModule(module);
   };
@@ -391,11 +411,13 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   };
 
   /** Handles toolbox update requests from blocks */
-  const handleToolboxUpdateRequest = React.useCallback(() => {
-    if (blocksEditor.current && currentModule) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+  const handleToolboxUpdateRequest = React.useCallback((e: Event) => {
+    const workspaceId = (e as CustomEvent).detail.workspaceId;
+    const correspondingEditor = editor.Editor.getEditorForBlocklyWorkspaceId(workspaceId);
+    if (correspondingEditor) {
+      correspondingEditor.updateToolbox(shownPythonToolboxCategories);
     }
-  }, [currentModule, shownPythonToolboxCategories, i18n.language]);
+  }, [shownPythonToolboxCategories, i18n.language]);
 
   // Add event listener for toolbox updates
   React.useEffect(() => {
@@ -417,85 +439,153 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
   // Update generator context and load module blocks when current module changes
   React.useEffect(() => {
-    if (generatorContext.current) {
-      generatorContext.current.setModule(currentModule);
-    }
-    if (blocksEditor.current) {
-      blocksEditor.current.loadModuleBlocks(currentModule, project);
+    if (currentModule) {
+      if (modulePaths.current.includes(currentModule.modulePath)) {
+        activateEditor();
+      } else {
+        // Add the module path to modulePaths to create a new BlocklyComponent.
+        modulePaths.current.push(currentModule.modulePath);
+      }
     }
   }, [currentModule]);
 
-  const setupWorkspace = (newWorkspace: Blockly.WorkspaceSvg) => {
-    if (!blocklyComponent.current || !storage) {
+  const activateEditor = () => {
+    if (!project || !currentModule) {
       return;
     }
-    // Recreate workspace when Blockly component is ready
+    for (const modulePath in modulePathToBlocklyComponent.current) {
+      const blocklyComponent = modulePathToBlocklyComponent.current[modulePath];
+      const active = (modulePath === currentModule.modulePath);
+      const workspaceIsVisible = blocklyComponent.getBlocklyWorkspace()!.isVisible();
+      if (active != workspaceIsVisible) {
+        blocklyComponent.setActive(active);
+      }
+    }
+    if (currentModule.modulePath in modulePathToEditor.current) {
+      const editor = modulePathToEditor.current[currentModule.modulePath];
+      editor.makeCurrent(project, modulePathToContentText);
+    }
+  };
+
+  const setupBlocklyComponent = (modulePath: string, newBlocklyComponent: BlocklyComponentType) => {
+    modulePathToBlocklyComponent.current[modulePath] = newBlocklyComponent;
+    if (currentModule) {
+      newBlocklyComponent.setActive(modulePath === currentModule.modulePath);
+    }
+  };
+
+  const setupWorkspace = (modulePath: string, newWorkspace: Blockly.WorkspaceSvg) => {
+    if (!project || !storage) {
+      return;
+    }
+    const module = storageProject.findModuleByModulePath(project, modulePath);
+    if (!module) {
+      console.error("setupWorkspace called for unknown module path " + modulePath);
+      return;
+    }
+
     ChangeFramework.setup(newWorkspace);
     newWorkspace.addChangeListener(mutatorOpenListener);
     newWorkspace.addChangeListener(handleBlocksChanged);
 
     registerToolboxButton(newWorkspace, messageApi);
 
-    generatorContext.current = createGeneratorContext();
-
-    if (currentModule) {
-      generatorContext.current.setModule(currentModule);
+    const oldEditor = modulePathToEditor.current[modulePath];
+    if (oldEditor) {
+      oldEditor.abandon();
     }
 
-    if (blocksEditor.current) {
-      blocksEditor.current.abandon();
-    }
-    blocksEditor.current = new editor.Editor(newWorkspace, generatorContext.current, storage);
-    blocksEditor.current.makeCurrent();
+    const newEditor = new editor.Editor(
+        newWorkspace, module, project, storage, modulePathToContentText);
+    modulePathToEditor.current[modulePath] = newEditor;
+    newEditor.loadModuleBlocks();
+    newEditor.updateToolbox(shownPythonToolboxCategories);
 
-    // Set the current module in the editor after creating it
-    if (currentModule) {
-      blocksEditor.current.loadModuleBlocks(currentModule, project);
+    if (currentModule && currentModule.modulePath === modulePath) {
+      activateEditor();
     }
-
-    blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
   };
-
-  // Initialize Blockly workspace and editor when component and storage are ready
-  React.useEffect(() => {
-    if (!blocklyComponent.current || !storage) {
-      return;
-    }
-
-    const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-    if (blocklyWorkspace) {
-      setupWorkspace(blocklyWorkspace);
-    }
-  }, [blocklyComponent, storage]);
 
   // Generate code when module or regeneration trigger changes
   React.useEffect(() => {
-    if (currentModule && blocklyComponent.current && generatorContext.current) {
-      const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-      setGeneratedCode(extendedPythonGenerator.mrcWorkspaceToCode(
-        blocklyWorkspace,
-        generatorContext.current
-      ));
-    } else {
-      setGeneratedCode('');
+    let generatedCode = '';
+    if (currentModule) {
+      if (currentModule.modulePath in modulePathToBlocklyComponent.current) {
+        const blocklyComponent = modulePathToBlocklyComponent.current[currentModule.modulePath];
+        generatedCode = extendedPythonGenerator.mrcWorkspaceToCode(
+            blocklyComponent.getBlocklyWorkspace(), currentModule);
+      }
     }
-  }, [currentModule, project, triggerPythonRegeneration, blocklyComponent]);
+    setGeneratedCode(generatedCode);
+  }, [currentModule, project, triggerPythonRegeneration]);
 
-  // Update toolbox when module or categories change
+  // Update toolbox when categories change
   React.useEffect(() => {
-    if (blocksEditor.current) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+    if (currentModule) {
+      if (currentModule.modulePath in modulePathToEditor.current) {
+        const editor = modulePathToEditor.current[currentModule.modulePath];
+        editor.updateToolbox(shownPythonToolboxCategories);
+      }
     }
-  }, [currentModule, shownPythonToolboxCategories]);
+  }, [shownPythonToolboxCategories]);
 
-  // Update tab items when project changes
+  // Fetch modules when project changes.
+  React.useEffect(() => {
+    if (project && storage) {
+      const fetchModules = async () => {
+        const promises: {[modulePath: string]: Promise<string>} = {}; // value is promise of module content.
+        promises[project.robot.modulePath] = storage.fetchFileContentText(project.robot.modulePath);
+        project.mechanisms.forEach(mechanism => {
+          promises[mechanism.modulePath] = storage.fetchFileContentText(mechanism.modulePath);
+        });
+        project.opModes.forEach(opmode => {
+          promises[opmode.modulePath] = storage.fetchFileContentText(opmode.modulePath);
+        });
+        const updatedModulePathToContentText: {[modulePath: string]: string} = {}; // value is module content text
+        await Promise.all(
+          Object.entries(promises).map(async ([modulePath, promise]) => {
+            updatedModulePathToContentText[modulePath] = await promise;
+          })
+        );
+        const oldModulePathToContentText = modulePathToContentText;
+        setModulePathToContentText(updatedModulePathToContentText);
+
+        // Remove any deleted modules from modulePaths, modulePathToBlocklyComponent, and
+        // modulePathToEditor. Update currentModule if the current module was deleted.
+        for (const modulePath in oldModulePathToContentText) {
+          if (modulePath in updatedModulePathToContentText) {
+            continue;
+          }
+          if (currentModule && currentModule.modulePath === modulePath) {
+            setCurrentModule(project.robot);
+            setActiveTab(project.robot.modulePath);
+          }
+          const indexToRemove: number = modulePaths.current.indexOf(modulePath);
+          if (indexToRemove !== -1) {
+            modulePaths.current.splice(indexToRemove, 1);
+          }
+          if (modulePath in modulePathToBlocklyComponent.current) {
+            delete modulePathToBlocklyComponent.current[modulePath];
+          }
+          if (modulePath in modulePathToEditor.current) {
+            const editor = modulePathToEditor.current[modulePath];
+            editor.abandon();
+            delete modulePathToEditor.current[modulePath];
+          }
+        }
+      };
+      fetchModules();
+    }
+  }, [project]);
+
+  // Update tab items when fetching modules is done.
   React.useEffect(() => {
     if (project) {
       const tabs = createTabItemsFromProject(project);
       setTabItems(tabs);
       setActiveTab(project.robot.modulePath);
     }
-  }, [project]);
+  }, [modulePathToContentText]);
 
   const { Sider, Content } = Antd.Layout;
 
@@ -546,11 +636,15 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               />
               <Antd.Layout>
                 <Content>
-                  <BlocklyComponent
-                    theme={theme}
-                    onWorkspaceRecreated={setupWorkspace}
-                    ref={blocklyComponent}
-                  />
+                  {modulePaths.current.map((modulePath) => (
+                    <BlocklyComponent
+                      key={modulePath}
+                      modulePath={modulePath}
+                      onBlocklyComponentCreated={setupBlocklyComponent}
+                      theme={theme}
+                      onWorkspaceCreated={setupWorkspace}
+                    />
+                  ))}
                 </Content>
                 <Sider
                   collapsible

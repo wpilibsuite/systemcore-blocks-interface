@@ -68,7 +68,7 @@ class MethodsCategory {
     // Collect the method names that are already overridden in the blockly workspace.
     const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
 
-    switch (editor.getCurrentModuleType()) {
+    switch (editor.getModuleType()) {
       case storageModule.ModuleType.ROBOT:
         // TODO(lizlooney): We need a way to mark a method in python as not overridable.
         // For example, in RobotBase, define_hardware, register_event_handler,

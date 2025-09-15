@@ -22,7 +22,6 @@
 import * as Blockly from 'blockly/core';
 
 import { extendedPythonGenerator } from './extended_python_generator';
-import { GeneratorContext } from './generator_context';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
@@ -43,27 +42,43 @@ export class Editor {
   private static workspaceIdToEditor: { [workspaceId: string]: Editor } = {};
   private static currentEditor: Editor | null = null;
 
-  private blocklyWorkspace: Blockly.WorkspaceSvg;
-  private generatorContext: GeneratorContext;
-  private storage: commonStorage.Storage;
-  private currentModule: storageModule.Module | null = null;
-  private currentProject: storageProject.Project | null = null;
-  private modulePath: string = '';
-  private robotPath: string = '';
-  private moduleContentText: string = '';
+  private readonly blocklyWorkspace: Blockly.WorkspaceSvg;
+  private readonly module: storageModule.Module;
+  private readonly projectName: string;
+  private readonly storage: commonStorage.Storage;
+  private readonly modulePath: string;
+  private readonly robotPath: string;
+  private moduleContentText: string;
+  private modulePathToModuleContent: {[modulePath: string]: storageModuleContent.ModuleContent} = {};
   private robotContent: storageModuleContent.ModuleContent | null = null;
+  private mechanisms: storageModule.Mechanism[] = [];
   private mechanismClassNameToModuleContent: {[mechanismClassName: string]: storageModuleContent.ModuleContent} = {};
   private bindedOnChange: any = null;
+  private shownPythonToolboxCategories: Set<string> | null = null;
   private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
 
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg, generatorContext: GeneratorContext, storage: commonStorage.Storage) {
-    Editor.workspaceIdToEditor[blocklyWorkspace.id] = this;
+  constructor(
+      blocklyWorkspace: Blockly.WorkspaceSvg,
+      module: storageModule.Module,
+      project: storageProject.Project,
+      storage: commonStorage.Storage,
+      modulePathToContentText: {[modulePath: string]: string}) {
     this.blocklyWorkspace = blocklyWorkspace;
-    this.generatorContext = generatorContext;
+    this.module = module;
+    this.projectName = project.projectName;
     this.storage = storage;
+    this.modulePath = module.modulePath;
+    this.robotPath = project.robot.modulePath;
+    this.moduleContentText = modulePathToContentText[module.modulePath];
+    this.parseModules(project, modulePathToContentText);
+    Editor.workspaceIdToEditor[blocklyWorkspace.id] = this;
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      return;
+    }
     if (event.type === Blockly.Events.FINISHED_LOADING) {
       // Remove the while-loading listener.
       this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
@@ -96,14 +111,24 @@ export class Editor {
       // UI events are things like scrolling, zooming, etc.
       return;
     }
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      return;
+    }
     if (this.blocklyWorkspace.isDragging()) {
       return;
     }
     // TODO(lizlooney): do we need to do anything here?
   }
 
-  public makeCurrent(): void {
+  public makeCurrent(
+      project: storageProject.Project,
+      modulePathToContentText: {[modulePath: string]: string}): void {
     Editor.currentEditor = this;
+
+    // Parse modules since they might have changed.
+    this.parseModules(project, modulePathToContentText);
+    this.updateToolboxImpl();
   }
 
   public abandon(): void {
@@ -115,99 +140,59 @@ export class Editor {
     }
   }
 
-  public async loadModuleBlocks(
-      currentModule: storageModule.Module | null,
-      currentProject: storageProject.Project | null) {
-    this.generatorContext.setModule(currentModule);
-    this.currentModule = currentModule;
-    this.currentProject = currentProject;
-
-    if (this.currentModule && this.currentProject) {
-      this.modulePath = this.currentModule.modulePath;
-      this.robotPath = this.currentProject.robot.modulePath;
-    } else {
-      this.modulePath = '';
-      this.robotPath = '';
+  private parseModules(
+      project: storageProject.Project,
+      modulePathToContentText: {[modulePath: string]: string}): void {
+    // Parse the modules.
+    this.modulePathToModuleContent = {}
+    for (const modulePath in modulePathToContentText) {
+      const moduleContentText = modulePathToContentText[modulePath];
+      this.modulePathToModuleContent[modulePath] = storageModuleContent.parseModuleContentText(
+          moduleContentText);
     }
-    this.moduleContentText = '';
-    this.robotContent = null;
-    this.mechanismClassNameToModuleContent = {}
-    this.clearBlocklyWorkspace();
 
-    if (this.currentModule && this.currentProject) {
-      // Fetch the content for the current module, the robot, and the mechanisms.
-      const promises: { [modulePath: string]: Promise<string> } = {}; // value is promise of module content.
-      promises[this.modulePath] = this.storage.fetchFileContentText(this.modulePath);
-      if (this.robotPath !== this.modulePath) {
-        // Also fetch the robot module content. It contains components, etc, that can be used in OpModes.
-        promises[this.robotPath] = this.storage.fetchFileContentText(this.robotPath)
-      }
-      for (const mechanism of this.currentProject.mechanisms) {
-        // Fetch the module content text for the mechanism.
-        if (mechanism.modulePath !== this.modulePath) {
-          promises[mechanism.modulePath] = this.storage.fetchFileContentText(mechanism.modulePath);
-        }
-      }
+    this.robotContent = this.modulePathToModuleContent[this.robotPath];
 
-      const modulePathToContentText: { [modulePath: string]: string } = {}; // value is module content
-      await Promise.all(
-        Object.entries(promises).map(async ([modulePath, promise]) => {
-          modulePathToContentText[modulePath] = await promise;
-        })
-      );
-      this.moduleContentText = modulePathToContentText[this.modulePath];
-      this.robotContent = storageModuleContent.parseModuleContentText(
-          (this.robotPath === this.modulePath)
-              ? this.moduleContentText
-              : modulePathToContentText[this.robotPath]);
-      for (const mechanism of this.currentProject.mechanisms) {
-        this.mechanismClassNameToModuleContent[mechanism.className] =
-            storageModuleContent.parseModuleContentText(
-                (mechanism.modulePath === this.modulePath)
-                    ? this.moduleContentText
-                    : modulePathToContentText[mechanism.modulePath]);
+    this.mechanisms = project.mechanisms;
+    this.mechanismClassNameToModuleContent = {};
+    for (const mechanism of this.mechanisms) {
+      const moduleContent = this.modulePathToModuleContent[mechanism.modulePath];
+      if (!moduleContent) {
+        console.error(this.modulePath + " editor.parseModules - modulePathToModuleContent['" +
+            mechanism.modulePath + "'] is undefined");
+        continue;
       }
-      this.loadBlocksIntoBlocklyWorkspace();
+      this.mechanismClassNameToModuleContent[mechanism.className] = moduleContent;
     }
   }
 
-  private clearBlocklyWorkspace() {
-    if (this.bindedOnChange) {
-      this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
-      this.bindedOnChange = null;
+  public loadModuleBlocks() {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      return;
     }
-    this.blocklyWorkspace.hideChaff();
-    this.blocklyWorkspace.clear();
-    this.blocklyWorkspace.scroll(0, 0);
-    this.setToolbox(EMPTY_TOOLBOX);
-  }
-
-  private setToolbox(toolbox: Blockly.utils.toolbox.ToolboxDefinition) {
-    if (toolbox != this.toolbox) {
-      this.toolbox = toolbox;
-      this.blocklyWorkspace.updateToolbox(toolbox);
-      //    testAllBlocksInToolbox(toolbox);
-    }
-  }
-
-  private loadBlocksIntoBlocklyWorkspace() {
     // Add the while-loading listener.
     this.bindedOnChange = this.onChangeWhileLoading.bind(this);
     this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
-    const moduleContent = storageModuleContent.parseModuleContentText(this.moduleContentText);
+    const moduleContent = this.modulePathToModuleContent[this.modulePath];
     Blockly.serialization.workspaces.load(moduleContent.getBlocks(), this.blocklyWorkspace);
   }
 
   public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
-    if (this.currentModule) {
-      if (!this.robotContent) {
-        // The Robot content hasn't been fetched yet. Try again in a bit.
-        setTimeout(() => {
-          this.updateToolbox(shownPythonToolboxCategories)
-        }, 50);
-        return;
-      }
-      this.setToolbox(getToolboxJSON(shownPythonToolboxCategories, this));
+    this.shownPythonToolboxCategories = shownPythonToolboxCategories;
+    this.updateToolboxImpl();
+  }
+
+  private updateToolboxImpl(): void {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      return;
+    }
+    const toolbox = getToolboxJSON(this.shownPythonToolboxCategories, this);
+    if (toolbox != this.toolbox) {
+      this.toolbox = toolbox;
+      this.blocklyWorkspace.updateToolbox(toolbox);
+      // testAllBlocksInToolbox(toolbox);
     }
   }
 
@@ -228,21 +213,18 @@ export class Editor {
     return this.blocklyWorkspace;
   }
 
-  public getCurrentModuleType(): storageModule.ModuleType | null {
-    if (this.currentModule) {
-      return this.currentModule.moduleType;
-    }
-    return null;
+  public getModuleType(): storageModule.ModuleType {
+    return this.module.moduleType;
   }
 
   private getModuleContentText(): string {
-    if (!this.currentModule) {
-      throw new Error('getModuleContentText: this.currentModule is null.');
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('getModuleContentText: this.blocklyWorkspace has been disposed.');
     }
 
     // Generate python because some parts of components, events, and methods are affected.
-    extendedPythonGenerator.init(this.blocklyWorkspace);
-    extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.generatorContext);
+    extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.module);
 
     const blocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
     const mechanisms: storageModuleContent.MechanismInRobot[] = this.getMechanismsFromWorkspace();
@@ -250,61 +232,89 @@ export class Editor {
     const privateComponents: storageModuleContent.Component[] = this.getPrivateComponentsFromWorkspace();
     const events: storageModuleContent.Event[] = this.getEventsFromWorkspace();
     const methods: storageModuleContent.Method[] = (
-        this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
-        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM)
+        this.module.moduleType === storageModule.ModuleType.ROBOT ||
+        this.module.moduleType === storageModule.ModuleType.MECHANISM)
         ? this.getMethodsForOutsideFromWorkspace()
         : [];
     return storageModuleContent.makeModuleContentText(
-      this.currentModule, blocks, mechanisms, components, privateComponents, events, methods);
+      this.module, blocks, mechanisms, components, privateComponents, events, methods);
   }
 
   private getMechanismsFromWorkspace(): storageModuleContent.MechanismInRobot[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const mechanisms: storageModuleContent.MechanismInRobot[] = [];
-    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
+    if (this.module.moduleType === storageModule.ModuleType.ROBOT) {
       mechanismComponentHolder.getMechanisms(this.blocklyWorkspace, mechanisms);
     }
     return mechanisms;
   }
 
   private getComponentsFromWorkspace(): storageModuleContent.Component[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const components: storageModuleContent.Component[] = [];
-    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
-        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
+    if (this.module.moduleType === storageModule.ModuleType.ROBOT ||
+        this.module.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getComponents(this.blocklyWorkspace, components);
     }
     return components;
   }
 
   private getPrivateComponentsFromWorkspace(): storageModuleContent.Component[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const components: storageModuleContent.Component[] = [];
-    if (this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
+    if (this.module.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getPrivateComponents(this.blocklyWorkspace, components);
     }
     return components;
   }
 
   public getAllComponentsFromWorkspace(): storageModuleContent.Component[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const components: storageModuleContent.Component[] = [];
-    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
-        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
+    if (this.module.moduleType === storageModule.ModuleType.ROBOT ||
+        this.module.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getAllComponents(this.blocklyWorkspace, components);
     }
     return components;
   }
 
   public getMethodsForWithinFromWorkspace(): storageModuleContent.Method[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const methods: storageModuleContent.Method[] = [];
     classMethodDef.getMethodsForWithin(this.blocklyWorkspace, methods);
     return methods;
   }
 
   private getMethodsForOutsideFromWorkspace(): storageModuleContent.Method[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const methods: storageModuleContent.Method[] = [];
     classMethodDef.getMethodsForOutside(this.blocklyWorkspace, methods);
     return methods;
   }
 
   public getMethodNamesAlreadyOverriddenInWorkspace(): string[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const methodNamesAlreadyOverridden: string[] = [];
     classMethodDef.getMethodNamesAlreadyOverriddenInWorkspace(
         this.blocklyWorkspace, methodNamesAlreadyOverridden);
@@ -312,15 +322,23 @@ export class Editor {
   }
 
   public getEventsFromWorkspace(): storageModuleContent.Event[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const events: storageModuleContent.Event[] = [];
-    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT ||
-        this.currentModule?.moduleType === storageModule.ModuleType.MECHANISM) {
+    if (this.module.moduleType === storageModule.ModuleType.ROBOT ||
+        this.module.moduleType === storageModule.ModuleType.MECHANISM) {
       mechanismComponentHolder.getEvents(this.blocklyWorkspace, events);
     }
     return events;
   }
 
   public getRobotEventHandlersAlreadyInWorkspace(): eventHandler.EventHandlerBlock[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const eventHandlerBlocks: eventHandler.EventHandlerBlock[] = [];
     eventHandler.getRobotEventHandlerBlocks(this.blocklyWorkspace, eventHandlerBlocks);
     return eventHandlerBlocks;
@@ -328,30 +346,33 @@ export class Editor {
 
   public getMechanismEventHandlersAlreadyInWorkspace(
       mechanismInRobot: storageModuleContent.MechanismInRobot): eventHandler.EventHandlerBlock[] {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
     const eventHandlerBlocks: eventHandler.EventHandlerBlock[] = [];
     eventHandler.getMechanismEventHandlerBlocks(
         this.blocklyWorkspace, mechanismInRobot.mechanismId, eventHandlerBlocks);
     return eventHandlerBlocks;
   }
 
-  public async saveBlocks() {
+  public async saveModule(): Promise<string> {
     const moduleContentText = this.getModuleContentText();
     try {
       await this.storage.saveFile(this.modulePath, moduleContentText);
       this.moduleContentText = moduleContentText;
-      if (this.currentProject) {
-        await storageProject.saveProjectInfo(this.storage, this.currentProject.projectName);
-      }
+      await storageProject.saveProjectInfo(this.storage, this.projectName);
     } catch (e) {
       throw e;
     }
+    return moduleContentText;
   }
 
   /**
    * Returns the mechanisms defined in the robot.
    */
   public getMechanismsFromRobot(): storageModuleContent.MechanismInRobot[] {
-    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
+    if (this.module.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getMechanismsFromWorkspace();
     }
     if (this.robotContent) {
@@ -364,7 +385,7 @@ export class Editor {
    * Returns the components defined in the robot.
    */
   public getComponentsFromRobot(): storageModuleContent.Component[] {
-    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
+    if (this.module.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getComponentsFromWorkspace();
     }
     if (this.robotContent) {
@@ -377,7 +398,7 @@ export class Editor {
    * Returns the events defined in the robot.
    */
   public getEventsFromRobot(): storageModuleContent.Event[] {
-    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
+    if (this.module.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getEventsFromWorkspace();
     }
     if (this.robotContent) {
@@ -390,7 +411,7 @@ export class Editor {
    * Returns the methods defined in the robot.
    */
   public getMethodsFromRobot(): storageModuleContent.Method[] {
-    if (this.currentModule?.moduleType === storageModule.ModuleType.ROBOT) {
+    if (this.module.moduleType === storageModule.ModuleType.ROBOT) {
       return this.getMethodsForWithinFromWorkspace();
     }
     if (this.robotContent) {
@@ -403,19 +424,17 @@ export class Editor {
    * Returns the mechanisms in this project.
    */
   public getMechanisms(): storageModule.Mechanism[] {
-    return this.currentProject ? this.currentProject.mechanisms : [];
+    return this.mechanisms;
   }
 
   /**
    * Returns the Mechanism matching the given MechanismInRobot.
    */
   public getMechanism(mechanismInRobot: storageModuleContent.MechanismInRobot): storageModule.Mechanism | null {
-    if (this.currentProject) {
-      for (const mechanism of this.currentProject.mechanisms) {
-        const fullClassName = storageNames.pascalCaseToSnakeCase(mechanism.className) + '.' + mechanism.className;
-        if (fullClassName === mechanismInRobot.className) {
-          return mechanism;
-        }
+    for (const mechanism of this.mechanisms) {
+      const fullClassName = storageNames.pascalCaseToSnakeCase(mechanism.className) + '.' + mechanism.className;
+      if (fullClassName === mechanismInRobot.className) {
+        return mechanism;
       }
     }
     return null;
@@ -425,7 +444,7 @@ export class Editor {
    * Returns the components defined in the given mechanism.
    */
   public getComponentsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Component[] {
-    if (this.currentModule?.modulePath === mechanism.modulePath) {
+    if (this.module.modulePath === mechanism.modulePath) {
       return this.getComponentsFromWorkspace();
     }
     if (mechanism.className in this.mechanismClassNameToModuleContent) {
@@ -439,7 +458,7 @@ export class Editor {
    * This is used when creating mechanism blocks that need all components for port parameters.
    */
   public getAllComponentsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Component[] {
-    if (this.currentModule?.modulePath === mechanism.modulePath) {
+    if (this.module.modulePath === mechanism.modulePath) {
       return this.getAllComponentsFromWorkspace();
     }
     if (mechanism.className in this.mechanismClassNameToModuleContent) {
@@ -457,7 +476,7 @@ export class Editor {
    * Returns the events defined in the given mechanism.
    */
   public getEventsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Event[] {
-    if (this.currentModule?.modulePath === mechanism.modulePath) {
+    if (this.module.modulePath === mechanism.modulePath) {
       return this.getEventsFromWorkspace();
     }
     if (mechanism.className in this.mechanismClassNameToModuleContent) {
@@ -470,7 +489,7 @@ export class Editor {
    * Returns the methods defined in the given mechanism.
    */
   public getMethodsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Method[] {
-    if (this.currentModule?.modulePath === mechanism.modulePath) {
+    if (this.module.modulePath === mechanism.modulePath) {
       return this.getMethodsForWithinFromWorkspace();
     }
     if (mechanism.className in this.mechanismClassNameToModuleContent) {
@@ -479,21 +498,25 @@ export class Editor {
     throw new Error('getMethodsFromMechanism: mechanism not found: ' + mechanism.className);
   }
 
-  public static getEditorForBlocklyWorkspace(workspace: Blockly.Workspace): Editor | null {
+  public static getEditorForBlocklyWorkspace(workspace: Blockly.Workspace, opt_returnCurrentIfNotFound?: boolean): Editor | null {
     if (workspace.id in Editor.workspaceIdToEditor) {
       return Editor.workspaceIdToEditor[workspace.id];
     }
 
-    // If the workspace id was not found, it might be because the workspace is associated with a block mutator's flyout.
-    // Try this workspaces's root workspace.
+    // If the workspace id was not found, it might be because the workspace is associated with a
+    // block mutator's flyout. Try this workspaces's root workspace.
     const rootWorkspace = workspace.getRootWorkspace();
     if (rootWorkspace &&
         rootWorkspace.id in Editor.workspaceIdToEditor) {
       return Editor.workspaceIdToEditor[rootWorkspace.id];
     }
 
-    // Otherwise, return the current editor.
-    return Editor.currentEditor;
+    return opt_returnCurrentIfNotFound ? Editor.currentEditor : null;
+  }
+
+  public static getEditorForBlocklyWorkspaceId(workspaceId: string): Editor | null {
+    const workspace = Blockly.Workspace.getById(workspaceId);
+    return workspace ? Editor.getEditorForBlocklyWorkspace(workspace) : null;
   }
 
   public static getCurrentEditor(): Editor | null {

@@ -178,7 +178,7 @@ const MECHANISM = {
     // mrcOnLoad is called for each MechanismBlock when the blocks are loaded in the blockly workspace.
     const warnings: string[] = [];
 
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
     if (editor) {
       // Find the mechanism.
       let foundMechanism: storageModule.Mechanism | null = null;

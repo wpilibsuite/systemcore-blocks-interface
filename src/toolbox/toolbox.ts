@@ -15,7 +15,7 @@ export function getToolboxJSON(
     contents: []
   };
 
-  switch (editor.getCurrentModuleType()) {
+  switch (editor.getModuleType()) {
     case storageModule.ModuleType.ROBOT:
     case storageModule.ModuleType.MECHANISM:
       toolbox.contents.push(getHardwareCategory(editor));

@@ -35,12 +35,15 @@ import { useTranslation } from 'react-i18next';
 /** Interface for methods exposed by the BlocklyComponent. */
 export interface BlocklyComponentType {
   getBlocklyWorkspace: () => Blockly.WorkspaceSvg;
+  setActive: (active: boolean) => void;
 }
 
 /** Interface for props passed to the BlocklyComponent. */
 export interface BlocklyComponentProps {
+  modulePath: string;
+  onBlocklyComponentCreated: (modulePath: string, blocklyComponent: BlocklyComponentType) => void;
   theme: string;
-  onWorkspaceRecreated: (workspace: Blockly.WorkspaceSvg) => void;
+  onWorkspaceCreated: (modulePath: string, workspace: Blockly.WorkspaceSvg) => void;
 }
 
 /** Grid spacing for the Blockly workspace. */
@@ -80,213 +83,252 @@ const WORKSPACE_STYLE: React.CSSProperties = {
  * React component that renders a Blockly workspace with proper initialization,
  * cleanup, and resize handling.
  */
-const BlocklyComponent = React.forwardRef<BlocklyComponentType | null, BlocklyComponentProps>(
-    (props, ref): React.JSX.Element => {
-      const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
-      const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
+export default function BlocklyComponent(props: BlocklyComponentProps): React.JSX.Element {
+  const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
+  const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
+  const parentDiv = React.useRef<HTMLDivElement | null>(null);
+  const savedScrollX = React.useRef<number>(0);
+  const savedScrollY = React.useRef<number>(0);
 
-      const { t, i18n } = useTranslation();
-      
+  const { t, i18n } = useTranslation();
+  
 
-      const getBlocklyTheme = (): Blockly.Theme => {
-        const blocklyTheme = 'mrc_theme_' + props.theme.replace(/-/g, '_');
-        // Find the theme by key
-        const themeObj = themes.find(t => t.name === blocklyTheme);
-        if (!themeObj) {
-          throw new Error(`Theme not found: ${blocklyTheme}`);
-        }
-
-        // Return the corresponding Blockly theme
-        return themeObj;
-      };
-
-      /** Creates the Blockly workspace configuration object. */
-      const createWorkspaceConfig = (): Blockly.BlocklyOptions => ({
-        theme: getBlocklyTheme(),
-        horizontalLayout: false, // Forces vertical layout for the workspace
-        // Start with an empty (but not null) toolbox. It will be replaced later.
-        toolbox: {
-          kind: 'categoryToolbox',
-          contents: [],
-        },
-        grid: {
-          spacing: GRID_SPACING,
-          length: GRID_LENGTH,
-          colour: GRID_COLOR,
-          snap: true,
-        },
-        zoom: {
-          controls: true,
-          wheel: true,
-          startScale: DEFAULT_ZOOM_START_SCALE,
-          maxScale: MAX_ZOOM_SCALE,
-          minScale: MIN_ZOOM_SCALE,
-          scaleSpeed: ZOOM_SCALE_SPEED,
-        },
-        scrollbars: true,
-        trashcan: false,
-        move: {
-          scrollbars: true,
-          drag: true,
-          wheel: true,
-        },
-        oneBasedIndex: false,
-        plugins: {
-          ...HardwareConnectionsPluginInfo,
-        },
-      });
-
-      /** Updates the Blockly locale when the language changes. */
-      const updateBlocklyLocale = (): void => {
-        if (!workspaceRef.current) {
-          return;
-        }
-
-        const newIsRtl = i18n.dir() === 'rtl';
-        const currentIsRtl = workspaceRef.current.RTL;
-
-        // If RTL direction changed, we need to recreate the workspace
-        if (newIsRtl !== currentIsRtl) {
-          cleanupWorkspace();
-          initializeWorkspace();
-          if (props.onWorkspaceRecreated) {
-            props.onWorkspaceRecreated(workspaceRef.current!);
-          }
-          return;
-        }
-
-        // Set new locale
-        switch (i18n.language) {
-          case 'es':
-            Blockly.setLocale(Es as any);
-            break;
-          case 'en':
-            Blockly.setLocale(En as any);
-            break;
-          case 'he':
-            Blockly.setLocale(He as any);
-            break;
-          default:
-            Blockly.setLocale(En as any);
-            break;
-        }
-        // Apply custom tokens
-        Blockly.setLocale(customTokens(t));
-
-        // Force complete toolbox rebuild by calling onWorkspaceRecreated AFTER locale is set
-        if (props.onWorkspaceRecreated) {
-          props.onWorkspaceRecreated(workspaceRef.current);
-        }
-      };
-
-      /** Initializes the Blockly workspace. */
-      const initializeWorkspace = (): void => {
-        if (!blocklyDiv.current) {
-          return;
-        }
-
-        // Set Blockly locale
-        switch (i18n.language) {
-          case 'es':
-            Blockly.setLocale(Es as any);
-            break;
-          case 'en':
-            Blockly.setLocale(En as any);
-            break;
-          case 'he':
-            Blockly.setLocale(He as any);
-            break;
-          default:
-            Blockly.setLocale(En as any);
-            break;
-        }
-        Blockly.setLocale(customTokens(t));
-        
-        // Create workspace
-        const workspaceConfig = createWorkspaceConfig();
-        workspaceConfig.rtl = i18n.dir() === 'rtl';
-        const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
-        workspaceRef.current = workspace;
-      };
-
-      /** Cleans up the Blockly workspace on unmount. */
-      const cleanupWorkspace = (): void => {
-        if (workspaceRef.current) {
-          workspaceRef.current.dispose();
-          workspaceRef.current = null;
-        }
-      };
-
-      /** Handles workspace resize events. */
-      const handleWorkspaceResize = (): void => {
-        if (workspaceRef.current) {
-          Blockly.svgResize(workspaceRef.current);
-        }
-      };
-
-      /** Sets up resize observer for the workspace container. */
-      const setupResizeObserver = (): (() => void) | undefined => {
-        const div = blocklyDiv.current;
-        if (!div) {
-          return undefined;
-        }
-
-        const resizeObserver = new ResizeObserver(handleWorkspaceResize);
-        resizeObserver.observe(div);
-
-        return () => {
-          resizeObserver.unobserve(div);
-        };
-      };
-
-      /** Gets the current Blockly workspace instance. */
-      const getBlocklyWorkspace = (): Blockly.WorkspaceSvg => {
-        if (!workspaceRef.current) {
-          throw new Error('Blockly workspace not initialized');
-        }
-        return workspaceRef.current;
-      };
-
-      // Initialize Blockly workspace
-      React.useEffect(() => {
-        initializeWorkspace();
-        return cleanupWorkspace;
-      }, []);
-
-      // Update theme when theme prop changes
-      React.useEffect(() => {
-        if (workspaceRef.current) {
-          const newTheme = getBlocklyTheme();
-          workspaceRef.current.setTheme(newTheme);
-        }
-      }, [props.theme]);
-
-      React.useEffect(() => {
-        updateBlocklyLocale();
-      }, [i18n.language]);
-
-      // Handle workspace resize
-      React.useEffect(() => {
-        return setupResizeObserver();
-      }, []);
-
-      // Expose methods through ref
-      React.useImperativeHandle(
-          ref,
-          (): BlocklyComponentType => ({
-            getBlocklyWorkspace,
-          }),
-          []
-      );
-
-      return (
-        <div className="blockly-workspace-container" style={FULL_SIZE_STYLE}>
-          <div ref={blocklyDiv} style={WORKSPACE_STYLE} />
-        </div>
-      );
+  const getBlocklyTheme = (): Blockly.Theme => {
+    const blocklyTheme = 'mrc_theme_' + props.theme.replace(/-/g, '_');
+    // Find the theme by key
+    const themeObj = themes.find(t => t.name === blocklyTheme);
+    if (!themeObj) {
+      throw new Error(`Theme not found: ${blocklyTheme}`);
     }
-);
 
-BlocklyComponent.displayName = 'BlocklyComponent';
+    // Return the corresponding Blockly theme
+    return themeObj;
+  };
 
-export default BlocklyComponent;
+  /** Creates the Blockly workspace configuration object. */
+  const createWorkspaceConfig = (): Blockly.BlocklyOptions => ({
+    theme: getBlocklyTheme(),
+    horizontalLayout: false, // Forces vertical layout for the workspace
+    // Start with an empty (but not null) toolbox. It will be replaced later.
+    toolbox: {
+      kind: 'categoryToolbox',
+      contents: [],
+    },
+    grid: {
+      spacing: GRID_SPACING,
+      length: GRID_LENGTH,
+      colour: GRID_COLOR,
+      snap: true,
+    },
+    zoom: {
+      controls: true,
+      wheel: true,
+      startScale: DEFAULT_ZOOM_START_SCALE,
+      maxScale: MAX_ZOOM_SCALE,
+      minScale: MIN_ZOOM_SCALE,
+      scaleSpeed: ZOOM_SCALE_SPEED,
+    },
+    scrollbars: true,
+    trashcan: false,
+    move: {
+      scrollbars: true,
+      drag: true,
+      wheel: true,
+    },
+    oneBasedIndex: false,
+    plugins: {
+      ...HardwareConnectionsPluginInfo,
+    },
+  });
+
+  /** Updates the Blockly locale when the language changes. */
+  const updateBlocklyLocale = (): void => {
+    if (!workspaceRef.current) {
+      return;
+    }
+
+    const newIsRtl = i18n.dir() === 'rtl';
+    const currentIsRtl = workspaceRef.current.RTL;
+
+    // If RTL direction changed, we need to recreate the workspace
+    if (newIsRtl !== currentIsRtl) {
+      cleanupWorkspace();
+      initializeWorkspace();
+      if (props.onWorkspaceCreated) {
+        props.onWorkspaceCreated(props.modulePath, workspaceRef.current!);
+      }
+      return;
+    }
+
+    // Set new locale
+    switch (i18n.language) {
+      case 'es':
+        Blockly.setLocale(Es as any);
+        break;
+      case 'en':
+        Blockly.setLocale(En as any);
+        break;
+      case 'he':
+        Blockly.setLocale(He as any);
+        break;
+      default:
+        Blockly.setLocale(En as any);
+        break;
+    }
+    // Apply custom tokens
+    Blockly.setLocale(customTokens(t));
+
+    // Force complete toolbox rebuild by calling onWorkspaceCreated AFTER locale is set
+    if (props.onWorkspaceCreated) {
+      props.onWorkspaceCreated(props.modulePath, workspaceRef.current);
+    }
+  };
+
+  /** Initializes the Blockly workspace. */
+  const initializeWorkspace = (): void => {
+    if (!blocklyDiv.current) {
+      return;
+    }
+
+    // Set Blockly locale
+    switch (i18n.language) {
+      case 'es':
+        Blockly.setLocale(Es as any);
+        break;
+      case 'en':
+        Blockly.setLocale(En as any);
+        break;
+      case 'he':
+        Blockly.setLocale(He as any);
+        break;
+      default:
+        Blockly.setLocale(En as any);
+        break;
+    }
+    Blockly.setLocale(customTokens(t));
+    
+    // Create workspace
+    const workspaceConfig = createWorkspaceConfig();
+    workspaceConfig.rtl = i18n.dir() === 'rtl';
+    const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
+    workspaceRef.current = workspace;
+    parentDiv.current = blocklyDiv.current.parentNode as HTMLDivElement;
+  };
+
+  /** Cleans up the Blockly workspace on unmount. */
+  const cleanupWorkspace = (): void => {
+    if (workspaceRef.current) {
+      workspaceRef.current.dispose();
+      workspaceRef.current = null;
+    }
+  };
+
+  /** Handles workspace resize events. */
+  const handleWorkspaceResize = (): void => {
+    if (workspaceRef.current) {
+      if (workspaceRef.current.isVisible() &&
+          Blockly.getMainWorkspace().id === workspaceRef.current.id) {
+        Blockly.svgResize(workspaceRef.current);
+      }
+    }
+  };
+
+  /** Sets up resize observer for the workspace container. */
+  const setupResizeObserver = (): (() => void) | undefined => {
+    const div = blocklyDiv.current;
+    if (!div) {
+      return undefined;
+    }
+
+    const resizeObserver = new ResizeObserver(handleWorkspaceResize);
+    resizeObserver.observe(div);
+
+    return () => {
+      resizeObserver.unobserve(div);
+    };
+  };
+
+  /** Gets the current Blockly workspace instance. */
+  const getBlocklyWorkspace = (): Blockly.WorkspaceSvg => {
+    if (!workspaceRef.current) {
+      throw new Error('Blockly workspace not initialized');
+    }
+    return workspaceRef.current;
+  };
+
+  const setActive = (active: boolean): void => {
+    if (workspaceRef.current) {
+      if (!active) {
+        // Save the scroll position before making this workspace invisible.
+        if (isScrollPositionValid(workspaceRef.current)) {
+          savedScrollX.current = workspaceRef.current.scrollX;
+          savedScrollY.current = workspaceRef.current.scrollY;
+        } else {
+          savedScrollX.current = 0;
+          savedScrollY.current = 0;
+        }
+      }
+      workspaceRef.current.setVisible(active);
+    }
+    if (parentDiv.current) {
+      parentDiv.current.hidden = !active;
+    }
+    if (workspaceRef.current) {
+      if (active) {
+        workspaceRef.current.markFocused();
+
+        const needScroll = !isScrollPositionValid(workspaceRef.current);
+        if (Blockly.getMainWorkspace().id === workspaceRef.current.id) {
+          Blockly.svgResize(workspaceRef.current);
+          if (needScroll) {
+            workspaceRef.current.scroll(savedScrollX.current, savedScrollY.current);
+          }
+        }
+      }
+    }
+  };
+
+  const isScrollPositionValid = (workspace: Blockly.WorkspaceSvg): boolean => {
+    return !(
+        Math.round(workspace.getMetrics().svgWidth) === 0 &&
+        Math.round(workspace.getMetrics().svgHeight) === 0 &&
+        Math.round(workspace.scrollX) === -10 &&
+        Math.round(workspace.scrollY) === -10);
+  };
+
+  // Initialize Blockly workspace
+  React.useEffect(() => {
+    if (props.onBlocklyComponentCreated) {
+      const blocklyComponent: BlocklyComponentType = {
+        getBlocklyWorkspace,
+        setActive,
+      };
+      props.onBlocklyComponentCreated(props.modulePath, blocklyComponent);
+    }
+    initializeWorkspace();
+    return cleanupWorkspace;
+  }, []);
+
+  // Update theme when theme prop changes
+  React.useEffect(() => {
+    if (workspaceRef.current) {
+      const newTheme = getBlocklyTheme();
+      workspaceRef.current.setTheme(newTheme);
+    }
+  }, [props.theme]);
+
+  React.useEffect(() => {
+    updateBlocklyLocale();
+  }, [i18n.language]);
+
+  // Handle workspace resize
+  React.useEffect(() => {
+    return setupResizeObserver();
+  }, []);
+
+  return (
+    <div className="blockly-workspace-container" style={FULL_SIZE_STYLE}>
+      <div ref={blocklyDiv} style={WORKSPACE_STYLE} />
+    </div>
+  );
+}
