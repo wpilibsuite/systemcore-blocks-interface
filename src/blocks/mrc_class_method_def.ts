@@ -39,7 +39,7 @@ export const BLOCK_NAME = 'mrc_class_method_def';
 
 export const FIELD_METHOD_NAME = 'NAME';
 
-type Parameter = {
+export type Parameter = {
     name: string,
     type?: string,
 };
@@ -445,6 +445,10 @@ export const pythonFromBlock = function (
         if (ports.length) {
             paramString += ', ' + ports.join(', ');
         }
+    }
+
+    if (generator.getModuleType() === storageModule.ModuleType.OPMODE && block.mrcPythonMethodName === '__init__') {
+        paramString = 'robot';
     }
 
     if (params.length != 0) {
