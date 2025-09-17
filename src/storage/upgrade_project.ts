@@ -46,7 +46,6 @@ export async function upgradeProjectIfNecessary(
       case '0.0.1':
         upgradeFrom_001_to_002(storage, projectName, projectInfo);
       case '0.0.2':
-      // @ts-ignore
         upgradeFrom_002_to_003(storage, projectName, projectInfo);
 
     }
