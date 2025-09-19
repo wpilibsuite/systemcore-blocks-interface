@@ -129,6 +129,13 @@ export class Editor {
     // Parse modules since they might have changed.
     this.parseModules(project, modulePathToContentText);
     this.updateToolboxImpl();
+
+    // Go through all the blocks in the workspace and call their mrcValidate method.
+    this.blocklyWorkspace.getAllBlocks().forEach(block => {
+      if ('mrcValidate' in block && typeof block.mrcValidate === "function") {
+        block.mrcValidate();
+      }
+    });
   }
 
   public abandon(): void {

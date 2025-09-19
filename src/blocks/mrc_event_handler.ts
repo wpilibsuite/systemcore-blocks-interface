@@ -176,6 +176,13 @@ const EVENT_HANDLER = {
    * workspace.
    */
   mrcOnLoad: function(this: EventHandlerBlock): void {
+    this.mrcValidate();
+  },
+  /**
+   * mrcValidate checks the block, updates it, and/or adds a warning balloon if necessary.
+   * It is called from mrcOnLoad above and from Editor.makeCurrent.
+   */
+  mrcValidate: function(this: EventHandlerBlock): void {
     const warnings: string[] = [];
 
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);

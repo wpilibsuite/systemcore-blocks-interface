@@ -318,7 +318,7 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : '';
     this.mrcComponentClassName = extraState.componentClassName ? extraState.componentClassName : '';
     this.mrcMechanismClassName = extraState.mechanismClassName ? extraState.mechanismClassName : '';
-    // Initialize mrcComponentNames and mrcMapComponentNameToId here. They will be filled during mrcOnLoad.
+    // Initialize mrcComponentNames and mrcMapComponentNameToId here. They will be filled during mrcValidate.
     this.mrcComponentNames = [];
     this.mrcMapComponentNameToId = {};
     this.updateBlock_();
@@ -405,7 +405,7 @@ const CALL_PYTHON_FUNCTION = {
                 .appendField('.');
           }
           // Here we create a text field for the component name.
-          // Later, in mrcOnLoad, we will replace it with a dropdown.
+          // Later, in mrcValidate, we will replace it with a dropdown.
           titleInput
               .appendField(createFieldNonEditableText(''), FIELD_COMPONENT_NAME)
               .appendField('.')
@@ -565,8 +565,18 @@ const CALL_PYTHON_FUNCTION = {
     }
     return components;
   },
+  /**
+   * mrcOnLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly
+   * workspace.
+   */
   mrcOnLoad: function(this: CallPythonFunctionBlock): void {
-    // mrcOnLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly workspace.
+    this.mrcValidate();
+  },
+  /**
+   * mrcValidate checks the block, updates it, and/or adds a warning balloon if necessary.
+   * It is called from mrcOnLoad above and from Editor.makeCurrent.
+   */
+  mrcValidate: function(this: CallPythonFunctionBlock): void {
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
     if (!editor) {
       return;
