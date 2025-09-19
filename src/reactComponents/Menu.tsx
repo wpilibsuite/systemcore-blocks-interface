@@ -102,35 +102,7 @@ function getDivider(): MenuItem {
  * Generates menu items for a given project.
  */
 function getMenuItems(t: (key: string) => string, project: storageProject.Project, currentLanguage: string): MenuItem[] {
-  const mechanisms: MenuItem[] = [];
-  const opmodes: MenuItem[] = [];
-
-  // Build mechanisms menu items
-  project.mechanisms.forEach((mechanism) => {
-    mechanisms.push(getItem(
-        mechanism.className,
-        mechanism.modulePath,
-        <BlockOutlined />
-    ));
-  });
-  if (mechanisms.length > 0) {
-    mechanisms.push(getDivider());
-  }
-  mechanisms.push(getItem('Manage...', 'manageMechanisms'));
-
-  // Build opmodes menu items
-  project.opModes.forEach((opmode) => {
-    opmodes.push(getItem(
-        opmode.className,
-        opmode.modulePath,
-        <CodeOutlined />
-    ));
-  });
-  if (opmodes.length > 0) {
-    opmodes.push(getDivider());
-  }
-  opmodes.push(getItem('Manage...', 'manageOpmodes'));
-
+  
   return [
     getItem(t('PROJECT'), 'project', <FolderOutlined />, [
       getItem(t('SAVE'), 'save', <SaveOutlined />),
@@ -140,8 +112,8 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
     ]),
     getItem(t('EXPLORER'), 'explorer', <FileOutlined />, [
       getItem(t('ROBOT'), project.robot.modulePath, <RobotOutlined />),
-      getItem(t('MECHANISMS'), 'mechanisms', <BlockOutlined />, mechanisms),
-      getItem(t('OPMODES'), 'opmodes', <CodeOutlined />, opmodes),
+      getItem(t('MECHANISMS') + '...', 'manageMechanisms', <BlockOutlined />),
+      getItem(t('OPMODES') + '...', 'manageOpmodes', <CodeOutlined />),
     ]),
     getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
       getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
