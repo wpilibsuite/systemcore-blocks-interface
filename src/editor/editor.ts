@@ -441,7 +441,7 @@ export class Editor {
   }
 
   /**
-   * Returns the components defined in the given mechanism.
+   * Returns the regular components defined in the given mechanism.
    */
   public getComponentsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Component[] {
     if (this.module.modulePath === mechanism.modulePath) {
@@ -451,6 +451,19 @@ export class Editor {
       return this.mechanismClassNameToModuleContent[mechanism.className].getComponents();
     }
     throw new Error('getComponentsFromMechanism: mechanism not found: ' + mechanism.className);
+  }
+
+  /**
+   * Returns the private components defined in the given mechanism.
+   */
+  public getPrivateComponentsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Component[] {
+    if (this.module.modulePath === mechanism.modulePath) {
+      return this.getPrivateComponentsFromWorkspace();
+    }
+    if (mechanism.className in this.mechanismClassNameToModuleContent) {
+      return this.mechanismClassNameToModuleContent[mechanism.className].getPrivateComponents();
+    }
+    throw new Error('getPrivateComponentsFromMechanism: mechanism not found: ' + mechanism.className);
   }
 
   /**

@@ -85,7 +85,6 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcComponentClassName: string,
   mrcOriginalComponentName: string,
   mrcMechanismClassName: string,
-  mrcComponentNames: string[],
   mrcMapComponentNameToId: {[componentName: string]: string},
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
@@ -318,8 +317,7 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : '';
     this.mrcComponentClassName = extraState.componentClassName ? extraState.componentClassName : '';
     this.mrcMechanismClassName = extraState.mechanismClassName ? extraState.mechanismClassName : '';
-    // Initialize mrcComponentNames and mrcMapComponentNameToId here. They will be filled during mrcOnLoad.
-    this.mrcComponentNames = [];
+    // Initialize mrcMapComponentNameToId here. It will be filled during mrcOnLoad.
     this.mrcMapComponentNameToId = {};
     this.updateBlock_();
   },
@@ -505,7 +503,7 @@ const CALL_PYTHON_FUNCTION = {
       methodOrEvent: storageModuleContent.Method | storageModuleContent.Event
   ): void {
     // mutateMethodCaller is called when the method or event definition block in the same module is modified.
-    if (this.mrcFunctionKind == FunctionKind.EVENT) {
+    if (this.mrcFunctionKind === FunctionKind.EVENT) {
       const event = methodOrEvent as storageModuleContent.Event;
       this.mrcArgs = [];
       event.args.forEach((arg) => {
@@ -514,7 +512,7 @@ const CALL_PYTHON_FUNCTION = {
           type: arg.type,
         });
       });
-    } else if (this.mrcFunctionKind == FunctionKind.INSTANCE_WITHIN) {
+    } else if (this.mrcFunctionKind === FunctionKind.INSTANCE_WITHIN) {
       const method = methodOrEvent as storageModuleContent.Method;
       this.mrcReturnType = method.returnType;
       this.mrcArgs = [];
@@ -581,12 +579,14 @@ const CALL_PYTHON_FUNCTION = {
     // If the component belongs to a mechanism, also check whether the mechanism
     // still exists and whether it has been changed.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
+      const componentNames: string[] = [];
+      this.mrcMapComponentNameToId = {}
       this.getComponents().forEach(component => {
-        this.mrcComponentNames.push(component.name);
+        componentNames.push(component.name);
         this.mrcMapComponentNameToId[component.name] = component.componentId;
       });
       let foundComponent = false;
-      for (const componentName of this.mrcComponentNames) {
+      for (const componentName of componentNames) {
         const componentId = this.mrcMapComponentNameToId[componentName];
         if (componentId === this.mrcComponentId) {
           foundComponent = true;
@@ -605,12 +605,12 @@ const CALL_PYTHON_FUNCTION = {
               break;
             }
           }
-          if (indexOfComponentNameField == -1) {
+          if (indexOfComponentNameField === -1) {
             throw new Error('Could not find the component name field');
           }
           titleInput.removeField(FIELD_COMPONENT_NAME);
           titleInput.insertFieldAt(indexOfComponentNameField,
-              createFieldDropdown(this.mrcComponentNames), FIELD_COMPONENT_NAME);
+              createFieldDropdown(componentNames), FIELD_COMPONENT_NAME);
           // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
           // items in the dropdown if the user adds or removes a component.
 
@@ -620,6 +620,39 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
       }
+      if (!foundComponent) {
+        if (this.mrcMechanismId) {
+          // Check whether the the component still exists, but is a private component in the mechanism.
+          for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
+            if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+              for (const mechanism of editor.getMechanisms()) {
+                if (mechanism.moduleId === mechanismInRobot.moduleId) {
+                  for (const privateComponent of editor.getPrivateComponentsFromMechanism(mechanism)) {
+                    if (privateComponent.className === this.mrcComponentClassName &&
+                        privateComponent.componentId === this.mrcComponentId) {
+                      foundComponent = true;
+                      warnings.push(
+                          'This blocks calls a method on a private component in the ' +
+                          mechanism.className + ' mechanism.'
+                      );
+                      break
+                    }
+                  }
+                  break;
+                }
+                if (foundComponent) {
+                  break;
+                }
+              }
+              break;
+            }
+            if (foundComponent) {
+              break;
+            }
+          }
+        }
+      }
+
       if (!foundComponent) {
         warnings.push('This block calls a method on a component that no longer exists.');
       }
