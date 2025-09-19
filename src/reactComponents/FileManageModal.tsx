@@ -154,21 +154,29 @@ export default function FileManageModal(props: FileManageModalProps) {
         return;
       }
 
-      const newModules = [...modules];
-      newModules.push({
+      const newModule = {
         path: newModulePath,
         title: newClassName,
         type: originalModule.type,
-      });
+      };
+
+      const newModules = [...modules];
+      newModules.push(newModule);
 
       setModules(newModules);
       triggerProjectUpdate();
+      
+      // Close the copy modal first
+      setCopyModalOpen(false);
+      
+      // Automatically select and open the newly created module
+      props.gotoTab(newModulePath);
+      props.onClose();
     } catch (error) {
       console.error('Error copying module:', error);
       props.setAlertErrorMessage(t('FAILED_TO_COPY_MODULE'));
+      setCopyModalOpen(false);
     }
-
-    setCopyModalOpen(false);
   };
 
   /** Handles adding a new module. */
