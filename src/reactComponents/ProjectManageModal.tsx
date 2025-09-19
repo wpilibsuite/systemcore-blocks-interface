@@ -67,6 +67,7 @@ const CONTAINER_PADDING = '12px';
  */
 export default function ProjectManageModal(props: ProjectManageModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
+  const { token } = Antd.theme.useToken();
   const [allProjectNames, setAllProjectNames] = React.useState<string[]>([]);
   const [allProjectRecords, setAllProjectRecords] = React.useState<ProjectRecord[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
@@ -232,7 +233,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   /** Creates the container style object. */
   const getContainerStyle = (): React.CSSProperties => ({
     marginBottom: ALERT_MARGIN_BOTTOM,
-    border: '1px solid #d9d9d9',
+    border: `1px solid ${token.colorBorder}`,
     borderRadius: CONTAINER_BORDER_RADIUS,
     padding: CONTAINER_PADDING,
   });

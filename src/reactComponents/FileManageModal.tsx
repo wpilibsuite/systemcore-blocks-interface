@@ -62,6 +62,7 @@ const ACTIONS_COLUMN_WIDTH = 120;
  */
 export default function FileManageModal(props: FileManageModalProps) {
   const {t} = I18Next.useTranslation();
+  const { token } = Antd.theme.useToken();
   const [modules, setModules] = React.useState<Module[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
   const [currentRecord, setCurrentRecord] = React.useState<Module | null>(null);
@@ -407,7 +408,7 @@ export default function FileManageModal(props: FileManageModalProps) {
       >
         <div style={{
           marginBottom: 16,
-          border: '1px solid #d9d9d9',
+          border: `1px solid ${token.colorBorder}`,
           borderRadius: '6px',
           padding: '12px',
         }}>
