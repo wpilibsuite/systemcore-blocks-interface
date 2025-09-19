@@ -38,7 +38,7 @@ interface Module {
 /** Props for the AddTabDialog component. */
 interface AddTabDialogProps {
   isOpen: boolean;
-  onOk: (newTabs: TabItem[]) => void;
+  onOk: (newTab: TabItem) => void;
   onCancel: () => void;
   project: storageProject.Project | null;
   setProject: (project: storageProject.Project | null) => void;
@@ -49,30 +49,23 @@ interface AddTabDialogProps {
 /** Height of the scrollable lists in pixels. */
 const LIST_HEIGHT = 200;
 
-/** Maximum width for truncated text in pixels. */
-const MAX_TEXT_WIDTH = 120;
-
-/** Search input width as a percentage. */
-const SEARCH_INPUT_WIDTH = '70%';
-
 /**
  * Dialog component for adding new tabs to the workspace.
  * Allows users to create new modules or select from existing ones.
  */
 export default function AddTabDialog(props: AddTabDialogProps) {
   const {t} = I18Next.useTranslation();
+  const { token } = Antd.theme.useToken();
   const [tabType, setTabType] = React.useState<TabType>(TabType.OPMODE);
   const [availableItems, setAvailableItems] = React.useState<Module[]>([]);
-  const [selectedItems, setSelectedItems] = React.useState<Module[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
-  const [searchText, setSearchText] = React.useState('');
 
   React.useEffect(() => {
     if (!props.project) {
       return;
     }
 
-    // Initialize available items based on project data
+    // Get all modules of the selected type
     const mechanisms = props.project.mechanisms.map((m) => ({
       path: m.modulePath,
       title: m.className,
@@ -84,48 +77,29 @@ export default function AddTabDialog(props: AddTabDialogProps) {
       type: TabType.OPMODE,
     }));
 
-    const allItems = [...mechanisms, ...opModes];
-
-    // Split items into available and selected based on currentTabs
-    const availableModules = allItems.filter((item) =>
+    // Filter by current tab type and exclude already open tabs
+    const allItems = tabType === TabType.MECHANISM ? mechanisms : opModes;
+    const notShownItems = allItems.filter((item) =>
       !props.currentTabs.some((tab) => tab.key === item.path)
     );
 
-    // Preserve the order from currentTabs for selectedModules
-    const selectedModules = props.currentTabs
-        .map((tab) => allItems.find((item) => item.path === tab.key))
-        .filter((item) => item !== undefined) as Module[];
+    setAvailableItems(notShownItems);
+  }, [props.project, props.currentTabs, tabType]);
 
-    setAvailableItems(availableModules);
-    setSelectedItems(selectedModules);
-  }, [props.project, props.currentTabs]);
+  /** Handles selecting an existing module. */
+  const handleSelectModule = (item: Module): void => {
+    const newTab: TabItem = {
+      key: item.path,
+      title: item.title,
+      type: item.type,
+    };
+    props.onOk(newTab);
+  };
 
-  const triggerProjectUpdate = (): void => {
-    if (props.project) {
-      props.setProject({...props.project});
-    }
-  }
-
-  /** Handles adding a new item or selecting an existing one. */
-  const handleAddNewItem = async (): Promise<void> => {
+  /** Handles creating a new module. */
+  const handleCreateNewItem = async (): Promise<void> => {
     const newClassName = newItemName.trim();
-    if (!newClassName) {
-      return;
-    }
-
-    // Check if there's an exact match in available items
-    const matchingItem = availableItems.find((item) =>
-      item.title.toLowerCase() === newClassName.toLowerCase()
-    );
-
-    if (matchingItem) {
-      // Move the matching item to selected
-      handleSelectItem(matchingItem);
-      setNewItemName('');
-      return;
-    }
-
-    if (!props.storage || !props.project) {
+    if (!newClassName || !props.storage || !props.project) {
       return;
     }
 
@@ -138,34 +112,13 @@ export default function AddTabDialog(props: AddTabDialogProps) {
 
     const newModule = storageProject.findModuleByClassName(props.project, newClassName);
     if (newModule) {
-      const module: Module = {
-        path: newModule.modulePath,
+      const newTab: TabItem = {
+        key: newModule.modulePath,
         title: newModule.className,
         type: tabType,
       };
-      setSelectedItems([...selectedItems, module]);
-      triggerProjectUpdate();
+      props.onOk(newTab);
     }
-
-
-    setNewItemName('');
-  };
-
-  /** Moves an item from available to selected list. */
-  const handleSelectItem = (item: Module): void => {
-    const existingItem = selectedItems.find((i) => i.path === item.path);
-    if (existingItem) {
-      return;
-    }
-
-    setSelectedItems([...selectedItems, item]);
-    setAvailableItems(availableItems.filter((i) => i.path !== item.path));
-  };
-
-  /** Moves an item from selected back to available list. */
-  const handleRemoveItem = (item: Module): void => {
-    setSelectedItems(selectedItems.filter((i) => i !== item));
-    setAvailableItems([...availableItems, item]);
   };
 
   /** Handles radio button change for tab type selection. */
@@ -177,258 +130,71 @@ export default function AddTabDialog(props: AddTabDialogProps) {
     }
   };
 
-  /** Handles search input enter key press. */
-  const handleSearchEnter = (): void => {
-    if (filteredAvailableItems.length === 1) {
-      // If only one item in filtered list, select it
-      handleSelectItem(filteredAvailableItems[0]);
-      setSearchText('');
-      return;
-    }
-
-    // If multiple items, look for exact match
-    const matchingItem = filteredAvailableItems.find((item) =>
-      item.title.toLowerCase() === searchText.trim().toLowerCase()
-    );
-
-    if (matchingItem) {
-      handleSelectItem(matchingItem);
-      setSearchText('');
-    }
-  };
-
-  /** Handles drag start for available items. */
-  const handleAvailableDragStart = (e: React.DragEvent, item: Module): void => {
-    e.dataTransfer.setData('application/json', JSON.stringify({
-      type: 'available',
-      item: item,
-    }));
-  };
-
-  /** Handles drag start for selected items. */
-  const handleSelectedDragStart = (e: React.DragEvent, index: number): void => {
-    e.dataTransfer.setData('text/plain', index.toString());
-  };
-
-  /** Handles drop events for the selected items container. */
-  const handleSelectedDrop = (e: React.DragEvent): void => {
-    e.preventDefault();
-    try {
-      const dragData = JSON.parse(e.dataTransfer.getData('application/json'));
-      if (dragData.type === 'available') {
-        handleSelectItem(dragData.item);
-      }
-    } catch (error) {
-      // Handle reordering within shown list
-      const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-      if (!isNaN(fromIndex)) {
-        // This is a reorder operation within the shown list
-        const items = Array.from(selectedItems);
-        const [reorderedItem] = items.splice(fromIndex, 1);
-        items.push(reorderedItem); // Add to end
-        setSelectedItems(items);
-      }
-    }
-  };
-
-  /** Handles drop events for individual selected items. */
-  const handleSelectedItemDrop = (e: React.DragEvent, index: number): void => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // First check if it's an item from available list
-    try {
-      const dragData = JSON.parse(e.dataTransfer.getData('application/json'));
-      if (dragData.type === 'available') {
-        // Insert the available item at this position
-        const existingItem = selectedItems.find((i) => i.path === dragData.item.path);
-        if (!existingItem) {
-          const newItems = Array.from(selectedItems);
-          newItems.splice(index, 0, dragData.item);
-          setSelectedItems(newItems);
-          setAvailableItems(availableItems.filter((i) => i.path !== dragData.item.path));
-        }
-        return;
-      }
-    } catch (error) {
-      // Not JSON data, continue with reordering logic
-    }
-
-    // Handle reordering within shown list
-    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-    const toIndex = index;
-
-    if (fromIndex !== toIndex && !isNaN(fromIndex)) {
-      const items = Array.from(selectedItems);
-      const [reorderedItem] = items.splice(fromIndex, 1);
-      items.splice(toIndex, 0, reorderedItem);
-      setSelectedItems(items);
-    }
-  };
-
-  /** Handles the OK button click. */
-  const handleOk = (): void => {
-    const newTabs = selectedItems.map((item) => ({
-      key: item.path,
-      title: item.title,
-      type: item.type,
-    }));
-    props.onOk(newTabs);
-  };
-
-  // Filter available items based on search text
-  const filteredAvailableItems = availableItems
-      .filter((item) => item.title.toLowerCase().includes(searchText.toLowerCase()));
-
   return (
     <Antd.Modal
       title={t('addTabDialog.title')}
       open={props.isOpen}
       onCancel={props.onCancel}
-      onOk={handleOk}
+      footer={null}
     >
       <div style={{marginTop: 16}}>
+        <Antd.Radio.Group
+          defaultValue="opmode"
+          buttonStyle="solid"
+          style={{marginBottom: 16}}
+          onChange={handleTabTypeChange}
+        >
+          <Antd.Radio.Button value="mechanism">
+            {TabTypeUtils.getIcon(TabType.MECHANISM)} {t('MECHANISM')}
+          </Antd.Radio.Button>
+          <Antd.Radio.Button value="opmode">
+            {TabTypeUtils.getIcon(TabType.OPMODE)} {t('OPMODE')}
+          </Antd.Radio.Button>
+        </Antd.Radio.Group>
+
+        <h4 style={{margin: '0 0 8px 0'}}>
+          {t('SELECT_HIDDEN')}
+        </h4>
+        <Antd.List
+          size="small"
+          bordered
+          style={{height: LIST_HEIGHT, overflow: 'auto', marginBottom: 16}}
+          dataSource={availableItems}
+          renderItem={(item) => (
+            <Antd.List.Item
+              onClick={() => handleSelectModule(item)}
+              style={{cursor: 'pointer'}}
+            >
+              <Antd.List.Item.Meta
+                avatar={TabTypeUtils.getIcon(item.type)}
+                title={
+                  <span style={{fontSize: '14px'}}>
+                    {item.title}
+                  </span>
+                }
+              />
+            </Antd.List.Item>
+          )}
+          locale={{emptyText: tabType === TabType.MECHANISM ? t('NO_HIDDEN_MECHANISMS') : t('NO_HIDDEN_OPMODES')}}
+        />
+        <h4 style={{margin: '0 0 8px 0'}}>
+          {t('CREATE_NEW')}
+        </h4>
+
         <div style={{
-          marginBottom: 16,
-          border: '1px solid #d9d9d9',
+          border: `1px solid ${token.colorBorder}`,
           borderRadius: '6px',
           padding: '12px',
         }}>
-          <Antd.Radio.Group
-            defaultValue="opmode"
-            buttonStyle="solid"
-            style={{marginBottom: 8}}
-            onChange={handleTabTypeChange}
-          >
-            <Antd.Radio.Button value="mechanism">
-              {TabTypeUtils.getIcon(TabType.MECHANISM)} {t('mechanism')}
-            </Antd.Radio.Button>
-            <Antd.Radio.Button value="opmode">
-              {TabTypeUtils.getIcon(TabType.OPMODE)} {t('opmode')}
-            </Antd.Radio.Button>
-          </Antd.Radio.Group>
-
           <ClassNameComponent
             tabType={tabType}
             newItemName={newItemName}
             setNewItemName={setNewItemName}
-            onAddNewItem={handleAddNewItem}
+            onAddNewItem={handleCreateNewItem}
             project={props.project}
             storage={props.storage}
-            buttonLabel={t('New')}
+            buttonLabel={t('CREATE')}
           />
-        </div>
-
-        <div style={{display: 'flex', gap: 16}}>
-          <div style={{flex: 1}}>
-            <h4 style={{margin: '0 0 8px 0'}}>
-              {t('Available')}
-            </h4>
-            <Antd.Input
-              placeholder={t('addTabDialog.search')}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              onPressEnter={handleSearchEnter}
-              style={{marginBottom: 8, width: SEARCH_INPUT_WIDTH}}
-              allowClear
-            />
-            <Antd.List
-              size="small"
-              bordered
-              style={{height: LIST_HEIGHT, overflow: 'auto'}}
-              dataSource={filteredAvailableItems}
-              renderItem={(item) => (
-                <Antd.List.Item
-                  draggable
-                  onDragStart={(e) => handleAvailableDragStart(e, item)}
-                  actions={[
-                    <Antd.Button
-                      key="select"
-                      size="small"
-                      onClick={() => handleSelectItem(item)}
-                    >
-                      →
-                    </Antd.Button>,
-                  ]}
-                  style={{cursor: 'grab'}}
-                >
-                  <Antd.List.Item.Meta
-                    avatar={TabTypeUtils.getIcon(item.type)}
-                    title={
-                      <Antd.Tooltip title={item.title}>
-                        <span
-                          style={{
-                            fontSize: '12px',
-                            display: 'block',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            maxWidth: `${MAX_TEXT_WIDTH}px`,
-                          }}
-                        >
-                          {item.title}
-                        </span>
-                      </Antd.Tooltip>
-                    }
-                  />
-                </Antd.List.Item>
-              )}
-            />
-          </div>
-
-          <div style={{flex: 1}}>
-            <h4 style={{margin: '0 0 8px 0'}}>
-              {t('Shown')}
-            </h4>
-            <div style={{height: 32, marginBottom: 8}}></div>
-            <div
-              style={{height: LIST_HEIGHT, overflow: 'auto', border: '1px solid #d9d9d9'}}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleSelectedDrop}
-            >
-              {selectedItems.map((item, index) => (
-                <div
-                  key={item.path}
-                  draggable
-                  onDragStart={(e) => handleSelectedDragStart(e, index)}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => handleSelectedItemDrop(e, index)}
-                  style={{
-                    padding: '8px 12px',
-                    borderBottom: '1px solid #f0f0f0',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'move',
-                  }}
-                >
-                  <div style={{display: 'flex', alignItems: 'center', gap: 8}}>
-                    {TabTypeUtils.getIcon(item.type)}
-                    <Antd.Tooltip title={item.title}>
-                      <span
-                        style={{
-                          fontSize: '12px',
-                          display: 'block',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          maxWidth: `${MAX_TEXT_WIDTH}px`,
-                        }}
-                      >
-                        {item.title}
-                      </span>
-                    </Antd.Tooltip>
-                  </div>
-                  <Antd.Button
-                    size="small"
-                    onClick={() => handleRemoveItem(item)}
-                  >
-                    ✕
-                  </Antd.Button>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </Antd.Modal>
