@@ -316,24 +316,7 @@ export async function copyModuleInProject(
   moduleContent.changeIds();
   moduleContentText = moduleContent.getModuleContentText();
 
-  await storage.saveFile(newModulePath, moduleContentText);
-
-  // Update the project's mechanisms or opModes.
-  const newModule = {
-    modulePath: newModulePath,
-    moduleType: oldModule.moduleType,
-    projectName: project.projectName,
-    className: newClassName
-  };
-  switch (oldModule.moduleType) {
-    case storageModule.ModuleType.MECHANISM:
-      project.mechanisms.push(newModule as storageModule.Mechanism);
-      break;
-    case storageModule.ModuleType.OPMODE:
-      project.opModes.push(newModule as storageModule.OpMode);
-      break;
-  }
-  await saveProjectInfo(storage, project.projectName);
+  await addModuleToProject(storage, project, oldModule.moduleType, newClassName);
 
   return newModulePath;
 }
