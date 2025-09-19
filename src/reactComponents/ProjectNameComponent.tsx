@@ -121,7 +121,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
       type="primary"
       onClick={handleAddNewItem}
     >
-      {t('New')}
+      {t('CREATE')}
     </Antd.Button>
   );
 

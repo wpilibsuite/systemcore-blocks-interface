@@ -583,9 +583,14 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     if (project) {
       const tabs = createTabItemsFromProject(project);
       setTabItems(tabs);
-      setActiveTab(project.robot.modulePath);
+      
+      // Only set active tab to robot if no active tab is set or if the current active tab no longer exists
+      const currentActiveTabExists = tabs.some(tab => tab.key === activeTab);
+      if (!activeTab || !currentActiveTabExists) {
+        setActiveTab(project.robot.modulePath);
+      }
     }
-  }, [modulePathToContentText]);
+  }, [modulePathToContentText, activeTab]);
 
   const { Sider, Content } = Antd.Layout;
 
