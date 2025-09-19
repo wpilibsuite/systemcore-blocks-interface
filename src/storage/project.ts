@@ -25,7 +25,7 @@ import * as commonStorage from './common_storage';
 import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
-import { upgradeProjectIfNecessary } from './upgrade_project';
+import { upgradeProjectIfNecessary, CURRENT_VERSION, NO_VERSION } from './upgrade_project';
 
 // Types, constants, and functions related to projects, regardless of where the projects are stored.
 
@@ -35,9 +35,6 @@ export type Project = {
   mechanisms: storageModule.Mechanism[],
   opModes: storageModule.OpMode[],
 };
-
-const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.2';
 
 export type ProjectInfo = {
   version: string,

@@ -322,6 +322,14 @@ const CLASS_METHOD_DEF = {
             this.mrcMethodId = oldIdToNewId[this.mrcMethodId];
         }
     },
+    upgrade_002_to_003: function(this: ClassMethodDefBlock) {
+        if (this.getFieldValue('NAME') === 'init') {
+            // Remove robot parameter from init method
+            const methodBlock = this as ClassMethodDefBlock;
+            let filteredParams: Parameter[] = methodBlock.mrcParameters.filter(param => param.name !== 'robot');
+            methodBlock.mrcParameters = filteredParams;
+        }
+    },
 };
 
 /**
@@ -445,6 +453,10 @@ export const pythonFromBlock = function (
         if (ports.length) {
             paramString += ', ' + ports.join(', ');
         }
+    }
+
+    if (generator.getModuleType() === storageModule.ModuleType.OPMODE && block.mrcPythonMethodName === '__init__') {
+        paramString = 'robot';
     }
 
     if (params.length != 0) {
