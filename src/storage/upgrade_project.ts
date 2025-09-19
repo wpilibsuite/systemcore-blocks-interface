@@ -54,18 +54,18 @@ export async function upgradeProjectIfNecessary(
 }
 
 async function upgradeFrom_000_to_001(
-  _storage: commonStorage.Storage,
-  _projectName: string,
-  projectInfo: storageProject.ProjectInfo): Promise<void> {
+   _storage: commonStorage.Storage,
+   _projectName: string,
+   projectInfo: storageProject.ProjectInfo): Promise<void> {
   // Project was saved without a project.info.json file.
   // Nothing needs to be done to upgrade to '0.0.1';
   projectInfo.version = '0.0.1';
 }
 
 async function upgradeFrom_001_to_002(
-  storage: commonStorage.Storage,
-  projectName: string,
-  projectInfo: storageProject.ProjectInfo): Promise<void> {
+   storage: commonStorage.Storage,
+   projectName: string,
+   projectInfo: storageProject.ProjectInfo): Promise<void> {
   // Modules were saved without private components.
   // The Robot's mrc_mechanism_component_holder block was saved without hidePrivateComponents.
   const projectFileNames: string[] = await storage.list(
