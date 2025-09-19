@@ -113,7 +113,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       await loadProjectNames(props.storage);
     } catch (error) {
       console.error('Error renaming project:', error);
-      props.setAlertErrorMessage('Failed to rename project');
+      props.setAlertErrorMessage(t('FAILED_TO_RENAME_PROJECT'));
     }
     
     setRenameModalOpen(false);
@@ -134,7 +134,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       await loadProjectNames(props.storage);
     } catch (error) {
       console.error('Error copying project:', error);
-      props.setAlertErrorMessage('Failed to copy project');
+      props.setAlertErrorMessage(t('FAILED_TO_COPY_PROJECT'));
     }
     
     setCopyModalOpen(false);
@@ -154,11 +154,12 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       );
     } catch (e) {
       console.error('Failed to create a new project:', e);
-      props.setAlertErrorMessage('Failed to create a new project.');
+      props.setAlertErrorMessage(t('FAILED_TO_CREATE_PROJECT'));
     }
 
     setNewItemName('');
     await loadProjectNames(props.storage);
+    handleSelectProject(newProjectName);
   };
 
   /** Handles project deletion with proper cleanup. */
@@ -191,7 +192,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       await storageProject.deleteProject(props.storage, projectNameToDelete);
     } catch (e) {
       console.error('Failed to delete the project:', e);
-      props.setAlertErrorMessage('Failed to delete the project.');
+      props.setAlertErrorMessage(t('FAILED_TO_DELETE_PROJECT'));
     }
   };
 
@@ -222,12 +223,12 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
 
   /** Gets the rename modal title. */
   const getRenameModalTitle = (): string => {
-    return `Rename Project: ${currentRecord ? currentRecord.projectName : ''}`;
+    return `${t('RENAME_PROJECT')}: ${currentRecord ? currentRecord.projectName : ''}`;
   };
 
   /** Gets the copy modal title. */
   const getCopyModalTitle = (): string => {
-    return `Copy Project: ${currentRecord ? currentRecord.projectName : ''}`;
+    return `${t('COPY_PROJECT')}: ${currentRecord ? currentRecord.projectName : ''}`;
   };
 
   /** Creates the container style object. */
@@ -246,7 +247,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   /** Table column configuration. */
   const columns: Antd.TableProps<ProjectRecord>['columns'] = [
     {
-      title: 'Name',
+      title: t('NAME'),
       dataIndex: 'projectName',
       key: 'projectName',
       ellipsis: {
@@ -259,7 +260,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       ),
     },
     {
-      title: 'Actions',
+      title: t('ACTIONS'),
       key: 'actions',
       width: ACTIONS_COLUMN_WIDTH,
       render: (_, record: ProjectRecord) => (
@@ -291,8 +292,8 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
           {allProjectRecords.length > 1 && (
             <Antd.Tooltip title={t('Delete')}>
               <Antd.Popconfirm
-                title={`Delete ${record.projectName}?`}
-                description="This action cannot be undone."
+                title={t('DELETE_PROJECT_CONFIRM', { projectName: record.projectName })}
+                description={t('DELETE_CANNOT_BE_UNDONE')}
                 onConfirm={() => handleDeleteProject(record.projectName)}
                 okText={t('Delete')}
                 cancelText={t('Cancel')}
@@ -377,30 +378,18 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
         title={t('Project Management')}
         open={props.isOpen}
         onCancel={props.onCancel}
-        footer={[
-          <Antd.Button key="close" onClick={props.onCancel}>
-            {t('Close')}
-          </Antd.Button>,
-        ]}
+        footer={null}
         width={MODAL_WIDTH}
       >
         {props.noProjects && (
           <Antd.Alert
-            message="No projects found"
-            description="Please create a new project to get started."
+            message={t('NO_PROJECTS_FOUND')}
+            description={t('CREATE_PROJECT_TO_START')}
             type="info"
             showIcon
             style={getAlertStyle()}
           />
         )}
-        <div style={getContainerStyle()}>
-          <ProjectNameComponent
-            newItemName={newItemName}
-            setNewItemName={setNewItemName}
-            onAddNewItem={handleAddNewItem}
-            projectNames={allProjectNames}
-          />
-        </div>
         {!props.noProjects && (
           <Antd.Table<ProjectRecord>
             columns={columns}
@@ -412,17 +401,26 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
               showSizeChanger: false,
               showQuickJumper: false,
               showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} items`,
+                t('PAGINATION_ITEMS', { range0: range[0], range1: range[1], total }),
             } : false}
             bordered
             locale={{
-              emptyText: 'No projects found',
+              emptyText: t('NO_PROJECTS_FOUND'),
             }}
             onRow={(record) => ({
               onDoubleClick: () => handleSelectProject(record.projectName),
             })}
           />
         )}
+        <br />
+        <div style={getContainerStyle()}>
+          <ProjectNameComponent
+            newItemName={newItemName}
+            setNewItemName={setNewItemName}
+            onAddNewItem={handleAddNewItem}
+            projectNames={allProjectNames}
+          />
+        </div>
       </Antd.Modal>
     </>
   );
