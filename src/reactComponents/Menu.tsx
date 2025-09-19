@@ -234,23 +234,18 @@ export function Component(props: MenuProps): React.JSX.Element {
 
     // Handle management actions
     if (key === 'manageMechanisms') {
-      console.log('Opening mechanisms modal');
       setFileModalOpen(false);
       setTabType(TabType.MECHANISM);
       setTimeout(() => {
-        console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
       }, 0);
     } else if (key === 'manageOpmodes') {
-      console.log('Opening opmodes modal');
       setFileModalOpen(false);
       setTabType(TabType.OPMODE);
       setTimeout(() => {
-        console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
       }, 0);
     } else if (key === 'manageProjects') {
-      console.log('Opening projects modal');
       setProjectModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
@@ -380,7 +375,6 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   /** Handles closing the file management modal. */
   const handleFileModalClose = (): void => {
-    console.log('Modal onCancel called');
     setFileModalOpen(false);
   };
 
