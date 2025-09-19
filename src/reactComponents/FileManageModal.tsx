@@ -25,7 +25,7 @@ import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
-import {EditOutlined, DeleteOutlined, CopyOutlined} from '@ant-design/icons';
+import {EditOutlined, DeleteOutlined, CopyOutlined, SelectOutlined} from '@ant-design/icons';
 import ClassNameComponent from './ClassNameComponent';
 
 /** Represents a module in the file management system. */
@@ -54,7 +54,7 @@ const DEFAULT_PAGE_SIZE = 5;
 const MODAL_WIDTH = 800;
 
 /** Actions column width in pixels. */
-const ACTIONS_COLUMN_WIDTH = 120;
+const ACTIONS_COLUMN_WIDTH = 160;
 
 /**
  * Modal component for managing files (mechanisms and opmodes) within a project.
@@ -125,12 +125,20 @@ export default function FileManageModal(props: FileManageModalProps) {
 
       setModules(newModules);
       triggerProjectUpdate();
+
+      // Close the rename modal first
+      setRenameModalOpen(false);
+      
+      // Automatically select and open the newly created module
+      props.gotoTab(newModulePath);
+      props.onClose();
+
     } catch (error) {
       console.error('Error renaming module:', error);
       props.setAlertErrorMessage(t('FAILED_TO_RENAME_MODULE'));
+      setRenameModalOpen(false);
     }
 
-    setRenameModalOpen(false);
   };
 
   /** Handles copying a module. */
@@ -276,6 +284,14 @@ export default function FileManageModal(props: FileManageModalProps) {
       width: ACTIONS_COLUMN_WIDTH,
       render: (_, record: Module) => (
         <Antd.Space size="small">
+          <Antd.Tooltip title={t('Select')}>
+            <Antd.Button
+              type="text"
+              size="small"
+              icon={<SelectOutlined />}
+              onClick={() => handleRowDoubleClick(record)}
+            />
+          </Antd.Tooltip>
           <Antd.Tooltip title={t('RENAME')}>
             <Antd.Button
               type="text"
