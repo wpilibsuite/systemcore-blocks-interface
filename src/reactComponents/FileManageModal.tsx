@@ -138,7 +138,6 @@ export default function FileManageModal(props: FileManageModalProps) {
       props.setAlertErrorMessage(t('FAILED_TO_RENAME_MODULE'));
       setRenameModalOpen(false);
     }
-
   };
 
   /** Handles copying a module. */
@@ -457,13 +456,13 @@ export default function FileManageModal(props: FileManageModalProps) {
             onDoubleClick: () => handleRowDoubleClick(record),
           })}
         />
+        <br />        
         <div style={{
           marginBottom: 16,
           border: `1px solid ${token.colorBorder}`,
           borderRadius: '6px',
           padding: '12px',
         }}>
-          <br />
         <ClassNameComponent
             tabType={props.tabType}
             newItemName={newItemName}
