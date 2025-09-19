@@ -34,7 +34,7 @@ export const NO_VERSION = '0.0.0';
 export const CURRENT_VERSION = '0.0.3';
 
 export async function upgradeProjectIfNecessary(
-   storage: commonStorage.Storage, projectName: string): Promise<void> {    
+    storage: commonStorage.Storage, projectName: string): Promise<void> {
   const projectInfo = await storageProject.fetchProjectInfo(storage, projectName);
   if (semver.lt(projectInfo.version, CURRENT_VERSION)) {
     switch (projectInfo.version) {
