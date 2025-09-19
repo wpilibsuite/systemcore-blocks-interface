@@ -149,10 +149,10 @@ export function Component(props: TabsProps): React.JSX.Element {
   };
 
   /** Handles successful addition of new tabs. */
-  const handleAddTabOk = (newTabs: TabItem[]): void => {
-    props.setTabList([props.tabList[0], ...newTabs]);
+  const handleAddTabOk = (newTab: TabItem): void => {
+    props.setTabList([...props.tabList, newTab]);
 
-    setActiveKey(props.tabList[0].key);
+    setActiveKey(newTab.key);
     setAddTabDialogOpen(false);
   };
 
