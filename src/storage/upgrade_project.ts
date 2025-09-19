@@ -101,9 +101,9 @@ async function upgradeFrom_001_to_002(
 }
 
 async function upgradeFrom_002_to_003(
-   storage: commonStorage.Storage,
-   projectName: string,
-   projectInfo: storageProject.ProjectInfo): Promise<void> {
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
   // Opmodes had robot as a parameter to init method
   const projectFileNames: string[] = await storage.list(
     storageNames.makeProjectDirectoryPath(projectName));
