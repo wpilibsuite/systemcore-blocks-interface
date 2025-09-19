@@ -39,7 +39,7 @@ export const BLOCK_NAME = 'mrc_class_method_def';
 
 export const FIELD_METHOD_NAME = 'NAME';
 
-export type Parameter = {
+type Parameter = {
     name: string,
     type?: string,
 };
@@ -320,6 +320,14 @@ const CLASS_METHOD_DEF = {
     mrcChangeIds: function (this: ClassMethodDefBlock, oldIdToNewId: { [oldId: string]: string }): void {
         if (this.mrcMethodId in oldIdToNewId) {
             this.mrcMethodId = oldIdToNewId[this.mrcMethodId];
+        }
+    },
+    upgrade_002_to_003: function(this: ClassMethodDefBlock) {
+        if (this.getFieldValue('NAME') === 'init') {
+            // Remove robot parameter from init method
+            const methodBlock = this as ClassMethodDefBlock;
+            let filteredParams: Parameter[] = methodBlock.mrcParameters.filter(param => param.name !== 'robot');
+            methodBlock.mrcParameters = filteredParams;
         }
     },
 };

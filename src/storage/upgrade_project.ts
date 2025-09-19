@@ -28,7 +28,7 @@ import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
-import { ClassMethodDefBlock, Parameter, BLOCK_NAME as MRC_CLASS_METHOD_DEF_BLOCK_NAME } from '../blocks/mrc_class_method_def';
+import { ClassMethodDefBlock, BLOCK_NAME as MRC_CLASS_METHOD_DEF_BLOCK_NAME } from '../blocks/mrc_class_method_def';
 
 export const NO_VERSION = '0.0.0';
 export const CURRENT_VERSION = '0.0.3';
@@ -121,17 +121,10 @@ async function upgradeFrom_002_to_003(
       try {
         Blockly.serialization.workspaces.load(blocks, headlessWorkspace);
 
-        // Find and modify init method blocks to remove robot parameter
-        const allBlocks = headlessWorkspace.getAllBlocks();
-        for (const block of allBlocks) {
-          if (block.type === MRC_CLASS_METHOD_DEF_BLOCK_NAME &&
-            block.getFieldValue('NAME') === 'init') {
-            // Remove robot parameter from init method
-            const methodBlock = block as ClassMethodDefBlock;
-            let filteredParams: Parameter[] = methodBlock.mrcParameters.filter(param => param.name !== 'robot');
-            methodBlock.mrcParameters = filteredParams;
-          }
-        }
+        // Method blocks need to be upgraded
+        headlessWorkspace.getBlocksByType(MRC_CLASS_METHOD_DEF_BLOCK_NAME, false).forEach(block => {
+          (block as ClassMethodDefBlock).upgrade_002_to_003();
+        });
         blocks = Blockly.serialization.workspaces.save(headlessWorkspace);
       } finally {
         headlessWorkspace.dispose();
