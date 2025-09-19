@@ -38,6 +38,9 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
   contents: [],
 };
 
+const MRC_ON_LOAD = 'mrcOnLoad';
+const MRC_VALIDATE = 'mrcValidate';
+
 export class Editor {
   private static workspaceIdToEditor: { [workspaceId: string]: Editor } = {};
   private static currentEditor: Editor | null = null;
@@ -97,8 +100,8 @@ export class Editor {
         blockCreateEvent.ids.forEach(id => {
           const block = this.blocklyWorkspace.getBlockById(id);
           if (block) {
-            if ('mrcOnLoad' in block && typeof block.mrcOnLoad === "function") {
-              block.mrcOnLoad();
+            if (MRC_ON_LOAD in block && typeof block[MRC_ON_LOAD] === 'function') {
+              block[MRC_ON_LOAD]();
             }
           }
         });
@@ -129,6 +132,13 @@ export class Editor {
     // Parse modules since they might have changed.
     this.parseModules(project, modulePathToContentText);
     this.updateToolboxImpl();
+
+    // Go through all the blocks in the workspace and call their mrcValidate method.
+    this.blocklyWorkspace.getAllBlocks().forEach(block => {
+      if (MRC_VALIDATE in block && typeof block[MRC_VALIDATE] === 'function') {
+        block[MRC_VALIDATE]();
+      }
+    });
   }
 
   public abandon(): void {
@@ -158,8 +168,8 @@ export class Editor {
     for (const mechanism of this.mechanisms) {
       const moduleContent = this.modulePathToModuleContent[mechanism.modulePath];
       if (!moduleContent) {
-        console.error(this.modulePath + " editor.parseModules - modulePathToModuleContent['" +
-            mechanism.modulePath + "'] is undefined");
+        console.error(this.modulePath + ' editor.parseModules - modulePathToModuleContent["' +
+            mechanism.modulePath + '"] is undefined');
         continue;
       }
       this.mechanismClassNameToModuleContent[mechanism.className] = moduleContent;
