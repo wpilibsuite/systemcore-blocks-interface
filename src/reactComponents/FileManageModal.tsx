@@ -127,7 +127,7 @@ export default function FileManageModal(props: FileManageModalProps) {
       triggerProjectUpdate();
     } catch (error) {
       console.error('Error renaming module:', error);
-      props.setAlertErrorMessage('Failed to rename module');
+      props.setAlertErrorMessage(t('FAILED_TO_RENAME_MODULE'));
     }
 
     setRenameModalOpen(false);
@@ -150,7 +150,7 @@ export default function FileManageModal(props: FileManageModalProps) {
       const originalModule = modules.find((module) => module.path === origModule.path);
       if (!originalModule) {
         console.error('Original module not found for copying:', origModule.path);
-        props.setAlertErrorMessage('Original module not found for copying');
+        props.setAlertErrorMessage(t('MODULE_NOT_FOUND_FOR_COPYING'));
         return;
       }
 
@@ -165,7 +165,7 @@ export default function FileManageModal(props: FileManageModalProps) {
       triggerProjectUpdate();
     } catch (error) {
       console.error('Error copying module:', error);
-      props.setAlertErrorMessage('Failed to copy module');
+      props.setAlertErrorMessage(t('FAILED_TO_COPY_MODULE'));
     }
 
     setCopyModalOpen(false);
@@ -243,14 +243,14 @@ export default function FileManageModal(props: FileManageModalProps) {
   /** Opens the copy modal for a specific module. */
   const openCopyModal = (record: Module): void => {
     setCurrentRecord(record);
-    setName(record.title + 'Copy');
+    setName(t('COPY_SUFFIX', { name: record.title }));
     setCopyModalOpen(true);
   };
 
   /** Table column configuration. */
   const columns: Antd.TableProps<Module>['columns'] = [
     {
-      title: 'Name',
+      title: t('NAME'),
       dataIndex: 'title',
       key: 'title',
       ellipsis: {
@@ -263,12 +263,12 @@ export default function FileManageModal(props: FileManageModalProps) {
       ),
     },
     {
-      title: 'Actions',
+      title: t('ACTIONS'),
       key: 'actions',
       width: ACTIONS_COLUMN_WIDTH,
       render: (_, record: Module) => (
         <Antd.Space size="small">
-          <Antd.Tooltip title={t('Rename')}>
+          <Antd.Tooltip title={t('RENAME')}>
             <Antd.Button
               type="text"
               size="small"
@@ -279,7 +279,7 @@ export default function FileManageModal(props: FileManageModalProps) {
               }}
             />
           </Antd.Tooltip>
-          <Antd.Tooltip title={t('Copy')}>
+          <Antd.Tooltip title={t('COPY')}>
             <Antd.Button
               type="text"
               size="small"
@@ -292,8 +292,8 @@ export default function FileManageModal(props: FileManageModalProps) {
           </Antd.Tooltip>
           <Antd.Tooltip title={t('Delete')}>
             <Antd.Popconfirm
-              title={`Delete ${record.title}?`}
-              description="This action cannot be undone."
+              title={t('DELETE_MODULE_CONFIRM', { title: record.title })}
+              description={t('DELETE_CANNOT_BE_UNDONE')}
               onConfirm={() => handleDeleteConfirm(record)}
               okText={t('Delete')}
               cancelText={t('Cancel')}
@@ -315,29 +315,35 @@ export default function FileManageModal(props: FileManageModalProps) {
 
   /** Gets the modal title based on module type. */
   const getModalTitle = (): string => {
-    return `${TabTypeUtils.toString(props.tabType)} Management`;
+    return t('TYPE_MANAGEMENT', { type: TabTypeUtils.toString(props.tabType) });
   };
 
   /** Gets the rename modal title. */
   const getRenameModalTitle = (): string => {
     if (!currentRecord) {
-      return 'Rename';
+      return t('RENAME');
     }
-    return `Rename ${TabTypeUtils.toString(currentRecord.type)}: ${currentRecord.title}`;
+    return t('RENAME_TYPE_TITLE', { 
+      type: TabTypeUtils.toString(currentRecord.type), 
+      title: currentRecord.title 
+    });
   };
 
   /** Gets the copy modal title. */
   const getCopyModalTitle = (): string => {
     if (!currentRecord) {
-      return 'Copy';
+      return t('COPY');
     }
-    return `Copy ${TabTypeUtils.toString(currentRecord.type)}: ${currentRecord.title}`;
+    return t('COPY_TYPE_TITLE', { 
+      type: TabTypeUtils.toString(currentRecord.type), 
+      title: currentRecord.title 
+    });
   };
 
   /** Gets the empty table text based on tab type. */
   const getEmptyText = (): string => {
     const tabTypeString = TabTypeUtils.toString(props.tabType || TabType.OPMODE);
-    return `No ${tabTypeString.toLowerCase()} files found`;
+    return t('NO_FILES_FOUND', { type: tabTypeString.toLowerCase() });
   };
 
   return (
@@ -417,7 +423,7 @@ export default function FileManageModal(props: FileManageModalProps) {
             showSizeChanger: false,
             showQuickJumper: false,
             showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`,
+              t('PAGINATION_TOTAL', { start: range[0], end: range[1], total }),
           } : false}
           bordered
           locale={{

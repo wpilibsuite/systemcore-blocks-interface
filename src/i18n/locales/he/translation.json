@@ -50,6 +50,17 @@
     "NO_PROJECTS_FOUND": "לא נמצאו פרויקטים",
     "CREATE_PROJECT_TO_START": "אנא צור פרויקט חדש כדי להתחיל.",
     "PAGINATION_ITEMS": "{range0}-{range1} מתוך {total} פריטים",
+    "FAILED_TO_RENAME_MODULE": "נכשל בשינוי שם המודול",
+    "FAILED_TO_COPY_MODULE": "נכשל בהעתקת המודול",
+    "MODULE_NOT_FOUND_FOR_COPYING": "המודול המקורי לא נמצא להעתקה",
+    "COPY_SUFFIX": "{{name}} (עותק)",
+    "DELETE_MODULE_CONFIRM": "מחק את {title}?",
+    "MANAGEMENT": "ניהול",
+    "TYPE_MANAGEMENT": "ניהול {{type}}",
+    "RENAME_TYPE_TITLE": "שינוי שם {{type}}: {{title}}",
+    "COPY_TYPE_TITLE": "העתקת {{type}}: {{title}}",
+    "RENAME": "שנה שם",
+    "NO_FILES_FOUND": "לא נמצאו קבצי {type}",
     "MECHANISMS": "מנגנונים",    
     "OPMODES": "מצבי פעולה",
     "BLOCKLY":{
@@ -96,7 +107,8 @@
             "EVENTS": "אירועים",
             "ADD_MECHANISM": "+ מנגנון",
             "ADD_COMPONENT": "+ רכיב",
-            "TEST": "בדיקה"
+            "TEST": "בדיקה",
+            "PAGINATION_TOTAL": "{{start}}-{{end}} מתוך {{total}} פריטים"
         }
     }   
 }

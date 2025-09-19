@@ -50,6 +50,17 @@
     "NO_PROJECTS_FOUND": "No projects found",
     "CREATE_PROJECT_TO_START": "Please create a new project to get started.",
     "PAGINATION_ITEMS": "{range0}-{range1} of {total} items",
+    "FAILED_TO_RENAME_MODULE": "Failed to rename module",
+    "FAILED_TO_COPY_MODULE": "Failed to copy module",
+    "MODULE_NOT_FOUND_FOR_COPYING": "Original module not found for copying",
+    "COPY_SUFFIX": "{{name}} (copy)",
+    "DELETE_MODULE_CONFIRM": "Delete {title}?",
+    "MANAGEMENT": "Management",
+    "TYPE_MANAGEMENT": "{{type}} Management",
+    "RENAME_TYPE_TITLE": "Rename {{type}}: {{title}}",
+    "COPY_TYPE_TITLE": "Copy {{type}}: {{title}}",
+    "RENAME": "Rename",
+    "NO_FILES_FOUND": "No {type} files found",
     "MECHANISMS": "Mechanisms",    
     "OPMODES": "OpModes",
     "BLOCKLY":{
@@ -96,7 +107,8 @@
             "EVENTS": "Events",
             "ADD_MECHANISM": "+ Mechanism",
             "ADD_COMPONENT": "+ Component",
-            "TEST": "Test"
+            "TEST": "Test",
+            "PAGINATION_TOTAL": "{{start}}-{{end}} of {{total}} items"
         }
     }   
 }
