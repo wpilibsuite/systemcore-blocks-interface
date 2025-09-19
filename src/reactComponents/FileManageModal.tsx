@@ -38,7 +38,7 @@ interface Module {
 /** Props for the FileManageModal component. */
 interface FileManageModalProps {
   isOpen: boolean;
-  onCancel: () => void;
+  onClose: () => void;
   project: storageProject.Project | null;
   setProject: (project: storageProject.Project | null) => void;
   gotoTab: (path: string) => void;
@@ -200,7 +200,12 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
 
     setNewItemName('');
-    triggerProjectUpdate();};
+    if(newModule){
+      props.gotoTab(newModule.modulePath);
+    }
+    triggerProjectUpdate();
+    props.onClose();
+  };
 
   /** Handles delete confirmation for a module. */
   const handleDeleteConfirm = async (record: Module): Promise<void> => {
@@ -225,7 +230,7 @@ export default function FileManageModal(props: FileManageModalProps) {
   /** Handles row double-click to open module in tab. */
   const handleRowDoubleClick = (record: Module): void => {
     props.gotoTab(record.path);
-    props.onCancel();
+    props.onClose();
   };
 
   /** Opens the rename modal for a specific module. */
@@ -398,30 +403,10 @@ export default function FileManageModal(props: FileManageModalProps) {
       <Antd.Modal
         title={getModalTitle()}
         open={props.isOpen}
-        onCancel={props.onCancel}
-        footer={[
-          <Antd.Button key="close" onClick={props.onCancel}>
-            {t('Close')}
-          </Antd.Button>,
-        ]}
+        onCancel={props.onClose}
+        footer={null}
         width={MODAL_WIDTH}
       >
-        <div style={{
-          marginBottom: 16,
-          border: `1px solid ${token.colorBorder}`,
-          borderRadius: '6px',
-          padding: '12px',
-        }}>
-          <ClassNameComponent
-            tabType={props.tabType}
-            newItemName={newItemName}
-            setNewItemName={setNewItemName}
-            onAddNewItem={handleAddNewItem}
-            project={props.project}
-            storage={props.storage}
-            buttonLabel={t('New')}
-          />
-        </div>
         <Antd.Table<Module>
           columns={columns}
           dataSource={modules}
@@ -442,6 +427,23 @@ export default function FileManageModal(props: FileManageModalProps) {
             onDoubleClick: () => handleRowDoubleClick(record),
           })}
         />
+        <div style={{
+          marginBottom: 16,
+          border: `1px solid ${token.colorBorder}`,
+          borderRadius: '6px',
+          padding: '12px',
+        }}>
+          <br />
+        <ClassNameComponent
+            tabType={props.tabType}
+            newItemName={newItemName}
+            setNewItemName={setNewItemName}
+            onAddNewItem={handleAddNewItem}
+            project={props.project}
+            storage={props.storage}
+            buttonLabel={t('CREATE')}
+          />
+        </div>        
       </Antd.Modal>
     </>
   );

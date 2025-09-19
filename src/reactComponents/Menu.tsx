@@ -443,7 +443,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     <>
       <FileManageModal
         isOpen={fileModalOpen}
-        onCancel={handleFileModalClose}
+        onClose={handleFileModalClose}
         project={props.project}
         storage={props.storage}
         tabType={tabType}
