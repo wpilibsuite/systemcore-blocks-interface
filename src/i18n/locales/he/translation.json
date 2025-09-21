@@ -57,6 +57,10 @@
         "DISPLAY_GROUP": "קבוצת תצוגה",
         "PRINT": "הדפס",
         "NO_MECHANISM_CONTENTS": "אין תוכן מנגנון",
+        "CALL": "שִׂיחָה",
+        "ROBOT": "רובוט",
+        "CREATE": "לִיצוֹר",
+        "FIRE": "לִגרוֹם",
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "מריץ את הבלוק המחובר ומתעלם מהתוצאה. מאפשר לך לקרוא לפונקציה ולהתעלם מערך ההחזרה.",
             "NONE": "החזרות אין.",
@@ -65,7 +69,18 @@
             "OPMODE_NAME": "השם המוצג בתחנת הנהג. אם ריק ישתמש בשם הכיתה.",
             "OPMODE_GROUP": "קבוצה אופציונלית לקיבוץ מצבי פעולה בתחנת הנהג",
             "COMPONENTS": "רכיבים אלה גלויים במנגנון זה, ברובוט ובכל מצבי הפעולה.",
-            "PRIVATE_COMPONENTS": "רכיבים אלה לא יהיו גלויים ברובוט או במצבי פעולה. הם נגישים רק בתוך המנגנון הזה."
+            "PRIVATE_COMPONENTS": "רכיבים אלה לא יהיו גלויים ברובוט או במצבי פעולה. הם נגישים רק בתוך המנגנון הזה.",
+            "CALL_BUILTIN_FUNCTION": "קורא לפונקציה המובנית {{functionName}}.",
+            "CALL_MODULE_FUNCTION": "קורא לפונקציית המודול {{moduleName}}.{{functionName}}.",
+            "CALL_STATIC_METHOD": "קורא למתודה הסטטית {{className}}.{{functionName}}.",
+            "CALL_CONSTRUCTOR": "בונה מופע של המחלקה {{className}}.",
+            "CALL_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}}.",
+            "CALL_INSTANCE_METHOD_WITHIN": "קורא למתודה {{functionName}}.",
+            "FIRE_EVENT": "מפעיל את האירוע בשם {{eventName}}.",
+            "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} על הרכיב בשם {{componentName}} במנגנון בשם {{mechanismName}}.",
+            "CALL_COMPONENT_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} על הרכיב בשם {{componentName}}.",
+            "CALL_ROBOT_INSTANCE_METHOD": "קורא למתודה הרובוטית {{functionName}}.",
+            "CALL_MECHANISM_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} במנגנון בשם {{mechanismName}}."
         },
         "CATEGORY":{
             "LISTS": "רשימות",
@@ -84,6 +99,16 @@
             "ADD_MECHANISM": "+ מנגנון",
             "ADD_COMPONENT": "+ רכיב",
             "TEST": "בדיקה"
+        },
+        "WARNING":{
+            "CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT": "פעולה זו חוסם קריאה למתודה על רכיב פרטי במנגנון {{mechanismClassName}}.",
+            "CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT": "בלוק זה קורא למתודה על רכיב שכבר אינו קיים.",
+            "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM": "בלוק זה קורא למתודה על רכיב השייך למנגנון שכבר אינו קיים.",
+            "CALL_ROBOT_INSTANCE_METHOD_INSIDE_MECHANISM": "אסור להשתמש בבלוק זה בתוך מנגנון.",
+            "CALL_ROBOT_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שכבר לא קיימת ברובוט.",
+            "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "אסור להשתמש בבלוק זה בתוך מנגנון.",
+            "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא לשיטה שכבר אינה קיימת במנגנון.",
+            "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "בלוק זה קורא לשיטה במנגנון שכבר אינו קיים."
         }
     }   
 }
