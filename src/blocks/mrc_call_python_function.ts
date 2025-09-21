@@ -85,7 +85,6 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcComponentClassName: string,
   mrcOriginalComponentName: string,
   mrcMechanismClassName: string,
-  mrcComponentNames: string[],
   mrcMapComponentNameToId: {[componentName: string]: string},
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
@@ -167,65 +166,88 @@ const CALL_PYTHON_FUNCTION = {
       switch (this.mrcFunctionKind) {
         case FunctionKind.BUILT_IN: {
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = 'Calls the builtin function ' + functionName + '.';
+          tooltip = Blockly.Msg.CALL_BUILTIN_FUNCTION_TOOLTIP;
+          tooltip = tooltip.replace('{{functionName}}', functionName);
           break;
         }
         case FunctionKind.MODULE: {
           const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = 'Calls the module function ' + moduleName + '.' + functionName + '.';
+          tooltip = Blockly.Msg.CALL_MODULE_FUNCTION_TOOLTIP;
+          tooltip = tooltip
+              .replace('{{moduleName}}', moduleName)
+              .replace('{{functionName}}', functionName);
           break;
         }
         case FunctionKind.STATIC: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = 'Calls the static method ' + className + '.' + functionName + '.';
+          tooltip = Blockly.Msg.CALL_STATIC_METHOD_TOOLTIP;
+          tooltip = tooltip
+              .replace('{{className}}', className)
+              .replace('{{functionName}}', functionName);
           break;
         }
         case FunctionKind.CONSTRUCTOR: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Constructs an instance of the class ' + className + '.';
+          tooltip = Blockly.Msg.CALL_CONSTRUCTOR_TOOLTIP;
+          tooltip = tooltip.replace('{{className}}', className);
           break;
         }
         case FunctionKind.INSTANCE: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = 'Calls the instance method ' + className + '.' + functionName + '.';
+          tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_TOOLTIP;
+          tooltip = tooltip
+              .replace('{{className}}', className)
+              .replace('{{functionName}}', functionName);
           break;
         }
         case FunctionKind.INSTANCE_WITHIN: {
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = 'Calls the instance method ' + functionName + '.';
+          tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_WITHIN_TOOLTIP;
+          tooltip = tooltip.replace('{{functionName}}', functionName);
           break;
         }
         case FunctionKind.EVENT: {
           const eventName = this.getFieldValue(FIELD_EVENT_NAME);
-          tooltip = 'Fires the event ' + eventName + '.';
+          tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_WITHIN_TOOLTIP;
+          tooltip = tooltip.replace('{{eventName}}', eventName);
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
           const className = this.mrcComponentClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           if (this.mrcMechanismId) {
-            tooltip = 'Calls the instance method ' + className + '.' + functionName +
-                ' on the component named ' + this.getFieldValue(FIELD_COMPONENT_NAME) +
-                ' in the mechanism named ' + this.getFieldValue(FIELD_MECHANISM_NAME) + '.';
+            tooltip = Blockly.Msg.CALL_MECHANISM_COMPONENT_INSTANCE_METHOD;
+            tooltip = tooltip
+                .replace('{{className}}', className)
+                .replace('{{functionName}}', functionName)
+                .replace('{{componentName}}', this.getFieldValue(FIELD_COMPONENT_NAME))
+                .replace('{{mechanismName}}', this.getFieldValue(FIELD_MECHANISM_NAME));
           } else {
-            tooltip = 'Calls the instance method ' + className + '.' + functionName +
-                ' on the component named ' + this.getFieldValue(FIELD_COMPONENT_NAME) + '.';
+            tooltip = Blockly.Msg.CALL_COMPONENT_INSTANCE_METHOD;
+            tooltip = tooltip
+                .replace('{{className}}', className)
+                .replace('{{functionName}}', functionName)
+                .replace('{{componentName}}', this.getFieldValue(FIELD_COMPONENT_NAME));
           }
           break;
         }
         case FunctionKind.INSTANCE_ROBOT: {
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = 'Calls the robot method ' + functionName + '.';
+          tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_WITHIN_TOOLTIP;
+          tooltip = tooltip.replace('{{functionName}}', functionName);
           break;
         }
         case FunctionKind.INSTANCE_MECHANISM: {
           const className = this.mrcMechanismClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = 'Calls the instance method ' + className + '.' + functionName +
-              ' on the mechanism named ' + this.getFieldValue(FIELD_MECHANISM_NAME) + '.';
+            tooltip = Blockly.Msg.CALL_MECHANISM_INSTANCE_METHOD;
+            tooltip = tooltip
+                .replace('{{className}}', className)
+                .replace('{{functionName}}', functionName)
+                .replace('{{mechanismName}}', this.getFieldValue(FIELD_MECHANISM_NAME));
           break;
         }
         default:
@@ -318,8 +340,7 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : '';
     this.mrcComponentClassName = extraState.componentClassName ? extraState.componentClassName : '';
     this.mrcMechanismClassName = extraState.mechanismClassName ? extraState.mechanismClassName : '';
-    // Initialize mrcComponentNames and mrcMapComponentNameToId here. They will be filled during mrcValidate.
-    this.mrcComponentNames = [];
+    // Initialize mrcMapComponentNameToId here. It will be filled during mrcValidate.
     this.mrcMapComponentNameToId = {};
     this.updateBlock_();
   },
@@ -349,31 +370,31 @@ const CALL_PYTHON_FUNCTION = {
       switch (this.mrcFunctionKind) {
         case FunctionKind.BUILT_IN:
           this.appendDummyInput(INPUT_TITLE)
-              .appendField('call')
+              .appendField(Blockly.Msg.CALL)
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.MODULE:
           this.appendDummyInput(INPUT_TITLE)
-              .appendField('call')
+              .appendField(Blockly.Msg.CALL)
               .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.STATIC:
           this.appendDummyInput(INPUT_TITLE)
-              .appendField('call')
+              .appendField(Blockly.Msg.CALL)
               .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         case FunctionKind.CONSTRUCTOR:
           this.appendDummyInput(INPUT_TITLE)
-              .appendField('create')
+              .appendField(Blockly.Msg.CREATE)
               .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME);
           break;
         case FunctionKind.INSTANCE:
           this.appendDummyInput(INPUT_TITLE)
-              .appendField('call')
+              .appendField(Blockly.Msg.CALL)
               .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
@@ -382,7 +403,7 @@ const CALL_PYTHON_FUNCTION = {
           const input = this.getInput(INPUT_TITLE);
           if (!input) {
             this.appendDummyInput(INPUT_TITLE)
-                .appendField('call')
+                .appendField(Blockly.Msg.CALL)
                 .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           }
           break;
@@ -391,14 +412,14 @@ const CALL_PYTHON_FUNCTION = {
           const input = this.getInput(INPUT_TITLE);
           if (!input) {
             this.appendDummyInput(INPUT_TITLE)
-                .appendField('fire')
+                .appendField(Blockly.Msg.FIRE)
                 .appendField(createFieldNonEditableText(''), FIELD_EVENT_NAME);
           }
           break;
         }
         case FunctionKind.INSTANCE_COMPONENT: {
           const titleInput = this.appendDummyInput(INPUT_TITLE)
-              .appendField('call');
+              .appendField(Blockly.Msg.CALL);
           if (this.mrcMechanismId) {
             titleInput
                 .appendField(createFieldNonEditableText(''), FIELD_MECHANISM_NAME)
@@ -414,15 +435,15 @@ const CALL_PYTHON_FUNCTION = {
         }
         case FunctionKind.INSTANCE_ROBOT: {
           this.appendDummyInput(INPUT_TITLE)
-              .appendField('call')
-              .appendField(createFieldNonEditableText('robot'))
+              .appendField(Blockly.Msg.CALL)
+              .appendField(createFieldNonEditableText(Blockly.Msg.ROBOT))
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
         }
         case FunctionKind.INSTANCE_MECHANISM: {
           this.appendDummyInput(INPUT_TITLE)
-              .appendField('call')
+              .appendField(Blockly.Msg.CALL)
               .appendField(createFieldNonEditableText(''), FIELD_MECHANISM_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
@@ -505,7 +526,7 @@ const CALL_PYTHON_FUNCTION = {
       methodOrEvent: storageModuleContent.Method | storageModuleContent.Event
   ): void {
     // mutateMethodCaller is called when the method or event definition block in the same module is modified.
-    if (this.mrcFunctionKind == FunctionKind.EVENT) {
+    if (this.mrcFunctionKind === FunctionKind.EVENT) {
       const event = methodOrEvent as storageModuleContent.Event;
       this.mrcArgs = [];
       event.args.forEach((arg) => {
@@ -514,7 +535,7 @@ const CALL_PYTHON_FUNCTION = {
           type: arg.type,
         });
       });
-    } else if (this.mrcFunctionKind == FunctionKind.INSTANCE_WITHIN) {
+    } else if (this.mrcFunctionKind === FunctionKind.INSTANCE_WITHIN) {
       const method = methodOrEvent as storageModuleContent.Method;
       this.mrcReturnType = method.returnType;
       this.mrcArgs = [];
@@ -591,12 +612,14 @@ const CALL_PYTHON_FUNCTION = {
     // If the component belongs to a mechanism, also check whether the mechanism
     // still exists and whether it has been changed.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
+      const componentNames: string[] = [];
+      this.mrcMapComponentNameToId = {}
       this.getComponents().forEach(component => {
-        this.mrcComponentNames.push(component.name);
+        componentNames.push(component.name);
         this.mrcMapComponentNameToId[component.name] = component.componentId;
       });
       let foundComponent = false;
-      for (const componentName of this.mrcComponentNames) {
+      for (const componentName of componentNames) {
         const componentId = this.mrcMapComponentNameToId[componentName];
         if (componentId === this.mrcComponentId) {
           foundComponent = true;
@@ -615,12 +638,12 @@ const CALL_PYTHON_FUNCTION = {
               break;
             }
           }
-          if (indexOfComponentNameField == -1) {
+          if (indexOfComponentNameField === -1) {
             throw new Error('Could not find the component name field');
           }
           titleInput.removeField(FIELD_COMPONENT_NAME);
           titleInput.insertFieldAt(indexOfComponentNameField,
-              createFieldDropdown(this.mrcComponentNames), FIELD_COMPONENT_NAME);
+              createFieldDropdown(componentNames), FIELD_COMPONENT_NAME);
           // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
           // items in the dropdown if the user adds or removes a component.
 
@@ -631,7 +654,39 @@ const CALL_PYTHON_FUNCTION = {
         }
       }
       if (!foundComponent) {
-        warnings.push('This block calls a method on a component that no longer exists.');
+        if (this.mrcMechanismId) {
+          // Check whether the the component still exists, but is a private component in the mechanism.
+          for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
+            if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+              for (const mechanism of editor.getMechanisms()) {
+                if (mechanism.moduleId === mechanismInRobot.moduleId) {
+                  for (const privateComponent of editor.getPrivateComponentsFromMechanism(mechanism)) {
+                    if (privateComponent.className === this.mrcComponentClassName &&
+                        privateComponent.componentId === this.mrcComponentId) {
+                      foundComponent = true;
+                      let warning = Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT;
+                      warning = warning.replace('{{mechanismClassName}}', mechanism.className);
+                      warnings.push(warning);
+                      break
+                    }
+                  }
+                  break;
+                }
+                if (foundComponent) {
+                  break;
+                }
+              }
+              break;
+            }
+            if (foundComponent) {
+              break;
+            }
+          }
+        }
+      }
+
+      if (!foundComponent) {
+        warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT);
       }
 
       if (this.mrcMechanismId) {
@@ -649,9 +704,7 @@ const CALL_PYTHON_FUNCTION = {
           }
         }
         if (!foundMechanism) {
-          warnings.push(
-              'This block calls a method on a component that belongs to a mechanism that no ' +
-              'longer exists.');
+          warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM);
         }
       }
 
@@ -665,7 +718,7 @@ const CALL_PYTHON_FUNCTION = {
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_ROBOT) {
       if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
-        warnings.push('This block is not allowed to be used inside a mechanism.');
+        warnings.push(Blockly.Msg.WARNING_CALL_ROBOT_INSTANCE_METHOD_INSIDE_MECHANISM);
       } else {
         let foundRobotMethod = false;
         const robotMethods = editor.getMethodsFromRobot();
@@ -695,7 +748,7 @@ const CALL_PYTHON_FUNCTION = {
           }
         }
         if (!foundRobotMethod) {
-          warnings.push('This block calls a method that no longer exists.');
+          warnings.push(Blockly.Msg.WARNING_CALL_ROBOT_INSTANCE_METHOD_MISSING_METHOD);
         }
       }
     }
@@ -711,7 +764,7 @@ const CALL_PYTHON_FUNCTION = {
     // visible warning on it.
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_MECHANISM) {
       if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
-        warnings.push('This block is not allowed to be used inside a mechanism.');
+        warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM);
       } else {
         let foundMechanism = false;
         const mechanismsInRobot = editor.getMechanismsFromRobot();
@@ -753,7 +806,7 @@ const CALL_PYTHON_FUNCTION = {
               }
             }
             if (!foundMechanismMethod) {
-              warnings.push('This block calls a method that no longer exists.');
+              warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD);
             }
 
             // Since we found the mechanism, we can break out of the loop.
@@ -761,7 +814,7 @@ const CALL_PYTHON_FUNCTION = {
           }
         }
         if (!foundMechanism) {
-          warnings.push('This block calls a method in a mechanism that no longer exists.');
+          warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM);
         }
       }
     }

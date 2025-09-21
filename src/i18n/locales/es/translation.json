@@ -58,6 +58,10 @@
         "DISPLAY_GROUP": "Grupo a Mostrar",
         "PRINT": "imprimir",
         "NO_MECHANISM_CONTENTS": "Sin Contenido de Mecanismo",
+        "CALL": "llamar",
+        "ROBOT": "robot",
+        "CREATE": "crear",
+        "FIRE": "disparar",
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Ejecuta el bloque conectado e ignora el resultado. Te permite llamar una función e ignorar el valor de retorno.",
             "NONE": "No devuelve ninguno.",
@@ -66,7 +70,18 @@
             "OPMODE_NAME": "El nombre mostrado en la Estación del Conductor. Si está en blanco usará el nombre de la clase.",
             "OPMODE_GROUP": "Un grupo opcional para agrupar OpModes en la Estación del Conductor",
             "COMPONENTS": "Estos componentes son visibles en este mecanismo, el robot y todos los opmodes.",
-            "PRIVATE_COMPONENTS": "Estos componentes no serán visibles en el robot o en los opmodes. Solo son accesibles dentro de este mecanismo."
+            "PRIVATE_COMPONENTS": "Estos componentes no serán visibles en el robot o en los opmodes. Solo son accesibles dentro de este mecanismo.",
+            "CALL_BUILTIN_FUNCTION": "Llama a la función incorporada {{functionName}}.",
+            "CALL_MODULE_FUNCTION": "Llama a la función del módulo {{moduleName}}.{{functionName}}.",
+            "CALL_STATIC_METHOD": "Llama al método estático {{className}}.{{functionName}}.",
+            "CALL_CONSTRUCTOR": "Construye una instancia de la clase {{className}}.",
+            "CALL_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}}.",
+            "CALL_INSTANCE_METHOD_WITHIN": "Llama al método de instancia {{functionName}}.",
+            "FIRE_EVENT": "Dispara el evento llamado {{eventName}}.",
+            "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el componente llamado {{componentName}} en el mecanismo llamado {{mechanismName}}.",
+            "CALL_COMPONENT_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el componente llamado {{componentName}}.",
+            "CALL_ROBOT_INSTANCE_METHOD": "Llama al método robot {{functionName}}.",
+            "CALL_MECHANISM_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el mecanismo llamado {{mechanismName}}."
         },
         "CATEGORY": {
             "LISTS": "Listas",
@@ -85,6 +100,16 @@
             "ADD_MECHANISM": "+ Mecanismo",
             "ADD_COMPONENT": "+ Componente",
             "TEST": "Prueba"
+        },
+        "WARNING":{
+            "CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT": "Este bloque llama a un método en un componente privado en el mecanismo {{mechanismClassName}}.",
+            "CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT": "Este bloque llama a un método en un componente que ya no existe.",
+            "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM": "Este bloque llama a un método de un componente que pertenece a un mecanismo que ya no existe.",
+            "CALL_ROBOT_INSTANCE_METHOD_INSIDE_MECHANISM": "No se permite utilizar este bloque dentro de un mecanismo.",
+            "CALL_ROBOT_INSTANCE_METHOD_MISSING_METHOD": "Este bloque llama a un método que ya no existe en el robot.",
+            "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "No se permite utilizar este bloque dentro de un mecanismo.",
+            "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "Este bloque llama a un método que ya no existe en el mecanismo.",
+            "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "Este bloque llama a un método en un mecanismo que ya no existe."
         }
     }
 }
