@@ -57,6 +57,10 @@
         "DISPLAY_GROUP": "Display Group",
         "PRINT": "print",
         "NO_MECHANISM_CONTENTS": "No Mechanism Contents",
+        "CALL": "call",
+        "ROBOT": "robot",
+        "CREATE": "create",
+        "FIRE": "fire",
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
             "NONE": "Returns None.",
@@ -65,7 +69,18 @@
             "OPMODE_NAME": "The name shown on the Driver Station.  If blank will use the class name.",
             "OPMODE_GROUP": "An optional group to group OpModes on Driver Station",
             "COMPONENTS": "These components are visible in this mechanism, the robot, and all opmodes.",
-            "PRIVATE_COMPONENTS": "These components will not be visible in the robot or opmodes. They are only accessible within this mechanism."
+            "PRIVATE_COMPONENTS": "These components will not be visible in the robot or opmodes. They are only accessible within this mechanism.",
+            "CALL_BUILTIN_FUNCTION": "Calls the builtin function {{functionName}}.",
+            "CALL_MODULE_FUNCTION": "Calls the module function {{moduleName}}.{{functionName}}.",
+            "CALL_STATIC_METHOD": "Calls the static method {{className}}.{{functionName}}.",
+            "CALL_CONSTRUCTOR": "Constructs an instance of the class {{className}}.",
+            "CALL_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}}.",
+            "CALL_INSTANCE_METHOD_WITHIN": "Calls the instance method {{functionName}}.",
+            "FIRE_EVENT": "Fires the event named {{eventName}}.",
+            "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the component named {{componentName}} in the mechanism named {{mechanismName}}.",
+            "CALL_COMPONENT_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the component named {{componentName}}.",
+            "CALL_ROBOT_INSTANCE_METHOD": "Calls the robot method {{functionName}}.",
+            "CALL_MECHANISM_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the mechanism named {{mechanismName}}."
         },
         "CATEGORY":{
             "LISTS": "Lists",
@@ -84,6 +99,16 @@
             "ADD_MECHANISM": "+ Mechanism",
             "ADD_COMPONENT": "+ Component",
             "TEST": "Test"
+        },
+        "WARNING":{
+            "CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT": "This blocks calls a method on a private component in the {{mechanismClassName}} mechanism.",
+            "CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT": "This block calls a method on a component that no longer exists.",
+            "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method on a component that belongs to a mechanism that no longer exists.",
+            "CALL_ROBOT_INSTANCE_METHOD_INSIDE_MECHANISM": "This block is not allowed to be used inside a mechanism.",
+            "CALL_ROBOT_INSTANCE_METHOD_MISSING_METHOD": "This block calls a method that no longer exists in the robot.",
+            "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "This block is not allowed to be used inside a mechanism.",
+            "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "This block calls a method that no longer exists in the mechanism.",
+            "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method in a mechanism that no longer exists."
         }
     }   
 }
