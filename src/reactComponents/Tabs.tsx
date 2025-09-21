@@ -114,6 +114,8 @@ export function Component(props: TabsProps): React.JSX.Element {
       case storageModule.ModuleType.OPMODE:
         newTabs.push({ key, title: module.className, type: TabType.OPMODE });
         break;
+      case storageModule.ModuleType.ROBOT:
+        break;   // Robot tab is always first and cannot be added again.
       default:
         console.warn('Unknown module type:', module.moduleType);
         break;
