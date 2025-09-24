@@ -117,6 +117,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
         title: newModule.className,
         type: tabType,
       };
+      setNewItemName('');
       props.onOk(newTab);
     }
   };
