@@ -25,8 +25,8 @@ import * as toolboxItems from './items';
 
 // Tests
 
-export function testAllBlocksInToolbox(toolbox : Blockly.utils.toolbox.ToolboxDefinition) {
-  const contents  = (toolbox as toolboxItems.Category).contents;
+export function testAllBlocksInToolbox(toolbox : Blockly.utils.toolbox.ToolboxInfo) {
+  const contents  = toolbox.contents;
   alert('Press OK to run tests on all blocks from the toolbox.');
   const toolboxTestData = new ToolboxTestData(contents, () => {
     alert('Completed tests on all blocks in the toolbox. See console for any errors.');
