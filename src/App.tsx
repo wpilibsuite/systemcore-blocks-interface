@@ -593,7 +593,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         setActiveTab(project.robot.modulePath);
       }
     }
-  }, [modulePathToContentText, activeTab]);
+  }, [modulePathToContentText]);
 
   const { Sider, Content } = Antd.Layout;
 
