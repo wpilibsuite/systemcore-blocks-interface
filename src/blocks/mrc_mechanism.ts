@@ -174,8 +174,19 @@ const MECHANISM = {
       className: mechanismType,
     };
   },
+
+  /**
+   * mrcOnLoad is called for each MechanismBlock when the blocks are loaded in the blockly
+   * workspace.
+   */
   mrcOnLoad: function(this: MechanismBlock): void {
-    // mrcOnLoad is called for each MechanismBlock when the blocks are loaded in the blockly workspace.
+    this.mrcValidate();
+  },
+  /**
+   * mrcValidate checks the block, updates it, and/or adds a warning balloon if necessary.
+   * It is called from mrcOnLoad above and from Editor.makeCurrent.
+   */
+  mrcValidate: function(this: MechanismBlock): void {
     const warnings: string[] = [];
 
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);

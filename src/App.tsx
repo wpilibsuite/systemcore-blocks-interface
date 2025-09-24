@@ -368,6 +368,9 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       await saveModule();
     }
     setCurrentModule(module);
+    if (module) {
+      setActiveTab(module.modulePath);
+    }
   };
 
   /** Handles toolbox settings modal close. */
