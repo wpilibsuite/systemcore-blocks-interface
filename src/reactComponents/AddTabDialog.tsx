@@ -48,6 +48,8 @@ interface AddTabDialogProps {
 
 /** Height of the scrollable lists in pixels. */
 const LIST_HEIGHT = 200;
+const ITEM_HEIGHT = 45;
+const EMPTY_HEIGHT = 60;
 
 /**
  * Dialog component for adding new tabs to the workspace.
@@ -131,6 +133,10 @@ export default function AddTabDialog(props: AddTabDialogProps) {
     }
   };
 
+  const getListHeight = (): number => {
+    return Math.max(EMPTY_HEIGHT, Math.min(LIST_HEIGHT, availableItems.length * ITEM_HEIGHT));
+  }
+
   return (
     <Antd.Modal
       title={t('addTabDialog.title')}
@@ -159,7 +165,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
         <Antd.List
           size="small"
           bordered
-          style={{height: LIST_HEIGHT, overflow: 'auto', marginBottom: 16}}
+          style={{height: getListHeight(), overflow: 'auto', marginBottom: 16}}
           dataSource={availableItems}
           renderItem={(item) => (
             <Antd.List.Item
