@@ -31,9 +31,9 @@ import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
-import { getToolboxJSON } from '../toolbox/toolbox';
+import { applyExpandedCategories, getToolboxJSON } from '../toolbox/toolbox';
 
-const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
+const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
   kind: 'categoryToolbox',
   contents: [],
 };
@@ -58,7 +58,7 @@ export class Editor {
   private mechanismClassNameToModuleContent: {[mechanismClassName: string]: storageModuleContent.ModuleContent} = {};
   private bindedOnChange: any = null;
   private shownPythonToolboxCategories: Set<string> | null = null;
-  private toolbox: Blockly.utils.toolbox.ToolboxDefinition = EMPTY_TOOLBOX;
+  private toolbox: Blockly.utils.toolbox.ToolboxInfo = EMPTY_TOOLBOX;
 
   constructor(
       blocklyWorkspace: Blockly.WorkspaceSvg,
@@ -199,6 +199,10 @@ export class Editor {
       return;
     }
     const toolbox = getToolboxJSON(this.shownPythonToolboxCategories, this);
+    const previousToolbox = this.blocklyWorkspace.getToolbox();
+    if (previousToolbox) {
+      applyExpandedCategories(previousToolbox, toolbox);
+    }
     if (toolbox != this.toolbox) {
       this.toolbox = toolbox;
       this.blocklyWorkspace.updateToolbox(toolbox);
