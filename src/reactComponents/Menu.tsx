@@ -90,14 +90,6 @@ function getItem(
   } as MenuItem;
 }
 
-/**
- * Creates a divider menu item.
- */
-function getDivider(): MenuItem {
-  return {
-    type: 'divider',
-  } as MenuItem;
-}
 
 /**
  * Generates menu items for a given project.
