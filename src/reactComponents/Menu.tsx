@@ -43,6 +43,7 @@ import {
   CheckOutlined,
   DownloadOutlined,
   UploadOutlined,
+  ControlOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
@@ -102,18 +103,41 @@ function getDivider(): MenuItem {
  * Generates menu items for a given project.
  */
 function getMenuItems(t: (key: string) => string, project: storageProject.Project, currentLanguage: string): MenuItem[] {
-  
+  const mechanisms: MenuItem[] = [];
+  const opmodes: MenuItem[] = [];
+
+  // Build mechanisms menu items
+  project.mechanisms.forEach((mechanism) => {
+    mechanisms.push(getItem(
+        mechanism.className,
+        mechanism.modulePath,
+        <BlockOutlined />
+    ));
+  });
+
+  // Build opmodes menu items
+  project.opModes.forEach((opmode) => {
+    opmodes.push(getItem(
+        opmode.className,
+        opmode.modulePath,
+        <CodeOutlined />
+    ));
+  });
+
   return [
     getItem(t('PROJECT'), 'project', <FolderOutlined />, [
       getItem(t('SAVE'), 'save', <SaveOutlined />),
       getItem(t('DEPLOY'), 'deploy'),
-      getDivider(),
-      getItem(t('MANAGE') + '...', 'manageProjects'),
+    ]),
+    getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
+      getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
+      getItem(t('MECHANISMS') + '...', 'manageMechanisms', <BlockOutlined />),
+      getItem(t('OPMODES') + '...', 'manageOpmodes', <CodeOutlined />),
     ]),
     getItem(t('EXPLORER'), 'explorer', <FileOutlined />, [
       getItem(t('ROBOT'), project.robot.modulePath, <RobotOutlined />),
-      getItem(t('MECHANISMS') + '...', 'manageMechanisms', <BlockOutlined />),
-      getItem(t('OPMODES') + '...', 'manageOpmodes', <CodeOutlined />),
+      getItem(t('MECHANISMS'), 'mechanisms', <BlockOutlined />, mechanisms),
+      getItem(t('OPMODES'), 'opmodes', <CodeOutlined />, opmodes),
     ]),
     getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
       getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
