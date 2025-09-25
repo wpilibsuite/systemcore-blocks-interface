@@ -581,7 +581,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     }
   }, [project]);
 
-  // Update tab items when fetching modules is done.
+  // Update tab items when ever the modules in the project change.
   React.useEffect(() => {
     if (project) {
       const tabs = createTabItemsFromProject(project);
