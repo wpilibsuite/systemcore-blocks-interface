@@ -413,6 +413,9 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
           />
         )}
         <br />
+        <h4 style={{margin: '0 0 8px 0'}}>
+            {t('CREATE_NEW', { type: t('PROJECT') })}
+        </h4>  
         <div style={getContainerStyle()}>
           <ProjectNameComponent
             newItemName={newItemName}
