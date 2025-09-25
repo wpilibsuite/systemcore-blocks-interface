@@ -63,7 +63,6 @@ import expansion_hub_motor
 import expansion_hub_servo
 import port
 import rev_touch_sensor
-import servo
 import smart_motor
 import spark_mini
 import sparkfun_led_stick
@@ -126,7 +125,6 @@ def main(argv):
     expansion_hub_servo,
     port,
     rev_touch_sensor,
-    servo,
     smart_motor,
     spark_mini,
     sparkfun_led_stick,
