@@ -456,7 +456,7 @@ export const pythonFromBlock = function (
     }
 
     if (generator.getModuleType() === storageModule.ModuleType.OPMODE && block.mrcPythonMethodName === '__init__') {
-        paramString = 'robot';
+        paramString += ', robot';
     }
 
     if (params.length != 0) {
