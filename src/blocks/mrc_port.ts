@@ -30,15 +30,28 @@ import { createFieldNumberDropdown } from '../fields/field_number_dropdown';
 export const BLOCK_NAME = 'mrc_port';
 export const OUTPUT_NAME = 'mrc_port';
 
-export type MrcPortType = {
+const FIELD_PREFIX_TYPE = 'TYPE_';
+const FIELD_PREFIX_PORT_NUM = 'PORT_NUM_';
+
+const VISIBLE_PORT_TYPE_CAN = 'can';
+const VISIBLE_PORT_TYPE_SMART_IO = 'smartio';
+const VISIBLE_PORT_TYPE_SMART_MOTOR = 'MotionCore port';
+const VISIBLE_PORT_TYPE_I2C = 'i2c';
+const VISIBLE_PORT_TYPE_USB = 'usb';
+const VISIBLE_PORT_TYPE_MOTOR = 'motor';
+const VISIBLE_PORT_TYPE_SERVO = 'servo';
+const VISIBLE_PORT_TYPE_USB_HUB_IN = 'usb in';
+const VISIBLE_PORT_TYPE_USB_HUB_OUT = 'usb out';
+
+type MrcPortType = {
   portType: string,
   portNumber: number,
 };
 
 type PortBlock = Blockly.Block & PortMixin;
 interface PortMixin extends PortMixinType {
-  portType_ : string,
-  ports_ : MrcPortType[],
+  mrcPortType: string,
+  mrcPorts: MrcPortType[],
 }
 type PortMixinType = typeof PORT;
 
@@ -62,8 +75,8 @@ const PORT = {
    */
   saveExtraState: function (this: PortBlock): PortExtraState {
     const state: PortExtraState = {
-      portType: this.portType_,
-      ports: this.ports_
+      portType: this.mrcPortType,
+      ports: this.mrcPorts
     };
 
     return state;
@@ -73,34 +86,15 @@ const PORT = {
    * Load the ports from the block's extra state.
    */
   loadExtraState: function (this: PortBlock, state: PortExtraState): void {
-    this.portType_ = state.portType || '';
-    this.ports_ = state.ports || [];
-    this.updateShape_();
-  },
+    this.mrcPortType = state.portType || '';
+    this.mrcPorts = state.ports || [];
 
-  /**
-   * Update the block's shape based on the current ports.
-   */
-  updateShape_: function (this: PortBlock): void {
-    // Remove all existing inputs
-    for (let i = this.inputList.length - 1; i >= 0; i--) {
-      const input = this.inputList[i];
-      if (input && (input.name.startsWith('PORT_'))) {
-        this.removeInput(input.name, true);
-      }
-    }
-
-    // Initialize ports if not set
-    if (!this.ports_) {
-      this.ports_ = [{ portType: '', portNumber: 0 }];
-    }
-
-    // Add inputs for each port
-    for (let i = 0; i < this.ports_.length; i++) {
-      const port = this.ports_[i];
-      this.appendDummyInput('PORT_' + i)
-        .appendField(createFieldNonEditableText(port.portType), 'TYPE_' + i)
-        .appendField(createFieldDropdownForPortType(port.portType, port.portNumber), 'PORT_NUM_' + i)
+    // Add an input for each port.
+    for (let i = 0; i < this.mrcPorts.length; i++) {
+      const port = this.mrcPorts[i];
+      this.appendDummyInput()
+        .appendField(createFieldNonEditableText(port.portType), FIELD_PREFIX_TYPE + i)
+        .appendField(createFieldDropdownForPortType(port.portType, port.portNumber), FIELD_PREFIX_PORT_NUM + i)
         .setAlign(Blockly.inputs.Align.RIGHT);
     }
   },
@@ -117,25 +111,19 @@ export const pythonFromBlock = function (
   
   const ports: string[] = [];
 
-  for (let i = 0; i < block.inputList.length; i++) {
-    const input = block.inputList[i];
-    if (input.name.startsWith('PORT_')) {
-      const portNumField = input.fieldRow.find(field => field.name === 'PORT_NUM_' + i);
-      if (portNumField) {
-        ports.push(portNumField.getValue() as string);
-      }
-    }
+  for (let i = 0; i < block.mrcPorts.length; i++) {
+    ports.push(block.getFieldValue(FIELD_PREFIX_PORT_NUM + i));
   }
   let code = 'port.';
   
   if (ports.length === 1) {
-     code += `SimplePort(port_type = port.PortType.${block.portType_}, location = ${ports[0]})`;
+     code += `SimplePort(port_type = port.PortType.${block.mrcPortType}, location = ${ports[0]})`;
 
   } else if (ports.length === 2) {
     let port1Type = 'UNKNOWN';
     let port2Type = 'UNKNOWN';
 
-    switch (block.portType_) {
+    switch (block.mrcPortType) {
       case 'USB_HUB':
         port1Type = 'USB_PORT';
         port2Type = 'USB_PORT';
@@ -149,9 +137,9 @@ export const pythonFromBlock = function (
         port2Type = 'EXPANSION_HUB_SERVO_PORT';
         break;
     }
-    code += `CompoundPort(port_type = port.PortType.${block.portType_},`;
-    code += `\\ \n${generator.INDENT}port1 = port.SimplePort(port_type = port.PortType.${port1Type}, location = ${ports[0]}), `;
-    code += `\\ \n${generator.INDENT}port2 = port.SimplePort(port_type = port.PortType.${port2Type}, location = ${ports[1]}))`;
+    code += `CompoundPort(port_type = port.PortType.${block.mrcPortType},\n`;
+    code += `${generator.INDENT}port1 = port.SimplePort(port_type = port.PortType.${port1Type}, location = ${ports[0]}),\n`;
+    code += `${generator.INDENT}port2 = port.SimplePort(port_type = port.PortType.${port2Type}, location = ${ports[1]}))`;
   }
 
   return [code, Order.ATOMIC];
@@ -159,19 +147,19 @@ export const pythonFromBlock = function (
 
 function createFieldDropdownForPortType(portType: string, defaultVal: number): Blockly.Field {
   switch (portType) {
-    case 'can':
+    case VISIBLE_PORT_TYPE_CAN:
       return createFieldNumberDropdown(0, 4, defaultVal);
-    case 'smartio':
+    case VISIBLE_PORT_TYPE_SMART_IO:
       return createFieldNumberDropdown(0, 5, defaultVal);
-    case 'MotionCore port':
+    case VISIBLE_PORT_TYPE_SMART_MOTOR:
       return createFieldNumberDropdown(1, 6, defaultVal);
-    case 'i2c':
+    case VISIBLE_PORT_TYPE_I2C:
       return createFieldNumberDropdown(0, 1, defaultVal);
-    case 'usb in':
+    case VISIBLE_PORT_TYPE_USB_HUB_IN:
       return createFieldNumberDropdown(0, 3, defaultVal);
-    case 'motor':
+    case VISIBLE_PORT_TYPE_MOTOR:
       return createFieldNumberDropdown(1, 6, defaultVal);
-    case 'servo':
+    case VISIBLE_PORT_TYPE_SERVO:
       return createFieldNumberDropdown(1, 6, defaultVal);
     default:
       return createFieldNumberDropdown(0, 99, defaultVal);
@@ -183,40 +171,40 @@ export function createPort(portType: string) {
   const ports: MrcPortType[] = [];
   switch (portType) {
     case 'CAN_PORT':
-      ports.push({ portType: 'can', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_CAN, portNumber: 1 });
       break;
     case 'SMART_IO_PORT':
-      ports.push({ portType: 'smartio', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_SMART_IO, portNumber: 1 });
       break;
     case 'SMART_MOTOR_PORT':
-      ports.push({ portType: 'MotionCore port', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_SMART_MOTOR, portNumber: 1 });
       break;
     case 'SERVO_PORT':
-      ports.push({ portType: 'servo', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_SERVO, portNumber: 1 });
       break;
     case 'I2C_PORT':
-      ports.push({ portType: 'i2c', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_I2C, portNumber: 1 });
       break;
     case 'USB_PORT':
-      ports.push({ portType: 'usb', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_USB, portNumber: 1 });
       break;
     case 'EXPANSION_HUB_MOTOR_PORT':
-      ports.push({ portType: 'motor', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_MOTOR, portNumber: 1 });
       break;
     case 'EXPANSION_HUB_SERVO_PORT':
-      ports.push({ portType: 'servo', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_SERVO, portNumber: 1 });
       break;
     case 'USB_HUB':
-      ports.push({ portType: 'usb in', portNumber: 1 });
-      ports.push({ portType: 'usb out', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_USB_HUB_IN, portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_USB_HUB_OUT, portNumber: 1 });
       break;
     case 'EXPANSION_HUB_MOTOR':
-      ports.push({ portType: 'usb in', portNumber: 1 });
-      ports.push({ portType: 'motor', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_USB_HUB_IN, portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_MOTOR, portNumber: 1 });
       break;
     case 'EXPANSION_HUB_SERVO':
-      ports.push({ portType: 'usb in', portNumber: 1 });
-      ports.push({ portType: 'servo', portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_USB_HUB_IN, portNumber: 1 });
+      ports.push({ portType: VISIBLE_PORT_TYPE_SERVO, portNumber: 1 });
       break;
     default:
       ports.push({ portType: 'unknown' + portType, portNumber: 1 });
