@@ -23,7 +23,7 @@ from port import Port, PortType
 class RevTouchSensor(Component):
     def __init__(self, port : Port):
         super().__init__(port, PortType.SMART_IO_PORT)
-        self.is_pressed = None
+        self._is_pressed = None
 
     def get_manufacturer(self) -> str:   
         return "REV Robotics" 
@@ -46,10 +46,10 @@ class RevTouchSensor(Component):
         pass
 
     def periodic(self) -> None:
-        old = self.is_pressed
+        old = self._is_pressed
         self._read_hardware()
-        if old != self.is_pressed:
-            if self.is_pressed and self.pressed_callback:
+        if old != self._is_pressed:
+            if self._is_pressed and self.pressed_callback:
                 self.pressed_callback()
             elif old and self.released_callback:
                 self.released_callback()
@@ -57,12 +57,12 @@ class RevTouchSensor(Component):
     # Component specific methods
 
     def _read_hardware(self):
-        # here read hardware to get the current value of the sensor and set self.is_pressed
+        # here read hardware to get the current value of the sensor and set self._is_pressed
         pass
 
     def is_pressed(self) -> bool:
         '''Returns if the touch sensor is pressed or not'''
-        return self.is_pressed
+        return self._is_pressed
     
     # Events
     def register_when_pressed(self, callback: EmptyCallable) -> None:
