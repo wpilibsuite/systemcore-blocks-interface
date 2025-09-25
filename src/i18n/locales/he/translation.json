@@ -38,7 +38,7 @@
   "SELECT_HIDDEN": "בחר נסתר",
   "NO_HIDDEN_MECHANISMS": "אין מנגנונים נסתרים",
   "NO_HIDDEN_OPMODES": "אין אופמודים נסתרים",
-  "CREATE_NEW": "צור חדש",
+  "CREATE_NEW": "צור {{type}} חדש",
   "CREATE": "צור",
   "BLOCKS": "בלוקים",
   "CODE": "קוד",

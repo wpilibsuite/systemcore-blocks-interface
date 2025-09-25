@@ -456,7 +456,10 @@ export default function FileManageModal(props: FileManageModalProps) {
             onDoubleClick: () => handleRowDoubleClick(record),
           })}
         />
-        <br />        
+        <br />  
+        <h4 style={{margin: '0 0 8px 0'}}>
+          {t('CREATE_NEW', { type: TabTypeUtils.toString(props.tabType) })}
+        </h4>
         <div style={{
           marginBottom: 16,
           border: `1px solid ${token.colorBorder}`,

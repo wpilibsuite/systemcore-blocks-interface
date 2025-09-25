@@ -38,7 +38,7 @@
     "SELECT_HIDDEN": "Select Hidden",
     "NO_HIDDEN_MECHANISMS": "No Hidden Mechanisms",
     "NO_HIDDEN_OPMODES": "No Hidden Opmodes",
-    "CREATE_NEW": "Create New",
+    "CREATE_NEW": "Create New {{type}}",
     "CREATE": "Create",
     "BLOCKS": "Blocks",
     "CODE": "Code",

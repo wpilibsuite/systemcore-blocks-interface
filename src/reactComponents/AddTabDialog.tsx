@@ -185,7 +185,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
           locale={{emptyText: tabType === TabType.MECHANISM ? t('NO_HIDDEN_MECHANISMS') : t('NO_HIDDEN_OPMODES')}}
         />
         <h4 style={{margin: '0 0 8px 0'}}>
-          {t('CREATE_NEW')}
+          {t('CREATE_NEW', { type: TabTypeUtils.toString(tabType) })}
         </h4>
 
         <div style={{
