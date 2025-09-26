@@ -73,7 +73,7 @@ class MethodsCategory {
         // TODO(lizlooney): We need a way to mark a method in python as not overridable.
         // For example, in RobotBase, define_hardware, register_event_handler,
         // unregister_event_handler, and fire_event should not be overridden in a user's robot.
-        const methodNamesNotOverrideable: string[] = [
+        const robotMethodNamesNotOverrideable: string[] = [
           'define_hardware',
           'fire_event',
           'register_event_handler',
@@ -81,13 +81,21 @@ class MethodsCategory {
         ];
         // Add the methods for a Robot.
         this.addClassBlocksForCurrentModule(
-            'More Robot Methods', this.robotClassBlocks, methodNamesNotOverrideable,
+            'More Robot Methods', this.robotClassBlocks, robotMethodNamesNotOverrideable,
             methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.MECHANISM:
+        // TODO(lizlooney): We need a way to mark a method in python as not overridable.
+        // For example, in Mechanism, register_event_handler, unregister_event_handler, and
+        // fire_event should not be overridden in a user's mechamism.
+        const mechanismMethodNamesNotOverrideable: string[] = [
+          'fire_event',
+          'register_event_handler',
+          'unregister_event_handler',
+        ];
         // Add the methods for a Mechanism.
         this.addClassBlocksForCurrentModule(
-            'More Mechanism Methods', this.mechanismClassBlocks, [],
+            'More Mechanism Methods', this.mechanismClassBlocks, mechanismMethodNamesNotOverrideable,
             methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.OPMODE:
