@@ -153,7 +153,7 @@ interface AppContentProps {
 
 const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.JSX.Element => {
   const { t, i18n } = useTranslation();
-  const { settings, updateLanguage, updateTheme, storage, isLoading } = useUserSettings();
+  const { settings, updateLanguage, updateTheme, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
 
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [currentModule, setCurrentModule] = React.useState<storageModule.Module | null>(null);
@@ -163,6 +163,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [modulePathToContentText, setModulePathToContentText] = React.useState<{[modulePath: string]: string}>({});
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [activeTab, setActiveTab] = React.useState('');
+  const [isLoadingTabs, setIsLoadingTabs] = React.useState(false);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
@@ -384,35 +385,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     handleToolboxSettingsOk(updatedShownCategories);
   };
 
-  /** Creates tab items from project data. */
-  const createTabItemsFromProject = (projectData: storageProject.Project): Tabs.TabItem[] => {
-    const tabs: Tabs.TabItem[] = [
-      {
-        key: projectData.robot.modulePath,
-        title: t('ROBOT'),
-        type: TabType.ROBOT,
-      },
-    ];
-
-    projectData.mechanisms.forEach((mechanism) => {
-      tabs.push({
-        key: mechanism.modulePath,
-        title: mechanism.className,
-        type: TabType.MECHANISM,
-      });
-    });
-
-    projectData.opModes.forEach((opmode) => {
-      tabs.push({
-        key: opmode.modulePath,
-        title: opmode.className,
-        type: TabType.OPMODE,
-      });
-    });
-
-    return tabs;
-  };
-
   /** Handles toolbox update requests from blocks */
   const handleToolboxUpdateRequest = React.useCallback((e: Event) => {
     const workspaceId = (e as CustomEvent).detail.workspaceId;
@@ -581,19 +553,162 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     }
   }, [project]);
 
-  // Update tab items when ever the modules in the project change.
+  // Load saved tabs when project changes
   React.useEffect(() => {
-    if (project) {
-      const tabs = createTabItemsFromProject(project);
-      setTabItems(tabs);
+    const loadSavedTabs = async () => {
+      if (project && !isLoading) {
+        setIsLoadingTabs(true);
+        
+        // Add a small delay to ensure UserSettingsProvider context is updated
+        await new Promise(resolve => setTimeout(resolve, 0));
+        
+        let tabsToSet: Tabs.TabItem[] = [];
+        let usedSavedTabs = false;
+        
+        // Try to load saved tabs first
+        try {
+          const savedTabPaths = await getOpenTabs(project.projectName);
+          
+          if (savedTabPaths.length > 0) {
+            // Filter saved tabs to only include those that still exist in the project
+            const validSavedTabs = savedTabPaths.filter((tabPath: string) => {
+              const module = storageProject.findModuleByModulePath(project!, tabPath);
+              return module !== null;
+            });
+            
+            if (validSavedTabs.length > 0) {
+              usedSavedTabs = true;
+              // Convert paths back to TabItem objects
+              tabsToSet = validSavedTabs.map((path: string) => {
+                const module = storageProject.findModuleByModulePath(project!, path);
+                if (!module) return null;
+                
+                let type: TabType;
+                let title: string;
+                
+                switch (module.moduleType) {
+                  case storageModule.ModuleType.ROBOT:
+                    type = TabType.ROBOT;
+                    title = t('ROBOT');
+                    break;
+                  case storageModule.ModuleType.MECHANISM:
+                    type = TabType.MECHANISM;
+                    title = module.className;
+                    break;
+                  case storageModule.ModuleType.OPMODE:
+                    type = TabType.OPMODE;
+                    title = module.className;
+                    break;
+                  default:
+                    return null;
+                }
+                
+                return {
+                  key: path,
+                  title,
+                  type,
+                };
+              }).filter((item): item is Tabs.TabItem => item !== null);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load saved tabs:', error);
+        }
+        
+        // If no saved tabs or loading failed, create default tabs (all project files)
+        if (tabsToSet.length === 0) {
+          tabsToSet = [
+            {
+              key: project.robot.modulePath,
+              title: t('ROBOT'),
+              type: TabType.ROBOT,
+            }
+          ];
+
+          // Add all mechanisms
+          project.mechanisms.forEach((mechanism) => {
+            tabsToSet.push({
+              key: mechanism.modulePath,
+              title: mechanism.className,
+              type: TabType.MECHANISM,
+            });
+          });
+
+          // Add all opmodes
+          project.opModes.forEach((opmode) => {
+            tabsToSet.push({
+              key: opmode.modulePath,
+              title: opmode.className,
+              type: TabType.OPMODE,
+            });
+          });
+        }
+        
+        // Set the tabs
+        setTabItems(tabsToSet);
+        
+        // Only set active tab to robot if no active tab is set or if the current active tab no longer exists
+        const currentActiveTabExists = tabsToSet.some(tab => tab.key === activeTab);
+        if (!activeTab || !currentActiveTabExists) {
+          setActiveTab(project.robot.modulePath);
+        }
+        
+        // Only auto-save if we didn't use saved tabs (i.e., this is a new project or the first time)
+        if (!usedSavedTabs) {
+          try {
+            const tabPaths = tabsToSet.map(tab => tab.key);
+            await updateOpenTabs(project.projectName, tabPaths);
+          } catch (error) {
+            console.error('Failed to auto-save default tabs:', error);
+          }
+        }
+        
+        setIsLoadingTabs(false);
+      }
+    };
+    
+    loadSavedTabs();
+  }, [project?.projectName, isLoading, getOpenTabs]);
+
+  // Update tab items when modules in project change (for title updates, etc)
+  React.useEffect(() => {
+    if (project && tabItems.length > 0) {
+      // Update existing tab titles in case they changed
+      const updatedTabs = tabItems.map(tab => {
+        const module = storageProject.findModuleByModulePath(project, tab.key);
+        if (module && module.moduleType !== storageModule.ModuleType.ROBOT) {
+          return { ...tab, title: module.className };
+        }
+        return tab;
+      });
       
-      // Only set active tab to robot if no active tab is set or if the current active tab no longer exists
-      const currentActiveTabExists = tabs.some(tab => tab.key === activeTab);
-      if (!activeTab || !currentActiveTabExists) {
-        setActiveTab(project.robot.modulePath);
+      // Only update if something actually changed
+      const titlesChanged = updatedTabs.some((tab, index) => tab.title !== tabItems[index]?.title);
+      if (titlesChanged) {
+        setTabItems(updatedTabs);
       }
     }
   }, [modulePathToContentText]);
+
+  // Save tabs when tab list changes (but not during initial loading)
+  React.useEffect(() => {
+    const saveTabs = async () => {
+      // Don't save tabs while we're in the process of loading them
+      if (project?.projectName && tabItems.length > 0 && !isLoadingTabs) {
+        try {
+          const tabPaths = tabItems.map(tab => tab.key);
+          await updateOpenTabs(project.projectName, tabPaths);
+        } catch (error) {
+          console.error('Failed to save open tabs:', error);
+          // Don't show alert for save failures as they're not critical to user workflow
+        }
+      }
+    };
+    
+    // Use a small delay to debounce rapid tab changes
+    const timeoutId = setTimeout(saveTabs, 100);
+    return () => clearTimeout(timeoutId);
+  }, [tabItems, project?.projectName, isLoadingTabs]);
 
   const { Sider, Content } = Antd.Layout;
 
