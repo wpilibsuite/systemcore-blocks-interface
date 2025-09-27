@@ -26,7 +26,7 @@ import * as storageModule from '../storage/module';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
 import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
-import { createCustomMethodBlock, getBaseClassBlocks, FIELD_METHOD_NAME } from '../blocks/mrc_class_method_def';
+import { createCustomMethodBlock, getBaseClassBlocks, FIELD_METHOD_NAME, createCustomMethodBlockWithReturn } from '../blocks/mrc_class_method_def';
 import { Editor } from '../editor/editor';
 
 
@@ -113,6 +113,7 @@ class MethodsCategory {
         text: 'Custom Methods',
       },
       createCustomMethodBlock(),
+      createCustomMethodBlockWithReturn()
     );
 
     // Get blocks for calling methods defined in the current workspace.
