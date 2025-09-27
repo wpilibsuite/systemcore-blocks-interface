@@ -79,7 +79,7 @@ const FULL_VIEWPORT_HEIGHT = '100vh';
 const FULL_HEIGHT = '100%';
 
 /** Default size for code panel. */
-const CODE_PANEL_DEFAULT_SIZE = 400;
+const CODE_PANEL_DEFAULT_SIZE = '25%';
 
 /** Minimum size for code panel. */
 const CODE_PANEL_MIN_SIZE = 100;
@@ -167,9 +167,9 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
-  const [codePanelSize, setCodePanelSize] = React.useState<number>(CODE_PANEL_DEFAULT_SIZE);
+  const [codePanelSize, setCodePanelSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
   const [codePanelCollapsed, setCodePanelCollapsed] = React.useState(false);
-  const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<number>(CODE_PANEL_DEFAULT_SIZE);
+  const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
   const [codePanelAnimating, setCodePanelAnimating] = React.useState(false);
   const [theme, setTheme] = React.useState('dark');
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
@@ -391,8 +391,11 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       setCodePanelSize(codePanelExpandedSize);
       setCodePanelCollapsed(false);
     } else {
-      // Collapse to minimum size
-      setCodePanelExpandedSize(codePanelSize);
+      // Collapse to minimum size - convert current size to pixels for storage
+      const currentSizePx = typeof codePanelSize === 'string'
+        ? (parseFloat(codePanelSize) / 100) * window.innerWidth
+        : codePanelSize;
+      setCodePanelExpandedSize(currentSizePx);
       setCodePanelSize(CODE_PANEL_MIN_SIZE);
       setCodePanelCollapsed(true);
     }
@@ -687,7 +690,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 </Content>
                 <div
                   style={{
-                    width: `${codePanelSize}px`,
+                    width: typeof codePanelSize === 'string' ? codePanelSize : `${codePanelSize}px`,
                     minWidth: CODE_PANEL_MIN_SIZE,
                     height: '100%',
                     borderLeft: '1px solid #d9d9d9',
@@ -714,7 +717,11 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                       
                       const handleMouseMove = (e: MouseEvent) => {
                         const deltaX = startX - e.clientX;
-                        const newWidth = Math.max(CODE_PANEL_MIN_SIZE, startWidth + deltaX);
+                        // Convert startWidth to number if it's a percentage
+                        const startWidthPx = typeof startWidth === 'string' 
+                          ? (parseFloat(startWidth) / 100) * window.innerWidth
+                          : startWidth;
+                        const newWidth = Math.max(CODE_PANEL_MIN_SIZE, startWidthPx + deltaX);
                         setCodePanelSize(newWidth);
                         // Update expanded size if not at minimum
                         if (newWidth > CODE_PANEL_MIN_SIZE) {
