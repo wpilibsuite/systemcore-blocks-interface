@@ -31,6 +31,9 @@ const USER_THEME_KEY = 'userTheme';
 const DEFAULT_LANGUAGE = 'en';
 const DEFAULT_THEME = 'dark';
 
+/** Helper function to generate project-specific storage key for open tabs. */
+const getUserOptionsKey = (projectName: string): string => `user_options_${projectName}`;
+
 /** User settings interface. */
 export interface UserSettings {
   language: string;
@@ -42,6 +45,8 @@ export interface UserSettingsContextType {
   settings: UserSettings;
   updateLanguage: (language: string) => Promise<void>;
   updateTheme: (theme: string) => Promise<void>;
+  updateOpenTabs: (projectName: string, tabPaths: string[]) => Promise<void>;
+  getOpenTabs: (projectName: string) => Promise<string[]>;
   isLoading: boolean;
   error: string | null;
   storage: Storage | null;
@@ -134,10 +139,52 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     }
   };
 
+  /** Update open tabs for a specific project. */
+  const updateOpenTabs = async (projectName: string, tabPaths: string[]): Promise<void> => {
+    try {
+      setError(null);
+      
+      if (storage) {
+        const storageKey = getUserOptionsKey(projectName);
+        await storage.saveEntry(storageKey, JSON.stringify(tabPaths));
+      } else {
+        console.warn('No storage available, cannot save open tabs');
+      }
+    } catch (err) {
+      setError(`Failed to save open tabs: ${err}`);
+      console.error('Error saving open tabs:', err);
+      throw err;
+    }
+  };
+
+  /** Get open tabs for a specific project. */
+  const getOpenTabs = async (projectName: string): Promise<string[]> => {
+    try {
+      if (!storage) {
+        return [];
+      }
+      
+      const storageKey = getUserOptionsKey(projectName);
+      const tabsJson = await storage.fetchEntry(storageKey, JSON.stringify([]));
+      
+      try {
+        return JSON.parse(tabsJson);
+      } catch (error) {
+        console.warn(`Failed to parse open tabs for project ${projectName}, using default:`, error);
+        return [];
+      }
+    } catch (err) {
+      console.error(`Error loading open tabs for project ${projectName}:`, err);
+      return [];
+    }
+  };
+
   const contextValue: UserSettingsContextType = {
     settings,
     updateLanguage,
     updateTheme,
+    updateOpenTabs,
+    getOpenTabs,
     isLoading,
     error,
     storage: storage || null,
@@ -148,4 +195,13 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
       {children}
     </UserSettingsContext.Provider>
   );
+};
+
+/** Custom hook to use user settings context. */
+export const useUserSettings = (): UserSettingsContextType => {
+  const context = React.useContext(UserSettingsContext);
+  if (!context) {
+    throw new Error('useUserSettings must be used within a UserSettingsProvider');
+  }
+  return context;
 };
