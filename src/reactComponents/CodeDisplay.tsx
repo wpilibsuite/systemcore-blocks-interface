@@ -20,7 +20,7 @@
  */
 import * as Antd from 'antd';
 import * as React from 'react';
-import { CopyOutlined as CopyIcon } from '@ant-design/icons';
+import { CopyOutlined as CopyIcon, LeftOutlined as CollapseIcon, RightOutlined as ExpandIcon } from '@ant-design/icons';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -36,6 +36,8 @@ interface CodeDisplayProps {
   theme: string;
   messageApi: MessageInstance;
   setAlertErrorMessage: StringFunction;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 /** Success message for copy operation. */
@@ -110,10 +112,56 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
     </SyntaxHighlighter>
   );
 
+  /** Renders the collapse/expand trigger at the bottom center of the panel. */
+  const renderCollapseTrigger = (): React.JSX.Element | null => {
+    if (!props.onToggleCollapse) return null;
+    
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: token.colorBgContainer,
+          border: `1px solid ${token.colorBorder}`,
+          borderBottom: 'none',
+          borderRadius: '6px 6px 0 0',
+          padding: '2px 6px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minWidth: '24px',
+          height: '22px',
+          color: token.colorTextSecondary,
+          transition: 'all 0.2s',
+          zIndex: 1,
+        }}
+        onClick={props.onToggleCollapse}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = token.colorText;
+          e.currentTarget.style.backgroundColor = token.colorBgTextHover;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = token.colorTextSecondary;
+          e.currentTarget.style.backgroundColor = token.colorBgContainer;
+        }}
+      >
+        <Antd.Tooltip title={props.isCollapsed ? t("EXPAND") : t("COLLAPSE")}>
+          {props.isCollapsed ? <ExpandIcon /> : <CollapseIcon />}
+        </Antd.Tooltip>
+      </div>
+    );
+  };
+
   return (
-    <Antd.Flex vertical gap="small" style={{ height: '100%' }}>
-      {renderHeader()}
-      {renderCodeBlock()}
-    </Antd.Flex>
+    <div style={{ height: '100%', position: 'relative' }}>
+      <Antd.Flex vertical gap="small" style={{ height: '100%' }}>
+        {renderHeader()}
+        {renderCodeBlock()}
+      </Antd.Flex>
+      {renderCollapseTrigger()}
+    </div>
   );
 }
