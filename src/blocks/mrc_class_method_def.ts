@@ -264,8 +264,8 @@ const CLASS_METHOD_DEF = {
             this.appendValueInput(RETURN_VALUE)
                 .setAlign(Blockly.inputs.Align.RIGHT)
                 .appendField(Blockly.Msg.PROCEDURES_DEFRETURN_RETURN);
-            // Move the return input to be before the statement input
-            this.moveInputBefore(RETURN_VALUE, 'STACK');
+            // Move the return input to be after the statement input
+            this.moveInputBefore('STACK', RETURN_VALUE);
         }
     },
     removeParameterFields: function (input: Blockly.Input) {
