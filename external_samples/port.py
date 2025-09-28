@@ -29,10 +29,10 @@ class PortType(Enum):
     USB_PORT = 4
 
     # Ports on other devices.
-    SMART_MOTOR_PORT = 5  # A motor port on MotionCore.
-    USB_HUB_PORT = 6  # A port on a usb hub.
-    EXPANSION_HUB_MOTOR_PORT = 7  # A motor port on an expansion hub.
-    EXPANSION_HUB_SERVO_PORT = 8  # A servo port on an expansion hub.
+    USB_HUB_PORT = 5  # A port on a usb hub.
+    EXPANSION_HUB_MOTOR_PORT = 6  # A motor port on an Expansion Hub.
+    EXPANSION_HUB_SERVO_PORT = 7  # A servo port on an Expansion Hub.
+    # TODO: Add the ports for MotionCore.
 
     # Compound ports
     USB_HUB = _BASE_COMPOUND + 1  # A compound port with USB_PORT and USB_HUB_PORT.

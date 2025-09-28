@@ -2577,7 +2577,6 @@
                         "EXPANSION_HUB_SERVO_PORT",
                         "I2C_PORT",
                         "SMART_IO_PORT",
-                        "SMART_MOTOR_PORT",
                         "USB_HUB",
                         "USB_HUB_PORT",
                         "USB_PORT"
