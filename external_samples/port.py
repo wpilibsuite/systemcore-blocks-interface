@@ -17,9 +17,9 @@
 # @author alan@porpoiseful.com (Alan Smith)
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Self
+from typing import Final, Self
 
-_base_compound = 256
+_BASE_COMPOUND: Final[int] = 256
 
 class PortType(Enum):
     # Ports on the SystemCore.
@@ -35,9 +35,9 @@ class PortType(Enum):
     EXPANSION_HUB_SERVO_PORT = 8  # A servo port on an expansion hub.
 
     # Compound ports
-    USB_HUB = _base_compound + 1  # A compound port with USB_PORT and USB_HUB_PORT.
-    EXPANSION_HUB_MOTOR = _base_compound + 2  # A compound port with USB_PORT and EXPANSION_HUB_MOTOR_PORT.
-    EXPANSION_HUB_SERVO = _base_compound + 3  # A compound port with USB_PORT and EXPANSION_HUB_SERVO_PORT.
+    USB_HUB = _BASE_COMPOUND + 1  # A compound port with USB_PORT and USB_HUB_PORT.
+    EXPANSION_HUB_MOTOR = _BASE_COMPOUND + 2  # A compound port with USB_PORT and EXPANSION_HUB_MOTOR_PORT.
+    EXPANSION_HUB_SERVO = _BASE_COMPOUND + 3  # A compound port with USB_PORT and EXPANSION_HUB_SERVO_PORT.
 
 class Port(ABC):
     """Abstract base class for all port types."""
@@ -63,7 +63,7 @@ class SimplePort(Port):
             port_type: PortType for this port (must be a simple type)
             location: int location for this port
         """
-        if port_type.value >= _base_compound:
+        if port_type.value >= _BASE_COMPOUND:
             raise ValueError("Port must be of a simple type")
         super().__init__(port_type)
         self.location = location
@@ -85,7 +85,7 @@ class CompoundPort(Port):
             port1: First Port for compound ports
             port2: Second Port for compound ports
         """
-        if port_type.value < _base_compound:
+        if port_type.value < _BASE_COMPOUND:
             raise ValueError("Port must be of a compound type")
         super().__init__(port_type)
         self.port1 = port1
