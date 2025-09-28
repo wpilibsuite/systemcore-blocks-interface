@@ -121,6 +121,7 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
       <SiderCollapseTrigger
         collapsed={props.isCollapsed || false}
         onToggle={props.onToggleCollapse}
+        isRightPanel={true}
       />
     );
   };

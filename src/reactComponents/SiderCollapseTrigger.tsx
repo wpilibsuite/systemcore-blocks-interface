@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 interface SiderCollapseTriggerProps {
   collapsed: boolean;
   onToggle: () => void;
+  isRightPanel?: boolean;
 }
 
 /**
@@ -64,10 +65,17 @@ export default function SiderCollapseTrigger(props: SiderCollapseTriggerProps): 
       onMouseLeave={() => setIsHovered(false)}
     >
       <Antd.Tooltip title={props.collapsed ? t("EXPAND") : t("COLLAPSE")}>
-        {props.collapsed ? 
-          <RightOutlined style={{ fontSize: '12px', color: 'inherit' }} /> : 
-          <LeftOutlined style={{ fontSize: '12px', color: 'inherit' }} />
-        }
+        {props.isRightPanel ? (
+          // Right panel: reversed arrows
+          props.collapsed ? 
+            <LeftOutlined style={{ fontSize: '12px', color: 'inherit' }} /> : 
+            <RightOutlined style={{ fontSize: '12px', color: 'inherit' }} />
+        ) : (
+          // Left panel: normal arrows
+          props.collapsed ? 
+            <RightOutlined style={{ fontSize: '12px', color: 'inherit' }} /> : 
+            <LeftOutlined style={{ fontSize: '12px', color: 'inherit' }} />
+        )}
       </Antd.Tooltip>
     </div>
   );
