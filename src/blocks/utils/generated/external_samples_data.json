@@ -1583,211 +1583,6 @@
             "staticMethods": []
         },
         {
-            "className": "servo.Servo",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "port",
-                            "type": "port.Port"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "expectedPortType": "SERVO_PORT",
-                    "functionName": "__init__",
-                    "returnType": "servo.Servo",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "get_connection_port_type",
-                    "returnType": "port.PortType | None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "get_manufacturer",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "get_name",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "get_part_number",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "get_url",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "get_version",
-                    "returnType": "tuple[int, int, int]",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "periodic",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "reset",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "angle",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "set_angle_degrees",
-                    "returnType": "None",
-                    "tooltip": "Set the servo to an angle between 0 and 270"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pos",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "set_position",
-                    "returnType": "None",
-                    "tooltip": "Set the servo to a position between 0 and 1"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "servo.Servo"
-                        }
-                    ],
-                    "declaringClassName": "servo.Servo",
-                    "functionName": "update",
-                    "returnType": "None",
-                    "tooltip": ""
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "servo",
-            "staticMethods": []
-        },
-        {
             "className": "smart_motor.SmartMotor",
             "classVariables": [],
             "constructors": [
@@ -2775,17 +2570,15 @@
                 {
                     "enumClassName": "port.PortType",
                     "enumValues": [
-                        "BASE_COMPOUND",
                         "CAN_PORT",
                         "EXPANSION_HUB_MOTOR",
                         "EXPANSION_HUB_MOTOR_PORT",
                         "EXPANSION_HUB_SERVO",
                         "EXPANSION_HUB_SERVO_PORT",
                         "I2C_PORT",
-                        "SERVO_PORT",
                         "SMART_IO_PORT",
-                        "SMART_MOTOR_PORT",
                         "USB_HUB",
+                        "USB_HUB_PORT",
                         "USB_PORT"
                     ],
                     "moduleName": "port",
@@ -2800,12 +2593,6 @@
             "enums": [],
             "functions": [],
             "moduleName": "rev_touch_sensor",
-            "moduleVariables": []
-        },
-        {
-            "enums": [],
-            "functions": [],
-            "moduleName": "servo",
             "moduleVariables": []
         },
         {
@@ -2833,7 +2620,6 @@
             "expansion_hub_motor.ExpansionHubMotor",
             "expansion_hub_servo.ExpansionHubServo",
             "rev_touch_sensor.RevTouchSensor",
-            "servo.Servo",
             "smart_motor.SmartMotor",
             "spark_mini.SparkMini",
             "sparkfun_led_stick.SparkFunLEDStick"

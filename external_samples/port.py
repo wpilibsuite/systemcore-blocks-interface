@@ -17,22 +17,27 @@
 # @author alan@porpoiseful.com (Alan Smith)
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Self
+from typing import Final, Self
+
+_BASE_COMPOUND: Final[int] = 256
 
 class PortType(Enum):
+    # Ports on the SystemCore.
     CAN_PORT = 1
     SMART_IO_PORT = 2
-    SMART_MOTOR_PORT = 3
-    SERVO_PORT = 4
-    I2C_PORT = 5
-    USB_PORT = 6
-    EXPANSION_HUB_MOTOR_PORT = 7  # This is the port on the expansion hub
-    EXPANSION_HUB_SERVO_PORT = 8  # This is the port on the expansion hub
+    I2C_PORT = 3
+    USB_PORT = 4
 
-    BASE_COMPOUND = 256
-    USB_HUB = BASE_COMPOUND + 1
-    EXPANSION_HUB_MOTOR = BASE_COMPOUND + 2   # This is combination expansion hub and motor
-    EXPANSION_HUB_SERVO = BASE_COMPOUND + 3   # This is combination expansion hub and servo
+    # Ports on other devices.
+    USB_HUB_PORT = 5  # A port on a usb hub.
+    EXPANSION_HUB_MOTOR_PORT = 6  # A motor port on an Expansion Hub.
+    EXPANSION_HUB_SERVO_PORT = 7  # A servo port on an Expansion Hub.
+    # TODO: Add the ports for MotionCore.
+
+    # Compound ports
+    USB_HUB = _BASE_COMPOUND + 1  # A compound port with USB_PORT and USB_HUB_PORT.
+    EXPANSION_HUB_MOTOR = _BASE_COMPOUND + 2  # A compound port with USB_PORT and EXPANSION_HUB_MOTOR_PORT.
+    EXPANSION_HUB_SERVO = _BASE_COMPOUND + 3  # A compound port with USB_PORT and EXPANSION_HUB_SERVO_PORT.
 
 class Port(ABC):
     """Abstract base class for all port types."""
@@ -58,7 +63,7 @@ class SimplePort(Port):
             port_type: PortType for this port (must be a simple type)
             location: int location for this port
         """
-        if port_type.value >= PortType.BASE_COMPOUND.value:
+        if port_type.value >= _BASE_COMPOUND:
             raise ValueError("Port must be of a simple type")
         super().__init__(port_type)
         self.location = location
@@ -80,7 +85,7 @@ class CompoundPort(Port):
             port1: First Port for compound ports
             port2: Second Port for compound ports
         """
-        if port_type.value < PortType.BASE_COMPOUND.value:
+        if port_type.value < _BASE_COMPOUND:
             raise ValueError("Port must be of a compound type")
         super().__init__(port_type)
         self.port1 = port1
