@@ -215,7 +215,7 @@ const EVENT_HANDLER = {
           }
         }
         if (!foundRobotEvent) {
-          warnings.push('This block is an event handler for an event that no longer exists.');
+          warnings.push(Blockly.Msg.EVENT_HANDLER_ROBOT_EVENT_NOT_FOUND);
         }
       }
 
@@ -266,7 +266,7 @@ const EVENT_HANDLER = {
               }
             }
             if (!foundMechanismEvent) {
-              warnings.push('This block is an event handler for an event that no longer exists.');
+              warnings.push(Blockly.Msg.EVENT_HANDLER_MECHANISM_EVENT_NOT_FOUND);
             }
 
             // Since we found the mechanism, we can break out of the loop.
@@ -274,7 +274,7 @@ const EVENT_HANDLER = {
           }
         }
         if (!foundMechanism) {
-          warnings.push('This block is an event handler for an event in a mechanism that no longer exists.');
+          warnings.push(Blockly.Msg.EVENT_HANDLER_MECHANISM_NOT_FOUND);
         }
       }
     }
