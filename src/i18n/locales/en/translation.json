@@ -43,6 +43,8 @@
     "BLOCKS": "Blocks",
     "CODE": "Code",
     "COPY": "Copy",
+    "COLLAPSE": "Collapse",
+    "EXPAND": "Expand",
     "FAILED_TO_RENAME_PROJECT": "Failed to rename project",
     "FAILED_TO_COPY_PROJECT": "Failed to copy project",
     "FAILED_TO_CREATE_PROJECT": "Failed to create a new project.",

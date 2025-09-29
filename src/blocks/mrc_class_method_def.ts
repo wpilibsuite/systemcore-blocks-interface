@@ -38,6 +38,7 @@ import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock }
 export const BLOCK_NAME = 'mrc_class_method_def';
 
 export const FIELD_METHOD_NAME = 'NAME';
+export const RETURN_VALUE = 'RETURN';
 
 type Parameter = {
     name: string,
@@ -54,6 +55,7 @@ interface ClassMethodDefMixin extends ClassMethodDefMixinType {
     mrcParameters: Parameter[],
     mrcPythonMethodName: string,
     mrcFuncName: string | null,
+    mrcUpdateReturnInput(): void,
 }
 type ClassMethodDefMixinType = typeof CLASS_METHOD_DEF;
 
@@ -179,6 +181,7 @@ const CLASS_METHOD_DEF = {
             (this as Blockly.BlockSvg).setMutator(null);
         }
         this.mrcUpdateParams();
+        this.mrcUpdateReturnInput();
     },
     compose: function (this: ClassMethodDefBlock, containerBlock: any) {
         // Parameter list.
@@ -248,6 +251,21 @@ const CLASS_METHOD_DEF = {
                     input.appendField(createFieldFlydown(param.name, false), paramName);
                 });
             }
+        }
+    },
+    mrcUpdateReturnInput: function (this: ClassMethodDefBlock) {
+        // Remove existing return input if it exists
+        if (this.getInput(RETURN_VALUE)) {
+            this.removeInput(RETURN_VALUE);
+        }
+        
+        // Add return input if return type is not 'None'
+        if (this.mrcReturnType && this.mrcReturnType !== 'None') {
+            this.appendValueInput(RETURN_VALUE)
+                .setAlign(Blockly.inputs.Align.RIGHT)
+                .appendField(Blockly.Msg.PROCEDURES_DEFRETURN_RETURN);
+            // Move the return input to be after the statement input
+            this.moveInputBefore('STACK', RETURN_VALUE);
         }
     },
     removeParameterFields: function (input: Blockly.Input) {
@@ -500,6 +518,23 @@ export function createCustomMethodBlock(): toolboxItems.Block {
   const fields: {[key: string]: any} = {};
   fields[FIELD_METHOD_NAME] = 'my_method';
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
+}
+
+export function createCustomMethodBlockWithReturn(): toolboxItems.Block {
+    const extraState: ClassMethodDefExtraState = {
+        canChangeSignature: true,
+        canBeCalledWithinClass: true,
+        canBeCalledOutsideClass: true,
+        returnType: 'Any',
+        params: [],
+    };
+    const fields: {[key: string]: any} = {};
+    fields[FIELD_METHOD_NAME] = 'my_method_with_return';
+    const inputs: {[key: string]: any} = {};
+    inputs[RETURN_VALUE] = {
+        'type': 'input_value',
+    };
+    return new toolboxItems.Block(BLOCK_NAME, extraState, fields, inputs);
 }
 
 export function getBaseClassBlocks(

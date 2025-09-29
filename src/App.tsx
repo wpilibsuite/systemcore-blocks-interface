@@ -28,6 +28,7 @@ import { pythonGenerator } from 'blockly/python';
 import Header from './reactComponents/Header';
 import * as Menu from './reactComponents/Menu';
 import CodeDisplay from './reactComponents/CodeDisplay';
+import SiderCollapseTrigger from './reactComponents/SiderCollapseTrigger';
 import BlocklyComponent, { BlocklyComponentType } from './reactComponents/BlocklyComponent';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
@@ -81,7 +82,7 @@ const FULL_HEIGHT = '100%';
 const CODE_PANEL_DEFAULT_SIZE = '25%';
 
 /** Minimum size for code panel. */
-const CODE_PANEL_MIN_SIZE = 80;
+const CODE_PANEL_MIN_SIZE = 100;
 
 /** Background color for testing layout. */
 const LAYOUT_BACKGROUND_COLOR = '#0F0';
@@ -153,7 +154,7 @@ interface AppContentProps {
 
 const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.JSX.Element => {
   const { t, i18n } = useTranslation();
-  const { settings, updateLanguage, updateTheme, storage, isLoading } = useUserSettings();
+  const { settings, updateLanguage, updateTheme, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
 
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [currentModule, setCurrentModule] = React.useState<storageModule.Module | null>(null);
@@ -163,10 +164,14 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [modulePathToContentText, setModulePathToContentText] = React.useState<{[modulePath: string]: string}>({});
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [activeTab, setActiveTab] = React.useState('');
+  const [isLoadingTabs, setIsLoadingTabs] = React.useState(false);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
-  const [rightCollapsed, setRightCollapsed] = React.useState(false);
+  const [codePanelSize, setCodePanelSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
+  const [codePanelCollapsed, setCodePanelCollapsed] = React.useState(false);
+  const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
+  const [codePanelAnimating, setCodePanelAnimating] = React.useState(false);
   const [theme, setTheme] = React.useState('dark');
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
@@ -378,39 +383,34 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     setToolboxSettingsModalIsOpen(false);
   };
 
+  /** Toggles the code panel between collapsed and expanded states. */
+  const toggleCodePanelCollapse = (): void => {
+    setCodePanelAnimating(true);
+    
+    if (codePanelCollapsed) {
+      // Expand to previous size
+      setCodePanelSize(codePanelExpandedSize);
+      setCodePanelCollapsed(false);
+    } else {
+      // Collapse to minimum size - convert current size to pixels for storage
+      const currentSizePx = typeof codePanelSize === 'string'
+        ? (parseFloat(codePanelSize) / 100) * window.innerWidth
+        : codePanelSize;
+      setCodePanelExpandedSize(currentSizePx);
+      setCodePanelSize(CODE_PANEL_MIN_SIZE);
+      setCodePanelCollapsed(true);
+    }
+
+    // Reset animation flag after transition completes
+    setTimeout(() => {
+      setCodePanelAnimating(false);
+    }, 200);
+  };
+
   /** Handles toolbox settings modal OK with updated categories. */
   const handleToolboxSettingsConfirm = (updatedShownCategories: Set<string>): void => {
     setToolboxSettingsModalIsOpen(false);
     handleToolboxSettingsOk(updatedShownCategories);
-  };
-
-  /** Creates tab items from project data. */
-  const createTabItemsFromProject = (projectData: storageProject.Project): Tabs.TabItem[] => {
-    const tabs: Tabs.TabItem[] = [
-      {
-        key: projectData.robot.modulePath,
-        title: t('ROBOT'),
-        type: TabType.ROBOT,
-      },
-    ];
-
-    projectData.mechanisms.forEach((mechanism) => {
-      tabs.push({
-        key: mechanism.modulePath,
-        title: mechanism.className,
-        type: TabType.MECHANISM,
-      });
-    });
-
-    projectData.opModes.forEach((opmode) => {
-      tabs.push({
-        key: opmode.modulePath,
-        title: opmode.className,
-        type: TabType.OPMODE,
-      });
-    });
-
-    return tabs;
   };
 
   /** Handles toolbox update requests from blocks */
@@ -581,19 +581,162 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     }
   }, [project]);
 
-  // Update tab items when ever the modules in the project change.
+  // Load saved tabs when project changes
   React.useEffect(() => {
-    if (project) {
-      const tabs = createTabItemsFromProject(project);
-      setTabItems(tabs);
+    const loadSavedTabs = async () => {
+      if (project && !isLoading) {
+        setIsLoadingTabs(true);
+        
+        // Add a small delay to ensure UserSettingsProvider context is updated
+        await new Promise(resolve => setTimeout(resolve, 0));
+        
+        let tabsToSet: Tabs.TabItem[] = [];
+        let usedSavedTabs = false;
+        
+        // Try to load saved tabs first
+        try {
+          const savedTabPaths = await getOpenTabs(project.projectName);
+          
+          if (savedTabPaths.length > 0) {
+            // Filter saved tabs to only include those that still exist in the project
+            const validSavedTabs = savedTabPaths.filter((tabPath: string) => {
+              const module = storageProject.findModuleByModulePath(project!, tabPath);
+              return module !== null;
+            });
+            
+            if (validSavedTabs.length > 0) {
+              usedSavedTabs = true;
+              // Convert paths back to TabItem objects
+              tabsToSet = validSavedTabs.map((path: string) => {
+                const module = storageProject.findModuleByModulePath(project!, path);
+                if (!module) return null;
+                
+                let type: TabType;
+                let title: string;
+                
+                switch (module.moduleType) {
+                  case storageModule.ModuleType.ROBOT:
+                    type = TabType.ROBOT;
+                    title = t('ROBOT');
+                    break;
+                  case storageModule.ModuleType.MECHANISM:
+                    type = TabType.MECHANISM;
+                    title = module.className;
+                    break;
+                  case storageModule.ModuleType.OPMODE:
+                    type = TabType.OPMODE;
+                    title = module.className;
+                    break;
+                  default:
+                    return null;
+                }
+                
+                return {
+                  key: path,
+                  title,
+                  type,
+                };
+              }).filter((item): item is Tabs.TabItem => item !== null);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load saved tabs:', error);
+        }
+        
+        // If no saved tabs or loading failed, create default tabs (all project files)
+        if (tabsToSet.length === 0) {
+          tabsToSet = [
+            {
+              key: project.robot.modulePath,
+              title: t('ROBOT'),
+              type: TabType.ROBOT,
+            }
+          ];
+
+          // Add all mechanisms
+          project.mechanisms.forEach((mechanism) => {
+            tabsToSet.push({
+              key: mechanism.modulePath,
+              title: mechanism.className,
+              type: TabType.MECHANISM,
+            });
+          });
+
+          // Add all opmodes
+          project.opModes.forEach((opmode) => {
+            tabsToSet.push({
+              key: opmode.modulePath,
+              title: opmode.className,
+              type: TabType.OPMODE,
+            });
+          });
+        }
+        
+        // Set the tabs
+        setTabItems(tabsToSet);
+        
+        // Only set active tab to robot if no active tab is set or if the current active tab no longer exists
+        const currentActiveTabExists = tabsToSet.some(tab => tab.key === activeTab);
+        if (!activeTab || !currentActiveTabExists) {
+          setActiveTab(project.robot.modulePath);
+        }
+        
+        // Only auto-save if we didn't use saved tabs (i.e., this is a new project or the first time)
+        if (!usedSavedTabs) {
+          try {
+            const tabPaths = tabsToSet.map(tab => tab.key);
+            await updateOpenTabs(project.projectName, tabPaths);
+          } catch (error) {
+            console.error('Failed to auto-save default tabs:', error);
+          }
+        }
+        
+        setIsLoadingTabs(false);
+      }
+    };
+    
+    loadSavedTabs();
+  }, [project?.projectName, isLoading, getOpenTabs]);
+
+  // Update tab items when modules in project change (for title updates, etc)
+  React.useEffect(() => {
+    if (project && tabItems.length > 0) {
+      // Update existing tab titles in case they changed
+      const updatedTabs = tabItems.map(tab => {
+        const module = storageProject.findModuleByModulePath(project, tab.key);
+        if (module && module.moduleType !== storageModule.ModuleType.ROBOT) {
+          return { ...tab, title: module.className };
+        }
+        return tab;
+      });
       
-      // Only set active tab to robot if no active tab is set or if the current active tab no longer exists
-      const currentActiveTabExists = tabs.some(tab => tab.key === activeTab);
-      if (!activeTab || !currentActiveTabExists) {
-        setActiveTab(project.robot.modulePath);
+      // Only update if something actually changed
+      const titlesChanged = updatedTabs.some((tab, index) => tab.title !== tabItems[index]?.title);
+      if (titlesChanged) {
+        setTabItems(updatedTabs);
       }
     }
   }, [modulePathToContentText]);
+
+  // Save tabs when tab list changes (but not during initial loading)
+  React.useEffect(() => {
+    const saveTabs = async () => {
+      // Don't save tabs while we're in the process of loading them
+      if (project?.projectName && tabItems.length > 0 && !isLoadingTabs) {
+        try {
+          const tabPaths = tabItems.map(tab => tab.key);
+          await updateOpenTabs(project.projectName, tabPaths);
+        } catch (error) {
+          console.error('Failed to save open tabs:', error);
+          // Don't show alert for save failures as they're not critical to user workflow
+        }
+      }
+    };
+    
+    // Use a small delay to debounce rapid tab changes
+    const timeoutId = setTimeout(saveTabs, 100);
+    return () => clearTimeout(timeoutId);
+  }, [tabItems, project?.projectName, isLoadingTabs]);
 
   const { Sider, Content } = Antd.Layout;
 
@@ -618,6 +761,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               collapsible
               collapsed={leftCollapsed}
               onCollapse={(collapsed: boolean) => setLeftCollapsed(collapsed)}
+              trigger={null}
+              style={{ position: 'relative' }}
             >
               <Menu.Component
                 storage={storage}
@@ -628,6 +773,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 theme={theme}
                 setTheme={setTheme}
+              />
+              <SiderCollapseTrigger
+                collapsed={leftCollapsed}
+                onToggle={() => setLeftCollapsed(!leftCollapsed)}
               />
             </Sider>
             <Antd.Layout>
@@ -642,8 +791,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 setProject={setProject}
                 storage={storage}
               />
-              <Antd.Layout>
-                <Content>
+              <div style={{ display: 'flex', height: FULL_HEIGHT }}>
+                <Content style={{ flex: 1, height: '100%' }}>
                   {modulePaths.current.map((modulePath) => (
                     <BlocklyComponent
                       key={modulePath}
@@ -654,22 +803,69 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                     />
                   ))}
                 </Content>
-                <Sider
-                  collapsible
-                  reverseArrow={true}
-                  collapsed={rightCollapsed}
-                  collapsedWidth={CODE_PANEL_MIN_SIZE}
-                  width={CODE_PANEL_DEFAULT_SIZE}
-                  onCollapse={(collapsed: boolean) => setRightCollapsed(collapsed)}
+                <div
+                  style={{
+                    width: typeof codePanelSize === 'string' ? codePanelSize : `${codePanelSize}px`,
+                    minWidth: CODE_PANEL_MIN_SIZE,
+                    height: '100%',
+                    borderLeft: '1px solid #d9d9d9',
+                    position: 'relative',
+                    transition: codePanelAnimating ? 'width 0.2s ease' : 'none'
+                  }}
                 >
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      width: '4px',
+                      height: '100%',
+                      cursor: 'ew-resize',
+                      backgroundColor: 'transparent',
+                      zIndex: 10,
+                      transform: 'translateX(-2px)'
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      const startX = e.clientX;
+                      const startWidth = codePanelSize;
+                      
+                      const handleMouseMove = (e: MouseEvent) => {
+                        const deltaX = startX - e.clientX;
+                        // Convert startWidth to number if it's a percentage
+                        const startWidthPx = typeof startWidth === 'string' 
+                          ? (parseFloat(startWidth) / 100) * window.innerWidth
+                          : startWidth;
+                        const newWidth = Math.max(CODE_PANEL_MIN_SIZE, startWidthPx + deltaX);
+                        setCodePanelSize(newWidth);
+                        // Update expanded size if not at minimum
+                        if (newWidth > CODE_PANEL_MIN_SIZE) {
+                          setCodePanelExpandedSize(newWidth);
+                          setCodePanelCollapsed(false);
+                        } else {
+                          setCodePanelCollapsed(true);
+                        }
+                      };
+                      
+                      const handleMouseUp = () => {
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', handleMouseUp);
+                      };
+                      
+                      document.addEventListener('mousemove', handleMouseMove);
+                      document.addEventListener('mouseup', handleMouseUp);
+                    }}
+                  />
                   <CodeDisplay
                     generatedCode={generatedCode}
                     messageApi={messageApi}
                     setAlertErrorMessage={setAlertErrorMessage}
                     theme={theme}
+                    isCollapsed={codePanelCollapsed}
+                    onToggleCollapse={toggleCodePanelCollapse}
                   />
-                </Sider>
-              </Antd.Layout>
+                </div>
+              </div>
             </Antd.Layout>
           </Antd.Layout>
         </Antd.Layout>
