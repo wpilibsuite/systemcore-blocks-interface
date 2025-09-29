@@ -28,6 +28,7 @@ import { pythonGenerator } from 'blockly/python';
 import Header from './reactComponents/Header';
 import * as Menu from './reactComponents/Menu';
 import CodeDisplay from './reactComponents/CodeDisplay';
+import SiderCollapseTrigger from './reactComponents/SiderCollapseTrigger';
 import BlocklyComponent, { BlocklyComponentType } from './reactComponents/BlocklyComponent';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
@@ -81,7 +82,7 @@ const FULL_HEIGHT = '100%';
 const CODE_PANEL_DEFAULT_SIZE = '25%';
 
 /** Minimum size for code panel. */
-const CODE_PANEL_MIN_SIZE = 80;
+const CODE_PANEL_MIN_SIZE = 100;
 
 /** Background color for testing layout. */
 const LAYOUT_BACKGROUND_COLOR = '#0F0';
@@ -167,7 +168,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
-  const [rightCollapsed, setRightCollapsed] = React.useState(false);
+  const [codePanelSize, setCodePanelSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
+  const [codePanelCollapsed, setCodePanelCollapsed] = React.useState(false);
+  const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
+  const [codePanelAnimating, setCodePanelAnimating] = React.useState(false);
   const [theme, setTheme] = React.useState('dark');
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
@@ -377,6 +381,30 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   /** Handles toolbox settings modal close. */
   const handleToolboxSettingsCancel = (): void => {
     setToolboxSettingsModalIsOpen(false);
+  };
+
+  /** Toggles the code panel between collapsed and expanded states. */
+  const toggleCodePanelCollapse = (): void => {
+    setCodePanelAnimating(true);
+    
+    if (codePanelCollapsed) {
+      // Expand to previous size
+      setCodePanelSize(codePanelExpandedSize);
+      setCodePanelCollapsed(false);
+    } else {
+      // Collapse to minimum size - convert current size to pixels for storage
+      const currentSizePx = typeof codePanelSize === 'string'
+        ? (parseFloat(codePanelSize) / 100) * window.innerWidth
+        : codePanelSize;
+      setCodePanelExpandedSize(currentSizePx);
+      setCodePanelSize(CODE_PANEL_MIN_SIZE);
+      setCodePanelCollapsed(true);
+    }
+
+    // Reset animation flag after transition completes
+    setTimeout(() => {
+      setCodePanelAnimating(false);
+    }, 200);
   };
 
   /** Handles toolbox settings modal OK with updated categories. */
@@ -733,6 +761,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               collapsible
               collapsed={leftCollapsed}
               onCollapse={(collapsed: boolean) => setLeftCollapsed(collapsed)}
+              trigger={null}
+              style={{ position: 'relative' }}
             >
               <Menu.Component
                 storage={storage}
@@ -743,6 +773,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 theme={theme}
                 setTheme={setTheme}
+              />
+              <SiderCollapseTrigger
+                collapsed={leftCollapsed}
+                onToggle={() => setLeftCollapsed(!leftCollapsed)}
               />
             </Sider>
             <Antd.Layout>
@@ -757,8 +791,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 setProject={setProject}
                 storage={storage}
               />
-              <Antd.Layout>
-                <Content>
+              <div style={{ display: 'flex', height: FULL_HEIGHT }}>
+                <Content style={{ flex: 1, height: '100%' }}>
                   {modulePaths.current.map((modulePath) => (
                     <BlocklyComponent
                       key={modulePath}
@@ -769,22 +803,69 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                     />
                   ))}
                 </Content>
-                <Sider
-                  collapsible
-                  reverseArrow={true}
-                  collapsed={rightCollapsed}
-                  collapsedWidth={CODE_PANEL_MIN_SIZE}
-                  width={CODE_PANEL_DEFAULT_SIZE}
-                  onCollapse={(collapsed: boolean) => setRightCollapsed(collapsed)}
+                <div
+                  style={{
+                    width: typeof codePanelSize === 'string' ? codePanelSize : `${codePanelSize}px`,
+                    minWidth: CODE_PANEL_MIN_SIZE,
+                    height: '100%',
+                    borderLeft: '1px solid #d9d9d9',
+                    position: 'relative',
+                    transition: codePanelAnimating ? 'width 0.2s ease' : 'none'
+                  }}
                 >
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      width: '4px',
+                      height: '100%',
+                      cursor: 'ew-resize',
+                      backgroundColor: 'transparent',
+                      zIndex: 10,
+                      transform: 'translateX(-2px)'
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      const startX = e.clientX;
+                      const startWidth = codePanelSize;
+                      
+                      const handleMouseMove = (e: MouseEvent) => {
+                        const deltaX = startX - e.clientX;
+                        // Convert startWidth to number if it's a percentage
+                        const startWidthPx = typeof startWidth === 'string' 
+                          ? (parseFloat(startWidth) / 100) * window.innerWidth
+                          : startWidth;
+                        const newWidth = Math.max(CODE_PANEL_MIN_SIZE, startWidthPx + deltaX);
+                        setCodePanelSize(newWidth);
+                        // Update expanded size if not at minimum
+                        if (newWidth > CODE_PANEL_MIN_SIZE) {
+                          setCodePanelExpandedSize(newWidth);
+                          setCodePanelCollapsed(false);
+                        } else {
+                          setCodePanelCollapsed(true);
+                        }
+                      };
+                      
+                      const handleMouseUp = () => {
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', handleMouseUp);
+                      };
+                      
+                      document.addEventListener('mousemove', handleMouseMove);
+                      document.addEventListener('mouseup', handleMouseUp);
+                    }}
+                  />
                   <CodeDisplay
                     generatedCode={generatedCode}
                     messageApi={messageApi}
                     setAlertErrorMessage={setAlertErrorMessage}
                     theme={theme}
+                    isCollapsed={codePanelCollapsed}
+                    onToggleCollapse={toggleCodePanelCollapse}
                   />
-                </Sider>
-              </Antd.Layout>
+                </div>
+              </div>
             </Antd.Layout>
           </Antd.Layout>
         </Antd.Layout>

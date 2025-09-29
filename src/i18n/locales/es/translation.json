@@ -40,6 +40,8 @@
     "BLOCKS": "Bloques",
     "CODE": "Código",
     "COPY": "Copiar",
+    "COLLAPSE": "Colapsar",
+    "EXPAND": "Expandir",
     "FAILED_TO_RENAME_PROJECT": "Error al renombrar proyecto",
     "FAILED_TO_COPY_PROJECT": "Error al copiar proyecto",
     "FAILED_TO_CREATE_PROJECT": "Error al crear un nuevo proyecto.",
