@@ -43,6 +43,8 @@
   "BLOCKS": "בלוקים",
   "CODE": "קוד",
   "COPY": "העתק",
+  "COLLAPSE": "כווץ",
+  "EXPAND": "הרחב",
     "FAILED_TO_RENAME_PROJECT": "נכשל בשינוי שם הפרויקט",
     "FAILED_TO_COPY_PROJECT": "נכשל בהעתקת הפרויקט",
     "FAILED_TO_CREATE_PROJECT": "נכשל ביצירת פרויקט חדש.",
