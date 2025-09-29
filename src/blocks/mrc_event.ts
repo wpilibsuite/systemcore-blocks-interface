@@ -24,7 +24,6 @@ import * as Blockly from 'blockly';
 import { MRC_STYLE_EVENTS } from '../themes/styles'
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
-import * as ChangeFramework from './utils/change_framework';
 import { BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER } from './mrc_mechanism_component_holder';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModuleContent from '../storage/module_content';
@@ -33,12 +32,16 @@ import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_func
 export const BLOCK_NAME = 'mrc_event';
 export const OUTPUT_NAME = 'mrc_event';
 
+const INPUT_TITLE = 'TITLE';
 const FIELD_EVENT_NAME = 'NAME';
+const FIELD_PARAM_PREFIX = 'PARAM_';
 
 type Parameter = {
   name: string,
   type?: string,
 };
+
+const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
 
 type EventExtraState = {
   eventId?: string,
@@ -50,6 +53,14 @@ export type EventBlock = Blockly.Block & EventMixin & Blockly.BlockSvg;
 interface EventMixin extends EventMixinType {
   mrcEventId: string,
   mrcParameters: Parameter[],
+
+  /**
+   * mrcHasWarning is set to true if we set the warning text on the block. It is checked to avoid
+   * adding a warning if there already is one. Otherwise, if we get two move events (one for drag
+   * and one for snap), and we call setWarningText for both events, we get a detached warning
+   * balloon. See https://github.com/wpilibsuite/systemcore-blocks-interface/issues/248.
+   */
+  mrcHasWarning: boolean,
 }
 type EventMixinType = typeof EVENT;
 
@@ -59,12 +70,11 @@ const EVENT = {
    */
   init: function (this: EventBlock): void {
     this.setStyle(MRC_STYLE_EVENTS);
-    this.appendDummyInput("TITLE")
+    this.appendDummyInput(INPUT_TITLE)
       .appendField(new Blockly.FieldTextInput('my_event'), FIELD_EVENT_NAME);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
     this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
-    ChangeFramework.registerCallback(BLOCK_NAME, [Blockly.Events.BLOCK_MOVE], this.onBlockChanged);
   },
 
   /**
@@ -91,6 +101,7 @@ const EVENT = {
   loadExtraState: function (this: EventBlock, extraState: EventExtraState): void {
     this.mrcEventId = extraState.eventId ? extraState.eventId : this.id;
     this.mrcParameters = [];
+    this.mrcHasWarning = false;
 
     if (extraState.params) {
       extraState.params.forEach((arg) => {
@@ -108,7 +119,7 @@ const EVENT = {
    */
   updateBlock_: function (this: EventBlock): void {
     const name = this.getFieldValue(FIELD_EVENT_NAME);
-    const input = this.getInput('TITLE');
+    const input = this.getInput(INPUT_TITLE);
     if (!input) {
       return;
     }
@@ -136,8 +147,7 @@ const EVENT = {
         paramBlock.originalName = param.name;
       }
       this.mrcParameters.push(param);
-      paramBlock =
-        paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
+      paramBlock = paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
     }
     this.mrcUpdateParams();
     mutateMethodCallers(this.workspace, this.mrcEventId, this.getEvent());
@@ -152,7 +162,7 @@ const EVENT = {
     let connection = topBlock!.getInput('STACK')!.connection;
 
     for (let i = 0; i < this.mrcParameters.length; i++) {
-      let itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME);
+      const itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME);
       (itemBlock as Blockly.BlockSvg).initSvg();
       itemBlock.setFieldValue(this.mrcParameters[i].name, 'NAME');
       (itemBlock as MethodMutatorArgBlock).originalName = this.mrcParameters[i].name;
@@ -164,11 +174,11 @@ const EVENT = {
   },
   mrcUpdateParams: function (this: EventBlock) {
     if (this.mrcParameters.length > 0) {
-      let input = this.getInput('TITLE');
+      const input = this.getInput(INPUT_TITLE);
       if (input) {
         this.removeParameterFields(input);
         this.mrcParameters.forEach((param) => {
-          const paramName = 'PARAM_' + param.name;
+          const paramName = FIELD_PARAM_PREFIX + param.name;
           const field = new Blockly.FieldTextInput(param.name);
           field.EDITABLE = false;
           input.appendField(field, paramName);
@@ -178,7 +188,7 @@ const EVENT = {
   },
   removeParameterFields: function (input: Blockly.Input) {
     const fieldsToRemove = input.fieldRow
-      .filter(field => field.name?.startsWith('PARAM_'))
+      .filter(field => field.name?.startsWith(FIELD_PARAM_PREFIX))
       .map(field => field.name!);
 
     fieldsToRemove.forEach(fieldName => {
@@ -197,21 +207,33 @@ const EVENT = {
     }
     return legalName;
   },
-  onBlockChanged(block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase): void {
-    const blockBlock = block as Blockly.Block;
-  
-    if (blockEvent.type === Blockly.Events.BLOCK_MOVE) {
-      const parent = ChangeFramework.getParentOfType(block, MRC_MECHANISM_COMPONENT_HOLDER);
-        
-      if (parent) {
-        // If it is, we allow it to stay.
-        blockBlock.setWarningText(null);
-        return;
+  /**
+   * mrcOnLoad is called for each EventBlock when the blocks are loaded in the blockly workspace.
+   */
+  mrcOnLoad: function(this: EventBlock): void {
+    this.checkParentIsHolder();
+  },
+  /**
+   * mrcOnLoad is called when an EventBlock is moved.
+   */
+  mrcOnMove: function(this: EventBlock): void {
+    this.checkParentIsHolder();
+  },
+  checkParentIsHolder: function(this: EventBlock): void {
+    const parentBlock = this.getParent();
+    if (parentBlock && parentBlock.type === MRC_MECHANISM_COMPONENT_HOLDER) {
+      // If the parent block is the mechanism_component_holder, the event block is allowed to stay.
+      // Remove any previous warning.
+      this.setWarningText(null, WARNING_ID_NOT_IN_HOLDER);
+      this.mrcHasWarning = false;
+    } else {
+      // Otherwise, add a warning to the block.
+      this.unplug(true);
+      if (!this.mrcHasWarning) {
+        this.setWarningText(Blockly.Msg.WARNING_EVENT_NOT_IN_HOLDER, WARNING_ID_NOT_IN_HOLDER);
+        this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+        this.mrcHasWarning = true;
       }
-      // If we end up here it shouldn't be allowed
-      block.unplug(true);
-      blockBlock.setWarningText('Events can only go in the events section of the robot or mechanism');
-      blockBlock.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
     }
   },
   getEvent: function (this: EventBlock): storageModuleContent.Event {

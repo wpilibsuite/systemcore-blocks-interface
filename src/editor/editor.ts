@@ -39,6 +39,7 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
 };
 
 const MRC_ON_LOAD = 'mrcOnLoad';
+const MRC_ON_MOVE = 'mrcOnMove';
 const MRC_VALIDATE = 'mrcValidate';
 
 export class Editor {
@@ -121,7 +122,17 @@ export class Editor {
     if (this.blocklyWorkspace.isDragging()) {
       return;
     }
-    // TODO(lizlooney): do we need to do anything here?
+
+    if (event.type === Blockly.Events.BLOCK_MOVE) {
+      const blockMoveEvent = event as Blockly.Events.BlockMove;
+      const block = this.blocklyWorkspace.getBlockById(blockMoveEvent.blockId!);
+      if (!block) {
+        return;
+      }
+      if (MRC_ON_MOVE in block && typeof block[MRC_ON_MOVE] === 'function') {
+        block[MRC_ON_MOVE]();
+      }
+    }
   }
 
   public makeCurrent(

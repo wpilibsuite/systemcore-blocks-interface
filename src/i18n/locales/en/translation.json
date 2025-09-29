@@ -141,7 +141,8 @@
             "CALL_ROBOT_INSTANCE_METHOD_MISSING_METHOD": "This block calls a method that no longer exists in the robot.",
             "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "This block is not allowed to be used inside a mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "This block calls a method that no longer exists in the mechanism.",
-            "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method in a mechanism that no longer exists."
+            "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method in a mechanism that no longer exists.",
+            "EVENT_NOT_IN_HOLDER": "This block can only go in the events section of the robot or mechanism."
         }
     }   
 }
