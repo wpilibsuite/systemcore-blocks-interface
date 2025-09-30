@@ -22,6 +22,7 @@
 
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
+import i18n from '../i18n';
 
 import {
     createModuleOrClassVariableSetterBlock,
@@ -132,7 +133,7 @@ const GET_PYTHON_VARIABLE = {
    */
   init: function(this: GetPythonVariableBlock): void {
     this.appendDummyInput('VAR')
-        .appendField('get')
+        .appendField(i18n.t('BLOCKLY.GET'))
         .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
         .appendField('.');
     this.setStyle(MRC_STYLE_VARIABLES);
@@ -142,21 +143,21 @@ const GET_PYTHON_VARIABLE = {
       switch (this.mrcVarKind) {
         case VariableKind.MODULE: {
           const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Gets the variable ' + moduleName + '.' + varName + '.';
+          tooltip = i18n.t('BLOCKLY.TOOLTIP.GET_MODULE_VARIABLE', { moduleName, varName });
           break;
         }
         case VariableKind.CLASS: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Gets the variable ' + className + '.' + varName + '.';
+          tooltip = i18n.t('BLOCKLY.TOOLTIP.GET_CLASS_VARIABLE', { className, varName });
           break;
         }
         case VariableKind.INSTANCE: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Gets the variable ' + varName + ' for the given ' + className + ' object.';
+          tooltip = i18n.t('BLOCKLY.TOOLTIP.GET_INSTANCE_VARIABLE', { className, varName });
           break;
         }
         default:
-          throw new Error('mrcVarKind must be "module", "class", or "instance".')
+          throw new Error(i18n.t('BLOCKLY.ERROR.VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE'));
       }
       const varTooltips = PythonVariableGetterTooltips[this.mrcKey];
       if (varTooltips) {
@@ -286,7 +287,7 @@ export const pythonFromBlock = function(
       return [code, Order.MEMBER];
     }
     default:
-      throw new Error('mrcVarKind must be "module", "class", or "instance".')
+      throw new Error(i18n.t('BLOCKLY.ERROR.VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE'));
   }
 };
 
