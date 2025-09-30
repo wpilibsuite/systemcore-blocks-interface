@@ -97,6 +97,8 @@
     "CREATE": "צור",
     "FIRE": "הפעל",
     "GET": "קבל",
+    "SET": "הגדר",
+    "TO": "ל",
     "TOOLTIP": {
       "EVALUATE_BUT_IGNORE_RESULT": "מבצע את הבלוק המחובר ומתעלם מהתוצאה. מאפשר לקרוא לפונקציה מבלי להשתמש בערך שהיא מחזירה.",
       "NONE": "מחזיר כלום.",
@@ -120,7 +122,10 @@
       "GET_MODULE_VARIABLE": "מקבל את המשתנה %1.%2.",
       "GET_CLASS_VARIABLE": "מקבל את המשתנה %1.%2.",
       "GET_INSTANCE_VARIABLE": "מקבל את המשתנה %1 עבור אובייקט %2 נתון.",
-      "GET_ENUM_VALUE": "מקבל את ערך ההספירה %1.%2."
+      "GET_ENUM_VALUE": "מקבל את ערך ההספירה %1.%2.",
+      "SET_MODULE_VARIABLE": "מגדיר את המשתנה %1.%2.",
+      "SET_CLASS_VARIABLE": "מגדיר את המשתנה %1.%2.",
+      "SET_INSTANCE_VARIABLE": "מגדיר את המשתנה %1 עבור אובייקט %2 נתון."
     },
     "CATEGORY": {
       "LISTS": "רשימות",

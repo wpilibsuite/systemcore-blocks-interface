@@ -98,6 +98,8 @@
         "CREATE": "crear",
         "FIRE": "disparar",
         "GET": "obtener",
+        "SET": "establecer",
+        "TO": "a",
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Ejecuta el bloque conectado e ignora el resultado. Te permite llamar una función e ignorar el valor de retorno.",
             "NONE": "No devuelve ninguno.",
@@ -121,7 +123,10 @@
             "GET_MODULE_VARIABLE": "Obtiene la variable %1.%2.",
             "GET_CLASS_VARIABLE": "Obtiene la variable %1.%2.",
             "GET_INSTANCE_VARIABLE": "Obtiene la variable %1 para el objeto %2 dado.",
-            "GET_ENUM_VALUE": "Obtiene el valor de enumeración %1.%2."
+            "GET_ENUM_VALUE": "Obtiene el valor de enumeración %1.%2.",
+            "SET_MODULE_VARIABLE": "Establece la variable %1.%2.",
+            "SET_CLASS_VARIABLE": "Establece la variable %1.%2.",
+            "SET_INSTANCE_VARIABLE": "Establece la variable %1 para el objeto %2 dado."
         },
         "CATEGORY": {
             "LISTS": "Listas",

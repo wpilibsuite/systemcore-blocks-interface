@@ -97,6 +97,8 @@
         "CREATE": "create",
         "FIRE": "fire",
         "GET": "get",
+        "SET": "set",
+        "TO": "to",
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
             "NONE": "Returns None.",
@@ -120,7 +122,10 @@
             "GET_MODULE_VARIABLE": "Gets the variable %1.%2.",
             "GET_CLASS_VARIABLE": "Gets the variable %1.%2.",
             "GET_INSTANCE_VARIABLE": "Gets the variable %1 for the given %2 object.",
-            "GET_ENUM_VALUE": "Gets the enum value %1.%2."
+            "GET_ENUM_VALUE": "Gets the enum value %1.%2.",
+            "SET_MODULE_VARIABLE": "Sets the variable %1.%2.",
+            "SET_CLASS_VARIABLE": "Sets the variable %1.%2.",
+            "SET_INSTANCE_VARIABLE": "Sets the variable %1 for the given %2 object."
         },
         "CATEGORY":{
             "LISTS": "Lists",
