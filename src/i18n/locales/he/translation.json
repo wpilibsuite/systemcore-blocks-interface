@@ -117,9 +117,9 @@
       "CALL_COMPONENT_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} על הרכיב {{componentName}}.",
       "CALL_ROBOT_INSTANCE_METHOD": "קורא למתודת הרובוט {{functionName}}.",
       "CALL_MECHANISM_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} במנגנון {{mechanismName}}.",
-      "GET_MODULE_VARIABLE": "מקבל את המשתנה {{moduleName}}.{{varName}}.",
-      "GET_CLASS_VARIABLE": "מקבל את המשתנה {{className}}.{{varName}}.",
-      "GET_INSTANCE_VARIABLE": "מקבל את המשתנה {{varName}} עבור אובייקט {{className}} נתון."
+      "GET_MODULE_VARIABLE": "מקבל את המשתנה %1.%2.",
+      "GET_CLASS_VARIABLE": "מקבל את המשתנה %1.%2.",
+      "GET_INSTANCE_VARIABLE": "מקבל את המשתנה %1 עבור אובייקט %2 נתון."
     },
     "CATEGORY": {
       "LISTS": "רשימות",

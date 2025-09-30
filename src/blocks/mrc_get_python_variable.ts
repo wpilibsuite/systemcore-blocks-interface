@@ -22,7 +22,6 @@
 
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
-import i18n from '../i18n';
 
 import {
     createModuleOrClassVariableSetterBlock,
@@ -133,7 +132,7 @@ const GET_PYTHON_VARIABLE = {
    */
   init: function(this: GetPythonVariableBlock): void {
     this.appendDummyInput('VAR')
-        .appendField(i18n.t('BLOCKLY.GET'))
+        .appendField(Blockly.Msg['GET'])
         .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
         .appendField('.');
     this.setStyle(MRC_STYLE_VARIABLES);
@@ -143,21 +142,27 @@ const GET_PYTHON_VARIABLE = {
       switch (this.mrcVarKind) {
         case VariableKind.MODULE: {
           const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = i18n.t('BLOCKLY.TOOLTIP.GET_MODULE_VARIABLE', { moduleName, varName });
+          tooltip = Blockly.Msg['GET_MODULE_VARIABLE_TOOLTIP']
+              .replace('%1', moduleName)
+              .replace('%2', varName);
           break;
         }
         case VariableKind.CLASS: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = i18n.t('BLOCKLY.TOOLTIP.GET_CLASS_VARIABLE', { className, varName });
+          tooltip = Blockly.Msg['GET_CLASS_VARIABLE_TOOLTIP']
+              .replace('%1', className)
+              .replace('%2', varName);
           break;
         }
         case VariableKind.INSTANCE: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = i18n.t('BLOCKLY.TOOLTIP.GET_INSTANCE_VARIABLE', { className, varName });
+          tooltip = Blockly.Msg['GET_INSTANCE_VARIABLE_TOOLTIP']
+              .replace('%1', varName)
+              .replace('%2', className);
           break;
         }
         default:
-          throw new Error(i18n.t('BLOCKLY.ERROR.VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE'));
+          throw new Error(Blockly.Msg['VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE']);
       }
       const varTooltips = PythonVariableGetterTooltips[this.mrcKey];
       if (varTooltips) {
@@ -287,7 +292,7 @@ export const pythonFromBlock = function(
       return [code, Order.MEMBER];
     }
     default:
-      throw new Error(i18n.t('BLOCKLY.ERROR.VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE'));
+      throw new Error(Blockly.Msg['VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE']);
   }
 };
 

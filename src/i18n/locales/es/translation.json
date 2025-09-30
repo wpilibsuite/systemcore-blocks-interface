@@ -118,9 +118,9 @@
             "CALL_COMPONENT_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el componente llamado {{componentName}}.",
             "CALL_ROBOT_INSTANCE_METHOD": "Llama al método robot {{functionName}}.",
             "CALL_MECHANISM_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el mecanismo llamado {{mechanismName}}.",
-            "GET_MODULE_VARIABLE": "Obtiene la variable {{moduleName}}.{{varName}}.",
-            "GET_CLASS_VARIABLE": "Obtiene la variable {{className}}.{{varName}}.",
-            "GET_INSTANCE_VARIABLE": "Obtiene la variable {{varName}} para el objeto {{className}} dado."
+            "GET_MODULE_VARIABLE": "Obtiene la variable %1.%2.",
+            "GET_CLASS_VARIABLE": "Obtiene la variable %1.%2.",
+            "GET_INSTANCE_VARIABLE": "Obtiene la variable %1 para el objeto %2 dado."
         },
         "CATEGORY": {
             "LISTS": "Listas",
