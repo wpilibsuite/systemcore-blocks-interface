@@ -75,7 +75,9 @@ const GET_PYTHON_ENUM_VALUE = {
     this.setTooltip(() => {
       const enumClassName = this.getFieldValue(FIELD_ENUM_CLASS_NAME);
       const enumValue = this.getFieldValue(FIELD_ENUM_VALUE);
-      let tooltip = 'Gets the enum value ' + enumClassName + '.' + enumValue + '.';
+      let tooltip = Blockly.Msg['GET_ENUM_VALUE_TOOLTIP']
+          .replace('%1', enumClassName)
+          .replace('%2', enumValue);
       const enumTooltip = PythonEnumTooltips[enumClassName]
       if (enumTooltip) {
         if (typeof enumTooltip === 'string') {

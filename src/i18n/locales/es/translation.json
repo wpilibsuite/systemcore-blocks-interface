@@ -120,7 +120,8 @@
             "CALL_MECHANISM_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el mecanismo llamado {{mechanismName}}.",
             "GET_MODULE_VARIABLE": "Obtiene la variable %1.%2.",
             "GET_CLASS_VARIABLE": "Obtiene la variable %1.%2.",
-            "GET_INSTANCE_VARIABLE": "Obtiene la variable %1 para el objeto %2 dado."
+            "GET_INSTANCE_VARIABLE": "Obtiene la variable %1 para el objeto %2 dado.",
+            "GET_ENUM_VALUE": "Obtiene el valor de enumeración %1.%2."
         },
         "CATEGORY": {
             "LISTS": "Listas",
