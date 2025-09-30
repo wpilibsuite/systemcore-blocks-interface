@@ -66,6 +66,13 @@
     "COPY_TYPE_TITLE": "Copiar {{type}}: {{title}}",
     "RENAME": "Renombrar",
     "NO_FILES_FOUND": "No se encontraron archivos de {{type}}",
+    "DELETE": "Eliminar",
+    "CANCEL": "Cancelar",
+    "CLOSE_TAB": "Cerrar Pestaña",
+    "CLOSE_OTHER_TABS": "Cerrar Otras Pestañas",
+    "RENAME_ELLIPSIS": "Renombrar...",
+    "DELETE_ELLIPSIS": "Eliminar...",
+    "COPY_ELLIPSIS": "Copiar...",
     "addTabDialog": {
         "title": "Agregar Pestaña",
         "search": "Buscar..."

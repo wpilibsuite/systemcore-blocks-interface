@@ -69,6 +69,13 @@
     "COPY_TYPE_TITLE": "העתקת {{type}}: {{title}}",
     "RENAME": "שנה שם",
     "NO_FILES_FOUND": "לא נמצאו קבצי {{type}}",
+    "DELETE": "מחק",
+    "CANCEL": "בטל",
+    "CLOSE_TAB": "סגור לשונית",
+    "CLOSE_OTHER_TABS": "סגור לשוניות אחרות",
+    "RENAME_ELLIPSIS": "שנה שם...",
+    "DELETE_ELLIPSIS": "מחק...",
+    "COPY_ELLIPSIS": "העתק...",
   "MECHANISMS": "מנגנונים",    
   "OPMODES": "אופמודים",
   "BLOCKLY": {

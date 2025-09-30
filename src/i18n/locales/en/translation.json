@@ -69,6 +69,13 @@
     "COPY_TYPE_TITLE": "Copy {{type}}: {{title}}",
     "RENAME": "Rename",
     "NO_FILES_FOUND": "No {{type}} files found",
+    "DELETE": "Delete",
+    "CANCEL": "Cancel",
+    "CLOSE_TAB": "Close Tab",
+    "CLOSE_OTHER_TABS": "Close Other tabs",
+    "RENAME_ELLIPSIS": "Rename...",
+    "DELETE_ELLIPSIS": "Delete...",
+    "COPY_ELLIPSIS": "Copy...",
     "MECHANISMS": "Mechanisms",    
     "OPMODES": "OpModes",
     "BLOCKLY":{
