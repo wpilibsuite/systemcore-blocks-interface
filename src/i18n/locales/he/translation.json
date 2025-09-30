@@ -96,6 +96,12 @@
     "ROBOT": "רובוט",
     "CREATE": "צור",
     "FIRE": "הפעל",
+    "CUSTOM_EVENTS_LABEL": "אירועים מותאמים אישית",
+    "CUSTOM_METHODS_LABEL": "מתודות מותאמות אישית",
+    "MORE_ROBOT_METHODS_LABEL": "מתודות נוספות לרובוט",
+    "MORE_MECHANISM_METHODS_LABEL": "מתודות נוספות למנגנון",
+    "MORE_OPMODE_METHODS_LABEL": "מתודות נוספות לאופמוד",
+    "COMMENT_DEFAULT_TEXT": "הזן את ההערה שלך כאן!",
     "TOOLTIP": {
       "EVALUATE_BUT_IGNORE_RESULT": "מבצע את הבלוק המחובר ומתעלם מהתוצאה. מאפשר לקרוא לפונקציה מבלי להשתמש בערך שהיא מחזירה.",
       "NONE": "מחזיר כלום.",

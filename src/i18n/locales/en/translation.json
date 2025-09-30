@@ -96,6 +96,12 @@
         "ROBOT": "robot",
         "CREATE": "create",
         "FIRE": "fire",
+        "CUSTOM_EVENTS_LABEL": "Custom Events",
+        "CUSTOM_METHODS_LABEL": "Custom Methods",
+        "MORE_ROBOT_METHODS_LABEL": "More Robot Methods",
+        "MORE_MECHANISM_METHODS_LABEL": "More Mechanism Methods",
+        "MORE_OPMODE_METHODS_LABEL": "More OpMode Methods",
+        "COMMENT_DEFAULT_TEXT": "Enter your comment here!",
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
             "NONE": "Returns None.",

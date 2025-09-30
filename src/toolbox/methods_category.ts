@@ -81,7 +81,7 @@ class MethodsCategory {
         ];
         // Add the methods for a Robot.
         this.addClassBlocksForCurrentModule(
-            'More Robot Methods', this.robotClassBlocks, robotMethodNamesNotOverrideable,
+            Blockly.Msg['MORE_ROBOT_METHODS_LABEL'], this.robotClassBlocks, robotMethodNamesNotOverrideable,
             methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.MECHANISM:
@@ -95,13 +95,13 @@ class MethodsCategory {
         ];
         // Add the methods for a Mechanism.
         this.addClassBlocksForCurrentModule(
-            'More Mechanism Methods', this.mechanismClassBlocks, mechanismMethodNamesNotOverrideable,
+            Blockly.Msg['MORE_MECHANISM_METHODS_LABEL'], this.mechanismClassBlocks, mechanismMethodNamesNotOverrideable,
             methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.OPMODE:
         // Add the methods for an OpMode.
         this.addClassBlocksForCurrentModule(
-            'More OpMode Methods', this.opmodeClassBlocks, [],
+            Blockly.Msg['MORE_OPMODE_METHODS_LABEL'], this.opmodeClassBlocks, [],
             methodNamesAlreadyOverridden, contents);
         break;
     }
@@ -110,7 +110,7 @@ class MethodsCategory {
     contents.push(
       {
         kind: 'label',
-        text: 'Custom Methods',
+        text: Blockly.Msg['CUSTOM_METHODS_LABEL'],
       },
       createCustomMethodBlock(),
       createCustomMethodBlockWithReturn()
