@@ -322,18 +322,19 @@ export async function copyModuleInProject(
  * Checks if the proposed class name is valid and does not conflict with existing names in the project.
  * @param project The project to check against.
  * @param proposedClassName The proposed class name to validate.
+ * @param t Translation function for internationalized error messages.
  * @returns An object containing a boolean `ok` indicating if the name is valid, and an `error` message if it is not.
  */
-export function isClassNameOk(project: Project, proposedClassName: string) {
+export function isClassNameOk(project: Project, proposedClassName: string, t: (key: string, params?: any) => string) {
   let ok = true;
   let error = '';
 
   if (!storageNames.isValidClassName(proposedClassName)) {
     ok = false;
-    error = proposedClassName + ' is not a valid name. Please enter a different name.';
+    error = t('INVALID_CLASS_NAME', { name: proposedClassName });
   } else if (findModuleByClassName(project, proposedClassName) != null) {
     ok = false;
-    error = 'Another Mechanism or OpMode is already named ' + proposedClassName + '. Please enter a different name.'
+    error = t('CLASS_NAME_ALREADY_EXISTS', { name: proposedClassName });
   }
 
   return {

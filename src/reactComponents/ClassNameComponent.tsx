@@ -66,7 +66,7 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
       return;
     }
 
-    const {ok, error} = storageProject.isClassNameOk(props.project, newClassName);
+    const {ok, error} = storageProject.isClassNameOk(props.project, newClassName, t);
     if (ok) {
       clearError();
       props.onAddNewItem();

@@ -78,6 +78,8 @@
     "COPY_ELLIPSIS": "Copy...",
     "MECHANISMS": "Mechanisms",    
     "OPMODES": "OpModes",
+    "INVALID_CLASS_NAME": "{{name}} is not a valid name. Please enter a different name.",
+    "CLASS_NAME_ALREADY_EXISTS": "Another Mechanism or OpMode is already named {{name}}. Please enter a different name.",
     "THEME_MODAL": {
         "LIGHT": "Light Theme",
         "LIGHT_DESCRIPTION": "Clean and bright interface for daytime use",

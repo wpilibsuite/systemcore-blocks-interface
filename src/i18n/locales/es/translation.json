@@ -79,6 +79,8 @@
     },
     "MECHANISMS": "Mecanismos",
     "OPMODES": "OpModes",
+    "INVALID_CLASS_NAME": "{{name}} no es un nombre válido. Por favor ingrese un nombre diferente.",
+    "CLASS_NAME_ALREADY_EXISTS": "Otro Mecanismo u OpMode ya se llama {{name}}. Por favor ingrese un nombre diferente.",
     "THEME_MODAL": {
         "LIGHT": "Tema Claro",
         "LIGHT_DESCRIPTION": "Interfaz limpia y brillante para uso diurno",
