@@ -22,6 +22,7 @@
 import * as Blockly from 'blockly';
 
 import { MRC_STYLE_EVENTS } from '../themes/styles'
+import { Parameter } from './mrc_class_method_def';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
 import { BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER } from './mrc_mechanism_component_holder';
@@ -35,11 +36,6 @@ export const OUTPUT_NAME = 'mrc_event';
 const INPUT_TITLE = 'TITLE';
 const FIELD_EVENT_NAME = 'NAME';
 const FIELD_PARAM_PREFIX = 'PARAM_';
-
-type Parameter = {
-  name: string,
-  type?: string,
-};
 
 const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
 
@@ -214,7 +210,7 @@ const EVENT = {
     this.checkParentIsHolder();
   },
   /**
-   * mrcOnLoad is called when an EventBlock is moved.
+   * mrcOnMove is called when an EventBlock is moved.
    */
   mrcOnMove: function(this: EventBlock): void {
     this.checkParentIsHolder();

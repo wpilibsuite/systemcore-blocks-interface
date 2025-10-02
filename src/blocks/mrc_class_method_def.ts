@@ -40,10 +40,10 @@ export const BLOCK_NAME = 'mrc_class_method_def';
 export const FIELD_METHOD_NAME = 'NAME';
 export const RETURN_VALUE = 'RETURN';
 
-type Parameter = {
-    name: string,
-    type?: string,
-};
+export interface Parameter {
+  name: string;
+  type?: string;
+}
 
 export type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin & Blockly.BlockSvg;
 interface ClassMethodDefMixin extends ClassMethodDefMixinType {
@@ -332,6 +332,13 @@ const CLASS_METHOD_DEF = {
     if (this.mrcMethodId in oldIdToNewId) {
       this.mrcMethodId = oldIdToNewId[this.mrcMethodId];
     }
+  },
+  mrcGetParameterNames: function(this: ClassMethodDefBlock): string[] {
+    const parameterNames: string[] = [];
+    this.mrcParameters.forEach(parameter => {
+      parameterNames.push(parameter.name);
+    });
+    return parameterNames;
   },
   upgrade_002_to_003: function(this: ClassMethodDefBlock) {
     if (this.getFieldValue('NAME') === 'init') {

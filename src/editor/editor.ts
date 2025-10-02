@@ -40,6 +40,7 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
 
 const MRC_ON_LOAD = 'mrcOnLoad';
 const MRC_ON_MOVE = 'mrcOnMove';
+const MRC_ON_ANCESTOR_MOVE = 'mrcOnAncestorMove';
 const MRC_VALIDATE = 'mrcValidate';
 
 export class Editor {
@@ -129,9 +130,16 @@ export class Editor {
       if (!block) {
         return;
       }
+      // Call MRC_ON_MOVE for the block that was moved.
       if (MRC_ON_MOVE in block && typeof block[MRC_ON_MOVE] === 'function') {
         block[MRC_ON_MOVE]();
       }
+      // Call MRC_ON_ANCESTOR_MOVE for all descendents of the block that was moved.
+      block.getDescendants(false).forEach(descendant => {
+        if (MRC_ON_ANCESTOR_MOVE in descendant && typeof descendant[MRC_ON_ANCESTOR_MOVE] === 'function') {
+          descendant[MRC_ON_ANCESTOR_MOVE]();
+        }
+      });
     }
   }
 

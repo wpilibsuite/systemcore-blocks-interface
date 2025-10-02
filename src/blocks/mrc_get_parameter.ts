@@ -27,70 +27,94 @@ import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
 import {createFieldNonEditableText} from '../fields/FieldNonEditableText';
 import {MRC_STYLE_VARIABLES} from '../themes/styles';
 import {BLOCK_NAME as MRC_CLASS_METHOD_DEF, ClassMethodDefBlock} from './mrc_class_method_def';
-import {BLOCK_NAME as MRC_EVENT_HANDLER } from './mrc_event_handler';
-import * as ChangeFramework from './utils/change_framework';
+import {BLOCK_NAME as MRC_EVENT_HANDLER, EventHandlerBlock } from './mrc_event_handler';
 
 
 export const BLOCK_NAME = 'mrc_get_parameter';
 export const OUTPUT_NAME = 'mrc_get_parameter_output';
 
+const FIELD_PARAMETER_NAME = 'PARAMETER_NAME';
+
+const WARNING_ID_NOT_IN_METHOD = 'not in method';
+
 
 type GetParameterBlock = Blockly.Block & Blockly.BlockSvg & GetParameterMixin;
 
-interface GetParameterMixin extends GetParameterMixinType {}
+interface GetParameterMixin extends GetParameterMixinType {
+  // TODO(lizlooney): currently mrcParameterType is never set to anything other than '' because
+  // setNameAndType is never called. If we add code that uses setNameAndType, we will probably
+  // need to save and load extra state that includes the parameter type.
+  /**
+   * mrcParameterType is initialized in init to ''. It can be set by calling setNameAndType.
+   */
+  mrcParameterType: string,
+
+  /**
+   * mrcHasWarning is set to true if we set the warning text on the block. It is checked to avoid
+   * adding a warning if there already is one. Otherwise, if we get two move events (one for drag
+   * and one for snap), and we call setWarningText for both events, we get a detached warning
+   * balloon. See https://github.com/wpilibsuite/systemcore-blocks-interface/issues/248.
+   */
+  mrcHasWarning: boolean,
+}
 
 type GetParameterMixinType = typeof GET_PARAMETER_BLOCK;
 
 const GET_PARAMETER_BLOCK = {
-  parameterType: '',  // Later this will be set to the type of the parameter, e.g. 'string', 'number', etc.
   /**
    * Block initialization.
    */
   init: function(this: GetParameterBlock): void {
+    this.mrcParameterType = '';
+    this.mrcHasWarning = false;
+
     this.setStyle(MRC_STYLE_VARIABLES);
     this.appendDummyInput()
         .appendField(Blockly.Msg.PARAMETER)
-        .appendField(createFieldNonEditableText('parameter'), 'PARAMETER_NAME');
-
-    this.setOutput(true, this.parameterType);
-    ChangeFramework.registerCallback(BLOCK_NAME, [Blockly.Events.BLOCK_MOVE], this.onBlockChanged);
+        .appendField(createFieldNonEditableText(''), FIELD_PARAMETER_NAME);
+    this.setOutput(true, this.mrcParameterType);
   },
   setNameAndType: function(this: GetParameterBlock, name: string, type: string): void {
-    this.setFieldValue(name, 'PARAMETER_NAME');
-    this.parameterType = type;
+    this.setFieldValue(name, FIELD_PARAMETER_NAME);
+    this.mrcParameterType = type;
     this.setOutput(true, [OUTPUT_NAME, type]);
   },
+  /**
+   * mrcOnMove is called when an EventBlock is moved.
+   */
+  mrcOnMove: function(this: GetParameterBlock): void {
+    this.checkBlockPlacement();
+  },
+  mrcOnAncestorMove: function(this: GetParameterBlock): void {
+    this.checkBlockPlacement();
+  },
+  checkBlockPlacement: function(this: GetParameterBlock): void {
+    const legalParameterNames: string[] = [];
 
-  onBlockChanged(block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase): void {
-    const blockBlock = block as Blockly.Block;
+    const rootBlock: Blockly.Block = this.getRootBlock();
+    if (rootBlock.type === MRC_CLASS_METHOD_DEF) {
+      // This block is within a class method definition.
+      const classMethodDefBlock = rootBlock as ClassMethodDefBlock;
+      // Add the method's parameter names to legalParameterNames.
+      legalParameterNames.push(...classMethodDefBlock.mrcGetParameterNames());
+    } else if (rootBlock.type === MRC_EVENT_HANDLER) {
+      // This block is within an event handler.
+      const eventHandlerBlock = rootBlock as EventHandlerBlock;
+      // Add the method's parameter names to legalParameterNames.
+      legalParameterNames.push(...eventHandlerBlock.mrcGetParameterNames());
+    }
 
-    if (blockEvent.type === Blockly.Events.BLOCK_MOVE) {
-      let parent = blockBlock.getRootBlock();
-      if ( parent.type === MRC_CLASS_METHOD_DEF) {
-        // It is a class method definition, so we see if this variable is in it.
-        const classMethodDefBlock = parent as ClassMethodDefBlock;
-        for (const parameter of classMethodDefBlock.mrcParameters) {
-          if (parameter.name === blockBlock.getFieldValue('PARAMETER_NAME')) {
-            // If it is, we allow it to stay.
-            blockBlock.setWarningText(null);
-            return;
-          }
-        }
+    if (legalParameterNames.includes(this.getFieldValue(FIELD_PARAMETER_NAME))) {
+      // If this blocks's parameter name is in legalParameterNames, it's good.
+      this.setWarningText(null, WARNING_ID_NOT_IN_METHOD);
+      this.mrcHasWarning = false;
+    } else {
+      // Otherwise, add a warning to this block.
+      if (!this.mrcHasWarning) {
+        this.setWarningText(Blockly.Msg.PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK, WARNING_ID_NOT_IN_METHOD);
+        this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+        this.mrcHasWarning = true;
       }
-      else if (parent.type === MRC_EVENT_HANDLER) {
-        const classMethodDefBlock = parent as ClassMethodDefBlock;
-        for (const parameter of classMethodDefBlock.mrcParameters) {
-          if (parameter.name === blockBlock.getFieldValue('PARAMETER_NAME')) {
-            // If it is, we allow it to stay.
-            blockBlock.setWarningText(null);
-            return;
-          }
-        }
-      }
-      // If we end up here it shouldn't be allowed
-      block.unplug(true);
-      blockBlock.setWarningText(Blockly.Msg.PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK);
-      blockBlock.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
     }
   },
 };
@@ -104,7 +128,7 @@ export const pythonFromBlock = function(
     _generator: ExtendedPythonGenerator,
 ) {
   // TODO (Alan) : Specify the type here as well
-  const code = block.getFieldValue('PARAMETER_NAME');
+  const code = block.getFieldValue(FIELD_PARAMETER_NAME);
 
   return [code, Order.ATOMIC];
 };
