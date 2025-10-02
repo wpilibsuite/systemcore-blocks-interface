@@ -21,6 +21,7 @@
 import * as React from 'react';
 import * as Antd from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 declare const __APP_VERSION__: string;
 const __APP_NAME__ = "SystemCore Blocks";
@@ -34,8 +35,9 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
     visible,
     onClose,
 }) => {
-    const [attributions, setAttributions] = React.useState<string>('Loading attributions...');
-    const [dependencies, setDependencies] = React.useState<string>('Loading dependencies...');
+    const { t } = useTranslation();
+    const [attributions, setAttributions] = React.useState<string>(t('ABOUT.LOADING_ATTRIBUTIONS'));
+    const [dependencies, setDependencies] = React.useState<string>(t('ABOUT.LOADING_DEPENDENCIES'));
     const attributionsFile = '/attributions.txt'; // Path to the attributions file
 
     React.useEffect(() => {
@@ -60,21 +62,21 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
                 let text = ''
 
                 licenses.forEach((licenseData) => {
-                    text += `Name: ${licenseData.name}\n`;
-                    text += `Version: ${licenseData.version}\n`;
-                    text += `Authors: ${licenseData.authors}\n`;
-                    text += `URL: ${licenseData.url}\n`;
-                    text += `License: ${licenseData.license}\n`;
+                    text += `${t('ABOUT.NAME')}: ${licenseData.name}\n`;
+                    text += `${t('ABOUT.VERSION')}: ${licenseData.version}\n`;
+                    text += `${t('ABOUT.AUTHORS')}: ${licenseData.authors}\n`;
+                    text += `${t('ABOUT.URL')}: ${licenseData.url}\n`;
+                    text += `${t('ABOUT.LICENSE')}: ${licenseData.license}\n`;
                     text += `\n`;
                 });
 
                 setAttributions(text);
             } else {
-                setAttributions('Attributions file not found.');
+                setAttributions(t('ABOUT.ATTRIBUTIONS_NOT_FOUND'));
             }
         } catch (error) {
             console.error('Error loading attributions:', error);
-            setAttributions('Error loading attributions.');
+            setAttributions(t('ABOUT.ERROR_LOADING_ATTRIBUTIONS'));
         }
     };
 
@@ -96,11 +98,11 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
                 });
                 setDependencies(depText);
             } else {
-                setDependencies('Dependencies information not available.');
+                setDependencies(t('ABOUT.DEPENDENCIES_NOT_AVAILABLE'));
             }
         } catch (error) {
             console.error('Error loading dependencies:', error);
-            setDependencies('Error loading dependencies.');
+            setDependencies(t('ABOUT.ERROR_LOADING_DEPENDENCIES'));
         }
     };
 
@@ -109,11 +111,11 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
             title={
                 <Antd.Space>
                     <InfoCircleOutlined />
-                    About
+                    {t('ABOUT.TITLE')}
                 </Antd.Space>
             }
             open={visible}
-            footer={[<Antd.Button key="submit" onClick={onClose}>OK</Antd.Button>]}
+            footer={[<Antd.Button key="submit" onClick={onClose}>{t('ABOUT.OK')}</Antd.Button>]}
             onCancel={onClose}
             onOk={onClose}
             width={600}
@@ -122,7 +124,7 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
             <Antd.Space direction="vertical" style={{ width: '100%' }} size="small">
                 <div>
                     <Antd.Typography.Title level={4}>{__APP_NAME__}</Antd.Typography.Title>
-                    <Antd.Typography.Text>Version: {__APP_VERSION__}</Antd.Typography.Text>
+                    <Antd.Typography.Text>{t('ABOUT.VERSION')}: {__APP_VERSION__}</Antd.Typography.Text>
                 </div>
 
                 <Antd.Divider style={{ margin: '8px 0' }} />
@@ -131,7 +133,7 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
                     items={[
                         {
                             key: 'attributions',
-                            label: 'Third-Party Attributions',
+                            label: t('ABOUT.TAB_ATTRIBUTIONS'),
                             children: (
                                 <Antd.Input.TextArea
                                     value={attributions}
@@ -147,7 +149,7 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
                         },
                         {
                             key: 'dependencies',
-                            label: 'Dependencies',
+                            label: t('ABOUT.TAB_DEPENDENCIES'),
                             children: (
                                 <Antd.Input.TextArea
                                     value={dependencies}
@@ -166,7 +168,7 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
 
                 <div style={{ textAlign: 'center', marginTop: '16px' }}>
                     <Antd.Typography.Text type="secondary">
-                        © 2025 FIRST. All rights reserved.
+                        {t('ABOUT.COPYRIGHT')}
                     </Antd.Typography.Text>
                 </div>
             </Antd.Space>
