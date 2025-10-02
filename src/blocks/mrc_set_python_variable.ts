@@ -31,6 +31,7 @@ import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
+import { replaceTokens } from './tokens';
 
 
 // A block to set a python variable.
@@ -133,23 +134,26 @@ const SET_PYTHON_VARIABLE = {
       switch (this.mrcVarKind) {
         case VariableKind.MODULE: {
           const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = Blockly.Msg['SET_MODULE_VARIABLE_TOOLTIP']
-              .replace('%1', moduleName)
-              .replace('%2', varName);
+          tooltip = replaceTokens(Blockly.Msg['SET_MODULE_VARIABLE_TOOLTIP'], {
+            moduleName: moduleName,
+            varName: varName
+          });
           break;
         }
         case VariableKind.CLASS: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = Blockly.Msg['SET_CLASS_VARIABLE_TOOLTIP']
-              .replace('%1', className)
-              .replace('%2', varName);
+          tooltip = replaceTokens(Blockly.Msg['SET_CLASS_VARIABLE_TOOLTIP'], {
+            className: className,
+            varName: varName
+          });
           break;
         }
         case VariableKind.INSTANCE: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = Blockly.Msg['SET_INSTANCE_VARIABLE_TOOLTIP']
-              .replace('%1', varName)
-              .replace('%2', className);
+          tooltip = replaceTokens(Blockly.Msg['SET_INSTANCE_VARIABLE_TOOLTIP'], {
+            varName: varName,
+            className: className
+          });
           break;
         }
         default:

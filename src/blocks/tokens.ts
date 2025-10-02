@@ -122,3 +122,15 @@ export function customTokens(t: (key: string) => string): typeof Blockly.Msg {
     MRC_PRINT: t('BLOCKLY.PRINT'),
   }
 };
+
+/**
+ * Replaces tokens in a string with values from a dictionary.
+ * @param template String containing tokens in the format {{token}}
+ * @param values Dictionary mapping token names to their replacement values
+ * @return String with all tokens replaced by their corresponding values
+ */
+export function replaceTokens(template: string, values: Record<string, string>): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (match, token) => {
+    return values[token] !== undefined ? values[token] : match;
+  });
+}
