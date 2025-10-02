@@ -115,6 +115,12 @@
         "ROBOT": "robot",
         "CREATE": "crear",
         "FIRE": "disparar",
+        "CUSTOM_EVENTS_LABEL": "Eventos Personalizados",
+        "CUSTOM_METHODS_LABEL": "Métodos Personalizados",
+        "MORE_ROBOT_METHODS_LABEL": "Más Métodos del Robot",
+        "MORE_MECHANISM_METHODS_LABEL": "Más Métodos del Mecanismo",
+        "MORE_OPMODE_METHODS_LABEL": "Más Métodos del OpMode",
+        "COMMENT_DEFAULT_TEXT": "¡Ingresa tu comentario aquí!",
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Ejecuta el bloque conectado e ignora el resultado. Te permite llamar una función e ignorar el valor de retorno.",
             "NONE": "No devuelve ninguno.",
