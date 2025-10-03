@@ -24,6 +24,7 @@ import * as Blockly from 'blockly';
 import {Order} from 'blockly/python';
 
 import type { MessageInstance } from 'antd/es/message/interface';
+import { Parameter } from './mrc_class_method_def';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldFlydown } from '../fields/field_flydown';
@@ -45,11 +46,6 @@ export enum SenderType {
   ROBOT = 'robot',
   MECHANISM = 'mechanism',
   COMPONENT = 'component'
-}
-
-export interface Parameter {
-  name: string;
-  type?: string;
 }
 
 const SENDER_VALUE_ROBOT = 'robot';
@@ -310,6 +306,13 @@ const EVENT_HANDLER = {
     if (this.mrcMechanismId && this.mrcMechanismId in oldIdToNewId) {
       this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
     }
+  },
+  mrcGetParameterNames: function(this: EventHandlerBlock): string[] {
+    const parameterNames: string[] = [];
+    this.mrcParameters.forEach(parameter => {
+      parameterNames.push(parameter.name);
+    });
+    return parameterNames;
   },
 };
 
