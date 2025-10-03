@@ -12,6 +12,6 @@ WARNING! This is not ready for use and is under heavy development of basic featu
 7. Make sure any python backends are running on your PC.
 
 ## Known Issues
-1. Mechanisms aren't limited to init
-2. Mechanisms aren't limited to only Robot or Mechanism class
-3. No way to specify whether an opmode is auto or teleop
+In addition to those listed in the issues on github, there are some major pieces not ready yet.
+1. Deploy doesn't connect to backend
+1. No ability to upload blocks code
