@@ -25,6 +25,7 @@ import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
+import * as storageNames from '../storage/names';
 
 /** Props for the ClassNameComponent. */
 interface ClassNameComponentProps {
@@ -66,8 +67,15 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
       return;
     }
 
-    const {ok, error} = storageProject.isClassNameOk(props.project, newClassName, t);
-    if (ok) {
+    let error = '';
+  
+    if (!storageNames.isValidClassName(newClassName)) {
+      error = t('INVALID_CLASS_NAME', { name: newClassName });
+    } else if (storageProject.findModuleByClassName(props.project!, newClassName) != null) {
+      error = t('CLASS_NAME_ALREADY_EXISTS', { name: newClassName });
+    }
+
+    if (!error) {
       clearError();
       props.onAddNewItem();
     } else {
