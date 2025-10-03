@@ -25,13 +25,13 @@ import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
-import {EditOutlined, DeleteOutlined, CopyOutlined, SelectOutlined} from '@ant-design/icons';
 import ClassNameComponent from './ClassNameComponent';
+import ManageTable from './ManageTable';
 
 /** Represents a module in the file management system. */
 interface Module {
   path: string;
-  title: string;
+  name: string;
   type: TabType;
 }
 
@@ -47,14 +47,8 @@ interface FileManageModalProps {
   tabType: TabType;
 }
 
-/** Default page size for table pagination. */
-const DEFAULT_PAGE_SIZE = 5;
-
 /** Modal width in pixels. */
 const MODAL_WIDTH = 800;
-
-/** Actions column width in pixels. */
-const ACTIONS_COLUMN_WIDTH = 160;
 
 /**
  * Modal component for managing files (mechanisms and opmodes) within a project.
@@ -86,19 +80,19 @@ export default function FileManageModal(props: FileManageModalProps) {
     if (props.tabType === TabType.MECHANISM) {
       moduleList = props.project.mechanisms.map((m) => ({
         path: m.modulePath,
-        title: m.className,
+        name: m.className,
         type: TabType.MECHANISM,
       }));
     } else if (props.tabType === TabType.OPMODE) {
       moduleList = props.project.opModes.map((o) => ({
         path: o.modulePath,
-        title: o.className,
+        name: o.className,
         type: TabType.OPMODE,
       }));
     }
 
-    // Sort modules alphabetically by title
-    moduleList.sort((a, b) => a.title.localeCompare(b.title));
+    // Sort modules alphabetically by name
+    moduleList.sort((a, b) => a.name.localeCompare(b.name));
     setModules(moduleList);
   }, [props.project, props.tabType]);
 
@@ -163,7 +157,7 @@ export default function FileManageModal(props: FileManageModalProps) {
 
       const newModule = {
         path: newModulePath,
-        title: newClassName,
+        name: newClassName,
         type: originalModule.type,
       };
 
@@ -208,7 +202,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,
-        title: newModule.className,
+        name: newModule.className,
         type: props.tabType,
       };
       setModules([...modules, module]);
@@ -237,13 +231,8 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
   };
 
-  /** Handles button click events to prevent row selection. */
-  const handleButtonClick = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-  };
-
-  /** Handles row double-click to open module in tab. */
-  const handleRowDoubleClick = (record: Module): void => {
+  /** Handles selection to open module in tab. */
+  const handleSelect = (record: Module): void => {
     props.gotoTab(record.path);
     props.onClose();
   };
@@ -251,90 +240,16 @@ export default function FileManageModal(props: FileManageModalProps) {
   /** Opens the rename modal for a specific module. */
   const openRenameModal = (record: Module): void => {
     setCurrentRecord(record);
-    setName(record.title);
+    setName(record.name);
     setRenameModalOpen(true);
   };
 
   /** Opens the copy modal for a specific module. */
   const openCopyModal = (record: Module): void => {
     setCurrentRecord(record);
-    setName(t('COPY_SUFFIX', { name: record.title }));
+    setName(t('COPY_SUFFIX', { name: record.name }));
     setCopyModalOpen(true);
   };
-
-  /** Table column configuration. */
-  const columns: Antd.TableProps<Module>['columns'] = [
-    {
-      title: t('NAME'),
-      dataIndex: 'title',
-      key: 'title',
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (title: string) => (
-        <Antd.Tooltip title={title}>
-          {title}
-        </Antd.Tooltip>
-      ),
-    },
-    {
-      title: t('ACTIONS'),
-      key: 'actions',
-      width: ACTIONS_COLUMN_WIDTH,
-      render: (_, record: Module) => (
-        <Antd.Space size="small">
-          <Antd.Tooltip title={t('Select')}>
-            <Antd.Button
-              type="text"
-              size="small"
-              icon={<SelectOutlined />}
-              onClick={() => handleRowDoubleClick(record)}
-            />
-          </Antd.Tooltip>
-          <Antd.Tooltip title={t('RENAME')}>
-            <Antd.Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={(e) => {
-                handleButtonClick(e);
-                openRenameModal(record);
-              }}
-            />
-          </Antd.Tooltip>
-          <Antd.Tooltip title={t('COPY')}>
-            <Antd.Button
-              type="text"
-              size="small"
-              icon={<CopyOutlined />}
-              onClick={(e) => {
-                handleButtonClick(e);
-                openCopyModal(record);
-              }}
-            />
-          </Antd.Tooltip>
-          <Antd.Tooltip title={t('Delete')}>
-            <Antd.Popconfirm
-              title={t('DELETE_MODULE_CONFIRM', { title: record.title })}
-              description={t('DELETE_CANNOT_BE_UNDONE')}
-              onConfirm={() => handleDeleteConfirm(record)}
-              okText={t('Delete')}
-              cancelText={t('Cancel')}
-              okType="danger"
-            >
-              <Antd.Button
-                type="text"
-                size="small"
-                icon={<DeleteOutlined />}
-                danger
-                onClick={handleButtonClick}
-              />
-            </Antd.Popconfirm>
-          </Antd.Tooltip>
-        </Antd.Space>
-      ),
-    },
-  ];
 
   /** Gets the modal title based on module type. */
   const getModalTitle = (): string => {
@@ -348,7 +263,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
     return t('RENAME_TYPE_TITLE', { 
       type: TabTypeUtils.toString(currentRecord.type), 
-      title: currentRecord.title 
+      title: currentRecord.name 
     });
   };
 
@@ -359,7 +274,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
     return t('COPY_TYPE_TITLE', { 
       type: TabTypeUtils.toString(currentRecord.type), 
-      title: currentRecord.title 
+      title: currentRecord.name 
     });
   };
 
@@ -368,6 +283,14 @@ export default function FileManageModal(props: FileManageModalProps) {
     const tabTypeString = TabTypeUtils.toString(props.tabType || TabType.OPMODE);
     return t('NO_FILES_FOUND', { type: tabTypeString.toLowerCase() });
   };
+
+  const getModuleFromName = (name: string): Module => {
+    const module = modules.find((m) => m.name === name);
+    if (!module) {
+      throw new Error('Module not found for name: ' + name);
+    }
+    return module;
+  }
 
   return (
     <>
@@ -436,27 +359,17 @@ export default function FileManageModal(props: FileManageModalProps) {
         footer={null}
         width={MODAL_WIDTH}
       >
-        <Antd.Table<Module>
-          columns={columns}
-          dataSource={modules}
-          rowKey="path"
-          size="small"
-          pagination={modules.length > DEFAULT_PAGE_SIZE ? {
-            pageSize: DEFAULT_PAGE_SIZE,
-            showSizeChanger: false,
-            showQuickJumper: false,
-            showTotal: (total, range) =>
-              t('PAGINATION_TOTAL', { start: range[0], end: range[1], total }),
-          } : false}
-          bordered
-          locale={{
-            emptyText: getEmptyText(),
-          }}
-          onRow={(record) => ({
-            onDoubleClick: () => handleRowDoubleClick(record),
-          })}
-        />
-        <br />  
+          <ManageTable
+            textOnEmpty={getEmptyText()}
+            records={modules}
+            showDelete={true}
+            deleteDialogTitle="DELETE_PROJECT_CONFIRM"
+            onSelect={(record) => handleSelect(getModuleFromName(record.name))}
+            onRename={(record) => openRenameModal(getModuleFromName(record.name))}
+            onCopy={(record) => openCopyModal(getModuleFromName(record.name))}
+            onDelete={(record) => handleDeleteConfirm(getModuleFromName(record.name))}
+          />
+        <br />
         <h4 style={{margin: '0 0 8px 0'}}>
           {t('CREATE_NEW', { type: TabTypeUtils.toString(props.tabType) })}
         </h4>
