@@ -30,6 +30,7 @@ import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_ENUM } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
+import { replaceTokens } from './tokens';
 
 
 // A block to access a python enum.
@@ -75,7 +76,10 @@ const GET_PYTHON_ENUM_VALUE = {
     this.setTooltip(() => {
       const enumClassName = this.getFieldValue(FIELD_ENUM_CLASS_NAME);
       const enumValue = this.getFieldValue(FIELD_ENUM_VALUE);
-      let tooltip = 'Gets the enum value ' + enumClassName + '.' + enumValue + '.';
+      let tooltip = replaceTokens(Blockly.Msg['GET_ENUM_VALUE_TOOLTIP'], {
+        enumName: enumClassName,
+        valueName: enumValue
+      });
       const enumTooltip = PythonEnumTooltips[enumClassName]
       if (enumTooltip) {
         if (typeof enumTooltip === 'string') {
