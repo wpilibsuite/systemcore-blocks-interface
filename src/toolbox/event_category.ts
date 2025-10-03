@@ -65,7 +65,7 @@ class EventsCategory {
     contents.push(
       {
         kind: 'label',
-        text: 'Custom Events',
+        text: Blockly.Msg['CUSTOM_EVENTS_LABEL'],
       },
       createCustomEventBlock(storageNames.makeUniqueName('my_event', eventNames))
     );

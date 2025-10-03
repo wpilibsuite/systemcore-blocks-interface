@@ -7,7 +7,7 @@ export const getCategory = () => ({
             kind: 'block',
             type: 'mrc_misc_comment',
             fields: {
-                COMMENT: 'Enter your comment here!',
+                COMMENT: Blockly.Msg['COMMENT_DEFAULT_TEXT'],
             },
         },
         {
