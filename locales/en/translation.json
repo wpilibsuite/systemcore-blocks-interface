@@ -114,6 +114,9 @@
         "ROBOT": "robot",
         "CREATE": "create",
         "FIRE": "fire",
+        "GET": "get",
+        "SET": "set",
+        "TO": "to",
         "CUSTOM_EVENTS_LABEL": "Custom Events",
         "CUSTOM_METHODS_LABEL": "Custom Methods",
         "MORE_ROBOT_METHODS_LABEL": "More Robot Methods",
@@ -139,7 +142,14 @@
             "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the component named {{componentName}} in the mechanism named {{mechanismName}}.",
             "CALL_COMPONENT_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the component named {{componentName}}.",
             "CALL_ROBOT_INSTANCE_METHOD": "Calls the robot method {{functionName}}.",
-            "CALL_MECHANISM_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the mechanism named {{mechanismName}}."
+            "CALL_MECHANISM_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the mechanism named {{mechanismName}}.",
+            "GET_MODULE_VARIABLE": "Gets the variable {{moduleName}}.{{varName}}.",
+            "GET_CLASS_VARIABLE": "Gets the variable {{className}}.{{varName}}.",
+            "GET_INSTANCE_VARIABLE": "Gets the variable {{varName}} for the given {{className}} object.",
+            "GET_ENUM_VALUE": "Gets the enum value {{enumName}}.{{valueName}}.",
+            "SET_MODULE_VARIABLE": "Sets the variable {{moduleName}}.{{varName}}.",
+            "SET_CLASS_VARIABLE": "Sets the variable {{className}}.{{varName}}.",
+            "SET_INSTANCE_VARIABLE": "Sets the variable {{varName}} for the given {{className}} object."
         },
         "CATEGORY":{
             "LISTS": "Lists",
@@ -169,7 +179,11 @@
             "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "This block is not allowed to be used inside a mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "This block calls a method that no longer exists in the mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method in a mechanism that no longer exists.",
-            "EVENT_NOT_IN_HOLDER": "This block can only go in the events section of the robot or mechanism."
+            "EVENT_NOT_IN_HOLDER": "This block can only go in the events section of the robot or mechanism.",
+            "MECHANISM_NOT_FOUND": "This block refers to a mechanism that no longer exists."
+        },
+        "ERROR":{
+            "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind must be \"module\", \"class\", or \"instance\"."
         }
     }   
 }

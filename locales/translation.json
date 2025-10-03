@@ -114,6 +114,9 @@
     "ROBOT": "רובוט",
     "CREATE": "צור",
     "FIRE": "הפעל",
+    "GET": "קבל",
+    "SET": "הגדר",
+    "TO": "ל",
     "CUSTOM_EVENTS_LABEL": "אירועים מותאמים אישית",
     "CUSTOM_METHODS_LABEL": "מתודות מותאמות אישית",
     "MORE_ROBOT_METHODS_LABEL": "מתודות נוספות לרובוט",
@@ -139,7 +142,14 @@
       "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} על הרכיב {{componentName}} במנגנון {{mechanismName}}.",
       "CALL_COMPONENT_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} על הרכיב {{componentName}}.",
       "CALL_ROBOT_INSTANCE_METHOD": "קורא למתודת הרובוט {{functionName}}.",
-      "CALL_MECHANISM_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} במנגנון {{mechanismName}}."
+      "CALL_MECHANISM_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} במנגנון {{mechanismName}}.",
+      "GET_MODULE_VARIABLE": "מקבל את המשתנה {{moduleName}}.{{varName}}.",
+      "GET_CLASS_VARIABLE": "מקבל את המשתנה {{className}}.{{varName}}.",
+      "GET_INSTANCE_VARIABLE": "מקבל את המשתנה {{varName}} עבור אובייקט {{className}} נתון.",
+      "GET_ENUM_VALUE": "מקבל את ערך ההספירה {{enumName}}.{{valueName}}.",
+      "SET_MODULE_VARIABLE": "מגדיר את המשתנה {{moduleName}}.{{varName}}.",
+      "SET_CLASS_VARIABLE": "מגדיר את המשתנה {{className}}.{{varName}}.",
+      "SET_INSTANCE_VARIABLE": "מגדיר את המשתנה {{varName}} עבור אובייקט {{className}} נתון."
     },
     "CATEGORY": {
       "LISTS": "רשימות",
@@ -169,7 +179,11 @@
       "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "בלוק זה אינו מורשה לשימוש בתוך מנגנון.",
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שכבר לא קיימת במנגנון.",
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "בלוק זה קורא למתודה במנגנון שכבר לא קיים.",
-      "EVENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור האירועים של הרובוט או המנגנון."
+      "EVENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור האירועים של הרובוט או המנגנון.",
+      "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים."
+    },
+    "ERROR": {
+      "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind חייב להיות \"module\", \"class\" או \"instance\"."
     }
   }
 }
