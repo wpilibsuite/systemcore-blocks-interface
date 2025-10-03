@@ -56,7 +56,7 @@ export interface TabsProps {
 }
 
 /** Default copy suffix for tab names. */
-const COPY_SUFFIX = ' (copy)';
+const COPY_SUFFIX = 'Copy';
 
 /** Minimum number of tabs required to show close others option. */
 const MIN_TABS_FOR_CLOSE_OTHERS = 2;
