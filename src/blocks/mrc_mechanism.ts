@@ -74,7 +74,7 @@ const MECHANISM = {
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     this.appendDummyInput()
       .appendField(nameField, FIELD_NAME)
-      .appendField(Blockly.Msg.OF_TYPE)
+      .appendField(Blockly.Msg['OF_TYPE'])
       .appendField(createFieldNonEditableText(''), FIELD_TYPE);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
@@ -240,7 +240,7 @@ const MECHANISM = {
         this.updateBlock_();
       } else {
         // Did not find the mechanism.
-        warnings.push('This block refers to a mechanism that no longer exists.');
+        warnings.push(Blockly.Msg['MECHANISM_NOT_FOUND_WARNING']);
       }
     }
 

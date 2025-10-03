@@ -31,6 +31,7 @@ import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
+import { replaceTokens } from './tokens';
 
 
 // A block to set a python variable.
@@ -123,7 +124,7 @@ const SET_PYTHON_VARIABLE = {
    */
   init: function(this: SetPythonVariableBlock): void {
     this.appendValueInput('VALUE')
-        .appendField('set')
+        .appendField(Blockly.Msg['SET'])
         .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
         .appendField('.');
     this.setStyle(MRC_STYLE_VARIABLES);
@@ -133,21 +134,30 @@ const SET_PYTHON_VARIABLE = {
       switch (this.mrcVarKind) {
         case VariableKind.MODULE: {
           const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Sets the variable ' + moduleName + '.' + varName + '.';
+          tooltip = replaceTokens(Blockly.Msg['SET_MODULE_VARIABLE_TOOLTIP'], {
+            moduleName: moduleName,
+            varName: varName
+          });
           break;
         }
         case VariableKind.CLASS: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Sets the variable ' + className + '.' + varName + '.';
+          tooltip = replaceTokens(Blockly.Msg['SET_CLASS_VARIABLE_TOOLTIP'], {
+            className: className,
+            varName: varName
+          });
           break;
         }
         case VariableKind.INSTANCE: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Sets the variable ' + varName + ' for the given ' + className + ' object.';
+          tooltip = replaceTokens(Blockly.Msg['SET_INSTANCE_VARIABLE_TOOLTIP'], {
+            varName: varName,
+            className: className
+          });
           break;
         }
         default:
-          throw new Error('mrcVarKind must be "module", "class", or "instance".')
+          throw new Error(Blockly.Msg['VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE']);
       }
       const varTooltips = PythonVariableSetterTooltips[this.mrcKey];
       if (varTooltips) {
@@ -226,7 +236,7 @@ const SET_PYTHON_VARIABLE = {
       } else {
         input.appendField(createFieldNonEditableText(''), FIELD_VARIABLE_NAME);
       }
-      input.appendField('to');
+      input.appendField(Blockly.Msg['TO']);
       if (this.mrcVarType) {
         input.setCheck(getAllowedTypesForSetCheck(this.mrcVarType));
       }
@@ -279,7 +289,7 @@ export const pythonFromBlock = function(
       return code;
     }
     default:
-      throw new Error('mrcVarKind must be "module", "class", or "instance".')
+      throw new Error(Blockly.Msg['VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE']);
   }
 };
 

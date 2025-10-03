@@ -31,7 +31,6 @@
     "SPANISH": "Español",
     "HEBREW": "Hebreo",
     "HELP": "Ayuda",
-    "ABOUT": "Acerca de",
     "SELECT_HIDDEN": "Seleccionar Oculto",
     "NO_HIDDEN_MECHANISMS": "No Hay Mecanismos Ocultos",
     "NO_HIDDEN_OPMODES": "No Hay Opmodes Ocultos",
@@ -79,6 +78,24 @@
     },
     "MECHANISMS": "Mecanismos",
     "OPMODES": "OpModes",
+    "ABOUT": {
+        "TITLE": "Acerca de",
+        "OK": "Aceptar",
+        "VERSION": "Versión",
+        "NAME": "Nombre",
+        "AUTHORS": "Autores",
+        "URL": "URL",
+        "LICENSE": "Licencia",
+        "TAB_ATTRIBUTIONS": "Atribuciones de Terceros",
+        "TAB_DEPENDENCIES": "Dependencias",
+        "LOADING_ATTRIBUTIONS": "Cargando atribuciones...",
+        "LOADING_DEPENDENCIES": "Cargando dependencias...",
+        "ATTRIBUTIONS_NOT_FOUND": "Archivo de atribuciones no encontrado.",
+        "ERROR_LOADING_ATTRIBUTIONS": "Error al cargar atribuciones.",
+        "DEPENDENCIES_NOT_AVAILABLE": "Información de dependencias no disponible.",
+        "ERROR_LOADING_DEPENDENCIES": "Error al cargar dependencias.",
+        "COPYRIGHT": "© 2025 FIRST. Todos los derechos reservados."
+    },
     "INVALID_CLASS_NAME": "{{name}} no es un nombre válido. Por favor ingrese un nombre diferente.",
     "CLASS_NAME_ALREADY_EXISTS": "Otro Mecanismo u OpMode ya se llama {{name}}. Por favor ingrese un nombre diferente.",
     "THEME_MODAL": {
@@ -126,6 +143,15 @@
         "ROBOT": "robot",
         "CREATE": "crear",
         "FIRE": "disparar",
+        "GET": "obtener",
+        "SET": "establecer",
+        "TO": "a",
+        "CUSTOM_EVENTS_LABEL": "Eventos Personalizados",
+        "CUSTOM_METHODS_LABEL": "Métodos Personalizados",
+        "MORE_ROBOT_METHODS_LABEL": "Más Métodos del Robot",
+        "MORE_MECHANISM_METHODS_LABEL": "Más Métodos del Mecanismo",
+        "MORE_OPMODE_METHODS_LABEL": "Más Métodos del OpMode",
+        "COMMENT_DEFAULT_TEXT": "¡Ingresa tu comentario aquí!",
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Ejecuta el bloque conectado e ignora el resultado. Te permite llamar una función e ignorar el valor de retorno.",
             "NONE": "No devuelve ninguno.",
@@ -145,7 +171,14 @@
             "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el componente llamado {{componentName}} en el mecanismo llamado {{mechanismName}}.",
             "CALL_COMPONENT_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el componente llamado {{componentName}}.",
             "CALL_ROBOT_INSTANCE_METHOD": "Llama al método robot {{functionName}}.",
-            "CALL_MECHANISM_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el mecanismo llamado {{mechanismName}}."
+            "CALL_MECHANISM_INSTANCE_METHOD": "Llama al método de instancia {{className}}.{{functionName}} en el mecanismo llamado {{mechanismName}}.",
+            "GET_MODULE_VARIABLE": "Obtiene la variable {{moduleName}}.{{varName}}.",
+            "GET_CLASS_VARIABLE": "Obtiene la variable {{className}}.{{varName}}.",
+            "GET_INSTANCE_VARIABLE": "Obtiene la variable {{varName}} para el objeto {{className}} dado.",
+            "GET_ENUM_VALUE": "Obtiene el valor de enumeración {{enumName}}.{{valueName}}.",
+            "SET_MODULE_VARIABLE": "Establece la variable {{moduleName}}.{{varName}}.",
+            "SET_CLASS_VARIABLE": "Establece la variable {{className}}.{{varName}}.",
+            "SET_INSTANCE_VARIABLE": "Establece la variable {{varName}} para el objeto {{className}} dado."
         },
         "CATEGORY": {
             "LISTS": "Listas",
@@ -175,7 +208,11 @@
             "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "No se permite utilizar este bloque dentro de un mecanismo.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "Este bloque llama a un método que ya no existe en el mecanismo.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "Este bloque llama a un método en un mecanismo que ya no existe.",
-            "EVENT_NOT_IN_HOLDER": "Este bloque solo puede ir en la sección de eventos del robot o mecanismo."
+            "EVENT_NOT_IN_HOLDER": "Este bloque solo puede ir en la sección de eventos del robot o mecanismo.",
+            "MECHANISM_NOT_FOUND": "Este bloque se refiere a un mecanismo que ya no existe."
+        },
+        "ERROR":{
+            "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind debe ser \"module\", \"class\" o \"instance\"."
         }
     }
 }

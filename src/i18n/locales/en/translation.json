@@ -34,7 +34,6 @@
     "SPANISH": "Spanish",
     "HEBREW": "Hebrew",
     "HELP": "Help",
-    "ABOUT": "About",
     "SELECT_HIDDEN": "Select Hidden",
     "NO_HIDDEN_MECHANISMS": "No Hidden Mechanisms",
     "NO_HIDDEN_OPMODES": "No Hidden Opmodes",
@@ -78,6 +77,24 @@
     "COPY_ELLIPSIS": "Copy...",
     "MECHANISMS": "Mechanisms",    
     "OPMODES": "OpModes",
+    "ABOUT": {
+        "TITLE": "About",
+        "OK": "OK",
+        "VERSION": "Version",
+        "NAME": "Name",
+        "AUTHORS": "Authors",
+        "URL": "URL",
+        "LICENSE": "License",
+        "TAB_ATTRIBUTIONS": "Third-Party Attributions",
+        "TAB_DEPENDENCIES": "Dependencies",
+        "LOADING_ATTRIBUTIONS": "Loading attributions...",
+        "LOADING_DEPENDENCIES": "Loading dependencies...",
+        "ATTRIBUTIONS_NOT_FOUND": "Attributions file not found.",
+        "ERROR_LOADING_ATTRIBUTIONS": "Error loading attributions.",
+        "DEPENDENCIES_NOT_AVAILABLE": "Dependencies information not available.",
+        "ERROR_LOADING_DEPENDENCIES": "Error loading dependencies.",
+        "COPYRIGHT": "© 2025 FIRST. All rights reserved."
+    },
     "INVALID_CLASS_NAME": "{{name}} is not a valid name. Please enter a different name.",
     "CLASS_NAME_ALREADY_EXISTS": "Another Mechanism or OpMode is already named {{name}}. Please enter a different name.",
     "THEME_MODAL": {
@@ -125,6 +142,15 @@
         "ROBOT": "robot",
         "CREATE": "create",
         "FIRE": "fire",
+        "GET": "get",
+        "SET": "set",
+        "TO": "to",
+        "CUSTOM_EVENTS_LABEL": "Custom Events",
+        "CUSTOM_METHODS_LABEL": "Custom Methods",
+        "MORE_ROBOT_METHODS_LABEL": "More Robot Methods",
+        "MORE_MECHANISM_METHODS_LABEL": "More Mechanism Methods",
+        "MORE_OPMODE_METHODS_LABEL": "More OpMode Methods",
+        "COMMENT_DEFAULT_TEXT": "Enter your comment here!",
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
             "NONE": "Returns None.",
@@ -144,7 +170,14 @@
             "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the component named {{componentName}} in the mechanism named {{mechanismName}}.",
             "CALL_COMPONENT_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the component named {{componentName}}.",
             "CALL_ROBOT_INSTANCE_METHOD": "Calls the robot method {{functionName}}.",
-            "CALL_MECHANISM_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the mechanism named {{mechanismName}}."
+            "CALL_MECHANISM_INSTANCE_METHOD": "Calls the instance method {{className}}.{{functionName}} on the mechanism named {{mechanismName}}.",
+            "GET_MODULE_VARIABLE": "Gets the variable {{moduleName}}.{{varName}}.",
+            "GET_CLASS_VARIABLE": "Gets the variable {{className}}.{{varName}}.",
+            "GET_INSTANCE_VARIABLE": "Gets the variable {{varName}} for the given {{className}} object.",
+            "GET_ENUM_VALUE": "Gets the enum value {{enumName}}.{{valueName}}.",
+            "SET_MODULE_VARIABLE": "Sets the variable {{moduleName}}.{{varName}}.",
+            "SET_CLASS_VARIABLE": "Sets the variable {{className}}.{{varName}}.",
+            "SET_INSTANCE_VARIABLE": "Sets the variable {{varName}} for the given {{className}} object."
         },
         "CATEGORY":{
             "LISTS": "Lists",
@@ -174,7 +207,11 @@
             "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "This block is not allowed to be used inside a mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "This block calls a method that no longer exists in the mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method in a mechanism that no longer exists.",
-            "EVENT_NOT_IN_HOLDER": "This block can only go in the events section of the robot or mechanism."
+            "EVENT_NOT_IN_HOLDER": "This block can only go in the events section of the robot or mechanism.",
+            "MECHANISM_NOT_FOUND": "This block refers to a mechanism that no longer exists."
+        },
+        "ERROR":{
+            "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind must be \"module\", \"class\", or \"instance\"."
         }
     }   
 }

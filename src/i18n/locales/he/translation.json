@@ -34,7 +34,6 @@
   "SPANISH": "ספרדית",
   "HEBREW": "עברית",
   "HELP": "עזרה",
-  "ABOUT": "אודות",
   "SELECT_HIDDEN": "בחר נסתר",
   "NO_HIDDEN_MECHANISMS": "אין מנגנונים נסתרים",
   "NO_HIDDEN_OPMODES": "אין אופמודים נסתרים",
@@ -78,6 +77,24 @@
     "COPY_ELLIPSIS": "העתק...",
   "MECHANISMS": "מנגנונים",    
   "OPMODES": "אופמודים",
+  "ABOUT": {
+    "TITLE": "אודות",
+    "OK": "אישור",
+    "VERSION": "גרסה",
+    "NAME": "שם",
+    "AUTHORS": "מחברים",
+    "URL": "כתובת URL",
+    "LICENSE": "רישיון",
+    "TAB_ATTRIBUTIONS": "ייחוסים לצד שלישי",
+    "TAB_DEPENDENCIES": "תלויות",
+    "LOADING_ATTRIBUTIONS": "טוען ייחוסים...",
+    "LOADING_DEPENDENCIES": "טוען תלויות...",
+    "ATTRIBUTIONS_NOT_FOUND": "קובץ הייחוסים לא נמצא.",
+    "ERROR_LOADING_ATTRIBUTIONS": "שגיאה בטעינת ייחוסים.",
+    "DEPENDENCIES_NOT_AVAILABLE": "מידע על תלויות אינו זמין.",
+    "ERROR_LOADING_DEPENDENCIES": "שגיאה בטעינת תלויות.",
+    "COPYRIGHT": "© 2025 FIRST. כל הזכויות שמורות."
+  },
   "INVALID_CLASS_NAME": "{{name}} אינו שם תקין. אנא הזן שם אחר.",
   "CLASS_NAME_ALREADY_EXISTS": "מנגנון או אופמוד אחר כבר נקרא {{name}}. אנא הזן שם אחר.",
   "THEME_MODAL": {
@@ -125,6 +142,15 @@
     "ROBOT": "רובוט",
     "CREATE": "צור",
     "FIRE": "הפעל",
+    "GET": "קבל",
+    "SET": "הגדר",
+    "TO": "ל",
+    "CUSTOM_EVENTS_LABEL": "אירועים מותאמים אישית",
+    "CUSTOM_METHODS_LABEL": "מתודות מותאמות אישית",
+    "MORE_ROBOT_METHODS_LABEL": "מתודות נוספות לרובוט",
+    "MORE_MECHANISM_METHODS_LABEL": "מתודות נוספות למנגנון",
+    "MORE_OPMODE_METHODS_LABEL": "מתודות נוספות לאופמוד",
+    "COMMENT_DEFAULT_TEXT": "הזן את ההערה שלך כאן!",
     "TOOLTIP": {
       "EVALUATE_BUT_IGNORE_RESULT": "מבצע את הבלוק המחובר ומתעלם מהתוצאה. מאפשר לקרוא לפונקציה מבלי להשתמש בערך שהיא מחזירה.",
       "NONE": "מחזיר כלום.",
@@ -144,7 +170,14 @@
       "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} על הרכיב {{componentName}} במנגנון {{mechanismName}}.",
       "CALL_COMPONENT_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} על הרכיב {{componentName}}.",
       "CALL_ROBOT_INSTANCE_METHOD": "קורא למתודת הרובוט {{functionName}}.",
-      "CALL_MECHANISM_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} במנגנון {{mechanismName}}."
+      "CALL_MECHANISM_INSTANCE_METHOD": "קורא למתודה {{className}}.{{functionName}} במנגנון {{mechanismName}}.",
+      "GET_MODULE_VARIABLE": "מקבל את המשתנה {{moduleName}}.{{varName}}.",
+      "GET_CLASS_VARIABLE": "מקבל את המשתנה {{className}}.{{varName}}.",
+      "GET_INSTANCE_VARIABLE": "מקבל את המשתנה {{varName}} עבור אובייקט {{className}} נתון.",
+      "GET_ENUM_VALUE": "מקבל את ערך ההספירה {{enumName}}.{{valueName}}.",
+      "SET_MODULE_VARIABLE": "מגדיר את המשתנה {{moduleName}}.{{varName}}.",
+      "SET_CLASS_VARIABLE": "מגדיר את המשתנה {{className}}.{{varName}}.",
+      "SET_INSTANCE_VARIABLE": "מגדיר את המשתנה {{varName}} עבור אובייקט {{className}} נתון."
     },
     "CATEGORY": {
       "LISTS": "רשימות",
@@ -174,7 +207,11 @@
       "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "בלוק זה אינו מורשה לשימוש בתוך מנגנון.",
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שכבר לא קיימת במנגנון.",
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "בלוק זה קורא למתודה במנגנון שכבר לא קיים.",
-      "EVENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור האירועים של הרובוט או המנגנון."
+      "EVENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור האירועים של הרובוט או המנגנון.",
+      "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים."
+    },
+    "ERROR": {
+      "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind חייב להיות \"module\", \"class\" או \"instance\"."
     }
   }
 }
