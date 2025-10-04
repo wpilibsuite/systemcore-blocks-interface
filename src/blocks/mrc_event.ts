@@ -25,7 +25,10 @@ import { MRC_STYLE_EVENTS } from '../themes/styles'
 import { Parameter } from './mrc_class_method_def';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
-import { BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER } from './mrc_mechanism_component_holder';
+import {
+    BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
+    MechanismComponentHolderBlock,
+    mrcDescendantsMayHaveChanged } from './mrc_mechanism_component_holder';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModuleContent from '../storage/module_content';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
@@ -211,8 +214,15 @@ const EVENT = {
   /**
    * mrcOnMove is called when an EventBlock is moved.
    */
-  mrcOnMove: function(this: EventBlock): void {
+  mrcOnMove: function(this: EventBlock, reason: string[]): void {
     this.checkBlockIsInHolder();
+    if (reason.includes('connect')) {
+      const rootBlock: Blockly.Block | null = this.getRootBlock();
+      if (rootBlock && rootBlock.type === MRC_MECHANISM_COMPONENT_HOLDER) {
+        (rootBlock as MechanismComponentHolderBlock).setNameOfChildBlock(this);
+      }
+    }
+    mrcDescendantsMayHaveChanged(this.workspace);
   },
   checkBlockIsInHolder: function(this: EventBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -233,6 +243,9 @@ const EVENT = {
         this.mrcHasNotInHolderWarning = true;
       }
     }
+  },
+  getEventId: function (this: EventBlock): string {
+   return this.mrcEventId;
   },
   getEvent: function (this: EventBlock): storageModuleContent.Event {
     const event: storageModuleContent.Event = {

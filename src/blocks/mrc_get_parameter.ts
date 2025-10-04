@@ -82,7 +82,7 @@ const GET_PARAMETER_BLOCK = {
   /**
    * mrcOnMove is called when an EventBlock is moved.
    */
-  mrcOnMove: function(this: GetParameterBlock): void {
+  mrcOnMove: function(this: GetParameterBlock, _reason: string[]): void {
     this.checkBlockPlacement();
   },
   mrcOnAncestorMove: function(this: GetParameterBlock): void {
@@ -91,7 +91,7 @@ const GET_PARAMETER_BLOCK = {
   checkBlockPlacement: function(this: GetParameterBlock): void {
     const legalParameterNames: string[] = [];
 
-    const rootBlock: Blockly.Block = this.getRootBlock();
+    const rootBlock: Blockly.Block | null = this.getRootBlock();
     if (rootBlock.type === MRC_CLASS_METHOD_DEF) {
       // This block is within a class method definition.
       const classMethodDefBlock = rootBlock as ClassMethodDefBlock;

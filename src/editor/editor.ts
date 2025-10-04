@@ -132,7 +132,8 @@ export class Editor {
       }
       // Call MRC_ON_MOVE for the block that was moved.
       if (MRC_ON_MOVE in block && typeof block[MRC_ON_MOVE] === 'function') {
-        block[MRC_ON_MOVE]();
+        const reason: string[] = blockMoveEvent.reason ?? [];
+        block[MRC_ON_MOVE](reason);
       }
       // Call MRC_ON_ANCESTOR_MOVE for all descendents of the block that was moved.
       block.getDescendants(false).forEach(descendant => {

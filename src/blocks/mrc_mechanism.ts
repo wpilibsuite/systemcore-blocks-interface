@@ -31,7 +31,10 @@ import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import * as storageNames from '../storage/names';
-import { BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER } from './mrc_mechanism_component_holder';
+import {
+    BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
+    MechanismComponentHolderBlock,
+    mrcDescendantsMayHaveChanged } from './mrc_mechanism_component_holder';
 import { renameMethodCallers } from './mrc_call_python_function'
 import { renameMechanismName as renameMechanismNameInEventHandlers } from './mrc_event_handler'
 import { createPort } from './mrc_port';
@@ -176,6 +179,9 @@ const MECHANISM = {
     }
     return legalName;
   },
+  getMechanismId: function (this: MechanismBlock): string {
+   return this.mrcMechanismId;
+  },
   getMechanism: function (this: MechanismBlock): storageModuleContent.MechanismInRobot | null {
     const mechanismName = this.getFieldValue(FIELD_NAME);
     const mechanismType = this.mrcImportModule + '.' + this.getFieldValue(FIELD_TYPE);
@@ -204,8 +210,15 @@ const MECHANISM = {
   /**
    * mrcOnMove is called when a MechanismBlock is moved.
    */
-  mrcOnMove: function(this: MechanismBlock): void {
+  mrcOnMove: function(this: MechanismBlock, reason: string[]): void {
     this.checkBlockIsInHolder();
+    if (reason.includes('connect')) {
+      const rootBlock: Blockly.Block | null = this.getRootBlock();
+      if (rootBlock && rootBlock.type === MRC_MECHANISM_COMPONENT_HOLDER) {
+        (rootBlock as MechanismComponentHolderBlock).setNameOfChildBlock(this);
+      }
+    }
+    mrcDescendantsMayHaveChanged(this.workspace);
   },
   checkBlockIsInHolder: function(this: MechanismBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();
