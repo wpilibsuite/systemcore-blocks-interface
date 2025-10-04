@@ -168,17 +168,23 @@ const EVENT_HANDLER = {
   },
 
   /**
+   * mrcOnModuleCurrent is called for each EventHandlerBlock when the module becomes the current module.
+   */
+  mrcOnModuleCurrent: function(this: EventHandlerBlock): void {
+    this.checkEvent();
+  },
+  /**
    * mrcOnLoad is called for each EventHandlerBlock when the blocks are loaded in the blockly
    * workspace.
    */
   mrcOnLoad: function(this: EventHandlerBlock): void {
-    this.mrcValidate();
+    this.checkEvent();
   },
   /**
-   * mrcValidate checks the block, updates it, and/or adds a warning balloon if necessary.
-   * It is called from mrcOnLoad above and from Editor.makeCurrent.
+   * checkEvent checks the block, updates it, and/or adds a warning balloon if necessary.
+   * It is called from mrcOnModuleCurrent and mrcOnLoad above.
    */
-  mrcValidate: function(this: EventHandlerBlock): void {
+  checkEvent: function(this: EventHandlerBlock): void {
     const warnings: string[] = [];
 
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
