@@ -153,7 +153,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
       ]),
     ]),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
-      getItem(t('ABOUT') + '...', 'about', <InfoCircleOutlined />),
+      getItem(t('ABOUT.TITLE') + '...', 'about', <InfoCircleOutlined />),
     ]),
   ];
 }
