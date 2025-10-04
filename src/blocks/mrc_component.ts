@@ -30,6 +30,7 @@ import { getAllowedTypesForSetCheck, getClassData, getSubclassNames } from './ut
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
+import { BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER } from './mrc_mechanism_component_holder';
 import { createPort } from './mrc_port';
 import { ClassData, FunctionData } from './utils/python_json_types';
 import { renameMethodCallers } from './mrc_call_python_function'
@@ -40,6 +41,8 @@ export const OUTPUT_NAME = 'mrc_component';
 
 export const FIELD_NAME = 'NAME';
 export const FIELD_TYPE = 'TYPE';
+
+const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
 
 type ConstructorArg = {
   name: string,
@@ -60,6 +63,15 @@ interface ComponentMixin extends ComponentMixinType {
   mrcArgs: ConstructorArg[],
   mrcImportModule: string,
   mrcStaticFunctionName: string,
+
+  /**
+   * mrcHasNotInHolderWarning is set to true if we set the NOT_IN_HOLDER warning text on the block.
+   * It is checked to avoid adding a warning if there already is one. Otherwise, if we get two move
+   * events (one for drag and one for snap), and we call setWarningText for both events, we get a
+   * detached warning balloon.
+   * See https://github.com/wpilibsuite/systemcore-blocks-interface/issues/248.
+   */
+  mrcHasNotInHolderWarning: boolean,
 }
 type ComponentMixinType = typeof COMPONENT;
 
@@ -68,6 +80,7 @@ const COMPONENT = {
    * Block initialization.
    */
   init: function (this: ComponentBlock): void {
+    this.mrcHasNotInHolderWarning = false;
     this.setStyle(MRC_STYLE_COMPONENTS);
     const nameField = new Blockly.FieldTextInput('')
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
@@ -90,8 +103,8 @@ const COMPONENT = {
     if (this.mrcArgs){
       this.mrcArgs.forEach((arg) => {
         extraState.params!.push({
-          'name': arg.name,
-          'type': arg.type,
+          name: arg.name,
+          type: arg.type,
         });
       });
     }
@@ -115,12 +128,11 @@ const COMPONENT = {
     if (extraState.params) {
       extraState.params.forEach((arg) => {
         this.mrcArgs.push({
-          'name': arg.name,
-          'type': arg.type,
+          name: arg.name,
+          type: arg.type,
         });
       });
     }
-    this.mrcArgs = extraState.params ? extraState.params : [];
     this.updateBlock_();
   },
   /**
@@ -167,13 +179,43 @@ const COMPONENT = {
   getArgName: function (this: ComponentBlock, _: number): string {
     return this.getFieldValue(FIELD_NAME) + '__' + 'port';
   },
-
-
   getComponentPorts: function (this: ComponentBlock, ports: {[argName: string]: string}): void {
     // Collect the ports for this component block.
     for (let i = 0; i < this.mrcArgs.length; i++) {
       const argName = this.getArgName(i);
       ports[argName] = this.mrcArgs[i].name;  
+    }
+  },
+  /**
+   * mrcOnLoad is called for each ComponentBlock when the blocks are loaded in the blockly workspace.
+   */
+  mrcOnLoad: function(this: ComponentBlock): void {
+    this.checkBlockIsInHolder();
+  },
+  /**
+   * mrcOnMove is called when a ComponentBlock is moved.
+   */
+  mrcOnMove: function(this: ComponentBlock): void {
+    this.checkBlockIsInHolder();
+  },
+  checkBlockIsInHolder: function(this: ComponentBlock): void {
+    const rootBlock: Blockly.Block | null = this.getRootBlock();
+    if (rootBlock && rootBlock.type === MRC_MECHANISM_COMPONENT_HOLDER) {
+      // If the root block is the mechanism_component_holder, the component block is allowed to stay.
+      // Remove any previous warning.
+      this.setWarningText(null, WARNING_ID_NOT_IN_HOLDER);
+      this.mrcHasNotInHolderWarning = false;
+    } else {
+      // Otherwise, add a warning to the block.
+      this.unplug(true);
+      if (!this.mrcHasNotInHolderWarning) {
+        this.setWarningText(Blockly.Msg.WARNING_COMPONENT_NOT_IN_HOLDER, WARNING_ID_NOT_IN_HOLDER);
+        const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+        if (icon) {
+          icon.setBubbleVisible(true);
+        }
+        this.mrcHasNotInHolderWarning = true;
+      }
     }
   },
   /**
@@ -253,8 +295,8 @@ function createComponentBlock(
 
   if (constructorData.expectedPortType) {
     extraState.params!.push({
-      'name': constructorData.expectedPortType,
-      'type': 'Port',
+      name: constructorData.expectedPortType,
+      type: 'Port',
     });
     if ( moduleType == storageModule.ModuleType.ROBOT ) {
       inputs['ARG0'] = createPort(constructorData.expectedPortType);
