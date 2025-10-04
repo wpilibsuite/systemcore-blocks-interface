@@ -41,7 +41,7 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
 const MRC_ON_LOAD = 'mrcOnLoad';
 const MRC_ON_MOVE = 'mrcOnMove';
 const MRC_ON_ANCESTOR_MOVE = 'mrcOnAncestorMove';
-const MRC_VALIDATE = 'mrcValidate';
+const MRC_ON_MODULE_CURRENT = 'mrcOnModuleCurrent';
 
 export class Editor {
   private static workspaceIdToEditor: { [workspaceId: string]: Editor } = {};
@@ -152,10 +152,10 @@ export class Editor {
     this.parseModules(project, modulePathToContentText);
     this.updateToolboxImpl();
 
-    // Go through all the blocks in the workspace and call their mrcValidate method.
+    // Go through all the blocks in the workspace and call their mrcOnModuleCurrent method.
     this.blocklyWorkspace.getAllBlocks().forEach(block => {
-      if (MRC_VALIDATE in block && typeof block[MRC_VALIDATE] === 'function') {
-        block[MRC_VALIDATE]();
+      if (MRC_ON_MODULE_CURRENT in block && typeof block[MRC_ON_MODULE_CURRENT] === 'function') {
+        block[MRC_ON_MODULE_CURRENT]();
       }
     });
   }

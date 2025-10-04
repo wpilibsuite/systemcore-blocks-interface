@@ -176,17 +176,23 @@ const MECHANISM = {
   },
 
   /**
+   * mrcOnModuleCurrent is called for each MechanismBlock when the module becomes the current module.
+   */
+  mrcOnModuleCurrent: function(this: MechanismBlock): void {
+    this.checkMechanism();
+  },
+  /**
    * mrcOnLoad is called for each MechanismBlock when the blocks are loaded in the blockly
    * workspace.
    */
   mrcOnLoad: function(this: MechanismBlock): void {
-    this.mrcValidate();
+    this.checkMechanism();
   },
   /**
-   * mrcValidate checks the block, updates it, and/or adds a warning balloon if necessary.
-   * It is called from mrcOnLoad above and from Editor.makeCurrent.
+   * checkMechanism checks the block, updates it, and/or adds a warning balloon if necessary.
+   * It is called from mrcOnModuleCurrent and mrcOnLoad above.
    */
-  mrcValidate: function(this: MechanismBlock): void {
+  checkMechanism: function(this: MechanismBlock): void {
     const warnings: string[] = [];
 
     const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
