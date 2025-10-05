@@ -167,9 +167,6 @@ const COMPONENT = {
     }
     return legalName;
   },
-  getComponentId: function (this: ComponentBlock): string {
-   return this.mrcComponentId;
-  },
   getComponent: function (this: ComponentBlock): storageModuleContent.Component | null {
     const componentName = this.getFieldValue(FIELD_NAME);
     const componentType = this.getFieldValue(FIELD_TYPE);
@@ -220,7 +217,6 @@ const COMPONENT = {
       this.mrcHasNotInHolderWarning = false;
     } else {
       // Otherwise, add a warning to the block.
-      this.unplug(true);
       if (!this.mrcHasNotInHolderWarning) {
         this.setWarningText(Blockly.Msg.WARNING_COMPONENT_NOT_IN_HOLDER, WARNING_ID_NOT_IN_HOLDER);
         const icon = this.getIcon(Blockly.icons.IconType.WARNING);

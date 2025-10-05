@@ -55,10 +55,10 @@ interface MechanismComponentHolderMixin extends MechanismComponentHolderMixinTyp
   mrcHideMechanisms: boolean;
   mrcHidePrivateComponents: boolean;
 
-  mrcMechanismIds: string[],
-  mrcComponentIds: string[],
-  mrcPrivateComponentIds: string[],
-  mrcEventIds: string[],
+  mrcMechanismBlockIds: string,
+  mrcComponentBlockIds: string,
+  mrcPrivateComponentBlockIds: string,
+  mrcEventBlockIds: string,
   mrcToolboxUpdateTimeout: NodeJS.Timeout | null;
 }
 type MechanismComponentHolderMixinType = typeof MECHANISM_COMPONENT_HOLDER;
@@ -71,10 +71,10 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.setInputsInline(false);
     this.setOutput(false);
     this.setStyle(MRC_STYLE_MECHANISMS);
-    this.mrcMechanismIds = [];
-    this.mrcComponentIds = [];
-    this.mrcPrivateComponentIds = [];
-    this.mrcEventIds = [];
+    this.mrcMechanismBlockIds = '';
+    this.mrcComponentBlockIds = '';
+    this.mrcPrivateComponentBlockIds = '';
+    this.mrcEventBlockIds = '';
     this.mrcToolboxUpdateTimeout = null;
   },
   saveExtraState: function (this: MechanismComponentHolderBlock): MechanismComponentHolderExtraState {
@@ -134,15 +134,22 @@ const MECHANISM_COMPONENT_HOLDER = {
   mrcOnLoad: function(this: MechanismComponentHolderBlock): void {
     this.collectDescendants(false);
   },
+  /**
+   * mrcOnDescendantDisconnect is called for each MechanismComponentHolderBlock when any descendant is
+   * disconnected.
+   */
+  mrcOnDescendantDisconnect: function(this: MechanismComponentHolderBlock): void {
+    this.collectDescendants(true);
+  },
   mrcDescendantsMayHaveChanged: function (this: MechanismComponentHolderBlock): void {
     this.collectDescendants(true);
   },
   collectDescendants: function (
       this: MechanismComponentHolderBlock, updateToolboxIfDescendantsChanged: boolean): void {
-    const mechanismIds: string[] = [];
-    const componentIds: string[] = [];
-    const privateComponentIds: string[] = [];
-    const eventIds: string[] = [];
+    let mechanismBlockIds = '';
+    let componentBlockIds = '';
+    let privateComponentBlockIds = '';
+    let eventBlockIds = '';
 
     const mechanismsInput = this.getInput(INPUT_MECHANISMS);
     if (mechanismsInput && mechanismsInput.connection) {
@@ -150,7 +157,7 @@ const MECHANISM_COMPONENT_HOLDER = {
       let mechanismBlock = mechanismsInput.connection.targetBlock();
       while (mechanismBlock) {
         if (mechanismBlock.type === MRC_MECHANISM_NAME) {
-          mechanismIds.push((mechanismBlock as MechanismBlock).getMechanismId());
+          mechanismBlockIds += mechanismBlock.id;
         }
         // Move to the next block in the stack.
         mechanismBlock = mechanismBlock.getNextBlock();
@@ -162,7 +169,7 @@ const MECHANISM_COMPONENT_HOLDER = {
       let componentBlock = componentsInput.connection.targetBlock();
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME) {
-          componentIds.push((componentBlock as ComponentBlock).getComponentId());
+          componentBlockIds += componentBlock.id;
         }
         // Move to the next block in the stack.
         componentBlock = componentBlock.getNextBlock();
@@ -174,7 +181,7 @@ const MECHANISM_COMPONENT_HOLDER = {
       let componentBlock = privateComponentsInput.connection.targetBlock();
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME) {
-          privateComponentIds.push((componentBlock as ComponentBlock).getComponentId());
+          privateComponentBlockIds += componentBlock.id;
         }
         // Move to the next block in the stack.
         componentBlock = componentBlock.getNextBlock();
@@ -186,7 +193,7 @@ const MECHANISM_COMPONENT_HOLDER = {
       let eventBlock = eventsInput.connection.targetBlock();
       while (eventBlock) {
         if (eventBlock.type === MRC_EVENT_NAME) {
-          eventIds.push((eventBlock as EventBlock).getEventId());
+          eventBlockIds += eventBlock.id;
         }
         // Move to the next block in the stack.
         eventBlock = eventBlock.getNextBlock();
@@ -194,57 +201,18 @@ const MECHANISM_COMPONENT_HOLDER = {
     }
 
     if (updateToolboxIfDescendantsChanged) {
-      let descendantsChanged = false;
-      if (mechanismIds.length === this.mrcMechanismIds.length) {
-        for (let i = 0; i < mechanismIds.length; i++) {
-          if (mechanismIds[i] !== this.mrcMechanismIds[i]) {
-            descendantsChanged = true;
-            break;
-          }
-        }
-      } else {
-        descendantsChanged = true;
-      }
-      if (componentIds.length === this.mrcComponentIds.length) {
-        for (let i = 0; i < componentIds.length; i++) {
-          if (componentIds[i] !== this.mrcComponentIds[i]) {
-            descendantsChanged = true;
-            break;
-          }
-        }
-      } else {
-        descendantsChanged = true;
-      }
-      if (privateComponentIds.length === this.mrcPrivateComponentIds.length) {
-        for (let i = 0; i < privateComponentIds.length; i++) {
-          if (privateComponentIds[i] !== this.mrcPrivateComponentIds[i]) {
-            descendantsChanged = true;
-            break;
-          }
-        }
-      } else {
-        descendantsChanged = true;
-      }
-      if (eventIds.length === this.mrcEventIds.length) {
-        for (let i = 0; i < eventIds.length; i++) {
-          if (eventIds[i] !== this.mrcEventIds[i]) {
-            descendantsChanged = true;
-            break;
-          }
-        }
-      } else {
-        descendantsChanged = true;
-      }
-
-      if (descendantsChanged) {
+      if (mechanismBlockIds !== this.mrcMechanismBlockIds ||
+          componentBlockIds !== this.mrcComponentBlockIds ||
+          privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
+          eventBlockIds !== this.mrcEventBlockIds) {
         this.updateToolboxAfterDelay();
       }
     }
 
-    this.mrcMechanismIds = mechanismIds;
-    this.mrcComponentIds = componentIds;
-    this.mrcPrivateComponentIds = privateComponentIds;
-    this.mrcEventIds = eventIds;
+    this.mrcMechanismBlockIds = mechanismBlockIds;
+    this.mrcComponentBlockIds = componentBlockIds;
+    this.mrcPrivateComponentBlockIds = privateComponentBlockIds;
+    this.mrcEventBlockIds = eventBlockIds;
   },
   updateToolboxAfterDelay: function (this: MechanismComponentHolderBlock): void {
     if (this.mrcToolboxUpdateTimeout) {

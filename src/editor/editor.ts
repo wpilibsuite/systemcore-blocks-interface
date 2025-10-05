@@ -40,6 +40,7 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
 
 const MRC_ON_LOAD = 'mrcOnLoad';
 const MRC_ON_MOVE = 'mrcOnMove';
+const MRC_ON_DESCENDANT_DISCONNECT = 'mrcOnDescendantDisconnect';
 const MRC_ON_ANCESTOR_MOVE = 'mrcOnAncestorMove';
 const MRC_ON_MODULE_CURRENT = 'mrcOnModuleCurrent';
 
@@ -126,16 +127,29 @@ export class Editor {
 
     if (event.type === Blockly.Events.BLOCK_MOVE) {
       const blockMoveEvent = event as Blockly.Events.BlockMove;
+      const reason: string[] = blockMoveEvent.reason ?? [];
+      if (reason.includes('disconnect') && blockMoveEvent.oldParentId) {
+        const oldParent = this.blocklyWorkspace.getBlockById(blockMoveEvent.oldParentId!);
+        if (oldParent) {
+          const rootBlock = oldParent.getRootBlock();
+          if (rootBlock) {
+            // Call MRC_ON_DESCENDANT_DISCONNECT on the root block of the block that was disconnected.
+            if (MRC_ON_DESCENDANT_DISCONNECT in rootBlock && typeof rootBlock[MRC_ON_DESCENDANT_DISCONNECT] === 'function') {
+              rootBlock[MRC_ON_DESCENDANT_DISCONNECT]();
+            }
+          }
+        }
+      }
+
       const block = this.blocklyWorkspace.getBlockById(blockMoveEvent.blockId!);
       if (!block) {
         return;
       }
-      // Call MRC_ON_MOVE for the block that was moved.
+      // Call MRC_ON_MOVE on the block that was moved.
       if (MRC_ON_MOVE in block && typeof block[MRC_ON_MOVE] === 'function') {
-        const reason: string[] = blockMoveEvent.reason ?? [];
         block[MRC_ON_MOVE](reason);
       }
-      // Call MRC_ON_ANCESTOR_MOVE for all descendents of the block that was moved.
+      // Call MRC_ON_ANCESTOR_MOVE on all descendents of the block that was moved.
       block.getDescendants(false).forEach(descendant => {
         if (MRC_ON_ANCESTOR_MOVE in descendant && typeof descendant[MRC_ON_ANCESTOR_MOVE] === 'function') {
           descendant[MRC_ON_ANCESTOR_MOVE]();

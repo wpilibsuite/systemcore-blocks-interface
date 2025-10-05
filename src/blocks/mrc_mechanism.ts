@@ -179,9 +179,6 @@ const MECHANISM = {
     }
     return legalName;
   },
-  getMechanismId: function (this: MechanismBlock): string {
-   return this.mrcMechanismId;
-  },
   getMechanism: function (this: MechanismBlock): storageModuleContent.MechanismInRobot | null {
     const mechanismName = this.getFieldValue(FIELD_NAME);
     const mechanismType = this.mrcImportModule + '.' + this.getFieldValue(FIELD_TYPE);
@@ -229,7 +226,6 @@ const MECHANISM = {
       this.mrcHasNotInHolderWarning = false;
     } else {
       // Otherwise, add a warning to the block.
-      this.unplug(true);
       if (!this.mrcHasNotInHolderWarning) {
         this.setWarningText(Blockly.Msg.WARNING_MECHANISM_NOT_IN_HOLDER, WARNING_ID_NOT_IN_HOLDER);
         const icon = this.getIcon(Blockly.icons.IconType.WARNING);
