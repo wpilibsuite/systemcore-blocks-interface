@@ -208,6 +208,8 @@
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "This block calls a method that no longer exists in the mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method in a mechanism that no longer exists.",
             "EVENT_NOT_IN_HOLDER": "This block can only go in the events section of the robot or mechanism.",
+            "COMPONENT_NOT_IN_HOLDER": "This block can only go in the components section of the robot or mechanism.",
+            "MECHANISM_NOT_IN_HOLDER": "This block can only go in the mechanisms section of the robot.",
             "MECHANISM_NOT_FOUND": "This block refers to a mechanism that no longer exists."
         },
         "ERROR":{

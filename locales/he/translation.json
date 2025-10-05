@@ -208,6 +208,8 @@
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שכבר לא קיימת במנגנון.",
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "בלוק זה קורא למתודה במנגנון שכבר לא קיים.",
       "EVENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור האירועים של הרובוט או המנגנון.",
+      "COMPONENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור הרכיבים של הרובוט או המנגנון.",
+      "MECHANISM_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לחלק המנגנונים של הרובוט.",
       "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים."
     },
     "ERROR": {
