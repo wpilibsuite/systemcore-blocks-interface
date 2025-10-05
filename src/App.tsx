@@ -45,7 +45,6 @@ import * as clientSideStorage from './storage/client_side_storage';
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
-import * as ChangeFramework from './blocks/utils/change_framework'
 import { registerToolboxButton } from './blocks/mrc_event_handler'
 import { mutatorOpenListener } from './blocks/mrc_param_container'
 import { TOOLBOX_UPDATE_EVENT } from './blocks/mrc_mechanism_component_holder';
@@ -487,7 +486,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       return;
     }
 
-    ChangeFramework.setup(newWorkspace);
     newWorkspace.addChangeListener(mutatorOpenListener);
     newWorkspace.addChangeListener(handleBlocksChanged);
 
