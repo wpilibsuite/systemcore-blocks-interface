@@ -137,3 +137,10 @@ export function onMutatorOpen(block: Blockly.BlockSvg) {
   updateMutatorFlyout(mutatorWorkspace);
   ChangeFramework.setup(mutatorWorkspace);
 }
+
+/**
+ * Returns the MutatorIcon for the given block.
+ */
+export function getMutatorIcon(block: Blockly.BlockSvg): Blockly.icons.MutatorIcon {
+  return new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], block);
+}

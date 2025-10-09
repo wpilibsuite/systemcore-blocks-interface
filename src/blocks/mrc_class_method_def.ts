@@ -172,7 +172,7 @@ const CLASS_METHOD_DEF = {
     if (this.mrcCanChangeSignature) {
       const nameField = new Blockly.FieldTextInput(name);
       input.insertFieldAt(0, nameField, FIELD_METHOD_NAME);
-      this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
+      this.setMutator(paramContainer.getMutatorIcon(this));
       nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     } else {
       input.insertFieldAt(0, createFieldNonEditableText(name), FIELD_METHOD_NAME);

@@ -71,12 +71,13 @@ const EVENT = {
    */
   init: function (this: EventBlock): void {
     this.mrcHasNotInHolderWarning = false;
+    this.mrcParameters = [];
     this.setStyle(MRC_STYLE_EVENTS);
     this.appendDummyInput(INPUT_TITLE)
       .appendField(new Blockly.FieldTextInput(''), FIELD_EVENT_NAME);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
-    this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
+    this.updateBlock_();
   },
 
   /**
@@ -126,7 +127,7 @@ const EVENT = {
 
     const nameField = new Blockly.FieldTextInput(name);
     input.insertFieldAt(0, nameField, FIELD_EVENT_NAME);
-    this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
+    this.setMutator(paramContainer.getMutatorIcon(this));
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
 
     this.mrcUpdateParams();
