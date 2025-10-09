@@ -34,14 +34,22 @@ export const setup = function () {
   Blockly.Blocks[PARAM_CONTAINER_BLOCK_NAME] = METHOD_PARAM_CONTAINER;
 };
 
+// The parameter container block.
+
+const INPUT_STACK = 'STACK';
+
 const METHOD_PARAM_CONTAINER = {
   init: function (this: Blockly.Block) {
-    this.appendDummyInput("TITLE").appendField('Parameters');
-    this.appendStatementInput('STACK');
+    this.appendDummyInput().appendField(Blockly.Msg.PARAMETERS);
+    this.appendStatementInput(INPUT_STACK);
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
     this.contextMenu = false;
   },
 };
+
+// The parameter item block.
+
+const FIELD_NAME = 'NAME';
 
 export type MethodMutatorArgBlock = Blockly.Block & MethodMutatorArgMixin & Blockly.BlockSvg;
 interface MethodMutatorArgMixin extends MethodMutatorArgMixinType {
@@ -57,11 +65,11 @@ function setName(block: Blockly.BlockSvg) {
     const otherNames: string[] = []
     variableBlocks?.forEach(function (variableBlock) {
       if (variableBlock != block) {
-        otherNames.push(variableBlock.getFieldValue('NAME'));
+        otherNames.push(variableBlock.getFieldValue(FIELD_NAME));
       }
     });
-    const currentName = block.getFieldValue('NAME');
-    block.setFieldValue(getLegalName(currentName, otherNames), 'NAME');
+    const currentName = block.getFieldValue(FIELD_NAME);
+    block.setFieldValue(getLegalName(currentName, otherNames), FIELD_NAME);
     updateMutatorFlyout(block.workspace);
   }
 }
@@ -69,7 +77,7 @@ function setName(block: Blockly.BlockSvg) {
 const METHODS_MUTATORARG = {
   init: function (this: MethodMutatorArgBlock) {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput(Blockly.Procedures.DEFAULT_ARG), 'NAME');
+        .appendField(new Blockly.FieldTextInput(''), FIELD_NAME);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
@@ -103,7 +111,7 @@ function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
   const usedNames = [];
   const blocks = workspace.getBlocksByType(MUTATOR_BLOCK_NAME, false);
   for (let i = 0, block; (block = blocks[i]); i++) {
-    usedNames.push(block.getFieldValue('NAME'));
+    usedNames.push(block.getFieldValue(FIELD_NAME));
   }
   const argValue = Blockly.Variables.generateUniqueNameFromOptions(
       Blockly.Procedures.DEFAULT_ARG,
