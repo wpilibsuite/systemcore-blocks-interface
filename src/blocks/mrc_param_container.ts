@@ -72,22 +72,6 @@ interface ParamItemMixin extends ParamItemMixinType {
 
 type ParamItemMixinType = typeof PARAM_ITEM;
 
-function setName(block: Blockly.BlockSvg) {
-  const parentBlock = ChangeFramework.getParentOfType(block, PARAM_CONTAINER_BLOCK_NAME);
-  if (parentBlock) {
-    const variableBlocks = parentBlock!.getDescendants(true)
-    const otherNames: string[] = []
-    variableBlocks?.forEach(function (variableBlock) {
-      if (variableBlock != block) {
-        otherNames.push(variableBlock.getFieldValue(FIELD_NAME));
-      }
-    });
-    const currentName = block.getFieldValue(FIELD_NAME);
-    block.setFieldValue(getLegalName(currentName, otherNames), FIELD_NAME);
-    updateMutatorFlyout(block.workspace);
-  }
-}
-
 const PARAM_ITEM = {
   init: function (this: ParamItemBlock) {
     this.appendDummyInput()
@@ -103,12 +87,26 @@ const PARAM_ITEM = {
     if (blockEvent.type == Blockly.Events.BLOCK_MOVE) {
       const blockMoveEvent = blockEvent as Blockly.Events.BlockMove;
       if (blockMoveEvent.reason?.includes('connect')) {
-        setName(block);
+        (block as ParamItemBlock).makeNameLegal();
       }
     } else {
       if (blockEvent.type == Blockly.Events.BLOCK_CHANGE) {
-        setName(block);
+        (block as ParamItemBlock).makeNameLegal();
       }
+    }
+  },
+  makeNameLegal: function (this: ParamItemBlock): void {
+    const rootBlock: Blockly.Block | null = this.getRootBlock();
+    if (rootBlock) {
+      const otherNames: string[] = []
+      rootBlock!.getDescendants(true)?.forEach(itemBlock => {
+        if (itemBlock != this) {
+          otherNames.push(itemBlock.getFieldValue(FIELD_NAME));
+        }
+      });
+      const currentName = this.getFieldValue(FIELD_NAME);
+      this.setFieldValue(getLegalName(currentName, otherNames), FIELD_NAME);
+      updateMutatorFlyout(this.workspace);
     }
   },
   getName: function (this: ParamItemBlock): string {
@@ -123,26 +121,23 @@ const PARAM_ITEM = {
 }
 
 /**
- * Updates the procedure mutator's flyout so that the arg block is not a
- * duplicate of another arg.
+ * Updates the mutator's flyout so that it contains a single param item block
+ * whose name is not a duplicate of an existing param item.
  *
- * @param workspace The procedure mutator's workspace. This workspace's flyout
- *     is what is being updated.
+ * @param workspace The mutator's workspace. This workspace's flyout is what is being updated.
  */
 function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
-  const usedNames = [];
-  const blocks = workspace.getBlocksByType(PARAM_ITEM_BLOCK_NAME, false);
-  for (let i = 0, block; (block = blocks[i]); i++) {
+  const usedNames: string[] = [];
+  workspace.getBlocksByType(PARAM_ITEM_BLOCK_NAME, false).forEach(block => {
     usedNames.push(block.getFieldValue(FIELD_NAME));
-  }
-  const argValue = Blockly.Variables.generateUniqueNameFromOptions(
-      Blockly.Procedures.DEFAULT_ARG,
-      usedNames);
+  });
+  const uniqueName = Blockly.Variables.generateUniqueNameFromOptions(
+      Blockly.Procedures.DEFAULT_ARG, usedNames);
   const jsonBlock = {
     kind: 'block',
     type: PARAM_ITEM_BLOCK_NAME,
     fields: {
-      NAME: argValue,
+      NAME: uniqueName,
     },
   };
 
