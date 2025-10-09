@@ -131,23 +131,23 @@ const EVENT = {
 
     this.mrcUpdateParams();
   },
-  compose: function (this: EventBlock, containerBlock: any) {
-    // Parameter list.
+  compose: function (this: EventBlock, containerBlock: Blockly.Block) {
+    if (containerBlock.type !== paramContainer.PARAM_CONTAINER_BLOCK_NAME) {
+      throw new Error('compose: containerBlock.type should be ' + paramContainer.PARAM_CONTAINER_BLOCK_NAME);
+    }
     this.mrcParameters = [];
 
-    let paramBlock = containerBlock.getInputTargetBlock('STACK');
-    while (paramBlock) {
+    const paramContainerBlock = containerBlock as paramContainer.ParamContainerBlock;
+    paramContainerBlock.getParamItemBlocks().forEach(paramItemBlock => {
+      const itemName = paramItemBlock.getName();
       const param: Parameter = {
-        name: paramBlock.getFieldValue('NAME'),
+        name: itemName,
         type: ''
-      }
-      if (paramBlock.originalName) {
-        // This is a mutator arg block, so we can get the original name.
-        paramBlock.originalName = param.name;
-      }
+      };
+      paramItemBlock.setOriginalName(itemName);
       this.mrcParameters.push(param);
-      paramBlock = paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
-    }
+    });
+
     this.mrcUpdateParams();
     mutateMethodCallers(this.workspace, this.mrcEventId, this.getEvent());
   },

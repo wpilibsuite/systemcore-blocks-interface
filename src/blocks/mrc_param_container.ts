@@ -22,26 +22,42 @@
 import * as Blockly from 'blockly';
 import * as ChangeFramework from './utils/change_framework'
 import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
-
-export const MUTATOR_BLOCK_NAME = 'methods_mutatorarg';
-export const PARAM_CONTAINER_BLOCK_NAME = 'method_param_container';
 import { getLegalName } from './utils/python';
 
+export const PARAM_CONTAINER_BLOCK_NAME = 'mrc_param_container';
+const PARAM_ITEM_BLOCK_NAME = 'mrc_param_item';
+
 export const setup = function () {
-  Blockly.Blocks[MUTATOR_BLOCK_NAME] = METHODS_MUTATORARG;
-  Blockly.Blocks[PARAM_CONTAINER_BLOCK_NAME] = METHOD_PARAM_CONTAINER;
+  Blockly.Blocks[PARAM_CONTAINER_BLOCK_NAME] = PARAM_CONTAINER;
+  Blockly.Blocks[PARAM_ITEM_BLOCK_NAME] = PARAM_ITEM;
 };
 
 // The parameter container block.
 
 const INPUT_STACK = 'STACK';
 
-const METHOD_PARAM_CONTAINER = {
-  init: function (this: Blockly.Block) {
+export type ParamContainerBlock = ParamContainerMixin & Blockly.BlockSvg;
+interface ParamContainerMixin extends ParamContainerMixinType {}
+type ParamContainerMixinType = typeof PARAM_CONTAINER;
+
+const PARAM_CONTAINER = {
+  init: function (this: ParamContainerBlock) {
     this.appendDummyInput().appendField(Blockly.Msg.PARAMETERS);
     this.appendStatementInput(INPUT_STACK);
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
     this.contextMenu = false;
+  },
+  getParamItemBlocks: function (this: ParamContainerBlock): ParamItemBlock[] {
+    const paramItemBlocks: ParamItemBlock[] = [];
+    let block = this.getInputTargetBlock(INPUT_STACK);
+    while (block && !block.isInsertionMarker()) {
+      if (block.type !== PARAM_ITEM_BLOCK_NAME) {
+       throw new Error('getItemNames: block.type should be ' + PARAM_ITEM_BLOCK_NAME);
+      }
+      paramItemBlocks.push(block as ParamItemBlock);
+      block = block.nextConnection && block.nextConnection.targetBlock();
+    }
+    return paramItemBlocks;
   },
 };
 
@@ -49,12 +65,12 @@ const METHOD_PARAM_CONTAINER = {
 
 const FIELD_NAME = 'NAME';
 
-export type MethodMutatorArgBlock = Blockly.Block & MethodMutatorArgMixin & Blockly.BlockSvg;
-interface MethodMutatorArgMixin extends MethodMutatorArgMixinType {
+export type ParamItemBlock = ParamItemMixin & Blockly.BlockSvg;
+interface ParamItemMixin extends ParamItemMixinType {
   originalName: string,
 }
 
-type MethodMutatorArgMixinType = typeof METHODS_MUTATORARG;
+type ParamItemMixinType = typeof PARAM_ITEM;
 
 function setName(block: Blockly.BlockSvg) {
   const parentBlock = ChangeFramework.getParentOfType(block, PARAM_CONTAINER_BLOCK_NAME);
@@ -72,8 +88,8 @@ function setName(block: Blockly.BlockSvg) {
   }
 }
 
-const METHODS_MUTATORARG = {
-  init: function (this: MethodMutatorArgBlock) {
+const PARAM_ITEM = {
+  init: function (this: ParamItemBlock) {
     this.appendDummyInput()
         .appendField(new Blockly.FieldTextInput(''), FIELD_NAME);
     this.setPreviousStatement(true);
@@ -81,7 +97,7 @@ const METHODS_MUTATORARG = {
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
     this.originalName = '';
     this.contextMenu = false;
-    ChangeFramework.registerCallback(MUTATOR_BLOCK_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
+    ChangeFramework.registerCallback(PARAM_ITEM_BLOCK_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
   },
   onBlockChanged: function (block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase) {
     if (blockEvent.type == Blockly.Events.BLOCK_MOVE) {
@@ -95,8 +111,16 @@ const METHODS_MUTATORARG = {
       }
     }
   },
+  getName: function (this: ParamItemBlock): string {
+    return this.getFieldValue(FIELD_NAME);
+  },
+  getOriginalName: function (this: ParamItemBlock): string {
+    return this.originalName;
+  },
+  setOriginalName: function (this: ParamItemBlock, originalName: string): void {
+    this.originalName = originalName;
+  },
 }
-
 
 /**
  * Updates the procedure mutator's flyout so that the arg block is not a
@@ -107,7 +131,7 @@ const METHODS_MUTATORARG = {
  */
 function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
   const usedNames = [];
-  const blocks = workspace.getBlocksByType(MUTATOR_BLOCK_NAME, false);
+  const blocks = workspace.getBlocksByType(PARAM_ITEM_BLOCK_NAME, false);
   for (let i = 0, block; (block = blocks[i]); i++) {
     usedNames.push(block.getFieldValue(FIELD_NAME));
   }
@@ -116,7 +140,7 @@ function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
       usedNames);
   const jsonBlock = {
     kind: 'block',
-    type: MUTATOR_BLOCK_NAME,
+    type: PARAM_ITEM_BLOCK_NAME,
     fields: {
       NAME: argValue,
     },
@@ -142,7 +166,7 @@ export function onMutatorOpen(block: Blockly.BlockSvg) {
  * Returns the MutatorIcon for the given block.
  */
 export function getMutatorIcon(block: Blockly.BlockSvg): Blockly.icons.MutatorIcon {
-  return new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], block);
+  return new Blockly.icons.MutatorIcon([PARAM_ITEM_BLOCK_NAME], block);
 }
 
 export function createMutatorBlocks(workspace: Blockly.Workspace, parameterNames: string[]): Blockly.BlockSvg {
@@ -150,10 +174,10 @@ export function createMutatorBlocks(workspace: Blockly.Workspace, parameterNames
   const containerBlock = workspace.newBlock(PARAM_CONTAINER_BLOCK_NAME) as Blockly.BlockSvg;
   containerBlock.initSvg();
 
-  // Then add one MethodMutatorArgBlock for each parameter.
+  // Then add one param item block for each parameter.
   let connection = containerBlock!.getInput(INPUT_STACK)!.connection;
   for (const parameterName of parameterNames) {
-    const itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME) as MethodMutatorArgBlock;
+    const itemBlock = workspace.newBlock(PARAM_ITEM_BLOCK_NAME) as ParamItemBlock;
     itemBlock.initSvg();
     itemBlock.setFieldValue(parameterName, FIELD_NAME);
     itemBlock.originalName = parameterName;

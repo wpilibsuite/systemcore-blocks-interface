@@ -181,24 +181,26 @@ const CLASS_METHOD_DEF = {
     this.mrcUpdateParams();
     this.mrcUpdateReturnInput();
   },
-  compose: function (this: ClassMethodDefBlock, containerBlock: any) {
-    // Parameter list.
+  compose: function (this: ClassMethodDefBlock, containerBlock: Blockly.Block) {
+    if (containerBlock.type !== paramContainer.PARAM_CONTAINER_BLOCK_NAME) {
+      throw new Error('compose: containerBlock.type should be ' + paramContainer.PARAM_CONTAINER_BLOCK_NAME);
+    }
+    const paramContainerBlock = containerBlock as paramContainer.ParamContainerBlock;
+    const paramItemBlocks: paramContainer.ParamItemBlock[] = paramContainerBlock.getParamItemBlocks();
+
     this.mrcParameters = [];
 
-    let paramBlock = containerBlock.getInputTargetBlock('STACK');
-    while (paramBlock) {
+    paramItemBlocks.forEach(paramItemBlock => {
+      const itemName = paramItemBlock.getName();
       const param: Parameter = {
-        name: paramBlock.getFieldValue('NAME'),
+        name: itemName,
         type: ''
       };
-      if (paramBlock.originalName) {
-        // This is a mutator arg block, so we can get the original name.
-        this.mrcRenameParameter(paramBlock.originalName, param.name);
-        paramBlock.originalName = param.name;
-      }
+      this.mrcRenameParameter(paramItemBlock.getOriginalName(), itemName);
+      paramItemBlock.setOriginalName(itemName);
       this.mrcParameters.push(param);
-      paramBlock = paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
-    }
+    });
+
     this.mrcUpdateParams();
     if (this.mrcCanBeCalledWithinClass) {
       const methodForWithin = this.getMethodForWithin();
