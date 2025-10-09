@@ -34,7 +34,6 @@ import { FunctionData } from './utils/python_json_types';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
 import * as paramContainer from './mrc_param_container'
-import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
@@ -209,24 +208,11 @@ const CLASS_METHOD_DEF = {
     }
   },
   decompose: function (this: ClassMethodDefBlock, workspace: Blockly.Workspace) {
-    // This is a special sub-block that only gets created in the mutator UI.
-    // It acts as our "top block"
-    const topBlock = workspace.newBlock(PARAM_CONTAINER_BLOCK_NAME);
-    (topBlock as Blockly.BlockSvg).initSvg();
-
-    // Then we add one sub-block for each item in the list.
-    let connection = topBlock!.getInput('STACK')!.connection;
-
-    for (let i = 0; i < this.mrcParameters.length; i++) {
-      const itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME);
-      (itemBlock as Blockly.BlockSvg).initSvg();
-      itemBlock.setFieldValue(this.mrcParameters[i].name, 'NAME');
-      (itemBlock as MethodMutatorArgBlock).originalName = this.mrcParameters[i].name;
-
-      connection!.connect(itemBlock.previousConnection!);
-      connection = itemBlock.nextConnection;
-    }
-    return topBlock;
+    const parameterNames: string[] = [];
+    this.mrcParameters.forEach(parameter => {
+      parameterNames.push(parameter.name);
+    });
+    return paramContainer.createMutatorBlocks(workspace, parameterNames);
   },
   /**
    * mrcOnMutatorOpen is called when the mutator on a ClassMethodDefBlock is opened.

@@ -144,3 +144,21 @@ export function onMutatorOpen(block: Blockly.BlockSvg) {
 export function getMutatorIcon(block: Blockly.BlockSvg): Blockly.icons.MutatorIcon {
   return new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], block);
 }
+
+export function createMutatorBlocks(workspace: Blockly.Workspace, parameterNames: string[]): Blockly.BlockSvg {
+  // First create the container block.
+  const containerBlock = workspace.newBlock(PARAM_CONTAINER_BLOCK_NAME) as Blockly.BlockSvg;
+  containerBlock.initSvg();
+
+  // Then add one MethodMutatorArgBlock for each parameter.
+  let connection = containerBlock!.getInput(INPUT_STACK)!.connection;
+  for (const parameterName of parameterNames) {
+    const itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME) as MethodMutatorArgBlock;
+    itemBlock.initSvg();
+    itemBlock.setFieldValue(parameterName, FIELD_NAME);
+    itemBlock.originalName = parameterName;
+    connection!.connect(itemBlock.previousConnection!);
+    connection = itemBlock.nextConnection;
+  }
+  return containerBlock;
+}
