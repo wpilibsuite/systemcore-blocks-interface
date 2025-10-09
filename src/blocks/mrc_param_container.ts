@@ -20,7 +20,6 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
-import * as ChangeFramework from './utils/change_framework'
 import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
 import { getLegalName } from './utils/python';
 
@@ -81,19 +80,6 @@ const PARAM_ITEM = {
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
     this.originalName = '';
     this.contextMenu = false;
-    ChangeFramework.registerCallback(PARAM_ITEM_BLOCK_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
-  },
-  onBlockChanged: function (block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase) {
-    if (blockEvent.type == Blockly.Events.BLOCK_MOVE) {
-      const blockMoveEvent = blockEvent as Blockly.Events.BlockMove;
-      if (blockMoveEvent.reason?.includes('connect')) {
-        (block as ParamItemBlock).makeNameLegal();
-      }
-    } else {
-      if (blockEvent.type == Blockly.Events.BLOCK_CHANGE) {
-        (block as ParamItemBlock).makeNameLegal();
-      }
-    }
   },
   makeNameLegal: function (this: ParamItemBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -145,6 +131,30 @@ function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
 }
 
 /**
+ * The blockly event listener function for the mutator's workspace.
+ */
+function onChange(mutatorWorkspace: Blockly.Workspace, event: Blockly.Events.Abstract) {
+  if (event.type === Blockly.Events.BLOCK_MOVE) {
+    const blockMoveEvent = event as Blockly.Events.BlockMove;
+    const reason: string[] = blockMoveEvent.reason ?? [];
+    if (reason.includes('connect') && blockMoveEvent.blockId) {
+      const block = mutatorWorkspace.getBlockById(blockMoveEvent.blockId);
+      if (block && block.type === PARAM_ITEM_BLOCK_NAME) {
+        (block as ParamItemBlock).makeNameLegal();
+      }
+    }
+  } else if (event.type === Blockly.Events.BLOCK_CHANGE) {
+    const blockChangeEvent = event as Blockly.Events.BlockChange;
+    if (blockChangeEvent.blockId) {
+      const block = mutatorWorkspace.getBlockById(blockChangeEvent.blockId);
+      if (block && block.type === PARAM_ITEM_BLOCK_NAME) {
+        (block as ParamItemBlock).makeNameLegal();
+      }
+    }
+  }
+}
+
+/**
  * Called for mrc_event and mrc_class_method_def blocks when their mutator opesn.
  * Triggers a flyout update and adds an event listener to the mutator workspace.
  *
@@ -154,7 +164,7 @@ export function onMutatorOpen(block: Blockly.BlockSvg) {
   const mutatorIcon = block.getIcon(Blockly.icons.MutatorIcon.TYPE) as Blockly.icons.MutatorIcon;
   const mutatorWorkspace = mutatorIcon.getWorkspace()!;
   updateMutatorFlyout(mutatorWorkspace);
-  ChangeFramework.setup(mutatorWorkspace);
+  mutatorWorkspace.addChangeListener(event => onChange(mutatorWorkspace, event));
 }
 
 /**
