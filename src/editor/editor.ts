@@ -43,6 +43,7 @@ const MRC_ON_MOVE = 'mrcOnMove';
 const MRC_ON_DESCENDANT_DISCONNECT = 'mrcOnDescendantDisconnect';
 const MRC_ON_ANCESTOR_MOVE = 'mrcOnAncestorMove';
 const MRC_ON_MODULE_CURRENT = 'mrcOnModuleCurrent';
+const MRC_ON_MUTATOR_OPEN = 'mrcOnMutatorOpen';
 
 export class Editor {
   private static workspaceIdToEditor: { [workspaceId: string]: Editor } = {};
@@ -113,10 +114,6 @@ export class Editor {
   }
 
   private onChangeAfterLoading(event: Blockly.Events.Abstract) {
-    if (event.isUiEvent) {
-      // UI events are things like scrolling, zooming, etc.
-      return;
-    }
     if (!this.blocklyWorkspace.rendered) {
       // This editor has been abandoned.
       return;
@@ -155,6 +152,19 @@ export class Editor {
           descendant[MRC_ON_ANCESTOR_MOVE]();
         }
       });
+    }
+    if (event.type === Blockly.Events.BUBBLE_OPEN) {
+      const bubbleOpenEvent = event as Blockly.Events.BubbleOpen;
+      if (bubbleOpenEvent.bubbleType === 'mutator' && bubbleOpenEvent.isOpen) {
+        const block = this.blocklyWorkspace.getBlockById(bubbleOpenEvent.blockId!);
+        if (!block) {
+          return;
+        }
+        // Call MRC_ON_MUTATOR_OPEN on the block.
+        if (MRC_ON_MUTATOR_OPEN in block && typeof block[MRC_ON_MUTATOR_OPEN] === 'function') {
+          block[MRC_ON_MUTATOR_OPEN]();
+        }
+      }
     }
   }
 

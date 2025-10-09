@@ -22,8 +22,6 @@
 import * as Blockly from 'blockly';
 import * as ChangeFramework from './utils/change_framework'
 import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
-import { BLOCK_NAME as MRC_CLASS_METHOD_DEF } from './mrc_class_method_def';
-import { BLOCK_NAME as MRC_EVENT } from './mrc_event';
 
 export const MUTATOR_BLOCK_NAME = 'methods_mutatorarg';
 export const PARAM_CONTAINER_BLOCK_NAME = 'method_param_container';
@@ -128,32 +126,14 @@ function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
 }
 
 /**
- * Listens for when a procedure mutator is opened. Then it triggers a flyout
- * update and adds a mutator change listener to the mutator workspace.
+ * Called for mrc_event and mrc_class_method_def blocks when their mutator opesn.
+ * Triggers a flyout update and adds an event listener to the mutator workspace.
  *
- * @param e The event that triggered this listener.
- * @internal
+ * @param block The block whose mutator is open.
  */
-export function mutatorOpenListener(e: Blockly.Events.Abstract) {
-  if (e.type != Blockly.Events.BUBBLE_OPEN) {
-    return;
-  }
-  const bubbleEvent = e as Blockly.Events.BubbleOpen;
-  if (!(bubbleEvent.bubbleType === 'mutator' && bubbleEvent.isOpen) ||
-      !bubbleEvent.blockId) {
-    return;
-  }
-  const workspaceId = bubbleEvent.workspaceId;
-  const block = Blockly.common
-      .getWorkspaceById(workspaceId)!
-      .getBlockById(bubbleEvent.blockId) as Blockly.BlockSvg;
-
-  if (block.type !== MRC_EVENT && block.type !== MRC_CLASS_METHOD_DEF) {
-    return;
-  }
+export function onMutatorOpen(block: Blockly.BlockSvg) {
   const mutatorIcon = block.getIcon(Blockly.icons.MutatorIcon.TYPE) as Blockly.icons.MutatorIcon;
-  const workspace = mutatorIcon.getWorkspace()!;
-
-  updateMutatorFlyout(workspace);
-  ChangeFramework.setup(workspace);
+  const mutatorWorkspace = mutatorIcon.getWorkspace()!;
+  updateMutatorFlyout(mutatorWorkspace);
+  ChangeFramework.setup(mutatorWorkspace);
 }

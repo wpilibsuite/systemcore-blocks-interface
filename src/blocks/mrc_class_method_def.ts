@@ -33,6 +33,7 @@ import { getClassData } from './utils/python';
 import { FunctionData } from './utils/python_json_types';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
+import * as paramContainer from './mrc_param_container'
 import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
 
 export const BLOCK_NAME = 'mrc_class_method_def';
@@ -226,6 +227,12 @@ const CLASS_METHOD_DEF = {
       connection = itemBlock.nextConnection;
     }
     return topBlock;
+  },
+  /**
+   * mrcOnMutatorOpen is called when the mutator on a ClassMethodDefBlock is opened.
+   */
+  mrcOnMutatorOpen: function(this: ClassMethodDefBlock): void {
+    paramContainer.onMutatorOpen(this);
   },
   mrcRenameParameter: function (this: ClassMethodDefBlock, oldName: string, newName: string) {
     const nextBlock = this.getInputTargetBlock(INPUT_STACK);

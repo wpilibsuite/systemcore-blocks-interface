@@ -24,6 +24,7 @@ import * as Blockly from 'blockly';
 import { MRC_STYLE_EVENTS } from '../themes/styles'
 import { Parameter } from './mrc_class_method_def';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import * as paramContainer from './mrc_param_container'
 import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
@@ -72,7 +73,7 @@ const EVENT = {
     this.mrcHasNotInHolderWarning = false;
     this.setStyle(MRC_STYLE_EVENTS);
     this.appendDummyInput(INPUT_TITLE)
-      .appendField(new Blockly.FieldTextInput('my_event'), FIELD_EVENT_NAME);
+      .appendField(new Blockly.FieldTextInput(''), FIELD_EVENT_NAME);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
     this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
@@ -223,6 +224,12 @@ const EVENT = {
       }
     }
     mrcDescendantsMayHaveChanged(this.workspace);
+  },
+  /**
+   * mrcOnMutatorOpen is called when the mutator on an EventBlock is opened.
+   */
+  mrcOnMutatorOpen: function(this: EventBlock): void {
+    paramContainer.onMutatorOpen(this);
   },
   checkBlockIsInHolder: function(this: EventBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();
