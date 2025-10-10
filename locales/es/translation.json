@@ -123,6 +123,7 @@
         "WITH": "con",
         "WHEN": "cuando",
         "PARAMETER": "parámetro",
+        "PARAMETERS": "Parámetros",
         "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "Los parámetros solo pueden ir en el bloque de su método",
         "EVENT_HANDLER_ALREADY_ON_WORKSPACE": "Este controlador de eventos ya está en el área de trabajo.",
         "EVENT_HANDLER_ROBOT_EVENT_NOT_FOUND": "Este bloque es un controlador de eventos para un evento que ya no existe.",
