@@ -15,7 +15,7 @@ import * as MiscComment from './mrc_misc_comment';
 import * as MiscEvaluateButIgnoreResult from './mrc_misc_evaluate_but_ignore_result';
 import * as None from './mrc_none';
 import * as OpModeDetails from './mrc_opmode_details';
-import * as ParameterMutator from './mrc_param_container'
+import * as ParamContainer from './mrc_param_container'
 import * as Port from './mrc_port';
 import * as SetPythonVariable from './mrc_set_python_variable';
 import * as Steps from './mrc_steps';
@@ -37,7 +37,7 @@ const customBlocks = [
   MiscEvaluateButIgnoreResult,
   None,
   OpModeDetails,
-  ParameterMutator,
+  ParamContainer,
   Port,
   SetPythonVariable,
   Steps,

@@ -22,6 +22,7 @@ import * as Antd from 'antd';
 import * as React from 'react';
 import { CopyOutlined as CopyIcon } from '@ant-design/icons';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import SiderCollapseTrigger from './SiderCollapseTrigger';
 import { dracula, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import type { MessageInstance } from 'antd/es/message/interface';
@@ -36,6 +37,8 @@ interface CodeDisplayProps {
   theme: string;
   messageApi: MessageInstance;
   setAlertErrorMessage: StringFunction;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 /** Success message for copy operation. */
@@ -110,10 +113,26 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
     </SyntaxHighlighter>
   );
 
+  /** Renders the collapse/expand trigger at the bottom center of the panel. */
+  const renderCollapseTrigger = (): React.JSX.Element | null => {
+    if (!props.onToggleCollapse) return null;
+    
+    return (
+      <SiderCollapseTrigger
+        collapsed={props.isCollapsed || false}
+        onToggle={props.onToggleCollapse}
+        isRightPanel={true}
+      />
+    );
+  };
+
   return (
-    <Antd.Flex vertical gap="small" style={{ height: '100%' }}>
-      {renderHeader()}
-      {renderCodeBlock()}
-    </Antd.Flex>
+    <div style={{ height: '100%', position: 'relative' }}>
+      <Antd.Flex vertical gap="small" style={{ height: '100%' }}>
+        {renderHeader()}
+        {renderCodeBlock()}
+      </Antd.Flex>
+      {renderCollapseTrigger()}
+    </div>
   );
 }

@@ -43,6 +43,7 @@ import {
   CheckOutlined,
   DownloadOutlined,
   UploadOutlined,
+  ControlOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
@@ -89,14 +90,6 @@ function getItem(
   } as MenuItem;
 }
 
-/**
- * Creates a divider menu item.
- */
-function getDivider(): MenuItem {
-  return {
-    type: 'divider',
-  } as MenuItem;
-}
 
 /**
  * Generates menu items for a given project.
@@ -113,10 +106,6 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
         <BlockOutlined />
     ));
   });
-  if (mechanisms.length > 0) {
-    mechanisms.push(getDivider());
-  }
-  mechanisms.push(getItem('Manage...', 'manageMechanisms'));
 
   // Build opmodes menu items
   project.opModes.forEach((opmode) => {
@@ -126,17 +115,16 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
         <CodeOutlined />
     ));
   });
-  if (opmodes.length > 0) {
-    opmodes.push(getDivider());
-  }
-  opmodes.push(getItem('Manage...', 'manageOpmodes'));
 
   return [
     getItem(t('PROJECT'), 'project', <FolderOutlined />, [
       getItem(t('SAVE'), 'save', <SaveOutlined />),
       getItem(t('DEPLOY'), 'deploy'),
-      getDivider(),
-      getItem(t('MANAGE') + '...', 'manageProjects'),
+    ]),
+    getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
+      getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
+      getItem(t('MECHANISMS') + '...', 'manageMechanisms', <BlockOutlined />),
+      getItem(t('OPMODES') + '...', 'manageOpmodes', <CodeOutlined />),
     ]),
     getItem(t('EXPLORER'), 'explorer', <FileOutlined />, [
       getItem(t('ROBOT'), project.robot.modulePath, <RobotOutlined />),
@@ -165,7 +153,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
       ]),
     ]),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
-      getItem(t('ABOUT') + '...', 'about', <InfoCircleOutlined />),
+      getItem(t('ABOUT.TITLE') + '...', 'about', <InfoCircleOutlined />),
     ]),
   ];
 }
@@ -262,23 +250,18 @@ export function Component(props: MenuProps): React.JSX.Element {
 
     // Handle management actions
     if (key === 'manageMechanisms') {
-      console.log('Opening mechanisms modal');
       setFileModalOpen(false);
       setTabType(TabType.MECHANISM);
       setTimeout(() => {
-        console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
       }, 0);
     } else if (key === 'manageOpmodes') {
-      console.log('Opening opmodes modal');
       setFileModalOpen(false);
       setTabType(TabType.OPMODE);
       setTimeout(() => {
-        console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
       }, 0);
     } else if (key === 'manageProjects') {
-      console.log('Opening projects modal');
       setProjectModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
@@ -408,7 +391,6 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   /** Handles closing the file management modal. */
   const handleFileModalClose = (): void => {
-    console.log('Modal onCancel called');
     setFileModalOpen(false);
   };
 
@@ -443,7 +425,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     <>
       <FileManageModal
         isOpen={fileModalOpen}
-        onCancel={handleFileModalClose}
+        onClose={handleFileModalClose}
         project={props.project}
         storage={props.storage}
         tabType={tabType}

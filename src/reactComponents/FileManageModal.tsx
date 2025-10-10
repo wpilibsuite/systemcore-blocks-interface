@@ -25,20 +25,20 @@ import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
-import {EditOutlined, DeleteOutlined, CopyOutlined} from '@ant-design/icons';
 import ClassNameComponent from './ClassNameComponent';
+import ManageTable from './ManageTable';
 
 /** Represents a module in the file management system. */
 interface Module {
   path: string;
-  title: string;
+  name: string;
   type: TabType;
 }
 
 /** Props for the FileManageModal component. */
 interface FileManageModalProps {
   isOpen: boolean;
-  onCancel: () => void;
+  onClose: () => void;
   project: storageProject.Project | null;
   setProject: (project: storageProject.Project | null) => void;
   gotoTab: (path: string) => void;
@@ -47,14 +47,8 @@ interface FileManageModalProps {
   tabType: TabType;
 }
 
-/** Default page size for table pagination. */
-const DEFAULT_PAGE_SIZE = 5;
-
 /** Modal width in pixels. */
 const MODAL_WIDTH = 800;
-
-/** Actions column width in pixels. */
-const ACTIONS_COLUMN_WIDTH = 120;
 
 /**
  * Modal component for managing files (mechanisms and opmodes) within a project.
@@ -62,6 +56,7 @@ const ACTIONS_COLUMN_WIDTH = 120;
  */
 export default function FileManageModal(props: FileManageModalProps) {
   const {t} = I18Next.useTranslation();
+  const { token } = Antd.theme.useToken();
   const [modules, setModules] = React.useState<Module[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
   const [currentRecord, setCurrentRecord] = React.useState<Module | null>(null);
@@ -85,19 +80,19 @@ export default function FileManageModal(props: FileManageModalProps) {
     if (props.tabType === TabType.MECHANISM) {
       moduleList = props.project.mechanisms.map((m) => ({
         path: m.modulePath,
-        title: m.className,
+        name: m.className,
         type: TabType.MECHANISM,
       }));
     } else if (props.tabType === TabType.OPMODE) {
       moduleList = props.project.opModes.map((o) => ({
         path: o.modulePath,
-        title: o.className,
+        name: o.className,
         type: TabType.OPMODE,
       }));
     }
 
-    // Sort modules alphabetically by title
-    moduleList.sort((a, b) => a.title.localeCompare(b.title));
+    // Sort modules alphabetically by name
+    moduleList.sort((a, b) => a.name.localeCompare(b.name));
     setModules(moduleList);
   }, [props.project, props.tabType]);
 
@@ -124,12 +119,19 @@ export default function FileManageModal(props: FileManageModalProps) {
 
       setModules(newModules);
       triggerProjectUpdate();
+
+      // Close the rename modal first
+      setRenameModalOpen(false);
+      
+      // Automatically select and open the newly created module
+      props.gotoTab(newModulePath);
+      props.onClose();
+
     } catch (error) {
       console.error('Error renaming module:', error);
-      props.setAlertErrorMessage('Failed to rename module');
+      props.setAlertErrorMessage(t('FAILED_TO_RENAME_MODULE'));
+      setRenameModalOpen(false);
     }
-
-    setRenameModalOpen(false);
   };
 
   /** Handles copying a module. */
@@ -149,25 +151,33 @@ export default function FileManageModal(props: FileManageModalProps) {
       const originalModule = modules.find((module) => module.path === origModule.path);
       if (!originalModule) {
         console.error('Original module not found for copying:', origModule.path);
-        props.setAlertErrorMessage('Original module not found for copying');
+        props.setAlertErrorMessage(t('MODULE_NOT_FOUND_FOR_COPYING'));
         return;
       }
 
-      const newModules = [...modules];
-      newModules.push({
+      const newModule = {
         path: newModulePath,
-        title: newClassName,
+        name: newClassName,
         type: originalModule.type,
-      });
+      };
+
+      const newModules = [...modules];
+      newModules.push(newModule);
 
       setModules(newModules);
       triggerProjectUpdate();
+      
+      // Close the copy modal first
+      setCopyModalOpen(false);
+      
+      // Automatically select and open the newly created module
+      props.gotoTab(newModulePath);
+      props.onClose();
     } catch (error) {
       console.error('Error copying module:', error);
-      props.setAlertErrorMessage('Failed to copy module');
+      props.setAlertErrorMessage(t('FAILED_TO_COPY_MODULE'));
+      setCopyModalOpen(false);
     }
-
-    setCopyModalOpen(false);
   };
 
   /** Handles adding a new module. */
@@ -192,14 +202,19 @@ export default function FileManageModal(props: FileManageModalProps) {
     if (newModule) {
       const module: Module = {
         path: newModule.modulePath,
-        title: newModule.className,
+        name: newModule.className,
         type: props.tabType,
       };
       setModules([...modules, module]);
     }
 
     setNewItemName('');
-    triggerProjectUpdate();};
+    if(newModule){
+      props.gotoTab(newModule.modulePath);
+    }
+    triggerProjectUpdate();
+    props.onClose();
+  };
 
   /** Handles delete confirmation for a module. */
   const handleDeleteConfirm = async (record: Module): Promise<void> => {
@@ -216,123 +231,66 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
   };
 
-  /** Handles button click events to prevent row selection. */
-  const handleButtonClick = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-  };
-
-  /** Handles row double-click to open module in tab. */
-  const handleRowDoubleClick = (record: Module): void => {
+  /** Handles selection to open module in tab. */
+  const handleSelect = (record: Module): void => {
     props.gotoTab(record.path);
-    props.onCancel();
+    props.onClose();
   };
 
   /** Opens the rename modal for a specific module. */
   const openRenameModal = (record: Module): void => {
     setCurrentRecord(record);
-    setName(record.title);
+    setName(record.name);
     setRenameModalOpen(true);
   };
 
   /** Opens the copy modal for a specific module. */
   const openCopyModal = (record: Module): void => {
     setCurrentRecord(record);
-    setName(record.title + 'Copy');
+    setName(t('COPY_SUFFIX', { name: record.name }));
     setCopyModalOpen(true);
   };
 
-  /** Table column configuration. */
-  const columns: Antd.TableProps<Module>['columns'] = [
-    {
-      title: 'Name',
-      dataIndex: 'title',
-      key: 'title',
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (title: string) => (
-        <Antd.Tooltip title={title}>
-          {title}
-        </Antd.Tooltip>
-      ),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: ACTIONS_COLUMN_WIDTH,
-      render: (_, record: Module) => (
-        <Antd.Space size="small">
-          <Antd.Tooltip title={t('Rename')}>
-            <Antd.Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={(e) => {
-                handleButtonClick(e);
-                openRenameModal(record);
-              }}
-            />
-          </Antd.Tooltip>
-          <Antd.Tooltip title={t('Copy')}>
-            <Antd.Button
-              type="text"
-              size="small"
-              icon={<CopyOutlined />}
-              onClick={(e) => {
-                handleButtonClick(e);
-                openCopyModal(record);
-              }}
-            />
-          </Antd.Tooltip>
-          <Antd.Tooltip title={t('Delete')}>
-            <Antd.Popconfirm
-              title={`Delete ${record.title}?`}
-              description="This action cannot be undone."
-              onConfirm={() => handleDeleteConfirm(record)}
-              okText={t('Delete')}
-              cancelText={t('Cancel')}
-              okType="danger"
-            >
-              <Antd.Button
-                type="text"
-                size="small"
-                icon={<DeleteOutlined />}
-                danger
-                onClick={handleButtonClick}
-              />
-            </Antd.Popconfirm>
-          </Antd.Tooltip>
-        </Antd.Space>
-      ),
-    },
-  ];
-
   /** Gets the modal title based on module type. */
   const getModalTitle = (): string => {
-    return `${TabTypeUtils.toString(props.tabType)} Management`;
+    return t('TYPE_MANAGEMENT', { type: TabTypeUtils.toString(props.tabType) });
   };
 
   /** Gets the rename modal title. */
   const getRenameModalTitle = (): string => {
     if (!currentRecord) {
-      return 'Rename';
+      return t('RENAME');
     }
-    return `Rename ${TabTypeUtils.toString(currentRecord.type)}: ${currentRecord.title}`;
+    return t('RENAME_TYPE_TITLE', { 
+      type: TabTypeUtils.toString(currentRecord.type), 
+      title: currentRecord.name 
+    });
   };
 
   /** Gets the copy modal title. */
   const getCopyModalTitle = (): string => {
     if (!currentRecord) {
-      return 'Copy';
+      return t('COPY');
     }
-    return `Copy ${TabTypeUtils.toString(currentRecord.type)}: ${currentRecord.title}`;
+    return t('COPY_TYPE_TITLE', { 
+      type: TabTypeUtils.toString(currentRecord.type), 
+      title: currentRecord.name 
+    });
   };
 
   /** Gets the empty table text based on tab type. */
   const getEmptyText = (): string => {
     const tabTypeString = TabTypeUtils.toString(props.tabType || TabType.OPMODE);
-    return `No ${tabTypeString.toLowerCase()} files found`;
+    return t('NO_FILES_FOUND', { type: tabTypeString.toLowerCase() });
   };
+
+  const getModuleFromName = (name: string): Module => {
+    const module = modules.find((m) => m.name === name);
+    if (!module) {
+      throw new Error('Module not found for name: ' + name);
+    }
+    return module;
+  }
 
   return (
     <>
@@ -397,50 +355,40 @@ export default function FileManageModal(props: FileManageModalProps) {
       <Antd.Modal
         title={getModalTitle()}
         open={props.isOpen}
-        onCancel={props.onCancel}
-        footer={[
-          <Antd.Button key="close" onClick={props.onCancel}>
-            {t('Close')}
-          </Antd.Button>,
-        ]}
+        onCancel={props.onClose}
+        footer={null}
         width={MODAL_WIDTH}
       >
+          <ManageTable
+            textOnEmpty={getEmptyText()}
+            records={modules}
+            showDelete={true}
+            deleteDialogTitle="DELETE_PROJECT_CONFIRM"
+            onSelect={(record) => handleSelect(getModuleFromName(record.name))}
+            onRename={(record) => openRenameModal(getModuleFromName(record.name))}
+            onCopy={(record) => openCopyModal(getModuleFromName(record.name))}
+            onDelete={(record) => handleDeleteConfirm(getModuleFromName(record.name))}
+          />
+        <br />
+        <h4 style={{margin: '0 0 8px 0'}}>
+          {t('CREATE_NEW', { type: TabTypeUtils.toString(props.tabType) })}
+        </h4>
         <div style={{
           marginBottom: 16,
-          border: '1px solid #d9d9d9',
+          border: `1px solid ${token.colorBorder}`,
           borderRadius: '6px',
           padding: '12px',
         }}>
-          <ClassNameComponent
+        <ClassNameComponent
             tabType={props.tabType}
             newItemName={newItemName}
             setNewItemName={setNewItemName}
             onAddNewItem={handleAddNewItem}
             project={props.project}
             storage={props.storage}
-            buttonLabel={t('New')}
+            buttonLabel={t('CREATE')}
           />
-        </div>
-        <Antd.Table<Module>
-          columns={columns}
-          dataSource={modules}
-          rowKey="path"
-          size="small"
-          pagination={modules.length > DEFAULT_PAGE_SIZE ? {
-            pageSize: DEFAULT_PAGE_SIZE,
-            showSizeChanger: false,
-            showQuickJumper: false,
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`,
-          } : false}
-          bordered
-          locale={{
-            emptyText: getEmptyText(),
-          }}
-          onRow={(record) => ({
-            onDoubleClick: () => handleRowDoubleClick(record),
-          })}
-        />
+        </div>        
       </Antd.Modal>
     </>
   );

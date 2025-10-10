@@ -33,7 +33,7 @@ import {
 import { Editor } from '../editor/editor';
 
 export function getHardwareCategory(editor: Editor): toolboxItems.Category {
-  const moduleType = editor.getCurrentModuleType();
+  const moduleType = editor.getModuleType();
   switch (moduleType) {
     case storageModule.ModuleType.ROBOT:
       return new toolboxItems.Category(
@@ -69,7 +69,7 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
   const contents: toolboxItems.ContentsType[] = [];
 
   // Include the "+ Mechanism" category if the user it editing the robot and there are any mechanism modules.
-  if (editor.getCurrentModuleType() === storageModule.ModuleType.ROBOT) {
+  if (editor.getModuleType() === storageModule.ModuleType.ROBOT) {
     const mechanisms = editor.getMechanisms();
     if (mechanisms.length) {
       const mechanismBlocks: toolboxItems.Block[] = [];

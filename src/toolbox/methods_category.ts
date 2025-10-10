@@ -26,7 +26,7 @@ import * as storageModule from '../storage/module';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
 import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
-import { createCustomMethodBlock, getBaseClassBlocks, FIELD_METHOD_NAME } from '../blocks/mrc_class_method_def';
+import { createCustomMethodBlock, getBaseClassBlocks, FIELD_METHOD_NAME, createCustomMethodBlockWithReturn } from '../blocks/mrc_class_method_def';
 import { Editor } from '../editor/editor';
 
 
@@ -68,12 +68,12 @@ class MethodsCategory {
     // Collect the method names that are already overridden in the blockly workspace.
     const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
 
-    switch (editor.getCurrentModuleType()) {
+    switch (editor.getModuleType()) {
       case storageModule.ModuleType.ROBOT:
         // TODO(lizlooney): We need a way to mark a method in python as not overridable.
         // For example, in RobotBase, define_hardware, register_event_handler,
         // unregister_event_handler, and fire_event should not be overridden in a user's robot.
-        const methodNamesNotOverrideable: string[] = [
+        const robotMethodNamesNotOverrideable: string[] = [
           'define_hardware',
           'fire_event',
           'register_event_handler',
@@ -81,19 +81,27 @@ class MethodsCategory {
         ];
         // Add the methods for a Robot.
         this.addClassBlocksForCurrentModule(
-            'More Robot Methods', this.robotClassBlocks, methodNamesNotOverrideable,
+            Blockly.Msg['MORE_ROBOT_METHODS_LABEL'], this.robotClassBlocks, robotMethodNamesNotOverrideable,
             methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.MECHANISM:
+        // TODO(lizlooney): We need a way to mark a method in python as not overridable.
+        // For example, in Mechanism, register_event_handler, unregister_event_handler, and
+        // fire_event should not be overridden in a user's mechamism.
+        const mechanismMethodNamesNotOverrideable: string[] = [
+          'fire_event',
+          'register_event_handler',
+          'unregister_event_handler',
+        ];
         // Add the methods for a Mechanism.
         this.addClassBlocksForCurrentModule(
-            'More Mechanism Methods', this.mechanismClassBlocks, [],
+            Blockly.Msg['MORE_MECHANISM_METHODS_LABEL'], this.mechanismClassBlocks, mechanismMethodNamesNotOverrideable,
             methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.OPMODE:
         // Add the methods for an OpMode.
         this.addClassBlocksForCurrentModule(
-            'More OpMode Methods', this.opmodeClassBlocks, [],
+            Blockly.Msg['MORE_OPMODE_METHODS_LABEL'], this.opmodeClassBlocks, [],
             methodNamesAlreadyOverridden, contents);
         break;
     }
@@ -102,9 +110,10 @@ class MethodsCategory {
     contents.push(
       {
         kind: 'label',
-        text: 'Custom Methods',
+        text: Blockly.Msg['CUSTOM_METHODS_LABEL'],
       },
       createCustomMethodBlock(),
+      createCustomMethodBlockWithReturn()
     );
 
     // Get blocks for calling methods defined in the current workspace.

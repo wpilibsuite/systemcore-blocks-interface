@@ -22,7 +22,6 @@
 import * as Blockly from 'blockly';
 
 import { MRC_STYLE_MECHANISMS } from '../themes/styles';
-import * as ChangeFramework from './utils/change_framework';
 import { getLegalName } from './utils/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
@@ -55,23 +54,14 @@ export type MechanismComponentHolderBlock = Blockly.Block & MechanismComponentHo
 interface MechanismComponentHolderMixin extends MechanismComponentHolderMixinType {
   mrcHideMechanisms: boolean;
   mrcHidePrivateComponents: boolean;
+
+  mrcMechanismBlockIds: string,
+  mrcComponentBlockIds: string,
+  mrcPrivateComponentBlockIds: string,
+  mrcEventBlockIds: string,
+  mrcToolboxUpdateTimeout: NodeJS.Timeout | null;
 }
 type MechanismComponentHolderMixinType = typeof MECHANISM_COMPONENT_HOLDER;
-
-function setName(block: Blockly.BlockSvg){
-    const parentBlock = ChangeFramework.getParentOfType(block, BLOCK_NAME);
-    if (parentBlock) {
-        const variableBlocks = parentBlock!.getDescendants(true)
-        const otherNames: string[] = []
-        variableBlocks?.forEach(function (variableBlock) {
-            if (variableBlock != block) {
-                otherNames.push(variableBlock.getFieldValue('NAME'));
-            }
-        });
-        const currentName = block.getFieldValue('NAME');
-        block.setFieldValue(getLegalName(currentName, otherNames), 'NAME');
-    }
-}
 
 const MECHANISM_COMPONENT_HOLDER = {
   /**
@@ -81,11 +71,11 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.setInputsInline(false);
     this.setOutput(false);
     this.setStyle(MRC_STYLE_MECHANISMS);
-    ChangeFramework.registerCallback(MRC_COMPONENT_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
-    ChangeFramework.registerCallback(MRC_MECHANISM_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
-    ChangeFramework.registerCallback(MRC_EVENT_NAME, [Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE], this.onBlockChanged);
-    // TODO: We also need an event handler for when a mechanism, component, or event is deleted or
-    // disconnected from the holder.
+    this.mrcMechanismBlockIds = '';
+    this.mrcComponentBlockIds = '';
+    this.mrcPrivateComponentBlockIds = '';
+    this.mrcEventBlockIds = '';
+    this.mrcToolboxUpdateTimeout = null;
   },
   saveExtraState: function (this: MechanismComponentHolderBlock): MechanismComponentHolderExtraState {
     const extraState: MechanismComponentHolderExtraState = {
@@ -137,19 +127,124 @@ const MECHANISM_COMPONENT_HOLDER = {
         .setCheck(EVENT_OUTPUT)
         .appendField(Blockly.Msg.EVENTS);
   },
-  onBlockChanged: function (block: Blockly.BlockSvg, blockEvent: Blockly.Events.BlockBase) {
-    if (blockEvent.type == Blockly.Events.BLOCK_MOVE) {
-      let blockMoveEvent = blockEvent as Blockly.Events.BlockMove;
-      if (blockMoveEvent.reason?.includes('connect')) {
-        setName(block);
-        updateToolboxAfterDelay();
+  /**
+   * mrcOnLoad is called for each MechanismComponentHolderBlock when the blocks are loaded in the blockly
+   * workspace.
+   */
+  mrcOnLoad: function(this: MechanismComponentHolderBlock): void {
+    this.collectDescendants(false);
+  },
+  /**
+   * mrcOnDescendantDisconnect is called for each MechanismComponentHolderBlock when any descendant is
+   * disconnected.
+   */
+  mrcOnDescendantDisconnect: function(this: MechanismComponentHolderBlock): void {
+    this.collectDescendants(true);
+  },
+  mrcDescendantsMayHaveChanged: function (this: MechanismComponentHolderBlock): void {
+    this.collectDescendants(true);
+  },
+  collectDescendants: function (
+      this: MechanismComponentHolderBlock, updateToolboxIfDescendantsChanged: boolean): void {
+    let mechanismBlockIds = '';
+    let componentBlockIds = '';
+    let privateComponentBlockIds = '';
+    let eventBlockIds = '';
+
+    const mechanismsInput = this.getInput(INPUT_MECHANISMS);
+    if (mechanismsInput && mechanismsInput.connection) {
+      // Walk through all connected mechanism blocks.
+      let mechanismBlock = mechanismsInput.connection.targetBlock();
+      while (mechanismBlock) {
+        if (mechanismBlock.type === MRC_MECHANISM_NAME) {
+          mechanismBlockIds += mechanismBlock.id;
+        }
+        // Move to the next block in the stack.
+        mechanismBlock = mechanismBlock.getNextBlock();
       }
     }
-    else {
-      if (blockEvent.type == Blockly.Events.BLOCK_CHANGE) {
-        setName(block);
-        updateToolboxAfterDelay();
+    const componentsInput = this.getInput(INPUT_COMPONENTS);
+    if (componentsInput && componentsInput.connection) {
+      // Walk through all connected component blocks.
+      let componentBlock = componentsInput.connection.targetBlock();
+      while (componentBlock) {
+        if (componentBlock.type === MRC_COMPONENT_NAME) {
+          componentBlockIds += componentBlock.id;
+        }
+        // Move to the next block in the stack.
+        componentBlock = componentBlock.getNextBlock();
       }
+    }
+    const privateComponentsInput = this.getInput(INPUT_PRIVATE_COMPONENTS);
+    if (privateComponentsInput && privateComponentsInput.connection) {
+      // Walk through all connected component blocks.
+      let componentBlock = privateComponentsInput.connection.targetBlock();
+      while (componentBlock) {
+        if (componentBlock.type === MRC_COMPONENT_NAME) {
+          privateComponentBlockIds += componentBlock.id;
+        }
+        // Move to the next block in the stack.
+        componentBlock = componentBlock.getNextBlock();
+      }
+    }
+    const eventsInput = this.getInput(INPUT_EVENTS);
+    if (eventsInput && eventsInput.connection) {
+      // Walk through all connected event blocks.
+      let eventBlock = eventsInput.connection.targetBlock();
+      while (eventBlock) {
+        if (eventBlock.type === MRC_EVENT_NAME) {
+          eventBlockIds += eventBlock.id;
+        }
+        // Move to the next block in the stack.
+        eventBlock = eventBlock.getNextBlock();
+      }
+    }
+
+    if (updateToolboxIfDescendantsChanged) {
+      if (mechanismBlockIds !== this.mrcMechanismBlockIds ||
+          componentBlockIds !== this.mrcComponentBlockIds ||
+          privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
+          eventBlockIds !== this.mrcEventBlockIds) {
+        this.updateToolboxAfterDelay();
+      }
+    }
+
+    this.mrcMechanismBlockIds = mechanismBlockIds;
+    this.mrcComponentBlockIds = componentBlockIds;
+    this.mrcPrivateComponentBlockIds = privateComponentBlockIds;
+    this.mrcEventBlockIds = eventBlockIds;
+  },
+  updateToolboxAfterDelay: function (this: MechanismComponentHolderBlock): void {
+    if (this.mrcToolboxUpdateTimeout) {
+      clearTimeout(this.mrcToolboxUpdateTimeout);
+    }
+    this.mrcToolboxUpdateTimeout = setTimeout(() => {
+      const event = new CustomEvent(TOOLBOX_UPDATE_EVENT, {
+        detail: {
+          timestamp: Date.now(),
+          workspaceId: this.workspace.id,
+        }
+      });
+      window.dispatchEvent(event);
+      this.mrcToolboxUpdateTimeout = null;
+    }, 100);
+  },
+  /**
+   * setNameOfChildBlock is called from mrc_mechanism, mrc_component, and mrc_event blocks when they
+   * connect to this mrc_mechanism_component_holder block.
+   */
+  setNameOfChildBlock(this: MechanismComponentHolderBlock, child: Blockly.Block): void {
+    const otherNames: string[] = []
+    const descendants = this.getDescendants(true);
+    descendants
+        .filter(descendant => descendant.id !== child.id)
+        .forEach(descendant => {
+          otherNames.push(descendant.getFieldValue('NAME'));
+        });
+    const currentName = child.getFieldValue('NAME');
+    const legalName = getLegalName(currentName, otherNames);
+    if (legalName !== currentName) {
+      child.setFieldValue(legalName, 'NAME');
     }
   },
   getMechanisms: function (this: MechanismComponentHolderBlock): storageModuleContent.MechanismInRobot[] {
@@ -240,20 +335,6 @@ const MECHANISM_COMPONENT_HOLDER = {
 
     return events;
   },
-}
-
-let toolboxUpdateTimeout: NodeJS.Timeout | null = null;
-export function updateToolboxAfterDelay(){
-  if (toolboxUpdateTimeout) {
-    clearTimeout(toolboxUpdateTimeout);
-  }
-  toolboxUpdateTimeout = setTimeout(() => {
-    const event = new CustomEvent(TOOLBOX_UPDATE_EVENT, {
-      detail: { timestamp: Date.now() }
-    });
-    window.dispatchEvent(event);
-    toolboxUpdateTimeout = null;
-  }, 100);
 }
 
 export const setup = function () {
@@ -427,6 +508,13 @@ export function getEvents(
     const eventsFromHolder: storageModuleContent.Event[] =
       (block as MechanismComponentHolderBlock).getEvents();
     events.push(...eventsFromHolder);
+  });
+}
+
+export function mrcDescendantsMayHaveChanged(workspace: Blockly.Workspace): void {
+  // Get the holder block and call its mrcDescendantsMayHaveChanged method.
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as MechanismComponentHolderBlock).mrcDescendantsMayHaveChanged();
   });
 }
 

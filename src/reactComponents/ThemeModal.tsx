@@ -4,6 +4,8 @@
 
 import * as React from 'react';
 import * as Antd from 'antd';
+import * as I18Next from 'react-i18next';
+
 import {
     BgColorsOutlined,
     CheckOutlined,
@@ -25,52 +27,53 @@ export interface ThemeModalProps {
     onThemeChange: (themeKey: string) => void;
 }
 
-const THEME_OPTIONS: ThemeOption[] = [
-    {
-        key: 'light',
-        name: 'Light Theme',
-        icon: <SunOutlined />,
-        description: 'Clean and bright interface for daytime use',
-    },
-    {
-        key: 'dark',
-        name: 'Dark Theme',
-        icon: <MoonOutlined />,
-        description: 'Easy on the eyes for low-light environments',
-    },
-    {
-        key: 'tritanopia',
-        name: 'Tritanopia Theme',
-        icon: <SunOutlined />,
-        description: 'Designed for those with Tritanopia color blindness',
-    },
-    {
-        key: 'tritanopia-dark',
-        name: 'Tritanopia Dark',
-        icon: <MoonOutlined />,
-        description: 'Dark theme for those with Tritanopia color blindness',
-    },
-    {
-        key: 'deuteranopia',
-        name: 'Deuteranopia Theme',
-        icon: <SunOutlined />,
-        description: 'Designed for those with Deuteranopia color blindness',
-    },
-    {
-        key: 'deuteranopia-dark',
-        name: 'Deuteranopia Dark',
-        icon: <MoonOutlined />,
-        description: 'Dark theme for those with Deuteranopia color blindness',
-    },
-];
-
 const ThemeModal: React.FC<ThemeModalProps> = ({
     open,
     onClose,
     currentTheme,
     onThemeChange,
 }) => {
+    const { t } = I18Next.useTranslation();
     const [selectedTheme, setSelectedTheme] = React.useState(currentTheme);
+
+    const THEME_OPTIONS: ThemeOption[] = [
+        {
+            key: 'light',
+            name: t('THEME_MODAL.LIGHT'),
+            icon: <SunOutlined />,
+            description: t('THEME_MODAL.LIGHT_DESCRIPTION'),
+        },
+        {
+            key: 'dark',
+            name: t('THEME_MODAL.DARK'),
+            icon: <MoonOutlined />,
+            description: t('THEME_MODAL.DARK_DESCRIPTION'),
+        },
+        {
+            key: 'tritanopia',
+            name: t('THEME_MODAL.TRITANOPIA'),
+            icon: <SunOutlined />,
+            description: t('THEME_MODAL.TRITANOPIA_DESCRIPTION'),
+        },
+        {
+            key: 'tritanopia-dark',
+            name: t('THEME_MODAL.TRITANOPIA_DARK'),
+            icon: <MoonOutlined />,
+            description: t('THEME_MODAL.TRITANOPIA_DARK_DESCRIPTION'),
+        },
+        {
+            key: 'deuteranopia',
+            name: t('THEME_MODAL.DEUTERANOPIA'),
+            icon: <SunOutlined />,
+            description: t('THEME_MODAL.DEUTERANOPIA_DESCRIPTION'),
+        },
+        {
+            key: 'deuteranopia-dark',
+            name: t('THEME_MODAL.DEUTERANOPIA_DARK'),
+            icon: <MoonOutlined />,
+            description: t('THEME_MODAL.DEUTERANOPIA_DARK_DESCRIPTION'),
+        },
+    ];
 
     React.useEffect(() => {
         setSelectedTheme(currentTheme);
@@ -95,14 +98,14 @@ const ThemeModal: React.FC<ThemeModalProps> = ({
             title={
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <BgColorsOutlined />
-                    Theme Selection
+                    {t('THEME_MODAL.SELECTION')}
                 </div>
             }
             open={open}
             onCancel={handleCancel}
             footer={[
                 <Antd.Button key="cancel" onClick={handleCancel}>
-                    Cancel
+                    {t('CANCEL')}
                 </Antd.Button>,
                 <Antd.Button
                     key="apply"
@@ -110,7 +113,7 @@ const ThemeModal: React.FC<ThemeModalProps> = ({
                     onClick={handleApplyTheme}
                     disabled={selectedTheme === currentTheme}
                 >
-                    Apply Theme
+                    {t('THEME_MODAL.APPLY')}
                 </Antd.Button>,
             ]}
             width={600}
@@ -118,7 +121,7 @@ const ThemeModal: React.FC<ThemeModalProps> = ({
         >
             <div style={{ padding: '16px 0' }}>
                 <Antd.Typography.Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>
-                    Choose a theme that best suits your preference and working environment.
+                    {t('THEME_MODAL.CHOOSE_DESCRIPTION')}
                 </Antd.Typography.Text>
 
                 <Antd.Row gutter={[16, 16]}>
@@ -176,7 +179,7 @@ const ThemeModal: React.FC<ThemeModalProps> = ({
                                     <div style={{ marginTop: 12 }}>
                                         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                                             <Antd.Button size="small" type="primary">
-                                                Primary
+                                                {t('THEME_MODAL.PRIMARY_BUTTON')}
                                             </Antd.Button>
                                         </div>
                                     </div>
@@ -190,8 +193,8 @@ const ThemeModal: React.FC<ThemeModalProps> = ({
                 <Antd.Divider />
 
                 <Antd.Alert
-                    message="Theme Preview"
-                    description="The selected theme will be applied to the entire application interface."
+                    message={t('THEME_MODAL.PREVIEW')}
+                    description={t('THEME_MODAL.PREVIEW_DESCRIPTION')}
                     type="info"
                     showIcon
                     style={{ marginTop: 16 }}

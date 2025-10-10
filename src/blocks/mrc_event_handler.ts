@@ -24,6 +24,7 @@ import * as Blockly from 'blockly';
 import {Order} from 'blockly/python';
 
 import type { MessageInstance } from 'antd/es/message/interface';
+import { Parameter } from './mrc_class_method_def';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldFlydown } from '../fields/field_flydown';
@@ -45,11 +46,6 @@ export enum SenderType {
   ROBOT = 'robot',
   MECHANISM = 'mechanism',
   COMPONENT = 'component'
-}
-
-export interface Parameter {
-  name: string;
-  type?: string;
 }
 
 const SENDER_VALUE_ROBOT = 'robot';
@@ -172,13 +168,26 @@ const EVENT_HANDLER = {
   },
 
   /**
+   * mrcOnModuleCurrent is called for each EventHandlerBlock when the module becomes the current module.
+   */
+  mrcOnModuleCurrent: function(this: EventHandlerBlock): void {
+    this.checkEvent();
+  },
+  /**
    * mrcOnLoad is called for each EventHandlerBlock when the blocks are loaded in the blockly
    * workspace.
    */
   mrcOnLoad: function(this: EventHandlerBlock): void {
+    this.checkEvent();
+  },
+  /**
+   * checkEvent checks the block, updates it, and/or adds a warning balloon if necessary.
+   * It is called from mrcOnModuleCurrent and mrcOnLoad above.
+   */
+  checkEvent: function(this: EventHandlerBlock): void {
     const warnings: string[] = [];
 
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
     if (editor) {
       if (this.mrcSenderType === SenderType.ROBOT) {
         // This block is an event handler for a robot event.
@@ -208,7 +217,7 @@ const EVENT_HANDLER = {
           }
         }
         if (!foundRobotEvent) {
-          warnings.push('This block is an event handler for an event that no longer exists.');
+          warnings.push(Blockly.Msg.EVENT_HANDLER_ROBOT_EVENT_NOT_FOUND);
         }
       }
 
@@ -259,7 +268,7 @@ const EVENT_HANDLER = {
               }
             }
             if (!foundMechanismEvent) {
-              warnings.push('This block is an event handler for an event that no longer exists.');
+              warnings.push(Blockly.Msg.EVENT_HANDLER_MECHANISM_EVENT_NOT_FOUND);
             }
 
             // Since we found the mechanism, we can break out of the loop.
@@ -267,7 +276,7 @@ const EVENT_HANDLER = {
           }
         }
         if (!foundMechanism) {
-          warnings.push('This block is an event handler for an event in a mechanism that no longer exists.');
+          warnings.push(Blockly.Msg.EVENT_HANDLER_MECHANISM_NOT_FOUND);
         }
       }
     }
@@ -303,6 +312,13 @@ const EVENT_HANDLER = {
     if (this.mrcMechanismId && this.mrcMechanismId in oldIdToNewId) {
       this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
     }
+  },
+  mrcGetParameterNames: function(this: EventHandlerBlock): string[] {
+    const parameterNames: string[] = [];
+    this.mrcParameters.forEach(parameter => {
+      parameterNames.push(parameter.name);
+    });
+    return parameterNames;
   },
 };
 

@@ -28,12 +28,12 @@ import { pythonGenerator } from 'blockly/python';
 import Header from './reactComponents/Header';
 import * as Menu from './reactComponents/Menu';
 import CodeDisplay from './reactComponents/CodeDisplay';
+import SiderCollapseTrigger from './reactComponents/SiderCollapseTrigger';
 import BlocklyComponent, { BlocklyComponentType } from './reactComponents/BlocklyComponent';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
 import { TabType } from './types/TabType';
 
-import { createGeneratorContext, GeneratorContext } from './editor/generator_context';
 import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
 
@@ -45,9 +45,7 @@ import * as clientSideStorage from './storage/client_side_storage';
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
-import * as ChangeFramework from './blocks/utils/change_framework'
 import { registerToolboxButton } from './blocks/mrc_event_handler'
-import { mutatorOpenListener } from './blocks/mrc_param_container'
 import { TOOLBOX_UPDATE_EVENT } from './blocks/mrc_mechanism_component_holder';
 import { antdThemeFromString } from './reactComponents/ThemeModal';
 import { useTranslation } from 'react-i18next';
@@ -82,7 +80,7 @@ const FULL_HEIGHT = '100%';
 const CODE_PANEL_DEFAULT_SIZE = '25%';
 
 /** Minimum size for code panel. */
-const CODE_PANEL_MIN_SIZE = 80;
+const CODE_PANEL_MIN_SIZE = 100;
 
 /** Background color for testing layout. */
 const LAYOUT_BACKGROUND_COLOR = '#0F0';
@@ -154,26 +152,32 @@ interface AppContentProps {
 
 const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.JSX.Element => {
   const { t, i18n } = useTranslation();
-  const { settings, updateLanguage, updateTheme, storage, isLoading } = useUserSettings();
+  const { settings, updateLanguage, updateTheme, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
 
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [currentModule, setCurrentModule] = React.useState<storageModule.Module | null>(null);
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+  const [modulePathToContentText, setModulePathToContentText] = React.useState<{[modulePath: string]: string}>({});
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [activeTab, setActiveTab] = React.useState('');
+  const [isLoadingTabs, setIsLoadingTabs] = React.useState(false);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
-  const [rightCollapsed, setRightCollapsed] = React.useState(false);
+  const [codePanelSize, setCodePanelSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
+  const [codePanelCollapsed, setCodePanelCollapsed] = React.useState(false);
+  const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
+  const [codePanelAnimating, setCodePanelAnimating] = React.useState(false);
   const [theme, setTheme] = React.useState('dark');
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
 
-  const blocksEditor = React.useRef<editor.Editor | null>(null);
-  const generatorContext = React.useRef<GeneratorContext | null>(null);
-  const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
+  /** modulePaths controls how BlocklyComponents are created. */
+  const modulePaths = React.useRef<string[]>([]);
+  const modulePathToBlocklyComponent = React.useRef<{[modulePath: string]: BlocklyComponentType}>({});
+  const modulePathToEditor = React.useRef<{[modulePath: string]: editor.Editor}>({});
 
   /** Initialize language from UserSettings when app first starts. */
   React.useEffect(() => {
@@ -207,7 +211,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       // Save current blocks before language change
       if (currentModule && areBlocksModified()) {
         try {
-          await saveBlocks();
+          await saveModule();
         } catch (e) {
           console.error('Failed to save blocks before language change:', e);
         }
@@ -222,9 +226,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         }
       }
 
-      // Update toolbox after language change
-      if (blocksEditor.current) {
-        blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+      // Update toolbox in all editors after language change.
+      for (const modulePath in modulePathToEditor.current) {
+        const editor = modulePathToEditor.current[modulePath];
+        editor.updateToolbox(shownPythonToolboxCategories);
       }
     };
 
@@ -298,19 +303,32 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       return;
     }
 
+    // Check whether this blockly workspace is for the current module.
+    if (!currentModule ||
+        !(currentModule.modulePath in modulePathToBlocklyComponent.current)) {
+      return;
+    }
+    const blocklyComponent = modulePathToBlocklyComponent.current[currentModule.modulePath];
+    if (event.workspaceId != blocklyComponent.getBlocklyWorkspace().id) {
+      return;
+    }
+
     setTriggerPythonRegeneration(Date.now());
   };
 
   /** Saves blocks to storage with success/error messaging. */
-  const saveBlocks = async (): Promise<boolean> => {
+  const saveModule = async (): Promise<boolean> => {
     return new Promise(async (resolve, reject) => {
-      if (!blocksEditor.current) {
+      if (!currentModule ||
+          !(currentModule.modulePath in modulePathToEditor.current)) {
         reject(new Error('Blocks editor not initialized'));
         return;
       }
+      const editor = modulePathToEditor.current[currentModule.modulePath];
 
       try {
-        await blocksEditor.current.saveBlocks();
+        const moduleContentText = await editor.saveModule();
+        modulePathToContentText[currentModule.modulePath] = moduleContentText;
         messageApi.open({
           type: 'success',
           content: SAVE_SUCCESS_MESSAGE,
@@ -339,20 +357,52 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
   /** Checks if blocks have been modified. */
   const areBlocksModified = (): boolean => {
-    return blocksEditor.current ? blocksEditor.current.isModified() : false;
+    if (currentModule &&
+        currentModule.modulePath in modulePathToEditor.current) {
+      const editor = modulePathToEditor.current[currentModule.modulePath];
+      return editor.isModified();
+    }
+    return false;
   };
 
   /** Changes current module with automatic saving if modified. */
   const changeModule = async (module: storageModule.Module | null): Promise<void> => {
     if (currentModule && areBlocksModified()) {
-      await saveBlocks();
+      await saveModule();
     }
     setCurrentModule(module);
+    if (module) {
+      setActiveTab(module.modulePath);
+    }
   };
 
   /** Handles toolbox settings modal close. */
   const handleToolboxSettingsCancel = (): void => {
     setToolboxSettingsModalIsOpen(false);
+  };
+
+  /** Toggles the code panel between collapsed and expanded states. */
+  const toggleCodePanelCollapse = (): void => {
+    setCodePanelAnimating(true);
+    
+    if (codePanelCollapsed) {
+      // Expand to previous size
+      setCodePanelSize(codePanelExpandedSize);
+      setCodePanelCollapsed(false);
+    } else {
+      // Collapse to minimum size - convert current size to pixels for storage
+      const currentSizePx = typeof codePanelSize === 'string'
+        ? (parseFloat(codePanelSize) / 100) * window.innerWidth
+        : codePanelSize;
+      setCodePanelExpandedSize(currentSizePx);
+      setCodePanelSize(CODE_PANEL_MIN_SIZE);
+      setCodePanelCollapsed(true);
+    }
+
+    // Reset animation flag after transition completes
+    setTimeout(() => {
+      setCodePanelAnimating(false);
+    }, 200);
   };
 
   /** Handles toolbox settings modal OK with updated categories. */
@@ -361,41 +411,14 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     handleToolboxSettingsOk(updatedShownCategories);
   };
 
-  /** Creates tab items from project data. */
-  const createTabItemsFromProject = (projectData: storageProject.Project): Tabs.TabItem[] => {
-    const tabs: Tabs.TabItem[] = [
-      {
-        key: projectData.robot.modulePath,
-        title: t('ROBOT'),
-        type: TabType.ROBOT,
-      },
-    ];
-
-    projectData.mechanisms.forEach((mechanism) => {
-      tabs.push({
-        key: mechanism.modulePath,
-        title: mechanism.className,
-        type: TabType.MECHANISM,
-      });
-    });
-
-    projectData.opModes.forEach((opmode) => {
-      tabs.push({
-        key: opmode.modulePath,
-        title: opmode.className,
-        type: TabType.OPMODE,
-      });
-    });
-
-    return tabs;
-  };
-
   /** Handles toolbox update requests from blocks */
-  const handleToolboxUpdateRequest = React.useCallback(() => {
-    if (blocksEditor.current && currentModule) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+  const handleToolboxUpdateRequest = React.useCallback((e: Event) => {
+    const workspaceId = (e as CustomEvent).detail.workspaceId;
+    const correspondingEditor = editor.Editor.getEditorForBlocklyWorkspaceId(workspaceId);
+    if (correspondingEditor) {
+      correspondingEditor.updateToolbox(shownPythonToolboxCategories);
     }
-  }, [currentModule, shownPythonToolboxCategories, i18n.language]);
+  }, [shownPythonToolboxCategories, i18n.language]);
 
   // Add event listener for toolbox updates
   React.useEffect(() => {
@@ -417,85 +440,299 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
   // Update generator context and load module blocks when current module changes
   React.useEffect(() => {
-    if (generatorContext.current) {
-      generatorContext.current.setModule(currentModule);
-    }
-    if (blocksEditor.current) {
-      blocksEditor.current.loadModuleBlocks(currentModule, project);
+    if (currentModule) {
+      if (modulePaths.current.includes(currentModule.modulePath)) {
+        activateEditor();
+      } else {
+        // Add the module path to modulePaths to create a new BlocklyComponent.
+        modulePaths.current.push(currentModule.modulePath);
+      }
     }
   }, [currentModule]);
 
-  const setupWorkspace = (newWorkspace: Blockly.WorkspaceSvg) => {
-    if (!blocklyComponent.current || !storage) {
+  const activateEditor = () => {
+    if (!project || !currentModule) {
       return;
     }
-    // Recreate workspace when Blockly component is ready
-    ChangeFramework.setup(newWorkspace);
-    newWorkspace.addChangeListener(mutatorOpenListener);
+    for (const modulePath in modulePathToBlocklyComponent.current) {
+      const blocklyComponent = modulePathToBlocklyComponent.current[modulePath];
+      const active = (modulePath === currentModule.modulePath);
+      const workspaceIsVisible = blocklyComponent.getBlocklyWorkspace()!.isVisible();
+      if (active != workspaceIsVisible) {
+        blocklyComponent.setActive(active);
+      }
+    }
+    if (currentModule.modulePath in modulePathToEditor.current) {
+      const editor = modulePathToEditor.current[currentModule.modulePath];
+      editor.makeCurrent(project, modulePathToContentText);
+    }
+  };
+
+  const setupBlocklyComponent = (modulePath: string, newBlocklyComponent: BlocklyComponentType) => {
+    modulePathToBlocklyComponent.current[modulePath] = newBlocklyComponent;
+    if (currentModule) {
+      newBlocklyComponent.setActive(modulePath === currentModule.modulePath);
+    }
+  };
+
+  const setupWorkspace = (modulePath: string, newWorkspace: Blockly.WorkspaceSvg) => {
+    if (!project || !storage) {
+      return;
+    }
+    const module = storageProject.findModuleByModulePath(project, modulePath);
+    if (!module) {
+      console.error("setupWorkspace called for unknown module path " + modulePath);
+      return;
+    }
+
     newWorkspace.addChangeListener(handleBlocksChanged);
 
     registerToolboxButton(newWorkspace, messageApi);
 
-    generatorContext.current = createGeneratorContext();
-
-    if (currentModule) {
-      generatorContext.current.setModule(currentModule);
+    const oldEditor = modulePathToEditor.current[modulePath];
+    if (oldEditor) {
+      oldEditor.abandon();
     }
 
-    if (blocksEditor.current) {
-      blocksEditor.current.abandon();
-    }
-    blocksEditor.current = new editor.Editor(newWorkspace, generatorContext.current, storage);
-    blocksEditor.current.makeCurrent();
+    const newEditor = new editor.Editor(
+        newWorkspace, module, project, storage, modulePathToContentText);
+    modulePathToEditor.current[modulePath] = newEditor;
+    newEditor.loadModuleBlocks();
+    newEditor.updateToolbox(shownPythonToolboxCategories);
 
-    // Set the current module in the editor after creating it
-    if (currentModule) {
-      blocksEditor.current.loadModuleBlocks(currentModule, project);
+    if (currentModule && currentModule.modulePath === modulePath) {
+      activateEditor();
     }
-
-    blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
   };
-
-  // Initialize Blockly workspace and editor when component and storage are ready
-  React.useEffect(() => {
-    if (!blocklyComponent.current || !storage) {
-      return;
-    }
-
-    const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-    if (blocklyWorkspace) {
-      setupWorkspace(blocklyWorkspace);
-    }
-  }, [blocklyComponent, storage]);
 
   // Generate code when module or regeneration trigger changes
   React.useEffect(() => {
-    if (currentModule && blocklyComponent.current && generatorContext.current) {
-      const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-      setGeneratedCode(extendedPythonGenerator.mrcWorkspaceToCode(
-        blocklyWorkspace,
-        generatorContext.current
-      ));
-    } else {
-      setGeneratedCode('');
+    let generatedCode = '';
+    if (currentModule) {
+      if (currentModule.modulePath in modulePathToBlocklyComponent.current) {
+        const blocklyComponent = modulePathToBlocklyComponent.current[currentModule.modulePath];
+        generatedCode = extendedPythonGenerator.mrcWorkspaceToCode(
+            blocklyComponent.getBlocklyWorkspace(), currentModule);
+      }
     }
-  }, [currentModule, project, triggerPythonRegeneration, blocklyComponent]);
+    setGeneratedCode(generatedCode);
+  }, [currentModule, project, triggerPythonRegeneration]);
 
-  // Update toolbox when module or categories change
+  // Update toolbox when categories change
   React.useEffect(() => {
-    if (blocksEditor.current) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
+    if (currentModule) {
+      if (currentModule.modulePath in modulePathToEditor.current) {
+        const editor = modulePathToEditor.current[currentModule.modulePath];
+        editor.updateToolbox(shownPythonToolboxCategories);
+      }
     }
-  }, [currentModule, shownPythonToolboxCategories]);
+  }, [shownPythonToolboxCategories]);
 
-  // Update tab items when project changes
+  // Fetch modules when project changes.
   React.useEffect(() => {
-    if (project) {
-      const tabs = createTabItemsFromProject(project);
-      setTabItems(tabs);
-      setActiveTab(project.robot.modulePath);
+    if (project && storage) {
+      const fetchModules = async () => {
+        const promises: {[modulePath: string]: Promise<string>} = {}; // value is promise of module content.
+        promises[project.robot.modulePath] = storage.fetchFileContentText(project.robot.modulePath);
+        project.mechanisms.forEach(mechanism => {
+          promises[mechanism.modulePath] = storage.fetchFileContentText(mechanism.modulePath);
+        });
+        project.opModes.forEach(opmode => {
+          promises[opmode.modulePath] = storage.fetchFileContentText(opmode.modulePath);
+        });
+        const updatedModulePathToContentText: {[modulePath: string]: string} = {}; // value is module content text
+        await Promise.all(
+          Object.entries(promises).map(async ([modulePath, promise]) => {
+            updatedModulePathToContentText[modulePath] = await promise;
+          })
+        );
+        const oldModulePathToContentText = modulePathToContentText;
+        setModulePathToContentText(updatedModulePathToContentText);
+
+        // Remove any deleted modules from modulePaths, modulePathToBlocklyComponent, and
+        // modulePathToEditor. Update currentModule if the current module was deleted.
+        for (const modulePath in oldModulePathToContentText) {
+          if (modulePath in updatedModulePathToContentText) {
+            continue;
+          }
+          if (currentModule && currentModule.modulePath === modulePath) {
+            setCurrentModule(project.robot);
+            setActiveTab(project.robot.modulePath);
+          }
+          const indexToRemove: number = modulePaths.current.indexOf(modulePath);
+          if (indexToRemove !== -1) {
+            modulePaths.current.splice(indexToRemove, 1);
+          }
+          if (modulePath in modulePathToBlocklyComponent.current) {
+            delete modulePathToBlocklyComponent.current[modulePath];
+          }
+          if (modulePath in modulePathToEditor.current) {
+            const editor = modulePathToEditor.current[modulePath];
+            editor.abandon();
+            delete modulePathToEditor.current[modulePath];
+          }
+        }
+      };
+      fetchModules();
     }
   }, [project]);
+
+  // Load saved tabs when project changes
+  React.useEffect(() => {
+    const loadSavedTabs = async () => {
+      if (project && !isLoading) {
+        setIsLoadingTabs(true);
+        
+        // Add a small delay to ensure UserSettingsProvider context is updated
+        await new Promise(resolve => setTimeout(resolve, 0));
+        
+        let tabsToSet: Tabs.TabItem[] = [];
+        let usedSavedTabs = false;
+        
+        // Try to load saved tabs first
+        try {
+          const savedTabPaths = await getOpenTabs(project.projectName);
+          
+          if (savedTabPaths.length > 0) {
+            // Filter saved tabs to only include those that still exist in the project
+            const validSavedTabs = savedTabPaths.filter((tabPath: string) => {
+              const module = storageProject.findModuleByModulePath(project!, tabPath);
+              return module !== null;
+            });
+            
+            if (validSavedTabs.length > 0) {
+              usedSavedTabs = true;
+              // Convert paths back to TabItem objects
+              tabsToSet = validSavedTabs.map((path: string) => {
+                const module = storageProject.findModuleByModulePath(project!, path);
+                if (!module) return null;
+                
+                let type: TabType;
+                let title: string;
+                
+                switch (module.moduleType) {
+                  case storageModule.ModuleType.ROBOT:
+                    type = TabType.ROBOT;
+                    title = t('ROBOT');
+                    break;
+                  case storageModule.ModuleType.MECHANISM:
+                    type = TabType.MECHANISM;
+                    title = module.className;
+                    break;
+                  case storageModule.ModuleType.OPMODE:
+                    type = TabType.OPMODE;
+                    title = module.className;
+                    break;
+                  default:
+                    return null;
+                }
+                
+                return {
+                  key: path,
+                  title,
+                  type,
+                };
+              }).filter((item): item is Tabs.TabItem => item !== null);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load saved tabs:', error);
+        }
+        
+        // If no saved tabs or loading failed, create default tabs (all project files)
+        if (tabsToSet.length === 0) {
+          tabsToSet = [
+            {
+              key: project.robot.modulePath,
+              title: t('ROBOT'),
+              type: TabType.ROBOT,
+            }
+          ];
+
+          // Add all mechanisms
+          project.mechanisms.forEach((mechanism) => {
+            tabsToSet.push({
+              key: mechanism.modulePath,
+              title: mechanism.className,
+              type: TabType.MECHANISM,
+            });
+          });
+
+          // Add all opmodes
+          project.opModes.forEach((opmode) => {
+            tabsToSet.push({
+              key: opmode.modulePath,
+              title: opmode.className,
+              type: TabType.OPMODE,
+            });
+          });
+        }
+        
+        // Set the tabs
+        setTabItems(tabsToSet);
+        
+        // Only set active tab to robot if no active tab is set or if the current active tab no longer exists
+        const currentActiveTabExists = tabsToSet.some(tab => tab.key === activeTab);
+        if (!activeTab || !currentActiveTabExists) {
+          setActiveTab(project.robot.modulePath);
+        }
+        
+        // Only auto-save if we didn't use saved tabs (i.e., this is a new project or the first time)
+        if (!usedSavedTabs) {
+          try {
+            const tabPaths = tabsToSet.map(tab => tab.key);
+            await updateOpenTabs(project.projectName, tabPaths);
+          } catch (error) {
+            console.error('Failed to auto-save default tabs:', error);
+          }
+        }
+        
+        setIsLoadingTabs(false);
+      }
+    };
+    
+    loadSavedTabs();
+  }, [project?.projectName, isLoading, getOpenTabs]);
+
+  // Update tab items when modules in project change (for title updates, etc)
+  React.useEffect(() => {
+    if (project && tabItems.length > 0) {
+      // Update existing tab titles in case they changed
+      const updatedTabs = tabItems.map(tab => {
+        const module = storageProject.findModuleByModulePath(project, tab.key);
+        if (module && module.moduleType !== storageModule.ModuleType.ROBOT) {
+          return { ...tab, title: module.className };
+        }
+        return tab;
+      });
+      
+      // Only update if something actually changed
+      const titlesChanged = updatedTabs.some((tab, index) => tab.title !== tabItems[index]?.title);
+      if (titlesChanged) {
+        setTabItems(updatedTabs);
+      }
+    }
+  }, [modulePathToContentText]);
+
+  // Save tabs when tab list changes (but not during initial loading)
+  React.useEffect(() => {
+    const saveTabs = async () => {
+      // Don't save tabs while we're in the process of loading them
+      if (project?.projectName && tabItems.length > 0 && !isLoadingTabs) {
+        try {
+          const tabPaths = tabItems.map(tab => tab.key);
+          await updateOpenTabs(project.projectName, tabPaths);
+        } catch (error) {
+          console.error('Failed to save open tabs:', error);
+          // Don't show alert for save failures as they're not critical to user workflow
+        }
+      }
+    };
+    
+    // Use a small delay to debounce rapid tab changes
+    const timeoutId = setTimeout(saveTabs, 100);
+    return () => clearTimeout(timeoutId);
+  }, [tabItems, project?.projectName, isLoadingTabs]);
 
   const { Sider, Content } = Antd.Layout;
 
@@ -520,6 +757,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               collapsible
               collapsed={leftCollapsed}
               onCollapse={(collapsed: boolean) => setLeftCollapsed(collapsed)}
+              trigger={null}
+              style={{ position: 'relative' }}
             >
               <Menu.Component
                 storage={storage}
@@ -530,6 +769,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 theme={theme}
                 setTheme={setTheme}
+              />
+              <SiderCollapseTrigger
+                collapsed={leftCollapsed}
+                onToggle={() => setLeftCollapsed(!leftCollapsed)}
               />
             </Sider>
             <Antd.Layout>
@@ -544,30 +787,81 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 setProject={setProject}
                 storage={storage}
               />
-              <Antd.Layout>
-                <Content>
-                  <BlocklyComponent
-                    theme={theme}
-                    onWorkspaceRecreated={setupWorkspace}
-                    ref={blocklyComponent}
-                  />
+              <div style={{ display: 'flex', height: FULL_HEIGHT }}>
+                <Content style={{ flex: 1, height: '100%' }}>
+                  {modulePaths.current.map((modulePath) => (
+                    <BlocklyComponent
+                      key={modulePath}
+                      modulePath={modulePath}
+                      onBlocklyComponentCreated={setupBlocklyComponent}
+                      theme={theme}
+                      onWorkspaceCreated={setupWorkspace}
+                    />
+                  ))}
                 </Content>
-                <Sider
-                  collapsible
-                  reverseArrow={true}
-                  collapsed={rightCollapsed}
-                  collapsedWidth={CODE_PANEL_MIN_SIZE}
-                  width={CODE_PANEL_DEFAULT_SIZE}
-                  onCollapse={(collapsed: boolean) => setRightCollapsed(collapsed)}
+                <div
+                  style={{
+                    width: typeof codePanelSize === 'string' ? codePanelSize : `${codePanelSize}px`,
+                    minWidth: CODE_PANEL_MIN_SIZE,
+                    height: '100%',
+                    borderLeft: '1px solid #d9d9d9',
+                    position: 'relative',
+                    transition: codePanelAnimating ? 'width 0.2s ease' : 'none'
+                  }}
                 >
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      width: '4px',
+                      height: '100%',
+                      cursor: 'ew-resize',
+                      backgroundColor: 'transparent',
+                      zIndex: 10,
+                      transform: 'translateX(-2px)'
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      const startX = e.clientX;
+                      const startWidth = codePanelSize;
+                      
+                      const handleMouseMove = (e: MouseEvent) => {
+                        const deltaX = startX - e.clientX;
+                        // Convert startWidth to number if it's a percentage
+                        const startWidthPx = typeof startWidth === 'string' 
+                          ? (parseFloat(startWidth) / 100) * window.innerWidth
+                          : startWidth;
+                        const newWidth = Math.max(CODE_PANEL_MIN_SIZE, startWidthPx + deltaX);
+                        setCodePanelSize(newWidth);
+                        // Update expanded size if not at minimum
+                        if (newWidth > CODE_PANEL_MIN_SIZE) {
+                          setCodePanelExpandedSize(newWidth);
+                          setCodePanelCollapsed(false);
+                        } else {
+                          setCodePanelCollapsed(true);
+                        }
+                      };
+                      
+                      const handleMouseUp = () => {
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', handleMouseUp);
+                      };
+                      
+                      document.addEventListener('mousemove', handleMouseMove);
+                      document.addEventListener('mouseup', handleMouseUp);
+                    }}
+                  />
                   <CodeDisplay
                     generatedCode={generatedCode}
                     messageApi={messageApi}
                     setAlertErrorMessage={setAlertErrorMessage}
                     theme={theme}
+                    isCollapsed={codePanelCollapsed}
+                    onToggleCollapse={toggleCodePanelCollapse}
                   />
-                </Sider>
-              </Antd.Layout>
+                </div>
+              </div>
             </Antd.Layout>
           </Antd.Layout>
         </Antd.Layout>

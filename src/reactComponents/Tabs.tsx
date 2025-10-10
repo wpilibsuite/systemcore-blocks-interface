@@ -114,6 +114,8 @@ export function Component(props: TabsProps): React.JSX.Element {
       case storageModule.ModuleType.OPMODE:
         newTabs.push({ key, title: module.className, type: TabType.OPMODE });
         break;
+      case storageModule.ModuleType.ROBOT:
+        break;   // Robot tab is always first and cannot be added again.
       default:
         console.warn('Unknown module type:', module.moduleType);
         break;
@@ -149,10 +151,10 @@ export function Component(props: TabsProps): React.JSX.Element {
   };
 
   /** Handles successful addition of new tabs. */
-  const handleAddTabOk = (newTabs: TabItem[]): void => {
-    props.setTabList([props.tabList[0], ...newTabs]);
+  const handleAddTabOk = (newTab: TabItem): void => {
+    props.setTabList([...props.tabList, newTab]);
 
-    setActiveKey(props.tabList[0].key);
+    setActiveKey(newTab.key);
     setAddTabDialogOpen(false);
   };
 
@@ -184,7 +186,7 @@ export function Component(props: TabsProps): React.JSX.Element {
       triggerProjectUpdate();
     } catch (error) {
       console.error('Error renaming module:', error);
-      props.setAlertErrorMessage('Failed to rename module');
+      props.setAlertErrorMessage(t('FAILED_TO_RENAME_MODULE'));
     }
 
     setRenameModalOpen(false);
@@ -211,7 +213,7 @@ export function Component(props: TabsProps): React.JSX.Element {
 
       if (!originalTab) {
         console.error('Original tab not found for copying:', key);
-        props.setAlertErrorMessage('Original tab not found for copying');
+        props.setAlertErrorMessage(t('MODULE_NOT_FOUND_FOR_COPYING'));
         return;
       }
 
@@ -221,7 +223,7 @@ export function Component(props: TabsProps): React.JSX.Element {
       triggerProjectUpdate();
     } catch (error) {
       console.error('Error copying module:', error);
-      props.setAlertErrorMessage('Failed to copy module');
+      props.setAlertErrorMessage(t('FAILED_TO_COPY_MODULE'));
     }
 
     setCopyModalOpen(false);
@@ -258,11 +260,11 @@ export function Component(props: TabsProps): React.JSX.Element {
     const titleToShow = currentTab ? currentTab.title : tab.title;
 
     modal.confirm({
-      title: `${t('Delete')} ${TabTypeUtils.toString(tab.type)}: ${titleToShow}`,
-      content: t('Are you sure you want to delete this? This action cannot be undone.'),
-      okText: t('Delete'),
+      title: t('DELETE_MODULE_CONFIRM', { title: `${TabTypeUtils.toString(tab.type)}: ${titleToShow}` }),
+      content: t('DELETE_CANNOT_BE_UNDONE'),
+      okText: t('DELETE'),
       okType: 'danger',
-      cancelText: t('Cancel'),
+      cancelText: t('CANCEL'),
       onOk: async (): Promise<void> => {
         const newTabs = props.tabList.filter((t) => t.key !== tab.key);
         props.setTabList(newTabs);
@@ -288,35 +290,35 @@ export function Component(props: TabsProps): React.JSX.Element {
   const createTabContextMenuItems = (tab: TabItem): any[] => [
     {
       key: 'close',
-      label: t('Close Tab'),
+      label: t('CLOSE_TAB'),
       onClick: () => handleTabEdit(tab.key, 'remove'),
       disabled: tab.type === TabType.ROBOT,
       icon: <CloseOutlined />,
     },
     {
       key: 'close-others',
-      label: t('Close Other tabs'),
+      label: t('CLOSE_OTHER_TABS'),
       onClick: () => handleCloseOtherTabs(tab.key),
       disabled: props.tabList.length <= getMinTabsForCloseOthers(tab.type),
       icon: <CloseCircleOutlined />,
     },
     {
       key: 'rename',
-      label: t('Rename...'),
+      label: t('RENAME_ELLIPSIS'),
       disabled: tab.type === TabType.ROBOT,
       onClick: () => handleOpenRenameModal(tab),
       icon: <EditOutlined />,
     },
     {
       key: 'delete',
-      label: t('Delete...'),
+      label: t('DELETE_ELLIPSIS'),
       disabled: tab.type === TabType.ROBOT,
       icon: <DeleteOutlined />,
       onClick: () => handleDeleteTab(tab),
     },
     {
       key: 'copy',
-      label: t('Copy...'),
+      label: t('COPY_ELLIPSIS'),
       disabled: tab.type === TabType.ROBOT,
       icon: <CopyOutlined />,
       onClick: () => handleOpenCopyModal(tab),
@@ -364,8 +366,7 @@ export function Component(props: TabsProps): React.JSX.Element {
       />
 
       <Antd.Modal
-        title={`Rename ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${currentTab ? currentTab.title : ''
-          }`}
+        title={t('RENAME_TYPE_TITLE', { type: currentTab ? TabTypeUtils.toString(currentTab.type) : '', title: currentTab ? currentTab.title : '' })}
         open={renameModalOpen}
         onCancel={() => setRenameModalOpen(false)}
         onOk={() => {
@@ -373,8 +374,8 @@ export function Component(props: TabsProps): React.JSX.Element {
             handleRename(currentTab.key, name);
           }
         }}
-        okText={t('Rename')}
-        cancelText={t('Cancel')}
+        okText={t('RENAME')}
+        cancelText={t('CANCEL')}
       >
         {currentTab && (
           <ClassNameComponent
@@ -394,8 +395,7 @@ export function Component(props: TabsProps): React.JSX.Element {
       </Antd.Modal>
 
       <Antd.Modal
-        title={`Copy ${currentTab ? TabTypeUtils.toString(currentTab.type) : ''}: ${currentTab ? currentTab.title : ''
-          }`}
+        title={t('COPY_TYPE_TITLE', { type: currentTab ? TabTypeUtils.toString(currentTab.type) : '', title: currentTab ? currentTab.title : '' })}
         open={copyModalOpen}
         onCancel={() => setCopyModalOpen(false)}
         onOk={() => {
@@ -403,8 +403,8 @@ export function Component(props: TabsProps): React.JSX.Element {
             handleCopy(currentTab.key, name);
           }
         }}
-        okText={t('Copy')}
-        cancelText={t('Cancel')}
+        okText={t('COPY')}
+        cancelText={t('CANCEL')}
       >
         {currentTab && (
           <ClassNameComponent

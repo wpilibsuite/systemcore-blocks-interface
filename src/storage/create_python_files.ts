@@ -29,7 +29,6 @@ import { parseModuleContentText } from './module_content';
 import { Project } from './project';
 import { pascalCaseToSnakeCase } from './names';
 import JSZip from 'jszip';
-import { GeneratorContext } from '../editor/generator_context';
 
 /** Result of Python code generation for a single module */
 interface ModulePythonResult {
@@ -66,18 +65,10 @@ async function generatePythonForModule(module: Module, storage: Storage): Promis
 
     // Parse and load the JSON into the workspace
     const blocks = moduleContent.getBlocks();
-
     Blockly.serialization.workspaces.load(blocks, workspace);
 
-    // Create and set up generator context like the editor does
-    const generatorContext = new GeneratorContext();
-    generatorContext.setModule(module);
-
-    // Initialize the generator
-    extendedPythonGenerator.init(workspace);
-
-    // Generate Python code using the same method as the editor
-    const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(workspace, generatorContext);
+    // Generate Python code.
+    const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(workspace, module);
 
     // Clean up the workspace
     workspace.dispose();

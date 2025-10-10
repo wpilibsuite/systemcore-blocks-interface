@@ -31,6 +31,10 @@ import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import * as storageNames from '../storage/names';
+import {
+    BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
+    MechanismComponentHolderBlock,
+    mrcDescendantsMayHaveChanged } from './mrc_mechanism_component_holder';
 import { renameMethodCallers } from './mrc_call_python_function'
 import { renameMechanismName as renameMechanismNameInEventHandlers } from './mrc_event_handler'
 import { createPort } from './mrc_port';
@@ -53,6 +57,7 @@ type MechanismExtraState = {
   parameters?: Parameter[],
 }
 
+const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
 const WARNING_ID_MECHANISM_CHANGED = 'mechanism changed';
 
 export type MechanismBlock = Blockly.Block & MechanismMixin & Blockly.BlockSvg;
@@ -61,6 +66,15 @@ interface MechanismMixin extends MechanismMixinType {
   mrcMechanismId: string,
   mrcImportModule: string,
   mrcParameters: Parameter[],
+
+  /**
+   * mrcHasNotInHolderWarning is set to true if we set the NOT_IN_HOLDER warning text on the block.
+   * It is checked to avoid adding a warning if there already is one. Otherwise, if we get two move
+   * events (one for drag and one for snap), and we call setWarningText for both events, we get a
+   * detached warning balloon.
+   * See https://github.com/wpilibsuite/systemcore-blocks-interface/issues/248.
+   */
+  mrcHasNotInHolderWarning: boolean,
 }
 type MechanismMixinType = typeof MECHANISM;
 
@@ -69,12 +83,13 @@ const MECHANISM = {
     * Block initialization.
     */
   init: function (this: MechanismBlock): void {
+    this.mrcHasNotInHolderWarning = false;
     this.setStyle(MRC_STYLE_MECHANISMS);
     const nameField = new Blockly.FieldTextInput('')
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     this.appendDummyInput()
       .appendField(nameField, FIELD_NAME)
-      .appendField(Blockly.Msg.OF_TYPE)
+      .appendField(Blockly.Msg['OF_TYPE'])
       .appendField(createFieldNonEditableText(''), FIELD_TYPE);
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
@@ -91,8 +106,8 @@ const MECHANISM = {
     extraState.parameters = [];
     this.mrcParameters.forEach((arg) => {
       extraState.parameters!.push({
-        'name': arg.name,
-        'type': arg.type,
+        name: arg.name,
+        type: arg.type,
       });
     });
     if (this.mrcImportModule) {
@@ -174,11 +189,61 @@ const MECHANISM = {
       className: mechanismType,
     };
   },
+
+  /**
+   * mrcOnModuleCurrent is called for each MechanismBlock when the module becomes the current module.
+   */
+  mrcOnModuleCurrent: function(this: MechanismBlock): void {
+    this.checkMechanism();
+  },
+  /**
+   * mrcOnLoad is called for each MechanismBlock when the blocks are loaded in the blockly
+   * workspace.
+   */
   mrcOnLoad: function(this: MechanismBlock): void {
-    // mrcOnLoad is called for each MechanismBlock when the blocks are loaded in the blockly workspace.
+    this.checkBlockIsInHolder();
+    this.checkMechanism();
+  },
+  /**
+   * mrcOnMove is called when a MechanismBlock is moved.
+   */
+  mrcOnMove: function(this: MechanismBlock, reason: string[]): void {
+    this.checkBlockIsInHolder();
+    if (reason.includes('connect')) {
+      const rootBlock: Blockly.Block | null = this.getRootBlock();
+      if (rootBlock && rootBlock.type === MRC_MECHANISM_COMPONENT_HOLDER) {
+        (rootBlock as MechanismComponentHolderBlock).setNameOfChildBlock(this);
+      }
+    }
+    mrcDescendantsMayHaveChanged(this.workspace);
+  },
+  checkBlockIsInHolder: function(this: MechanismBlock): void {
+    const rootBlock: Blockly.Block | null = this.getRootBlock();
+    if (rootBlock && rootBlock.type === MRC_MECHANISM_COMPONENT_HOLDER) {
+      // If the root block is the mechanism_component_holder, the mechanism block is allowed to stay.
+      // Remove any previous warning.
+      this.setWarningText(null, WARNING_ID_NOT_IN_HOLDER);
+      this.mrcHasNotInHolderWarning = false;
+    } else {
+      // Otherwise, add a warning to the block.
+      if (!this.mrcHasNotInHolderWarning) {
+        this.setWarningText(Blockly.Msg.WARNING_MECHANISM_NOT_IN_HOLDER, WARNING_ID_NOT_IN_HOLDER);
+        const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+        if (icon) {
+          icon.setBubbleVisible(true);
+        }
+        this.mrcHasNotInHolderWarning = true;
+      }
+    }
+  },
+  /**
+   * checkMechanism checks the block, updates it, and/or adds a warning balloon if necessary.
+   * It is called from mrcOnModuleCurrent and mrcOnLoad above.
+   */
+  checkMechanism: function(this: MechanismBlock): void {
     const warnings: string[] = [];
 
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
     if (editor) {
       // Find the mechanism.
       let foundMechanism: storageModule.Mechanism | null = null;
@@ -229,7 +294,7 @@ const MECHANISM = {
         this.updateBlock_();
       } else {
         // Did not find the mechanism.
-        warnings.push('This block refers to a mechanism that no longer exists.');
+        warnings.push(Blockly.Msg['MECHANISM_NOT_FOUND_WARNING']);
       }
     }
 

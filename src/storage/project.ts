@@ -25,7 +25,7 @@ import * as commonStorage from './common_storage';
 import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
-import { upgradeProjectIfNecessary } from './upgrade_project';
+import { upgradeProjectIfNecessary, CURRENT_VERSION, NO_VERSION } from './upgrade_project';
 
 // Types, constants, and functions related to projects, regardless of where the projects are stored.
 
@@ -35,9 +35,6 @@ export type Project = {
   mechanisms: storageModule.Mechanism[],
   opModes: storageModule.OpMode[],
 };
-
-const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.2';
 
 export type ProjectInfo = {
   version: string,
@@ -316,50 +313,9 @@ export async function copyModuleInProject(
   moduleContent.changeIds();
   moduleContentText = moduleContent.getModuleContentText();
 
-  await storage.saveFile(newModulePath, moduleContentText);
-
-  // Update the project's mechanisms or opModes.
-  const newModule = {
-    modulePath: newModulePath,
-    moduleType: oldModule.moduleType,
-    projectName: project.projectName,
-    className: newClassName
-  };
-  switch (oldModule.moduleType) {
-    case storageModule.ModuleType.MECHANISM:
-      project.mechanisms.push(newModule as storageModule.Mechanism);
-      break;
-    case storageModule.ModuleType.OPMODE:
-      project.opModes.push(newModule as storageModule.OpMode);
-      break;
-  }
-  await saveProjectInfo(storage, project.projectName);
+  await addModuleToProject(storage, project, oldModule.moduleType, newClassName);
 
   return newModulePath;
-}
-
-/**
- * Checks if the proposed class name is valid and does not conflict with existing names in the project.
- * @param project The project to check against.
- * @param proposedClassName The proposed class name to validate.
- * @returns An object containing a boolean `ok` indicating if the name is valid, and an `error` message if it is not.
- */
-export function isClassNameOk(project: Project, proposedClassName: string) {
-  let ok = true;
-  let error = '';
-
-  if (!storageNames.isValidClassName(proposedClassName)) {
-    ok = false;
-    error = proposedClassName + ' is not a valid name. Please enter a different name.';
-  } else if (findModuleByClassName(project, proposedClassName) != null) {
-    ok = false;
-    error = 'Another Mechanism or OpMode is already named ' + proposedClassName + '. Please enter a different name.'
-  }
-
-  return {
-    ok: ok,
-    error: error
-  }
 }
 
 /**
