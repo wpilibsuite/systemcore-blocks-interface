@@ -22,6 +22,7 @@
 import * as Blockly from 'blockly';
 
 import { MRC_STYLE_EVENTS } from '../themes/styles'
+import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Parameter } from './mrc_class_method_def';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as paramContainer from './mrc_param_container'
@@ -165,8 +166,7 @@ const EVENT = {
         this.removeParameterFields(input);
         this.mrcParameters.forEach((param) => {
           const paramName = FIELD_PARAM_PREFIX + param.name;
-          const field = new Blockly.FieldTextInput(param.name);
-          field.EDITABLE = false;
+          const field = createFieldNonEditableText(param.name);
           input.appendField(field, paramName);
         });
       }
