@@ -33,12 +33,15 @@ import { getClassData } from './utils/python';
 import { FunctionData } from './utils/python_json_types';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
-import { MUTATOR_BLOCK_NAME, PARAM_CONTAINER_BLOCK_NAME, MethodMutatorArgBlock } from './mrc_param_container'
+import * as paramContainer from './mrc_param_container'
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
+const INPUT_TITLE = 'TITLE';
 export const FIELD_METHOD_NAME = 'NAME';
-export const RETURN_VALUE = 'RETURN';
+const FIELD_PARAM_PREFIX = 'PARAM_';
+const INPUT_STACK = 'STACK';
+export const INPUT_RETURN = 'RETURN';
 
 export interface Parameter {
   name: string;
@@ -100,12 +103,12 @@ const CLASS_METHOD_DEF = {
    * Block initialization.
    */
   init: function (this: ClassMethodDefBlock): void {
-    this.appendDummyInput("TITLE")
+    this.mrcParameters = [];
+    this.appendDummyInput(INPUT_TITLE)
         .appendField('', FIELD_METHOD_NAME);
     this.setOutput(false);
     this.setStyle(MRC_STYLE_FUNCTIONS);
-    this.appendStatementInput('STACK').appendField('');
-    this.mrcParameters = [];
+    this.appendStatementInput(INPUT_STACK).appendField('');
     this.setPreviousStatement(false);
     this.setNextStatement(false);
     this.updateBlock_();
@@ -159,7 +162,7 @@ const CLASS_METHOD_DEF = {
    */
   updateBlock_: function (this: ClassMethodDefBlock): void {
     const name = this.getFieldValue(FIELD_METHOD_NAME);
-    const input = this.getInput('TITLE');
+    const input = this.getInput(INPUT_TITLE);
     if (!input) {
       return;
     }
@@ -168,7 +171,7 @@ const CLASS_METHOD_DEF = {
     if (this.mrcCanChangeSignature) {
       const nameField = new Blockly.FieldTextInput(name);
       input.insertFieldAt(0, nameField, FIELD_METHOD_NAME);
-      this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
+      this.setMutator(paramContainer.getMutatorIcon(this));
       nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     } else {
       input.insertFieldAt(0, createFieldNonEditableText(name), FIELD_METHOD_NAME);
@@ -178,24 +181,26 @@ const CLASS_METHOD_DEF = {
     this.mrcUpdateParams();
     this.mrcUpdateReturnInput();
   },
-  compose: function (this: ClassMethodDefBlock, containerBlock: any) {
-    // Parameter list.
+  compose: function (this: ClassMethodDefBlock, containerBlock: Blockly.Block) {
+    if (containerBlock.type !== paramContainer.PARAM_CONTAINER_BLOCK_NAME) {
+      throw new Error('compose: containerBlock.type should be ' + paramContainer.PARAM_CONTAINER_BLOCK_NAME);
+    }
+    const paramContainerBlock = containerBlock as paramContainer.ParamContainerBlock;
+    const paramItemBlocks: paramContainer.ParamItemBlock[] = paramContainerBlock.getParamItemBlocks();
+
     this.mrcParameters = [];
 
-    let paramBlock = containerBlock.getInputTargetBlock('STACK');
-    while (paramBlock) {
+    paramItemBlocks.forEach(paramItemBlock => {
+      const itemName = paramItemBlock.getName();
       const param: Parameter = {
-        name: paramBlock.getFieldValue('NAME'),
+        name: itemName,
         type: ''
       };
-      if (paramBlock.originalName) {
-        // This is a mutator arg block, so we can get the original name.
-        this.mrcRenameParameter(paramBlock.originalName, param.name);
-        paramBlock.originalName = param.name;
-      }
+      this.mrcRenameParameter(paramItemBlock.getOriginalName(), itemName);
+      paramItemBlock.setOriginalName(itemName);
       this.mrcParameters.push(param);
-      paramBlock = paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
-    }
+    });
+
     this.mrcUpdateParams();
     if (this.mrcCanBeCalledWithinClass) {
       const methodForWithin = this.getMethodForWithin();
@@ -205,29 +210,24 @@ const CLASS_METHOD_DEF = {
     }
   },
   decompose: function (this: ClassMethodDefBlock, workspace: Blockly.Workspace) {
-    // This is a special sub-block that only gets created in the mutator UI.
-    // It acts as our "top block"
-    const topBlock = workspace.newBlock(PARAM_CONTAINER_BLOCK_NAME);
-    (topBlock as Blockly.BlockSvg).initSvg();
-
-    // Then we add one sub-block for each item in the list.
-    let connection = topBlock!.getInput('STACK')!.connection;
-
-    for (let i = 0; i < this.mrcParameters.length; i++) {
-      const itemBlock = workspace.newBlock(MUTATOR_BLOCK_NAME);
-      (itemBlock as Blockly.BlockSvg).initSvg();
-      itemBlock.setFieldValue(this.mrcParameters[i].name, 'NAME');
-      (itemBlock as MethodMutatorArgBlock).originalName = this.mrcParameters[i].name;
-
-      connection!.connect(itemBlock.previousConnection!);
-      connection = itemBlock.nextConnection;
-    }
-    return topBlock;
+    const parameterNames: string[] = [];
+    this.mrcParameters.forEach(parameter => {
+      parameterNames.push(parameter.name);
+    });
+    return paramContainer.createMutatorBlocks(workspace, parameterNames);
+  },
+  /**
+   * mrcOnMutatorOpen is called when the mutator on a ClassMethodDefBlock is opened.
+   */
+  mrcOnMutatorOpen: function(this: ClassMethodDefBlock): void {
+    paramContainer.onMutatorOpen(this);
   },
   mrcRenameParameter: function (this: ClassMethodDefBlock, oldName: string, newName: string) {
-    const nextBlock = this.getInputTargetBlock('STACK');
+    const nextBlock = this.getInputTargetBlock(INPUT_STACK);
     if (nextBlock) {
       findConnectedBlocksOfType(nextBlock, MRC_GET_PARAMETER_BLOCK_NAME).forEach((block) => {
+        // TODO(lizlooney): add methods getParameterName and setParameterName to GetParameterBlock
+        // in mrc_get_parameter.ts and call them here.
         if (block.getFieldValue('PARAMETER_NAME') === oldName) {
           block.setFieldValue(newName, 'PARAMETER_NAME');
         }
@@ -236,11 +236,11 @@ const CLASS_METHOD_DEF = {
   },
   mrcUpdateParams: function (this: ClassMethodDefBlock) {
     if (this.mrcParameters.length > 0) {
-      const input = this.getInput('TITLE');
+      const input = this.getInput(INPUT_TITLE);
       if (input) {
         this.removeParameterFields(input);
         this.mrcParameters.forEach((param) => {
-          const paramName = 'PARAM_' + param.name;                    
+          const paramName = FIELD_PARAM_PREFIX + param.name;
           input.appendField(createFieldFlydown(param.name, false), paramName);
         });
       }
@@ -248,22 +248,22 @@ const CLASS_METHOD_DEF = {
   },
   mrcUpdateReturnInput: function (this: ClassMethodDefBlock) {
     // Remove existing return input if it exists
-    if (this.getInput(RETURN_VALUE)) {
-      this.removeInput(RETURN_VALUE);
+    if (this.getInput(INPUT_RETURN)) {
+      this.removeInput(INPUT_RETURN);
     }
         
     // Add return input if return type is not 'None'
     if (this.mrcReturnType && this.mrcReturnType !== 'None') {
-      this.appendValueInput(RETURN_VALUE)
+      this.appendValueInput(INPUT_RETURN)
           .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(Blockly.Msg.PROCEDURES_DEFRETURN_RETURN);
       // Move the return input to be after the statement input
-      this.moveInputBefore('STACK', RETURN_VALUE);
+      this.moveInputBefore(INPUT_STACK, INPUT_RETURN);
     }
   },
   removeParameterFields: function (input: Blockly.Input) {
     const fieldsToRemove = input.fieldRow
-        .filter(field => field.name?.startsWith('PARAM_'))
+        .filter(field => field.name?.startsWith(FIELD_PARAM_PREFIX))
         .map(field => field.name!);
 
     fieldsToRemove.forEach(fieldName => {
@@ -436,12 +436,12 @@ export const pythonFromBlock = function (
     );
   }
   let branch = '';
-  if (block.getInput('STACK')) {
-    branch = generator.statementToCode(block, 'STACK');
+  if (block.getInput(INPUT_STACK)) {
+    branch = generator.statementToCode(block, INPUT_STACK);
   }
   let returnValue = '';
-  if (block.getInput('RETURN')) {
-    returnValue = generator.valueToCode(block, 'RETURN', Order.NONE) || '';
+  if (block.getInput(INPUT_RETURN)) {
+    returnValue = generator.valueToCode(block, INPUT_RETURN, Order.NONE) || '';
   }
   let xfix2 = '';
   if (branch && returnValue) {
@@ -465,7 +465,7 @@ export const pythonFromBlock = function (
   }
 
   const params = block.mrcParameters;
-  let paramString = "self";
+  let paramString = 'self';
   if (generator.getModuleType() === storageModule.ModuleType.MECHANISM && block.mrcPythonMethodName === '__init__') {
     const ports: string[] = generator.getComponentPortParameters();
     if (ports.length) {
@@ -527,7 +527,7 @@ export function createCustomMethodBlockWithReturn(): toolboxItems.Block {
   const fields: {[key: string]: any} = {};
   fields[FIELD_METHOD_NAME] = 'my_method_with_return';
   const inputs: {[key: string]: any} = {};
-  inputs[RETURN_VALUE] = {
+  inputs[INPUT_RETURN] = {
     type: 'input_value',
   };
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, inputs);

@@ -46,7 +46,6 @@ import * as CustomBlocks from './blocks/setup_custom_blocks';
 
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
 import { registerToolboxButton } from './blocks/mrc_event_handler'
-import { mutatorOpenListener } from './blocks/mrc_param_container'
 import { TOOLBOX_UPDATE_EVENT } from './blocks/mrc_mechanism_component_holder';
 import { antdThemeFromString } from './reactComponents/ThemeModal';
 import { useTranslation } from 'react-i18next';
@@ -486,7 +485,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       return;
     }
 
-    newWorkspace.addChangeListener(mutatorOpenListener);
     newWorkspace.addChangeListener(handleBlocksChanged);
 
     registerToolboxButton(newWorkspace, messageApi);
