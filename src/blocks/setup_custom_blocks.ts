@@ -19,6 +19,7 @@ import * as ParamContainer from './mrc_param_container'
 import * as Port from './mrc_port';
 import * as SetPythonVariable from './mrc_set_python_variable';
 import * as Steps from './mrc_steps';
+import * as AdvanceToStep from './mrc_advance_to_step';
 
 const customBlocks = [
   CallPythonFunction,
@@ -41,6 +42,7 @@ const customBlocks = [
   Port,
   SetPythonVariable,
   Steps,
+  AdvanceToStep
 ];
 
 export const setup = function(forBlock: any) {
