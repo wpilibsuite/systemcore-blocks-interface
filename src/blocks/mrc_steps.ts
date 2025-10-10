@@ -23,6 +23,8 @@ import * as Blockly from 'blockly';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
+import { createStepFieldFlydown } from '../fields/field_flydown';
+import * as paramContainer from './mrc_param_container'
 
 export const BLOCK_NAME = 'mrc_steps';
 const MUTATOR_BLOCK_NAME = 'steps_mutatorarg';
@@ -42,26 +44,43 @@ const STEPS = {
             .appendField(createFieldNonEditableText('steps'));
         this.appendDummyInput()
             .appendField('Step')
-            .appendField(new Blockly.FieldTextInput('0'));
+            .appendField(createStepFieldFlydown('0', false));
         this.appendStatementInput('STEP_0');
         this.appendValueInput('CONDITION_0')
             .setCheck('Boolean')
             .appendField('Advance when');
         this.appendDummyInput()
             .appendField('Step')
-            .appendField(new Blockly.FieldTextInput('1'));
+            .appendField(createStepFieldFlydown('1', false));
         this.appendStatementInput('STEP_1');
         this.appendValueInput('CONDITION_1')
             .setCheck('Boolean')
             .appendField('Finish when');
         this.setInputsInline(false);
         this.setStyle(MRC_STYLE_FUNCTIONS);
-        this.setMutator(new Blockly.icons.MutatorIcon([MUTATOR_BLOCK_NAME], this));
-        
-  }
+        this.setMutator(paramContainer.getMutatorIcon(this));
+  },
+    compose: function (this: StepsBlock, containerBlock: Blockly.Block) {
+      if (containerBlock.type !== paramContainer.PARAM_CONTAINER_BLOCK_NAME) {
+        throw new Error('compose: containerBlock.type should be ' + paramContainer.PARAM_CONTAINER_BLOCK_NAME);
+      }
+      const paramContainerBlock = containerBlock as paramContainer.ParamContainerBlock;
+      const paramItemBlocks: paramContainer.ParamItemBlock[] = paramContainerBlock.getParamItemBlocks();
+  
+    },
+    decompose: function (this: StepsBlock, workspace: Blockly.Workspace) {
+      const parameterNames: string[] = [];
+
+      return paramContainer.createMutatorBlocks(workspace, parameterNames);
+    },
+};
+
+const MUTATOR_STEPS = {
+
 };
 
 export const setup = function () {
+    Blockly.Blocks[MUTATOR_BLOCK_NAME] = MUTATOR_STEPS;
     Blockly.Blocks[BLOCK_NAME] = STEPS;
 };
 
