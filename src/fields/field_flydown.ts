@@ -179,10 +179,17 @@ export class FieldFlydown extends Blockly.FieldTextInput {
     private boundMouseOutHandler_: (e: Event) => void;
     private showTimeout_: number | null = null;
     private hideTimeout_: number | null = null;
+    private createFlyoutDefinition_: (text: string) => Blockly.utils.toolbox.FlyoutDefinition;
 
-    constructor(value: string, isEditable: boolean, displayLocation: FlydownLocation = FlydownLocation.DISPLAY_RIGHT) {
+    constructor(
+        value: string, 
+        isEditable: boolean, 
+        createFlyoutDefinition: (text: string) => Blockly.utils.toolbox.FlyoutDefinition,
+        displayLocation: FlydownLocation = FlydownLocation.DISPLAY_RIGHT
+    ) {
         super(value);
         this.EDITABLE = isEditable;
+        this.createFlyoutDefinition_ = createFlyoutDefinition;
         this.displayLocation_ = displayLocation;
 
         // Bind the handlers
@@ -309,17 +316,7 @@ export class FieldFlydown extends Blockly.FieldTextInput {
     }
     private getBlocksForFlydown_() {
         const name = this.getText();
-        return {
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'mrc_get_parameter',
-                    fields: {
-                        PARAMETER_NAME: name,
-                    },
-                },
-            ]
-        };
+        return this.createFlyoutDefinition_(name);
     }
 
 
@@ -372,9 +369,48 @@ export class FieldFlydown extends Blockly.FieldTextInput {
         }
         super.dispose();
     }
-
 }
 
-export function createFieldFlydown(label: string, isEditable: boolean): Blockly.Field {
-    return new FieldFlydown(label, isEditable);
+export function createParameterBlock(paramName: string): Blockly.utils.toolbox.FlyoutDefinition {
+    return {
+        contents: [
+            {
+                kind: 'block',
+                type: 'mrc_get_parameter',
+                fields: {
+                    PARAMETER_NAME: paramName,
+                },
+            },
+        ]
+    };
+}
+
+export function createAdvanceToBlock(stepName: string): Blockly.utils.toolbox.FlyoutDefinition {
+    return {
+        contents: [
+            {
+                kind: 'block',
+                type: 'mrc_advance_to_step',
+                fields: {
+                    STEP_NAME: stepName,
+                },
+            },
+        ]
+    };
+}
+
+export function createFieldFlydown(
+    label: string, 
+    isEditable: boolean,
+    createFlyoutDefinition: (text: string) => Blockly.utils.toolbox.FlyoutDefinition
+): Blockly.Field {
+    return new FieldFlydown(label, isEditable, createFlyoutDefinition);
+}
+
+export function createParameterFieldFlydown(paramName: string, isEditable: boolean): Blockly.Field {
+    return new FieldFlydown(paramName, isEditable, createParameterBlock);
+}
+
+export function createStepFieldFlydown(paramName: string, isEditable: boolean): Blockly.Field {
+    return new FieldFlydown(paramName, isEditable, createAdvanceToBlock);
 }
