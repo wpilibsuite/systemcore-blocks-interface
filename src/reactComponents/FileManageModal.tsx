@@ -40,7 +40,7 @@ interface FileManageModalProps {
   isOpen: boolean;
   onClose: () => void;
   project: storageProject.Project | null;
-  setProject: (project: storageProject.Project | null) => void;
+  onProjectChanged: () => Promise<void>;
   gotoTab: (path: string) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
@@ -64,11 +64,6 @@ export default function FileManageModal(props: FileManageModalProps) {
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
-  const triggerProjectUpdate = (): void => {
-    if (props.project) {
-      props.setProject({...props.project});
-    }
-  }
   React.useEffect(() => {
     if (!props.project || props.tabType === null) {
       setModules([]);
@@ -109,6 +104,7 @@ export default function FileManageModal(props: FileManageModalProps) {
           newClassName,
           origModule.path
       );
+      await props.onProjectChanged();
 
       const newModules = modules.map((module) => {
         if (module.path === origModule.path) {
@@ -118,7 +114,6 @@ export default function FileManageModal(props: FileManageModalProps) {
       });
 
       setModules(newModules);
-      triggerProjectUpdate();
 
       // Close the rename modal first
       setRenameModalOpen(false);
@@ -147,6 +142,7 @@ export default function FileManageModal(props: FileManageModalProps) {
           newClassName,
           origModule.path
       );
+      await props.onProjectChanged();
 
       const originalModule = modules.find((module) => module.path === origModule.path);
       if (!originalModule) {
@@ -165,7 +161,6 @@ export default function FileManageModal(props: FileManageModalProps) {
       newModules.push(newModule);
 
       setModules(newModules);
-      triggerProjectUpdate();
       
       // Close the copy modal first
       setCopyModalOpen(false);
@@ -197,6 +192,7 @@ export default function FileManageModal(props: FileManageModalProps) {
         moduleType,
         newClassName
     );
+    await props.onProjectChanged();
 
     const newModule = storageProject.findModuleByClassName(props.project, newClassName);
     if (newModule) {
@@ -212,7 +208,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     if(newModule){
       props.gotoTab(newModule.modulePath);
     }
-    triggerProjectUpdate();
+
     props.onClose();
   };
 
@@ -227,7 +223,7 @@ export default function FileManageModal(props: FileManageModalProps) {
           props.project,
           record.path
       );
-      triggerProjectUpdate();
+      await props.onProjectChanged();
     }
   };
 

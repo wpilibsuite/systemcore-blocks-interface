@@ -528,61 +528,77 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     }
   }, [shownPythonToolboxCategories]);
 
-  // Fetch modules when project changes.
+  // Fetch any unfetched modules when project changes.
   React.useEffect(() => {
-    if (project && storage) {
-      const fetchModules = async () => {
-        const promises: {[modulePath: string]: Promise<string>} = {}; // value is promise of module content.
-        promises[project.robot.modulePath] = storage.fetchFileContentText(project.robot.modulePath);
-        project.mechanisms.forEach(mechanism => {
-          promises[mechanism.modulePath] = storage.fetchFileContentText(mechanism.modulePath);
-        });
-        project.opModes.forEach(opmode => {
-          promises[opmode.modulePath] = storage.fetchFileContentText(opmode.modulePath);
-        });
-        const updatedModulePathToContentText: {[modulePath: string]: string} = {}; // value is module content text
-        await Promise.all(
-          Object.entries(promises).map(async ([modulePath, promise]) => {
-            updatedModulePathToContentText[modulePath] = await promise;
-          })
-        );
-        const oldModulePathToContentText = modulePathToContentText;
-        setModulePathToContentText(updatedModulePathToContentText);
-
-        // Remove any deleted modules from modulePaths, modulePathToBlocklyComponent, and
-        // modulePathToEditor. Update currentModule if the current module was deleted.
-        for (const modulePath in oldModulePathToContentText) {
-          if (modulePath in updatedModulePathToContentText) {
-            continue;
-          }
-          if (currentModule && currentModule.modulePath === modulePath) {
-            setCurrentModule(project.robot);
-            setActiveTab(project.robot.modulePath);
-          }
-          const indexToRemove: number = modulePaths.current.indexOf(modulePath);
-          if (indexToRemove !== -1) {
-            modulePaths.current.splice(indexToRemove, 1);
-          }
-          if (modulePath in modulePathToBlocklyComponent.current) {
-            delete modulePathToBlocklyComponent.current[modulePath];
-          }
-          if (modulePath in modulePathToEditor.current) {
-            const editor = modulePathToEditor.current[modulePath];
-            editor.abandon();
-            delete modulePathToEditor.current[modulePath];
-          }
-        }
-      };
-      fetchModules();
-    }
+    fetchModules();
   }, [project]);
+
+  const fetchModules = async () => {
+    if (!project || !storage) {
+      return;
+    }
+    const oldModulePathToContentText = modulePathToContentText;
+    const promises: {[modulePath: string]: Promise<string>} = {}; // value is promise of module content.
+    const updatedModulePathToContentText: {[modulePath: string]: string} = {}; // value is module content text
+    if (project.robot.modulePath in modulePathToContentText) {
+      updatedModulePathToContentText[project.robot.modulePath] = modulePathToContentText[project.robot.modulePath];
+    } else {
+      promises[project.robot.modulePath] = storage.fetchFileContentText(project.robot.modulePath);
+    }
+    project.mechanisms.forEach(mechanism => {
+      if (mechanism.modulePath in modulePathToContentText) {
+        updatedModulePathToContentText[mechanism.modulePath] = modulePathToContentText[mechanism.modulePath];
+      } else {
+        promises[mechanism.modulePath] = storage.fetchFileContentText(mechanism.modulePath);
+      }
+    });
+    project.opModes.forEach(opmode => {
+      if (opmode.modulePath in modulePathToContentText) {
+        updatedModulePathToContentText[opmode.modulePath] = modulePathToContentText[opmode.modulePath];
+      } else {
+        promises[opmode.modulePath] = storage.fetchFileContentText(opmode.modulePath);
+      }
+    });
+    if (Object.keys(promises).length) {
+      await Promise.all(
+        Object.entries(promises).map(async ([modulePath, promise]) => {
+          updatedModulePathToContentText[modulePath] = await promise;
+        })
+      );
+      setModulePathToContentText(updatedModulePathToContentText);
+    }
+
+    // Remove any deleted modules from modulePaths, modulePathToBlocklyComponent, and
+    // modulePathToEditor. Update currentModule if the current module was deleted.
+    for (const modulePath in oldModulePathToContentText) {
+      if (modulePath in updatedModulePathToContentText) {
+        continue;
+      }
+      if (currentModule && currentModule.modulePath === modulePath) {
+        setCurrentModule(project.robot);
+        setActiveTab(project.robot.modulePath);
+      }
+      const indexToRemove: number = modulePaths.current.indexOf(modulePath);
+      if (indexToRemove !== -1) {
+        modulePaths.current.splice(indexToRemove, 1);
+      }
+      if (modulePath in modulePathToBlocklyComponent.current) {
+        delete modulePathToBlocklyComponent.current[modulePath];
+      }
+      if (modulePath in modulePathToEditor.current) {
+        const editor = modulePathToEditor.current[modulePath];
+        editor.abandon();
+        delete modulePathToEditor.current[modulePath];
+      }
+    }
+  };
 
   // Load saved tabs when project changes
   React.useEffect(() => {
     const loadSavedTabs = async () => {
       if (project && !isLoading) {
         setIsLoadingTabs(true);
-        
+
         // Add a small delay to ensure UserSettingsProvider context is updated
         await new Promise(resolve => setTimeout(resolve, 0));
         
@@ -705,7 +721,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         }
         return tab;
       });
-      
+
       // Only update if something actually changed
       const titlesChanged = updatedTabs.some((tab, index) => tab.title !== tabItems[index]?.title);
       if (titlesChanged) {
@@ -733,6 +749,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     const timeoutId = setTimeout(saveTabs, 100);
     return () => clearTimeout(timeoutId);
   }, [tabItems, project?.projectName, isLoadingTabs]);
+
+  const onProjectChanged = async (): Promise<void> => {
+    await fetchModules();
+  };
 
   const { Sider, Content } = Antd.Layout;
 
@@ -766,6 +786,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 gotoTab={setActiveTab}
                 project={project}
                 setProject={setProject}
+                onProjectChanged={onProjectChanged}
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 theme={theme}
                 setTheme={setTheme}
@@ -784,7 +805,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 currentModule={currentModule}
                 setCurrentModule={changeModule}
                 project={project}
-                setProject={setProject}
+                onProjectChanged={onProjectChanged}
                 storage={storage}
               />
               <div style={{ display: 'flex', height: FULL_HEIGHT }}>
