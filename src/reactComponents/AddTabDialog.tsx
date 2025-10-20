@@ -41,7 +41,7 @@ interface AddTabDialogProps {
   onOk: (newTab: TabItem) => void;
   onCancel: () => void;
   project: storageProject.Project | null;
-  setProject: (project: storageProject.Project | null) => void;
+  onProjectChanged: () => Promise<void>;
   currentTabs: TabItem[];
   storage: commonStorage.Storage | null;
 }
@@ -111,6 +111,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
 
     await storageProject.addModuleToProject(
         props.storage, props.project, moduleType, newClassName);
+    await props.onProjectChanged();
 
     const newModule = storageProject.findModuleByClassName(props.project, newClassName);
     if (newModule) {

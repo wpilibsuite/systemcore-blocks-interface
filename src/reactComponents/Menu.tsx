@@ -60,6 +60,7 @@ export interface MenuProps {
   gotoTab: (tabKey: string) => void;
   project: storageProject.Project | null;
   setProject: (project: storageProject.Project | null) => void;
+  onProjectChanged: () => Promise<void>;
   openWPIToolboxSettings: () => void;
   theme: string;
   setTheme: (theme: string) => void;
@@ -429,7 +430,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         project={props.project}
         storage={props.storage}
         tabType={tabType}
-        setProject={props.setProject}
+        onProjectChanged={props.onProjectChanged}
         setAlertErrorMessage={props.setAlertErrorMessage}
         gotoTab={props.gotoTab}
       />
