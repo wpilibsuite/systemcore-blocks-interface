@@ -24,10 +24,13 @@ export function getCategory(): toolboxItems.Category {
     kind: 'block',
     type: 'mrc_port',
     extraState: {
-      ports: [
-        { portType: 'USB Port', portNumber: 1 },
-        { portType: 'Expansion Hub Motor Port', portNumber: 2 },
-      ],
+      portType: 'EXPANSION_HUB_SERVO'
+    },
+    fields: {
+      TYPE_0: 'usb',
+      PORT_NUM_0: '1',
+      TYPE_1: 'servo',
+      PORT_NUM_1: '1'
     },
   });
 
