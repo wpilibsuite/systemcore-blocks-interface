@@ -865,7 +865,7 @@ export function pythonFromBlock(
     generator: ExtendedPythonGenerator,
 ) {
   if (block.mrcImportModule) {
-    generator.addImport(block.mrcImportModule);
+    generator.importModule(block.mrcImportModule);
   }
   let code = '';
   let needOpenParen = true;

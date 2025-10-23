@@ -32,31 +32,21 @@ import {
 import * as storageModule from '../storage/module';
 
 export class OpModeDetails {
-  constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
-  decorations(className : string) : string{
+  constructor(private name: string, private group: string, private enabled: boolean, private type: string) {}
+  generateDecorators(generator: ExtendedPythonGenerator, className: string): string {
     let code = '';
 
-    if (this.enabled){
-      code += '@' + this.type + "\n";
+    if (this.enabled) {
+      const typeDecorator = generator.importModuleName(MODULE_NAME_BLOCKS_BASE_CLASSES, this.type);
+      code += `@${typeDecorator}\n`;
 
-      if (this.name){
-        code += '@Name(' + className + ', "' + this.name + '")\n';
+      if (this.name) {
+        const nameDecorator = generator.importModuleName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'Name');
+        code += `@${nameDecorator}(${className}, "${this.name}")\n`;
       }
-      if (this.group){
-        code += '@Group(' + className + ', "' + this.group + '")\n';
-      }
-    }
-    return code;
-  }
-  imports() : string{
-    let code = '';
-    if (this.enabled){
-      code += 'from ' + MODULE_NAME_BLOCKS_BASE_CLASSES + ' import ' + this.type;
-      if (this.name){
-        code += ', Name';
-      }
-      if (this.group){
-        code += ', Group';
+      if (this.group) {
+        const groupDecorator = generator.importModuleName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'Group');
+        code += `@${groupDecorator}(${className}, "${this.group}")\n`;
       }
     }
 
@@ -68,8 +58,8 @@ export class OpModeDetails {
 // variables that have been defined so they can be used in other modules.
 
 export class ExtendedPythonGenerator extends PythonGenerator {
-  private workspace: Blockly.Workspace | null = null;
   private readonly context: GeneratorContext;
+  private workspace: Blockly.Workspace | null = null;
 
   // Fields related to generating the __init__ for a mechanism.
   private hasAnyComponents = false;
@@ -80,15 +70,19 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   private classMethods: {[key: string]: string} = Object.create(null);
   private registerEventHandlerStatements: string[] = [];
+
+  private importedNames: {[name: string]: string} = Object.create(null); // value is an import statement
+  private fromModuleImportNames: {[module: string]: string[]} = Object.create(null); // value is an array of names being imported from the module.
+
   // Opmode details
-  private details : OpModeDetails | null  = null;
+  private opModeDetails: OpModeDetails | null  = null;
 
   constructor() {
     super('Python');
     this.context = createGeneratorContext();
   }
 
-  init(workspace: Blockly.Workspace){
+  init(workspace: Blockly.Workspace) {
     super.init(workspace);
 
     // super.init will have put all variables in this.definitions_['variables'] but we need to make
@@ -109,7 +103,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
    * This is called from the python generator for the mrc_class_method_def for the
    * init method
    */
-  generateInitStatements() : string {
+  generateInitStatements(): string {
     let initStatements = '';
 
     if (this.getModuleType() === storageModule.ModuleType.MECHANISM && this.hasAnyComponents) {
@@ -135,8 +129,6 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.context.setModule(module);
     this.init(workspace);
 
-    this.hasAnyComponents = false;
-    this.componentPorts = Object.create(null);
     if (this.getModuleType() ===  storageModule.ModuleType.MECHANISM) {
       this.hasAnyComponents = mechanismContainerHolder.hasAnyComponents(workspace);
       mechanismContainerHolder.getComponentPorts(workspace, this.componentPorts);
@@ -145,8 +137,18 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     const code = super.workspaceToCode(workspace);
 
+    // Clean up.
     this.context.setModule(null);
     this.workspace = null;
+    this.hasAnyComponents = false;
+    this.componentPorts = Object.create(null);
+    this.hasAnyEventHandlers = false;
+    this.classMethods = Object.create(null);
+    this.registerEventHandlerStatements = [];
+    this.importedNames = Object.create(null);
+    this.fromModuleImportNames = Object.create(null);
+    this.opModeDetails = null;
+
     return code;
   }
 
@@ -158,21 +160,53 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   /**
-   * Add an import statement for a python module.
-   * If the given moduleOrClass is in the blocks_base_classes package, the simple name is returned.
+   * Import a python module.
    */
-  addImport(moduleOrClass: string): string {
-    const key = 'import_' + moduleOrClass;
+  importModule(module: string): void {
+    const key = 'import_' + module;
+    const importStatement = 'import ' + module;
+    // Note(lizlooney): We can't really handle name collisions for "import <module>" statements.
+    // For the user's code, we could try to do "import <module> as <unique name>", but that would be
+    // more difficulat to do for robotpy modules.
+    this.definitions_[key] = importStatement;
+    this.importedNames[module] = importStatement;
+  }
 
-    if (moduleOrClass.startsWith(MODULE_NAME_BLOCKS_BASE_CLASSES + '.') &&
-        moduleOrClass.lastIndexOf('.') == MODULE_NAME_BLOCKS_BASE_CLASSES.length) {
-      const simpleName = moduleOrClass.substring(MODULE_NAME_BLOCKS_BASE_CLASSES.length + 1);
-      this.definitions_[key] = 'from ' + MODULE_NAME_BLOCKS_BASE_CLASSES + ' import ' + simpleName;
-      return simpleName;
+  /**
+   * Add an import statement of the form "from <module> import <name>".
+   * Returns true if successful.
+   */
+  private fromModuleImportName(module: string, name: string): boolean {
+    const importStatement = 'from ' + module + ' import ' + name;
+    if (name in this.importedNames) {
+      // This name is already in the importedNames map.
+      // If the previously stored value is the same import statement, we don't need to do anything; return true.
+      // Otherwise, we can't import this because the name will collide; return false.
+      return (this.importedNames[name] === importStatement);
     }
+    this.importedNames[name] = importStatement;
 
-    this.definitions_[key] = 'import ' + moduleOrClass;
-    return '';
+    if (!(module in this.fromModuleImportNames)) {
+      this.fromModuleImportNames[module] = [];
+    }
+    this.fromModuleImportNames[module].push(name);
+
+    return true;
+  }
+
+  /**
+   * Import a name from a python module.
+   * If possible, a "from <module> import <name>" import will be used, otherwise a "import <module>"
+   * import will be used.
+   * Returns the name, which may be qualified with the module, that can be used in generated python
+   * code.
+   */
+  importModuleName(module: string, name: string): string {
+    if (this.fromModuleImportName(module, name)) {
+      return name;
+    }
+    this.importModule(module);
+    return module + '.' + name;
   }
 
   /**
@@ -197,57 +231,71 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   finish(code: string): string {
     if (this.workspace) {
       const className = this.context.getClassName();
-      const baseClassName = this.context.getBaseClassName();
-      const decorations = this.details?.decorations(className);
-      const import_decorations = this.details?.imports();
+      const decorators = this.opModeDetails
+          ? this.opModeDetails.generateDecorators(this, className)
+          : '';
 
-      if (import_decorations) {
-        this.definitions_['import_decorations'] = import_decorations;
+      let baseClassName = this.context.getBaseClassName();
+      if (baseClassName.startsWith(MODULE_NAME_BLOCKS_BASE_CLASSES + '.') &&
+          baseClassName.lastIndexOf('.') == MODULE_NAME_BLOCKS_BASE_CLASSES.length) {
+        const simpleName = baseClassName.substring(MODULE_NAME_BLOCKS_BASE_CLASSES.length + 1);
+        if (this.fromModuleImportName(MODULE_NAME_BLOCKS_BASE_CLASSES, simpleName)) {
+          baseClassName = simpleName;
+        } else {
+          this.importModule(MODULE_NAME_BLOCKS_BASE_CLASSES);
+        }
       }
 
-      const simpleBaseClassName = this.addImport(baseClassName);
-      if (!simpleBaseClassName) {
-        throw new Error('addImport for ' + baseClassName + ' did not return a valid simple name')
-      }
+      code = decorators + 'class ' + className + '(' + baseClassName + '):\n';
 
-      const classDef = 'class ' + className + '(' + simpleBaseClassName + '):\n';
       const classMethods = [];
 
-      if (this.registerEventHandlerStatements && this.registerEventHandlerStatements.length > 0) {
-        let code = 'def register_event_handlers(self):\n';
-        for (const registerEventHandlerStatement of this.registerEventHandlerStatements) {
-          code += this.INDENT + registerEventHandlerStatement;
-        }
-        classMethods.push(code);
-      }
       // Generate the __init__ method first.
       if ('__init__' in this.classMethods) {
         classMethods.push(this.classMethods['__init__'])
       }
+
+      // Generate the define_hardware method next.
+      if ('define_hardware' in this.classMethods) {
+        classMethods.push(this.classMethods['define_hardware'])
+      }
+
+      // Generate the register_event_handlers method next.
+      if (this.registerEventHandlerStatements && this.registerEventHandlerStatements.length > 0) {
+        let registerEventHandlers = 'def register_event_handlers(self):\n';
+        for (const registerEventHandlerStatement of this.registerEventHandlerStatements) {
+          registerEventHandlers += this.INDENT + registerEventHandlerStatement;
+        }
+        classMethods.push(registerEventHandlers);
+      }
+
+      // Generate the remaining methods.
       for (const name in this.classMethods) {
-        if (name === '__init__') {
+        if (name === '__init__' || name === 'define_hardware') {
           continue;
         }
         classMethods.push(this.classMethods[name])
       }
-      this.classMethods = Object.create(null);
-      this.registerEventHandlerStatements = [];
-      this.componentPorts = Object.create(null);
-      code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
-      if (decorations){
-        code = decorations + code;
-      }
-      this.details = null;
+
+      code += this.prefixLines(classMethods.join('\n\n'), this.INDENT);
+    }
+
+    // Process the fromModuleImportNames to generate "from <module> import <name1>, <name2>, ..." statements.
+    for (const module in this.fromModuleImportNames) {
+      const names = this.fromModuleImportNames[module];
+      const key = 'import_from_' + module;
+      const importStatement = 'from ' + module + ' import ' + names.sort().join(', ');
+      this.definitions_[key] = importStatement;
     }
 
     return super.finish(code);
   }
 
-  setOpModeDetails(details : OpModeDetails) {
-    this.details = details;
+  setOpModeDetails(opModeDetails: OpModeDetails) {
+    this.opModeDetails = opModeDetails;
   }
 
-  getClassSpecificForInit() : string{
+  getClassSpecificForInit(): string {
     if (this.context?.getBaseClassName() == CLASS_NAME_OPMODE) {
       return 'robot'
     }
@@ -259,7 +307,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
    * knows whether to call super() or not.
    * @returns list of method names
    */
-  getBaseClassMethods() : string[] {
+  getBaseClassMethods(): string[] {
     const methodNames: string[] = [];
 
     const baseClassName = this.context?.getBaseClassName();

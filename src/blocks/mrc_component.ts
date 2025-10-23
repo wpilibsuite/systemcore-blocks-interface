@@ -246,7 +246,7 @@ export const pythonFromBlock = function (
   generator: ExtendedPythonGenerator,
 ) {
   if (block.mrcImportModule) {
-    generator.addImport(block.mrcImportModule);
+    generator.importModule(block.mrcImportModule);
   }
   let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.getFieldValue(FIELD_TYPE) + "(";
 

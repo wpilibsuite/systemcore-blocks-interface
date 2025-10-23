@@ -268,7 +268,7 @@ export const pythonFromBlock = function(
       const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
       if (setPythonVariableBlock.mrcImportModule) {
-        generator.addImport(setPythonVariableBlock.mrcImportModule);
+        generator.importModule(setPythonVariableBlock.mrcImportModule);
       }
       const code = moduleName + '.' + varName + ' = ' + value + '\n';
       return code;
@@ -277,7 +277,7 @@ export const pythonFromBlock = function(
       const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
       if (setPythonVariableBlock.mrcImportModule) {
-        generator.addImport(setPythonVariableBlock.mrcImportModule);
+        generator.importModule(setPythonVariableBlock.mrcImportModule);
       }
       const code = className + '.' + varName + ' = ' + value + '\n';
       return code;

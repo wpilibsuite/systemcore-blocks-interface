@@ -277,7 +277,7 @@ export const pythonFromBlock = function(
     case VariableKind.MODULE: {
       const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       if (getPythonVariableBlock.mrcImportModule) {
-        generator.addImport(getPythonVariableBlock.mrcImportModule);
+        generator.importModule(getPythonVariableBlock.mrcImportModule);
       }
       const code = moduleName + '.' + varName;
       return [code, Order.MEMBER];
@@ -285,7 +285,7 @@ export const pythonFromBlock = function(
     case VariableKind.CLASS: {
       const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       if (getPythonVariableBlock.mrcImportModule) {
-        generator.addImport(getPythonVariableBlock.mrcImportModule);        
+        generator.importModule(getPythonVariableBlock.mrcImportModule);
       }
       const code = className + '.' + varName;
       return [code, Order.MEMBER];
