@@ -20,20 +20,6 @@ export function getCategory(): toolboxItems.Category {
 
   addBuiltInFunctionBlocks([printFunction], contents);
 
-  contents.push({
-    kind: 'block',
-    type: 'mrc_port',
-    extraState: {
-      portType: 'EXPANSION_HUB_SERVO'
-    },
-    fields: {
-      TYPE_0: 'usb',
-      PORT_NUM_0: '1',
-      TYPE_1: 'servo',
-      PORT_NUM_1: '1'
-    },
-  });
-
   return {
     kind: 'category',
     name: Blockly.Msg['MRC_CATEGORY_TEST'],
