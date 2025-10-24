@@ -48,7 +48,7 @@ export interface TabsProps {
   setTabList: (items: TabItem[]) => void;
   activeTab: string;
   project: storageProject.Project | null;
-  setProject: (project: storageProject.Project | null) => void;
+  onProjectChanged: () => Promise<void>;
   setAlertErrorMessage: (message: string) => void;
   currentModule: storageModule.Module | null;
   setCurrentModule: (module: storageModule.Module | null) => void;
@@ -75,10 +75,6 @@ export function Component(props: TabsProps): React.JSX.Element {
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
-
-  const triggerProjectUpdate = (): void => {
-    props.setProject(structuredClone(props.project));
-  }
 
   /** Handles tab change and updates current module. */
   const handleTabChange = (key: string): void => {
@@ -154,7 +150,7 @@ export function Component(props: TabsProps): React.JSX.Element {
   const handleAddTabOk = (newTab: TabItem): void => {
     props.setTabList([...props.tabList, newTab]);
 
-    setActiveKey(newTab.key);
+    handleTabChange(newTab.key);
     setAddTabDialogOpen(false);
   };
 
@@ -173,6 +169,7 @@ export function Component(props: TabsProps): React.JSX.Element {
         newClassName,
         oldModulePath,
       );
+      await props.onProjectChanged();
 
       const newTabs = props.tabList.map((tab) => {
         if (tab.key === key) {
@@ -183,7 +180,6 @@ export function Component(props: TabsProps): React.JSX.Element {
 
       props.setTabList(newTabs);
       setActiveKey(newModulePath);
-      triggerProjectUpdate();
     } catch (error) {
       console.error('Error renaming module:', error);
       props.setAlertErrorMessage(t('FAILED_TO_RENAME_MODULE'));
@@ -207,6 +203,7 @@ export function Component(props: TabsProps): React.JSX.Element {
         newClassName,
         oldModulePath,
       );
+      await props.onProjectChanged();
 
       const newTabs = [...props.tabList];
       const originalTab = props.tabList.find((tab) => tab.key === key);
@@ -220,7 +217,6 @@ export function Component(props: TabsProps): React.JSX.Element {
       newTabs.push({ key: newModulePath, title: newClassName, type: originalTab.type });
       props.setTabList(newTabs);
       setActiveKey(newModulePath);
-      triggerProjectUpdate();
     } catch (error) {
       console.error('Error copying module:', error);
       props.setAlertErrorMessage(t('FAILED_TO_COPY_MODULE'));
@@ -271,7 +267,7 @@ export function Component(props: TabsProps): React.JSX.Element {
 
         if (props.storage && props.project) {
           await storageProject.removeModuleFromProject(props.storage, props.project, tab.key);
-          triggerProjectUpdate();
+          await props.onProjectChanged();
         }
 
         if (newTabs.length > 0) {
@@ -360,7 +356,7 @@ export function Component(props: TabsProps): React.JSX.Element {
         onCancel={() => setAddTabDialogOpen(false)}
         onOk={handleAddTabOk}
         project={props.project}
-        setProject={props.setProject}
+        onProjectChanged={props.onProjectChanged}
         currentTabs={props.tabList}
         storage={props.storage}
       />
