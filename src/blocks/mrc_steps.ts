@@ -20,18 +20,18 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
-import { MRC_STYLE_FUNCTIONS } from '../themes/styles';
+import { MRC_STYLE_STEPS } from '../themes/styles';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { createStepFieldFlydown } from '../fields/field_flydown';
-import * as paramContainer from './mrc_param_container'
+import * as stepContainer from './mrc_step_container'
 
 export const BLOCK_NAME = 'mrc_steps';
-const MUTATOR_BLOCK_NAME = 'steps_mutatorarg';
+// const MUTATOR_BLOCK_NAME = 'steps_mutatorarg';
 
 
 export type StepsBlock = Blockly.Block & StepsMixin & Blockly.BlockSvg;
 interface StepsMixin extends StepsMixinType {
+    mrcStepNames: string[];
 }
 type StepsMixinType = typeof STEPS;
 
@@ -40,47 +40,74 @@ const STEPS = {
      * Block initialization.
      */
     init: function (this: StepsBlock): void {
+        this.mrcStepNames = [];
         this.appendDummyInput()
-            .appendField(createFieldNonEditableText('steps'));
-        this.appendDummyInput()
-            .appendField('Step')
-            .appendField(createStepFieldFlydown('0', false));
-        this.appendStatementInput('STEP_0');
-        this.appendValueInput('CONDITION_0')
-            .setCheck('Boolean')
-            .appendField('Advance when');
-        this.appendDummyInput()
-            .appendField('Step')
-            .appendField(createStepFieldFlydown('1', false));
-        this.appendStatementInput('STEP_1');
-        this.appendValueInput('CONDITION_1')
-            .setCheck('Boolean')
-            .appendField('Finish when');
+            .appendField(Blockly.Msg.STEPS);
+        /*            
+                this.appendValueInput('CONDITION_0')
+                    .appendField(createStepFieldFlydown('shoot', true))
+                    .setCheck('Boolean')
+                    .appendField('Repeat Until');    
+                this.appendStatementInput('STEP_0');
+        
+                this.appendValueInput('CONDITION_1')
+                    .appendField(createStepFieldFlydown('move', true))
+                    .setCheck('Boolean')
+                    .appendField('Repeat Until');    
+                this.appendStatementInput('STEP_1');
+        */
         this.setInputsInline(false);
-        this.setStyle(MRC_STYLE_FUNCTIONS);
-        this.setMutator(paramContainer.getMutatorIcon(this));
-  },
+        this.setStyle(MRC_STYLE_STEPS);
+        this.setMutator(stepContainer.getMutatorIcon(this));
+    },
     compose: function (this: StepsBlock, containerBlock: Blockly.Block) {
-      if (containerBlock.type !== paramContainer.PARAM_CONTAINER_BLOCK_NAME) {
-        throw new Error('compose: containerBlock.type should be ' + paramContainer.PARAM_CONTAINER_BLOCK_NAME);
-      }
-      const paramContainerBlock = containerBlock as paramContainer.ParamContainerBlock;
-      const paramItemBlocks: paramContainer.ParamItemBlock[] = paramContainerBlock.getParamItemBlocks();
-  
+        if (containerBlock.type !== stepContainer.STEP_CONTAINER_BLOCK_NAME) {
+            throw new Error('compose: containerBlock.type should be ' + stepContainer.STEP_CONTAINER_BLOCK_NAME);
+        }
+        const stepContainerBlock = containerBlock as stepContainer.StepContainerBlock;
+        const stepItemBlocks: stepContainer.StepItemBlock[] = stepContainerBlock.getStepItemBlocks();
+        stepItemBlocks.forEach((stepItemBlock) => {
+        });
+        this.mrcStepNames = [];
+        stepItemBlocks.forEach((stepItemBlock) => {
+            this.mrcStepNames.push(stepItemBlock.getName());
+        });
+        // TODO: Update any jump blocks to have the correct name
+        this.updateShape_();
     },
     decompose: function (this: StepsBlock, workspace: Blockly.Workspace) {
-      const parameterNames: string[] = [];
-
-      return paramContainer.createMutatorBlocks(workspace, parameterNames);
+        const stepNames: string[] = [];
+        this.mrcStepNames.forEach(step => {
+            stepNames.push(step);
+        });
+        return stepContainer.createMutatorBlocks(workspace, stepNames);
     },
-};
-
-const MUTATOR_STEPS = {
-
+      /**
+       * mrcOnMutatorOpen is called when the mutator on an EventBlock is opened.
+       */
+      mrcOnMutatorOpen: function(this: StepsBlock): void {
+        stepContainer.onMutatorOpen(this);
+      },
+    updateShape_: function (this: StepsBlock): void {
+        // some way of knowing what was there before and what is there now
+        let success = true;
+        let i = 0;
+        while (success){    
+            success = this.removeInput('CONDITION_' + i, true);
+            success = this.removeInput('STEP_' + i, true);
+            i++;
+        }
+        for (let j = 0; j < this.mrcStepNames.length; j++) {
+            this.appendValueInput('CONDITION_' + j)
+                .appendField(createStepFieldFlydown(this.mrcStepNames[j], true))
+                .setCheck('Boolean')
+                .appendField(Blockly.Msg.REPEAT_UNTIL);    
+            this.appendStatementInput('STEP_' + j);
+        }
+    },
 };
 
 export const setup = function () {
-    Blockly.Blocks[MUTATOR_BLOCK_NAME] = MUTATOR_STEPS;
     Blockly.Blocks[BLOCK_NAME] = STEPS;
 };
 

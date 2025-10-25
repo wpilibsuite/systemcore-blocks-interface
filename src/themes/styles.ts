@@ -22,6 +22,7 @@
 import * as Blockly from 'blockly/core'
 
 export const MRC_STYLE_FUNCTIONS = 'mrc_style_function';
+export const MRC_STYLE_STEPS = 'mrc_style_steps';
 export const MRC_STYLE_ENUM = 'mrc_style_enum';
 export const MRC_STYLE_VARIABLES = 'mrc_style_variables';
 export const MRC_STYLE_COMMENTS = 'mrc_style_comments';
@@ -50,6 +51,9 @@ export const add_mrc_styles = function (theme: Blockly.Theme): Blockly.Theme {
     });
     theme.setBlockStyle(MRC_STYLE_EVENTS, {
         ...procedureStyle
+    });
+    theme.setBlockStyle(MRC_STYLE_STEPS, {
+        ...procedureStyle,
     });
     theme.setBlockStyle(MRC_STYLE_ENUM, {
         ...variableStyle
