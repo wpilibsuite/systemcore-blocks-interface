@@ -140,7 +140,7 @@
         "PRINT": "print",
         "NO_MECHANISM_CONTENTS": "No Mechanism Contents",
         "CALL": "call",
-        "ROBOT": "robot",
+        "ROBOT_LOWER_CASE": "robot",
         "CREATE": "create",
         "FIRE": "fire",
         "GET": "get",
