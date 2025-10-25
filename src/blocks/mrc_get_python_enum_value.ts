@@ -150,7 +150,7 @@ export const pythonFromBlock = function(
   const enumClassName = block.getFieldValue(FIELD_ENUM_CLASS_NAME);
   const enumValue = block.getFieldValue(FIELD_ENUM_VALUE);
   if (getPythonEnumValueBlock.mrcImportModule) {
-    generator.addImport(getPythonEnumValueBlock.mrcImportModule);
+    generator.importModule(getPythonEnumValueBlock.mrcImportModule);
   }
   const code = enumClassName + '.' + enumValue;
   return [code, Order.MEMBER];
