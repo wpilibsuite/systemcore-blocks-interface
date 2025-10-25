@@ -40,7 +40,7 @@ const STEPS = {
      * Block initialization.
      */
     init: function (this: StepsBlock): void {
-        this.mrcStepNames = [];
+        this.mrcStepNames = ["0"];
         this.appendDummyInput()
             .appendField(Blockly.Msg.STEPS);
         /*            
@@ -59,6 +59,7 @@ const STEPS = {
         this.setInputsInline(false);
         this.setStyle(MRC_STYLE_STEPS);
         this.setMutator(stepContainer.getMutatorIcon(this));
+        this.updateShape_();
     },
     compose: function (this: StepsBlock, containerBlock: Blockly.Block) {
         if (containerBlock.type !== stepContainer.STEP_CONTAINER_BLOCK_NAME) {
@@ -85,9 +86,9 @@ const STEPS = {
       /**
        * mrcOnMutatorOpen is called when the mutator on an EventBlock is opened.
        */
-      mrcOnMutatorOpen: function(this: StepsBlock): void {
+    mrcOnMutatorOpen: function(this: StepsBlock): void {
         stepContainer.onMutatorOpen(this);
-      },
+    },
     updateShape_: function (this: StepsBlock): void {
         // some way of knowing what was there before and what is there now
         let success = true;
