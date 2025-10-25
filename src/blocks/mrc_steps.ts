@@ -20,6 +20,8 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
+import {Order} from 'blockly/python';
+
 import { MRC_STYLE_STEPS } from '../themes/styles';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createStepFieldFlydown } from '../fields/field_flydown';
@@ -76,6 +78,9 @@ const STEPS = {
     mrcOnMutatorOpen: function(this: StepsBlock): void {
         stepContainer.onMutatorOpen(this);
     },
+    mrcOnChange: function(this: StepsBlock): void {
+        
+    },
     updateShape_: function (this: StepsBlock): void {
         // some way of knowing what was there before and what is there now
         let success = true;
@@ -100,8 +105,39 @@ export const setup = function () {
 };
 
 export const pythonFromBlock = function (
-    _block: StepsBlock,
-    _generator: ExtendedPythonGenerator,
+    block: StepsBlock,
+    generator: ExtendedPythonGenerator,
 ) {
-    return 'def steps(self):\n    pass'
+
+    let code = 'def initialize_steps(self):\n';
+    code += generator.INDENT + 'self.step_from_name = {}\n';
+    code += generator.INDENT + 'self.name_from_step = {}\n';
+    block.mrcStepNames.forEach((stepName, index) => {
+        code += generator.INDENT + `self.step_from_name['${stepName}'] = ${index}\n`;
+        code += generator.INDENT + `self.name_from_step[${index}] = '${stepName}'\n`;
+    });
+    
+    code += generator.INDENT + 'self.current_step_index = 0\n';
+    code += generator.INDENT + 'self.initialized = True\n';
+
+    generator.addClassMethodDefinition('initialize_steps', code);
+
+    code = 'def steps(self):\n';
+    code += generator.INDENT + 'if not self.initialized:\n';
+    code += generator.INDENT.repeat(2) + 'self.initialize_steps()\n\n';
+    code += generator.INDENT + 'match self.current_step_index:\n';
+    block.mrcStepNames.forEach((stepName, index) => {
+        code += generator.INDENT.repeat(2) + `case ${index}:   # ${stepName}\n`;
+        let stepCode = generator.statementToCode(block, 'STEP_' + index);
+        if (stepCode !== '') {
+            code += generator.prefixLines(stepCode, generator.INDENT.repeat(2));
+        }
+        let conditionCode = generator.valueToCode(block, 'CONDITION_' + index, Order.NONE) || 'False';
+        code += generator.INDENT.repeat(3) + 'if ' + conditionCode + ':\n';
+        code += generator.INDENT.repeat(4) + 'self.current_step_index += 1\n';
+    });
+
+    generator.addClassMethodDefinition('steps', code);
+    
+    return ''
 }
