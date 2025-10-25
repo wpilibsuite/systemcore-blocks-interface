@@ -7,16 +7,16 @@ For each PR, make sure each of these works
 # Using robot
 * [ ] Add a component to the Robot
 * [ ] Add a mechanism to the Robot
-* [ ] Make sure component and Mechanism show up in toolbox for Opmode
+* [ ] When editing an OpMode, make sure the component shows up in the toolbox Robot -> Components ->
+* [ ] When editing an OpMode, make sure the mechanism shows up in the toolbox Robot -> Mechanisms -> my_arm
 # Events
 * [ ] Add an event to the Mechanism
-* [ ] In Robot, make sure you can see the event
-* [ ] In Opmode, make sure you can see the event
+* [ ] In Robot, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> my_arm -> Events
+* [ ] In Opmode, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> my_arm -> Events
 # Mechanims
 * [ ] Add a public component to the mechanism
 * [ ] Add a private component to the mechanism
-* [ ] Make sure that in the Robot you can see the public component (and not the private one)
+* [ ] Make sure that in the Robot you can see the public component (and not the private one) in the toolbox
 # Code Generation
-* [ ] Generate code (right now "Deploy") and make sure there are no errors
-
- 
+* [ ] Generate code (right now "Deploy") and make sure there are no errors in the console
+* [ ] Check that the deploy zip file contains robot.py, teleop.py, auto.py, and arm.py.
