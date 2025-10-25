@@ -24,12 +24,20 @@ import {Order} from 'blockly/python';
 
 import { MRC_STYLE_STEPS } from '../themes/styles';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { createStepFieldFlydown } from '../fields/field_flydown';
+import { createStepFieldFlydown, FieldFlydown } from '../fields/field_flydown';
 import * as stepContainer from './mrc_step_container'
 
 export const BLOCK_NAME = 'mrc_steps';
 // const MUTATOR_BLOCK_NAME = 'steps_mutatorarg';
 
+
+/** Extra state for serialising call_python_* blocks. */
+type StepsExtraState = {
+  /**
+   * The steps
+   */
+  stepNames: string[],
+};
 
 export type StepsBlock = Blockly.Block & StepsMixin & Blockly.BlockSvg;
 interface StepsMixin extends StepsMixinType {
@@ -49,6 +57,17 @@ const STEPS = {
         this.setStyle(MRC_STYLE_STEPS);
         this.setMutator(stepContainer.getMutatorIcon(this));
         this.updateShape_();
+    },
+    saveExtraState: function (this: StepsBlock): StepsExtraState{
+        return {
+            stepNames: this.mrcStepNames,
+        };
+    },
+    loadExtraState: function (this: StepsBlock, state: StepsExtraState): void {
+        if (state && state.stepNames) {
+            this.mrcStepNames = state.stepNames;
+            this.updateShape_();
+        }
     },
     compose: function (this: StepsBlock, containerBlock: Blockly.Block) {
         if (containerBlock.type !== stepContainer.STEP_CONTAINER_BLOCK_NAME) {
@@ -81,6 +100,30 @@ const STEPS = {
     mrcOnChange: function(this: StepsBlock): void {
         
     },
+    mrcUpdateStepName: function(this: StepsBlock, step : number, newName: string) : string {
+        const otherNames = this.mrcStepNames.filter((_name, index) => index !== step);
+        let currentName = newName;
+      
+        // Make name unique if it conflicts
+        while (otherNames.includes(currentName)) {
+            // Check if currentName ends with a number
+            const match = currentName.match(/^(.*?)(\d+)$/);
+            if (match) {
+                // If it ends with a number, increment it
+                const baseName = match[1];
+                const number = parseInt(match[2], 10);
+                currentName = baseName + (number + 1);
+            } else {
+                // If it doesn't end with a number, append 2
+                currentName = currentName + '2';
+            }
+        }
+        this.mrcStepNames[step] = currentName;
+        // TODO: Rename any jump blocks that refer to this step
+
+        
+        return currentName;
+    },
     updateShape_: function (this: StepsBlock): void {
         // some way of knowing what was there before and what is there now
         let success = true;
@@ -91,13 +134,19 @@ const STEPS = {
             i++;
         }
         for (let j = 0; j < this.mrcStepNames.length; j++) {
+            const fieldFlydown = createStepFieldFlydown(this.mrcStepNames[j], true);
+            
+            fieldFlydown.setValidator(this.mrcUpdateStepName.bind(this, j));
             this.appendValueInput('CONDITION_' + j)
-                .appendField(createStepFieldFlydown(this.mrcStepNames[j], true))
+                .appendField(fieldFlydown)
                 .setCheck('Boolean')
                 .appendField(Blockly.Msg.REPEAT_UNTIL);    
             this.appendStatementInput('STEP_' + j);
         }
     },
+    mrcGetStepNames: function(this: StepsBlock): string[] {
+        return this.mrcStepNames;
+    }
 };
 
 export const setup = function () {

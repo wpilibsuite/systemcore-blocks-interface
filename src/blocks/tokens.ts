@@ -131,6 +131,7 @@ export function customTokens(t: (key: string) => string): typeof Blockly.Msg {
     COMMENT_DEFAULT_TEXT: t('BLOCKLY.COMMENT_DEFAULT_TEXT'),
     STEPS: t('BLOCKLY.STEPS'),
     REPEAT_UNTIL: t('BLOCKLY.REPEAT_UNTIL'),
+    JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK: t('BLOCKLY.JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK'),
   }
 };
 

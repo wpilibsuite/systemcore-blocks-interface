@@ -25,14 +25,19 @@ import {Order} from 'blockly/python';
 import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
 import {createFieldNonEditableText} from '../fields/FieldNonEditableText';
 import {MRC_STYLE_VARIABLES} from '../themes/styles';
+import {BLOCK_NAME as MRC_STEPS, StepsBlock} from './mrc_steps'
 
 export const BLOCK_NAME = 'mrc_jump_to_step';
 
 const FIELD_STEP_NAME = 'STEP_NAME';
 
+const WARNING_ID_NOT_IN_STEP = 'not in step';
+
+
 type JumpToStepBlock = Blockly.Block & Blockly.BlockSvg & JumpToStepMixin;
 
 interface JumpToStepMixin extends JumpToStepMixinType {
+  mrcHasWarning: boolean,
 }
 
 type JumpToStepMixinType = typeof JUMP_TO_STEP_BLOCK;
@@ -50,6 +55,39 @@ const JUMP_TO_STEP_BLOCK = {
     this.setStyle(MRC_STYLE_VARIABLES);
     this.setTooltip('Jump to the specified step.');          
   },
+      /**
+         * mrcOnMove is called when an EventBlock is moved.
+         */
+        mrcOnMove: function(this: JumpToStepBlock, _reason: string[]): void {
+          this.checkBlockPlacement();
+        },
+        mrcOnAncestorMove: function(this: JumpToStepBlock): void {
+          this.checkBlockPlacement();
+        },
+        checkBlockPlacement: function(this: JumpToStepBlock): void {
+          const legalStepNames: string[] = [];
+      
+          const rootBlock: Blockly.Block | null = this.getRootBlock();
+          if (rootBlock.type === MRC_STEPS) {
+            // This block is within a class method definition.
+            const stepsBlock = rootBlock as StepsBlock;
+            // Add the method's parameter names to legalStepNames.
+            legalStepNames.push(...stepsBlock.mrcGetStepNames());
+          } 
+      
+          if (legalStepNames.includes(this.getFieldValue(FIELD_STEP_NAME))) {
+            // If this blocks's parameter name is in legalParameterNames, it's good.
+            this.setWarningText(null, WARNING_ID_NOT_IN_STEP);
+            this.mrcHasWarning = false;
+          } else {
+            // Otherwise, add a warning to this block.
+            if (!this.mrcHasWarning) {
+              this.setWarningText(Blockly.Msg.JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK, WARNING_ID_NOT_IN_STEP);
+              this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+              this.mrcHasWarning = true;
+            }
+          }
+        },
 };
 
 export const setup = function() {
@@ -60,8 +98,9 @@ export const pythonFromBlock = function(
     block: JumpToStepBlock,
     _generator: ExtendedPythonGenerator,
 ) {
-  // TODO (Alan) : Specify the type here as well
-  const code = '# TODO: Jump to step ' + block.getFieldValue(FIELD_STEP_NAME) + '\n';
+  let code = 'self.current_step_index = self.mrc_step_name_to_index["' +
+      block.getFieldValue(FIELD_STEP_NAME) + '"]\n';
+  code += 'return\n';
 
-  return [code, Order.ATOMIC];
+  return code;
 };
