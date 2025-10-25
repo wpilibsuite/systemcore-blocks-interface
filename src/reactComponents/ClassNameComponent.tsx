@@ -26,6 +26,7 @@ import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
 import * as storageNames from '../storage/names';
+import { isExistingPythonModule } from '../blocks/utils/python';
 
 /** Props for the ClassNameComponent. */
 interface ClassNameComponentProps {
@@ -73,6 +74,11 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
       error = t('INVALID_CLASS_NAME', { name: newClassName });
     } else if (storageProject.findModuleByClassName(props.project!, newClassName) != null) {
       error = t('CLASS_NAME_ALREADY_EXISTS', { name: newClassName });
+    }
+
+    const moduleName = storageNames.pascalCaseToSnakeCase(newClassName);
+    if (isExistingPythonModule(moduleName)) {
+      error = t('PYTHON_MODULE_NAME_ALREADY_EXISTS', { name: newClassName, moduleName: moduleName });
     }
 
     if (!error) {

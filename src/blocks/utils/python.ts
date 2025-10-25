@@ -287,3 +287,15 @@ export function getLegalName(proposedName: string, existingNames: string[]){
   }
   return newName;
 }
+
+export function isExistingPythonModule(moduleName: string): boolean {
+  for (const pythonData of allPythonData) {
+    // Process modules.
+    for (const moduleData of pythonData.modules) {
+      if (moduleData.moduleName === moduleName) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
