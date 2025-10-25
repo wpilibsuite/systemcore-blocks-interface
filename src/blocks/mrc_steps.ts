@@ -43,19 +43,6 @@ const STEPS = {
         this.mrcStepNames = ["0"];
         this.appendDummyInput()
             .appendField(Blockly.Msg.STEPS);
-        /*            
-                this.appendValueInput('CONDITION_0')
-                    .appendField(createStepFieldFlydown('shoot', true))
-                    .setCheck('Boolean')
-                    .appendField('Repeat Until');    
-                this.appendStatementInput('STEP_0');
-        
-                this.appendValueInput('CONDITION_1')
-                    .appendField(createStepFieldFlydown('move', true))
-                    .setCheck('Boolean')
-                    .appendField('Repeat Until');    
-                this.appendStatementInput('STEP_1');
-        */
         this.setInputsInline(false);
         this.setStyle(MRC_STYLE_STEPS);
         this.setMutator(stepContainer.getMutatorIcon(this));

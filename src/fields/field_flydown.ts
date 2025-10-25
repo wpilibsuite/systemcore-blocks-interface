@@ -23,6 +23,8 @@
  * https://github.com/mit-cml/blockly-plugins/blob/main/block-lexical-variables/src/fields/field_flydown.js
  */
 import * as Blockly from 'blockly';
+import {BLOCK_NAME as JUMP_TO_STEP} from '../blocks/mrc_jump_to_step';
+import {BLOCK_NAME as GET_PARAMETER} from '../blocks/mrc_get_parameter';
 
 enum FlydownLocation {
     DISPLAY_BELOW = 'displayBelow',
@@ -376,7 +378,7 @@ export function createParameterBlock(paramName: string): Blockly.utils.toolbox.F
         contents: [
             {
                 kind: 'block',
-                type: 'mrc_get_parameter',
+                type: GET_PARAMETER,
                 fields: {
                     PARAMETER_NAME: paramName,
                 },
@@ -390,7 +392,7 @@ export function createAdvanceToBlock(stepName: string): Blockly.utils.toolbox.Fl
         contents: [
             {
                 kind: 'block',
-                type: 'mrc_advance_to_step',
+                type: JUMP_TO_STEP,
                 fields: {
                     STEP_NAME: stepName,
                 },

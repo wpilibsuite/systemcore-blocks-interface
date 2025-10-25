@@ -16,8 +16,7 @@
  */
 
 /**
- * @fileoverview This is a block that allows your code to use a parameter
- * that is passed to a method.
+ * @fileoverview This is a block that allows your code to jump to a specific step.
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
@@ -27,42 +26,42 @@ import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
 import {createFieldNonEditableText} from '../fields/FieldNonEditableText';
 import {MRC_STYLE_VARIABLES} from '../themes/styles';
 
-export const BLOCK_NAME = 'mrc_advance_to_step';
+export const BLOCK_NAME = 'mrc_jump_to_step';
 
 const FIELD_STEP_NAME = 'STEP_NAME';
 
-type AdvanceToStepBlock = Blockly.Block & Blockly.BlockSvg & AdvanceToStepMixin;
+type JumpToStepBlock = Blockly.Block & Blockly.BlockSvg & JumpToStepMixin;
 
-interface AdvanceToStepMixin extends AdvanceToStepMixinType {
+interface JumpToStepMixin extends JumpToStepMixinType {
 }
 
-type AdvanceToStepMixinType = typeof ADVANCE_TO_STEP_BLOCK;
+type JumpToStepMixinType = typeof JUMP_TO_STEP_BLOCK;
 
-const ADVANCE_TO_STEP_BLOCK = {
+const JUMP_TO_STEP_BLOCK = {
   /**
    * Block initialization.
    */
-  init: function(this: AdvanceToStepBlock): void {
+  init: function(this: JumpToStepBlock): void {
     this.appendDummyInput()
-        .appendField('Advance to step')
+        .appendField('Jump to')
         .appendField(createFieldNonEditableText(''), FIELD_STEP_NAME);
     this.setPreviousStatement(true, null);
     this.setInputsInline(true);
     this.setStyle(MRC_STYLE_VARIABLES);
-    this.setTooltip('Advance to the specified step when the condition is true.');          
+    this.setTooltip('Jump to the specified step.');          
   },
 };
 
 export const setup = function() {
-  Blockly.Blocks[BLOCK_NAME] = ADVANCE_TO_STEP_BLOCK;
+  Blockly.Blocks[BLOCK_NAME] = JUMP_TO_STEP_BLOCK;
 };
 
 export const pythonFromBlock = function(
-    block: AdvanceToStepBlock,
+    block: JumpToStepBlock,
     _generator: ExtendedPythonGenerator,
 ) {
   // TODO (Alan) : Specify the type here as well
-  const code = '# TODO: Advance to step ' + block.getFieldValue(FIELD_STEP_NAME) + '\n';
+  const code = '# TODO: Jump to step ' + block.getFieldValue(FIELD_STEP_NAME) + '\n';
 
   return [code, Order.ATOMIC];
 };
