@@ -142,7 +142,7 @@
         "PRINT": "imprimir",
         "NO_MECHANISM_CONTENTS": "Sin Contenido de Mecanismo",
         "CALL": "llamar",
-        "ROBOT": "robot",
+        "ROBOT_LOWER_CASE": "robot",
         "CREATE": "crear",
         "FIRE": "disparar",
         "GET": "obtener",
