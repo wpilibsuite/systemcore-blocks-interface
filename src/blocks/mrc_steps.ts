@@ -161,33 +161,28 @@ export const pythonFromBlock = function (
     block: StepsBlock,
     generator: ExtendedPythonGenerator,
 ) {
+    let code = 'def steps(self):\n';
+    code += generator.INDENT + 'if not self._initialized_steps:\n';
+    code += generator.INDENT.repeat(2) + 'self._current_step = "' + block.mrcStepNames[0] + '"\n';
+    code += generator.INDENT.repeat(2) + 'self.initialized_steps = True\n\n';
+    code += generator.INDENT + 'if self._current_step == None:\n';
+    code += generator.INDENT.repeat(2) + 'return\n';
 
-    let code = 'def initialize_steps(self):\n';
-    code += generator.INDENT + 'self.step_from_name = {}\n';
-    code += generator.INDENT + 'self.name_from_step = {}\n';
+
+    code += generator.INDENT + 'match self._current_step:\n';
     block.mrcStepNames.forEach((stepName, index) => {
-        code += generator.INDENT + `self.step_from_name['${stepName}'] = ${index}\n`;
-        code += generator.INDENT + `self.name_from_step[${index}] = '${stepName}'\n`;
-    });
-
-    code += generator.INDENT + 'self.current_step_index = 0\n';
-    code += generator.INDENT + 'self.initialized = True\n';
-
-    generator.addClassMethodDefinition('initialize_steps', code);
-
-    code = 'def steps(self):\n';
-    code += generator.INDENT + 'if not self.initialized:\n';
-    code += generator.INDENT.repeat(2) + 'self.initialize_steps()\n\n';
-    code += generator.INDENT + 'match self.current_step_index:\n';
-    block.mrcStepNames.forEach((stepName, index) => {
-        code += generator.INDENT.repeat(2) + `case ${index}:   # ${stepName}\n`;
+        code += generator.INDENT.repeat(2) + `case "${stepName}":\n`;
         let stepCode = generator.statementToCode(block, 'STEP_' + index);
         if (stepCode !== '') {
             code += generator.prefixLines(stepCode, generator.INDENT.repeat(2));
         }
         let conditionCode = generator.valueToCode(block, 'CONDITION_' + index, Order.NONE) || 'False';
         code += generator.INDENT.repeat(3) + 'if ' + conditionCode + ':\n';
-        code += generator.INDENT.repeat(4) + 'self.current_step_index += 1\n';
+        if (index === block.mrcStepNames.length - 1) {
+            code += generator.INDENT.repeat(4) + 'self._current_step = None\n';
+        } else {
+            code += generator.INDENT.repeat(4) + 'self._current_step = "' + block.mrcStepNames[index + 1] + '"\n';
+        }
     });
 
     generator.addClassMethodDefinition('steps', code);
