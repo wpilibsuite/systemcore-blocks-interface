@@ -21,10 +21,10 @@
  */
 import * as Blockly from 'blockly';
 
-import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
-import {createFieldNonEditableText} from '../fields/FieldNonEditableText';
-import {MRC_STYLE_VARIABLES} from '../themes/styles';
-import {BLOCK_NAME as MRC_STEPS, StepsBlock} from './mrc_steps'
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
+import { MRC_STYLE_VARIABLES } from '../themes/styles';
+import { BLOCK_NAME as MRC_STEPS, StepsBlock } from './mrc_steps'
 
 export const BLOCK_NAME = 'mrc_jump_to_step';
 
@@ -45,60 +45,60 @@ const JUMP_TO_STEP_BLOCK = {
   /**
    * Block initialization.
    */
-  init: function(this: JumpToStepBlock): void {
+  init: function (this: JumpToStepBlock): void {
     this.appendDummyInput()
-        .appendField('Jump to')
-        .appendField(createFieldNonEditableText(''), FIELD_STEP_NAME);
+      .appendField('Jump to')
+      .appendField(createFieldNonEditableText(''), FIELD_STEP_NAME);
     this.setPreviousStatement(true, null);
     this.setInputsInline(true);
     this.setStyle(MRC_STYLE_VARIABLES);
-    this.setTooltip('Jump to the specified step.');          
+    this.setTooltip('Jump to the specified step.');
   },
-      /**
-         * mrcOnMove is called when an EventBlock is moved.
-         */
-        mrcOnMove: function(this: JumpToStepBlock, _reason: string[]): void {
-          this.checkBlockPlacement();
-        },
-        mrcOnAncestorMove: function(this: JumpToStepBlock): void {
-          this.checkBlockPlacement();
-        },
-        checkBlockPlacement: function(this: JumpToStepBlock): void {
-          const legalStepNames: string[] = [];
-      
-          const rootBlock: Blockly.Block | null = this.getRootBlock();
-          if (rootBlock.type === MRC_STEPS) {
-            // This block is within a class method definition.
-            const stepsBlock = rootBlock as StepsBlock;
-            // Add the method's parameter names to legalStepNames.
-            legalStepNames.push(...stepsBlock.mrcGetStepNames());
-          } 
-      
-          if (legalStepNames.includes(this.getFieldValue(FIELD_STEP_NAME))) {
-            // If this blocks's parameter name is in legalParameterNames, it's good.
-            this.setWarningText(null, WARNING_ID_NOT_IN_STEP);
-            this.mrcHasWarning = false;
-          } else {
-            // Otherwise, add a warning to this block.
-            if (!this.mrcHasWarning) {
-              this.setWarningText(Blockly.Msg.JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK, WARNING_ID_NOT_IN_STEP);
-              this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
-              this.mrcHasWarning = true;
-            }
-          }
-        },
+  /**
+     * mrcOnMove is called when an EventBlock is moved.
+     */
+  mrcOnMove: function (this: JumpToStepBlock, _reason: string[]): void {
+    this.checkBlockPlacement();
+  },
+  mrcOnAncestorMove: function (this: JumpToStepBlock): void {
+    this.checkBlockPlacement();
+  },
+  checkBlockPlacement: function (this: JumpToStepBlock): void {
+    const legalStepNames: string[] = [];
+
+    const rootBlock: Blockly.Block | null = this.getRootBlock();
+    if (rootBlock.type === MRC_STEPS) {
+      // This block is within a class method definition.
+      const stepsBlock = rootBlock as StepsBlock;
+      // Add the method's parameter names to legalStepNames.
+      legalStepNames.push(...stepsBlock.mrcGetStepNames());
+    }
+
+    if (legalStepNames.includes(this.getFieldValue(FIELD_STEP_NAME))) {
+      // If this blocks's parameter name is in legalParameterNames, it's good.
+      this.setWarningText(null, WARNING_ID_NOT_IN_STEP);
+      this.mrcHasWarning = false;
+    } else {
+      // Otherwise, add a warning to this block.
+      if (!this.mrcHasWarning) {
+        this.setWarningText(Blockly.Msg.JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK, WARNING_ID_NOT_IN_STEP);
+        this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+        this.mrcHasWarning = true;
+      }
+    }
+  },
 };
 
-export const setup = function() {
+export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = JUMP_TO_STEP_BLOCK;
 };
 
-export const pythonFromBlock = function(
-    block: JumpToStepBlock,
-    _generator: ExtendedPythonGenerator,
+export const pythonFromBlock = function (
+  block: JumpToStepBlock,
+  _generator: ExtendedPythonGenerator,
 ) {
   let code = 'self.current_step_index = self.mrc_step_name_to_index["' +
-      block.getFieldValue(FIELD_STEP_NAME) + '"]\n';
+    block.getFieldValue(FIELD_STEP_NAME) + '"]\n';
   code += 'return\n';
 
   return code;

@@ -20,7 +20,7 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
-import {Order} from 'blockly/python';
+import { Order } from 'blockly/python';
 
 import { MRC_STYLE_STEPS } from '../themes/styles';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
@@ -33,10 +33,10 @@ export const BLOCK_NAME = 'mrc_steps';
 
 /** Extra state for serialising call_python_* blocks. */
 type StepsExtraState = {
-  /**
-   * The steps
-   */
-  stepNames: string[],
+    /**
+     * The steps
+     */
+    stepNames: string[],
 };
 
 export type StepsBlock = Blockly.Block & StepsMixin & Blockly.BlockSvg;
@@ -58,7 +58,7 @@ const STEPS = {
         this.setMutator(stepContainer.getMutatorIcon(this));
         this.updateShape_();
     },
-    saveExtraState: function (this: StepsBlock): StepsExtraState{
+    saveExtraState: function (this: StepsBlock): StepsExtraState {
         return {
             stepNames: this.mrcStepNames,
         };
@@ -75,7 +75,7 @@ const STEPS = {
         }
         const stepContainerBlock = containerBlock as stepContainer.StepContainerBlock;
         const stepItemBlocks: stepContainer.StepItemBlock[] = stepContainerBlock.getStepItemBlocks();
-        
+
         this.mrcStepNames = [];
         stepItemBlocks.forEach((stepItemBlock) => {
             this.mrcStepNames.push(stepItemBlock.getName());
@@ -90,19 +90,19 @@ const STEPS = {
         });
         return stepContainer.createMutatorBlocks(workspace, stepNames);
     },
-      /**
-       * mrcOnMutatorOpen is called when the mutator on an EventBlock is opened.
-       */
-    mrcOnMutatorOpen: function(this: StepsBlock): void {
+    /**
+     * mrcOnMutatorOpen is called when the mutator on an EventBlock is opened.
+     */
+    mrcOnMutatorOpen: function (this: StepsBlock): void {
         stepContainer.onMutatorOpen(this);
     },
-    mrcOnChange: function(this: StepsBlock): void {
-        
+    mrcOnChange: function (this: StepsBlock): void {
+
     },
-    mrcUpdateStepName: function(this: StepsBlock, step : number, newName: string) : string {
+    mrcUpdateStepName: function (this: StepsBlock, step: number, newName: string): string {
         const otherNames = this.mrcStepNames.filter((_name, index) => index !== step);
         let currentName = newName;
-      
+
         // Make name unique if it conflicts
         while (otherNames.includes(currentName)) {
             // Check if currentName ends with a number
@@ -120,30 +120,30 @@ const STEPS = {
         this.mrcStepNames[step] = currentName;
         // TODO: Rename any jump blocks that refer to this step
 
-        
+
         return currentName;
     },
     updateShape_: function (this: StepsBlock): void {
         // some way of knowing what was there before and what is there now
         let success = true;
         let i = 0;
-        while (success){    
+        while (success) {
             success = this.removeInput('CONDITION_' + i, true);
             success = this.removeInput('STEP_' + i, true);
             i++;
         }
         for (let j = 0; j < this.mrcStepNames.length; j++) {
             const fieldFlydown = createStepFieldFlydown(this.mrcStepNames[j], true);
-            
+
             fieldFlydown.setValidator(this.mrcUpdateStepName.bind(this, j));
             this.appendValueInput('CONDITION_' + j)
                 .appendField(fieldFlydown)
                 .setCheck('Boolean')
-                .appendField(Blockly.Msg.REPEAT_UNTIL);    
+                .appendField(Blockly.Msg.REPEAT_UNTIL);
             this.appendStatementInput('STEP_' + j);
         }
     },
-    mrcGetStepNames: function(this: StepsBlock): string[] {
+    mrcGetStepNames: function (this: StepsBlock): string[] {
         return this.mrcStepNames;
     }
 };
@@ -156,7 +156,7 @@ export function isStepsInWorkspace(workspace: Blockly.Workspace): boolean {
     const blocks = workspace.getBlocksByType(BLOCK_NAME);
     return blocks.length > 0;
 };
- 
+
 export const pythonFromBlock = function (
     block: StepsBlock,
     generator: ExtendedPythonGenerator,
@@ -169,7 +169,7 @@ export const pythonFromBlock = function (
         code += generator.INDENT + `self.step_from_name['${stepName}'] = ${index}\n`;
         code += generator.INDENT + `self.name_from_step[${index}] = '${stepName}'\n`;
     });
-    
+
     code += generator.INDENT + 'self.current_step_index = 0\n';
     code += generator.INDENT + 'self.initialized = True\n';
 
@@ -191,6 +191,6 @@ export const pythonFromBlock = function (
     });
 
     generator.addClassMethodDefinition('steps', code);
-    
+
     return ''
 }
