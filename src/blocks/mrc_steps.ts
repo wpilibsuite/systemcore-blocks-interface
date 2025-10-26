@@ -24,7 +24,7 @@ import {Order} from 'blockly/python';
 
 import { MRC_STYLE_STEPS } from '../themes/styles';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { createStepFieldFlydown, FieldFlydown } from '../fields/field_flydown';
+import { createStepFieldFlydown } from '../fields/field_flydown';
 import * as stepContainer from './mrc_step_container'
 
 export const BLOCK_NAME = 'mrc_steps';
@@ -75,8 +75,7 @@ const STEPS = {
         }
         const stepContainerBlock = containerBlock as stepContainer.StepContainerBlock;
         const stepItemBlocks: stepContainer.StepItemBlock[] = stepContainerBlock.getStepItemBlocks();
-        stepItemBlocks.forEach((stepItemBlock) => {
-        });
+        
         this.mrcStepNames = [];
         stepItemBlocks.forEach((stepItemBlock) => {
             this.mrcStepNames.push(stepItemBlock.getName());
