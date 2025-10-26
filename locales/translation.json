@@ -141,7 +141,7 @@
     "PRINT": "הדפס",
     "NO_MECHANISM_CONTENTS": "אין תוכן במנגנון",
     "CALL": "קרא",
-    "ROBOT": "רובוט",
+    "ROBOT_LOWER_CASE": "רובוט",
     "CREATE": "צור",
     "FIRE": "הפעל",
     "GET": "קבל",
