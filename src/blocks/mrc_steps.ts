@@ -77,7 +77,6 @@ const STEPS = {
         const stepContainerBlock = containerBlock as stepContainer.StepContainerBlock;
         const stepItemBlocks: stepContainer.StepItemBlock[] = stepContainerBlock.getStepItemBlocks();
 
-        const oldStepNames = [...this.mrcStepNames];
         this.mrcStepNames = [];
         stepItemBlocks.forEach((stepItemBlock) => {
             this.mrcStepNames.push(stepItemBlock.getName());
@@ -86,7 +85,7 @@ const STEPS = {
         // Update jump blocks for any renamed steps
         const workspace = this.workspace;
         const jumpBlocks = workspace.getBlocksByType(MRC_JUMP_TO_STEP, false);
-        stepItemBlocks.forEach((stepItemBlock, index) => {
+        stepItemBlocks.forEach((stepItemBlock) => {
             const oldName = stepItemBlock.getOriginalName();
             const newName = stepItemBlock.getName();
             if (oldName && oldName !== newName) {
