@@ -25,6 +25,7 @@ import { Order } from 'blockly/python';
 import { MRC_STYLE_STEPS } from '../themes/styles';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createStepFieldFlydown } from '../fields/field_flydown';
+import { BLOCK_NAME as MRC_JUMP_TO_STEP } from './mrc_jump_to_step';
 import * as stepContainer from './mrc_step_container'
 
 export const BLOCK_NAME = 'mrc_steps';
@@ -76,11 +77,27 @@ const STEPS = {
         const stepContainerBlock = containerBlock as stepContainer.StepContainerBlock;
         const stepItemBlocks: stepContainer.StepItemBlock[] = stepContainerBlock.getStepItemBlocks();
 
+        const oldStepNames = [...this.mrcStepNames];
         this.mrcStepNames = [];
         stepItemBlocks.forEach((stepItemBlock) => {
             this.mrcStepNames.push(stepItemBlock.getName());
         });
-        // TODO: Update any jump blocks to have the correct name
+        
+        // Update jump blocks for any renamed steps
+        const workspace = this.workspace;
+        const jumpBlocks = workspace.getBlocksByType(MRC_JUMP_TO_STEP, false);
+        stepItemBlocks.forEach((stepItemBlock, index) => {
+            const oldName = stepItemBlock.getOriginalName();
+            const newName = stepItemBlock.getName();
+            if (oldName && oldName !== newName) {
+                jumpBlocks.forEach((jumpBlock) => {
+                    if (jumpBlock.getFieldValue('STEP_NAME') === oldName) {
+                        jumpBlock.setFieldValue(newName, 'STEP_NAME');
+                    }
+                });
+            }
+        });
+        
         this.updateShape_();
     },
     decompose: function (this: StepsBlock, workspace: Blockly.Workspace) {
@@ -100,6 +117,7 @@ const STEPS = {
 
     },
     mrcUpdateStepName: function (this: StepsBlock, step: number, newName: string): string {
+        const oldName = this.mrcStepNames[step];
         const otherNames = this.mrcStepNames.filter((_name, index) => index !== step);
         let currentName = newName;
 
@@ -118,29 +136,96 @@ const STEPS = {
             }
         }
         this.mrcStepNames[step] = currentName;
-        // TODO: Rename any jump blocks that refer to this step
-
+        
+        // Update all mrc_jump_to_step blocks that reference the old name
+        if (oldName !== currentName) {
+            const workspace = this.workspace;
+            const jumpBlocks = workspace.getBlocksByType(MRC_JUMP_TO_STEP, false);
+            jumpBlocks.forEach((jumpBlock) => {
+                if (jumpBlock.getFieldValue('STEP_NAME') === oldName) {
+                    jumpBlock.setFieldValue(currentName, 'STEP_NAME');
+                }
+            });
+        }
 
         return currentName;
     },
     updateShape_: function (this: StepsBlock): void {
-        // some way of knowing what was there before and what is there now
-        let success = true;
+        // Build a map of step names to their current input indices
+        const currentStepMap: { [stepName: string]: number } = {};
         let i = 0;
-        while (success) {
-            success = this.removeInput('CONDITION_' + i, true);
-            success = this.removeInput('STEP_' + i, true);
+        while (this.getInput('CONDITION_' + i)) {
+            const conditionInput = this.getInput('CONDITION_' + i);
+            const field = conditionInput?.fieldRow[0];
+            if (field) {
+                currentStepMap[field.getValue()] = i;
+            }
             i++;
         }
-        for (let j = 0; j < this.mrcStepNames.length; j++) {
-            const fieldFlydown = createStepFieldFlydown(this.mrcStepNames[j], true);
 
-            fieldFlydown.setValidator(this.mrcUpdateStepName.bind(this, j));
-            this.appendValueInput('CONDITION_' + j)
-                .appendField(fieldFlydown)
-                .setCheck('Boolean')
-                .appendField(Blockly.Msg.REPEAT_UNTIL);
-            this.appendStatementInput('STEP_' + j);
+        // For each new step position, find where it currently is (if it exists)
+        for (let j = 0; j < this.mrcStepNames.length; j++) {
+            const stepName = this.mrcStepNames[j];
+            const currentIndex = currentStepMap[stepName];
+            
+            if (currentIndex !== undefined && currentIndex !== j) {
+                // Step exists but is at wrong position - move it
+                const conditionConnection = this.getInput('CONDITION_' + currentIndex)?.connection?.targetConnection;
+                const stepConnection = this.getInput('STEP_' + currentIndex)?.connection?.targetConnection;
+                
+                // Temporarily disconnect
+                if (conditionConnection) conditionConnection.disconnect();
+                if (stepConnection) stepConnection.disconnect();
+                
+                // Remove old inputs
+                this.removeInput('CONDITION_' + currentIndex, false);
+                this.removeInput('STEP_' + currentIndex, false);
+                
+                // Create new inputs at correct position
+                const fieldFlydown = createStepFieldFlydown(stepName, true);
+                fieldFlydown.setValidator(this.mrcUpdateStepName.bind(this, j));
+                
+                this.appendValueInput('CONDITION_' + j)
+                    .appendField(fieldFlydown)
+                    .setCheck('Boolean')
+                    .appendField(Blockly.Msg.REPEAT_UNTIL);
+                this.appendStatementInput('STEP_' + j);
+                
+                // Reconnect
+                if (conditionConnection) {
+                    this.getInput('CONDITION_' + j)?.connection?.connect(conditionConnection);
+                }
+                if (stepConnection) {
+                    this.getInput('STEP_' + j)?.connection?.connect(stepConnection);
+                }
+                
+                delete currentStepMap[stepName];
+            } else if (currentIndex !== undefined) {
+                // Step is at correct position - just update the field
+                const conditionInput = this.getInput('CONDITION_' + j);
+                const field = conditionInput?.fieldRow[0];
+                if (field && field.getValue() !== stepName) {
+                    field.setValue(stepName);
+                }
+                delete currentStepMap[stepName];
+            } else {
+                // Step doesn't exist - create it
+                const fieldFlydown = createStepFieldFlydown(stepName, true);
+                fieldFlydown.setValidator(this.mrcUpdateStepName.bind(this, j));
+                
+                this.appendValueInput('CONDITION_' + j)
+                    .appendField(fieldFlydown)
+                    .setCheck('Boolean')
+                    .appendField(Blockly.Msg.REPEAT_UNTIL);
+                this.appendStatementInput('STEP_' + j);
+            }
+        }
+
+        // Remove any leftover inputs (steps that were deleted)
+        for (const stepName in currentStepMap) {
+            const index = currentStepMap[stepName];
+            this.removeInput('CONDITION_' + index, false);
+            this.removeInput('STEP_' + index, false);
         }
     },
     mrcGetStepNames: function (this: StepsBlock): string[] {
