@@ -99,6 +99,13 @@ class MethodsCategory {
             methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.OPMODE:
+        const hasSteps = editor.isStepsInWorkspace();
+        if (!hasSteps) {
+          contents.push({
+            kind: 'block',
+            type: 'mrc_steps',
+          });
+        }
         // Add the methods for an OpMode.
         this.addClassBlocksForCurrentModule(
             Blockly.Msg['MORE_OPMODE_METHODS_LABEL'], this.opmodeClassBlocks, [],

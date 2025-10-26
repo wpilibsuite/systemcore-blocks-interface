@@ -153,6 +153,11 @@ export const setup = function () {
     Blockly.Blocks[BLOCK_NAME] = STEPS;
 };
 
+export function isStepsInWorkspace(workspace: Blockly.Workspace): boolean {
+    const blocks = workspace.getBlocksByType(BLOCK_NAME);
+    return blocks.length > 0;
+};
+ 
 export const pythonFromBlock = function (
     block: StepsBlock,
     generator: ExtendedPythonGenerator,

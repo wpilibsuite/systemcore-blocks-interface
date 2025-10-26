@@ -20,11 +20,6 @@ export function getCategory(): toolboxItems.Category {
 
   addBuiltInFunctionBlocks([printFunction], contents);
 
-  contents.push({
-    kind: 'block',
-    type: 'mrc_steps',
-  });
-
   return {
     kind: 'category',
     name: Blockly.Msg['MRC_CATEGORY_TEST'],
