@@ -248,7 +248,7 @@ export const pythonFromBlock = function (
     let code = 'def steps(self):\n';
     code += generator.INDENT + 'if not self._initialized_steps:\n';
     code += generator.INDENT.repeat(2) + 'self._current_step = "' + block.mrcStepNames[0] + '"\n';
-    code += generator.INDENT.repeat(2) + 'self.initialized_steps = True\n\n';
+    code += generator.INDENT.repeat(2) + 'self._initialized_steps = True\n\n';
     code += generator.INDENT + 'if self._current_step == None:\n';
     code += generator.INDENT.repeat(2) + 'return\n';
 
