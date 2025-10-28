@@ -211,7 +211,7 @@ const CALL_PYTHON_FUNCTION = {
         }
         case FunctionKind.EVENT: {
           const eventName = this.getFieldValue(FIELD_EVENT_NAME);
-          tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_WITHIN_TOOLTIP;
+          tooltip = Blockly.Msg.FIRE_EVENT_TOOLTIP;
           tooltip = tooltip.replace('{{eventName}}', eventName);
           break;
         }
@@ -219,14 +219,14 @@ const CALL_PYTHON_FUNCTION = {
           const className = this.mrcComponentClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           if (this.mrcMechanismId) {
-            tooltip = Blockly.Msg.CALL_MECHANISM_COMPONENT_INSTANCE_METHOD;
+            tooltip = Blockly.Msg.CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_TOOLTIP;
             tooltip = tooltip
                 .replace('{{className}}', className)
                 .replace('{{functionName}}', functionName)
                 .replace('{{componentName}}', this.getFieldValue(FIELD_COMPONENT_NAME))
                 .replace('{{mechanismName}}', this.getFieldValue(FIELD_MECHANISM_NAME));
           } else {
-            tooltip = Blockly.Msg.CALL_COMPONENT_INSTANCE_METHOD;
+            tooltip = Blockly.Msg.CALL_COMPONENT_INSTANCE_METHOD_TOOLTIP;
             tooltip = tooltip
                 .replace('{{className}}', className)
                 .replace('{{functionName}}', functionName)
@@ -236,18 +236,18 @@ const CALL_PYTHON_FUNCTION = {
         }
         case FunctionKind.INSTANCE_ROBOT: {
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_WITHIN_TOOLTIP;
+          tooltip = Blockly.Msg.CALL_ROBOT_INSTANCE_METHOD_TOOLTIP;
           tooltip = tooltip.replace('{{functionName}}', functionName);
           break;
         }
         case FunctionKind.INSTANCE_MECHANISM: {
           const className = this.mrcMechanismClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-            tooltip = Blockly.Msg.CALL_MECHANISM_INSTANCE_METHOD;
-            tooltip = tooltip
-                .replace('{{className}}', className)
-                .replace('{{functionName}}', functionName)
-                .replace('{{mechanismName}}', this.getFieldValue(FIELD_MECHANISM_NAME));
+          tooltip = Blockly.Msg.CALL_MECHANISM_INSTANCE_METHOD_TOOLTIP;
+          tooltip = tooltip
+              .replace('{{className}}', className)
+              .replace('{{functionName}}', functionName)
+              .replace('{{mechanismName}}', this.getFieldValue(FIELD_MECHANISM_NAME));
           break;
         }
         default:
@@ -436,7 +436,7 @@ const CALL_PYTHON_FUNCTION = {
         case FunctionKind.INSTANCE_ROBOT: {
           this.appendDummyInput(INPUT_TITLE)
               .appendField(Blockly.Msg.CALL)
-              .appendField(createFieldNonEditableText(Blockly.Msg.ROBOT))
+              .appendField(createFieldNonEditableText(Blockly.Msg.ROBOT_LOWER_CASE))
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
@@ -858,7 +858,7 @@ export function pythonFromBlock(
     generator: ExtendedPythonGenerator,
 ) {
   if (block.mrcImportModule) {
-    generator.addImport(block.mrcImportModule);
+    generator.importModule(block.mrcImportModule);
   }
   let code = '';
   let needOpenParen = true;

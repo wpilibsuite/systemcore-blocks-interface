@@ -97,6 +97,7 @@
   },
   "INVALID_CLASS_NAME": "{{name}} אינו שם תקין. אנא הזן שם אחר.",
   "CLASS_NAME_ALREADY_EXISTS": "מנגנון או אופמוד אחר כבר נקרא {{name}}. אנא הזן שם אחר.",
+  "PYTHON_MODULE_NAME_ALREADY_EXISTS": "{{name}} אינו שם חוקי מכיוון שקיים מודול פייתון בשם {{moduleName}}.",
   "THEME_MODAL": {
     "LIGHT": "ערכת נושא בהירה",
     "LIGHT_DESCRIPTION": "ממשק נקי ובהיר לשימוש ביום",
@@ -140,7 +141,7 @@
     "PRINT": "הדפס",
     "NO_MECHANISM_CONTENTS": "אין תוכן במנגנון",
     "CALL": "קרא",
-    "ROBOT": "רובוט",
+    "ROBOT_LOWER_CASE": "רובוט",
     "CREATE": "צור",
     "FIRE": "הפעל",
     "GET": "קבל",

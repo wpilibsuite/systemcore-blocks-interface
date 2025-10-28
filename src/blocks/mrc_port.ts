@@ -115,7 +115,7 @@ const PORT = {
         appendFields(this.appendDummyInput(), PORT_TYPE_EXPANSION_HUB_SERVO_PORT, iField++);
         break;
       default:
-        throw new Error('Unexpected portType: ' + state.portType)
+        throw new Error('Unexpected portType: ' + state.portType);
     }
     this.mrcPortType = state.portType;
     this.mrcPortCount = iField;
@@ -129,17 +129,20 @@ export const setup = function () {
 export const pythonFromBlock = function (
     block: PortBlock,
     generator: ExtendedPythonGenerator) {
-  generator.addImport('port');
-  
+
   const ports: string[] = [];
   for (let i = 0; i < block.mrcPortCount; i++) {
     ports.push(block.getFieldValue(FIELD_PREFIX_PORT_NUM + i));
   }
 
-  let code = 'port.';
+  const portType = generator.importModuleName('port', 'PortType');
+  const simplePort = generator.importModuleName('port', 'SimplePort');
+  const compoundPort = (ports.length === 2) ? generator.importModuleName('port', 'CompoundPort') : '';
+
+  let code = '';
 
   if (ports.length === 1) {
-     code += `SimplePort(port_type = port.PortType.${block.mrcPortType}, location = ${ports[0]})`;
+     code += `${simplePort}(port_type = ${portType}.${block.mrcPortType}, location = ${ports[0]})`;
 
   } else if (ports.length === 2) {
     let port1Type = 'UNKNOWN';
@@ -159,9 +162,9 @@ export const pythonFromBlock = function (
         port2Type = PORT_TYPE_EXPANSION_HUB_SERVO_PORT;
         break;
     }
-    code += `CompoundPort(port_type = port.PortType.${block.mrcPortType},\n`;
-    code += `${generator.INDENT}port1 = port.SimplePort(port_type = port.PortType.${port1Type}, location = ${ports[0]}),\n`;
-    code += `${generator.INDENT}port2 = port.SimplePort(port_type = port.PortType.${port2Type}, location = ${ports[1]}))`;
+    code += `${compoundPort}(port_type = ${portType}.${block.mrcPortType},\n`;
+    code += `${generator.INDENT}port1 = ${simplePort}(port_type = ${portType}.${port1Type}, location = ${ports[0]}),\n`;
+    code += `${generator.INDENT}port2 = ${simplePort}(port_type = ${portType}.${port2Type}, location = ${ports[1]}))`;
   }
 
   return [code, Order.FUNCTION_CALL];

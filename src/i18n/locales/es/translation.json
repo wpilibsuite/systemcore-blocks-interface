@@ -98,6 +98,7 @@
     },
     "INVALID_CLASS_NAME": "{{name}} no es un nombre válido. Por favor ingrese un nombre diferente.",
     "CLASS_NAME_ALREADY_EXISTS": "Otro Mecanismo u OpMode ya se llama {{name}}. Por favor ingrese un nombre diferente.",
+    "PYTHON_MODULE_NAME_ALREADY_EXISTS": "{{name}} no es un nombre válido porque existe un módulo de Python llamado {{moduleName}}.",
     "THEME_MODAL": {
         "LIGHT": "Tema Claro",
         "LIGHT_DESCRIPTION": "Interfaz limpia y brillante para uso diurno",
@@ -141,7 +142,7 @@
         "PRINT": "imprimir",
         "NO_MECHANISM_CONTENTS": "Sin Contenido de Mecanismo",
         "CALL": "llamar",
-        "ROBOT": "robot",
+        "ROBOT_LOWER_CASE": "robot",
         "CREATE": "crear",
         "FIRE": "disparar",
         "GET": "obtener",
