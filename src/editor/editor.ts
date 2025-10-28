@@ -572,7 +572,7 @@ export class Editor {
     throw new Error('getMethodsFromMechanism: mechanism not found: ' + mechanism.className);
   }
 
-  public static getEditorForBlocklyWorkspace(workspace: Blockly.Workspace, opt_returnCurrentIfNotFound?: boolean): Editor | null {
+  public static getEditorForBlocklyWorkspace(workspace: Blockly.Workspace): Editor | null {
     if (workspace.id in Editor.workspaceIdToEditor) {
       return Editor.workspaceIdToEditor[workspace.id];
     }
@@ -585,7 +585,8 @@ export class Editor {
       return Editor.workspaceIdToEditor[rootWorkspace.id];
     }
 
-    return opt_returnCurrentIfNotFound ? Editor.currentEditor : null;
+    console.error('getEditorForBlocklyWorkspace: workspace with id ' + workspace.id + ' is not associated with an editor.');
+    return null;
   }
 
   public static getEditorForBlocklyWorkspaceId(workspaceId: string): Editor | null {
