@@ -107,7 +107,7 @@ export class Editor {
           const block = this.blocklyWorkspace.getBlockById(id);
           if (block) {
             if (MRC_ON_LOAD in block && typeof block[MRC_ON_LOAD] === 'function') {
-              block[MRC_ON_LOAD]();
+              block[MRC_ON_LOAD](this);
             }
           }
         });
@@ -182,7 +182,7 @@ export class Editor {
     // Go through all the blocks in the workspace and call their mrcOnModuleCurrent method.
     this.blocklyWorkspace.getAllBlocks().forEach(block => {
       if (MRC_ON_MODULE_CURRENT in block && typeof block[MRC_ON_MODULE_CURRENT] === 'function') {
-        block[MRC_ON_MODULE_CURRENT]();
+        block[MRC_ON_MODULE_CURRENT](this);
       }
     });
   }

@@ -170,114 +170,111 @@ const EVENT_HANDLER = {
   /**
    * mrcOnModuleCurrent is called for each EventHandlerBlock when the module becomes the current module.
    */
-  mrcOnModuleCurrent: function(this: EventHandlerBlock): void {
-    this.checkEvent();
+  mrcOnModuleCurrent: function(this: EventHandlerBlock, editor: Editor): void {
+    this.checkEvent(editor);
   },
   /**
    * mrcOnLoad is called for each EventHandlerBlock when the blocks are loaded in the blockly
    * workspace.
    */
-  mrcOnLoad: function(this: EventHandlerBlock): void {
-    this.checkEvent();
+  mrcOnLoad: function(this: EventHandlerBlock, editor: Editor): void {
+    this.checkEvent(editor);
   },
   /**
    * checkEvent checks the block, updates it, and/or adds a warning balloon if necessary.
    * It is called from mrcOnModuleCurrent and mrcOnLoad above.
    */
-  checkEvent: function(this: EventHandlerBlock): void {
+  checkEvent: function(this: EventHandlerBlock, editor: Editor): void {
     const warnings: string[] = [];
 
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
-    if (editor) {
-      if (this.mrcSenderType === SenderType.ROBOT) {
-        // This block is an event handler for a robot event.
-        // Check whether the robot event still exists and whether it has been changed.
-        // If the robot event doesn't exist, put a visible warning on this block.
-        // If the robot event has changed, update the block if possible or put a
-        // visible warning on it.
-        let foundRobotEvent = false;
-        const robotEvents = editor.getEventsFromRobot();
-        for (const robotEvent of robotEvents) {
-          if (robotEvent.eventId === this.mrcEventId) {
-            foundRobotEvent = true;
-            if (this.getFieldValue(FIELD_EVENT_NAME) !== robotEvent.name) {
-              this.setFieldValue(robotEvent.name, FIELD_EVENT_NAME);
-            }
-            this.mrcParameters = [];
-            robotEvent.args.forEach(arg => {
-              this.mrcParameters.push({
-                name: arg.name,
-                type: arg.type,
-              });
-            });
-            this.mrcUpdateParams();
-
-            // Since we found the robot event, we can break out of the loop.
-            break;
+    if (this.mrcSenderType === SenderType.ROBOT) {
+      // This block is an event handler for a robot event.
+      // Check whether the robot event still exists and whether it has been changed.
+      // If the robot event doesn't exist, put a visible warning on this block.
+      // If the robot event has changed, update the block if possible or put a
+      // visible warning on it.
+      let foundRobotEvent = false;
+      const robotEvents = editor.getEventsFromRobot();
+      for (const robotEvent of robotEvents) {
+        if (robotEvent.eventId === this.mrcEventId) {
+          foundRobotEvent = true;
+          if (this.getFieldValue(FIELD_EVENT_NAME) !== robotEvent.name) {
+            this.setFieldValue(robotEvent.name, FIELD_EVENT_NAME);
           }
-        }
-        if (!foundRobotEvent) {
-          warnings.push(Blockly.Msg.EVENT_HANDLER_ROBOT_EVENT_NOT_FOUND);
+          this.mrcParameters = [];
+          robotEvent.args.forEach(arg => {
+            this.mrcParameters.push({
+              name: arg.name,
+              type: arg.type,
+            });
+          });
+          this.mrcUpdateParams();
+
+          // Since we found the robot event, we can break out of the loop.
+          break;
         }
       }
+      if (!foundRobotEvent) {
+        warnings.push(Blockly.Msg.EVENT_HANDLER_ROBOT_EVENT_NOT_FOUND);
+      }
+    }
 
-      if (this.mrcSenderType === SenderType.MECHANISM) {
-        // This block is an event handler for a mechanism event.
-        // Check whether the mechanism still exists, whether it has been
-        // changed, whether the event still exists, and whether the event has
-        // been changed.
-        // If the mechanism doesn't exist, put a visible warning on this block.
-        // If the mechanism has changed, update the block if possible or put a
-        // visible warning on it.
-        // If the event doesn't exist, put a visible warning on this block.
-        // If the event has changed, update the block if possible or put a
-        // visible warning on it.
-        let foundMechanism = false;
-        const mechanismsInRobot = editor.getMechanismsFromRobot();
-        for (const mechanismInRobot of mechanismsInRobot) {
-          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
-            foundMechanism = true;
+    if (this.mrcSenderType === SenderType.MECHANISM) {
+      // This block is an event handler for a mechanism event.
+      // Check whether the mechanism still exists, whether it has been
+      // changed, whether the event still exists, and whether the event has
+      // been changed.
+      // If the mechanism doesn't exist, put a visible warning on this block.
+      // If the mechanism has changed, update the block if possible or put a
+      // visible warning on it.
+      // If the event doesn't exist, put a visible warning on this block.
+      // If the event has changed, update the block if possible or put a
+      // visible warning on it.
+      let foundMechanism = false;
+      const mechanismsInRobot = editor.getMechanismsFromRobot();
+      for (const mechanismInRobot of mechanismsInRobot) {
+        if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+          foundMechanism = true;
 
-            // If the mechanism name has changed, we can handle that.
-            if (this.getFieldValue(FIELD_SENDER) !== mechanismInRobot.name) {
-              this.setFieldValue(mechanismInRobot.name, FIELD_SENDER);
-            }
-
-            let foundMechanismEvent = false;
-            const mechanism = editor.getMechanism(mechanismInRobot);
-            const mechanismEvents: storageModuleContent.Event[] = mechanism
-                ? editor.getEventsFromMechanism(mechanism) : [];
-            for (const mechanismEvent of mechanismEvents) {
-              if (mechanismEvent.eventId === this.mrcEventId) {
-                foundMechanismEvent = true;
-                if (this.getFieldValue(FIELD_EVENT_NAME) !== mechanismEvent.name) {
-                  this.setFieldValue(mechanismEvent.name, FIELD_EVENT_NAME);
-                }
-
-                this.mrcParameters = [];
-                mechanismEvent.args.forEach(arg => {
-                  this.mrcParameters.push({
-                    name: arg.name,
-                    type: arg.type,
-                  });
-                });
-                this.mrcUpdateParams();
-
-                // Since we found the mechanism event, we can break out of the loop.
-                break;
-              }
-            }
-            if (!foundMechanismEvent) {
-              warnings.push(Blockly.Msg.EVENT_HANDLER_MECHANISM_EVENT_NOT_FOUND);
-            }
-
-            // Since we found the mechanism, we can break out of the loop.
-            break;
+          // If the mechanism name has changed, we can handle that.
+          if (this.getFieldValue(FIELD_SENDER) !== mechanismInRobot.name) {
+            this.setFieldValue(mechanismInRobot.name, FIELD_SENDER);
           }
+
+          let foundMechanismEvent = false;
+          const mechanism = editor.getMechanism(mechanismInRobot);
+          const mechanismEvents: storageModuleContent.Event[] = mechanism
+              ? editor.getEventsFromMechanism(mechanism) : [];
+          for (const mechanismEvent of mechanismEvents) {
+            if (mechanismEvent.eventId === this.mrcEventId) {
+              foundMechanismEvent = true;
+              if (this.getFieldValue(FIELD_EVENT_NAME) !== mechanismEvent.name) {
+                this.setFieldValue(mechanismEvent.name, FIELD_EVENT_NAME);
+              }
+
+              this.mrcParameters = [];
+              mechanismEvent.args.forEach(arg => {
+                this.mrcParameters.push({
+                  name: arg.name,
+                  type: arg.type,
+                });
+              });
+              this.mrcUpdateParams();
+
+              // Since we found the mechanism event, we can break out of the loop.
+              break;
+            }
+          }
+          if (!foundMechanismEvent) {
+            warnings.push(Blockly.Msg.EVENT_HANDLER_MECHANISM_EVENT_NOT_FOUND);
+          }
+
+          // Since we found the mechanism, we can break out of the loop.
+          break;
         }
-        if (!foundMechanism) {
-          warnings.push(Blockly.Msg.EVENT_HANDLER_MECHANISM_NOT_FOUND);
-        }
+      }
+      if (!foundMechanism) {
+        warnings.push(Blockly.Msg.EVENT_HANDLER_MECHANISM_NOT_FOUND);
       }
     }
 

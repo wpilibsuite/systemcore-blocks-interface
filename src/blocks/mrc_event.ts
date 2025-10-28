@@ -24,6 +24,7 @@ import * as Blockly from 'blockly';
 import { MRC_STYLE_EVENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Parameter } from './mrc_class_method_def';
+import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as paramContainer from './mrc_param_container'
 import {
@@ -196,7 +197,7 @@ const EVENT = {
   /**
    * mrcOnLoad is called for each EventBlock when the blocks are loaded in the blockly workspace.
    */
-  mrcOnLoad: function(this: EventBlock): void {
+  mrcOnLoad: function(this: EventBlock, _editor: Editor): void {
     this.checkBlockIsInHolder();
   },
   /**

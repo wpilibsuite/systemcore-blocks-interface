@@ -192,7 +192,7 @@ const COMPONENT = {
   /**
    * mrcOnLoad is called for each ComponentBlock when the blocks are loaded in the blockly workspace.
    */
-  mrcOnLoad: function(this: ComponentBlock): void {
+  mrcOnLoad: function(this: ComponentBlock, _editor: Editor): void {
     this.checkBlockIsInHolder();
   },
   /**
