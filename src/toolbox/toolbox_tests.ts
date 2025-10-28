@@ -22,13 +22,15 @@
 import * as Blockly from 'blockly/core';
 import { extendedPythonGenerator } from '../editor/extended_python_generator';
 import * as toolboxItems from './items';
+import * as storageModule from '../storage/module';
+import * as workspaces from '../blocks/utils/workspaces';
 
 // Tests
 
-export function testAllBlocksInToolbox(toolbox : Blockly.utils.toolbox.ToolboxInfo) {
-  const contents  = toolbox.contents;
+export function testAllBlocksInToolbox(toolbox : Blockly.utils.toolbox.ToolboxInfo, moduleType: storageModule.ModuleType) {
+  const contents = toolbox.contents;
   alert('Press OK to run tests on all blocks from the toolbox.');
-  const toolboxTestData = new ToolboxTestData(contents, () => {
+  const toolboxTestData = new ToolboxTestData(contents, moduleType, () => {
     alert('Completed tests on all blocks in the toolbox. See console for any errors.');
   });
   toolboxTestData.runTests();
@@ -40,9 +42,12 @@ class ToolboxTestData {
   jsonBlocks: toolboxItems.Block[];
   index: number;
 
-  constructor(contents: toolboxItems.ContentsType[] | undefined, onFinish: () => void) {
+  constructor(
+      contents: toolboxItems.ContentsType[] | undefined,
+      moduleType: storageModule.ModuleType,
+      onFinish: () => void) {
     this.onFinish = onFinish;
-    this.blocklyWorkspace = new Blockly.Workspace();
+    this.blocklyWorkspace = workspaces.createHeadlessWorkspace(moduleType);
     this.blocklyWorkspace.MAX_UNDO = 0;
     this.jsonBlocks = [];
     if (contents){
@@ -95,7 +100,7 @@ class ToolboxTestData {
     if (this.index < this.jsonBlocks.length) {
       setTimeout(this.testCallback.bind(this), 0);
     } else {
-      this.blocklyWorkspace.dispose();
+      workspaces.destroyHeadlessWorkspace(this.blocklyWorkspace);
       if (this.onFinish) {
         this.onFinish();
       }

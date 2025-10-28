@@ -30,6 +30,7 @@ import * as storageProject from '../storage/project';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
+import * as workspaces from '../blocks/utils/workspaces';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { applyExpandedCategories, getToolboxJSON } from '../toolbox/toolbox';
 
@@ -70,6 +71,7 @@ export class Editor {
       project: storageProject.Project,
       storage: commonStorage.Storage,
       modulePathToContentText: {[modulePath: string]: string}) {
+    workspaces.addWorkspace(blocklyWorkspace, module.moduleType);
     this.blocklyWorkspace = blocklyWorkspace;
     this.module = module;
     this.projectName = project.projectName;
@@ -186,6 +188,7 @@ export class Editor {
   }
 
   public abandon(): void {
+    workspaces.removeWorkspace(this.blocklyWorkspace);
     if (Editor.currentEditor === this) {
       Editor.currentEditor = null;
     }
@@ -250,7 +253,7 @@ export class Editor {
     if (toolbox != this.toolbox) {
       this.toolbox = toolbox;
       this.blocklyWorkspace.updateToolbox(toolbox);
-      // testAllBlocksInToolbox(toolbox);
+      // testAllBlocksInToolbox(toolbox, this.module.moduleType);
     }
   }
 
