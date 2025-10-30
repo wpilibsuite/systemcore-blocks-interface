@@ -8,7 +8,7 @@ class OpMode:
         self.robot.start()
     def loop(self) -> None:
         # Call steps method if it exists in the derived class
-        if hasattr(self, 'steps'):
+        if hasattr(self, 'steps') and callable(self.steps):
             self.steps()
         self.robot.update()
     def stop(self) -> None:
