@@ -148,7 +148,7 @@
         "SET": "set",
         "TO": "to",
         "STEPS": "steps",
-        "REPEAT_UNTIL": "Repeat Until",
+        "REPEAT_UNTIL": "repeat until",
         "CUSTOM_EVENTS_LABEL": "Custom Events",
         "CUSTOM_METHODS_LABEL": "Custom Methods",
         "MORE_ROBOT_METHODS_LABEL": "More Robot Methods",
