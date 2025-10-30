@@ -549,66 +549,59 @@ const CALL_PYTHON_FUNCTION = {
     }
     this.updateBlock_();
   },
-  getComponents: function(this: CallPythonFunctionBlock): storageModuleContent.Component[] {
+  getComponents: function(this: CallPythonFunctionBlock, editor: Editor): storageModuleContent.Component[] {
     // Get the list of components whose type matches this.mrcComponentClassName.
     const components: storageModuleContent.Component[] = [];
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
-    if (editor) {
-      let componentsToConsider: storageModuleContent.Component[] = [];
-      if (this.mrcMechanismId) {
-        // Only consider components that belong to the mechanism.
-        // this.mrcMechanismId is the mechanismId from the MechanismInRobot.
-        // We need to get the MechanismInRobot with that id, then get the mechanism, and then get
-        // the public components defined in that mechanism.
-        for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
-          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
-            for (const mechanism of editor.getMechanisms()) {
-              if (mechanism.moduleId === mechanismInRobot.moduleId) {
-                componentsToConsider = editor.getComponentsFromMechanism(mechanism);
-                break;
-              }
+    let componentsToConsider: storageModuleContent.Component[] = [];
+    if (this.mrcMechanismId) {
+      // Only consider components that belong to the mechanism.
+      // this.mrcMechanismId is the mechanismId from the MechanismInRobot.
+      // We need to get the MechanismInRobot with that id, then get the mechanism, and then get
+      // the public components defined in that mechanism.
+      for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
+        if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+          for (const mechanism of editor.getMechanisms()) {
+            if (mechanism.moduleId === mechanismInRobot.moduleId) {
+              componentsToConsider = editor.getComponentsFromMechanism(mechanism);
+              break;
             }
-            break;
           }
+          break;
         }
-      } else if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
-        // Only consider components (regular and private) in the current workspace.
-        componentsToConsider = editor.getAllComponentsFromWorkspace();
-      } else {
-        // Only consider components in the robot.
-        componentsToConsider = editor.getComponentsFromRobot();
       }
-      componentsToConsider.forEach(component => {
-        if (component.className === this.mrcComponentClassName) {
-          components.push(component);
-        }
-      });
+    } else if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
+      // Only consider components (regular and private) in the current workspace.
+      componentsToConsider = editor.getAllComponentsFromWorkspace();
+    } else {
+      // Only consider components in the robot.
+      componentsToConsider = editor.getComponentsFromRobot();
     }
+    componentsToConsider.forEach(component => {
+      if (component.className === this.mrcComponentClassName) {
+        components.push(component);
+      }
+    });
     return components;
   },
 
   /**
    * mrcOnModuleCurrent is called for each CallPythonFunctionBlock when the module becomes the current module.
    */
-  mrcOnModuleCurrent: function(this: CallPythonFunctionBlock): void {
-    this.checkFunction();
+  mrcOnModuleCurrent: function(this: CallPythonFunctionBlock, editor: Editor): void {
+    this.checkFunction(editor);
   },
   /**
    * mrcOnLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly
    * workspace.
    */
-  mrcOnLoad: function(this: CallPythonFunctionBlock): void {
-    this.checkFunction();
+  mrcOnLoad: function(this: CallPythonFunctionBlock, editor: Editor): void {
+    this.checkFunction(editor);
   },
   /**
    * checkFunction checks the block, updates it, and/or adds a warning balloon if necessary.
    * It is called from mrcOnModuleCurrent and mrcOnLoad above.
    */
-  checkFunction: function(this: CallPythonFunctionBlock): void {
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
-    if (!editor) {
-      return;
-    }
+  checkFunction: function(this: CallPythonFunctionBlock, editor: Editor): void {
     const warnings: string[] = [];
 
     // If this block is calling a component method, check whether the component
@@ -621,7 +614,7 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
       const componentNames: string[] = [];
       this.mrcMapComponentNameToId = {}
-      this.getComponents().forEach(component => {
+      this.getComponents(editor).forEach(component => {
         componentNames.push(component.name);
         this.mrcMapComponentNameToId[component.name] = component.componentId;
       });

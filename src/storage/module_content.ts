@@ -25,6 +25,7 @@ import * as storageNames from './names';
 import startingOpModeBlocks from '../modules/opmode_start.json';
 import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
+import * as workspaces from '../blocks/utils/workspaces';
 
 export type MethodArg = {
   name: string,
@@ -253,7 +254,7 @@ export class ModuleContent {
 
     if (Object.keys(oldIdToNewId).length) {
       // Change the ids in the blocks.
-      const workspace = new Blockly.Workspace();
+      const workspace = workspaces.createHeadlessWorkspace(this.moduleType);
       Blockly.serialization.workspaces.load(this.blocks, workspace);
       workspace.getAllBlocks().forEach(block => {
         if ('mrcChangeIds' in block && typeof block.mrcChangeIds === "function") {
@@ -263,7 +264,7 @@ export class ModuleContent {
       this.blocks = Blockly.serialization.workspaces.save(workspace);
 
       // Clean up the workspace
-      workspace.dispose();
+      workspaces.destroyHeadlessWorkspace(workspace);
     }
   }
 }
