@@ -29,10 +29,8 @@ import { BLOCK_NAME as MRC_JUMP_TO_STEP } from './mrc_jump_to_step';
 import * as stepContainer from './mrc_step_container'
 
 export const BLOCK_NAME = 'mrc_steps';
-// const MUTATOR_BLOCK_NAME = 'steps_mutatorarg';
 
-
-/** Extra state for serialising call_python_* blocks. */
+/** Extra state for serialising mrc_steps blocks. */
 type StepsExtraState = {
   /**
    * The steps
@@ -223,8 +221,10 @@ const STEPS = {
           const shadowBlock = this.workspace.newBlock('logic_boolean') as Blockly.BlockSvg;
           shadowBlock.setShadow(true);
           shadowBlock.setFieldValue('TRUE', 'BOOL');
-          shadowBlock.initSvg();
-          shadowBlock.render();
+          if (this.workspace.rendered){
+            shadowBlock.initSvg();
+            shadowBlock.render();
+          }
           conditionInput.connection?.connect(shadowBlock.outputConnection!);
         }
       }

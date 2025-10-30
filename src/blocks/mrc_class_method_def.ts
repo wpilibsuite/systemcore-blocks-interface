@@ -62,7 +62,7 @@ interface ClassMethodDefMixin extends ClassMethodDefMixinType {
 }
 type ClassMethodDefMixinType = typeof CLASS_METHOD_DEF;
 
-/** Extra state for serialising call_python_* blocks. */
+/** Extra state for serialising mrc_class_method_def blocks. */
 type ClassMethodDefExtraState = {
   /**
    * The id that identifies this method definition.

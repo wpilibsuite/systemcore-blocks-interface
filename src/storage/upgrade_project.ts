@@ -48,11 +48,10 @@ export async function upgradeProjectIfNecessary(
       // Intentional fallthrough
       // @ts-ignore
       case '0.0.2':
-        upgradeFrom_002_to_003(storage, projectName, projectInfo);
-      // Intentional fallthrough
-      // @ts-ignore        
+        upgradeFrom_002_to_003(storage, projectName, projectInfo);   
       case '0.0.3':
         upgradeFrom_003_to_004(storage, projectName, projectInfo);
+        break;
       default:
         throw new Error('Unrecognized project version: ' + projectInfo.version);
 
