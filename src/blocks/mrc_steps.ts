@@ -212,11 +212,21 @@ const STEPS = {
                 const fieldFlydown = createStepFieldFlydown(stepName, true);
                 fieldFlydown.setValidator(this.mrcUpdateStepName.bind(this, j));
                 
-                this.appendValueInput('CONDITION_' + j)
+                const conditionInput = this.appendValueInput('CONDITION_' + j)
                     .appendField(fieldFlydown)
                     .setCheck('Boolean')
                     .appendField(Blockly.Msg.REPEAT_UNTIL);
                 this.appendStatementInput('STEP_' + j);
+                
+                // Add shadow True block to the new condition input
+                if (this.workspace) {
+                    const shadowBlock = this.workspace.newBlock('logic_boolean') as Blockly.BlockSvg;
+                    shadowBlock.setShadow(true);
+                    shadowBlock.setFieldValue('TRUE', 'BOOL');
+                    shadowBlock.initSvg();
+                    shadowBlock.render();
+                    conditionInput.connection?.connect(shadowBlock.outputConnection!);
+                }
             }
         }
 
