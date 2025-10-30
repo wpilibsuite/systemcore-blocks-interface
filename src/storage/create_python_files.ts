@@ -22,6 +22,7 @@
  */
 
 import * as Blockly from 'blockly/core';
+import * as workspaces from '../blocks/utils/workspaces';
 import { extendedPythonGenerator } from '../editor/extended_python_generator';
 import { Storage } from './common_storage';
 import { Module } from './module';
@@ -61,7 +62,7 @@ async function generatePythonForModule(module: Module, storage: Storage): Promis
     const moduleContent = parseModuleContentText(moduleContentText);
 
     // Create a headless workspace
-    const workspace = new Blockly.Workspace();
+    const workspace = workspaces.createHeadlessWorkspace(module.moduleType);
 
     // Parse and load the JSON into the workspace
     const blocks = moduleContent.getBlocks();
@@ -71,7 +72,7 @@ async function generatePythonForModule(module: Module, storage: Storage): Promis
     const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(workspace, module);
 
     // Clean up the workspace
-    workspace.dispose();
+    workspaces.destroyHeadlessWorkspace(workspace);
 
     return {
       moduleName: moduleName,

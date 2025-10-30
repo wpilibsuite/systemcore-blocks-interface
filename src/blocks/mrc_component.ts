@@ -26,6 +26,7 @@ import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { getModuleTypeForWorkspace } from './utils/workspaces';
 import { getAllowedTypesForSetCheck, getClassData, getSubclassNames } from './utils/python';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
@@ -142,8 +143,8 @@ const COMPONENT = {
    * Update the block to reflect the newly loaded extra state.
    */
   updateBlock_: function (this: ComponentBlock): void {
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
-    if (editor && editor.getModuleType() === storageModule.ModuleType.ROBOT) {
+    const moduleType = getModuleTypeForWorkspace(this.workspace);
+    if (moduleType === storageModule.ModuleType.ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
         const input = this.appendValueInput('ARG' + i)
@@ -192,7 +193,7 @@ const COMPONENT = {
   /**
    * mrcOnLoad is called for each ComponentBlock when the blocks are loaded in the blockly workspace.
    */
-  mrcOnLoad: function(this: ComponentBlock): void {
+  mrcOnLoad: function(this: ComponentBlock, _editor: Editor): void {
     this.checkBlockIsInHolder();
   },
   /**
@@ -246,7 +247,7 @@ export const pythonFromBlock = function (
   generator: ExtendedPythonGenerator,
 ) {
   if (block.mrcImportModule) {
-    generator.addImport(block.mrcImportModule);
+    generator.importModule(block.mrcImportModule);
   }
   let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.getFieldValue(FIELD_TYPE) + "(";
 

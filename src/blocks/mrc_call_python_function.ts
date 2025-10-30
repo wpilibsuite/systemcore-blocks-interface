@@ -211,7 +211,7 @@ const CALL_PYTHON_FUNCTION = {
         }
         case FunctionKind.EVENT: {
           const eventName = this.getFieldValue(FIELD_EVENT_NAME);
-          tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_WITHIN_TOOLTIP;
+          tooltip = Blockly.Msg.FIRE_EVENT_TOOLTIP;
           tooltip = tooltip.replace('{{eventName}}', eventName);
           break;
         }
@@ -219,14 +219,14 @@ const CALL_PYTHON_FUNCTION = {
           const className = this.mrcComponentClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           if (this.mrcMechanismId) {
-            tooltip = Blockly.Msg.CALL_MECHANISM_COMPONENT_INSTANCE_METHOD;
+            tooltip = Blockly.Msg.CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_TOOLTIP;
             tooltip = tooltip
                 .replace('{{className}}', className)
                 .replace('{{functionName}}', functionName)
                 .replace('{{componentName}}', this.getFieldValue(FIELD_COMPONENT_NAME))
                 .replace('{{mechanismName}}', this.getFieldValue(FIELD_MECHANISM_NAME));
           } else {
-            tooltip = Blockly.Msg.CALL_COMPONENT_INSTANCE_METHOD;
+            tooltip = Blockly.Msg.CALL_COMPONENT_INSTANCE_METHOD_TOOLTIP;
             tooltip = tooltip
                 .replace('{{className}}', className)
                 .replace('{{functionName}}', functionName)
@@ -236,18 +236,18 @@ const CALL_PYTHON_FUNCTION = {
         }
         case FunctionKind.INSTANCE_ROBOT: {
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-          tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_WITHIN_TOOLTIP;
+          tooltip = Blockly.Msg.CALL_ROBOT_INSTANCE_METHOD_TOOLTIP;
           tooltip = tooltip.replace('{{functionName}}', functionName);
           break;
         }
         case FunctionKind.INSTANCE_MECHANISM: {
           const className = this.mrcMechanismClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
-            tooltip = Blockly.Msg.CALL_MECHANISM_INSTANCE_METHOD;
-            tooltip = tooltip
-                .replace('{{className}}', className)
-                .replace('{{functionName}}', functionName)
-                .replace('{{mechanismName}}', this.getFieldValue(FIELD_MECHANISM_NAME));
+          tooltip = Blockly.Msg.CALL_MECHANISM_INSTANCE_METHOD_TOOLTIP;
+          tooltip = tooltip
+              .replace('{{className}}', className)
+              .replace('{{functionName}}', functionName)
+              .replace('{{mechanismName}}', this.getFieldValue(FIELD_MECHANISM_NAME));
           break;
         }
         default:
@@ -436,7 +436,7 @@ const CALL_PYTHON_FUNCTION = {
         case FunctionKind.INSTANCE_ROBOT: {
           this.appendDummyInput(INPUT_TITLE)
               .appendField(Blockly.Msg.CALL)
-              .appendField(createFieldNonEditableText(Blockly.Msg.ROBOT))
+              .appendField(createFieldNonEditableText(Blockly.Msg.ROBOT_LOWER_CASE))
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
@@ -549,66 +549,59 @@ const CALL_PYTHON_FUNCTION = {
     }
     this.updateBlock_();
   },
-  getComponents: function(this: CallPythonFunctionBlock): storageModuleContent.Component[] {
+  getComponents: function(this: CallPythonFunctionBlock, editor: Editor): storageModuleContent.Component[] {
     // Get the list of components whose type matches this.mrcComponentClassName.
     const components: storageModuleContent.Component[] = [];
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
-    if (editor) {
-      let componentsToConsider: storageModuleContent.Component[] = [];
-      if (this.mrcMechanismId) {
-        // Only consider components that belong to the mechanism.
-        // this.mrcMechanismId is the mechanismId from the MechanismInRobot.
-        // We need to get the MechanismInRobot with that id, then get the mechanism, and then get
-        // the public components defined in that mechanism.
-        for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
-          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
-            for (const mechanism of editor.getMechanisms()) {
-              if (mechanism.moduleId === mechanismInRobot.moduleId) {
-                componentsToConsider = editor.getComponentsFromMechanism(mechanism);
-                break;
-              }
+    let componentsToConsider: storageModuleContent.Component[] = [];
+    if (this.mrcMechanismId) {
+      // Only consider components that belong to the mechanism.
+      // this.mrcMechanismId is the mechanismId from the MechanismInRobot.
+      // We need to get the MechanismInRobot with that id, then get the mechanism, and then get
+      // the public components defined in that mechanism.
+      for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
+        if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+          for (const mechanism of editor.getMechanisms()) {
+            if (mechanism.moduleId === mechanismInRobot.moduleId) {
+              componentsToConsider = editor.getComponentsFromMechanism(mechanism);
+              break;
             }
-            break;
           }
+          break;
         }
-      } else if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
-        // Only consider components (regular and private) in the current workspace.
-        componentsToConsider = editor.getAllComponentsFromWorkspace();
-      } else {
-        // Only consider components in the robot.
-        componentsToConsider = editor.getComponentsFromRobot();
       }
-      componentsToConsider.forEach(component => {
-        if (component.className === this.mrcComponentClassName) {
-          components.push(component);
-        }
-      });
+    } else if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
+      // Only consider components (regular and private) in the current workspace.
+      componentsToConsider = editor.getAllComponentsFromWorkspace();
+    } else {
+      // Only consider components in the robot.
+      componentsToConsider = editor.getComponentsFromRobot();
     }
+    componentsToConsider.forEach(component => {
+      if (component.className === this.mrcComponentClassName) {
+        components.push(component);
+      }
+    });
     return components;
   },
 
   /**
    * mrcOnModuleCurrent is called for each CallPythonFunctionBlock when the module becomes the current module.
    */
-  mrcOnModuleCurrent: function(this: CallPythonFunctionBlock): void {
-    this.checkFunction();
+  mrcOnModuleCurrent: function(this: CallPythonFunctionBlock, editor: Editor): void {
+    this.checkFunction(editor);
   },
   /**
    * mrcOnLoad is called for each CallPythonFunctionBlock when the blocks are loaded in the blockly
    * workspace.
    */
-  mrcOnLoad: function(this: CallPythonFunctionBlock): void {
-    this.checkFunction();
+  mrcOnLoad: function(this: CallPythonFunctionBlock, editor: Editor): void {
+    this.checkFunction(editor);
   },
   /**
    * checkFunction checks the block, updates it, and/or adds a warning balloon if necessary.
    * It is called from mrcOnModuleCurrent and mrcOnLoad above.
    */
-  checkFunction: function(this: CallPythonFunctionBlock): void {
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
-    if (!editor) {
-      return;
-    }
+  checkFunction: function(this: CallPythonFunctionBlock, editor: Editor): void {
     const warnings: string[] = [];
 
     // If this block is calling a component method, check whether the component
@@ -621,7 +614,7 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
       const componentNames: string[] = [];
       this.mrcMapComponentNameToId = {}
-      this.getComponents().forEach(component => {
+      this.getComponents(editor).forEach(component => {
         componentNames.push(component.name);
         this.mrcMapComponentNameToId[component.name] = component.componentId;
       });
@@ -865,7 +858,7 @@ export function pythonFromBlock(
     generator: ExtendedPythonGenerator,
 ) {
   if (block.mrcImportModule) {
-    generator.addImport(block.mrcImportModule);
+    generator.importModule(block.mrcImportModule);
   }
   let code = '';
   let needOpenParen = true;

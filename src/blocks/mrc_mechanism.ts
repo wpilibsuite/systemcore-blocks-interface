@@ -193,16 +193,16 @@ const MECHANISM = {
   /**
    * mrcOnModuleCurrent is called for each MechanismBlock when the module becomes the current module.
    */
-  mrcOnModuleCurrent: function(this: MechanismBlock): void {
-    this.checkMechanism();
+  mrcOnModuleCurrent: function(this: MechanismBlock, editor: Editor): void {
+    this.checkMechanism(editor);
   },
   /**
    * mrcOnLoad is called for each MechanismBlock when the blocks are loaded in the blockly
    * workspace.
    */
-  mrcOnLoad: function(this: MechanismBlock): void {
+  mrcOnLoad: function(this: MechanismBlock, editor: Editor): void {
     this.checkBlockIsInHolder();
-    this.checkMechanism();
+    this.checkMechanism(editor);
   },
   /**
    * mrcOnMove is called when a MechanismBlock is moved.
@@ -240,62 +240,59 @@ const MECHANISM = {
    * checkMechanism checks the block, updates it, and/or adds a warning balloon if necessary.
    * It is called from mrcOnModuleCurrent and mrcOnLoad above.
    */
-  checkMechanism: function(this: MechanismBlock): void {
+  checkMechanism: function(this: MechanismBlock, editor: Editor): void {
     const warnings: string[] = [];
 
-    const editor = Editor.getEditorForBlocklyWorkspace(this.workspace, true /* returnCurrentIfNotFound */);
-    if (editor) {
-      // Find the mechanism.
-      let foundMechanism: storageModule.Mechanism | null = null;
+    // Find the mechanism.
+    let foundMechanism: storageModule.Mechanism | null = null;
 
-      if (this.mrcMechanismModuleId) {
-        // Find the mechanism by module id.
-        for (const mechanism of editor.getMechanisms()) {
-          if (mechanism.moduleId === this.mrcMechanismModuleId) {
-            foundMechanism = mechanism;
-            break;
-          }
-        }
-      } else {
-        // Find the mechanism by class name.
-        const className = this.getFieldValue(FIELD_TYPE);
-        for (const mechanism of editor.getMechanisms()) {
-          if (mechanism.className === className) {
-            // Grap the mechanism module id, so we have it for next time.
-            this.mrcMechanismModuleId = mechanism.moduleId;
-            foundMechanism = mechanism;
-            break;
-          }
+    if (this.mrcMechanismModuleId) {
+      // Find the mechanism by module id.
+      for (const mechanism of editor.getMechanisms()) {
+        if (mechanism.moduleId === this.mrcMechanismModuleId) {
+          foundMechanism = mechanism;
+          break;
         }
       }
-
-      if (foundMechanism) {
-        // Here we need all the components (regular and private) from the mechanism because we need
-        // to create port parameters for all the components.
-        const components = editor.getAllComponentsFromMechanism(foundMechanism);
-
-        // If the mechanism class name has changed, update this blcok.
-        if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {
-          this.setFieldValue(foundMechanism.className, FIELD_TYPE);
+    } else {
+      // Find the mechanism by class name.
+      const className = this.getFieldValue(FIELD_TYPE);
+      for (const mechanism of editor.getMechanisms()) {
+        if (mechanism.className === className) {
+          // Grap the mechanism module id, so we have it for next time.
+          this.mrcMechanismModuleId = mechanism.moduleId;
+          foundMechanism = mechanism;
+          break;
         }
-        const importModule = storageNames.pascalCaseToSnakeCase(foundMechanism.className);
-        if (this.mrcImportModule !== importModule) {
-          this.mrcImportModule = importModule;
-        }
-        this.mrcParameters = [];
-        components.forEach(component => {
-          for (const port in component.ports) {
-            this.mrcParameters.push({
-              name: port,
-              type: component.ports[port],
-            });
-          }
-        });
-        this.updateBlock_();
-      } else {
-        // Did not find the mechanism.
-        warnings.push(Blockly.Msg['MECHANISM_NOT_FOUND_WARNING']);
       }
+    }
+
+    if (foundMechanism) {
+      // Here we need all the components (regular and private) from the mechanism because we need
+      // to create port parameters for all the components.
+      const components = editor.getAllComponentsFromMechanism(foundMechanism);
+
+      // If the mechanism class name has changed, update this blcok.
+      if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {
+        this.setFieldValue(foundMechanism.className, FIELD_TYPE);
+      }
+      const importModule = storageNames.pascalCaseToSnakeCase(foundMechanism.className);
+      if (this.mrcImportModule !== importModule) {
+        this.mrcImportModule = importModule;
+      }
+      this.mrcParameters = [];
+      components.forEach(component => {
+        for (const port in component.ports) {
+          this.mrcParameters.push({
+            name: port,
+            type: component.ports[port],
+          });
+        }
+      });
+      this.updateBlock_();
+    } else {
+      // Did not find the mechanism.
+      warnings.push(Blockly.Msg['MECHANISM_NOT_FOUND_WARNING']);
     }
 
     if (warnings.length) {
@@ -328,7 +325,7 @@ export const pythonFromBlock = function (
   generator: ExtendedPythonGenerator,
 ) {
   if (block.mrcImportModule) {
-    generator.addImport(block.mrcImportModule);
+    generator.importModule(block.mrcImportModule);
   }
   let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.mrcImportModule + '.' + block.getFieldValue(FIELD_TYPE) + '(';
 

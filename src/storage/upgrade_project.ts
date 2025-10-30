@@ -29,6 +29,7 @@ import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
 import { ClassMethodDefBlock, BLOCK_NAME as MRC_CLASS_METHOD_DEF_BLOCK_NAME } from '../blocks/mrc_class_method_def';
+import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
 export const CURRENT_VERSION = '0.0.4';
@@ -89,14 +90,16 @@ async function upgradeFrom_001_to_002(
       // mrc_mechanism_component_holder block.
       const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
       let blocks = moduleContent.getBlocks();
+
       // Create a temporary workspace to upgrade the blocks.
-      const headlessWorkspace = new Blockly.Workspace();
+      const headlessWorkspace = workspaces.createHeadlessWorkspace(storageModule.ModuleType.ROBOT);
+
       try {
         Blockly.serialization.workspaces.load(blocks, headlessWorkspace);
         mechanismComponentHolder.hidePrivateComponents(headlessWorkspace);
         blocks = Blockly.serialization.workspaces.save(headlessWorkspace);
       } finally {
-        headlessWorkspace.dispose();
+        workspaces.destroyHeadlessWorkspace(headlessWorkspace);
       }
       moduleContent.setBlocks(blocks);
       moduleContentText = moduleContent.getModuleContentText();
@@ -123,8 +126,9 @@ async function upgradeFrom_002_to_003(
       const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
       let blocks = moduleContent.getBlocks();
 
-      // Create a temporary workspace to upgrade the blocks
-      const headlessWorkspace = new Blockly.Workspace();
+      // Create a temporary workspace to upgrade the blocks.
+      const headlessWorkspace = workspaces.createHeadlessWorkspace(storageModule.ModuleType.ROBOT);
+
       try {
         Blockly.serialization.workspaces.load(blocks, headlessWorkspace);
 
@@ -134,7 +138,7 @@ async function upgradeFrom_002_to_003(
         });
         blocks = Blockly.serialization.workspaces.save(headlessWorkspace);
       } finally {
-        headlessWorkspace.dispose();
+        workspaces.destroyHeadlessWorkspace(headlessWorkspace);
       }
 
       moduleContent.setBlocks(blocks);

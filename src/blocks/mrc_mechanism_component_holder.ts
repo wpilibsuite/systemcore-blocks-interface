@@ -23,6 +23,7 @@ import * as Blockly from 'blockly';
 
 import { MRC_STYLE_MECHANISMS } from '../themes/styles';
 import { getLegalName } from './utils/python';
+import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
@@ -131,7 +132,7 @@ const MECHANISM_COMPONENT_HOLDER = {
    * mrcOnLoad is called for each MechanismComponentHolderBlock when the blocks are loaded in the blockly
    * workspace.
    */
-  mrcOnLoad: function(this: MechanismComponentHolderBlock): void {
+  mrcOnLoad: function(this: MechanismComponentHolderBlock, _editor: Editor): void {
     this.collectDescendants(false);
   },
   /**
