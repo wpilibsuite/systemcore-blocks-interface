@@ -35,7 +35,7 @@ export const setup = function () {
 const INPUT_STACK = 'STACK';
 
 export type StepContainerBlock = StepContainerMixin & Blockly.BlockSvg;
-interface StepContainerMixin extends StepContainerMixinType {}
+interface StepContainerMixin extends StepContainerMixinType { }
 type StepContainerMixinType = typeof STEP_CONTAINER;
 
 const STEP_CONTAINER = {
@@ -50,7 +50,7 @@ const STEP_CONTAINER = {
     let block = this.getInputTargetBlock(INPUT_STACK);
     while (block && !block.isInsertionMarker()) {
       if (block.type !== STEP_ITEM_BLOCK_NAME) {
-       throw new Error('getItemNames: block.type should be ' + STEP_ITEM_BLOCK_NAME);
+        throw new Error('getItemNames: block.type should be ' + STEP_ITEM_BLOCK_NAME);
       }
       stepItemBlocks.push(block as StepItemBlock);
       block = block.nextConnection && block.nextConnection.targetBlock();
@@ -73,7 +73,7 @@ type StepItemMixinType = typeof STEP_ITEM;
 const STEP_ITEM = {
   init: function (this: StepItemBlock) {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput(''), FIELD_NAME);
+      .appendField(new Blockly.FieldTextInput(''), FIELD_NAME);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
@@ -129,7 +129,7 @@ function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
   workspace.getBlocksByType(STEP_ITEM_BLOCK_NAME, false).forEach(block => {
     usedNames.push(block.getFieldValue(FIELD_NAME));
   });
-  
+
   // Find the first unused number starting from 0
   let counter = 0;
   let uniqueName = counter.toString();
@@ -137,7 +137,7 @@ function updateMutatorFlyout(workspace: Blockly.WorkspaceSvg) {
     counter++;
     uniqueName = counter.toString();
   }
-  
+
   const jsonBlock = {
     kind: 'block',
     type: STEP_ITEM_BLOCK_NAME,
