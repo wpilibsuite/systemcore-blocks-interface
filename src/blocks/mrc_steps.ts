@@ -99,6 +99,21 @@ const STEPS = {
     });
 
     this.updateShape_();
+
+    // Add a shadow True block to each empty condition input.
+    for (var i = 0; i < this.mrcStepNames.length; i++) {
+      const conditionInput = this.getInput(INPUT_CONDITION_PREFIX + i);
+      if (conditionInput && !conditionInput.connection?.targetConnection) {
+        const shadowBlock = this.workspace.newBlock('logic_boolean') as Blockly.BlockSvg;
+        shadowBlock.setShadow(true);
+        shadowBlock.setFieldValue('TRUE', 'BOOL');
+        if (this.workspace.rendered) {
+          shadowBlock.initSvg();
+          shadowBlock.render();
+        }
+        conditionInput.connection?.connect(shadowBlock.outputConnection!);
+      }
+    }
   },
   decompose: function (this: StepsBlock, workspace: Blockly.Workspace) {
     const stepNames: string[] = [];
@@ -217,23 +232,11 @@ const STEPS = {
         const fieldFlydown = createStepFieldFlydown(stepName, true);
         fieldFlydown.setValidator(this.mrcUpdateStepName.bind(this, j));
 
-        const conditionInput = this.appendValueInput(INPUT_CONDITION_PREFIX + j)
+        this.appendValueInput(INPUT_CONDITION_PREFIX + j)
           .appendField(fieldFlydown)
           .setCheck('Boolean')
           .appendField(Blockly.Msg.REPEAT_UNTIL);
         this.appendStatementInput(INPUT_STEP_PREFIX + j);
-
-        // Add shadow True block to the new condition input
-        if (this.workspace) {
-          const shadowBlock = this.workspace.newBlock('logic_boolean') as Blockly.BlockSvg;
-          shadowBlock.setShadow(true);
-          shadowBlock.setFieldValue('TRUE', 'BOOL');
-          if (this.workspace.rendered){
-            shadowBlock.initSvg();
-            shadowBlock.render();
-          }
-          conditionInput.connection?.connect(shadowBlock.outputConnection!);
-        }
       }
     }
 
