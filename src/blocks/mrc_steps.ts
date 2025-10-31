@@ -27,8 +27,13 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createStepFieldFlydown } from '../fields/field_flydown';
 import { BLOCK_NAME as MRC_JUMP_TO_STEP } from './mrc_jump_to_step';
 import * as stepContainer from './mrc_step_container'
+import * as value from './utils/value';
+import * as toolboxItems from '../toolbox/items';
 
 export const BLOCK_NAME = 'mrc_steps';
+
+const INPUT_CONDITION_PREFIX = 'CONDITION_';
+const INPUT_STEP_PREFIX = 'STEP_';
 
 /** Extra state for serialising mrc_steps blocks. */
 type StepsExtraState = {
@@ -49,7 +54,7 @@ const STEPS = {
    * Block initialization.
    */
   init: function (this: StepsBlock): void {
-    this.mrcStepNames = ["0"];
+    this.mrcStepNames = [];
     this.appendDummyInput()
       .appendField(Blockly.Msg.STEPS);
     this.setInputsInline(false);
@@ -63,10 +68,8 @@ const STEPS = {
     };
   },
   loadExtraState: function (this: StepsBlock, state: StepsExtraState): void {
-    if (state && state.stepNames) {
-      this.mrcStepNames = state.stepNames;
-      this.updateShape_();
-    }
+    this.mrcStepNames = state.stepNames;
+    this.updateShape_();
   },
   compose: function (this: StepsBlock, containerBlock: Blockly.Block) {
     if (containerBlock.type !== stepContainer.STEP_CONTAINER_BLOCK_NAME) {
@@ -96,6 +99,21 @@ const STEPS = {
     });
 
     this.updateShape_();
+
+    // Add a shadow True block to each empty condition input.
+    for (var i = 0; i < this.mrcStepNames.length; i++) {
+      const conditionInput = this.getInput(INPUT_CONDITION_PREFIX + i);
+      if (conditionInput && !conditionInput.connection?.targetConnection) {
+        const shadowBlock = this.workspace.newBlock('logic_boolean') as Blockly.BlockSvg;
+        shadowBlock.setShadow(true);
+        shadowBlock.setFieldValue('TRUE', 'BOOL');
+        if (this.workspace.rendered) {
+          shadowBlock.initSvg();
+          shadowBlock.render();
+        }
+        conditionInput.connection?.connect(shadowBlock.outputConnection!);
+      }
+    }
   },
   decompose: function (this: StepsBlock, workspace: Blockly.Workspace) {
     const stepNames: string[] = [];
@@ -151,8 +169,8 @@ const STEPS = {
     // Build a map of step names to their current input indices
     const currentStepMap: { [stepName: string]: number } = {};
     let i = 0;
-    while (this.getInput('CONDITION_' + i)) {
-      const conditionInput = this.getInput('CONDITION_' + i);
+    while (this.getInput(INPUT_CONDITION_PREFIX + i)) {
+      const conditionInput = this.getInput(INPUT_CONDITION_PREFIX + i);
       const field = conditionInput?.fieldRow[0];
       if (field) {
         currentStepMap[field.getValue()] = i;
@@ -167,39 +185,43 @@ const STEPS = {
 
       if (currentIndex !== undefined && currentIndex !== j) {
         // Step exists but is at wrong position - move it
-        const conditionConnection = this.getInput('CONDITION_' + currentIndex)?.connection?.targetConnection;
-        const stepConnection = this.getInput('STEP_' + currentIndex)?.connection?.targetConnection;
+        const conditionConnection = this.getInput(INPUT_CONDITION_PREFIX + currentIndex)?.connection?.targetConnection;
+        const stepConnection = this.getInput(INPUT_STEP_PREFIX + currentIndex)?.connection?.targetConnection;
 
         // Temporarily disconnect
-        if (conditionConnection) conditionConnection.disconnect();
-        if (stepConnection) stepConnection.disconnect();
+        if (conditionConnection) {
+          conditionConnection.disconnect();
+        }
+        if (stepConnection) {
+          stepConnection.disconnect();
+        }
 
         // Remove old inputs
-        this.removeInput('CONDITION_' + currentIndex, false);
-        this.removeInput('STEP_' + currentIndex, false);
+        this.removeInput(INPUT_CONDITION_PREFIX + currentIndex, false);
+        this.removeInput(INPUT_STEP_PREFIX + currentIndex, false);
 
         // Create new inputs at correct position
         const fieldFlydown = createStepFieldFlydown(stepName, true);
         fieldFlydown.setValidator(this.mrcUpdateStepName.bind(this, j));
 
-        this.appendValueInput('CONDITION_' + j)
+        this.appendValueInput(INPUT_CONDITION_PREFIX + j)
           .appendField(fieldFlydown)
           .setCheck('Boolean')
           .appendField(Blockly.Msg.REPEAT_UNTIL);
-        this.appendStatementInput('STEP_' + j);
+        this.appendStatementInput(INPUT_STEP_PREFIX + j);
 
         // Reconnect
         if (conditionConnection) {
-          this.getInput('CONDITION_' + j)?.connection?.connect(conditionConnection);
+          this.getInput(INPUT_CONDITION_PREFIX + j)?.connection?.connect(conditionConnection);
         }
         if (stepConnection) {
-          this.getInput('STEP_' + j)?.connection?.connect(stepConnection);
+          this.getInput(INPUT_STEP_PREFIX + j)?.connection?.connect(stepConnection);
         }
 
         delete currentStepMap[stepName];
       } else if (currentIndex !== undefined) {
         // Step is at correct position - just update the field
-        const conditionInput = this.getInput('CONDITION_' + j);
+        const conditionInput = this.getInput(INPUT_CONDITION_PREFIX + j);
         const field = conditionInput?.fieldRow[0];
         if (field && field.getValue() !== stepName) {
           field.setValue(stepName);
@@ -210,31 +232,19 @@ const STEPS = {
         const fieldFlydown = createStepFieldFlydown(stepName, true);
         fieldFlydown.setValidator(this.mrcUpdateStepName.bind(this, j));
 
-        const conditionInput = this.appendValueInput('CONDITION_' + j)
+        this.appendValueInput(INPUT_CONDITION_PREFIX + j)
           .appendField(fieldFlydown)
           .setCheck('Boolean')
           .appendField(Blockly.Msg.REPEAT_UNTIL);
-        this.appendStatementInput('STEP_' + j);
-
-        // Add shadow True block to the new condition input
-        if (this.workspace) {
-          const shadowBlock = this.workspace.newBlock('logic_boolean') as Blockly.BlockSvg;
-          shadowBlock.setShadow(true);
-          shadowBlock.setFieldValue('TRUE', 'BOOL');
-          if (this.workspace.rendered){
-            shadowBlock.initSvg();
-            shadowBlock.render();
-          }
-          conditionInput.connection?.connect(shadowBlock.outputConnection!);
-        }
+        this.appendStatementInput(INPUT_STEP_PREFIX + j);
       }
     }
 
     // Remove any leftover inputs (steps that were deleted)
     for (const stepName in currentStepMap) {
       const index = currentStepMap[stepName];
-      this.removeInput('CONDITION_' + index, false);
-      this.removeInput('STEP_' + index, false);
+      this.removeInput(INPUT_CONDITION_PREFIX + index, false);
+      this.removeInput(INPUT_STEP_PREFIX + index, false);
     }
   },
   mrcGetStepNames: function (this: StepsBlock): string[] {
@@ -256,7 +266,7 @@ export const pythonFromBlock = function (
   generator: ExtendedPythonGenerator,
 ) {
   let code = 'def steps(self):\n';
-  code += generator.INDENT + 'if not self._initialized_steps:\n';
+  code += generator.INDENT + 'if not hasattr(self, "_initialized_steps"):\n';
   code += generator.INDENT.repeat(2) + 'self._current_step = "' + block.mrcStepNames[0] + '"\n';
   code += generator.INDENT.repeat(2) + 'self._initialized_steps = True\n\n';
   code += generator.INDENT + 'if self._current_step == None:\n';
@@ -266,11 +276,11 @@ export const pythonFromBlock = function (
   code += generator.INDENT + 'match self._current_step:\n';
   block.mrcStepNames.forEach((stepName, index) => {
     code += generator.INDENT.repeat(2) + `case "${stepName}":\n`;
-    let stepCode = generator.statementToCode(block, 'STEP_' + index);
+    let stepCode = generator.statementToCode(block, INPUT_STEP_PREFIX + index);
     if (stepCode !== '') {
       code += generator.prefixLines(stepCode, generator.INDENT.repeat(2));
     }
-    let conditionCode = generator.valueToCode(block, 'CONDITION_' + index, Order.NONE) || 'False';
+    let conditionCode = generator.valueToCode(block, INPUT_CONDITION_PREFIX + index, Order.NONE) || 'False';
     code += generator.INDENT.repeat(3) + 'if ' + conditionCode + ':\n';
     if (index === block.mrcStepNames.length - 1) {
       code += generator.INDENT.repeat(4) + 'self._current_step = None\n';
@@ -282,4 +292,14 @@ export const pythonFromBlock = function (
   generator.addClassMethodDefinition('steps', code);
 
   return ''
+}
+
+export function createStepsBlock(): toolboxItems.Block {
+  const extraState: StepsExtraState = {
+    stepNames: ['0'],
+  };
+  const fields: {[key: string]: any} = {};
+  const inputs: {[key: string]: any} = {};
+  inputs[INPUT_CONDITION_PREFIX + 0] = value.createBooleanShadowValue(true);
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, inputs);
 }
