@@ -27,6 +27,8 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createStepFieldFlydown } from '../fields/field_flydown';
 import { BLOCK_NAME as MRC_JUMP_TO_STEP } from './mrc_jump_to_step';
 import * as stepContainer from './mrc_step_container'
+import * as value from './utils/value';
+import * as toolboxItems from '../toolbox/items';
 
 export const BLOCK_NAME = 'mrc_steps';
 
@@ -49,7 +51,7 @@ const STEPS = {
    * Block initialization.
    */
   init: function (this: StepsBlock): void {
-    this.mrcStepNames = ["0"];
+    this.mrcStepNames = [];
     this.appendDummyInput()
       .appendField(Blockly.Msg.STEPS);
     this.setInputsInline(false);
@@ -63,10 +65,8 @@ const STEPS = {
     };
   },
   loadExtraState: function (this: StepsBlock, state: StepsExtraState): void {
-    if (state && state.stepNames) {
-      this.mrcStepNames = state.stepNames;
-      this.updateShape_();
-    }
+    this.mrcStepNames = state.stepNames;
+    this.updateShape_();
   },
   compose: function (this: StepsBlock, containerBlock: Blockly.Block) {
     if (containerBlock.type !== stepContainer.STEP_CONTAINER_BLOCK_NAME) {
@@ -171,8 +171,12 @@ const STEPS = {
         const stepConnection = this.getInput('STEP_' + currentIndex)?.connection?.targetConnection;
 
         // Temporarily disconnect
-        if (conditionConnection) conditionConnection.disconnect();
-        if (stepConnection) stepConnection.disconnect();
+        if (conditionConnection) {
+          conditionConnection.disconnect();
+        }
+        if (stepConnection) {
+          stepConnection.disconnect();
+        }
 
         // Remove old inputs
         this.removeInput('CONDITION_' + currentIndex, false);
@@ -256,7 +260,7 @@ export const pythonFromBlock = function (
   generator: ExtendedPythonGenerator,
 ) {
   let code = 'def steps(self):\n';
-  code += generator.INDENT + 'if not self._initialized_steps:\n';
+  code += generator.INDENT + 'if not hasattr(self, "_initialized_steps"):\n';
   code += generator.INDENT.repeat(2) + 'self._current_step = "' + block.mrcStepNames[0] + '"\n';
   code += generator.INDENT.repeat(2) + 'self._initialized_steps = True\n\n';
   code += generator.INDENT + 'if self._current_step == None:\n';
@@ -282,4 +286,14 @@ export const pythonFromBlock = function (
   generator.addClassMethodDefinition('steps', code);
 
   return ''
+}
+
+export function createStepsBlock(): toolboxItems.Block {
+  const extraState: StepsExtraState = {
+    stepNames: ['0'],
+  };
+  const fields: {[key: string]: any} = {};
+  const inputs: {[key: string]: any} = {};
+  inputs['CONDITION_' + 0] = value.createBooleanShadowValue(true);
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, inputs);
 }

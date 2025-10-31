@@ -27,6 +27,7 @@ import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
 import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
 import { createCustomMethodBlock, getBaseClassBlocks, FIELD_METHOD_NAME, createCustomMethodBlockWithReturn } from '../blocks/mrc_class_method_def';
+import { createStepsBlock } from '../blocks/mrc_steps';
 import { Editor } from '../editor/editor';
 
 
@@ -101,10 +102,7 @@ class MethodsCategory {
       case storageModule.ModuleType.OPMODE:
         const hasSteps = editor.isStepsInWorkspace();
         if (!hasSteps) {
-          contents.push({
-            kind: 'block',
-            type: 'mrc_steps',
-          });
+          contents.push(createStepsBlock());
         }
         // Add the methods for an OpMode.
         this.addClassBlocksForCurrentModule(
