@@ -103,3 +103,13 @@ export const pythonFromBlock = function (
 
   return code;
 };
+
+export function renameSteps(workspace: Blockly.Workspace, mapOldStepNameToNewStepName: {[newStepName: string]: string}): void {
+  workspace.getBlocksByType(BLOCK_NAME, false).forEach((jumpBlock) => {
+    const stepName = jumpBlock.getFieldValue(FIELD_STEP_NAME);
+    if (stepName in mapOldStepNameToNewStepName) {
+      const newStepName = mapOldStepNameToNewStepName[stepName];
+      jumpBlock.setFieldValue(newStepName, FIELD_STEP_NAME);
+    }
+  });
+}
