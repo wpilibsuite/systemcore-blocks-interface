@@ -60,8 +60,8 @@ const JUMP_TO_STEP_BLOCK = {
     });
   },
   /**
-     * mrcOnMove is called when an EventBlock is moved.
-     */
+   * mrcOnMove is called when a JumpToStepBlock is moved.
+   */
   mrcOnMove: function (this: JumpToStepBlock, _reason: string[]): void {
     this.checkBlockPlacement();
   },
@@ -73,14 +73,14 @@ const JUMP_TO_STEP_BLOCK = {
 
     const rootBlock: Blockly.Block | null = this.getRootBlock();
     if (rootBlock.type === MRC_STEPS) {
-      // This block is within a class method definition.
+      // This block is within a steps block.
       const stepsBlock = rootBlock as StepsBlock;
-      // Add the method's parameter names to legalStepNames.
+      // Add the step names to legalStepNames.
       legalStepNames.push(...stepsBlock.mrcGetStepNames());
     }
 
     if (legalStepNames.includes(this.getFieldValue(FIELD_STEP_NAME))) {
-      // If this blocks's parameter name is in legalParameterNames, it's good.
+      // If this blocks's step name is in legalStepNames, it's good.
       this.setWarningText(null, WARNING_ID_NOT_IN_STEP);
       this.mrcHasWarning = false;
     } else {
