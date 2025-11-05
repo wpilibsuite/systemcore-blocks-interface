@@ -148,6 +148,8 @@
     "GET": "קבל",
     "SET": "הגדר",
     "TO": "ל",
+    "STEPS": "צעדים",
+    "REPEAT_UNTIL": "לחזור על כך עד",
     "CUSTOM_EVENTS_LABEL": "אירועים מותאמים אישית",
     "CUSTOM_METHODS_LABEL": "מתודות מותאמות אישית",
     "MORE_ROBOT_METHODS_LABEL": "מתודות נוספות לרובוט",
