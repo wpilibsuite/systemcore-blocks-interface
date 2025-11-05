@@ -66,6 +66,9 @@ const FIELD_NAME = 'NAME';
 export type StepItemBlock = StepItemMixin & Blockly.BlockSvg;
 interface StepItemMixin extends StepItemMixinType {
   originalName: string,
+  conditionShadowState?: any;
+  conditionTargetConnection?: Blockly.Connection | null;
+  statementTargetConnection?: Blockly.Connection | null;
 }
 
 type StepItemMixinType = typeof STEP_ITEM;
@@ -174,7 +177,7 @@ function onChange(mutatorWorkspace: Blockly.Workspace, event: Blockly.Events.Abs
 }
 
 /**
- * Called for mrc_event and mrc_class_method_def blocks when their mutator opesn.
+ * Called for mrc_steps blocks when their mutator opesn.
  * Triggers a flyout update and adds an event listener to the mutator workspace.
  *
  * @param block The block whose mutator is open.
@@ -193,9 +196,9 @@ export function getMutatorIcon(block: Blockly.BlockSvg): Blockly.icons.MutatorIc
   return new Blockly.icons.MutatorIcon([STEP_ITEM_BLOCK_NAME], block);
 }
 
-export function createMutatorBlocks(workspace: Blockly.Workspace, stepNames: string[]): Blockly.BlockSvg {
+export function createMutatorBlocks(workspace: Blockly.Workspace, stepNames: string[]): StepContainerBlock {
   // First create the container block.
-  const containerBlock = workspace.newBlock(STEP_CONTAINER_BLOCK_NAME) as Blockly.BlockSvg;
+  const containerBlock = workspace.newBlock(STEP_CONTAINER_BLOCK_NAME) as StepContainerBlock;
   containerBlock.initSvg();
 
   // Then add one step item block for each step.

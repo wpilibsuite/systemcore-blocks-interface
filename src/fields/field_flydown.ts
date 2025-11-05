@@ -373,7 +373,7 @@ export class FieldFlydown extends Blockly.FieldTextInput {
     }
 }
 
-export function createParameterBlock(paramName: string): Blockly.utils.toolbox.FlyoutDefinition {
+function createParameterBlock(paramName: string): Blockly.utils.toolbox.FlyoutDefinition {
     return {
         contents: [
             {
@@ -387,7 +387,7 @@ export function createParameterBlock(paramName: string): Blockly.utils.toolbox.F
     };
 }
 
-export function createAdvanceToBlock(stepName: string): Blockly.utils.toolbox.FlyoutDefinition {
+function createJumpToStepBlock(stepName: string): Blockly.utils.toolbox.FlyoutDefinition {
     return {
         contents: [
             {
@@ -413,6 +413,6 @@ export function createParameterFieldFlydown(paramName: string, isEditable: boole
     return new FieldFlydown(paramName, isEditable, createParameterBlock);
 }
 
-export function createStepFieldFlydown(paramName: string, isEditable: boolean): Blockly.Field {
-    return new FieldFlydown(paramName, isEditable, createAdvanceToBlock);
+export function createStepFieldFlydown(stepName: string, isEditable: boolean): Blockly.Field {
+    return new FieldFlydown(stepName, isEditable, createJumpToStepBlock);
 }
