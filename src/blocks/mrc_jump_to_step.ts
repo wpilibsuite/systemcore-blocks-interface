@@ -47,12 +47,17 @@ const JUMP_TO_STEP_BLOCK = {
    */
   init: function (this: JumpToStepBlock): void {
     this.appendDummyInput()
-      .appendField('Jump to')
+      .appendField(Blockly.Msg.JUMP_TO)
       .appendField(createFieldNonEditableText(''), FIELD_STEP_NAME);
     this.setPreviousStatement(true, null);
     this.setInputsInline(true);
     this.setStyle(MRC_STYLE_VARIABLES);
-    this.setTooltip('Jump to the specified step.');
+    this.setTooltip(() => {
+      const stepName = this.getFieldValue(FIELD_STEP_NAME);
+      let tooltip = Blockly.Msg.JUMP_TO_STEP_TOOLTIP;
+      tooltip = tooltip.replace('{{stepName}}', stepName);
+      return tooltip;
+    });
   },
   /**
      * mrcOnMove is called when an EventBlock is moved.
