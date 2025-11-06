@@ -29,6 +29,7 @@ import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
+import * as blockSteps from '../blocks/mrc_steps';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 import * as workspaces from '../blocks/utils/workspaces';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
@@ -380,6 +381,13 @@ export class Editor {
     classMethodDef.getMethodNamesAlreadyOverriddenInWorkspace(
         this.blocklyWorkspace, methodNamesAlreadyOverridden);
     return methodNamesAlreadyOverridden;
+  }
+  public isStepsInWorkspace(): boolean {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      throw new Error('this.blocklyWorkspace has been disposed.');
+    }
+    return blockSteps.isStepsInWorkspace(this.blocklyWorkspace);
   }
 
   public getEventsFromWorkspace(): storageModuleContent.Event[] {

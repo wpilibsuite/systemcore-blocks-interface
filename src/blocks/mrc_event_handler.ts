@@ -27,7 +27,7 @@ import type { MessageInstance } from 'antd/es/message/interface';
 import { Parameter } from './mrc_class_method_def';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { createFieldFlydown } from '../fields/field_flydown';
+import { createParameterFieldFlydown } from '../fields/field_flydown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_EVENT_HANDLER } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
@@ -146,7 +146,7 @@ const EVENT_HANDLER = {
         this.removeParameterFields(input);
         this.mrcParameters.forEach((param) => {
           const paramName = `PARAM_${param.name}`;
-          input.appendField(createFieldFlydown(param.name, false), paramName);
+          input.appendField(createParameterFieldFlydown(param.name, false), paramName);
         });
       }
     } else {

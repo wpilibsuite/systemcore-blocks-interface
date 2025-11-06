@@ -32,7 +32,7 @@ import { ClassMethodDefBlock, BLOCK_NAME as MRC_CLASS_METHOD_DEF_BLOCK_NAME } fr
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.3';
+export const CURRENT_VERSION = '0.0.4';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -46,8 +46,15 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.1':
         upgradeFrom_001_to_002(storage, projectName, projectInfo);
+      // Intentional fallthrough
+      // @ts-ignore
       case '0.0.2':
-        upgradeFrom_002_to_003(storage, projectName, projectInfo);
+        upgradeFrom_002_to_003(storage, projectName, projectInfo);   
+      case '0.0.3':
+        upgradeFrom_003_to_004(storage, projectName, projectInfo);
+        break;
+      default:
+        throw new Error('Unrecognized project version: ' + projectInfo.version);
 
     }
     await storageProject.saveProjectInfo(storage, projectName);
@@ -140,4 +147,13 @@ async function upgradeFrom_002_to_003(
     }
   }
   projectInfo.version = '0.0.3';
+}
+
+async function upgradeFrom_003_to_004(
+    _storage: commonStorage.Storage,
+    _projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // The only change in this version are some new blocks.  This keeps you
+  // from loading a project with an older version of software.
+  projectInfo.version = '0.0.4';
 }

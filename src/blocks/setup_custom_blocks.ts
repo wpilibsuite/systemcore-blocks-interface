@@ -18,6 +18,9 @@ import * as OpModeDetails from './mrc_opmode_details';
 import * as ParamContainer from './mrc_param_container'
 import * as Port from './mrc_port';
 import * as SetPythonVariable from './mrc_set_python_variable';
+import * as Steps from './mrc_steps';
+import * as StepContainer from './mrc_step_container';
+import * as JumpToStep from './mrc_jump_to_step';
 
 const customBlocks = [
   CallPythonFunction,
@@ -39,6 +42,9 @@ const customBlocks = [
   ParamContainer,
   Port,
   SetPythonVariable,
+  Steps,
+  StepContainer,
+  JumpToStep
 ];
 
 export const setup = function(forBlock: any) {

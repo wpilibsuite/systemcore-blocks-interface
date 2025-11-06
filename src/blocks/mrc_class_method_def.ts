@@ -22,7 +22,7 @@
 import * as Blockly from 'blockly';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
-import { createFieldFlydown } from '../fields/field_flydown';
+import { createParameterFieldFlydown } from '../fields/field_flydown';
 import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
@@ -62,7 +62,7 @@ interface ClassMethodDefMixin extends ClassMethodDefMixinType {
 }
 type ClassMethodDefMixinType = typeof CLASS_METHOD_DEF;
 
-/** Extra state for serialising call_python_* blocks. */
+/** Extra state for serialising mrc_class_method_def blocks. */
 type ClassMethodDefExtraState = {
   /**
    * The id that identifies this method definition.
@@ -241,7 +241,7 @@ const CLASS_METHOD_DEF = {
         this.removeParameterFields(input);
         this.mrcParameters.forEach((param) => {
           const paramName = FIELD_PARAM_PREFIX + param.name;
-          input.appendField(createFieldFlydown(param.name, false), paramName);
+          input.appendField(createParameterFieldFlydown(param.name, false), paramName);
         });
       }
     }
