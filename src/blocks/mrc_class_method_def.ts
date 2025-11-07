@@ -37,6 +37,9 @@ import * as paramContainer from './mrc_param_container'
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
+const NO_RETURN_VALUE = 'None';
+const UNTYPED_RETURN_VALUE = '';
+
 const INPUT_TITLE = 'TITLE';
 export const FIELD_METHOD_NAME = 'NAME';
 const FIELD_PARAM_PREFIX = 'PARAM_';
@@ -82,8 +85,8 @@ type ClassMethodDefExtraState = {
   canBeCalledOutsideClass: boolean,
   /**
    * The return type of the function.
-   * Use 'None' for no return value.
-   * Use '' for an untyped return value.
+   * Use NO_RETURN_VALUE for no return value.
+   * Use UNTYPED_RETURN_VALUE for an untyped return value.
    */
   returnType: string,
   /**
@@ -252,8 +255,8 @@ const CLASS_METHOD_DEF = {
       this.removeInput(INPUT_RETURN);
     }
         
-    // Add return input if return type is not 'None'
-    if (this.mrcReturnType && this.mrcReturnType !== 'None') {
+    // Add return input if return type is not NO_RETURN_VALUE
+    if (this.mrcReturnType !== undefined && this.mrcReturnType !== NO_RETURN_VALUE) {
       this.appendValueInput(INPUT_RETURN)
           .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(Blockly.Msg.PROCEDURES_DEFRETURN_RETURN);
@@ -346,6 +349,11 @@ const CLASS_METHOD_DEF = {
       const methodBlock = this as ClassMethodDefBlock;
       const filteredParams: Parameter[] = methodBlock.mrcParameters.filter(param => param.name !== 'robot');
       methodBlock.mrcParameters = filteredParams;
+    }
+  },
+  upgrade_004_to_005: function(this: ClassMethodDefBlock) {
+    if (this.mrcReturnType === 'Any') {
+      this.mrcReturnType = UNTYPED_RETURN_VALUE;
     }
   },
 };
@@ -508,7 +516,7 @@ export function createCustomMethodBlock(): toolboxItems.Block {
     canChangeSignature: true,
     canBeCalledWithinClass: true,
     canBeCalledOutsideClass: true,
-    returnType: 'None',
+    returnType: NO_RETURN_VALUE,
     params: [],
   };
   const fields: {[key: string]: any} = {};
@@ -521,7 +529,7 @@ export function createCustomMethodBlockWithReturn(): toolboxItems.Block {
       canChangeSignature: true,
       canBeCalledWithinClass: true,
       canBeCalledOutsideClass: true,
-      returnType: 'Any',
+      returnType: UNTYPED_RETURN_VALUE,
       params: [],
   };
   const fields: {[key: string]: any} = {};
@@ -607,5 +615,19 @@ export function getMethodNamesAlreadyOverriddenInWorkspace(
     if (!methodDefBlock.canChangeSignature()) {
       methodNamesAlreadyOverridden.push(methodDefBlock.getMethodName());
     }
+  });
+}
+
+/**
+ * Upgrades the ClassMethodDefBlocks in the given workspace from version 004 to 005.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_004_to_005(workspace: Blockly.Workspace): void {
+  // Make sure the workspace is headless.
+  if (workspace.rendered) {
+    throw new Error('upgrade_004_to_005 should never be called with a rendered workspace.');
+  }
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ClassMethodDefBlock).upgrade_004_to_005();
   });
 }
