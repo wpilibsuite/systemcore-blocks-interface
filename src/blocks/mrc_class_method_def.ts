@@ -619,6 +619,20 @@ export function getMethodNamesAlreadyOverriddenInWorkspace(
 }
 
 /**
+ * Upgrades the ClassMethodDefBlocks in the given workspace from version 002 to 003.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_002_to_003(workspace: Blockly.Workspace): void {
+  // Make sure the workspace is headless.
+  if (workspace.rendered) {
+    throw new Error('upgrade_002_to_003 should never be called with a rendered workspace.');
+  }
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ClassMethodDefBlock).upgrade_002_to_003();
+  });
+}
+
+/**
  * Upgrades the ClassMethodDefBlocks in the given workspace from version 004 to 005.
  * This function should only be called when upgrading old projects.
  */

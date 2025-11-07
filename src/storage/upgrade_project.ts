@@ -28,7 +28,7 @@ import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
-import { ClassMethodDefBlock, BLOCK_NAME as MRC_CLASS_METHOD_DEF_BLOCK_NAME, upgrade_004_to_005 } from '../blocks/mrc_class_method_def';
+import { upgrade_002_to_003, upgrade_004_to_005 } from '../blocks/mrc_class_method_def';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
@@ -74,6 +74,7 @@ export async function upgradeProjectIfNecessary(
 async function upgradeBlocksFiles(
     storage: commonStorage.Storage,
     projectName: string,
+    upgradePredicate: (moduleType: storageModule.ModuleType) => boolean,
     upgradeFunc: (w: Blockly.Workspace) => void
 ): Promise<void> {
   const projectFileNames: string[] = await storage.list(
@@ -81,28 +82,48 @@ async function upgradeBlocksFiles(
   for (const projectFileName of projectFileNames) {
     const modulePath = storageNames.makeFilePath(projectName, projectFileName);
     const moduleType = storageNames.getModuleType(modulePath);
+    const originalModuleContentText = await storage.fetchFileContentText(modulePath);
+    let moduleContentText = originalModuleContentText;
 
-    let moduleContentText = await storage.fetchFileContentText(modulePath);
-    const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
-    let blocks = moduleContent.getBlocks();
+    if (upgradePredicate(moduleType)) {
+      const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
+      let blocks = moduleContent.getBlocks();
 
-    // Create a temporary workspace to upgrade the blocks.
-    const headlessWorkspace = workspaces.createHeadlessWorkspace(moduleType);
+      // Create a temporary workspace to upgrade the blocks.
+      const headlessWorkspace = workspaces.createHeadlessWorkspace(moduleType);
 
-    try {
-      Blockly.serialization.workspaces.load(blocks, headlessWorkspace);
+      try {
+        Blockly.serialization.workspaces.load(blocks, headlessWorkspace);
+        upgradeFunc(headlessWorkspace);
+        blocks = Blockly.serialization.workspaces.save(headlessWorkspace);
+      } finally {
+        workspaces.destroyHeadlessWorkspace(headlessWorkspace);
+      }
 
-      upgradeFunc(headlessWorkspace);
-
-      blocks = Blockly.serialization.workspaces.save(headlessWorkspace);
-    } finally {
-      workspaces.destroyHeadlessWorkspace(headlessWorkspace);
+      moduleContent.setBlocks(blocks);
+      moduleContentText = moduleContent.getModuleContentText();
     }
 
-    moduleContent.setBlocks(blocks);
-    moduleContentText = moduleContent.getModuleContentText();
-    await storage.saveFile(modulePath, moduleContentText);
+    if (moduleContentText !== originalModuleContentText) {
+      await storage.saveFile(modulePath, moduleContentText);
+    }
   }
+}
+
+/**
+ * Predicate function that can be passed to upgradeBlocksFiles indicating that all modules should be
+ * affected.
+ */
+function anyModuleType(_moduleType: storageModule.ModuleType): boolean {
+  return true;
+}
+
+/**
+ * Predicate function that can be passed to upgradeBlocksFiles indicating that only OpMode modules
+ * should be affected.
+ */
+function isOpMode(moduleType: storageModule.ModuleType): boolean {
+  return moduleType === storageModule.ModuleType.OPMODE;
 }
 
 async function upgradeFrom_000_to_001(
@@ -158,38 +179,8 @@ async function upgradeFrom_002_to_003(
     storage: commonStorage.Storage,
     projectName: string,
     projectInfo: storageProject.ProjectInfo): Promise<void> {
-  // Opmodes had robot as a parameter to init method
-  const projectFileNames: string[] = await storage.list(
-    storageNames.makeProjectDirectoryPath(projectName));
-
-  for (const projectFileName of projectFileNames) {
-    const modulePath = storageNames.makeFilePath(projectName, projectFileName);
-
-    if (storageNames.getModuleType(modulePath) === storageModule.ModuleType.OPMODE) {
-      let moduleContentText = await storage.fetchFileContentText(modulePath);
-      const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
-      let blocks = moduleContent.getBlocks();
-
-      // Create a temporary workspace to upgrade the blocks.
-      const headlessWorkspace = workspaces.createHeadlessWorkspace(storageModule.ModuleType.ROBOT);
-
-      try {
-        Blockly.serialization.workspaces.load(blocks, headlessWorkspace);
-
-        // Method blocks need to be upgraded
-        headlessWorkspace.getBlocksByType(MRC_CLASS_METHOD_DEF_BLOCK_NAME, false).forEach(block => {
-          (block as ClassMethodDefBlock).upgrade_002_to_003();
-        });
-        blocks = Blockly.serialization.workspaces.save(headlessWorkspace);
-      } finally {
-        workspaces.destroyHeadlessWorkspace(headlessWorkspace);
-      }
-
-      moduleContent.setBlocks(blocks);
-      moduleContentText = moduleContent.getModuleContentText();
-      await storage.saveFile(modulePath, moduleContentText);
-    }
-  }
+  // OpModes had robot as a parameter to init method.
+  await upgradeBlocksFiles(storage, projectName, isOpMode, upgrade_002_to_003);
   projectInfo.version = '0.0.3';
 }
 
@@ -207,6 +198,6 @@ async function upgradeFrom_004_to_005(
     projectName: string,
     projectInfo: storageProject.ProjectInfo): Promise<void> {
   // mrc_class_method_def blocks that return a value need to have returnType changed from 'Any' to ''.
-  await upgradeBlocksFiles(storage, projectName, upgrade_004_to_005);
+  await upgradeBlocksFiles(storage, projectName, anyModuleType, upgrade_004_to_005);
   projectInfo.version = '0.0.5';
 }
