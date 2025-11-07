@@ -22,12 +22,12 @@
 import * as semver from 'semver';
 import * as Blockly from 'blockly/core';
 
-import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
+import { upgrade_001_to_002 } from '../blocks/mrc_mechanism_component_holder';
 import { upgrade_002_to_003, upgrade_004_to_005 } from '../blocks/mrc_class_method_def';
 import * as workspaces from '../blocks/utils/workspaces';
 
@@ -172,8 +172,8 @@ async function upgradeFrom_001_to_002(
   // The Robot's mrc_mechanism_component_holder block was saved without hidePrivateComponents.
   await upgradeBlocksFiles(
       storage, projectName,
-      anyModuleType, storageModuleContent.addPrivateComponents,
-      isRobot, mechanismComponentHolder.hidePrivateComponents);
+      anyModuleType, storageModuleContent.preupgrade_001_to_002,
+      isRobot, upgrade_001_to_002);
   projectInfo.version = '0.0.2';
 }
 
