@@ -74,6 +74,8 @@ export async function upgradeProjectIfNecessary(
 async function upgradeBlocksFiles(
     storage: commonStorage.Storage,
     projectName: string,
+    preupgradePredicate: (moduleType: storageModule.ModuleType) => boolean,
+    preupgradeFunc: (moduleContentText: string) => string,
     upgradePredicate: (moduleType: storageModule.ModuleType) => boolean,
     upgradeFunc: (w: Blockly.Workspace) => void
 ): Promise<void> {
@@ -84,6 +86,10 @@ async function upgradeBlocksFiles(
     const moduleType = storageNames.getModuleType(modulePath);
     const originalModuleContentText = await storage.fetchFileContentText(modulePath);
     let moduleContentText = originalModuleContentText;
+
+    if (preupgradePredicate(moduleType)) {
+      moduleContentText = preupgradeFunc(moduleContentText);
+    }
 
     if (upgradePredicate(moduleType)) {
       const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
@@ -126,6 +132,29 @@ function isOpMode(moduleType: storageModule.ModuleType): boolean {
   return moduleType === storageModule.ModuleType.OPMODE;
 }
 
+/**
+ * Predicate function that can be passed to upgradeBlocksFiles indicating that only Robot modules
+ * should be affected.
+ */
+function isRobot(moduleType: storageModule.ModuleType): boolean {
+  return moduleType === storageModule.ModuleType.ROBOT;
+}
+
+/**
+ * Predicate function that can be passed to upgradeBlocksFiles indicating that no modules should be
+ * affected.
+ */
+function noModuleTypes(_moduleType: storageModule.ModuleType): boolean {
+  return false;
+}
+
+/**
+ * Preupgrade function that makes no changes to moduleContentText.
+ */
+function noPreupgrade(moduleContentText: string): string {
+  return moduleContentText;
+}
+
 async function upgradeFrom_000_to_001(
     _storage: commonStorage.Storage,
     _projectName: string,
@@ -141,37 +170,10 @@ async function upgradeFrom_001_to_002(
     projectInfo: storageProject.ProjectInfo): Promise<void> {
   // Modules were saved without private components.
   // The Robot's mrc_mechanism_component_holder block was saved without hidePrivateComponents.
-  const projectFileNames: string[] = await storage.list(
-    storageNames.makeProjectDirectoryPath(projectName));
-  for (const projectFileName of projectFileNames) {
-    const modulePath = storageNames.makeFilePath(projectName, projectFileName);
-    let moduleContentText = await storage.fetchFileContentText(modulePath);
-
-    // Add private components to the module content.
-    moduleContentText = storageModuleContent.addPrivateComponents(moduleContentText);
-
-    if (storageNames.getModuleType(modulePath) === storageModule.ModuleType.ROBOT) {
-      // If this module is the robot, hide the private components part of the
-      // mrc_mechanism_component_holder block.
-      const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
-      let blocks = moduleContent.getBlocks();
-
-      // Create a temporary workspace to upgrade the blocks.
-      const headlessWorkspace = workspaces.createHeadlessWorkspace(storageModule.ModuleType.ROBOT);
-
-      try {
-        Blockly.serialization.workspaces.load(blocks, headlessWorkspace);
-        mechanismComponentHolder.hidePrivateComponents(headlessWorkspace);
-        blocks = Blockly.serialization.workspaces.save(headlessWorkspace);
-      } finally {
-        workspaces.destroyHeadlessWorkspace(headlessWorkspace);
-      }
-      moduleContent.setBlocks(blocks);
-      moduleContentText = moduleContent.getModuleContentText();
-    }
-
-    await storage.saveFile(modulePath, moduleContentText);
-  }
+  await upgradeBlocksFiles(
+      storage, projectName,
+      anyModuleType, storageModuleContent.addPrivateComponents,
+      isRobot, mechanismComponentHolder.hidePrivateComponents);
   projectInfo.version = '0.0.2';
 }
 
@@ -180,7 +182,10 @@ async function upgradeFrom_002_to_003(
     projectName: string,
     projectInfo: storageProject.ProjectInfo): Promise<void> {
   // OpModes had robot as a parameter to init method.
-  await upgradeBlocksFiles(storage, projectName, isOpMode, upgrade_002_to_003);
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      isOpMode, upgrade_002_to_003);
   projectInfo.version = '0.0.3';
 }
 
@@ -198,6 +203,9 @@ async function upgradeFrom_004_to_005(
     projectName: string,
     projectInfo: storageProject.ProjectInfo): Promise<void> {
   // mrc_class_method_def blocks that return a value need to have returnType changed from 'Any' to ''.
-  await upgradeBlocksFiles(storage, projectName, anyModuleType, upgrade_004_to_005);
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      anyModuleType, upgrade_004_to_005);
   projectInfo.version = '0.0.5';
 }
