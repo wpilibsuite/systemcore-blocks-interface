@@ -526,10 +526,6 @@ export function mrcDescendantsMayHaveChanged(workspace: Blockly.Workspace): void
  * This function should only be called when upgrading old projects.
  */
 export function upgrade_001_to_002(workspace: Blockly.Workspace) {
-  // Make sure the workspace is headless.
-  if (workspace.rendered) {
-    throw new Error('upgrade_001_to_002 should never be called with a rendered workspace.');
-  }
   // Make sure the module type is ROBOT.
   if (getModuleTypeForWorkspace(workspace) !== storageModule.ModuleType.ROBOT) {
     throw new Error('upgrade_001_to_002 should only be called for a robot module.');
