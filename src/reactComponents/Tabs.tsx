@@ -24,6 +24,8 @@ import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
 import * as I18Next from 'react-i18next';
+import * as Blockly from 'blockly';
+import { MessageInstance } from 'antd/es/message/interface';
 import {
   CloseOutlined,
   DeleteOutlined,
@@ -34,6 +36,7 @@ import {
 import AddTabDialog from './AddTabDialog';
 import ClassNameComponent from './ClassNameComponent';
 import { TabType, TabTypeUtils } from '../types/TabType';
+import { TabContent } from './TabContent';
 
 /** Represents a tab item in the tab bar. */
 export interface TabItem {
@@ -53,6 +56,11 @@ export interface TabsProps {
   currentModule: storageModule.Module | null;
   setCurrentModule: (module: storageModule.Module | null) => void;
   storage: commonStorage.Storage | null;
+  theme: string;
+  shownPythonToolboxCategories: Set<string>;
+  modulePathToContentText: {[modulePath: string]: string};
+  messageApi: MessageInstance;
+  onBlocksChanged: (event: Blockly.Events.Abstract) => void;
 }
 
 /** Default copy suffix for tab names. */
@@ -323,19 +331,38 @@ export function Component(props: TabsProps): React.JSX.Element {
 
   /** Creates tab items for the Antd.Tabs component. */
   const createTabItems = (): any[] => {
-    return props.tabList.map((tab) => ({
-      key: tab.key,
-      label: (
-        <Antd.Dropdown
-          menu={{ items: createTabContextMenuItems(tab) }}
-          trigger={['contextMenu']}
-        >
-          <span>{tab.title}</span>
-        </Antd.Dropdown>
-      ),
-      icon: TabTypeUtils.getIcon(tab.type),
-      closable: tab.type !== TabType.ROBOT,
-    }));
+    return props.tabList.map((tab) => {
+      const module = props.project ? storageProject.findModuleByModulePath(props.project, tab.key) : null;
+      
+      return {
+        key: tab.key,
+        label: (
+          <Antd.Dropdown
+            menu={{ items: createTabContextMenuItems(tab) }}
+            trigger={['contextMenu']}
+          >
+            <span>{tab.title}</span>
+          </Antd.Dropdown>
+        ),
+        icon: TabTypeUtils.getIcon(tab.type),
+        closable: tab.type !== TabType.ROBOT,
+        children: module && props.project && props.storage ? (
+          <TabContent
+            modulePath={tab.key}
+            module={module}
+            project={props.project}
+            storage={props.storage}
+            theme={props.theme}
+            shownPythonToolboxCategories={props.shownPythonToolboxCategories}
+            modulePathToContentText={props.modulePathToContentText}
+            messageApi={props.messageApi}
+            setAlertErrorMessage={props.setAlertErrorMessage}
+            isActive={activeKey === tab.key}
+            onBlocksChanged={props.onBlocksChanged}
+          />
+        ) : null,
+      };
+    });
   };
 
   // Effect to handle active tab changes
