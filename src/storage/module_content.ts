@@ -270,10 +270,10 @@ export class ModuleContent {
 }
 
 /**
- * Add privateComponents field.
- * This function should only called when upgrading old projects.
+ * Preupgrades the module content text by adding the privateComponents field.
+ * This function should only be called when upgrading old projects.
  */
-export function addPrivateComponents(moduleContentText: string): string {
+export function preupgrade_001_to_002(moduleContentText: string): string {
   const parsedContent = JSON.parse(moduleContentText);
   if (!('privateComponents' in parsedContent)) {
     parsedContent.privateComponents = [];
