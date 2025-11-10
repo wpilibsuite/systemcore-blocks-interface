@@ -191,7 +191,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @ant-design/icons
-6.0.2 <https://github.com/ant-design/ant-design-icons/tree/master/packages/icons-react>
+6.1.0 <https://github.com/ant-design/ant-design-icons/tree/master/packages/icons-react>
 MIT LICENSE
 
 Copyright (c) 2018-present Ant UED, https://xtech.antfin.com/
@@ -544,27 +544,6 @@ SOFTWARE.
 
 ******************************
 
-@isaacs/fs-minipass
-4.0.1 <https://github.com/npm/fs-minipass>
-The ISC License
-
-Copyright (c) Isaac Z. Schlueter and Contributors
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
-IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-
-******************************
-
 @jridgewell/gen-mapping
 0.3.13 <https://github.com/jridgewell/sourcemaps>
 Copyright 2024 Justin Ridgewell <justin@ridgewell.name>
@@ -813,7 +792,7 @@ SOFTWARE.
 ******************************
 
 @rc-component/qrcode
-1.0.1 <https://github.com/react-component/qrcode>
+1.1.0 <https://github.com/react-component/qrcode>
 The MIT License (MIT)
 Copyright (c) 2015-present Alipay.com, https://www.alipay.com/
 
@@ -891,7 +870,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @rc-component/util
-1.3.0 <https://github.com/react-component/util>
+1.4.0 <https://github.com/react-component/util>
 The MIT License (MIT)
 
 Copyright (c) 2014-present yiminghe
@@ -919,7 +898,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @tailwindcss/node
-4.1.13 <https://github.com/tailwindlabs/tailwindcss>
+4.1.17 <https://github.com/tailwindlabs/tailwindcss>
 MIT License
 
 Copyright (c) Tailwind Labs, Inc.
@@ -946,7 +925,7 @@ SOFTWARE.
 ******************************
 
 @tailwindcss/oxide
-4.1.13 <https://github.com/tailwindlabs/tailwindcss>
+4.1.17 <https://github.com/tailwindlabs/tailwindcss>
 MIT License
 
 Copyright (c) Tailwind Labs, Inc.
@@ -973,7 +952,7 @@ SOFTWARE.
 ******************************
 
 @tailwindcss/oxide-darwin-arm64
-4.1.13 <https://github.com/tailwindlabs/tailwindcss>
+4.1.17 <https://github.com/tailwindlabs/tailwindcss>
 MIT License
 
 Copyright (c) Tailwind Labs, Inc.
@@ -1000,7 +979,7 @@ SOFTWARE.
 ******************************
 
 @tailwindcss/postcss
-4.1.13 <https://github.com/tailwindlabs/tailwindcss>
+4.1.17 <https://github.com/tailwindlabs/tailwindcss>
 MIT License
 
 Copyright (c) Tailwind Labs, Inc.
@@ -1027,7 +1006,34 @@ SOFTWARE.
 ******************************
 
 @types/hast
-2.3.10 <https://github.com/DefinitelyTyped/DefinitelyTyped>
+3.0.4 <https://github.com/DefinitelyTyped/DefinitelyTyped>
+    MIT License
+
+    Copyright (c) Microsoft Corporation.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE
+
+
+******************************
+
+@types/prismjs
+1.26.5 <https://github.com/DefinitelyTyped/DefinitelyTyped>
     MIT License
 
     Copyright (c) Microsoft Corporation.
@@ -1054,7 +1060,7 @@ SOFTWARE.
 ******************************
 
 @types/react
-19.1.16 <https://github.com/DefinitelyTyped/DefinitelyTyped>
+19.2.2 <https://github.com/DefinitelyTyped/DefinitelyTyped>
     MIT License
 
     Copyright (c) Microsoft Corporation.
@@ -1081,7 +1087,7 @@ SOFTWARE.
 ******************************
 
 @types/react-dom
-19.1.9 <https://github.com/DefinitelyTyped/DefinitelyTyped>
+19.2.2 <https://github.com/DefinitelyTyped/DefinitelyTyped>
     MIT License
 
     Copyright (c) Microsoft Corporation.
@@ -1109,6 +1115,33 @@ SOFTWARE.
 
 @types/unist
 2.0.11 <https://github.com/DefinitelyTyped/DefinitelyTyped>
+    MIT License
+
+    Copyright (c) Microsoft Corporation.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE
+
+
+******************************
+
+@types/unist
+3.0.3 <https://github.com/DefinitelyTyped/DefinitelyTyped>
     MIT License
 
     Copyright (c) Microsoft Corporation.
@@ -1162,7 +1195,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 antd
-5.27.4 <https://github.com/ant-design/ant-design>
+5.28.0 <https://github.com/ant-design/ant-design>
 MIT LICENSE
 
 Copyright (c) 2015-present Ant UED, https://xtech.antfin.com/
@@ -1197,7 +1230,7 @@ authors: Neil Fraser
 ******************************
 
 character-entities
-1.2.4 <https://github.com/wooorm/character-entities>
+2.0.2 <https://github.com/wooorm/character-entities>
 (The MIT License)
 
 Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>
@@ -1225,7 +1258,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 character-entities-legacy
-1.1.4 <https://github.com/wooorm/character-entities-legacy>
+3.0.0 <https://github.com/wooorm/character-entities-legacy>
 (The MIT License)
 
 Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>
@@ -1253,7 +1286,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 character-reference-invalid
-1.1.4 <https://github.com/wooorm/character-reference-invalid>
+2.0.1 <https://github.com/wooorm/character-reference-invalid>
 (The MIT License)
 
 Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>
@@ -1276,75 +1309,6 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-******************************
-
-chownr
-3.0.0 <https://github.com/isaacs/chownr>
-All packages under `src/` are licensed according to the terms in
-their respective `LICENSE` or `LICENSE.md` files.
-
-The remainder of this project is licensed under the Blue Oak
-Model License, as follows:
-
------
-
-# Blue Oak Model License
-
-Version 1.0.0
-
-## Purpose
-
-This license gives everyone as much permission to work with
-this software as possible, while protecting contributors
-from liability.
-
-## Acceptance
-
-In order to receive this license, you must agree to its
-rules.  The rules of this license are both obligations
-under that agreement and conditions to your license.
-You must not do anything with this software that triggers
-a rule that you cannot or will not follow.
-
-## Copyright
-
-Each contributor licenses you to do everything with this
-software that would otherwise infringe that contributor's
-copyright in it.
-
-## Notices
-
-You must ensure that everyone who gets a copy of
-any part of this software from you, with or without
-changes, also gets the text of this license or a link to
-<https://blueoakcouncil.org/license/1.0.0>.
-
-## Excuse
-
-If anyone notifies you in writing that you have not
-complied with [Notices](#notices), you can keep your
-license by taking all practical steps to comply within 30
-days after the notice.  If you do not do so, your license
-ends immediately.
-
-## Patent
-
-Each contributor licenses you to do everything with this
-software that would otherwise infringe any patent claims
-they can license or become able to license.
-
-## Reliability
-
-No contributor can revoke this license.
-
-## No Liability
-
-***As far as the law allows, this software comes as is,
-without any warranty or condition, and no contributor
-will be liable to anyone for any damages related to this
-software or this license, under any kind of legal claim.***
 
 
 ******************************
@@ -1376,8 +1340,23 @@ SOFTWARE.
 
 ******************************
 
+clsx
+2.1.1 <https://github.com/lukeed/clsx>
+MIT License
+
+Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+******************************
+
 comma-separated-tokens
-1.0.8 <https://github.com/wooorm/comma-separated-tokens>
+2.0.3 <https://github.com/wooorm/comma-separated-tokens>
 (The MIT License)
 
 Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
@@ -1575,7 +1554,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 dayjs
-1.11.18 <https://github.com/iamkun/dayjs>
+1.11.19 <https://github.com/iamkun/dayjs>
 MIT License
 
 Copyright (c) 2018-present, iamkun
@@ -1634,8 +1613,36 @@ authors: Michael Mclaughlin <M8ch88l@gmail.com>
 
 ******************************
 
+decode-named-character-reference
+1.2.0 <https://github.com/wooorm/decode-named-character-reference>
+(The MIT License)
+
+Copyright (c) Titus Wormer <tituswormer@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+******************************
+
 detect-libc
-2.1.1 <https://github.com/lovell/detect-libc>
+2.1.2 <https://github.com/lovell/detect-libc>
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -1941,7 +1948,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ******************************
 
 hast-util-parse-selector
-2.2.5 <https://github.com/syntax-tree/hast-util-parse-selector>
+4.0.0 <https://github.com/syntax-tree/hast-util-parse-selector>
 (The MIT License)
 
 Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
@@ -1969,10 +1976,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 hastscript
-6.0.0 <https://github.com/syntax-tree/hastscript>
+9.0.1 <https://github.com/syntax-tree/hastscript>
 (The MIT License)
 
-Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
+Copyright (c) Titus Wormer <tituswormer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -2114,7 +2121,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 i18next
-25.5.2 <https://github.com/i18next/i18next>
+25.6.1 <https://github.com/i18next/i18next>
 The MIT License (MIT)
 
 Copyright (c) 2025 i18next
@@ -2223,7 +2230,7 @@ PERFORMANCE OF THIS SOFTWARE.
 ******************************
 
 is-alphabetical
-1.0.4 <https://github.com/wooorm/is-alphabetical>
+2.0.1 <https://github.com/wooorm/is-alphabetical>
 (The MIT License)
 
 Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
@@ -2251,7 +2258,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 is-alphanumerical
-1.0.4 <https://github.com/wooorm/is-alphanumerical>
+2.0.1 <https://github.com/wooorm/is-alphanumerical>
 (The MIT License)
 
 Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
@@ -2279,7 +2286,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 is-decimal
-1.0.4 <https://github.com/wooorm/is-decimal>
+2.0.1 <https://github.com/wooorm/is-decimal>
 (The MIT License)
 
 Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
@@ -2307,7 +2314,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 is-hexadecimal
-1.0.4 <https://github.com/wooorm/is-hexadecimal>
+2.0.1 <https://github.com/wooorm/is-hexadecimal>
 (The MIT License)
 
 Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
@@ -2375,7 +2382,7 @@ authors: Julian Gruber <mail@juliangruber.com>
 ******************************
 
 jiti
-2.6.0 <https://github.com/unjs/jiti>
+2.6.1 <https://github.com/unjs/jiti>
 MIT License
 
 Copyright (c) Pooya Parsa <pooya@pi0.io>
@@ -3128,7 +3135,7 @@ The above copyright notice and this permission notice shall be included in all c
 ******************************
 
 lightningcss
-1.30.1 <https://github.com/parcel-bundler/lightningcss>
+1.30.2 <https://github.com/parcel-bundler/lightningcss>
  Mozilla Public License Version 2.0
 ==================================
 
@@ -3507,7 +3514,7 @@ defined by the Mozilla Public License, v. 2.0.
 ******************************
 
 lightningcss-darwin-arm64
-1.30.1 <https://github.com/parcel-bundler/lightningcss>
+1.30.2 <https://github.com/parcel-bundler/lightningcss>
  Mozilla Public License Version 2.0
 ==================================
 
@@ -3935,7 +3942,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ******************************
 
 lucide-react
-0.544.0 <https://github.com/lucide-icons/lucide>
+0.553.0 <https://github.com/lucide-icons/lucide>
 ISC License
 
 Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
@@ -3980,7 +3987,7 @@ SOFTWARE.
 ******************************
 
 magic-string
-0.30.19 <https://github.com/rich-harris/magic-string>
+0.30.21 <https://github.com/Rich-Harris/magic-string>
 Copyright 2018 Rich Harris
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -3988,59 +3995,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-******************************
-
-minipass
-7.1.2 <https://github.com/isaacs/minipass>
-The ISC License
-
-Copyright (c) 2017-2023 npm, Inc., Isaac Z. Schlueter, and Contributors
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
-IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-
-******************************
-
-minizlib
-3.1.0 <https://github.com/isaacs/minizlib>
-Minizlib was created by Isaac Z. Schlueter.
-It is a derivative work of the Node.js project.
-
-"""
-Copyright (c) 2017-2023 Isaac Z. Schlueter and Contributors
-Copyright (c) 2017-2023 Node.js contributors. All rights reserved.
-Copyright (c) 2017-2023 Joyent, Inc. and other Node contributors. All rights reserved.
-
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
 
 
 ******************************
@@ -4182,10 +4136,10 @@ THE SOFTWARE.
 ******************************
 
 parse-entities
-2.0.0 <https://github.com/wooorm/parse-entities>
+4.0.2 <https://github.com/wooorm/parse-entities>
 (The MIT License)
 
-Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>
+Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -4282,33 +4236,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 prismjs
-1.27.0 <https://github.com/PrismJS/prism>
-MIT LICENSE
-
-Copyright (c) 2012 Lea Verou
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-
-******************************
-
-prismjs
 1.30.0 <https://github.com/PrismJS/prism>
 MIT LICENSE
 
@@ -4361,10 +4288,10 @@ SOFTWARE.**
 ******************************
 
 property-information
-5.6.0 <https://github.com/wooorm/property-information>
+7.1.0 <https://github.com/wooorm/property-information>
 (The MIT License)
 
-Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>
+Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -4527,7 +4454,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 rc-field-form
-2.7.0 <https://github.com/react-component/field-form>
+2.7.1 <https://github.com/react-component/field-form>
 MIT License
 
 Copyright (c) 2019-present react-component
@@ -4658,7 +4585,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 rc-overflow
-1.4.1 <https://github.com/react-component/overflow>
+1.5.0 <https://github.com/react-component/overflow>
 The MIT License (MIT)
 
 Copyright (c) 2019-present afc163
@@ -4834,7 +4761,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 rc-table
-7.53.1 <https://github.com/react-component/table>
+7.54.0 <https://github.com/react-component/table>
 MIT LICENSE
 
 Copyright (c) 2015-present Alipay.com, https://www.alipay.com/
@@ -4962,7 +4889,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 rc-upload
-4.9.2 <https://github.com/react-component/upload>
+4.11.0 <https://github.com/react-component/upload>
 The MIT License (MIT)
 
 Copyright (c) 2016-present react-component
@@ -5071,7 +4998,7 @@ SOFTWARE.
 ******************************
 
 react
-19.1.1 <https://github.com/facebook/react>
+19.2.0 <https://github.com/facebook/react>
 MIT License
 
 Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5098,7 +5025,7 @@ SOFTWARE.
 ******************************
 
 react-dom
-19.1.1 <https://github.com/facebook/react>
+19.2.0 <https://github.com/facebook/react>
 MIT License
 
 Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5125,7 +5052,7 @@ SOFTWARE.
 ******************************
 
 react-i18next
-16.0.0 <https://github.com/i18next/react-i18next>
+16.2.4 <https://github.com/i18next/react-i18next>
 The MIT License (MIT)
 
 Copyright (c) 2025 i18next
@@ -5180,7 +5107,7 @@ SOFTWARE.
 ******************************
 
 react-syntax-highlighter
-15.6.6 <https://github.com/react-syntax-highlighter/react-syntax-highlighter>
+16.1.0 <https://github.com/react-syntax-highlighter/react-syntax-highlighter>
 MIT License
 
 Copyright (c) 2019 Conor Hastings
@@ -5260,10 +5187,11 @@ IN THE SOFTWARE.
 ******************************
 
 refractor
-3.6.0 <https://github.com/wooorm/refractor>
+5.0.0 <https://github.com/wooorm/refractor>
 (The MIT License)
 
-Copyright (c) 2017 Titus Wormer <tituswormer@gmail.com>
+Copyright (c) Titus Wormer <tituswormer@gmail.com>
+Copyright (c) Lea Verou
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -5402,7 +5330,7 @@ authors: Louis-Dominique Dubeau <ldd@lddubeau.com>
 ******************************
 
 scheduler
-0.26.0 <https://github.com/facebook/react>
+0.27.0 <https://github.com/facebook/react>
 MIT License
 
 Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5456,7 +5384,7 @@ SOFTWARE.
 ******************************
 
 semver
-7.7.2 <https://github.com/npm/node-semver>
+7.7.3 <https://github.com/npm/node-semver>
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter and Contributors
@@ -5537,7 +5465,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************
 
 space-separated-tokens
-1.1.5 <https://github.com/wooorm/space-separated-tokens>
+2.0.2 <https://github.com/wooorm/space-separated-tokens>
 (The MIT License)
 
 Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
@@ -5699,7 +5627,7 @@ THE SOFTWARE.
 ******************************
 
 tailwindcss
-4.1.13 <https://github.com/tailwindlabs/tailwindcss>
+4.1.17 <https://github.com/tailwindlabs/tailwindcss>
 MIT License
 
 Copyright (c) Tailwind Labs, Inc.
@@ -5726,7 +5654,7 @@ SOFTWARE.
 ******************************
 
 tapable
-2.2.3 <https://github.com/webpack/tapable>
+2.3.0 <https://github.com/webpack/tapable>
 The MIT License
 
 Copyright JS Foundation and other contributors
@@ -5748,27 +5676,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-
-******************************
-
-tar
-7.5.1 <https://github.com/isaacs/node-tar>
-The ISC License
-
-Copyright (c) Isaac Z. Schlueter and Contributors
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
-IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
 ******************************
@@ -5978,6 +5885,33 @@ If the Work includes a "NOTICE" text file as part of its distribution, then any 
 9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
 
 END OF TERMS AND CONDITIONS
+
+
+******************************
+
+use-sync-external-store
+1.6.0 <https://github.com/facebook/react>
+MIT License
+
+Copyright (c) Meta Platforms, Inc. and affiliates.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 
 ******************************
@@ -6623,98 +6557,3 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-******************************
-
-xtend
-4.0.2 <https://github.com/Raynos/xtend>
-The MIT License (MIT)
-Copyright (c) 2012-2014 Raynos.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-
-******************************
-
-yallist
-5.0.0 <https://github.com/isaacs/yallist>
-All packages under `src/` are licensed according to the terms in
-their respective `LICENSE` or `LICENSE.md` files.
-
-The remainder of this project is licensed under the Blue Oak
-Model License, as follows:
-
------
-
-# Blue Oak Model License
-
-Version 1.0.0
-
-## Purpose
-
-This license gives everyone as much permission to work with
-this software as possible, while protecting contributors
-from liability.
-
-## Acceptance
-
-In order to receive this license, you must agree to its
-rules.  The rules of this license are both obligations
-under that agreement and conditions to your license.
-You must not do anything with this software that triggers
-a rule that you cannot or will not follow.
-
-## Copyright
-
-Each contributor licenses you to do everything with this
-software that would otherwise infringe that contributor's
-copyright in it.
-
-## Notices
-
-You must ensure that everyone who gets a copy of
-any part of this software from you, with or without
-changes, also gets the text of this license or a link to
-<https://blueoakcouncil.org/license/1.0.0>.
-
-## Excuse
-
-If anyone notifies you in writing that you have not
-complied with [Notices](#notices), you can keep your
-license by taking all practical steps to comply within 30
-days after the notice.  If you do not do so, your license
-ends immediately.
-
-## Patent
-
-Each contributor licenses you to do everything with this
-software that would otherwise infringe any patent claims
-they can license or become able to license.
-
-## Reliability
-
-No contributor can revoke this license.
-
-## No Liability
-
-***As far as the law allows, this software comes as is,
-without any warranty or condition, and no contributor
-will be liable to anyone for any damages related to this
-software or this license, under any kind of legal claim.***
