@@ -59,6 +59,11 @@ type ComponentExtraState = {
   // If staticFunctionName is not present, generate the constructor.
   staticFunctionName?: string,
   params?: ConstructorArg[],
+  /**
+   * The module type. Note that this is only present when blocks are created for the toolbox. It is not
+   * saved to the blocks file.
+   */
+  moduleType? : storageModule.ModuleType,
 }
 
 export type ComponentBlock = Blockly.Block & ComponentMixin;
@@ -137,13 +142,13 @@ const COMPONENT = {
         });
       });
     }
-    this.updateBlock_();
+    this.updateBlock_(extraState);
   },
   /**
    * Update the block to reflect the newly loaded extra state.
    */
-  updateBlock_: function (this: ComponentBlock): void {
-    const moduleType = getModuleTypeForWorkspace(this.workspace);
+  updateBlock_: function (this: ComponentBlock, extraState: ComponentExtraState): void {
+    const moduleType = extraState.moduleType ? extraState.moduleType : getModuleTypeForWorkspace(this.workspace);
     if (moduleType === storageModule.ModuleType.ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
@@ -297,6 +302,7 @@ function createComponentBlock(
     //TODO(ags): Remove this because we know what the constructor name is
     staticFunctionName: constructorData.functionName,
     params: [],
+    moduleType: moduleType,
   };
   const fields: {[key: string]: any} = {};
   fields[FIELD_NAME] = componentName;
