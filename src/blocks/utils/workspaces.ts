@@ -38,6 +38,14 @@ export function getModuleTypeForWorkspace(workspace: Blockly.Workspace): storage
   if (workspace.id in workspaceIdToModuleType) {
     return workspaceIdToModuleType[workspace.id];
   }
+  // If the workspace id was not found, it might be because the workspace is associated with a
+  // block mutator's flyout. Try this workspaces's root workspace.
+  const rootWorkspace = workspace.getRootWorkspace();
+  if (rootWorkspace &&
+      rootWorkspace.id in workspaceIdToModuleType) {
+    return workspaceIdToModuleType[rootWorkspace.id];
+  }
+
   throw new Error('getModuleTypeForWorkspace: workspaceId not found: ' + workspace.id);
 }
 
