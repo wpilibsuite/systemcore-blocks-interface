@@ -189,7 +189,7 @@ export const TabContent: React.FC<TabContentProps> = ({
 
   return (
     <div style={{ display: 'flex', height: '100%', visibility: isActive ? 'visible' : 'hidden', position: isActive ? 'relative' : 'absolute' }}>
-      <div style={{ flex: 1, height: '100%' }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <BlocklyComponent
           key={modulePath}
           modulePath={modulePath}

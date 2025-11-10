@@ -10,7 +10,17 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES      <Antd.Tabs
+        type="editable-card"
+        onChange={handleTabChange}
+        onEdit={handleTabEdit}
+        activeKey={activeKey}
+        tabBarStyle={{ padding: 0, margin: 0, flex: '0 0 auto' }}
+        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+        className="tabs-full-height"
+        hideAdd={false}
+        items={createTabItems()}
+      />NS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -377,6 +387,20 @@ export function Component(props: TabsProps): React.JSX.Element {
 
   return (
     <>
+      <style>{`
+        .tabs-full-height .ant-tabs-content-holder {
+          flex: 1;
+          overflow: hidden;
+        }
+        
+        .tabs-full-height .ant-tabs-content {
+          height: 100%;
+        }
+        
+        .tabs-full-height .ant-tabs-tabpane {
+          height: 100%;
+        }
+      `}</style>
       {contextHolder}
       <AddTabDialog
         isOpen={addTabDialogOpen}
@@ -451,7 +475,9 @@ export function Component(props: TabsProps): React.JSX.Element {
         onChange={handleTabChange}
         onEdit={handleTabEdit}
         activeKey={activeKey}
-        tabBarStyle={{ padding: 0, margin: 0 }}
+        tabBarStyle={{ padding: 0, margin: 0, flex: '0 0 auto' }}
+        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+        className="tabs-full-height"
         hideAdd={false}
         items={createTabItems()}
       />
