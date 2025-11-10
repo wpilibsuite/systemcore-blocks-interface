@@ -22,7 +22,6 @@ import * as React from 'react';
 import * as Antd from 'antd';
 import '@ant-design/v5-patch-for-react-19';
 
-import * as Blockly from 'blockly/core';
 import { pythonGenerator } from 'blockly/python';
 
 import Header from './reactComponents/Header';
@@ -238,12 +237,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       console.error(TOOLBOX_FETCH_ERROR_MESSAGE);
       console.error(e);
     }
-  };
-
-  /** Handles Blockly workspace changes and triggers code regeneration. */
-  const handleBlocksChanged = (_event: Blockly.Events.Abstract): void => {
-    // This is now handled by individual TabContent components
-    // Keep this stub for compatibility
   };
 
   /** Handles toolbox settings modal confirmation. */
@@ -574,7 +567,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 shownPythonToolboxCategories={shownPythonToolboxCategories}
                 modulePathToContentText={modulePathToContentText}
                 messageApi={messageApi}
-                onBlocksChanged={handleBlocksChanged}
               />
             </Antd.Layout>
           </Antd.Layout>

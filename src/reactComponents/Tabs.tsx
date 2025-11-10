@@ -24,7 +24,6 @@ import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
 import * as I18Next from 'react-i18next';
-import * as Blockly from 'blockly';
 import { MessageInstance } from 'antd/es/message/interface';
 import {
   CloseOutlined,
@@ -60,7 +59,6 @@ export interface TabsProps {
   shownPythonToolboxCategories: Set<string>;
   modulePathToContentText: {[modulePath: string]: string};
   messageApi: MessageInstance;
-  onBlocksChanged: (event: Blockly.Events.Abstract) => void;
 }
 
 /** Default copy suffix for tab names. */
@@ -358,7 +356,6 @@ export function Component(props: TabsProps): React.JSX.Element {
             messageApi={props.messageApi}
             setAlertErrorMessage={props.setAlertErrorMessage}
             isActive={activeKey === tab.key}
-            onBlocksChanged={props.onBlocksChanged}
           />
         ) : null,
       };

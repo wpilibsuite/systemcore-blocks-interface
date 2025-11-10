@@ -49,7 +49,6 @@ export interface TabContentProps {
   messageApi: MessageInstance;
   setAlertErrorMessage: (message: string) => void;
   isActive: boolean;
-  onBlocksChanged: (event: Blockly.Events.Abstract) => void;
 }
 
 /**
@@ -67,7 +66,6 @@ export const TabContent: React.FC<TabContentProps> = ({
   messageApi,
   setAlertErrorMessage,
   isActive,
-  onBlocksChanged,
 }) => {
   const [blocklyComponent, setBlocklyComponent] = React.useState<BlocklyComponentType | null>(null);
   const [editorInstance, setEditorInstance] = React.useState<editor.Editor | null>(null);
@@ -101,9 +99,8 @@ export const TabContent: React.FC<TabContentProps> = ({
     if (blocklyComponent && event.workspaceId === blocklyComponent.getBlocklyWorkspace().id) {
       setTriggerPythonRegeneration(Date.now());
       // Also notify parent
-      onBlocksChanged(event);
     }
-  }, [blocklyComponent, onBlocksChanged]);
+  }, [blocklyComponent]);
 
   /** Called when BlocklyComponent is created. */
   const setupBlocklyComponent = React.useCallback((_modulePath: string, newBlocklyComponent: BlocklyComponentType) => {
