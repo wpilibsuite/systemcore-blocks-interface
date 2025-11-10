@@ -168,9 +168,11 @@ export const TabContent: React.FC<TabContentProps> = ({
     setCodePanelAnimating(true);
     
     if (codePanelCollapsed) {
+      // Expand to previous size
       setCodePanelSize(codePanelExpandedSize);
       setCodePanelCollapsed(false);
     } else {
+      // Collapse to minimum size - convert current size to pixels for storage
       const currentSizePx = typeof codePanelSize === 'string'
         ? (parseFloat(codePanelSize) / 100) * window.innerWidth
         : codePanelSize;
@@ -179,6 +181,7 @@ export const TabContent: React.FC<TabContentProps> = ({
       setCodePanelCollapsed(true);
     }
 
+    // Reset animation flag after transition completes
     setTimeout(() => {
       setCodePanelAnimating(false);
     }, 200);
