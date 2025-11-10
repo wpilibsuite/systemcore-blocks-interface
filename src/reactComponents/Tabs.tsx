@@ -374,17 +374,12 @@ export function Component(props: TabsProps): React.JSX.Element {
 
   return (
     <>
-      <style>{`
-        .tabs-full-height .ant-tabs-content-holder {
-          flex: 1;
-          overflow: hidden;
-        }
-        
-        .tabs-full-height .ant-tabs-content {
+      <style>{`        
+        .ant-tabs-content {
           height: 100%;
         }
         
-        .tabs-full-height .ant-tabs-tabpane {
+        .ant-tabs-tabpane {
           height: 100%;
         }
       `}</style>
@@ -464,7 +459,6 @@ export function Component(props: TabsProps): React.JSX.Element {
         activeKey={activeKey}
         tabBarStyle={{ padding: 0, margin: 0, flex: '0 0 auto' }}
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-        className="tabs-full-height"
         hideAdd={false}
         items={createTabItems()}
       />

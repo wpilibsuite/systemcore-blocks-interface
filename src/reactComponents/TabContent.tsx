@@ -31,6 +31,7 @@ import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
 import * as commonStorage from '../storage/common_storage';
 import { registerToolboxButton } from '../blocks/mrc_event_handler';
+import { Content } from 'antd/es/layout/layout';
 
 /** Default size for code panel. */
 const CODE_PANEL_DEFAULT_SIZE = '25%';
@@ -188,8 +189,8 @@ export const TabContent: React.FC<TabContentProps> = ({
   };
 
   return (
-    <div style={{ display: 'flex', height: '100%', visibility: isActive ? 'visible' : 'hidden', position: isActive ? 'relative' : 'absolute' }}>
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ display: 'flex', minHeight: '100%', height: '100%' }}>
+      <Content style={{ flex: 1, minHeight: '100%' }}>
         <BlocklyComponent
           key={modulePath}
           modulePath={modulePath}
@@ -197,7 +198,7 @@ export const TabContent: React.FC<TabContentProps> = ({
           theme={theme}
           onWorkspaceCreated={setupWorkspace}
         />
-      </div>
+      </Content>
       <div
         style={{
           width: typeof codePanelSize === 'string' ? codePanelSize : `${codePanelSize}px`,
