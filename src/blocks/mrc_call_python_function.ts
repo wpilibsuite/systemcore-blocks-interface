@@ -910,7 +910,7 @@ export function pythonFromBlock(
     }
     case FunctionKind.EVENT: {
       const eventName = block.getFieldValue(FIELD_EVENT_NAME);
-      code = 'self.fire_event("' + eventName + '"';
+      code = 'self.fire_event(\'' + eventName + '\'';
       needOpenParen = false;
       delimiterBeforeArgs = ', ';
       break;
