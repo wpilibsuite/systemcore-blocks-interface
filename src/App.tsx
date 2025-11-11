@@ -139,7 +139,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const { settings, updateLanguage, updateTheme, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
 
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
-  const [currentModule, setCurrentModule] = React.useState<storageModule.Module | null>(null);
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
   const [modulePathToContentText, setModulePathToContentText] = React.useState<{[modulePath: string]: string}>({});
@@ -251,14 +250,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     await storage.saveEntry(SHOWN_TOOLBOX_CATEGORIES_KEY, JSON.stringify(array));
   };
 
-  /** Changes current module. */
-  const changeModule = async (module: storageModule.Module | null): Promise<void> => {
-    setCurrentModule(module);
-    if (module) {
-      setActiveTab(module.modulePath);
-    }
-  };
-
   /** Handles toolbox settings modal close. */
   const handleToolboxSettingsCancel = (): void => {
     setToolboxSettingsModalIsOpen(false);
@@ -306,7 +297,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     if (!project || !storage) {
       return;
     }
-    const oldModulePathToContentText = modulePathToContentText;
     const promises: {[modulePath: string]: Promise<string>} = {}; // value is promise of module content.
     const updatedModulePathToContentText: {[modulePath: string]: string} = {}; // value is module content text
     if (project.robot.modulePath in modulePathToContentText) {
@@ -335,17 +325,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         })
       );
       setModulePathToContentText(updatedModulePathToContentText);
-    }
-
-    // Update currentModule if the current module was deleted.
-    for (const modulePath in oldModulePathToContentText) {
-      if (modulePath in updatedModulePathToContentText) {
-        continue;
-      }
-      if (currentModule && currentModule.modulePath === modulePath) {
-        setCurrentModule(project.robot);
-        setActiveTab(project.robot.modulePath);
-      }
     }
   };
 
@@ -558,8 +537,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 activeTab={activeTab}
                 setTabList={setTabItems}
                 setAlertErrorMessage={setAlertErrorMessage}
-                currentModule={currentModule}
-                setCurrentModule={changeModule}
                 project={project}
                 onProjectChanged={onProjectChanged}
                 storage={storage}

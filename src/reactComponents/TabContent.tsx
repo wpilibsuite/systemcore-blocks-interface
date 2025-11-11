@@ -39,6 +39,11 @@ const CODE_PANEL_DEFAULT_SIZE = '25%';
 /** Minimum size for code panel. */
 const CODE_PANEL_MIN_SIZE = 100;
 
+/** Interface for methods exposed by TabContent via ref. */
+export interface TabContentRef {
+  saveModule: () => Promise<void>;
+}
+
 export interface TabContentProps {
   modulePath: string;
   module: storageModule.Module;
@@ -56,7 +61,7 @@ export interface TabContentProps {
  * Component that manages a single tab's BlocklyComponent and CodeDisplay.
  * Each tab has its own workspace and code display.
  */
-export const TabContent: React.FC<TabContentProps> = ({
+export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   modulePath,
   module,
   project,
@@ -67,7 +72,7 @@ export const TabContent: React.FC<TabContentProps> = ({
   messageApi,
   setAlertErrorMessage,
   isActive,
-}) => {
+}, ref) => {
   const [blocklyComponent, setBlocklyComponent] = React.useState<BlocklyComponentType | null>(null);
   const [editorInstance, setEditorInstance] = React.useState<editor.Editor | null>(null);
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
@@ -76,6 +81,15 @@ export const TabContent: React.FC<TabContentProps> = ({
   const [codePanelCollapsed, setCodePanelCollapsed] = React.useState(false);
   const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
   const [codePanelAnimating, setCodePanelAnimating] = React.useState(false);
+
+  /** Expose saveModule method via ref. */
+  React.useImperativeHandle(ref, () => ({
+    saveModule: async () => {
+      if (editorInstance) {
+        await editorInstance.saveModule();
+      }
+    },
+  }), [editorInstance]);
 
   /** Handles Blockly workspace changes and triggers code regeneration. */
   const handleBlocksChanged = React.useCallback((event: Blockly.Events.Abstract): void => {
@@ -261,4 +275,6 @@ export const TabContent: React.FC<TabContentProps> = ({
       </div>
     </div>
   );
-};
+});
+
+TabContent.displayName = 'TabContent';

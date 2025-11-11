@@ -35,7 +35,7 @@ import {
 import AddTabDialog from './AddTabDialog';
 import ClassNameComponent from './ClassNameComponent';
 import { TabType, TabTypeUtils } from '../types/TabType';
-import { TabContent } from './TabContent';
+import { TabContent, TabContentRef } from './TabContent';
 
 /** Represents a tab item in the tab bar. */
 export interface TabItem {
@@ -52,8 +52,6 @@ export interface TabsProps {
   project: storageProject.Project | null;
   onProjectChanged: () => Promise<void>;
   setAlertErrorMessage: (message: string) => void;
-  currentModule: storageModule.Module | null;
-  setCurrentModule: (module: storageModule.Module | null) => void;
   storage: commonStorage.Storage | null;
   theme: string;
   shownPythonToolboxCategories: Set<string>;
@@ -81,14 +79,23 @@ export function Component(props: TabsProps): React.JSX.Element {
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
+  
+  // Store refs to TabContent components for each tab
+  const tabContentRefs = React.useRef<Map<string, TabContentRef>>(new Map());
 
   /** Handles tab change and updates current module. */
   const handleTabChange = (key: string): void => {
-    if (props.project) {
-      const modulePath = key;
-      props.setCurrentModule(storageProject.findModuleByModulePath(props.project, modulePath));
-      setActiveKey(key);
+    if (key !== activeKey) {
+      // Save the tab we are changing away from (async, but don't wait)
+      const currentTabRef = tabContentRefs.current.get(activeKey);
+      if (currentTabRef) {
+        currentTabRef.saveModule().catch((error) => {
+          console.error('Error saving module on tab switch:', error);
+          props.setAlertErrorMessage(t('FAILED_TO_SAVE_MODULE'));
+        });
+      }
     }
+    setActiveKey(key);
   };
 
   /** Checks if a key exists in the current tab list. */
@@ -346,6 +353,13 @@ export function Component(props: TabsProps): React.JSX.Element {
         closable: tab.type !== TabType.ROBOT,
         children: module && props.project && props.storage ? (
           <TabContent
+            ref={(ref) => {
+              if (ref) {
+                tabContentRefs.current.set(tab.key, ref);
+              } else {
+                tabContentRefs.current.delete(tab.key);
+              }
+            }}
             modulePath={tab.key}
             module={module}
             project={props.project}
