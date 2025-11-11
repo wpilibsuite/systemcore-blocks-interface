@@ -228,7 +228,14 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     if (workspaceRef.current) {
       if (workspaceRef.current.isVisible() &&
           Blockly.getMainWorkspace().id === workspaceRef.current.id) {
+        // Save scroll position before resize
+        const scrollX = workspaceRef.current.scrollX;
+        const scrollY = workspaceRef.current.scrollY;
+        
         Blockly.svgResize(workspaceRef.current);
+        
+        // Restore scroll position after resize
+        workspaceRef.current.scroll(scrollX, scrollY);
       }
     }
   };
@@ -259,41 +266,29 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
   const setActive = (active: boolean): void => {
     if (workspaceRef.current) {
       if (!active) {
-        // Save the scroll position before making this workspace invisible.
-        if (isScrollPositionValid(workspaceRef.current)) {
-          savedScrollX.current = workspaceRef.current.scrollX;
-          savedScrollY.current = workspaceRef.current.scrollY;
-        } else {
-          savedScrollX.current = 0;
-          savedScrollY.current = 0;
-        }
+        // Always save the scroll position before making this workspace invisible
+        savedScrollX.current = workspaceRef.current.scrollX;
+        savedScrollY.current = workspaceRef.current.scrollY;
+        workspaceRef.current.setVisible(active);
+      } else {
+        // Make visible first
+        workspaceRef.current.setVisible(active);
       }
-      workspaceRef.current.setVisible(active);
     }
     if (parentDiv.current) {
       parentDiv.current.hidden = !active;
     }
-    if (workspaceRef.current) {
-      if (active) {
-        workspaceRef.current.markFocused();
-
-        const needScroll = !isScrollPositionValid(workspaceRef.current);
-        if (Blockly.getMainWorkspace().id === workspaceRef.current.id) {
-          Blockly.svgResize(workspaceRef.current);
-          if (needScroll) {
+    if (workspaceRef.current && active) {
+      workspaceRef.current.markFocused();
+      // Restore scroll position after making visible, with double RAF for proper rendering
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (workspaceRef.current) {
             workspaceRef.current.scroll(savedScrollX.current, savedScrollY.current);
           }
-        }
-      }
+        });
+      });
     }
-  };
-
-  const isScrollPositionValid = (workspace: Blockly.WorkspaceSvg): boolean => {
-    return !(
-        Math.round(workspace.getMetrics().svgWidth) === 0 &&
-        Math.round(workspace.getMetrics().svgHeight) === 0 &&
-        Math.round(workspace.scrollX) === -10 &&
-        Math.round(workspace.scrollY) === -10);
   };
 
   // Initialize Blockly workspace
