@@ -228,14 +228,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     if (workspaceRef.current) {
       if (workspaceRef.current.isVisible() &&
           Blockly.getMainWorkspace().id === workspaceRef.current.id) {
-        // Save scroll position before resize
-        const scrollX = workspaceRef.current.scrollX;
-        const scrollY = workspaceRef.current.scrollY;
-        
         Blockly.svgResize(workspaceRef.current);
-        
-        // Restore scroll position after resize
-        workspaceRef.current.scroll(scrollX, scrollY);
       }
     }
   };
@@ -266,28 +259,34 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
   const setActive = (active: boolean): void => {
     if (workspaceRef.current) {
       if (!active) {
-        // Always save the scroll position before making this workspace invisible
+        // Save the scroll position before making this workspace invisible.
         savedScrollX.current = workspaceRef.current.scrollX;
         savedScrollY.current = workspaceRef.current.scrollY;
-        workspaceRef.current.setVisible(active);
-      } else {
-        // Make visible first
-        workspaceRef.current.setVisible(active);
       }
+      workspaceRef.current.setVisible(active);
     }
     if (parentDiv.current) {
       parentDiv.current.hidden = !active;
     }
     if (workspaceRef.current && active) {
       workspaceRef.current.markFocused();
-      // Restore scroll position after making visible, with double RAF for proper rendering
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
+
+      if (Blockly.getMainWorkspace().id === workspaceRef.current.id) {
+        Blockly.svgResize(workspaceRef.current);
+        // We need to call Workspace.scroll, but it is not effective if we call it now.
+        // I tried requestAnimationFrame, nested requestAnimationFrame, and setTimeout.
+        // The requestAnimationFrame callback was called first, and calling Workspace.scroll was
+        // not effective.
+        // The setTimeout callback was called second, and calling Workspace.scroll was effective.
+        // The nested requestAnimationFrame callback was called after the setTimeout callback.
+        // I chose to use setTimeout because it was the earliest callback where calling
+        // Workspace.scroll was effective.
+        setTimeout(() => {
           if (workspaceRef.current) {
             workspaceRef.current.scroll(savedScrollX.current, savedScrollY.current);
           }
         });
-      });
+      }
     }
   };
 
