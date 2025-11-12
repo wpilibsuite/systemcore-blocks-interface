@@ -220,8 +220,8 @@ export const pythonFromBlock = function (
   generator: ExtendedPythonGenerator,
 ) {
   let code = 'def steps(self):\n';
-  code += generator.INDENT + 'if not hasattr(self, "_initialized_steps"):\n';
-  code += generator.INDENT.repeat(2) + 'self._current_step = "' + block.mrcStepNames[0] + '"\n';
+  code += generator.INDENT + 'if not hasattr(self, \'_initialized_steps\'):\n';
+  code += generator.INDENT.repeat(2) + 'self._current_step = \'' + block.mrcStepNames[0] + '\'\n';
   code += generator.INDENT.repeat(2) + 'self._initialized_steps = True\n\n';
   code += generator.INDENT + 'if self._current_step == None:\n';
   code += generator.INDENT.repeat(2) + 'return\n';
@@ -229,7 +229,7 @@ export const pythonFromBlock = function (
 
   code += generator.INDENT + 'match self._current_step:\n';
   block.mrcStepNames.forEach((stepName, index) => {
-    code += generator.INDENT.repeat(2) + `case "${stepName}":\n`;
+    code += generator.INDENT.repeat(2) + `case '${stepName}':\n`;
     const stepCode = generator.statementToCode(block, INPUT_STATEMENT_PREFIX + index);
     if (stepCode !== '') {
       code += generator.prefixLines(stepCode, generator.INDENT.repeat(2));
@@ -239,7 +239,7 @@ export const pythonFromBlock = function (
     if (index === block.mrcStepNames.length - 1) {
       code += generator.INDENT.repeat(4) + 'self._current_step = None\n';
     } else {
-      code += generator.INDENT.repeat(4) + 'self._current_step = "' + block.mrcStepNames[index + 1] + '"\n';
+      code += generator.INDENT.repeat(4) + 'self._current_step = \'' + block.mrcStepNames[index + 1] + '\'\n';
     }
   });
 

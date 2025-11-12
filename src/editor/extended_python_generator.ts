@@ -42,11 +42,11 @@ export class OpModeDetails {
 
       if (this.name) {
         const nameDecorator = generator.importModuleName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'Name');
-        code += `@${nameDecorator}(${className}, "${this.name}")\n`;
+        code += `@${nameDecorator}(${className}, '${this.name}')\n`;
       }
       if (this.group) {
         const groupDecorator = generator.importModuleName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'Group');
-        code += `@${groupDecorator}(${className}, "${this.group}")\n`;
+        code += `@${groupDecorator}(${className}, '${this.group}')\n`;
       }
     }
 

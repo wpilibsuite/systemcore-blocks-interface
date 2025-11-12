@@ -102,8 +102,8 @@ export const pythonFromBlock = function (
   block: JumpToStepBlock,
   _generator: ExtendedPythonGenerator,
 ) {
-  let code = 'self._current_step = "' +
-    block.getFieldValue(FIELD_STEP_NAME) + '"\n';
+  let code = 'self._current_step = \'' +
+    block.getFieldValue(FIELD_STEP_NAME) + '\'\n';
   code += 'return\n';
 
   return code;
