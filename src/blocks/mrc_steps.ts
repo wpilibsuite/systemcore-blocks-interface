@@ -32,6 +32,8 @@ import * as toolboxItems from '../toolbox/items';
 
 export const BLOCK_NAME = 'mrc_steps';
 
+export const STEPS_METHOD_NAME = '_steps';
+
 const INPUT_CONDITION_PREFIX = 'CONDITION_';
 const INPUT_STATEMENT_PREFIX = 'STATEMENT_';
 
@@ -219,7 +221,7 @@ export const pythonFromBlock = function (
   block: StepsBlock,
   generator: ExtendedPythonGenerator,
 ) {
-  let code = 'def steps(self):\n';
+  let code = 'def ' + STEPS_METHOD_NAME + '(self):\n';
   code += generator.INDENT + 'if not hasattr(self, \'_initialized_steps\'):\n';
   code += generator.INDENT.repeat(2) + 'self._current_step = \'' + block.mrcStepNames[0] + '\'\n';
   code += generator.INDENT.repeat(2) + 'self._initialized_steps = True\n\n';
@@ -243,7 +245,7 @@ export const pythonFromBlock = function (
     }
   });
 
-  generator.addClassMethodDefinition('steps', code);
+  generator.addClassMethodDefinition(STEPS_METHOD_NAME, code);
 
   return ''
 }

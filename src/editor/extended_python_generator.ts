@@ -24,9 +24,12 @@ import { PythonGenerator } from 'blockly/python';
 import { createGeneratorContext, GeneratorContext } from './generator_context';
 import * as mechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
 import * as eventHandler from '../blocks/mrc_event_handler';
+import { STEPS_METHOD_NAME } from '../blocks/mrc_steps';
+
 import {
     MODULE_NAME_BLOCKS_BASE_CLASSES,
     CLASS_NAME_OPMODE,
+    PERIODIC_METHOD_NAME,
     getClassData,
 } from '../blocks/utils/python';
 import * as storageModule from '../storage/module';
@@ -248,6 +251,22 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
       code = decorators + 'class ' + className + '(' + baseClassName + '):\n';
 
+      if (this.getModuleType() ===  storageModule.ModuleType.OPMODE) {
+        // If the user has a steps method, we need to generate code to call it from the periodic method.
+        if (STEPS_METHOD_NAME in this.classMethods) {
+          let periodicCode: string;
+          if (PERIODIC_METHOD_NAME in this.classMethods) {
+            periodicCode = this.classMethods[PERIODIC_METHOD_NAME];
+          } else {
+            periodicCode = `def ${PERIODIC_METHOD_NAME}(self):\n`;
+            periodicCode += this.INDENT + `super().${PERIODIC_METHOD_NAME}()\n`;
+          }
+          periodicCode += this.INDENT + `if hasattr(self, '${STEPS_METHOD_NAME}') and callable(self.${STEPS_METHOD_NAME}):\n`;
+          periodicCode += this.INDENT.repeat(2) + `self.${STEPS_METHOD_NAME}()\n`;
+          this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
+        }
+      }
+
       const classMethods = [];
 
       // Generate the __init__ method first.
@@ -295,7 +314,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.opModeDetails = opModeDetails;
   }
 
-  getClassSpecificForInit(): string {
+  getSuperInitParameters(): string {
     if (this.context?.getBaseClassName() == CLASS_NAME_OPMODE) {
       return 'robot'
     }
