@@ -24,6 +24,7 @@ import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
 import * as I18Next from 'react-i18next';
+import { MessageInstance } from 'antd/es/message/interface';
 import {
   CloseOutlined,
   DeleteOutlined,
@@ -34,6 +35,7 @@ import {
 import AddTabDialog from './AddTabDialog';
 import ClassNameComponent from './ClassNameComponent';
 import { TabType, TabTypeUtils } from '../types/TabType';
+import { TabContent, TabContentRef } from './TabContent';
 
 /** Represents a tab item in the tab bar. */
 export interface TabItem {
@@ -50,9 +52,11 @@ export interface TabsProps {
   project: storageProject.Project | null;
   onProjectChanged: () => Promise<void>;
   setAlertErrorMessage: (message: string) => void;
-  currentModule: storageModule.Module | null;
-  setCurrentModule: (module: storageModule.Module | null) => void;
   storage: commonStorage.Storage | null;
+  theme: string;
+  shownPythonToolboxCategories: Set<string>;
+  modulePathToContentText: {[modulePath: string]: string};
+  messageApi: MessageInstance;
 }
 
 /** Default copy suffix for tab names. */
@@ -75,14 +79,23 @@ export function Component(props: TabsProps): React.JSX.Element {
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
+  
+  // Store refs to TabContent components for each tab
+  const tabContentRefs = React.useRef<Map<string, TabContentRef>>(new Map());
 
   /** Handles tab change and updates current module. */
   const handleTabChange = (key: string): void => {
-    if (props.project) {
-      const modulePath = key;
-      props.setCurrentModule(storageProject.findModuleByModulePath(props.project, modulePath));
-      setActiveKey(key);
+    if (key !== activeKey) {
+      // Save the tab we are changing away from (async, but don't wait)
+      const currentTabRef = tabContentRefs.current.get(activeKey);
+      if (currentTabRef) {
+        currentTabRef.saveModule().catch((error) => {
+          console.error('Error saving module on tab switch:', error);
+          props.setAlertErrorMessage(t('FAILED_TO_SAVE_MODULE'));
+        });
+      }
     }
+    setActiveKey(key);
   };
 
   /** Checks if a key exists in the current tab list. */
@@ -323,19 +336,44 @@ export function Component(props: TabsProps): React.JSX.Element {
 
   /** Creates tab items for the Antd.Tabs component. */
   const createTabItems = (): any[] => {
-    return props.tabList.map((tab) => ({
-      key: tab.key,
-      label: (
-        <Antd.Dropdown
-          menu={{ items: createTabContextMenuItems(tab) }}
-          trigger={['contextMenu']}
-        >
-          <span>{tab.title}</span>
-        </Antd.Dropdown>
-      ),
-      icon: TabTypeUtils.getIcon(tab.type),
-      closable: tab.type !== TabType.ROBOT,
-    }));
+    return props.tabList.map((tab) => {
+      const module = props.project ? storageProject.findModuleByModulePath(props.project, tab.key) : null;
+      
+      return {
+        key: tab.key,
+        label: (
+          <Antd.Dropdown
+            menu={{ items: createTabContextMenuItems(tab) }}
+            trigger={['contextMenu']}
+          >
+            <span>{tab.title}</span>
+          </Antd.Dropdown>
+        ),
+        icon: TabTypeUtils.getIcon(tab.type),
+        closable: tab.type !== TabType.ROBOT,
+        children: module && props.project && props.storage ? (
+          <TabContent
+            ref={(ref) => {
+              if (ref) {
+                tabContentRefs.current.set(tab.key, ref);
+              } else {
+                tabContentRefs.current.delete(tab.key);
+              }
+            }}
+            modulePath={tab.key}
+            module={module}
+            project={props.project}
+            storage={props.storage}
+            theme={props.theme}
+            shownPythonToolboxCategories={props.shownPythonToolboxCategories}
+            modulePathToContentText={props.modulePathToContentText}
+            messageApi={props.messageApi}
+            setAlertErrorMessage={props.setAlertErrorMessage}
+            isActive={activeKey === tab.key}
+          />
+        ) : null,
+      };
+    });
   };
 
   // Effect to handle active tab changes
@@ -350,6 +388,15 @@ export function Component(props: TabsProps): React.JSX.Element {
 
   return (
     <>
+      <style>{`        
+        .ant-tabs-content {
+          height: 100%;
+        }
+        
+        .ant-tabs-tabpane {
+          height: 100%;
+        }
+      `}</style>
       {contextHolder}
       <AddTabDialog
         isOpen={addTabDialogOpen}
@@ -424,7 +471,8 @@ export function Component(props: TabsProps): React.JSX.Element {
         onChange={handleTabChange}
         onEdit={handleTabEdit}
         activeKey={activeKey}
-        tabBarStyle={{ padding: 0, margin: 0 }}
+        tabBarStyle={{ padding: 0, margin: 0, flex: '0 0 auto' }}
+        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
         hideAdd={false}
         items={createTabItems()}
       />
