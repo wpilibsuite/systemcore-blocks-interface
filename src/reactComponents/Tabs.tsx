@@ -84,15 +84,17 @@ export function Component(props: TabsProps): React.JSX.Element {
   const tabContentRefs = React.useRef<Map<string, TabContentRef>>(new Map());
 
   /** Handles tab change and updates current module. */
-  const handleTabChange = (key: string): void => {
+  const handleTabChange = async (key: string): Promise<void> => {
     if (key !== activeKey) {
-      // Save the tab we are changing away from (async, but don't wait)
+      // Save the tab we are changing away from. Wait for the save to complete before changing tabs.
       const currentTabRef = tabContentRefs.current.get(activeKey);
       if (currentTabRef) {
-        currentTabRef.saveModule().catch((error) => {
+        try {
+          await currentTabRef.saveModule();
+        } catch(error) {
           console.error('Error saving module on tab switch:', error);
           props.setAlertErrorMessage(t('FAILED_TO_SAVE_MODULE'));
-        });
+        }
       }
     }
     setActiveKey(key);
