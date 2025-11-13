@@ -217,6 +217,7 @@
             "EVENT_NOT_IN_HOLDER": "This block can only go in the events section of the robot or mechanism.",
             "COMPONENT_NOT_IN_HOLDER": "This block can only go in the components section of the robot or mechanism.",
             "MECHANISM_NOT_IN_HOLDER": "This block can only go in the mechanisms section of the robot.",
+            "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "A PeriodicOpMode should have steps, the periodic method, or both.",
             "MECHANISM_NOT_FOUND": "This block refers to a mechanism that no longer exists."
         },
         "ERROR":{

@@ -43,14 +43,19 @@
  */
 import * as Blockly from 'blockly';
 
+import { PERIODIC_METHOD_NAME } from './utils/python';
+import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator, OpModeDetails } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
 
 export const BLOCK_NAME = 'mrc_opmode_details';
 
+const WARNING_ID_STEPS_OR_PERIODIC_REQUIRED = 'steps or periodic required';
+
 type OpmodeDetailsBlock = Blockly.Block & OpmodeDetailsMixin;
 interface OpmodeDetailsMixin extends OpmodeDetailsMixinType {
+  mrcHasStepsOrPeriodicRequiredWarning: boolean,
 }
 type OpmodeDetailsMixinType = typeof OPMODE_DETAILS;
 
@@ -59,6 +64,7 @@ const OPMODE_DETAILS = {
     * Block initialization.
     */
   init: function (this: OpmodeDetailsBlock): void {
+    this.mrcHasStepsOrPeriodicRequiredWarning = false;
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
     this.appendDummyInput()
       .appendField(Blockly.Msg.TYPE)
@@ -80,6 +86,24 @@ const OPMODE_DETAILS = {
     this.getField('NAME')?.setTooltip(Blockly.Msg.OPMODE_NAME_TOOLTIP);
     this.getField('GROUP')?.setTooltip(Blockly.Msg.OPMODE_GROUP_TOOLTIP);
   },
+  checkOpMode(this: OpmodeDetailsBlock, editor: Editor): void {
+    if (editor.isStepsInWorkspace() ||
+        editor.getMethodNamesAlreadyOverriddenInWorkspace().includes(PERIODIC_METHOD_NAME)) {
+      // Remove any previous warning.
+      this.setWarningText(null, WARNING_ID_STEPS_OR_PERIODIC_REQUIRED);
+      this.mrcHasStepsOrPeriodicRequiredWarning = false;
+    } else {
+      // Otherwise, add a warning to the block.
+      if (!this.mrcHasStepsOrPeriodicRequiredWarning) {
+        this.setWarningText(Blockly.Msg.WARNING_OPMODE_STEPS_OR_PERIODIC_REQUIRED, WARNING_ID_STEPS_OR_PERIODIC_REQUIRED);
+        const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+        if (icon) {
+          icon.setBubbleVisible(true);
+        }
+        this.mrcHasStepsOrPeriodicRequiredWarning = true;
+      }
+    }
+  }
 }
 
 export const setup = function () {
@@ -97,4 +121,12 @@ export const pythonFromBlock = function (
                                 block.getFieldValue('TYPE')
                               ));
     return '';
+}
+
+// Misc
+
+export function checkOpMode(workspace: Blockly.Workspace, editor: Editor) {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as OpmodeDetailsBlock).checkOpMode(editor);
+  });
 }

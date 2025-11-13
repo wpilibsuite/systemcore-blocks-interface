@@ -217,6 +217,7 @@
       "EVENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור האירועים של הרובוט או המנגנון.",
       "COMPONENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור הרכיבים של הרובוט או המנגנון.",
       "MECHANISM_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לחלק המנגנונים של הרובוט.",
+      "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "ל-PeriodicOpMode צריך להיות שלבים, את השיטה המחזורית, או את שניהם.",
       "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים."
     },
     "ERROR": {

@@ -29,6 +29,7 @@ import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
+import * as opmodeDetails from '../blocks/mrc_opmode_details';
 import * as blockSteps from '../blocks/mrc_steps';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 import * as workspaces from '../blocks/utils/workspaces';
@@ -90,12 +91,7 @@ export class Editor {
       return;
     }
     if (event.type === Blockly.Events.FINISHED_LOADING) {
-      // Remove the while-loading listener.
-      this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
-
-      // Add the after-loading listener.
-      this.bindedOnChange = this.onChangeAfterLoading.bind(this);
-      this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
+      this.onFinishedLoading();
       return;
     }
 
@@ -113,6 +109,19 @@ export class Editor {
           }
         });
       }
+    }
+  }
+
+  private onFinishedLoading(): void {
+    // Remove the while-loading listener.
+    this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
+
+    // Add the after-loading listener.
+    this.bindedOnChange = this.onChangeAfterLoading.bind(this);
+    this.blocklyWorkspace.addChangeListener(this.bindedOnChange);
+
+    if (this.module.moduleType === storageModule.ModuleType.OPMODE) {
+      opmodeDetails.checkOpMode(this.blocklyWorkspace, this);
     }
   }
 
@@ -168,6 +177,10 @@ export class Editor {
           block[MRC_ON_MUTATOR_OPEN]();
         }
       }
+    }
+
+    if (this.module.moduleType === storageModule.ModuleType.OPMODE) {
+      opmodeDetails.checkOpMode(this.blocklyWorkspace, this);
     }
   }
 
