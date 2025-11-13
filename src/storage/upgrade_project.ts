@@ -82,6 +82,9 @@ async function upgradeBlocksFiles(
   const projectFileNames: string[] = await storage.list(
     storageNames.makeProjectDirectoryPath(projectName));
   for (const projectFileName of projectFileNames) {
+    if (!storageNames.isValidModuleFileName(projectFileName)) {
+      continue;
+    }
     const modulePath = storageNames.makeFilePath(projectName, projectFileName);
     const moduleType = storageNames.getModuleType(modulePath);
     const originalModuleContentText = await storage.fetchFileContentText(modulePath);

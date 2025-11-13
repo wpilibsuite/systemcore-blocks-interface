@@ -260,40 +260,34 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     if (workspaceRef.current) {
       if (!active) {
         // Save the scroll position before making this workspace invisible.
-        if (isScrollPositionValid(workspaceRef.current)) {
-          savedScrollX.current = workspaceRef.current.scrollX;
-          savedScrollY.current = workspaceRef.current.scrollY;
-        } else {
-          savedScrollX.current = 0;
-          savedScrollY.current = 0;
-        }
+        savedScrollX.current = workspaceRef.current.scrollX;
+        savedScrollY.current = workspaceRef.current.scrollY;
       }
       workspaceRef.current.setVisible(active);
     }
     if (parentDiv.current) {
       parentDiv.current.hidden = !active;
     }
-    if (workspaceRef.current) {
-      if (active) {
-        workspaceRef.current.markFocused();
+    if (workspaceRef.current && active) {
+      workspaceRef.current.markFocused();
 
-        const needScroll = !isScrollPositionValid(workspaceRef.current);
-        if (Blockly.getMainWorkspace().id === workspaceRef.current.id) {
-          Blockly.svgResize(workspaceRef.current);
-          if (needScroll) {
+      if (Blockly.getMainWorkspace().id === workspaceRef.current.id) {
+        Blockly.svgResize(workspaceRef.current);
+        // We need to call Workspace.scroll, but it is not effective if we call it now.
+        // I tried requestAnimationFrame, nested requestAnimationFrame, and setTimeout.
+        // The requestAnimationFrame callback was called first, and calling Workspace.scroll was
+        // not effective.
+        // The setTimeout callback was called second, and calling Workspace.scroll was effective.
+        // The nested requestAnimationFrame callback was called after the setTimeout callback.
+        // I chose to use setTimeout because it was the earliest callback where calling
+        // Workspace.scroll was effective.
+        setTimeout(() => {
+          if (workspaceRef.current) {
             workspaceRef.current.scroll(savedScrollX.current, savedScrollY.current);
           }
-        }
+        });
       }
     }
-  };
-
-  const isScrollPositionValid = (workspace: Blockly.WorkspaceSvg): boolean => {
-    return !(
-        Math.round(workspace.getMetrics().svgWidth) === 0 &&
-        Math.round(workspace.getMetrics().svgHeight) === 0 &&
-        Math.round(workspace.scrollX) === -10 &&
-        Math.round(workspace.scrollY) === -10);
   };
 
   // Initialize Blockly workspace
