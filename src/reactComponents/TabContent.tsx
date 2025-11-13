@@ -86,7 +86,11 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   React.useImperativeHandle(ref, () => ({
     saveModule: async () => {
       if (editorInstance) {
-        await editorInstance.saveModule();
+        const moduleContentText = await editorInstance.saveModule();
+        // Update modulePathToContentText.
+        // modulePathToContentText is passed to Editor.makeCurrent so the active editor will know
+        // about changes to other modules.
+        modulePathToContentText[modulePath] = moduleContentText;
       }
     },
   }), [editorInstance]);
