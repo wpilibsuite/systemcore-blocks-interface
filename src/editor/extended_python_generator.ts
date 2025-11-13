@@ -261,8 +261,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
             periodicCode = `def ${PERIODIC_METHOD_NAME}(self):\n`;
             periodicCode += this.INDENT + `super().${PERIODIC_METHOD_NAME}()\n`;
           }
-          periodicCode += this.INDENT + `if hasattr(self, '${STEPS_METHOD_NAME}') and callable(self.${STEPS_METHOD_NAME}):\n`;
-          periodicCode += this.INDENT.repeat(2) + `self.${STEPS_METHOD_NAME}()\n`;
+          periodicCode += this.INDENT + `self.${STEPS_METHOD_NAME}()\n`;
           this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
         }
       }
