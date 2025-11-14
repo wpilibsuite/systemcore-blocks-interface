@@ -33,9 +33,12 @@ import * as SetPythonVariable from "../mrc_set_python_variable";
 
 export const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
 export const CLASS_NAME_ROBOT_BASE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.RobotBase';
-export const CLASS_NAME_OPMODE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.OpMode';
 export const CLASS_NAME_MECHANISM = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Mechanism';
 
+// TODO(lizlooney): what about PeriodicOpMode and LinearOpMode?
+export const CLASS_NAME_OPMODE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.OpMode';
+// TODO(lizlooney): Make sure to update the value of PERIODIC_METHOD_NAME when we update wpilib.
+export const PERIODIC_METHOD_NAME = 'loop';
 
 export const robotPyData = generatedRobotPyData as PythonData;
 const externalSamplesData = generatedExternalSamplesData as PythonData
