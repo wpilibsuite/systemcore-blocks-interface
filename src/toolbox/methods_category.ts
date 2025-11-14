@@ -24,9 +24,18 @@ import * as Blockly from 'blockly/core';
 import * as toolboxItems from './items';
 import * as storageModule from '../storage/module';
 import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
-import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
+import {
+    CLASS_NAME_MECHANISM,
+    CLASS_NAME_OPMODE,
+    CLASS_NAME_ROBOT_BASE,
+    MECHANISM_METHOD_NAMES_NOT_OVERRIDEABLE,
+    OPMODE_METHOD_NAMES_NOT_OVERRIDEABLE,
+    ROBOT_METHOD_NAMES_NOT_OVERRIDEABLE } from '../blocks/utils/python';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
-import { createCustomMethodBlock, getBaseClassBlocks, FIELD_METHOD_NAME, createCustomMethodBlockWithReturn } from '../blocks/mrc_class_method_def';
+import {
+    createCustomMethodBlock,
+    createCustomMethodBlockWithReturn,
+    getBaseClassBlocks } from '../blocks/mrc_class_method_def';
 import { createStepsBlock } from '../blocks/mrc_steps';
 import { Editor } from '../editor/editor';
 
@@ -50,10 +59,6 @@ export function getCategory(editor: Editor): toolboxItems.Category {
 }
 
 class MethodsCategory {
-  private robotClassBlocks = getBaseClassBlocks(CLASS_NAME_ROBOT_BASE);
-  private mechanismClassBlocks = getBaseClassBlocks(CLASS_NAME_MECHANISM);
-  private opmodeClassBlocks = getBaseClassBlocks(CLASS_NAME_OPMODE);
-
   public methodsFlyout(workspace: Blockly.WorkspaceSvg) {
     const editor = Editor.getEditorForBlocklyWorkspace(workspace);
     if (!editor) {
@@ -71,33 +76,16 @@ class MethodsCategory {
 
     switch (editor.getModuleType()) {
       case storageModule.ModuleType.ROBOT:
-        // TODO(lizlooney): We need a way to mark a method in python as not overridable.
-        // For example, in RobotBase, define_hardware, register_event_handler,
-        // unregister_event_handler, and fire_event should not be overridden in a user's robot.
-        const robotMethodNamesNotOverrideable: string[] = [
-          'define_hardware',
-          'fire_event',
-          'register_event_handler',
-          'unregister_event_handler',
-        ];
         // Add the methods for a Robot.
-        this.addClassBlocksForCurrentModule(
-            Blockly.Msg['MORE_ROBOT_METHODS_LABEL'], this.robotClassBlocks, robotMethodNamesNotOverrideable,
-            methodNamesAlreadyOverridden, contents);
+        this.addBaseClassBlocksForCurrentModule(
+            workspace, Blockly.Msg['MORE_ROBOT_METHODS_LABEL'], CLASS_NAME_ROBOT_BASE,
+            ROBOT_METHOD_NAMES_NOT_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.MECHANISM:
-        // TODO(lizlooney): We need a way to mark a method in python as not overridable.
-        // For example, in Mechanism, register_event_handler, unregister_event_handler, and
-        // fire_event should not be overridden in a user's mechamism.
-        const mechanismMethodNamesNotOverrideable: string[] = [
-          'fire_event',
-          'register_event_handler',
-          'unregister_event_handler',
-        ];
         // Add the methods for a Mechanism.
-        this.addClassBlocksForCurrentModule(
-            Blockly.Msg['MORE_MECHANISM_METHODS_LABEL'], this.mechanismClassBlocks, mechanismMethodNamesNotOverrideable,
-            methodNamesAlreadyOverridden, contents);
+        this.addBaseClassBlocksForCurrentModule(
+            workspace, Blockly.Msg['MORE_MECHANISM_METHODS_LABEL'], CLASS_NAME_MECHANISM,
+            MECHANISM_METHOD_NAMES_NOT_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.OPMODE:
         const hasSteps = editor.isStepsInWorkspace();
@@ -105,21 +93,17 @@ class MethodsCategory {
           contents.push(createStepsBlock());
         }
         // Add the methods for an OpMode.
-        this.addClassBlocksForCurrentModule(
-            Blockly.Msg['MORE_OPMODE_METHODS_LABEL'], this.opmodeClassBlocks, [],
-            methodNamesAlreadyOverridden, contents);
+        this.addBaseClassBlocksForCurrentModule(
+            workspace, Blockly.Msg['MORE_OPMODE_METHODS_LABEL'], CLASS_NAME_OPMODE,
+            OPMODE_METHOD_NAMES_NOT_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
         break;
     }
 
     // Add a block that lets the user define a new method.
     contents.push(
-      {
-        kind: 'label',
-        text: Blockly.Msg['CUSTOM_METHODS_LABEL'],
-      },
-      createCustomMethodBlock(),
-      createCustomMethodBlockWithReturn()
-    );
+        new toolboxItems.Label(Blockly.Msg['CUSTOM_METHODS_LABEL']),
+        createCustomMethodBlock(),
+        createCustomMethodBlockWithReturn());
 
     // Get blocks for calling methods defined in the current workspace.
     const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
@@ -132,31 +116,16 @@ class MethodsCategory {
     return toolboxInfo;
   }
 
-  private addClassBlocksForCurrentModule(
-      label: string, classBlocks: toolboxItems.Block[],
-      methodNamesNotOverrideable: string[],
-      methodNamesAlreadyOverridden: string[], contents: toolboxItems.ContentsType[]) {
-    let labelAdded = false;
-    for (const blockInfo of classBlocks) {
-      if (blockInfo.fields) {
-        const methodName = blockInfo.fields[FIELD_METHOD_NAME];
-        if (methodNamesNotOverrideable.includes(methodName)) {
-          continue;
-        }
-        if (methodNamesAlreadyOverridden.includes(methodName)) {
-          continue;
-        }
-        if (!labelAdded) {
-          contents.push(
-            {
-              kind: 'label',
-              text: label,
-            },
-          );
-          labelAdded = true;
-        }
-        contents.push(blockInfo);
-      }
+  private addBaseClassBlocksForCurrentModule(
+      workspace: Blockly.WorkspaceSvg, label: string, baseClassName: string,
+      methodNamesNotOverrideable: string[], methodNamesAlreadyOverridden: string[],
+      contents: toolboxItems.ContentsType[]) {
+    const baseClassBlocks: toolboxItems.ContentsType[] = getBaseClassBlocks(
+        workspace, baseClassName, methodNamesNotOverrideable, methodNamesAlreadyOverridden);
+    if (baseClassBlocks.length) {
+      contents.push(
+          new toolboxItems.Label(label),
+          ...baseClassBlocks);
     }
   }
 }

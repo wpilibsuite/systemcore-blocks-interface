@@ -126,6 +126,7 @@
     "PARAMETERS": "פרמטרים",
     "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "פרמטרים יכולים ללכת רק בבלוק השיטה שלהם",
     "JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK": "קפיצה יכולה ללכת רק בבלוק הצעד שלה",
+    "CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE": "שיטה זו כבר קיימת בסביבת העבודה.",
     "EVENT_HANDLER_ALREADY_ON_WORKSPACE": "מטפל אירועים זה כבר נמצא במרחב העבודה.",
     "EVENT_HANDLER_ROBOT_EVENT_NOT_FOUND": "הבלוק הזה הוא מנהל אירועים לאירוע שכבר לא קיים.",
     "EVENT_HANDLER_MECHANISM_EVENT_NOT_FOUND": "הבלוק הזה הוא מנהל אירועים לאירוע שכבר לא קיים.",
