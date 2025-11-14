@@ -32,10 +32,24 @@ import * as SetPythonVariable from "../mrc_set_python_variable";
 // Utilities related to blocks for python modules and classes, including those from RobotPy, external samples, etc.
 
 export const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
-export const CLASS_NAME_ROBOT_BASE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.RobotBase';
-export const CLASS_NAME_OPMODE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.OpMode';
-export const CLASS_NAME_MECHANISM = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Mechanism';
 
+export const CLASS_NAME_ROBOT_BASE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.RobotBase';
+export const ROBOT_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [
+  'define_hardware',
+  'fire_event',
+  'register_event_handler',
+  'unregister_event_handler',
+];
+
+export const CLASS_NAME_MECHANISM = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Mechanism';
+export const MECHANISM_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [
+  'fire_event',
+  'register_event_handler',
+  'unregister_event_handler',
+];
+
+export const CLASS_NAME_OPMODE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.OpMode';
+export const OPMODE_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [];
 
 export const robotPyData = generatedRobotPyData as PythonData;
 const externalSamplesData = generatedExternalSamplesData as PythonData
