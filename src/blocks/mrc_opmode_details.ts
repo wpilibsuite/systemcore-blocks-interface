@@ -51,7 +51,7 @@ import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
 
 export const BLOCK_NAME = 'mrc_opmode_details';
 
-const WARNING_ID_STEPS_OR_PERIODIC_REQUIRED = 'steps or periodic required';
+const WARNING_ID_STEPS_OR_PERIODIC_REQUIRED = 'id_steps_or_periodic_required';
 
 type OpmodeDetailsBlock = Blockly.Block & OpmodeDetailsMixin;
 interface OpmodeDetailsMixin extends OpmodeDetailsMixinType {
@@ -89,7 +89,7 @@ const OPMODE_DETAILS = {
   checkOpMode(this: OpmodeDetailsBlock, editor: Editor): void {
     if (editor.isStepsInWorkspace() ||
         editor.getMethodNamesAlreadyOverriddenInWorkspace().includes(PERIODIC_METHOD_NAME)) {
-      // Remove any previous warning.
+      // Remove the previous warning.
       this.setWarningText(null, WARNING_ID_STEPS_OR_PERIODIC_REQUIRED);
       this.mrcHasStepsOrPeriodicRequiredWarning = false;
     } else {
