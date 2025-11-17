@@ -201,6 +201,12 @@ const EVENT = {
     this.checkBlockIsInHolder();
   },
   /**
+   * mrcOnCreate is called for each EventBlock when it is created.
+   */
+  mrcOnCreate: function(this: EventBlock, _editor: Editor): void {
+    this.checkBlockIsInHolder();
+  },
+  /**
    * mrcOnMove is called when an EventBlock is moved.
    */
   mrcOnMove: function(this: EventBlock, reason: string[]): void {

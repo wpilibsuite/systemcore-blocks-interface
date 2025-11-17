@@ -42,6 +42,7 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
 };
 
 const MRC_ON_LOAD = 'mrcOnLoad';
+const MRC_ON_CREATE = 'mrcOnCreate';
 const MRC_ON_MOVE = 'mrcOnMove';
 const MRC_ON_DESCENDANT_DISCONNECT = 'mrcOnDescendantDisconnect';
 const MRC_ON_ANCESTOR_MOVE = 'mrcOnAncestorMove';
@@ -134,6 +135,24 @@ export class Editor {
       return;
     }
 
+    if (event.type === Blockly.Events.VIEWPORT_CHANGE) {
+      this.setPasteLocation();
+    }
+
+    if (event.type === Blockly.Events.BLOCK_CREATE) {
+      const blockCreateEvent = event as Blockly.Events.BlockCreate;
+      if (blockCreateEvent.ids) {
+        blockCreateEvent.ids.forEach(id => {
+          const block = this.blocklyWorkspace.getBlockById(id);
+          if (block) {
+            if (MRC_ON_CREATE in block && typeof block[MRC_ON_CREATE] === 'function') {
+              block[MRC_ON_CREATE](this);
+            }
+          }
+        });
+      }
+    }
+
     if (event.type === Blockly.Events.BLOCK_MOVE) {
       const blockMoveEvent = event as Blockly.Events.BlockMove;
       const reason: string[] = blockMoveEvent.reason ?? [];
@@ -165,6 +184,7 @@ export class Editor {
         }
       });
     }
+
     if (event.type === Blockly.Events.BUBBLE_OPEN) {
       const bubbleOpenEvent = event as Blockly.Events.BubbleOpen;
       if (bubbleOpenEvent.bubbleType === 'mutator' && bubbleOpenEvent.isOpen) {
@@ -199,6 +219,16 @@ export class Editor {
         block[MRC_ON_MODULE_CURRENT](this);
       }
     });
+
+    if (Blockly.clipboard.getLastCopiedWorkspace()) {
+      Blockly.clipboard.setLastCopiedWorkspace(this.blocklyWorkspace);
+
+      setTimeout(() => {
+        this.blocklyWorkspace.markFocused();
+        Blockly.getFocusManager().focusNode(this.blocklyWorkspace);
+        this.setPasteLocation();
+      });
+    }
   }
 
   public abandon(): void {
@@ -617,5 +647,21 @@ export class Editor {
 
   public static getCurrentEditor(): Editor | null {
     return Editor.currentEditor;
+  }
+
+  private setPasteLocation(): void {
+    const copyData = Blockly.clipboard.getLastCopiedData();
+    if (copyData && copyData.paster === 'block') {
+      const blockCopyData = copyData as Blockly.clipboard.BlockCopyData;
+      if (blockCopyData.blockState) {
+        const metrics = this.blocklyWorkspace.getMetrics();
+        const center = new Blockly.utils.Coordinate(
+            metrics.viewLeft + metrics.viewWidth / 2,
+            metrics.viewTop + metrics.viewHeight / 2);
+        blockCopyData.blockState.x = center.x;
+        blockCopyData.blockState.y = center.y;
+        Blockly.clipboard.setLastCopiedLocation(center);
+      }
+    }
   }
 }

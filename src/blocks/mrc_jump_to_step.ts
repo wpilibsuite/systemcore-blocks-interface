@@ -87,7 +87,10 @@ const JUMP_TO_STEP_BLOCK = {
       // Otherwise, add a warning to this block.
       if (!this.mrcHasWarning) {
         this.setWarningText(Blockly.Msg.JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK, WARNING_ID_NOT_IN_STEP);
-        this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+        const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+        if (icon) {
+          icon.setBubbleVisible(true);
+        }
         this.mrcHasWarning = true;
       }
     }

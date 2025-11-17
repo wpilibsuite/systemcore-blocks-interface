@@ -205,6 +205,13 @@ const MECHANISM = {
     this.checkMechanism(editor);
   },
   /**
+   * mrcOnCreate is called for each MechanismBlock when it is created.
+   */
+  mrcOnCreate: function(this: MechanismBlock, editor: Editor): void {
+    this.checkBlockIsInHolder();
+    this.checkMechanism(editor);
+  },
+  /**
    * mrcOnMove is called when a MechanismBlock is moved.
    */
   mrcOnMove: function(this: MechanismBlock, reason: string[]): void {
@@ -299,7 +306,10 @@ const MECHANISM = {
       // Add a warnings to the block.
       const warningText = warnings.join('\n\n');
       this.setWarningText(warningText, WARNING_ID_MECHANISM_CHANGED);
-      this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
       this.bringToFront();
     } else {
       // Clear the existing warning on the block.
