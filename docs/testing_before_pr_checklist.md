@@ -13,7 +13,7 @@ For each PR, make sure each of these works
 * [ ] Add an event to the Mechanism
 * [ ] In Robot, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> my_arm -> Events
 * [ ] In Opmode, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> my_arm -> Events
-# Mechanims
+# Mechanisms
 * [ ] Add a public component to the mechanism
 * [ ] Add a private component to the mechanism
 * [ ] Make sure that in the Robot you can see the public component (and not the private one) in the toolbox

@@ -48,8 +48,11 @@ export const MECHANISM_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [
   'unregister_event_handler',
 ];
 
+// TODO(lizlooney): what about PeriodicOpMode and LinearOpMode?
 export const CLASS_NAME_OPMODE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.OpMode';
 export const OPMODE_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [];
+// TODO(lizlooney): Make sure to update the value of PERIODIC_METHOD_NAME when we update wpilib.
+export const PERIODIC_METHOD_NAME = 'loop';
 
 export const robotPyData = generatedRobotPyData as PythonData;
 const externalSamplesData = generatedExternalSamplesData as PythonData
