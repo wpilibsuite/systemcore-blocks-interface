@@ -19,11 +19,14 @@
  * @fileoverview Blocks for class method definition
  * @author alan@porpoiseful.com (Alan Smith)
  */
+
 import * as Blockly from 'blockly';
+import { Order } from 'blockly/python';
+
+import type { MessageInstance } from 'antd/es/message/interface';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
 import { createParameterFieldFlydown } from '../fields/field_flydown';
-import { Order } from 'blockly/python';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
@@ -37,11 +40,14 @@ import * as paramContainer from './mrc_param_container'
 
 export const BLOCK_NAME = 'mrc_class_method_def';
 
+const BUTTON_CALLBACK_KEY = 'CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE';
+const BUTTON_STYLE_PREFIX = 'classMethodDefButtonStyle_';
+
 const NO_RETURN_VALUE = 'None';
 const UNTYPED_RETURN_VALUE = '';
 
 const INPUT_TITLE = 'TITLE';
-export const FIELD_METHOD_NAME = 'NAME';
+const FIELD_METHOD_NAME = 'NAME';
 const FIELD_PARAM_PREFIX = 'PARAM_';
 const INPUT_STACK = 'STACK';
 export const INPUT_RETURN = 'RETURN';
@@ -542,31 +548,29 @@ export function createCustomMethodBlockWithReturn(): toolboxItems.Block {
 }
 
 export function getBaseClassBlocks(
-    baseClassName: string): toolboxItems.Block[] {
-  const blocks: toolboxItems.Block[] = [];
+    workspace: Blockly.WorkspaceSvg, baseClassName: string, methodNamesNotOverrideable: string[],
+    methodNamesAlreadyOverridden: string[]): toolboxItems.ContentsType[] {
+  const contents: toolboxItems.ContentsType[] = [];
   const classData = getClassData(baseClassName);
   if (classData) {
-    classData.instanceMethods.forEach(functionData => {
-      blocks.push(createClassMethodDefBlock(
-          functionData,
-          /* canChangeSignature */ false,
-          /* canBeCalledWithinClass */ false,
-          /* canBeCalledOutsideClass */ false,
-      ));
-    });
+    classData.instanceMethods
+        .filter(functionData => !methodNamesNotOverrideable.includes(functionData.functionName))
+        .forEach(functionData => {
+            if (methodNamesAlreadyOverridden.includes(functionData.functionName)) {
+              contents.push(createButton(workspace, functionData));
+            } else {
+              contents.push(createClassMethodDefBlock(functionData));
+            }
+        });
   }
-  return blocks;
+  return contents;
 }
 
-function createClassMethodDefBlock(
-    functionData: FunctionData,
-    canChangeSignature: boolean,
-    canBeCalledWithinClass: boolean,
-    canBeCalledOutsideClass: boolean): toolboxItems.Block {
+function createClassMethodDefBlock(functionData: FunctionData): toolboxItems.Block {
   const extraState: ClassMethodDefExtraState = {
-    canChangeSignature,
-    canBeCalledWithinClass,
-    canBeCalledOutsideClass,
+    canChangeSignature: false,
+    canBeCalledWithinClass: false,
+    canBeCalledOutsideClass: false,
     returnType: functionData.returnType,
     params: [],
   };
@@ -579,6 +583,15 @@ function createClassMethodDefBlock(
   const fields: {[key: string]: any} = {};
   fields[FIELD_METHOD_NAME] = functionData.functionName;
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
+}
+
+function createButton(
+    workspace: Blockly.WorkspaceSvg, functionData: FunctionData): toolboxItems.Button {
+  // Use non-breakable spaces so it looks more like an class method def block.
+  const spaces = '\u00A0\u00A0';
+  const text = spaces + functionData.functionName + spaces;
+  const style = BUTTON_STYLE_PREFIX + workspace.getTheme().name;
+  return new toolboxItems.Button(text, BUTTON_CALLBACK_KEY, style);
 }
 
 // Misc
@@ -615,6 +628,12 @@ export function getMethodNamesAlreadyOverriddenInWorkspace(
     if (!methodDefBlock.canChangeSignature()) {
       methodNamesAlreadyOverridden.push(methodDefBlock.getMethodName());
     }
+  });
+}
+
+export function registerToolboxButton(workspace: Blockly.WorkspaceSvg, messageApi: MessageInstance) {
+  workspace.registerButtonCallback(BUTTON_CALLBACK_KEY, function (_button) {
+    messageApi.info(Blockly.Msg.CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE);
   });
 }
 
