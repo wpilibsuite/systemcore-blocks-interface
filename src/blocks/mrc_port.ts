@@ -16,7 +16,7 @@
  */
 
 /**
- * @fileoverview Create a component with a name of a certain type
+ * @fileoverview A block that represents a port.
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
