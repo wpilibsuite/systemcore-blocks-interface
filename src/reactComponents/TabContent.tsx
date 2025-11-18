@@ -30,7 +30,8 @@ import { extendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
 import * as commonStorage from '../storage/common_storage';
-import { registerToolboxButton } from '../blocks/mrc_event_handler';
+import * as classMethodDef from '../blocks/mrc_class_method_def'
+import * as eventHandler from '../blocks/mrc_event_handler'
 import { Content } from 'antd/es/layout/layout';
 
 /** Default size for code panel. */
@@ -130,7 +131,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   /** Called when workspace is created. */
   const setupWorkspace = React.useCallback((_modulePath: string, newWorkspace: Blockly.WorkspaceSvg) => {
     newWorkspace.addChangeListener(handleBlocksChanged);
-    registerToolboxButton(newWorkspace, messageApi);
+    classMethodDef.registerToolboxButton(newWorkspace, messageApi);
+    eventHandler.registerToolboxButton(newWorkspace, messageApi);
 
     const newEditor = new editor.Editor(
       newWorkspace,

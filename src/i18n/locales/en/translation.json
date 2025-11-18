@@ -126,6 +126,7 @@
         "PARAMETERS": "Parameters",
         "PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK": "Parameters can only go in their method's block",
         "JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK": "Jump can only go in their step's block",
+        "CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE": "This method is already on the workspace.",
         "EVENT_HANDLER_ALREADY_ON_WORKSPACE": "This event handler is already on the workspace.",
         "EVENT_HANDLER_ROBOT_EVENT_NOT_FOUND": "This block is an event handler for an event that no longer exists.",
         "EVENT_HANDLER_MECHANISM_EVENT_NOT_FOUND": "This block is an event handler for an event that no longer exists.",

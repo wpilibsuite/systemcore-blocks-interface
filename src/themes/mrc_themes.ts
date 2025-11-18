@@ -66,6 +66,9 @@ const create_themes = function (): Blockly.Theme[] {
         cssClasses +=
             '.eventHandlerButtonStyle_' + theme.name + ' {\n' +
             '    fill: ' + fill + ';\n' +
+            '}\n' +
+            '.classMethodDefButtonStyle_' + theme.name + ' {\n' +
+            '    fill: ' + fill + ';\n' +
             '}\n';
     });
     const styleElement = document.createElement('style');
