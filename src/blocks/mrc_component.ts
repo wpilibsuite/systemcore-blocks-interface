@@ -202,6 +202,12 @@ const COMPONENT = {
     this.checkBlockIsInHolder();
   },
   /**
+   * mrcOnCreate is called for each ComponentBlock when it is created.
+   */
+  mrcOnCreate: function(this: ComponentBlock, _editor: Editor): void {
+    this.checkBlockIsInHolder();
+  },
+  /**
    * mrcOnMove is called when a ComponentBlock is moved.
    */
   mrcOnMove: function(this: ComponentBlock, reason: string[]): void {

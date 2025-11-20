@@ -598,11 +598,55 @@ const CALL_PYTHON_FUNCTION = {
     this.checkFunction(editor);
   },
   /**
+   * mrcOnCreate is called for each CallPythonFunctionBlock when it is created.
+   */
+  mrcOnCreate: function(this: CallPythonFunctionBlock, editor: Editor): void {
+    this.checkFunction(editor);
+  },
+  /**
    * checkFunction checks the block, updates it, and/or adds a warning balloon if necessary.
-   * It is called from mrcOnModuleCurrent and mrcOnLoad above.
+   * It is called from mrcOnModuleCurrent, mrcOnLoad, and mrcOnCreate above.
    */
   checkFunction: function(this: CallPythonFunctionBlock, editor: Editor): void {
     const warnings: string[] = [];
+
+    // If this block is calling a method defined in this module, check whether the method still
+    // exists and whether it has been changed.
+    // If the method doesn't exist, put a visible warning on this block.
+    // If the robot method has changed, update the block if possible or put a
+    // visible warning on it.
+    if (this.mrcFunctionKind === FunctionKind.INSTANCE_WITHIN) {
+      let foundMethod = false;
+      const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
+      for (const method of methodsFromWorkspace) {
+        if (method.methodId === this.mrcMethodId) {
+          foundMethod = true;
+          if (this.mrcActualFunctionName !== method.pythonName) {
+            this.mrcActualFunctionName = method.pythonName;
+          }
+          if (this.getFieldValue(FIELD_FUNCTION_NAME) !== method.visibleName) {
+            this.setFieldValue(method.visibleName, FIELD_FUNCTION_NAME);
+          }
+
+          this.mrcReturnType = method.returnType;
+          this.mrcArgs = [];
+          // We don't include the arg for the self argument because we don't need a socket for it.
+          for (let i = 1; i < method.args.length; i++) {
+            this.mrcArgs.push({
+              name: method.args[i].name,
+              type: method.args[i].type,
+              });
+          }
+          this.updateBlock_();
+
+          // Since we found the method, we can break out of the loop.
+          break;
+        }
+      }
+      if (!foundMethod) {
+        warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD);
+      }
+    }
 
     // If this block is calling a component method, check whether the component
     // still exists and whether it has been changed.
@@ -823,7 +867,10 @@ const CALL_PYTHON_FUNCTION = {
       // Add a warnings to the block.
       const warningText = warnings.join('\n\n');
       this.setWarningText(warningText, WARNING_ID_FUNCTION_CHANGED);
-      this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
       this.bringToFront();
     } else {
       // Clear the existing warning on the block.

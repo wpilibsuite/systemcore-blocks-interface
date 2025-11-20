@@ -207,6 +207,7 @@
             "PAGINATION_TOTAL": "{{start}}-{{end}} מתוך {{total}} פריטים"
     },
     "WARNING": {
+      "CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שאינה קיימת במודול זה.",
       "CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT": "בלוק זה קורא למתודה על רכיב פרטי במנגנון {{mechanismClassName}}.",
       "CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT": "בלוק זה קורא למתודה על רכיב שכבר לא קיים.",
       "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM": "בלוק זה קורא למתודה על רכיב ששייך למנגנון שכבר לא קיים.",

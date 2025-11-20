@@ -181,8 +181,14 @@ const EVENT_HANDLER = {
     this.checkEvent(editor);
   },
   /**
+   * mrcOnCreate is called for each EventHandlerBlock when it is created.
+   */
+  mrcOnCreate: function(this: EventHandlerBlock, editor: Editor): void {
+    this.checkEvent(editor);
+  },
+  /**
    * checkEvent checks the block, updates it, and/or adds a warning balloon if necessary.
-   * It is called from mrcOnModuleCurrent and mrcOnLoad above.
+   * It is called from mrcOnModuleCurrent, mrcOnLoad, and mrcCreate above.
    */
   checkEvent: function(this: EventHandlerBlock, editor: Editor): void {
     const warnings: string[] = [];
@@ -282,7 +288,10 @@ const EVENT_HANDLER = {
       // Add a warnings to the block.
       const warningText = warnings.join('\n\n');
       this.setWarningText(warningText, WARNING_ID_EVENT_CHANGED);
-      this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
       this.bringToFront();
     } else {
       // Clear the existing warning on the block.

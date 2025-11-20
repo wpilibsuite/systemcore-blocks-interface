@@ -207,6 +207,7 @@
             "PAGINATION_TOTAL": "{{start}}-{{end}} of {{total}} items"
         },
         "WARNING":{
+            "CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD": "This block calls a method that does not exist in this module.",
             "CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT": "This blocks calls a method on a private component in the {{mechanismClassName}} mechanism.",
             "CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT": "This block calls a method on a component that no longer exists.",
             "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method on a component that belongs to a mechanism that no longer exists.",
