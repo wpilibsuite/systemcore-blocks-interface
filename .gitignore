@@ -11,11 +11,13 @@
 # production
 /build
 /dist
+/backend/deploy
 
 # python stuff
 __pycache__/
 venv/
 *.egg-info
+
 
 # misc
 .DS_Store
