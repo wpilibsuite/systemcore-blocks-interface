@@ -1,10 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 import json
 import os
+import argparse
+import zipfile
+import shutil
+from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../dist', static_url_path='')
+app.url_map.merge_slashes = False  # Don't merge consecutive slashes
 api = Api(app)
 
 # Add CORS headers
@@ -224,25 +229,143 @@ class StorageRootResource(Resource):
         
         return {'files': sorted(list(children))}
 
+class DeployResource(Resource):
+    def post(self):
+        """Upload and extract a zip file to the deploy directory"""
+        if 'file' not in request.files:
+            return {'error': 'No file provided'}, 400
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return {'error': 'No file selected'}, 400
+        
+        if not file.filename.endswith('.zip'):
+            return {'error': 'Only zip files are allowed'}, 400
+        
+        try:
+            # Create deploy directory if it doesn't exist
+            deploy_dir = os.path.join(basedir, 'deploy')
+            
+            # Clear existing deploy directory
+            if os.path.exists(deploy_dir):
+                shutil.rmtree(deploy_dir)
+            os.makedirs(deploy_dir)
+            
+            # Save the zip file temporarily
+            temp_zip_path = os.path.join(basedir, 'temp_deploy.zip')
+            file.save(temp_zip_path)
+            
+            # Extract the zip file
+            with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+                zip_ref.extractall(deploy_dir)
+            
+            # Remove the temporary zip file
+            os.remove(temp_zip_path)
+            
+            # List extracted files
+            extracted_files = []
+            for root, dirs, files in os.walk(deploy_dir):
+                for filename in files:
+                    rel_path = os.path.relpath(os.path.join(root, filename), deploy_dir)
+                    extracted_files.append(rel_path)
+            
+            return {
+                'message': 'Deployment successful',
+                'deploy_directory': deploy_dir,
+                'files_extracted': len(extracted_files),
+                'files': extracted_files[:20]  # Show first 20 files
+            }
+        except zipfile.BadZipFile:
+            return {'error': 'Invalid zip file'}, 400
+        except Exception as e:
+            return {'error': f'Deployment failed: {str(e)}'}, 500
+
 # Register API routes
 # Storage API routes (more specific routes first)
 api.add_resource(StorageEntryResource, '/entries/<path:entry_key>')
 api.add_resource(StorageFileRenameResource, '/storage/rename')
 api.add_resource(StorageRootResource, '/storage/')
 api.add_resource(StorageResource, '/storage/<path:path>')
+api.add_resource(DeployResource, '/deploy')
 
-@app.route('/')
-def index():
-    return jsonify({
-        'message': 'Storage API',
-        'endpoints': {
-            'entries': '/entries/<entry_key>',
-            'storage': '/storage/<path>',
-            'storage_rename': '/storage/rename'
-        }
-    })
+# Handle the base path for the frontend
+@app.route('/blocks/', defaults={'path': ''})
+@app.route('/blocks/<path:path>')
+@app.route('/blocks//<path:path>')  # Handle double slash
+def serve_frontend(path):
+    """Serve static assets from dist/ directory with base path"""
+    # Normalize path - remove leading slashes and clean up double slashes
+    path = path.lstrip('/')
+    
+    # Debug logging
+    print(f"Requested path: '{path}'")
+    
+    # If path is empty, serve index.html
+    if path == '':
+        try:
+            return send_from_directory(app.static_folder, 'index.html')
+        except Exception as e:
+            print(f"Error serving index.html: {e}")
+            return jsonify({
+                'error': 'Frontend not built',
+                'message': 'Please build the frontend first with "npm run build"'
+            }), 404
+    
+    # Try to serve the requested file
+    try:
+        print(f"Attempting to serve: {app.static_folder}/{path}")
+        return send_from_directory(app.static_folder, path)
+    except Exception as e:
+        print(f"Error serving file: {e}")
+        # If file not found and not an asset, serve index.html for client-side routing
+        # But if it's an asset or known file type, return 404
+        if path.startswith('assets/') or '.' in path.split('/')[-1]:
+            return jsonify({'error': f'File not found: {path}'}), 404
+        try:
+            return send_from_directory(app.static_folder, 'index.html')
+        except:
+            return jsonify({'error': 'File not found'}), 404
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_static(path):
+    """Serve static assets from dist/ directory"""
+    # If path is empty, serve index.html
+    if path == '':
+        try:
+            return send_from_directory(app.static_folder, 'index.html')
+        except Exception as e:
+            return jsonify({
+                'error': 'Frontend not built',
+                'message': 'Please build the frontend first with "npm run build"',
+                'api_info': {
+                    'endpoints': {
+                        'entries': '/entries/<entry_key>',
+                        'storage': '/storage/<path>',
+                        'storage_rename': '/storage/rename'
+                    }
+                }
+            }), 404
+    
+    # Try to serve the requested file
+    try:
+        return send_from_directory(app.static_folder, path)
+    except Exception as e:
+        # If file not found, serve index.html for client-side routing
+        try:
+            return send_from_directory(app.static_folder, 'index.html')
+        except:
+            return jsonify({'error': 'File not found'}), 404
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Run the Storage API backend server')
+    parser.add_argument('-p', '--port', type=int, default=5001, 
+                        help='Port to run the server on (default: 5001)')
+    args = parser.parse_args()
+    
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=5001)
+    
+    print(f"Starting server on port {args.port}...")
+    app.run(debug=True, port=args.port)
