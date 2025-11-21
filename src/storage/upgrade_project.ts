@@ -29,10 +29,11 @@ import * as storageNames from './names';
 import * as storageProject from './project';
 import { upgrade_001_to_002 } from '../blocks/mrc_mechanism_component_holder';
 import { upgrade_002_to_003, upgrade_004_to_005 } from '../blocks/mrc_class_method_def';
+import { upgrade_005_to_006 } from '../blocks/mrc_mechanism';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.5';
+export const CURRENT_VERSION = '0.0.6';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -66,6 +67,11 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.4':
         upgradeFrom_004_to_005(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.5'
+      // @ts-ignore
+      case '0.0.5':
+        upgradeFrom_005_to_006(storage, projectName, projectInfo);
     }
     await storageProject.saveProjectInfo(storage, projectName);
   }
@@ -211,4 +217,16 @@ async function upgradeFrom_004_to_005(
       noModuleTypes, noPreupgrade,
       anyModuleType, upgrade_004_to_005);
   projectInfo.version = '0.0.5';
+}
+
+async function upgradeFrom_005_to_006(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // mrc_mechanism blocks may have component information for each parameter.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      anyModuleType, upgrade_005_to_006);
+  projectInfo.version = '0.0.6';
 }

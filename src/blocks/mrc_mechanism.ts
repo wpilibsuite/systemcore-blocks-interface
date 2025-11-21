@@ -48,6 +48,8 @@ export const FIELD_TYPE = 'TYPE';
 type Parameter = {
   name: string,
   type: string,
+  componentId?: string,
+  componentPortsIndex?: number,  // The zero-based number when iterating through component.ports.
 };
 
 type MechanismExtraState = {
@@ -55,6 +57,7 @@ type MechanismExtraState = {
   mechanismId?: string,
   importModule?: string,
   parameters?: Parameter[],
+  parametersHaveComponentInformation?: boolean,
 }
 
 const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
@@ -66,6 +69,7 @@ interface MechanismMixin extends MechanismMixinType {
   mrcMechanismId: string,
   mrcImportModule: string,
   mrcParameters: Parameter[],
+  mrcParametersHaveComponentInformation: boolean,
 
   /**
    * mrcHasNotInHolderWarning is set to true if we set the NOT_IN_HOLDER warning text on the block.
@@ -83,6 +87,7 @@ const MECHANISM = {
     * Block initialization.
     */
   init: function (this: MechanismBlock): void {
+    this.mrcParametersHaveComponentInformation = false;
     this.mrcHasNotInHolderWarning = false;
     this.setStyle(MRC_STYLE_MECHANISMS);
     const nameField = new Blockly.FieldTextInput('')
@@ -102,13 +107,11 @@ const MECHANISM = {
     const extraState: MechanismExtraState = {
       mechanismModuleId: this.mrcMechanismModuleId,
       mechanismId: this.mrcMechanismId,
+      parametersHaveComponentInformation: this.mrcParametersHaveComponentInformation,
     };
     extraState.parameters = [];
     this.mrcParameters.forEach((arg) => {
-      extraState.parameters!.push({
-        name: arg.name,
-        type: arg.type,
-      });
+      extraState.parameters!.push({...arg});
     });
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
@@ -125,12 +128,11 @@ const MECHANISM = {
     this.mrcParameters = [];
     if (extraState.parameters) {
       extraState.parameters.forEach((arg) => {
-        this.mrcParameters.push({
-          name: arg.name,
-          type: arg.type,
-        });
+        this.mrcParameters.push({...arg});
       });
     }
+    this.mrcParametersHaveComponentInformation = (extraState.parametersHaveComponentInformation == undefined)
+        ? false : extraState.parametersHaveComponentInformation;
     this.updateBlock_();
   },
   /**
@@ -289,13 +291,18 @@ const MECHANISM = {
       }
       this.mrcParameters = [];
       components.forEach(component => {
+        let componentPortsIndex = 0;
         for (const port in component.ports) {
           this.mrcParameters.push({
             name: port,
             type: component.ports[port],
+            componentId: component.componentId,
+            componentPortsIndex,
           });
+          componentPortsIndex++;
         }
       });
+      this.mrcParametersHaveComponentInformation = true;
       this.updateBlock_();
     } else {
       // Did not find the mechanism.
@@ -323,6 +330,12 @@ const MECHANISM = {
     if (this.mrcMechanismId in oldIdToNewId) {
       this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
     }
+  },
+  upgrade_005_to_006: function(this: MechanismBlock) {
+    // At the time when this upgrade method is called, we can't look up the component information
+    // for each parameter. Instead, we just mark this block as not having the information. Later,
+    // in the checkMechanism method, we will retrieve the component information for each parameter.
+    this.mrcParametersHaveComponentInformation = false;
   },
 };
 
@@ -359,17 +372,22 @@ export function createMechanismBlock(
     mechanismModuleId: mechanism.moduleId,
     importModule: snakeCaseName,
     parameters: [],
+    parametersHaveComponentInformation: true,
   };
   const inputs: {[key: string]: any} = {};
   let i = 0;
   components.forEach(component => {
+    let componentPortsIndex = 0;
     for (const port in component.ports) {
       const parameterType = component.ports[port];
       extraState.parameters?.push({
         name: port,
         type: parameterType,
+        componentId: component.componentId,
+        componentPortsIndex,
       });
       inputs['ARG' + i] = createPort(parameterType);
+      componentPortsIndex++;
       i++;
     }
   });
@@ -377,4 +395,14 @@ export function createMechanismBlock(
   fields[FIELD_NAME] = mechanismName;
   fields[FIELD_TYPE] = mechanism.className;
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, inputs);
+}
+
+/**
+ * Upgrades the MechanismBlocks in the given workspace from version 005 to 006.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_005_to_006(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as MechanismBlock).upgrade_005_to_006();
+  });
 }
