@@ -289,6 +289,16 @@ api.add_resource(StorageRootResource, '/storage/')
 api.add_resource(StorageResource, '/storage/<path:path>')
 api.add_resource(DeployResource, '/deploy')
 
+# API health check endpoint to distinguish from static file serving
+@app.route('/api/status')
+def api_status():
+    """Health check endpoint to identify backend server"""
+    return jsonify({
+        'status': 'ok',
+        'server': 'python-backend',
+        'version': '1.0'
+    })
+
 # Handle the base path for the frontend
 @app.route('/blocks/', defaults={'path': ''})
 @app.route('/blocks/<path:path>')
