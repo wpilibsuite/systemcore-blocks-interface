@@ -27,6 +27,7 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator, OpModeDetails } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 
 export const BLOCK_NAME = 'mrc_opmode_details';
 
@@ -65,6 +66,7 @@ const OPMODE_DETAILS = {
     this.getField('NAME')?.setTooltip(Blockly.Msg.OPMODE_NAME_TOOLTIP);
     this.getField('GROUP')?.setTooltip(Blockly.Msg.OPMODE_GROUP_TOOLTIP);
   },
+  ...NONCOPYABLE_BLOCK,
   checkOpMode(this: OpmodeDetailsBlock, editor: Editor): void {
     if (editor.isStepsInWorkspace() ||
         editor.getMethodNamesAlreadyOverriddenInWorkspace().includes(PERIODIC_METHOD_NAME)) {

@@ -27,6 +27,7 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { MechanismBlock } from './mrc_mechanism';
@@ -79,6 +80,7 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.mrcEventBlockIds = '';
     this.mrcToolboxUpdateTimeout = null;
   },
+  ...NONCOPYABLE_BLOCK,
   saveExtraState: function (this: MechanismComponentHolderBlock): MechanismComponentHolderExtraState {
     const extraState: MechanismComponentHolderExtraState = {
     };
