@@ -285,7 +285,23 @@ const MECHANISM = {
       if (this.mrcImportModule !== importModule) {
         this.mrcImportModule = importModule;
       }
+
+      // Save the old parameters and the blocks that are connected to their sockets.
+      const oldParameters: Parameter[] = [];
+      const oldConnectedBlocks: (Blockly.Block | null)[] = [];
+      for (let i = 0; i < this.mrcParameters.length; i++) {
+        oldParameters[i] = this.mrcParameters[i];
+        const argInput = this.getInput('ARG' + i);
+        if (argInput && argInput.connection && argInput.connection.targetBlock()) {
+          oldConnectedBlocks[i] = argInput.connection.targetBlock();
+        } else {
+          oldConnectedBlocks[i] = null;
+        }
+      }
+
+      // Regenerate mrc_parameters and create new inputs if necessary.
       this.mrcParameters = [];
+      let i = 0;
       components.forEach(component => {
         let componentPortsIndex = 0;
         for (const port in component.ports) {
@@ -295,10 +311,84 @@ const MECHANISM = {
             componentId: component.componentId,
             componentPortsIndex,
           });
+          let argInput = this.getInput('ARG' + i);
+          const argField = this.getField('ARGNAME' + i);
+          if (argInput && argField) {
+            argField.setValue(port);
+          } else {
+            // Add new input.
+            argInput = this.appendValueInput('ARG' + i)
+                .setAlign(Blockly.inputs.Align.RIGHT)
+                .appendField(port, 'ARGNAME' + i);
+          }
+          // Look in oldParameters to find the matching parameter.
+          let foundOldParameterIndex = -1;
+          for (let j = 0; j < oldParameters.length; j++) {
+            if (oldParameters[j].componentId === this.mrcParameters[i].componentId &&
+                oldParameters[j].componentPortsIndex === this.mrcParameters[i].componentPortsIndex) {
+              foundOldParameterIndex = j;
+              break;
+            }
+          }
+          if (foundOldParameterIndex !== -1) {
+            if (foundOldParameterIndex === i) {
+              // The old connected block is already connected to this input.
+              oldConnectedBlocks[foundOldParameterIndex] = null;
+            } else {
+              // Move the old connected block to this input.
+              const oldConnectedBlock = oldConnectedBlocks[foundOldParameterIndex];
+              if (oldConnectedBlock && oldConnectedBlock.outputConnection && argInput.connection) {
+                argInput.connection.connect(oldConnectedBlock.outputConnection);
+                oldConnectedBlocks[foundOldParameterIndex] = null;
+              }
+            }
+          }
+          argInput.setCheck(getAllowedTypesForSetCheck(this.mrcParameters[i].type));
+
           componentPortsIndex++;
+          i++;
         }
       });
-      this.updateBlock_();
+
+      // Remove deleted inputs.
+      for (let i = this.mrcParameters.length; this.getInput('ARG' + i); i++) {
+        this.removeInput('ARG' + i);
+      }
+
+      // Remove old blocks that are no longer connected to input sockets.
+      for (let i = 0; i < oldConnectedBlocks.length; i++) {
+        const oldConnectedBlock = oldConnectedBlocks[i];
+        if (oldConnectedBlock && oldConnectedBlock.outputConnection) {
+          if (!oldConnectedBlock.outputConnection.isConnected()) {
+            oldConnectedBlock.dispose();
+          }
+        }
+      }
+
+      // Add port blocks to any empty inputs.
+      for (let i = 0; i < this.mrcParameters.length; i++) {
+        let argInput = this.getInput('ARG' + i);
+        if (argInput && argInput.connection && !argInput.connection.targetBlock()) {
+          // The input is empty. Create a port block and connect it to the input.
+          const portBlockState = createPort(this.mrcParameters[i].type);
+          const portBlock = this.workspace.newBlock(portBlockState.type) as Blockly.BlockSvg;
+          if (portBlockState.extraState && portBlock.loadExtraState) {
+            portBlock.loadExtraState(portBlockState.extraState);
+          }
+          if (portBlockState.fields) {
+            const keys = Object.keys(portBlockState.fields);
+            for (let i = 0; i < keys.length; i++) {
+              const fieldName = keys[i];
+              const field = portBlock.getField(fieldName);
+              if (field) {
+                field.loadState(portBlockState.fields[fieldName]);
+              }
+            }
+          }
+          portBlock.initSvg();
+          argInput.connection.connect(portBlock.outputConnection);
+        }
+      }
     } else {
       // Did not find the mechanism.
       warnings.push(Blockly.Msg['MECHANISM_NOT_FOUND_WARNING']);
