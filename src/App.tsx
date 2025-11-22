@@ -31,7 +31,6 @@ import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
 import { TabType } from './types/TabType';
 
-import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
 
 import * as commonStorage from './storage/common_storage';
