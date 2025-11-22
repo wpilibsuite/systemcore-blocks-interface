@@ -301,19 +301,6 @@ export class Editor {
     }
   }
 
-  public isModified(): boolean {
-    /*
-    // This code is helpful for debugging issues where the editor says
-    // 'Blocks have been modified!'.
-    if (this.getModuleContentText() !== this.moduleContentText) {
-      console.log('isModified will return true');
-      console.log('this.getModuleContentText() is ' + this.getModuleContentText());
-      console.log('this.moduleContentText is ' + this.moduleContentText);
-    }
-    */
-    return this.getModuleContentText() !== this.moduleContentText;
-  }
-
   public getBlocklyWorkspace(): Blockly.WorkspaceSvg {
     return this.blocklyWorkspace;
   }
@@ -470,12 +457,14 @@ export class Editor {
 
   public async saveModule(): Promise<string> {
     const moduleContentText = this.getModuleContentText();
-    try {
-      await this.storage.saveFile(this.modulePath, moduleContentText);
-      this.moduleContentText = moduleContentText;
-      await storageProject.saveProjectInfo(this.storage, this.projectName);
-    } catch (e) {
-      throw e;
+    if (moduleContentText !== this.moduleContentText) {
+      try {
+        await this.storage.saveFile(this.modulePath, moduleContentText);
+        this.moduleContentText = moduleContentText;
+        await storageProject.saveProjectInfo(this.storage, this.projectName);
+      } catch (e) {
+        throw e;
+      }
     }
     return moduleContentText;
   }
