@@ -25,6 +25,7 @@ import * as commonStorage from '../storage/common_storage';
 import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
 import * as createPythonFiles from '../storage/create_python_files';
+import * as serverSideStorage from '../storage/server_side_storage';
 import * as I18Next from 'react-i18next';
 import {TabType } from '../types/TabType';
 
@@ -294,17 +295,45 @@ export function Component(props: MenuProps): React.JSX.Element {
 
     try {
       const blobUrl = await createPythonFiles.producePythonProjectBlob(props.project, props.storage);
-
-      // Create a temporary link to download the file
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = `${props.project.projectName}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
       
-      // Clean up the blob URL
-      URL.revokeObjectURL(blobUrl);
+      // Check if the backend server is available
+      const serverAvailable = await serverSideStorage.isServerAvailable();
+      console.log('Server available:', serverAvailable);
+      
+      if (serverAvailable) {
+        // Send the file to the backend /deploy endpoint
+        const response = await fetch(blobUrl);
+        const blob = await response.blob();
+        
+        const formData = new FormData();
+        formData.append('file', blob, `${props.project.projectName}.zip`);
+        
+        const deployResponse = await fetch('/deploy', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!deployResponse.ok) {
+          throw new Error('Deploy to server failed');
+        }
+        
+        const result = await deployResponse.json();
+        console.log('Deployment successful:', result);
+        
+        // Clean up the blob URL
+        URL.revokeObjectURL(blobUrl);
+      } else {
+        // Download the file locally
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `${props.project.projectName}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the blob URL
+        URL.revokeObjectURL(blobUrl);
+      }
     } catch (error) {
       console.error('Failed to deploy project:', error);
       props.setAlertErrorMessage(t('DEPLOY_FAILED') || 'Failed to deploy project');
