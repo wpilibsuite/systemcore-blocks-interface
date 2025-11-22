@@ -172,6 +172,10 @@ const COMPONENT = {
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
       renameMethodCallers(this.workspace, this.mrcComponentId, legalName);
+      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+      if (editor) {
+        editor.updateToolboxAfterDelay();
+      }
     }
     return legalName;
   },
