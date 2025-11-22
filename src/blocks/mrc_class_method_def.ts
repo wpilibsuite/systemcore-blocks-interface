@@ -35,6 +35,7 @@ import * as toolboxItems from '../toolbox/items';
 import { getClassData } from './utils/python';
 import { FunctionData } from './utils/python_json_types';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
 import * as paramContainer from './mrc_param_container'
 
@@ -122,6 +123,7 @@ const CLASS_METHOD_DEF = {
     this.setNextStatement(false);
     this.updateBlock_();
   },
+  ...NONCOPYABLE_BLOCK,
   /**
    * Returns the state of this block as a JSON serializable object.
    */

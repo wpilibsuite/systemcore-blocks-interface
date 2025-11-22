@@ -31,6 +31,7 @@ import { getAllowedTypesForSetCheck, getClassData, getSubclassNames } from './ut
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
     MechanismComponentHolderBlock,
@@ -100,6 +101,7 @@ const COMPONENT = {
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
   },
+  ...NONCOPYABLE_BLOCK,
 
   /**
     * Returns the state of this block as a JSON serializable object.

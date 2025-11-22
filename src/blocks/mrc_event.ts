@@ -26,6 +26,7 @@ import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Parameter } from './mrc_class_method_def';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import * as paramContainer from './mrc_param_container'
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
@@ -80,6 +81,7 @@ const EVENT = {
     this.setNextStatement(true, OUTPUT_NAME);
     this.updateBlock_();
   },
+  ...NONCOPYABLE_BLOCK,
 
   /**
    * Returns the state of this block as a JSON serializable object.
