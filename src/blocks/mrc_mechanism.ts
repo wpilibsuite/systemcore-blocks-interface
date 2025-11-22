@@ -48,6 +48,8 @@ export const FIELD_TYPE = 'TYPE';
 type Parameter = {
   name: string,
   type: string,
+  componentId?: string,
+  componentPortsIndex?: number,  // The zero-based number when iterating through component.ports.
 };
 
 type MechanismExtraState = {
@@ -105,10 +107,7 @@ const MECHANISM = {
     };
     extraState.parameters = [];
     this.mrcParameters.forEach((arg) => {
-      extraState.parameters!.push({
-        name: arg.name,
-        type: arg.type,
-      });
+      extraState.parameters!.push({...arg});
     });
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
@@ -125,10 +124,7 @@ const MECHANISM = {
     this.mrcParameters = [];
     if (extraState.parameters) {
       extraState.parameters.forEach((arg) => {
-        this.mrcParameters.push({
-          name: arg.name,
-          type: arg.type,
-        });
+        this.mrcParameters.push({...arg});
       });
     }
     this.updateBlock_();
@@ -289,11 +285,15 @@ const MECHANISM = {
       }
       this.mrcParameters = [];
       components.forEach(component => {
+        let componentPortsIndex = 0;
         for (const port in component.ports) {
           this.mrcParameters.push({
             name: port,
             type: component.ports[port],
+            componentId: component.componentId,
+            componentPortsIndex,
           });
+          componentPortsIndex++;
         }
       });
       this.updateBlock_();
@@ -363,13 +363,17 @@ export function createMechanismBlock(
   const inputs: {[key: string]: any} = {};
   let i = 0;
   components.forEach(component => {
+    let componentPortsIndex = 0;
     for (const port in component.ports) {
       const parameterType = component.ports[port];
       extraState.parameters?.push({
         name: port,
         type: parameterType,
+        componentId: component.componentId,
+        componentPortsIndex,
       });
       inputs['ARG' + i] = createPort(parameterType);
+      componentPortsIndex++;
       i++;
     }
   });
