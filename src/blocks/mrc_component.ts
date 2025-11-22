@@ -172,6 +172,10 @@ const COMPONENT = {
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
       renameMethodCallers(this.workspace, this.mrcComponentId, legalName);
+      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+      if (editor) {
+        editor.updateToolboxAfterDelay();
+      }
     }
     return legalName;
   },
@@ -212,7 +216,7 @@ const COMPONENT = {
   /**
    * mrcOnMove is called when a ComponentBlock is moved.
    */
-  mrcOnMove: function(this: ComponentBlock, reason: string[]): void {
+  mrcOnMove: function(this: ComponentBlock, editor: Editor, reason: string[]): void {
     this.checkBlockIsInHolder();
     if (reason.includes('connect')) {
       const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -220,7 +224,7 @@ const COMPONENT = {
         (rootBlock as MechanismComponentHolderBlock).setNameOfChildBlock(this);
       }
     }
-    mrcDescendantsMayHaveChanged(this.workspace);
+    mrcDescendantsMayHaveChanged(this.workspace, editor);
   },
   checkBlockIsInHolder: function(this: ComponentBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();

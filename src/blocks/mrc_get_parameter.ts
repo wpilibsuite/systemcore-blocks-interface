@@ -23,6 +23,7 @@
 import * as Blockly from 'blockly';
 import {Order} from 'blockly/python';
 
+import { Editor } from '../editor/editor';
 import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
 import {createFieldNonEditableText} from '../fields/FieldNonEditableText';
 import {MRC_STYLE_VARIABLES} from '../themes/styles';
@@ -82,7 +83,7 @@ const GET_PARAMETER_BLOCK = {
   /**
    * mrcOnMove is called when an EventBlock is moved.
    */
-  mrcOnMove: function(this: GetParameterBlock, _reason: string[]): void {
+  mrcOnMove: function(this: GetParameterBlock, _editor: Editor, _reason: string[]): void {
     this.checkBlockPlacement();
   },
   mrcOnAncestorMove: function(this: GetParameterBlock): void {

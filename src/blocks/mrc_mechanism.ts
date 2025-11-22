@@ -212,7 +212,7 @@ const MECHANISM = {
   /**
    * mrcOnMove is called when a MechanismBlock is moved.
    */
-  mrcOnMove: function(this: MechanismBlock, reason: string[]): void {
+  mrcOnMove: function(this: MechanismBlock, editor: Editor, reason: string[]): void {
     this.checkBlockIsInHolder();
     if (reason.includes('connect')) {
       const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -220,7 +220,7 @@ const MECHANISM = {
         (rootBlock as MechanismComponentHolderBlock).setNameOfChildBlock(this);
       }
     }
-    mrcDescendantsMayHaveChanged(this.workspace);
+    mrcDescendantsMayHaveChanged(this.workspace, editor);
   },
   checkBlockIsInHolder: function(this: MechanismBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();
