@@ -211,7 +211,7 @@ const EVENT = {
   /**
    * mrcOnMove is called when an EventBlock is moved.
    */
-  mrcOnMove: function(this: EventBlock, reason: string[]): void {
+  mrcOnMove: function(this: EventBlock, editor: Editor, reason: string[]): void {
     this.checkBlockIsInHolder();
     if (reason.includes('connect')) {
       const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -219,7 +219,7 @@ const EVENT = {
         (rootBlock as MechanismComponentHolderBlock).setNameOfChildBlock(this);
       }
     }
-    mrcDescendantsMayHaveChanged(this.workspace);
+    mrcDescendantsMayHaveChanged(this.workspace, editor);
   },
   /**
    * mrcOnMutatorOpen is called when the mutator on an EventBlock is opened.
