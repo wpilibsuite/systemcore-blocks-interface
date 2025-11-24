@@ -53,8 +53,8 @@ api.add_resource(StorageResource, '/storage/<path:path>')
 api.add_resource(DeployResource, '/deploy')
 
 # API health check endpoint to distinguish from static file serving
-@app.route('/api/status')
-def api_status() -> Response:
+@app.route('/statusz')
+def statusz() -> Response:
     """Health check endpoint to identify backend server"""
     return jsonify({
         'status': 'ok',

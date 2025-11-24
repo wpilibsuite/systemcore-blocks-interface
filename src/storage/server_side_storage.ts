@@ -32,13 +32,11 @@ export async function isServerAvailable(): Promise<boolean> {
     });
     
     // Check the specific API status endpoint to distinguish backend from static file server
-    // Use absolute path without base URL since /api/status is a backend endpoint
+    // Use absolute path without base URL since /statusz is a backend endpoint
     const response = await Promise.race([
-      fetch(`${API_BASE_URL}/api/status`),
+      fetch('/statusz'),
       timeoutPromise
-    ]);
-    
-    if (!response.ok) {
+    ]);    if (!response.ok) {
       return false;
     }
     
