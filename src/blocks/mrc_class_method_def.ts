@@ -188,7 +188,9 @@ const CLASS_METHOD_DEF = {
       nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     } else {
       input.insertFieldAt(0, createFieldNonEditableText(name), FIELD_METHOD_NAME);
-      // To call setMutator(null), this must be casted to BlockSvg.
+      // Block.setMutator is defined as setMutator(_mutator: MutatorIcon) and BlockSvg.setMutator
+      // is defined as setMutator(mutator: MutatorIcon | null).
+      // Therefore, to call setMutator(null), this must be casted to BlockSvg.
       if (this.rendered) {
         (this as unknown as Blockly.BlockSvg).setMutator(null);
       }
