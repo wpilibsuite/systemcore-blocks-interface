@@ -2,9 +2,10 @@
 import argparse
 import logging
 import os
+from typing import Tuple, Union
 
 # Third-party imports
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, Response
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
@@ -23,14 +24,14 @@ logger = logging.getLogger(__name__)
 
 # Add CORS headers
 @app.after_request
-def after_request(response):
+def after_request(response: Response) -> Response:
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
 @app.before_request
-def handle_preflight():
+def handle_preflight() -> Union[Response, None]:
     if request.method == "OPTIONS":
         response = jsonify({'message': 'OK'})
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -53,7 +54,7 @@ api.add_resource(DeployResource, '/deploy')
 
 # API health check endpoint to distinguish from static file serving
 @app.route('/api/status')
-def api_status():
+def api_status() -> Response:
     """Health check endpoint to identify backend server"""
     return jsonify({
         'status': 'ok',
@@ -65,7 +66,7 @@ def api_status():
 @app.route('/blocks/', defaults={'path': ''})
 @app.route('/blocks/<path:path>')
 @app.route('/blocks//<path:path>')  # Handle double slash
-def serve_frontend(path):
+def serve_frontend(path: str) -> Union[Response, Tuple[Response, int]]:
     """Serve static assets from dist/ directory with base path"""
     # Normalize path - remove leading slashes and clean up double slashes
     path = path.lstrip('/')
@@ -101,7 +102,7 @@ def serve_frontend(path):
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-def serve_static(path):
+def serve_static(path: str) -> Union[Response, Tuple[Response, int]]:
     """Serve static assets from dist/ directory"""
     # If path is empty, serve index.html
     if path == '':

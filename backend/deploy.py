@@ -2,6 +2,7 @@
 import os
 import shutil
 import zipfile
+from typing import Dict, List, Tuple, Union
 
 # Third-party imports
 from flask import request
@@ -11,7 +12,7 @@ from flask_restful import Resource
 from main import basedir
 
 class DeployResource(Resource):
-    def post(self):
+    def post(self) -> Union[Dict[str, Union[str, int, List[str]]], Tuple[Dict[str, str], int]]:
         """Upload and extract a zip file to the deploy directory"""
         if 'file' not in request.files:
             return {'error': 'No file provided'}, 400

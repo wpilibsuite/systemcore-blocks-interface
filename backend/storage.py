@@ -1,3 +1,6 @@
+# Standard library imports
+from typing import Dict, List, Tuple, Union
+
 # Third-party imports
 from flask import request
 from flask_restful import Resource
@@ -11,7 +14,7 @@ class StorageEntry(db.Model):
     entry_key = db.Column(db.String(255), nullable=False, unique=True)
     entry_value = db.Column(db.Text, nullable=False)
     
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, str]:
         return {
             'key': self.entry_key,
             'value': self.entry_value
@@ -22,7 +25,7 @@ class StorageFile(db.Model):
     file_path = db.Column(db.String(500), nullable=False, unique=True)
     file_content = db.Column(db.Text, nullable=False)
     
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, str]:
         return {
             'path': self.file_path,
             'content': self.file_content
@@ -30,7 +33,7 @@ class StorageFile(db.Model):
 
 # Storage Resources for key-value and file operations
 class StorageEntryResource(Resource):
-    def get(self, entry_key):
+    def get(self, entry_key: str) -> Dict[str, str]:
         """Fetch entry value by key"""
         entry = StorageEntry.query.filter_by(entry_key=entry_key).first()
         if entry:
@@ -40,7 +43,7 @@ class StorageEntryResource(Resource):
             default_value = request.args.get('default', '')
             return {'value': default_value}
     
-    def post(self, entry_key):
+    def post(self, entry_key: str) -> Union[Dict[str, str], Tuple[Dict[str, str], int]]:
         """Save entry value"""
         data = request.get_json()
         if not data or 'value' not in data:
@@ -61,7 +64,7 @@ class StorageEntryResource(Resource):
             return {'error': 'Failed to save entry'}, 500
 
 class StorageResource(Resource):
-    def get(self, path):
+    def get(self, path: str) -> Union[Dict[str, Union[List[str], str]], Tuple[Dict[str, str], int]]:
         """Get file content or list directory based on path"""
         # Handle empty path as root directory
         if not path:
@@ -107,7 +110,7 @@ class StorageResource(Resource):
             else:
                 return {'error': 'File not found'}, 404
     
-    def post(self, path):
+    def post(self, path: str) -> Union[Dict[str, str], Tuple[Dict[str, str], int]]:
         """Save file content (only for files, not directories)"""
         if path.endswith('/'):
             return {'error': 'Cannot save content to a directory path'}, 400
@@ -130,7 +133,7 @@ class StorageResource(Resource):
             db.session.rollback()
             return {'error': 'Failed to save file'}, 500
     
-    def delete(self, path):
+    def delete(self, path: str) -> Union[Dict[str, str], Tuple[Dict[str, str], int]]:
         """Delete file or directory"""
         if path.endswith('/'):
             # Delete directory (all files starting with this path)
@@ -152,7 +155,7 @@ class StorageResource(Resource):
             return {'error': 'Failed to delete'}, 500
 
 class StorageFileRenameResource(Resource):
-    def post(self):
+    def post(self) -> Union[Dict[str, str], Tuple[Dict[str, str], int]]:
         """Rename file or directory"""
         data = request.get_json()
         if not data or 'old_path' not in data or 'new_path' not in data:
@@ -182,7 +185,7 @@ class StorageFileRenameResource(Resource):
             return {'error': 'Failed to rename'}, 500
 
 class StorageRootResource(Resource):
-    def get(self):
+    def get(self) -> Dict[str, List[str]]:
         """List all top-level files and directories"""
         files = StorageFile.query.all()
         # Extract top-level files and directories
