@@ -68,7 +68,7 @@ def api_status() -> Response:
 @app.route('/blocks//<path:path>')  # Handle double slash
 def serve_frontend(path: str) -> Union[Response, Tuple[Response, int]]:
     """Serve static assets from dist/ directory with base path"""
-    # Normalize path - remove leading slashes and clean up double slashes
+    # Normalize path - remove leading slashes
     path = path.lstrip('/')
     
     # Debug logging
