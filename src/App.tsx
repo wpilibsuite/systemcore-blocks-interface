@@ -31,7 +31,6 @@ import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
 import { TabType } from './types/TabType';
 
-import * as editor from './editor/editor';
 import { extendedPythonGenerator } from './editor/extended_python_generator';
 
 import * as commonStorage from './storage/common_storage';
@@ -42,7 +41,6 @@ import * as clientSideStorage from './storage/client_side_storage';
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
-import { TOOLBOX_UPDATE_EVENT } from './blocks/mrc_mechanism_component_holder';
 import { antdThemeFromString } from './reactComponents/ThemeModal';
 import { useTranslation } from 'react-i18next';
 import { UserSettingsProvider } from './reactComponents/UserSettingsProvider';
@@ -260,24 +258,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     setToolboxSettingsModalIsOpen(false);
     handleToolboxSettingsOk(updatedShownCategories);
   };
-
-  /** Handles toolbox update requests from blocks */
-  const handleToolboxUpdateRequest = React.useCallback((e: Event) => {
-    const workspaceId = (e as CustomEvent).detail.workspaceId;
-    const correspondingEditor = editor.Editor.getEditorForBlocklyWorkspaceId(workspaceId);
-    if (correspondingEditor) {
-      correspondingEditor.updateToolbox(shownPythonToolboxCategories);
-    }
-  }, [shownPythonToolboxCategories, i18n.language]);
-
-  // Add event listener for toolbox updates
-  React.useEffect(() => {
-    window.addEventListener(TOOLBOX_UPDATE_EVENT, handleToolboxUpdateRequest);
-
-    return () => {
-      window.removeEventListener(TOOLBOX_UPDATE_EVENT, handleToolboxUpdateRequest);
-    };
-  }, [handleToolboxUpdateRequest]);
 
   // Initialize blocks when app loads
   React.useEffect(() => {
