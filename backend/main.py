@@ -1,5 +1,6 @@
 # Standard library imports
 import argparse
+import logging
 import os
 
 # Third-party imports
@@ -15,6 +16,10 @@ app = Flask(__name__, static_folder='../dist', static_url_path='')
 app.url_map.merge_slashes = False  # Don't merge consecutive slashes
 api = Api(app)
 db = SQLAlchemy(app)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Add CORS headers
 @app.after_request
@@ -66,14 +71,14 @@ def serve_frontend(path):
     path = path.lstrip('/')
     
     # Debug logging
-    print(f"Requested path: '{path}'")
+    logger.debug(f"Requested path: '{path}'")
     
     # If path is empty, serve index.html
     if path == '':
         try:
             return send_from_directory(app.static_folder, 'index.html')
         except Exception as e:
-            print(f"Error serving index.html: {e}")
+            logger.error(f"Error serving index.html: {e}")
             return jsonify({
                 'error': 'Frontend not built',
                 'message': 'Please build the frontend first with "npm run build"'
@@ -81,10 +86,10 @@ def serve_frontend(path):
     
     # Try to serve the requested file
     try:
-        print(f"Attempting to serve: {app.static_folder}/{path}")
+        logger.debug(f"Attempting to serve: {app.static_folder}/{path}")
         return send_from_directory(app.static_folder, path)
     except Exception as e:
-        print(f"Error serving file: {e}")
+        logger.error(f"Error serving file: {e}")
         # If file not found and not an asset, serve index.html for client-side routing
         # But if it's an asset or known file type, return 404
         if path.startswith('assets/') or '.' in path.split('/')[-1]:
@@ -129,10 +134,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run the Storage API backend server')
     parser.add_argument('-p', '--port', type=int, default=5001, 
                         help='Port to run the server on (default: 5001)')
+    parser.add_argument('-l', '--log-level', type=str, default='INFO',
+                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        help='Set the logging level (default: INFO)')
     args = parser.parse_args()
+    
+    # Set logging level based on argument
+    logging.getLogger().setLevel(getattr(logging, args.log_level))
     
     with app.app_context():
         db.create_all()
     
-    print(f"Starting server on port {args.port}...")
+    logger.info(f"Starting server on port {args.port}...")
     app.run(debug=True, port=args.port)
