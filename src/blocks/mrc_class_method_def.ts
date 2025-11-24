@@ -58,7 +58,7 @@ export interface Parameter {
   type?: string;
 }
 
-export type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin & Blockly.BlockSvg;
+export type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin;
 interface ClassMethodDefMixin extends ClassMethodDefMixinType {
   mrcMethodId: string,
   mrcCanChangeSignature: boolean,
@@ -182,12 +182,16 @@ const CLASS_METHOD_DEF = {
     if (this.mrcCanChangeSignature) {
       const nameField = new Blockly.FieldTextInput(name);
       input.insertFieldAt(0, nameField, FIELD_METHOD_NAME);
-      this.setMutator(paramContainer.getMutatorIcon(this));
+      if (this.rendered) {
+        this.setMutator(paramContainer.getMutatorIcon(this as unknown as Blockly.BlockSvg));
+      }
       nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     } else {
       input.insertFieldAt(0, createFieldNonEditableText(name), FIELD_METHOD_NAME);
-      // Case because a current bug in blockly where it won't allow passing null to Blockly.Block.setMutator makes it necessary.
-      (this as Blockly.BlockSvg).setMutator(null);
+      // To call setMutator(null), this must be casted to BlockSvg.
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).setMutator(null);
+      }
     }
     this.mrcUpdateParams();
     this.mrcUpdateReturnInput();
@@ -231,7 +235,9 @@ const CLASS_METHOD_DEF = {
    * mrcOnMutatorOpen is called when the mutator on a ClassMethodDefBlock is opened.
    */
   mrcOnMutatorOpen: function(this: ClassMethodDefBlock): void {
-    paramContainer.onMutatorOpen(this);
+    if (this.rendered) {
+      paramContainer.onMutatorOpen(this as unknown as Blockly.BlockSvg);
+    }
   },
   mrcRenameParameter: function (this: ClassMethodDefBlock, oldName: string, newName: string) {
     const nextBlock = this.getInputTargetBlock(INPUT_STACK);

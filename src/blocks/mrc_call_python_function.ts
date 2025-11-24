@@ -70,7 +70,7 @@ type FunctionArg = {
 
 const WARNING_ID_FUNCTION_CHANGED = 'function changed';
 
-export type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin & Blockly.BlockSvg;
+export type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin;
 interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcFunctionKind: FunctionKind,
   mrcReturnType: string,
@@ -871,7 +871,9 @@ const CALL_PYTHON_FUNCTION = {
       if (icon) {
         icon.setBubbleVisible(true);
       }
-      this.bringToFront();
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).bringToFront();
+      }
     } else {
       // Clear the existing warning on the block.
       this.setWarningText(null, WARNING_ID_FUNCTION_CHANGED);

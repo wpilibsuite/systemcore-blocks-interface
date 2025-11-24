@@ -50,7 +50,7 @@ type EventExtraState = {
   params?: Parameter[],
 }
 
-export type EventBlock = Blockly.Block & EventMixin & Blockly.BlockSvg;
+export type EventBlock = Blockly.Block & EventMixin;
 
 interface EventMixin extends EventMixinType {
   mrcEventId: string,
@@ -130,7 +130,9 @@ const EVENT = {
 
     const nameField = new Blockly.FieldTextInput(name);
     input.insertFieldAt(0, nameField, FIELD_EVENT_NAME);
-    this.setMutator(paramContainer.getMutatorIcon(this));
+    if (this.rendered) {
+      this.setMutator(paramContainer.getMutatorIcon(this as unknown as Blockly.BlockSvg));
+    }
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
 
     this.mrcUpdateParams();
@@ -225,7 +227,9 @@ const EVENT = {
    * mrcOnMutatorOpen is called when the mutator on an EventBlock is opened.
    */
   mrcOnMutatorOpen: function(this: EventBlock): void {
-    paramContainer.onMutatorOpen(this);
+    if (this.rendered) {
+      paramContainer.onMutatorOpen(this as unknown as Blockly.BlockSvg);
+    }
   },
   checkBlockIsInHolder: function(this: EventBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();
