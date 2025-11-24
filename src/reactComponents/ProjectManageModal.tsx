@@ -168,18 +168,12 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     setAllProjectRecords(updatedProjectRecords);
 
     // Find another project to set as current
-    let foundAnotherProject = false;
+    let projectToSelect: storageProject.Project | null = null;
     for (const projectName of allProjectNames) {
       if (projectName !== project.name) {
-        const project = await storageProject.fetchProject(props.storage, projectName);
-        props.setProject(project);
-        foundAnotherProject = true;
+        projectToSelect = await storageProject.fetchProject(props.storage, projectName);
         break;
       }
-    }
-
-    if (!foundAnotherProject) {
-      props.setProject(null);
     }
 
     try {
@@ -187,6 +181,11 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     } catch (e) {
       console.error('Failed to delete the project:', e);
       props.setAlertErrorMessage(t('FAILED_TO_DELETE_PROJECT'));
+    }
+
+    props.setProject(projectToSelect);
+    if (projectToSelect) {
+      props.onCancel();
     }
   };
 
