@@ -1,11 +1,14 @@
-from flask import Flask, request, jsonify, send_from_directory
-from flask_restful import Resource, Api
-from flask_sqlalchemy import SQLAlchemy
+# Standard library imports
+import argparse
 import json
 import os
-import argparse
-import zipfile
 import shutil
+import zipfile
+
+# Third-party imports
+from flask import Flask, jsonify, request, send_from_directory
+from flask_restful import Api, Resource
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__, static_folder='../dist', static_url_path='')
