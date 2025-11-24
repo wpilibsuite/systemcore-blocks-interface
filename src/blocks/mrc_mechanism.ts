@@ -301,7 +301,7 @@ const MECHANISM = {
 
       // Regenerate mrc_parameters and create new inputs if necessary.
       this.mrcParameters = [];
-      let i = 0;
+      let parametersIndex = 0;
       components.forEach(component => {
         let componentPortsIndex = 0;
         for (const port in component.ports) {
@@ -311,27 +311,27 @@ const MECHANISM = {
             componentId: component.componentId,
             componentPortsIndex,
           });
-          let argInput = this.getInput('ARG' + i);
-          const argField = this.getField('ARGNAME' + i);
+          let argInput = this.getInput('ARG' + parametersIndex);
+          const argField = this.getField('ARGNAME' + parametersIndex);
           if (argInput && argField) {
             argField.setValue(port);
           } else {
             // Add new input.
-            argInput = this.appendValueInput('ARG' + i)
+            argInput = this.appendValueInput('ARG' + parametersIndex)
                 .setAlign(Blockly.inputs.Align.RIGHT)
-                .appendField(port, 'ARGNAME' + i);
+                .appendField(port, 'ARGNAME' + parametersIndex);
           }
           // Look in oldParameters to find the matching parameter.
           let foundOldParameterIndex = -1;
           for (let j = 0; j < oldParameters.length; j++) {
-            if (oldParameters[j].componentId === this.mrcParameters[i].componentId &&
-                oldParameters[j].componentPortsIndex === this.mrcParameters[i].componentPortsIndex) {
+            if (oldParameters[j].componentId === this.mrcParameters[parametersIndex].componentId &&
+                oldParameters[j].componentPortsIndex === this.mrcParameters[parametersIndex].componentPortsIndex) {
               foundOldParameterIndex = j;
               break;
             }
           }
           if (foundOldParameterIndex !== -1) {
-            if (foundOldParameterIndex === i) {
+            if (foundOldParameterIndex === parametersIndex) {
               // The old connected block is already connected to this input.
               oldConnectedBlocks[foundOldParameterIndex] = null;
             } else {
@@ -343,10 +343,10 @@ const MECHANISM = {
               }
             }
           }
-          argInput.setCheck(getAllowedTypesForSetCheck(this.mrcParameters[i].type));
+          argInput.setCheck(getAllowedTypesForSetCheck(this.mrcParameters[parametersIndex].type));
 
           componentPortsIndex++;
-          i++;
+          parametersIndex++;
         }
       });
 
