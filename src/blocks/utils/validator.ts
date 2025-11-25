@@ -23,7 +23,7 @@
  * Take the proposed name, and return a legal name.
  * A legal name is:
  * 1. not empty.
- * 2. doesn't collide with other names.
+ * 2. doesn't collide with other names (case insensitive).
  * 3. Optional: is a valid python identifier.
  */
 export function makeLegalName(proposedName: string, otherNames: string[], mustBeValidPythonIdentifier: boolean): string {
