@@ -499,8 +499,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 storage={storage}
                 setAlertErrorMessage={setAlertErrorMessage}
                 gotoTab={setActiveTab}
-                project={project}
-                setProject={setProject}
+                currentProject={project}
+                setCurrentProject={setProject}
                 onProjectChanged={onProjectChanged}
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 theme={theme}

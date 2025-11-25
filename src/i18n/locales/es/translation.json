@@ -51,6 +51,7 @@
     "ACTIONS": "Acciones",
     "DELETE_PROJECT_CONFIRM": "¿Eliminar {{projectName}}?",
     "DELETE_CANNOT_BE_UNDONE": "Esta acción no se puede deshacer.",
+    "PROJECT_MANAGEMENT": "Gestión de proyectos",
     "NO_PROJECTS_FOUND": "No se encontraron proyectos",
     "CREATE_PROJECT_TO_START": "Por favor crea un nuevo proyecto para comenzar.",
     "PAGINATION_ITEMS": "{{range0}}-{{range1}} de {{total}} elementos",
