@@ -34,7 +34,7 @@ const FIELD_STEP_NAME = 'STEP_NAME';
 const WARNING_ID_NOT_IN_STEP = 'not in step';
 
 
-type JumpToStepBlock = Blockly.Block & Blockly.BlockSvg & JumpToStepMixin;
+type JumpToStepBlock = Blockly.Block & JumpToStepMixin;
 
 interface JumpToStepMixin extends JumpToStepMixinType {
   mrcHasWarning: boolean,

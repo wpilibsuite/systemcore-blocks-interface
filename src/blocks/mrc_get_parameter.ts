@@ -39,7 +39,7 @@ const FIELD_PARAMETER_NAME = 'PARAMETER_NAME';
 const WARNING_ID_NOT_IN_METHOD = 'not in method';
 
 
-type GetParameterBlock = Blockly.Block & Blockly.BlockSvg & GetParameterMixin;
+type GetParameterBlock = Blockly.Block & GetParameterMixin;
 
 interface GetParameterMixin extends GetParameterMixinType {
   // TODO(lizlooney): currently mrcParameterType is never set to anything other than '' because

@@ -63,7 +63,7 @@ type MechanismExtraState = {
 const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
 const WARNING_ID_MECHANISM_CHANGED = 'mechanism changed';
 
-export type MechanismBlock = Blockly.Block & MechanismMixin & Blockly.BlockSvg;
+export type MechanismBlock = Blockly.Block & MechanismMixin;
 interface MechanismMixin extends MechanismMixinType {
   mrcMechanismModuleId: string
   mrcMechanismId: string,
@@ -402,7 +402,9 @@ const MECHANISM = {
       if (icon) {
         icon.setBubbleVisible(true);
       }
-      this.bringToFront();
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).bringToFront();
+      }
     } else {
       // Clear the existing warning on the block.
       this.setWarningText(null, WARNING_ID_MECHANISM_CHANGED);

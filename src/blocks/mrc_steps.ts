@@ -46,7 +46,7 @@ type StepsExtraState = {
   stepNames: string[],
 };
 
-export type StepsBlock = Blockly.Block & StepsMixin & Blockly.BlockSvg;
+export type StepsBlock = Blockly.Block & StepsMixin;
 interface StepsMixin extends StepsMixinType {
   mrcStepNames: string[];
 }
@@ -62,7 +62,9 @@ const STEPS = {
       .appendField(Blockly.Msg.STEPS);
     this.setInputsInline(false);
     this.setStyle(MRC_STYLE_STEPS);
-    this.setMutator(stepContainer.getMutatorIcon(this));
+    if (this.rendered) {
+      this.setMutator(stepContainer.getMutatorIcon(this as unknown as Blockly.BlockSvg));
+    }
   },
   ...NONCOPYABLE_BLOCK,
   saveExtraState: function (this: StepsBlock): StepsExtraState {
@@ -155,7 +157,9 @@ const STEPS = {
    * mrcOnMutatorOpen is called when the mutator on an StepsBlock is opened.
    */
   mrcOnMutatorOpen: function (this: StepsBlock): void {
-    stepContainer.onMutatorOpen(this);
+    if (this.rendered) {
+      stepContainer.onMutatorOpen(this as unknown as Blockly.BlockSvg);
+    }
   },
   mrcUpdateStepName: function (this: StepsBlock, step: number, newName: string): string {
     const oldName = this.mrcStepNames[step];
