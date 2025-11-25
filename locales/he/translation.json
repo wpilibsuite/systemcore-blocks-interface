@@ -54,6 +54,7 @@
     "ACTIONS": "פעולות",
     "DELETE_PROJECT_CONFIRM": "מחק את {{projectName}}?",
     "DELETE_CANNOT_BE_UNDONE": "פעולה זו לא ניתנת לביטול.",
+    "PROJECT_MANAGEMENT": "ניהול פרויקטים",
     "NO_PROJECTS_FOUND": "לא נמצאו פרויקטים",
     "CREATE_PROJECT_TO_START": "אנא צור פרויקט חדש כדי להתחיל.",
     "PAGINATION_ITEMS": "{{range0}}-{{range1}} מתוך {{total}} פריטים",
