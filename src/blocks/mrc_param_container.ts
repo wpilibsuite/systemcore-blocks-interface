@@ -21,7 +21,7 @@
  */
 import * as Blockly from 'blockly';
 import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
-import { getLegalName } from './utils/python';
+import { makeLegalName } from './utils/validator';
 
 export const PARAM_CONTAINER_BLOCK_NAME = 'mrc_param_container';
 const PARAM_ITEM_BLOCK_NAME = 'mrc_param_item';
@@ -85,13 +85,16 @@ const PARAM_ITEM = {
     const rootBlock: Blockly.Block | null = this.getRootBlock();
     if (rootBlock) {
       const otherNames: string[] = []
-      rootBlock!.getDescendants(true)?.forEach(itemBlock => {
-        if (itemBlock != this) {
-          otherNames.push(itemBlock.getFieldValue(FIELD_NAME));
-        }
-      });
+      rootBlock.getDescendants(true)
+          .filter(descendant => descendant.type === PARAM_ITEM_BLOCK_NAME && descendant !== this)
+          .forEach(itemBlock => {
+            if (itemBlock != this) {
+              otherNames.push(itemBlock.getFieldValue(FIELD_NAME));
+            }
+          });
       const currentName = this.getFieldValue(FIELD_NAME);
-      this.setFieldValue(getLegalName(currentName, otherNames), FIELD_NAME);
+      const legalName = makeLegalName(currentName, otherNames, /* mustBeValidPythonIdentifier */ true);
+      this.setFieldValue(legalName, FIELD_NAME);
       updateMutatorFlyout(this.workspace);
     }
   },
