@@ -23,6 +23,7 @@ import * as Blockly from 'blockly';
 
 import { MRC_STYLE_EVENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
+import { makeLegalName } from './utils/validator';
 import { Parameter } from './mrc_class_method_def';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
@@ -185,10 +186,19 @@ const EVENT = {
     });
   },
   mrcNameFieldValidator(this: EventBlock, nameField: Blockly.FieldTextInput, name: string): string {
-    // Strip leading and trailing whitespace.
-    name = name.trim();
+    if (this.isInFlyout) {
+      // Flyouts can have multiple methods with identical names.
+      return name;
+    }
 
-    const legalName = name;
+    const otherNames: string[] = [];
+    this.workspace.getBlocksByType(BLOCK_NAME)
+        .filter(block => block.id !== this.id)
+        .forEach((block) => {
+          otherNames.push(block.getFieldValue(FIELD_EVENT_NAME));
+        });
+
+    const legalName = makeLegalName(name, otherNames, /* mustBeginWithLetter */ false);
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
