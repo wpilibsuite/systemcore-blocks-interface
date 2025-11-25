@@ -36,7 +36,9 @@ export async function isServerAvailable(): Promise<boolean> {
     const response = await Promise.race([
       fetch('/statusz'),
       timeoutPromise
-    ]);    if (!response.ok) {
+    ]);
+        
+    if (!response.ok) {
       return false;
     }
     
