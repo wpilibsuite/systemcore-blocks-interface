@@ -22,7 +22,7 @@
 import * as Blockly from 'blockly';
 
 import { MRC_STYLE_MECHANISMS } from '../themes/styles';
-import { getLegalName } from './utils/python';
+import { makeLegalName } from './utils/validator';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
@@ -220,14 +220,16 @@ const MECHANISM_COMPONENT_HOLDER = {
    */
   setNameOfChildBlock(this: MechanismComponentHolderBlock, child: Blockly.Block): void {
     const otherNames: string[] = []
-    const descendants = this.getDescendants(true);
-    descendants
+    this.getDescendants(true)
         .filter(descendant => descendant.id !== child.id)
         .forEach(descendant => {
           otherNames.push(descendant.getFieldValue('NAME'));
         });
     const currentName = child.getFieldValue('NAME');
-    const legalName = getLegalName(currentName, otherNames);
+    // mechanism and component names must be valid python identifiers.
+    // event names do not need to be valid python identifiers.
+    const mustBeValidPythonIdentifier = (child.type === MRC_MECHANISM_NAME || child.type === MRC_COMPONENT_NAME);
+    const legalName = makeLegalName(currentName, otherNames, mustBeValidPythonIdentifier);
     if (legalName !== currentName) {
       child.setFieldValue(legalName, 'NAME');
     }
