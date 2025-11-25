@@ -302,7 +302,7 @@ const CLASS_METHOD_DEF = {
           }
         });
 
-    const legalName = makeLegalName(name, otherNames, /* mustBeginWithLetter */ true);
+    const legalName = makeLegalName(name, otherNames, /* mustBeValidPythonIdentifier */ true);
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.

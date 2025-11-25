@@ -198,7 +198,7 @@ const EVENT = {
           otherNames.push(block.getFieldValue(FIELD_EVENT_NAME));
         });
 
-    const legalName = makeLegalName(name, otherNames, /* mustBeginWithLetter */ false);
+    const legalName = makeLegalName(name, otherNames, /* mustBeValidPythonIdentifier */ false);
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.

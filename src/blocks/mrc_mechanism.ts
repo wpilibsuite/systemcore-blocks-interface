@@ -180,7 +180,7 @@ const MECHANISM = {
           otherNames.push(block.getFieldValue(FIELD_NAME));
         });
 
-    const legalName = makeLegalName(name, otherNames, /* mustBeginWithLetter */ true);
+    const legalName = makeLegalName(name, otherNames, /* mustBeValidPythonIdentifier */ true);
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
