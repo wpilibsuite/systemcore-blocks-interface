@@ -281,30 +281,6 @@ export function getOutputCheck(type: string): string {
   return type;
 }
 
-// Function to return a legal name based off of proposed names and making sure it doesn't conflict
-// This is a legal name for python methods and variables. 
-export function getLegalName(proposedName: string, existingNames: string[]){
-  let newName = proposedName.trim().replace(' ', '_');
-
-  // TODO: Allow the user to put numbers in the name.
-  
-  if (!/^[A-Za-z_]/.test(newName)){
-      newName = "_" + newName;
-  }
-      
-  while (existingNames.includes(newName)){
-      const match = /(.*?)(\d+)$/.exec(newName)
-
-      if (match) {
-          let lastNumber  = +match[2]
-          newName = match[1] + (lastNumber + 1)
-      } else {
-          newName += "2"
-      }
-  }
-  return newName;
-}
-
 export function isExistingPythonModule(moduleName: string): boolean {
   for (const pythonData of allPythonData) {
     // Process modules.

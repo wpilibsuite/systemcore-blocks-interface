@@ -23,9 +23,11 @@ import * as Blockly from 'blockly';
 
 import { MRC_STYLE_EVENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
+import { makeLegalName } from './utils/validator';
 import { Parameter } from './mrc_class_method_def';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import * as paramContainer from './mrc_param_container'
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
@@ -49,7 +51,7 @@ type EventExtraState = {
   params?: Parameter[],
 }
 
-export type EventBlock = Blockly.Block & EventMixin & Blockly.BlockSvg;
+export type EventBlock = Blockly.Block & EventMixin;
 
 interface EventMixin extends EventMixinType {
   mrcEventId: string,
@@ -80,6 +82,7 @@ const EVENT = {
     this.setNextStatement(true, OUTPUT_NAME);
     this.updateBlock_();
   },
+  ...NONCOPYABLE_BLOCK,
 
   /**
    * Returns the state of this block as a JSON serializable object.
@@ -128,7 +131,9 @@ const EVENT = {
 
     const nameField = new Blockly.FieldTextInput(name);
     input.insertFieldAt(0, nameField, FIELD_EVENT_NAME);
-    this.setMutator(paramContainer.getMutatorIcon(this));
+    if (this.rendered) {
+      this.setMutator(paramContainer.getMutatorIcon(this as unknown as Blockly.BlockSvg));
+    }
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
 
     this.mrcUpdateParams();
@@ -183,10 +188,19 @@ const EVENT = {
     });
   },
   mrcNameFieldValidator(this: EventBlock, nameField: Blockly.FieldTextInput, name: string): string {
-    // Strip leading and trailing whitespace.
-    name = name.trim();
+    if (this.isInFlyout) {
+      // Flyouts can have multiple methods with identical names.
+      return name;
+    }
 
-    const legalName = name;
+    const otherNames: string[] = [];
+    this.workspace.getBlocksByType(BLOCK_NAME)
+        .filter(block => block.id !== this.id)
+        .forEach((block) => {
+          otherNames.push(block.getFieldValue(FIELD_EVENT_NAME));
+        });
+
+    const legalName = makeLegalName(name, otherNames, /* mustBeValidPythonIdentifier */ false);
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
@@ -209,7 +223,7 @@ const EVENT = {
   /**
    * mrcOnMove is called when an EventBlock is moved.
    */
-  mrcOnMove: function(this: EventBlock, reason: string[]): void {
+  mrcOnMove: function(this: EventBlock, editor: Editor, reason: string[]): void {
     this.checkBlockIsInHolder();
     if (reason.includes('connect')) {
       const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -217,13 +231,15 @@ const EVENT = {
         (rootBlock as MechanismComponentHolderBlock).setNameOfChildBlock(this);
       }
     }
-    mrcDescendantsMayHaveChanged(this.workspace);
+    mrcDescendantsMayHaveChanged(this.workspace, editor);
   },
   /**
    * mrcOnMutatorOpen is called when the mutator on an EventBlock is opened.
    */
   mrcOnMutatorOpen: function(this: EventBlock): void {
-    paramContainer.onMutatorOpen(this);
+    if (this.rendered) {
+      paramContainer.onMutatorOpen(this as unknown as Blockly.BlockSvg);
+    }
   },
   checkBlockIsInHolder: function(this: EventBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();

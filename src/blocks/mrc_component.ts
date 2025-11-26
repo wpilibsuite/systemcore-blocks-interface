@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2025 Porpoiseful LLC
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,9 +28,11 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getModuleTypeForWorkspace } from './utils/workspaces';
 import { getAllowedTypesForSetCheck, getClassData, getSubclassNames } from './utils/python';
+import { makeLegalName } from './utils/validator';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
     MechanismComponentHolderBlock,
@@ -100,6 +102,7 @@ const COMPONENT = {
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
   },
+  ...NONCOPYABLE_BLOCK,
 
   /**
     * Returns the state of this block as a JSON serializable object.
@@ -162,14 +165,27 @@ const COMPONENT = {
     }
   },
   mrcNameFieldValidator(this: ComponentBlock, nameField: Blockly.FieldTextInput, name: string): string {
-    // Strip leading and trailing whitespace.
-    name = name.trim();
+    if (this.isInFlyout) {
+      // Flyouts can have multiple methods with identical names.
+      return name;
+    }
 
-    const legalName = name;
+    const otherNames: string[] = [];
+    this.workspace.getBlocksByType(BLOCK_NAME)
+        .filter(block => block.id !== this.id)
+        .forEach((block) => {
+          otherNames.push(block.getFieldValue(FIELD_NAME));
+        });
+
+    const legalName = makeLegalName(name, otherNames, /* mustBeValidPythonIdentifier */ true);
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
       renameMethodCallers(this.workspace, this.mrcComponentId, legalName);
+      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+      if (editor) {
+        editor.updateToolboxAfterDelay();
+      }
     }
     return legalName;
   },
@@ -192,7 +208,7 @@ const COMPONENT = {
     // Collect the ports for this component block.
     for (let i = 0; i < this.mrcArgs.length; i++) {
       const argName = this.getArgName(i);
-      ports[argName] = this.mrcArgs[i].name;  
+      ports[argName] = this.mrcArgs[i].name;
     }
   },
   /**
@@ -210,7 +226,7 @@ const COMPONENT = {
   /**
    * mrcOnMove is called when a ComponentBlock is moved.
    */
-  mrcOnMove: function(this: ComponentBlock, reason: string[]): void {
+  mrcOnMove: function(this: ComponentBlock, editor: Editor, reason: string[]): void {
     this.checkBlockIsInHolder();
     if (reason.includes('connect')) {
       const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -218,7 +234,7 @@ const COMPONENT = {
         (rootBlock as MechanismComponentHolderBlock).setNameOfChildBlock(this);
       }
     }
-    mrcDescendantsMayHaveChanged(this.workspace);
+    mrcDescendantsMayHaveChanged(this.workspace, editor);
   },
   checkBlockIsInHolder: function(this: ComponentBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -245,6 +261,13 @@ const COMPONENT = {
   mrcChangeIds: function (this: ComponentBlock, oldIdToNewId: { [oldId: string]: string }): void {
     if (this.mrcComponentId in oldIdToNewId) {
       this.mrcComponentId = oldIdToNewId[this.mrcComponentId];
+    }
+  },
+  upgrade_005_to_006: function(this: ComponentBlock) {
+    for (let i = 0; i < this.mrcArgs.length; i++) {
+      if (this.mrcArgs[i].type === 'Port') {
+        this.mrcArgs[i].type = this.mrcArgs[i].name;
+      }
     }
   },
 };
@@ -318,11 +341,21 @@ function createComponentBlock(
   if (constructorData.expectedPortType) {
     extraState.params!.push({
       name: constructorData.expectedPortType,
-      type: 'Port',
+      type: constructorData.expectedPortType,
     });
-    if ( moduleType == storageModule.ModuleType.ROBOT ) {
+    if (moduleType == storageModule.ModuleType.ROBOT ) {
       inputs['ARG0'] = createPort(constructorData.expectedPortType);
     }
   }
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+}
+
+/**
+ * Upgrades the ComponentBlocks in the given workspace from version 005 to 006.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_005_to_006(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ComponentBlock).upgrade_005_to_006();
+  });
 }

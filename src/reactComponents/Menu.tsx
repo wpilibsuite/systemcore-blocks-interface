@@ -59,8 +59,8 @@ export interface MenuProps {
   storage: commonStorage.Storage | null;
   setAlertErrorMessage: (message: string) => void;
   gotoTab: (tabKey: string) => void;
-  project: storageProject.Project | null;
-  setProject: (project: storageProject.Project | null) => void;
+  currentProject: storageProject.Project | null;
+  setCurrentProject: (project: storageProject.Project | null) => void;
   onProjectChanged: () => Promise<void>;
   openWPIToolboxSettings: () => void;
   theme: string;
@@ -138,20 +138,20 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
       getItem(t('THEME') + '...', 'theme', <BgColorsOutlined />),
       getItem(t('LANGUAGE'), 'language', <GlobalOutlined />, [
         getItem(
-          t('ENGLISH'), 
-          'setlang:en', 
+          t('ENGLISH'),
+          'setlang:en',
           currentLanguage === 'en' ? <CheckOutlined /> : undefined
         ),
         getItem(
-          t('SPANISH'), 
-          'setlang:es', 
+          t('SPANISH'),
+          'setlang:es',
           currentLanguage === 'es' ? <CheckOutlined /> : undefined
         ),
         getItem(
-          t('HEBREW'), 
-          'setlang:he', 
+          t('HEBREW'),
+          'setlang:he',
           currentLanguage === 'he' ? <CheckOutlined /> : undefined
-        ),        
+        ),
       ]),
     ]),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
@@ -224,7 +224,7 @@ export function Component(props: MenuProps): React.JSX.Element {
       }
       if (projectNameToFetch) {
         const project = await storageProject.fetchProject(props.storage, projectNameToFetch);
-        props.setProject(project);
+        props.setCurrentProject(project);
       }
     }
   };
@@ -234,15 +234,15 @@ export function Component(props: MenuProps): React.JSX.Element {
     if (props.storage) {
       await props.storage.saveEntry(
           MOST_RECENT_PROJECT_NAME_KEY,
-          props.project?.projectName || ''
+          props.currentProject?.projectName || ''
       );
     }
   };
 
   /** Handles menu item clicks. */
   const handleClick: Antd.MenuProps['onClick'] = ({key}): void => {
-    const newModule = props.project ?
-      storageProject.findModuleByModulePath(props.project, key) :
+    const newModule = props.currentProject ?
+      storageProject.findModuleByModulePath(props.currentProject, key) :
       null;
 
     if (newModule) {
@@ -285,7 +285,7 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   /** Handles the deploy action to generate and download Python files. */
   const handleDeploy = async (): Promise<void> => {
-    if (!props.project) {
+    if (!props.currentProject) {
       props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
       return;
     }
@@ -343,7 +343,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   // TODO: Add UI for the download action.
   /** Handles the download action to generate and download json files. */
   const handleDownload = async (): Promise<void> => {
-    if (!props.project) {
+    if (!props.currentProject) {
       props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
       return;
     }
@@ -352,8 +352,8 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
 
     try {
-      const blobUrl = await storageProject.downloadProject(props.storage, props.project.projectName);
-      const filename = props.project.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+      const blobUrl = await storageProject.downloadProject(props.storage, props.currentProject.projectName);
+      const filename = props.currentProject.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
 
       // Create a temporary link to download the file
       const link = document.createElement('a');
@@ -444,19 +444,19 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   // Update menu items and save project when project or language changes
   React.useEffect(() => {
-    if (props.project) {
+    if (props.currentProject) {
       setMostRecentProjectName();
-      setMenuItems(getMenuItems(t, props.project, i18n.language));
+      setMenuItems(getMenuItems(t, props.currentProject, i18n.language));
       setNoProjects(false);
     }
-  }, [props.project, i18n.language]); 
+  }, [props.currentProject, i18n.language]);
 
   return (
     <>
       <FileManageModal
         isOpen={fileModalOpen}
         onClose={handleFileModalClose}
-        project={props.project}
+        project={props.currentProject}
         storage={props.storage}
         tabType={tabType}
         onProjectChanged={props.onProjectChanged}
@@ -468,7 +468,8 @@ export function Component(props: MenuProps): React.JSX.Element {
         isOpen={projectModalOpen}
         onCancel={handleProjectModalClose}
         storage={props.storage}
-        setProject={props.setProject}
+        currentProject={props.currentProject}
+        setCurrentProject={props.setCurrentProject}
         setAlertErrorMessage={props.setAlertErrorMessage}
       />
       <Antd.Menu
@@ -493,7 +494,7 @@ export function Component(props: MenuProps): React.JSX.Element {
           <Antd.Button
             icon={<DownloadOutlined />}
             size="small"
-            disabled={!props.project}
+            disabled={!props.currentProject}
             onClick={handleDownload}
             style={{ color: 'white' }}
           />

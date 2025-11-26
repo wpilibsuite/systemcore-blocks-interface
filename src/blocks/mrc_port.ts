@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2025 Porpoiseful LLC
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,6 +26,7 @@ import { MRC_STYLE_PORTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldNumberDropdown } from '../fields/field_number_dropdown';
+import { getOutputCheck } from './utils/python';
 
 export const BLOCK_NAME = 'mrc_port';
 export const OUTPUT_NAME = 'mrc_port';
@@ -119,6 +120,7 @@ const PORT = {
     }
     this.mrcPortType = state.portType;
     this.mrcPortCount = iField;
+    this.setOutput(true, getOutputCheck(this.mrcPortType));
   },
 }
 

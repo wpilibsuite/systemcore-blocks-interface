@@ -54,6 +54,7 @@
     "ACTIONS": "Actions",
     "DELETE_PROJECT_CONFIRM": "Delete {{projectName}}?",
     "DELETE_CANNOT_BE_UNDONE": "This action cannot be undone.",
+    "PROJECT_MANAGEMENT": "Project Management",
     "NO_PROJECTS_FOUND": "No projects found",
     "CREATE_PROJECT_TO_START": "Please create a new project to get started.",
     "PAGINATION_ITEMS": "{{range0}}-{{range1}} of {{total}} items",

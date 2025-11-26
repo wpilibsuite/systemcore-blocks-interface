@@ -21,6 +21,7 @@
  */
 import * as Blockly from 'blockly';
 
+import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
@@ -33,7 +34,7 @@ const FIELD_STEP_NAME = 'STEP_NAME';
 const WARNING_ID_NOT_IN_STEP = 'not in step';
 
 
-type JumpToStepBlock = Blockly.Block & Blockly.BlockSvg & JumpToStepMixin;
+type JumpToStepBlock = Blockly.Block & JumpToStepMixin;
 
 interface JumpToStepMixin extends JumpToStepMixinType {
   mrcHasWarning: boolean,
@@ -62,7 +63,7 @@ const JUMP_TO_STEP_BLOCK = {
   /**
    * mrcOnMove is called when a JumpToStepBlock is moved.
    */
-  mrcOnMove: function (this: JumpToStepBlock, _reason: string[]): void {
+  mrcOnMove: function (this: JumpToStepBlock, _editor: Editor, _reason: string[]): void {
     this.checkBlockPlacement();
   },
   mrcOnAncestorMove: function (this: JumpToStepBlock): void {

@@ -35,6 +35,8 @@ import * as toolboxItems from '../toolbox/items';
 import { getClassData } from './utils/python';
 import { FunctionData } from './utils/python_json_types';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
+import { makeLegalName } from './utils/validator';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
 import * as paramContainer from './mrc_param_container'
 
@@ -57,7 +59,7 @@ export interface Parameter {
   type?: string;
 }
 
-export type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin & Blockly.BlockSvg;
+export type ClassMethodDefBlock = Blockly.Block & ClassMethodDefMixin;
 interface ClassMethodDefMixin extends ClassMethodDefMixinType {
   mrcMethodId: string,
   mrcCanChangeSignature: boolean,
@@ -122,6 +124,7 @@ const CLASS_METHOD_DEF = {
     this.setNextStatement(false);
     this.updateBlock_();
   },
+  ...NONCOPYABLE_BLOCK,
   /**
    * Returns the state of this block as a JSON serializable object.
    */
@@ -180,12 +183,18 @@ const CLASS_METHOD_DEF = {
     if (this.mrcCanChangeSignature) {
       const nameField = new Blockly.FieldTextInput(name);
       input.insertFieldAt(0, nameField, FIELD_METHOD_NAME);
-      this.setMutator(paramContainer.getMutatorIcon(this));
+      if (this.rendered) {
+        this.setMutator(paramContainer.getMutatorIcon(this as unknown as Blockly.BlockSvg));
+      }
       nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     } else {
       input.insertFieldAt(0, createFieldNonEditableText(name), FIELD_METHOD_NAME);
-      // Case because a current bug in blockly where it won't allow passing null to Blockly.Block.setMutator makes it necessary.
-      (this as Blockly.BlockSvg).setMutator(null);
+      // Block.setMutator is defined as setMutator(_mutator: MutatorIcon) and BlockSvg.setMutator
+      // is defined as setMutator(mutator: MutatorIcon | null).
+      // Therefore, to call setMutator(null), this must be casted to BlockSvg.
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).setMutator(null);
+      }
     }
     this.mrcUpdateParams();
     this.mrcUpdateReturnInput();
@@ -229,7 +238,9 @@ const CLASS_METHOD_DEF = {
    * mrcOnMutatorOpen is called when the mutator on a ClassMethodDefBlock is opened.
    */
   mrcOnMutatorOpen: function(this: ClassMethodDefBlock): void {
-    paramContainer.onMutatorOpen(this);
+    if (this.rendered) {
+      paramContainer.onMutatorOpen(this as unknown as Blockly.BlockSvg);
+    }
   },
   mrcRenameParameter: function (this: ClassMethodDefBlock, oldName: string, newName: string) {
     const nextBlock = this.getInputTargetBlock(INPUT_STACK);
@@ -283,10 +294,23 @@ const CLASS_METHOD_DEF = {
     // When the user changes the method name on the block, clear the mrcPythonMethodName field.
     this.mrcPythonMethodName = '';
 
-    // Strip leading and trailing whitespace.
-    name = name.trim();
+    if (this.isInFlyout) {
+      // Flyouts can have multiple methods with identical names.
+      return name;
+    }
 
-    const legalName = findLegalMethodName(name, this);
+    const otherNames: string[] = [];
+    this.workspace.getBlocksByType(BLOCK_NAME)
+        .filter(block => block.id !== this.id)
+        .forEach((block) => {
+          otherNames.push(block.getFieldValue(FIELD_METHOD_NAME));
+          const classMethodDefBlock = block as ClassMethodDefBlock;
+          if (classMethodDefBlock.mrcPythonMethodName) {
+            otherNames.push(classMethodDefBlock.mrcPythonMethodName);
+          }
+        });
+
+    const legalName = makeLegalName(name, otherNames, /* mustBeValidPythonIdentifier */ true);
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
@@ -363,61 +387,6 @@ const CLASS_METHOD_DEF = {
     }
   },
 };
-
-/**
- * Ensure two identically-named methods don't exist.
- * Take the proposed method name, and return a legal name i.e. one that
- * is not empty and doesn't collide with other methods.
- *
- * @param name Proposed method name.
- * @param block Block to disambiguate.
- * @returns Non-colliding name.
- */
-function findLegalMethodName(name: string, block: ClassMethodDefBlock): string {
-  if (block.isInFlyout) {
-    // Flyouts can have multiple methods called 'my_method'.
-    return name;
-  }
-  name = name || 'unnamed';
-  while (isMethodNameUsed(name, block.workspace, block)) {
-    // Collision with another method.
-    const r = name.match(/^(.*?)(\d+)$/);
-    if (!r) {
-      name += '2';
-    } else {
-      name = r[1] + (parseInt(r[2]) + 1);
-    }
-  }
-  return name;
-}
-
-/**
- * Return if the given name is already a method name.
- *
- * @param name The questionable name.
- * @param workspace The workspace to scan for collisions.
- * @param opt_exclude Optional block to exclude from comparisons (one doesn't
- *     want to collide with oneself).
- * @returns True if the name is used, otherwise return false.
- */
-function isMethodNameUsed(
-  name: string, workspace: Blockly.Workspace, opt_exclude?: Blockly.Block): boolean {
-  const nameLowerCase = name.toLowerCase();
-  for (const block of workspace.getBlocksByType(BLOCK_NAME)) {
-    if (block === opt_exclude) {
-      continue;
-    }
-    if (nameLowerCase === block.getFieldValue(FIELD_METHOD_NAME).toLowerCase()) {
-      return true;
-    }
-    const classMethodDefBlock = block as ClassMethodDefBlock;
-    if (classMethodDefBlock.mrcPythonMethodName &&
-        nameLowerCase === classMethodDefBlock.mrcPythonMethodName.toLowerCase()) {
-      return true;
-    }
-  }
-  return false;
-}
 
 export const setup = function () {
   Blockly.Blocks[BLOCK_NAME] = CLASS_METHOD_DEF;

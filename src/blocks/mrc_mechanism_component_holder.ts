@@ -22,11 +22,12 @@
 import * as Blockly from 'blockly';
 
 import { MRC_STYLE_MECHANISMS } from '../themes/styles';
-import { getLegalName } from './utils/python';
+import { makeLegalName } from './utils/validator';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { MechanismBlock } from './mrc_mechanism';
@@ -45,8 +46,6 @@ const INPUT_COMPONENTS = 'COMPONENTS';
 const INPUT_PRIVATE_COMPONENTS = 'PRIVATE_COMPONENTS';
 const INPUT_EVENTS = 'EVENTS';
 
-export const TOOLBOX_UPDATE_EVENT = 'toolbox-update-requested';
-
 type MechanismComponentHolderExtraState = {
   hideMechanisms?: boolean;
   hidePrivateComponents?: boolean;
@@ -61,7 +60,6 @@ interface MechanismComponentHolderMixin extends MechanismComponentHolderMixinTyp
   mrcComponentBlockIds: string,
   mrcPrivateComponentBlockIds: string,
   mrcEventBlockIds: string,
-  mrcToolboxUpdateTimeout: NodeJS.Timeout | null;
 }
 type MechanismComponentHolderMixinType = typeof MECHANISM_COMPONENT_HOLDER;
 
@@ -77,8 +75,8 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.mrcComponentBlockIds = '';
     this.mrcPrivateComponentBlockIds = '';
     this.mrcEventBlockIds = '';
-    this.mrcToolboxUpdateTimeout = null;
   },
+  ...NONCOPYABLE_BLOCK,
   saveExtraState: function (this: MechanismComponentHolderBlock): MechanismComponentHolderExtraState {
     const extraState: MechanismComponentHolderExtraState = {
     };
@@ -133,21 +131,21 @@ const MECHANISM_COMPONENT_HOLDER = {
    * mrcOnLoad is called for each MechanismComponentHolderBlock when the blocks are loaded in the blockly
    * workspace.
    */
-  mrcOnLoad: function(this: MechanismComponentHolderBlock, _editor: Editor): void {
-    this.collectDescendants(false);
+  mrcOnLoad: function(this: MechanismComponentHolderBlock, editor: Editor): void {
+    this.collectDescendants(editor, false);
   },
   /**
    * mrcOnDescendantDisconnect is called for each MechanismComponentHolderBlock when any descendant is
    * disconnected.
    */
-  mrcOnDescendantDisconnect: function(this: MechanismComponentHolderBlock): void {
-    this.collectDescendants(true);
+  mrcOnDescendantDisconnect: function(this: MechanismComponentHolderBlock, editor: Editor): void {
+    this.collectDescendants(editor, true);
   },
-  mrcDescendantsMayHaveChanged: function (this: MechanismComponentHolderBlock): void {
-    this.collectDescendants(true);
+  mrcDescendantsMayHaveChanged: function (this: MechanismComponentHolderBlock, editor: Editor): void {
+    this.collectDescendants(editor, true);
   },
   collectDescendants: function (
-      this: MechanismComponentHolderBlock, updateToolboxIfDescendantsChanged: boolean): void {
+      this: MechanismComponentHolderBlock, editor: Editor, updateToolboxIfDescendantsChanged: boolean): void {
     let mechanismBlockIds = '';
     let componentBlockIds = '';
     let privateComponentBlockIds = '';
@@ -207,7 +205,7 @@ const MECHANISM_COMPONENT_HOLDER = {
           componentBlockIds !== this.mrcComponentBlockIds ||
           privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
           eventBlockIds !== this.mrcEventBlockIds) {
-        this.updateToolboxAfterDelay();
+        editor.updateToolboxAfterDelay();
       }
     }
 
@@ -216,35 +214,22 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.mrcPrivateComponentBlockIds = privateComponentBlockIds;
     this.mrcEventBlockIds = eventBlockIds;
   },
-  updateToolboxAfterDelay: function (this: MechanismComponentHolderBlock): void {
-    if (this.mrcToolboxUpdateTimeout) {
-      clearTimeout(this.mrcToolboxUpdateTimeout);
-    }
-    this.mrcToolboxUpdateTimeout = setTimeout(() => {
-      const event = new CustomEvent(TOOLBOX_UPDATE_EVENT, {
-        detail: {
-          timestamp: Date.now(),
-          workspaceId: this.workspace.id,
-        }
-      });
-      window.dispatchEvent(event);
-      this.mrcToolboxUpdateTimeout = null;
-    }, 100);
-  },
   /**
    * setNameOfChildBlock is called from mrc_mechanism, mrc_component, and mrc_event blocks when they
    * connect to this mrc_mechanism_component_holder block.
    */
   setNameOfChildBlock(this: MechanismComponentHolderBlock, child: Blockly.Block): void {
     const otherNames: string[] = []
-    const descendants = this.getDescendants(true);
-    descendants
+    this.getDescendants(true)
         .filter(descendant => descendant.id !== child.id)
         .forEach(descendant => {
           otherNames.push(descendant.getFieldValue('NAME'));
         });
     const currentName = child.getFieldValue('NAME');
-    const legalName = getLegalName(currentName, otherNames);
+    // mechanism and component names must be valid python identifiers.
+    // event names do not need to be valid python identifiers.
+    const mustBeValidPythonIdentifier = (child.type === MRC_MECHANISM_NAME || child.type === MRC_COMPONENT_NAME);
+    const legalName = makeLegalName(currentName, otherNames, mustBeValidPythonIdentifier);
     if (legalName !== currentName) {
       child.setFieldValue(legalName, 'NAME');
     }
@@ -513,10 +498,10 @@ export function getEvents(
   });
 }
 
-export function mrcDescendantsMayHaveChanged(workspace: Blockly.Workspace): void {
+export function mrcDescendantsMayHaveChanged(workspace: Blockly.Workspace, editor: Editor): void {
   // Get the holder block and call its mrcDescendantsMayHaveChanged method.
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as MechanismComponentHolderBlock).mrcDescendantsMayHaveChanged();
+    (block as MechanismComponentHolderBlock).mrcDescendantsMayHaveChanged(editor);
   });
 }
 

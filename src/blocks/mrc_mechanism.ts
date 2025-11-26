@@ -27,10 +27,12 @@ import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getAllowedTypesForSetCheck } from './utils/python';
+import { makeLegalName } from './utils/validator';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import * as storageNames from '../storage/names';
+import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
     MechanismComponentHolderBlock,
@@ -48,6 +50,8 @@ export const FIELD_TYPE = 'TYPE';
 type Parameter = {
   name: string,
   type: string,
+  componentId?: string,
+  componentPortsIndex?: number,  // The zero-based number when iterating through component.ports.
 };
 
 type MechanismExtraState = {
@@ -60,7 +64,7 @@ type MechanismExtraState = {
 const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
 const WARNING_ID_MECHANISM_CHANGED = 'mechanism changed';
 
-export type MechanismBlock = Blockly.Block & MechanismMixin & Blockly.BlockSvg;
+export type MechanismBlock = Blockly.Block & MechanismMixin;
 interface MechanismMixin extends MechanismMixinType {
   mrcMechanismModuleId: string
   mrcMechanismId: string,
@@ -94,6 +98,7 @@ const MECHANISM = {
     this.setPreviousStatement(true, OUTPUT_NAME);
     this.setNextStatement(true, OUTPUT_NAME);
   },
+  ...NONCOPYABLE_BLOCK,
 
   /**
     * Returns the state of this block as a JSON serializable object.
@@ -105,10 +110,7 @@ const MECHANISM = {
     };
     extraState.parameters = [];
     this.mrcParameters.forEach((arg) => {
-      extraState.parameters!.push({
-        name: arg.name,
-        type: arg.type,
-      });
+      extraState.parameters!.push({...arg});
     });
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
@@ -125,10 +127,7 @@ const MECHANISM = {
     this.mrcParameters = [];
     if (extraState.parameters) {
       extraState.parameters.forEach((arg) => {
-        this.mrcParameters.push({
-          name: arg.name,
-          type: arg.type,
-        });
+        this.mrcParameters.push({...arg});
       });
     }
     this.updateBlock_();
@@ -169,7 +168,19 @@ const MECHANISM = {
     // Strip leading and trailing whitespace.
     name = name.trim();
 
-    const legalName = name;
+    if (this.isInFlyout) {
+      // Flyouts can have multiple methods with identical names.
+      return name;
+    }
+
+    const otherNames: string[] = [];
+    this.workspace.getBlocksByType(BLOCK_NAME)
+        .filter(block => block.id !== this.id)
+        .forEach((block) => {
+          otherNames.push(block.getFieldValue(FIELD_NAME));
+        });
+
+    const legalName = makeLegalName(name, otherNames, /* mustBeValidPythonIdentifier */ true);
     const oldName = nameField.getValue();
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
@@ -214,7 +225,7 @@ const MECHANISM = {
   /**
    * mrcOnMove is called when a MechanismBlock is moved.
    */
-  mrcOnMove: function(this: MechanismBlock, reason: string[]): void {
+  mrcOnMove: function(this: MechanismBlock, editor: Editor, reason: string[]): void {
     this.checkBlockIsInHolder();
     if (reason.includes('connect')) {
       const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -222,7 +233,7 @@ const MECHANISM = {
         (rootBlock as MechanismComponentHolderBlock).setNameOfChildBlock(this);
       }
     }
-    mrcDescendantsMayHaveChanged(this.workspace);
+    mrcDescendantsMayHaveChanged(this.workspace, editor);
   },
   checkBlockIsInHolder: function(this: MechanismBlock): void {
     const rootBlock: Blockly.Block | null = this.getRootBlock();
@@ -287,16 +298,110 @@ const MECHANISM = {
       if (this.mrcImportModule !== importModule) {
         this.mrcImportModule = importModule;
       }
+
+      // Save the old parameters and the blocks that are connected to their sockets.
+      const oldParameters: Parameter[] = [];
+      const oldConnectedBlocks: (Blockly.Block | null)[] = [];
+      for (let i = 0; i < this.mrcParameters.length; i++) {
+        oldParameters[i] = this.mrcParameters[i];
+        const argInput = this.getInput('ARG' + i);
+        if (argInput && argInput.connection && argInput.connection.targetBlock()) {
+          oldConnectedBlocks[i] = argInput.connection.targetBlock();
+        } else {
+          oldConnectedBlocks[i] = null;
+        }
+      }
+
+      // Regenerate mrc_parameters and create new inputs if necessary.
       this.mrcParameters = [];
+      let parametersIndex = 0;
       components.forEach(component => {
+        let componentPortsIndex = 0;
         for (const port in component.ports) {
           this.mrcParameters.push({
             name: port,
             type: component.ports[port],
+            componentId: component.componentId,
+            componentPortsIndex,
           });
+          let argInput = this.getInput('ARG' + parametersIndex);
+          const argField = this.getField('ARGNAME' + parametersIndex);
+          if (argInput && argField) {
+            argField.setValue(port);
+          } else {
+            // Add new input.
+            argInput = this.appendValueInput('ARG' + parametersIndex)
+                .setAlign(Blockly.inputs.Align.RIGHT)
+                .appendField(port, 'ARGNAME' + parametersIndex);
+          }
+          // Look in oldParameters to find the matching parameter.
+          let foundOldParameterIndex = -1;
+          for (let j = 0; j < oldParameters.length; j++) {
+            if (oldParameters[j].componentId === this.mrcParameters[parametersIndex].componentId &&
+                oldParameters[j].componentPortsIndex === this.mrcParameters[parametersIndex].componentPortsIndex) {
+              foundOldParameterIndex = j;
+              break;
+            }
+          }
+          if (foundOldParameterIndex !== -1) {
+            if (foundOldParameterIndex === parametersIndex) {
+              // The old connected block is already connected to this input.
+              oldConnectedBlocks[foundOldParameterIndex] = null;
+            } else {
+              // Move the old connected block to this input.
+              const oldConnectedBlock = oldConnectedBlocks[foundOldParameterIndex];
+              if (oldConnectedBlock && oldConnectedBlock.outputConnection && argInput.connection) {
+                argInput.connection.connect(oldConnectedBlock.outputConnection);
+                oldConnectedBlocks[foundOldParameterIndex] = null;
+              }
+            }
+          }
+          argInput.setCheck(getAllowedTypesForSetCheck(this.mrcParameters[parametersIndex].type));
+
+          componentPortsIndex++;
+          parametersIndex++;
         }
       });
-      this.updateBlock_();
+
+      // Remove deleted inputs.
+      for (let i = this.mrcParameters.length; this.getInput('ARG' + i); i++) {
+        this.removeInput('ARG' + i);
+      }
+
+      // Remove old blocks that are no longer connected to input sockets.
+      for (let i = 0; i < oldConnectedBlocks.length; i++) {
+        const oldConnectedBlock = oldConnectedBlocks[i];
+        if (oldConnectedBlock && oldConnectedBlock.outputConnection) {
+          if (!oldConnectedBlock.outputConnection.isConnected()) {
+            oldConnectedBlock.dispose();
+          }
+        }
+      }
+
+      // Add port blocks to any empty inputs.
+      for (let i = 0; i < this.mrcParameters.length; i++) {
+        let argInput = this.getInput('ARG' + i);
+        if (argInput && argInput.connection && !argInput.connection.targetBlock()) {
+          // The input is empty. Create a port block and connect it to the input.
+          const portBlockState = createPort(this.mrcParameters[i].type);
+          const portBlock = this.workspace.newBlock(portBlockState.type) as Blockly.BlockSvg;
+          if (portBlockState.extraState && portBlock.loadExtraState) {
+            portBlock.loadExtraState(portBlockState.extraState);
+          }
+          if (portBlockState.fields) {
+            const keys = Object.keys(portBlockState.fields);
+            for (let i = 0; i < keys.length; i++) {
+              const fieldName = keys[i];
+              const field = portBlock.getField(fieldName);
+              if (field) {
+                field.loadState(portBlockState.fields[fieldName]);
+              }
+            }
+          }
+          portBlock.initSvg();
+          argInput.connection.connect(portBlock.outputConnection);
+        }
+      }
     } else {
       // Did not find the mechanism.
       warnings.push(Blockly.Msg['MECHANISM_NOT_FOUND_WARNING']);
@@ -310,7 +415,9 @@ const MECHANISM = {
       if (icon) {
         icon.setBubbleVisible(true);
       }
-      this.bringToFront();
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).bringToFront();
+      }
     } else {
       // Clear the existing warning on the block.
       this.setWarningText(null, WARNING_ID_MECHANISM_CHANGED);
@@ -363,13 +470,17 @@ export function createMechanismBlock(
   const inputs: {[key: string]: any} = {};
   let i = 0;
   components.forEach(component => {
+    let componentPortsIndex = 0;
     for (const port in component.ports) {
       const parameterType = component.ports[port];
       extraState.parameters?.push({
         name: port,
         type: parameterType,
+        componentId: component.componentId,
+        componentPortsIndex,
       });
       inputs['ARG' + i] = createPort(parameterType);
+      componentPortsIndex++;
       i++;
     }
   });

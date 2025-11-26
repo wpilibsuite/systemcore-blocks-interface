@@ -74,7 +74,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   setAlertErrorMessage,
   isActive,
 }, ref) => {
-  const [blocklyComponent, setBlocklyComponent] = React.useState<BlocklyComponentType | null>(null);
+  const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
   const [editorInstance, setEditorInstance] = React.useState<editor.Editor | null>(null);
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
@@ -116,7 +116,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     }
 
     // Check if this event is for our workspace
-    if (blocklyComponent && event.workspaceId === blocklyComponent.getBlocklyWorkspace().id) {
+    if (blocklyComponent.current &&
+        event.workspaceId === blocklyComponent.current.getBlocklyWorkspace().id) {
       setTriggerPythonRegeneration(Date.now());
       // Also notify parent
     }
@@ -124,7 +125,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
 
   /** Called when BlocklyComponent is created. */
   const setupBlocklyComponent = React.useCallback((_modulePath: string, newBlocklyComponent: BlocklyComponentType) => {
-    setBlocklyComponent(newBlocklyComponent);
+    blocklyComponent.current = newBlocklyComponent;
     newBlocklyComponent.setActive(isActive);
   }, [isActive]);
 
@@ -156,8 +157,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
 
   /** Update active state when isActive changes. */
   React.useEffect(() => {
-    if (blocklyComponent) {
-      blocklyComponent.setActive(isActive);
+    if (blocklyComponent.current) {
+      blocklyComponent.current.setActive(isActive);
     }
     if (editorInstance && isActive) {
       editorInstance.makeCurrent(project, modulePathToContentText);
@@ -166,9 +167,9 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
 
   /** Generate code when regeneration is triggered. */
   React.useEffect(() => {
-    if (blocklyComponent && module) {
+    if (blocklyComponent.current && module) {
       const code = extendedPythonGenerator.mrcWorkspaceToCode(
-        blocklyComponent.getBlocklyWorkspace(),
+        blocklyComponent.current.getBlocklyWorkspace(),
         module
       );
       setGeneratedCode(code);

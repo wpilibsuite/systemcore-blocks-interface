@@ -67,6 +67,7 @@ export class Editor {
   private bindedOnChange: any = null;
   private shownPythonToolboxCategories: Set<string> | null = null;
   private toolbox: Blockly.utils.toolbox.ToolboxInfo = EMPTY_TOOLBOX;
+  private toolboxUpdateTimeout: NodeJS.Timeout | null = null;
 
   constructor(
       blocklyWorkspace: Blockly.WorkspaceSvg,
@@ -163,7 +164,7 @@ export class Editor {
           if (rootBlock) {
             // Call MRC_ON_DESCENDANT_DISCONNECT on the root block of the block that was disconnected.
             if (MRC_ON_DESCENDANT_DISCONNECT in rootBlock && typeof rootBlock[MRC_ON_DESCENDANT_DISCONNECT] === 'function') {
-              rootBlock[MRC_ON_DESCENDANT_DISCONNECT]();
+              rootBlock[MRC_ON_DESCENDANT_DISCONNECT](this);
             }
           }
         }
@@ -175,7 +176,7 @@ export class Editor {
       }
       // Call MRC_ON_MOVE on the block that was moved.
       if (MRC_ON_MOVE in block && typeof block[MRC_ON_MOVE] === 'function') {
-        block[MRC_ON_MOVE](reason);
+        block[MRC_ON_MOVE](this, reason);
       }
       // Call MRC_ON_ANCESTOR_MOVE on all descendents of the block that was moved.
       block.getDescendants(false).forEach(descendant => {
@@ -279,6 +280,16 @@ export class Editor {
     Blockly.serialization.workspaces.load(moduleContent.getBlocks(), this.blocklyWorkspace);
   }
 
+  public updateToolboxAfterDelay(): void {
+    if (this.toolboxUpdateTimeout) {
+      clearTimeout(this.toolboxUpdateTimeout);
+    }
+    this.toolboxUpdateTimeout = setTimeout(() => {
+      this.updateToolboxImpl();
+      this.toolboxUpdateTimeout = null;
+    }, 100);
+  }
+
   public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
     this.shownPythonToolboxCategories = shownPythonToolboxCategories;
     this.updateToolboxImpl();
@@ -299,19 +310,6 @@ export class Editor {
       this.blocklyWorkspace.updateToolbox(toolbox);
       // testAllBlocksInToolbox(toolbox, this.module.moduleType);
     }
-  }
-
-  public isModified(): boolean {
-    /*
-    // This code is helpful for debugging issues where the editor says
-    // 'Blocks have been modified!'.
-    if (this.getModuleContentText() !== this.moduleContentText) {
-      console.log('isModified will return true');
-      console.log('this.getModuleContentText() is ' + this.getModuleContentText());
-      console.log('this.moduleContentText is ' + this.moduleContentText);
-    }
-    */
-    return this.getModuleContentText() !== this.moduleContentText;
   }
 
   public getBlocklyWorkspace(): Blockly.WorkspaceSvg {
@@ -470,12 +468,14 @@ export class Editor {
 
   public async saveModule(): Promise<string> {
     const moduleContentText = this.getModuleContentText();
-    try {
-      await this.storage.saveFile(this.modulePath, moduleContentText);
-      this.moduleContentText = moduleContentText;
-      await storageProject.saveProjectInfo(this.storage, this.projectName);
-    } catch (e) {
-      throw e;
+    if (moduleContentText !== this.moduleContentText) {
+      try {
+        await this.storage.saveFile(this.modulePath, moduleContentText);
+        this.moduleContentText = moduleContentText;
+        await storageProject.saveProjectInfo(this.storage, this.projectName);
+      } catch (e) {
+        throw e;
+      }
     }
     return moduleContentText;
   }

@@ -51,7 +51,7 @@ export enum SenderType {
 const SENDER_VALUE_ROBOT = 'robot';
 const WARNING_ID_EVENT_CHANGED = 'event changed';
 
-export type EventHandlerBlock = Blockly.Block & EventHandlerMixin & Blockly.BlockSvg;
+export type EventHandlerBlock = Blockly.Block & EventHandlerMixin;
 
 interface EventHandlerMixin extends EventHandlerMixinType {
   mrcSenderType: SenderType;
@@ -292,7 +292,9 @@ const EVENT_HANDLER = {
       if (icon) {
         icon.setBubbleVisible(true);
       }
-      this.bringToFront();
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).bringToFront();
+      }
     } else {
       // Clear the existing warning on the block.
       this.setWarningText(null, WARNING_ID_EVENT_CHANGED);
