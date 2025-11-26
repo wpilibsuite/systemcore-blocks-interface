@@ -22,7 +22,7 @@
 
 import * as commonStorage from './common_storage';
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = '';
 
 export async function isServerAvailable(): Promise<boolean> {
   try {
@@ -31,13 +31,20 @@ export async function isServerAvailable(): Promise<boolean> {
       setTimeout(() => reject(new Error('Timeout')), 5000); // 5 second timeout
     });
     
-    // Race between the fetch and timeout
+    // Check the specific API status endpoint to distinguish backend from static file server
+    // Use absolute path without base URL since /statusz is a backend endpoint
     const response = await Promise.race([
-      fetch(`${API_BASE_URL}/`),
+      fetch('/statusz'),
       timeoutPromise
     ]);
+        
+    if (!response.ok) {
+      return false;
+    }
     
-    return response.ok;
+    // Verify it's actually the Python backend by checking the response
+    const data = await response.json();
+    return data.server === 'python-backend';
   } catch (error) {
     // Network error, server not available, or timeout
     return false;
