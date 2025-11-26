@@ -294,7 +294,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
 
     try {
-      const blobUrl = await createPythonFiles.producePythonProjectBlob(props.project, props.storage);
+      const blobUrl = await createPythonFiles.producePythonProjectBlob(props.currentProject, props.storage);
       
       // Check if the backend server is available
       const serverAvailable = await serverSideStorage.isServerAvailable();
@@ -306,7 +306,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         const blob = await response.blob();
         
         const formData = new FormData();
-        formData.append('file', blob, `${props.project.projectName}.zip`);
+        formData.append('file', blob, `${props.currentProject.projectName}.zip`);
         
         const deployResponse = await fetch('/deploy', {
           method: 'POST',
@@ -326,7 +326,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         // Download the file locally
         const link = document.createElement('a');
         link.href = blobUrl;
-        link.download = `${props.project.projectName}.zip`;
+        link.download = `${props.currentProject.projectName}.zip`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
