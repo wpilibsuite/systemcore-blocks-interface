@@ -20,6 +20,10 @@
           - name: Install dependencies
             run: npm install
 
+          - name: Update base URL for GitHub Pages
+            run: |
+              sed -i "s|base: '/blocks/',|base: '/systemcore-blocks-interface/',|" vite.config.mts
+
           - name: Build package
             run: npm run build # Replace with your build command, outputting to e.g., 'dist'
 
