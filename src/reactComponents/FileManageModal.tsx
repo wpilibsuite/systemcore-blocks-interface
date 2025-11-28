@@ -42,6 +42,7 @@ interface FileManageModalProps {
   project: storageProject.Project | null;
   onProjectChanged: () => Promise<void>;
   gotoTab: (path: string) => void;
+  closeTab: (path: string) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
   tabType: TabType;
@@ -209,6 +210,9 @@ export default function FileManageModal(props: FileManageModalProps) {
     setModules(newModules);
 
     if (props.storage && props.project) {
+      // Close the tab before removing the module
+      props.closeTab(record.path);
+      
       await storageProject.removeModuleFromProject(
           props.storage,
           props.project,

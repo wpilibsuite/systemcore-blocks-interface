@@ -141,13 +141,14 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
   const [modulePathToContentText, setModulePathToContentText] = React.useState<{[modulePath: string]: string}>({});
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
-  const [activeTab, setActiveTab] = React.useState('');
   const [isLoadingTabs, setIsLoadingTabs] = React.useState(false);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
   const [theme, setTheme] = React.useState('dark');
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
+  
+  const tabsRef = React.useRef<Tabs.TabsRef>(null);
 
   /** Initialize language from UserSettings when app first starts. */
   React.useEffect(() => {
@@ -402,12 +403,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         // Set the tabs
         setTabItems(tabsToSet);
         
-        // Only set active tab to robot if no active tab is set or if the current active tab no longer exists
-        const currentActiveTabExists = tabsToSet.some(tab => tab.key === activeTab);
-        if (!activeTab || !currentActiveTabExists) {
-          setActiveTab(project.robot.modulePath);
-        }
-        
         // Only auto-save if we didn't use saved tabs (i.e., this is a new project or the first time)
         if (!usedSavedTabs) {
           try {
@@ -469,6 +464,14 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     await fetchModules();
   };
 
+  const gotoTab = (tabKey: string): void => {
+    tabsRef.current?.gotoTab(tabKey);
+  };
+
+  const closeTab = (tabKey: string): void => {
+    tabsRef.current?.closeTab(tabKey);
+  };
+
   const { Sider } = Antd.Layout;
 
   return (
@@ -498,7 +501,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               <Menu.Component
                 storage={storage}
                 setAlertErrorMessage={setAlertErrorMessage}
-                gotoTab={setActiveTab}
+                gotoTab={gotoTab}
+                closeTab={closeTab}
                 currentProject={project}
                 setCurrentProject={setProject}
                 onProjectChanged={onProjectChanged}
@@ -513,8 +517,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
             </Sider>
             <Antd.Layout>
               <Tabs.Component
+                ref={tabsRef}
                 tabList={tabItems}
-                activeTab={activeTab}
                 setTabList={setTabItems}
                 setAlertErrorMessage={setAlertErrorMessage}
                 project={project}
