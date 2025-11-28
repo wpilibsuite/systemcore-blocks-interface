@@ -20,7 +20,6 @@
  */
 import * as Antd from 'antd';
 import * as React from 'react';
-import { RcFile, UploadRequestOption } from 'rc-upload/lib/interface';
 import * as commonStorage from '../storage/common_storage';
 import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
@@ -391,7 +390,7 @@ export function Component(props: MenuProps): React.JSX.Element {
       },
       onChange: (_info) => {
       },
-      customRequest: (options: UploadRequestOption) => {
+      customRequest: (options) => {
         const reader = new FileReader();
         reader.onload = (event) => {
           if (!event.target) {
@@ -402,16 +401,20 @@ export function Component(props: MenuProps): React.JSX.Element {
           projectNames.forEach(projectName => {
             existingProjectNames.push(projectName);
           });
-          const file = options.file as RcFile;
+          const file = options.file as File;
           const uploadProjectName = storageProject.makeUploadProjectName(file.name, existingProjectNames);
           if (props.storage) {
             storageProject.uploadProject(props.storage, uploadProjectName, dataUrl);
           }
+          if (options.onSuccess) {
+            options.onSuccess(dataUrl);
+          }
         };
         reader.onerror = (_error) => {
           console.log('Error reading file: ' + reader.error);
-          // TODO: i18n
-          props.setAlertErrorMessage(t('UPLOAD_FAILED') || 'Failed to upload project');
+          if (options.onError) {
+            options.onError(new Error(t('UPLOAD_FAILED')));
+          }
         };
         reader.readAsDataURL(options.file as Blob);
       },
