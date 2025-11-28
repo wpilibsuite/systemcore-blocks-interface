@@ -65,7 +65,7 @@ export default function FileManageModal(props: FileManageModalProps) {
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
   React.useEffect(() => {
-    if (!props.project || props.tabType === null) {
+    if (!props.project || props.tabType === null || !props.isOpen) {
       setModules([]);
       return;
     }
@@ -89,7 +89,7 @@ export default function FileManageModal(props: FileManageModalProps) {
     // Sort modules alphabetically by name
     moduleList.sort((a, b) => a.name.localeCompare(b.name));
     setModules(moduleList);
-  }, [props.project, props.tabType]);
+  }, [props.project, props.tabType, props.isOpen]);
 
   /** Handles renaming a module. */
   const handleRename = async (origModule: Module, newClassName: string): Promise<void> => {
@@ -106,19 +106,10 @@ export default function FileManageModal(props: FileManageModalProps) {
       );
       await props.onProjectChanged();
 
-      const newModules = modules.map((module) => {
-        if (module.path === origModule.path) {
-          return {...module, title: newClassName, path: newModulePath};
-        }
-        return module;
-      });
-
-      setModules(newModules);
-
       // Close the rename modal first
       setRenameModalOpen(false);
       
-      // Automatically select and open the newly created module
+      // Automatically select and open the renamed module
       props.gotoTab(newModulePath);
       props.onClose();
 

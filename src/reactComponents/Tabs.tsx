@@ -381,8 +381,32 @@ export function Component(props: TabsProps): React.JSX.Element {
   // Effect to handle active tab changes
   React.useEffect(() => {
     if (activeKey !== props.activeTab) {
-      if (!isTabOpen(props.activeTab)) {
-        addTab(props.activeTab);
+      if (!isTabOpen(props.activeTab) && props.project) {
+        // Check if this is a renamed module by looking for a tab that points to a non-existent path
+        const targetModule = storageProject.findModuleByModulePath(props.project, props.activeTab);
+        if (targetModule) {
+          // Find a tab whose module path no longer exists (indicating it was renamed)
+          const staleTab = props.tabList.find((tab) => {
+            if (tab.type === TabType.ROBOT) return false;
+            const tabModule = storageProject.findModuleByModulePath(props.project!, tab.key);
+            // If the tab's path doesn't exist, check if it matches the type of the target module
+            return !tabModule && 
+              ((tab.type === TabType.MECHANISM && targetModule.moduleType === storageModule.ModuleType.MECHANISM) ||
+               (tab.type === TabType.OPMODE && targetModule.moduleType === storageModule.ModuleType.OPMODE));
+          });
+          
+          if (staleTab) {
+            // Update the stale tab with the new path and title
+            const newTabs = props.tabList.map((tab) => 
+              tab.key === staleTab.key ? { ...tab, key: props.activeTab, title: targetModule.className } : tab
+            );
+            props.setTabList(newTabs);
+          } else {
+            addTab(props.activeTab);
+          }
+        } else {
+          addTab(props.activeTab);
+        }
       }
       handleTabChange(props.activeTab);
     }
