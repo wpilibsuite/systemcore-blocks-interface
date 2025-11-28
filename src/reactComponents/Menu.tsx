@@ -59,6 +59,7 @@ export interface MenuProps {
   storage: commonStorage.Storage | null;
   setAlertErrorMessage: (message: string) => void;
   gotoTab: (tabKey: string) => void;
+  closeTab: (tabKey: string) => void;
   currentProject: storageProject.Project | null;
   setCurrentProject: (project: storageProject.Project | null) => void;
   onProjectChanged: () => Promise<void>;
@@ -462,6 +463,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         onProjectChanged={props.onProjectChanged}
         setAlertErrorMessage={props.setAlertErrorMessage}
         gotoTab={props.gotoTab}
+        closeTab={props.closeTab}
       />
       <ProjectManageModal
         noProjects={noProjects}
