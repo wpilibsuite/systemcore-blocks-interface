@@ -44,11 +44,16 @@ export interface TabItem {
   type: TabType;
 }
 
+/** Imperative methods exposed by Tabs component. */
+export interface TabsRef {
+  gotoTab: (tabKey: string) => void;
+  closeTab: (tabKey: string) => void;
+}
+
 /** Props for the Tabs component. */
 export interface TabsProps {
   tabList: TabItem[];
   setTabList: (items: TabItem[]) => void;
-  activeTab: string;
   project: storageProject.Project | null;
   onProjectChanged: () => Promise<void>;
   setAlertErrorMessage: (message: string) => void;
@@ -69,11 +74,11 @@ const MIN_TABS_FOR_CLOSE_OTHERS = 2;
  * Tab component that manages project module tabs with add, edit, delete, and rename functionality.
  * Provides context menus for tab operations and modal dialogs for user input.
  */
-export function Component(props: TabsProps): React.JSX.Element {
+export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): React.JSX.Element => {
   const { t } = I18Next.useTranslation();
   const [modal, contextHolder] = Antd.Modal.useModal();
 
-  const [activeKey, setActiveKey] = React.useState(props.activeTab);
+  const [activeKey, setActiveKey] = React.useState(props.tabList.length > 0 ? props.tabList[0].key : '');
   const [addTabDialogOpen, setAddTabDialogOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
@@ -100,40 +105,74 @@ export function Component(props: TabsProps): React.JSX.Element {
     setActiveKey(key);
   };
 
-  /** Checks if a key exists in the current tab list. */
-  const isTabOpen = (key: string): boolean => {
-    return props.tabList.some((tab) => tab.key === key);
+  /** Goes to a specific tab, adding it if needed or updating if renamed. */
+  const gotoTab = (tabKey: string): void => {
+    // Check if tab already exists
+    const existingTab = props.tabList.find(tab => tab.key === tabKey);
+    if (existingTab) {
+      // Tab exists, just activate it
+      setActiveKey(tabKey);
+      return;
+    }
+
+    if (!props.project) return;
+
+    // Check if this is a renamed module - look for a tab whose module no longer exists
+    const targetModule = storageProject.findModuleByModulePath(props.project, tabKey);
+    if (targetModule) {
+      // Look for a tab with the same type but whose path no longer exists (indicating a rename)
+      const staleTab = props.tabList.find(tab => {
+        const tabModule = storageProject.findModuleByModulePath(props.project!, tab.key);
+        // If tab's module doesn't exist and it matches the target type
+        return !tabModule && 
+               ((tab.type === TabType.MECHANISM && targetModule.moduleType === storageModule.ModuleType.MECHANISM) ||
+                (tab.type === TabType.OPMODE && targetModule.moduleType === storageModule.ModuleType.OPMODE));
+      });
+
+      if (staleTab) {
+        // This is a rename - update the existing tab
+        const updatedTabs = props.tabList.map(tab => 
+          tab.key === staleTab.key 
+            ? { ...tab, key: tabKey, title: targetModule.className }
+            : tab
+        );
+        props.setTabList(updatedTabs);
+        setActiveKey(tabKey);
+        return;
+      }
+
+      // Not a rename - add new tab
+      let newTab: TabItem;
+      switch (targetModule.moduleType) {
+        case storageModule.ModuleType.MECHANISM:
+          newTab = { key: tabKey, title: targetModule.className, type: TabType.MECHANISM };
+          break;
+        case storageModule.ModuleType.OPMODE:
+          newTab = { key: tabKey, title: targetModule.className, type: TabType.OPMODE };
+          break;
+        case storageModule.ModuleType.ROBOT:
+          newTab = { key: tabKey, title: targetModule.className, type: TabType.ROBOT };
+          break;
+        default:
+          return;
+      }
+      props.setTabList([...props.tabList, newTab]);
+      setActiveKey(tabKey);
+    }
   };
 
-  /** Adds a new tab for the given module key. */
-  const addTab = (key: string): void => {
-    const newTabs = [...props.tabList];
-    if (!props.project) {
-      return;
-    }
-
-    const modulePath = key;
-    const module = storageProject.findModuleByModulePath(props.project, modulePath);
-    if (!module) {
-      return;
-    }
-
-    switch (module.moduleType) {
-      case storageModule.ModuleType.MECHANISM:
-        newTabs.push({ key, title: module.className, type: TabType.MECHANISM });
-        break;
-      case storageModule.ModuleType.OPMODE:
-        newTabs.push({ key, title: module.className, type: TabType.OPMODE });
-        break;
-      case storageModule.ModuleType.ROBOT:
-        break;   // Robot tab is always first and cannot be added again.
-      default:
-        console.warn('Unknown module type:', module.moduleType);
-        break;
-    }
-
+  /** Closes a specific tab. */
+  const closeTabMethod = (tabKey: string): void => {
+    const newTabs = props.tabList.filter((tab) => tab.key !== tabKey);
     props.setTabList(newTabs);
+    // The useEffect will handle switching to another tab if needed
   };
+
+  // Expose imperative methods via ref
+  React.useImperativeHandle(ref, () => ({
+    gotoTab,
+    closeTab: closeTabMethod,
+  }));
 
   /** Handles tab edit actions (add/remove). */
   const handleTabEdit = (
@@ -378,15 +417,19 @@ export function Component(props: TabsProps): React.JSX.Element {
     });
   };
 
-  // Effect to handle active tab changes
+  // Effect to ensure activeKey is valid when tab list changes
   React.useEffect(() => {
-    if (activeKey !== props.activeTab) {
-      if (!isTabOpen(props.activeTab)) {
-        addTab(props.activeTab);
-      }
-      handleTabChange(props.activeTab);
+    // Check if current activeKey is still in the tab list
+    const isActiveKeyValid = props.tabList.some(tab => tab.key === activeKey);
+    
+    if (!isActiveKeyValid && props.tabList.length > 0) {
+      // Active tab was removed, switch to first available tab
+      const newActiveKey = props.tabList[0].key;
+      setActiveKey(newActiveKey);
+    } else if (props.tabList.length === 0) {
+      setActiveKey('');
     }
-  }, [props.activeTab]);
+  }, [props.tabList.length]);
 
   return (
     <>
@@ -480,4 +523,4 @@ export function Component(props: TabsProps): React.JSX.Element {
       />
     </>
   );
-}
+});
