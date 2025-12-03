@@ -368,7 +368,7 @@ export function Component(props: MenuProps): React.JSX.Element {
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error('Failed to download project:', error);
-      props.setAlertErrorMessage(t('DOWNLOAD_FAILED') || 'Failed to download project');
+      props.setAlertErrorMessage(t('DOWNLOAD_FAILED'));
     }
   }
 
@@ -385,7 +385,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         const isBlocks = file.name.endsWith(storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION)
         if (!isBlocks) {
           // TODO: i18n
-          props.setAlertErrorMessage(file.name + ' is not a blocks file');
+          props.setAlertErrorMessage(t('UPLOAD_FILE_NOT_BLOCKS', { filename: file.name }));
           return false;
         }
         return isBlocks || Antd.Upload.LIST_IGNORE;
