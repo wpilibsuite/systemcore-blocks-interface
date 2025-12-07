@@ -576,7 +576,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/cascader
-1.7.0 <https://github.com/react-component/cascader>
+1.8.0 <https://github.com/react-component/cascader>
 The MIT License (MIT)
 
 Copyright (c) 2014-present alipay.com
@@ -845,7 +845,7 @@ SOFTWARE.
 ******************************
 
 @rc-component/motion
-1.1.5 <https://github.com/react-component/motion>
+1.1.6 <https://github.com/react-component/motion>
 The MIT License (MIT)
 
 Copyright (c) 2019-present afc163
@@ -916,7 +916,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/picker
-1.6.0 <https://github.com/react-component/picker>
+1.7.1 <https://github.com/react-component/picker>
 The MIT License (MIT)
 
 Copyright (c) 2019-present afc163
@@ -1043,7 +1043,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/select
-1.2.3 <https://github.com/react-component/select>
+1.2.7 <https://github.com/react-component/select>
 The MIT License (MIT)
 
 Copyright (c) 2014-present alipay.com
@@ -1646,7 +1646,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 antd
-6.0.0 <https://github.com/ant-design/ant-design>
+6.0.1 <https://github.com/ant-design/ant-design>
 MIT LICENSE
 
 Copyright (c) 2015-present Ant UED, https://xtech.antfin.com/
@@ -2545,7 +2545,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 i18next
-25.6.3 <https://github.com/i18next/i18next>
+25.7.1 <https://github.com/i18next/i18next>
 The MIT License (MIT)
 
 Copyright (c) 2025 i18next
@@ -4460,7 +4460,7 @@ SOFTWARE.
 ******************************
 
 nwsapi
-2.2.22 <https://github.com/dperini/nwsapi>
+2.2.23 <https://github.com/dperini/nwsapi>
 Copyright (c) 2007-2025 Diego Perini (http://www.iport.it/)
 
 Permission is hereby granted, free of charge, to any person
@@ -4806,7 +4806,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 react
-19.2.0 <https://github.com/facebook/react>
+19.2.1 <https://github.com/facebook/react>
 MIT License
 
 Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -4833,7 +4833,7 @@ SOFTWARE.
 ******************************
 
 react-dom
-19.2.0 <https://github.com/facebook/react>
+19.2.1 <https://github.com/facebook/react>
 MIT License
 
 Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -4860,7 +4860,7 @@ SOFTWARE.
 ******************************
 
 react-i18next
-16.3.5 <https://github.com/i18next/react-i18next>
+16.4.0 <https://github.com/i18next/react-i18next>
 The MIT License (MIT)
 
 Copyright (c) 2025 i18next
