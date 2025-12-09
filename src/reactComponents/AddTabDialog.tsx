@@ -163,28 +163,59 @@ export default function AddTabDialog(props: AddTabDialogProps) {
         <h4 style={{margin: '0 0 8px 0'}}>
           {t('SELECT_HIDDEN')}
         </h4>
-        <Antd.List
-          size="small"
-          bordered
-          style={{height: getListHeight(), overflow: 'auto', marginBottom: 16}}
-          dataSource={availableItems}
-          renderItem={(item) => (
-            <Antd.List.Item
-              onClick={() => handleSelectModule(item)}
-              style={{cursor: 'pointer'}}
-            >
-              <Antd.List.Item.Meta
-                avatar={TabTypeUtils.getIcon(item.type)}
-                title={
+        <div
+          style={{
+            height: getListHeight(),
+            overflow: 'auto',
+            marginBottom: 16,
+            border: `1px solid ${token.colorBorder}`,
+            borderRadius: '6px',
+          }}
+        >
+          {availableItems.length === 0 ? (
+            <div style={{
+              padding: '20px',
+              textAlign: 'center',
+              color: token.colorTextSecondary,
+            }}>
+              {tabType === TabType.MECHANISM ? t('NO_HIDDEN_MECHANISMS') : t('NO_HIDDEN_OPMODES')}
+            </div>
+          ) : (
+            <ul style={{
+              listStyle: 'none',
+              margin: 0,
+              padding: 0,
+            }}>
+              {availableItems.map((item) => (
+                <li
+                  key={item.path}
+                  onClick={() => handleSelectModule(item)}
+                  style={{
+                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    borderBottom: `1px solid ${token.colorBorderSecondary}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = token.colorBgTextHover;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    {TabTypeUtils.getIcon(item.type)}
+                  </span>
                   <span style={{fontSize: '14px'}}>
                     {item.title}
                   </span>
-                }
-              />
-            </Antd.List.Item>
+                </li>
+              ))}
+            </ul>
           )}
-          locale={{emptyText: tabType === TabType.MECHANISM ? t('NO_HIDDEN_MECHANISMS') : t('NO_HIDDEN_OPMODES')}}
-        />
+        </div>
         <h4 style={{margin: '0 0 8px 0'}}>
           {t('CREATE_NEW', { type: TabTypeUtils.toString(tabType) })}
         </h4>
