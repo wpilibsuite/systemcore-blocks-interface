@@ -58,8 +58,7 @@ type ConstructorArg = {
 type ComponentExtraState = {
   componentId?: string,
   importModule?: string,
-  // If staticFunctionName is not present, generate the constructor.
-  staticFunctionName?: string,
+  tooltip?: string,
   params?: ConstructorArg[],
   /**
    * The module type. Note that this is only present when blocks are created for the toolbox. It is not
@@ -73,7 +72,7 @@ interface ComponentMixin extends ComponentMixinType {
   mrcComponentId: string,
   mrcArgs: ConstructorArg[],
   mrcImportModule: string,
-  mrcStaticFunctionName: string,
+  mrcTooltip: string,
 
   /**
    * mrcHasNotInHolderWarning is set to true if we set the NOT_IN_HOLDER warning text on the block.
@@ -93,6 +92,9 @@ const COMPONENT = {
   init: function (this: ComponentBlock): void {
     this.mrcHasNotInHolderWarning = false;
     this.setStyle(MRC_STYLE_COMPONENTS);
+    this.setTooltip(() => {
+      return this.mrcTooltip;
+    });
     const nameField = new Blockly.FieldTextInput('')
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
     this.appendDummyInput()
@@ -123,8 +125,8 @@ const COMPONENT = {
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
     }
-    if (this.mrcStaticFunctionName) {
-      extraState.staticFunctionName = this.mrcStaticFunctionName;
+    if (this.mrcTooltip) {
+      extraState.tooltip = this.mrcTooltip;
     }
     return extraState;
   },
@@ -134,7 +136,7 @@ const COMPONENT = {
   loadExtraState: function (this: ComponentBlock, extraState: ComponentExtraState): void {
     this.mrcComponentId = extraState.componentId ? extraState.componentId : this.id;
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
-    this.mrcStaticFunctionName = extraState.staticFunctionName ? extraState.staticFunctionName : '';
+    this.mrcTooltip = extraState.tooltip ? extraState.tooltip : '';
     this.mrcArgs = [];
 
     if (extraState.params) {
@@ -328,8 +330,7 @@ function createComponentBlock(
     moduleType: storageModule.ModuleType): toolboxItems.Block {
   const extraState: ComponentExtraState = {
     importModule: classData.moduleName,
-    //TODO(ags): Remove this because we know what the constructor name is
-    staticFunctionName: constructorData.functionName,
+    tooltip: constructorData.tooltip,
     params: [],
     moduleType: moduleType,
   };
