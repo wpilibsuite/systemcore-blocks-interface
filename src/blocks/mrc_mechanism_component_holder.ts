@@ -337,8 +337,11 @@ function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator:
   const body = mechanisms + components;
   if (body) {
     code += body;
-    generator.addClassMethodDefinition('define_hardware', code);
+  } else {
+    code += generator.INDENT + 'pass\n';
   }
+
+  generator.addClassMethodDefinition('define_hardware', code);
 }
 
 function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
