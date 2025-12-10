@@ -304,618 +304,6 @@
     },
     "classes": [
         {
-            "className": "expansion_hub.ExpansionHub",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "hubNumber",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHub",
-                    "functionName": "__init__",
-                    "returnType": "expansion_hub.ExpansionHub",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHub"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHub",
-                    "functionName": "getBatteryVoltage",
-                    "returnType": "float",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHub"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "motorNumber",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHub",
-                    "functionName": "getMotor",
-                    "returnType": "expansion_hub.ExpansionHubMotor",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHub"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "servoNumber",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHub",
-                    "functionName": "getServo",
-                    "returnType": "expansion_hub.ExpansionHubServo",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHub"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHub",
-                    "functionName": "isConnected",
-                    "returnType": "bool",
-                    "tooltip": ""
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "expansion_hub",
-            "staticMethods": []
-        },
-        {
-            "className": "expansion_hub.ExpansionHubMotor",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "hubNumber",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "motorNumber",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "__init__",
-                    "returnType": "expansion_hub.ExpansionHubMotor",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "getCurrent",
-                    "returnType": "float",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "getEncoder",
-                    "returnType": "float",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "getEncoderVelocity",
-                    "returnType": "float",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "getPositionPidConstants",
-                    "returnType": "expansion_hub.ExpansionHubPidConstants",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "getVelocityPidConstants",
-                    "returnType": "expansion_hub.ExpansionHubPidConstants",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "isHubConnected",
-                    "returnType": "bool",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "resetEncoder",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "perCount",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "setDistancePerCount",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "enabled",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "setEnabled",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "floatOn0",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "setFloatOn0",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "power",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "setPercentagePower",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "setpoint",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "setPositionSetpoint",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "reversed",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "setReversed",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "setpoint",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "setVelocitySetpoint",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubMotor"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "voltage",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubMotor",
-                    "functionName": "setVoltage",
-                    "returnType": "None",
-                    "tooltip": ""
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "expansion_hub",
-            "staticMethods": []
-        },
-        {
-            "className": "expansion_hub.ExpansionHubPidConstants",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "hubNumber",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "motorNumber",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "isVelocityPid",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
-                    "functionName": "__init__",
-                    "returnType": "expansion_hub.ExpansionHubPidConstants",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubPidConstants"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
-                    "functionName": "disableContinousInput",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubPidConstants"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "minimum",
-                            "type": "float"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "maximum",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
-                    "functionName": "enableContinousInput",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubPidConstants"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "s",
-                            "type": "float"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "v",
-                            "type": "float"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "a",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
-                    "functionName": "setFF",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubPidConstants"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "p",
-                            "type": "float"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "i",
-                            "type": "float"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "d",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubPidConstants",
-                    "functionName": "setPID",
-                    "returnType": "None",
-                    "tooltip": ""
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "expansion_hub",
-            "staticMethods": []
-        },
-        {
-            "className": "expansion_hub.ExpansionHubServo",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "hubNumber",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "servoNumber",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubServo",
-                    "functionName": "__init__",
-                    "returnType": "expansion_hub.ExpansionHubServo",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubServo"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubServo",
-                    "functionName": "isHubConnected",
-                    "returnType": "bool",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubServo"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "value",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubServo",
-                    "functionName": "set",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubServo"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "degrees",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubServo",
-                    "functionName": "setAngle",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubServo"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "enabled",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubServo",
-                    "functionName": "setEnabled",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubServo"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "framePeriod",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubServo",
-                    "functionName": "setFramePeriod",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub.ExpansionHubServo"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "pulseWidth",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub.ExpansionHubServo",
-                    "functionName": "setPulseWidth",
-                    "returnType": "None",
-                    "tooltip": ""
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "expansion_hub",
-            "staticMethods": []
-        },
-        {
             "className": "wpilib.ADXL345_I2C",
             "classVariables": [
                 {
@@ -46399,6 +45787,884 @@
             "staticMethods": []
         },
         {
+            "className": "wpilib_placeholders.ExpansionHub",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hubNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHub",
+                    "functionName": "__init__",
+                    "returnType": "wpilib_placeholders.ExpansionHub",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHub"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHub",
+                    "functionName": "getBatteryVoltage",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHub"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "motorNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHub",
+                    "functionName": "getMotor",
+                    "returnType": "wpilib_placeholders.ExpansionHubMotor",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHub"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "servoNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHub",
+                    "functionName": "getServo",
+                    "returnType": "wpilib_placeholders.ExpansionHubServo",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHub"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHub",
+                    "functionName": "isConnected",
+                    "returnType": "bool",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "wpilib_placeholders",
+            "staticMethods": []
+        },
+        {
+            "className": "wpilib_placeholders.ExpansionHubMotor",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hubNumber",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "motorNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "__init__",
+                    "returnType": "wpilib_placeholders.ExpansionHubMotor",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "getCurrent",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "getEncoder",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "getEncoderVelocity",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "getPositionPidConstants",
+                    "returnType": "wpilib_placeholders.ExpansionHubPidConstants",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "getVelocityPidConstants",
+                    "returnType": "wpilib_placeholders.ExpansionHubPidConstants",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "isHubConnected",
+                    "returnType": "bool",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "resetEncoder",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "perCount",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "setDistancePerCount",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "setEnabled",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "floatOn0",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "setFloatOn0",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "power",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "setPercentagePower",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setpoint",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "setPositionSetpoint",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "reversed",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "setReversed",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setpoint",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "setVelocitySetpoint",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubMotor"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "voltage",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
+                    "functionName": "setVoltage",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "wpilib_placeholders",
+            "staticMethods": []
+        },
+        {
+            "className": "wpilib_placeholders.ExpansionHubPidConstants",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hubNumber",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "motorNumber",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "isVelocityPid",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubPidConstants",
+                    "functionName": "__init__",
+                    "returnType": "wpilib_placeholders.ExpansionHubPidConstants",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubPidConstants"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubPidConstants",
+                    "functionName": "disableContinousInput",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubPidConstants"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "minimum",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "maximum",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubPidConstants",
+                    "functionName": "enableContinousInput",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubPidConstants"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "s",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "v",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "a",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubPidConstants",
+                    "functionName": "setFF",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubPidConstants"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "p",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "i",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "d",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubPidConstants",
+                    "functionName": "setPID",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "wpilib_placeholders",
+            "staticMethods": []
+        },
+        {
+            "className": "wpilib_placeholders.ExpansionHubServo",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "hubNumber",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "servoNumber",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubServo",
+                    "functionName": "__init__",
+                    "returnType": "wpilib_placeholders.ExpansionHubServo",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubServo",
+                    "functionName": "isHubConnected",
+                    "returnType": "bool",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubServo",
+                    "functionName": "set",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "degrees",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubServo",
+                    "functionName": "setAngle",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubServo",
+                    "functionName": "setEnabled",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "framePeriod",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubServo",
+                    "functionName": "setFramePeriod",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.ExpansionHubServo"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "pulseWidth",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.ExpansionHubServo",
+                    "functionName": "setPulseWidth",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "wpilib_placeholders",
+            "staticMethods": []
+        },
+        {
+            "className": "wpilib_placeholders.OpModeRobot",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "wpilib_placeholders.OpModeRobot",
+                    "functionName": "__init__",
+                    "returnType": "wpilib_placeholders.OpModeRobot",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.OpModeRobot"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "mode, name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "group",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "description",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.OpModeRobot",
+                    "functionName": "AddOpMode",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.OpModeRobot"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.OpModeRobot",
+                    "functionName": "DriverStationConnected",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.OpModeRobot"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.OpModeRobot",
+                    "functionName": "EndCompetition",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.OpModeRobot"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.OpModeRobot",
+                    "functionName": "NonePeriodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.OpModeRobot"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.OpModeRobot",
+                    "functionName": "StartCompetition",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "wpilib_placeholders",
+            "staticMethods": []
+        },
+        {
+            "className": "wpilib_placeholders.PeriodicOpMode",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "__init__",
+                    "returnType": "wpilib_placeholders.PeriodicOpMode",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "AddPeriodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "DisabledPeriodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "End",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "GetLoopStartTime",
+                    "returnType": "int",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "GetPeriod",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "LoopFunc",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "opModeId",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "OpModeRun",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "OpModeStop",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "Periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "PrintWatchdogEpochs",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib_placeholders.PeriodicOpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_placeholders.PeriodicOpMode",
+                    "functionName": "Start",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "moduleName": "wpilib_placeholders",
+            "staticMethods": []
+        },
+        {
             "className": "wpimath.controller.ArmFeedforward",
             "classVariables": [],
             "constructors": [
@@ -81452,12 +81718,6 @@
     "modules": [
         {
             "enums": [],
-            "functions": [],
-            "moduleName": "expansion_hub",
-            "moduleVariables": []
-        },
-        {
-            "enums": [],
             "functions": [
                 {
                     "args": [],
@@ -81675,6 +81935,30 @@
             "enums": [],
             "functions": [],
             "moduleName": "wpilib.sysid",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "wpilib_placeholders",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "wpilib_placeholders.expansion_hub",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "wpilib_placeholders.op_mode_robot",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "wpilib_placeholders.periodic_op_mode",
             "moduleVariables": []
         },
         {

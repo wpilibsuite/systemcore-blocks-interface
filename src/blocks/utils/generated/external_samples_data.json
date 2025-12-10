@@ -27,7 +27,7 @@
                     "expectedPortType": "I2C_PORT",
                     "functionName": "__init__",
                     "returnType": "color_range_sensor.ColorRangeSensor",
-                    "tooltip": ""
+                    "tooltip": "REV Robotics Color Sensor v3. Part number REV-31-1557. https://www.revrobotics.com/rev-31-1557"
                 }
             ],
             "enums": [],
@@ -93,8 +93,8 @@
                         }
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "get_manufacturer",
-                    "returnType": "str",
+                    "functionName": "opmode_end",
+                    "returnType": "None",
                     "tooltip": ""
                 },
                 {
@@ -106,8 +106,8 @@
                         }
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "get_name",
-                    "returnType": "str",
+                    "functionName": "opmode_periodic",
+                    "returnType": "None",
                     "tooltip": ""
                 },
                 {
@@ -119,46 +119,7 @@
                         }
                     ],
                     "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "get_part_number",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "color_range_sensor.ColorRangeSensor"
-                        }
-                    ],
-                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "get_url",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "color_range_sensor.ColorRangeSensor"
-                        }
-                    ],
-                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "get_version",
-                    "returnType": "tuple[int, int, int]",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "color_range_sensor.ColorRangeSensor"
-                        }
-                    ],
-                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "periodic",
+                    "functionName": "opmode_start",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -240,58 +201,6 @@
                     "functionName": "register_when_saturation_in_range",
                     "returnType": "None",
                     "tooltip": "Event when saturation is in range"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "color_range_sensor.ColorRangeSensor"
-                        }
-                    ],
-                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "reset",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "color_range_sensor.ColorRangeSensor"
-                        }
-                    ],
-                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "color_range_sensor.ColorRangeSensor"
-                        }
-                    ],
-                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "color_range_sensor.ColorRangeSensor"
-                        }
-                    ],
-                    "declaringClassName": "color_range_sensor.ColorRangeSensor",
-                    "functionName": "update",
-                    "returnType": "None",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -355,72 +264,7 @@
                         }
                     ],
                     "declaringClassName": "component.Component",
-                    "functionName": "get_manufacturer",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "component.Component"
-                        }
-                    ],
-                    "declaringClassName": "component.Component",
-                    "functionName": "get_name",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "component.Component"
-                        }
-                    ],
-                    "declaringClassName": "component.Component",
-                    "functionName": "get_part_number",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "component.Component"
-                        }
-                    ],
-                    "declaringClassName": "component.Component",
-                    "functionName": "get_url",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "component.Component"
-                        }
-                    ],
-                    "declaringClassName": "component.Component",
-                    "functionName": "get_version",
-                    "returnType": "tuple[int, int, int]",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "component.Component"
-                        }
-                    ],
-                    "declaringClassName": "component.Component",
-                    "functionName": "periodic",
+                    "functionName": "opmode_end",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -433,7 +277,7 @@
                         }
                     ],
                     "declaringClassName": "component.Component",
-                    "functionName": "reset",
+                    "functionName": "opmode_periodic",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -446,33 +290,7 @@
                         }
                     ],
                     "declaringClassName": "component.Component",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "component.Component"
-                        }
-                    ],
-                    "declaringClassName": "component.Component",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "component.Component"
-                        }
-                    ],
-                    "declaringClassName": "component.Component",
-                    "functionName": "update",
+                    "functionName": "opmode_start",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -536,7 +354,7 @@
                     "expectedPortType": "EXPANSION_HUB_MOTOR",
                     "functionName": "__init__",
                     "returnType": "expansion_hub_motor.ExpansionHubMotor",
-                    "tooltip": ""
+                    "tooltip": "REV Robotics Expansion Hub Motor"
                 }
             ],
             "enums": [],
@@ -590,7 +408,7 @@
                     ],
                     "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
                     "functionName": "getPositionPidConstants",
-                    "returnType": "expansion_hub.ExpansionHubPidConstants",
+                    "returnType": "wpilib_placeholders.ExpansionHubPidConstants",
                     "tooltip": ""
                 },
                 {
@@ -603,7 +421,7 @@
                     ],
                     "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
                     "functionName": "getVelocityPidConstants",
-                    "returnType": "expansion_hub.ExpansionHubPidConstants",
+                    "returnType": "wpilib_placeholders.ExpansionHubPidConstants",
                     "tooltip": ""
                 },
                 {
@@ -628,71 +446,6 @@
                         }
                     ],
                     "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "get_manufacturer",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_motor.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "get_name",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_motor.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "get_part_number",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_motor.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "get_url",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_motor.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "get_version",
-                    "returnType": "tuple[int, int, int]",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_motor.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
                     "functionName": "isHubConnected",
                     "returnType": "bool",
                     "tooltip": ""
@@ -706,7 +459,7 @@
                         }
                     ],
                     "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "periodic",
+                    "functionName": "opmode_end",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -719,7 +472,20 @@
                         }
                     ],
                     "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "reset",
+                    "functionName": "opmode_periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_motor.ExpansionHubMotor"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
+                    "functionName": "opmode_start",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -879,45 +645,6 @@
                     "functionName": "setVoltage",
                     "returnType": "None",
                     "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_motor.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_motor.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_motor.ExpansionHubMotor"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_motor.ExpansionHubMotor",
-                    "functionName": "update",
-                    "returnType": "None",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -940,7 +667,7 @@
                     "expectedPortType": "EXPANSION_HUB_SERVO",
                     "functionName": "__init__",
                     "returnType": "expansion_hub_servo.ExpansionHubServo",
-                    "tooltip": ""
+                    "tooltip": "REV Robotics Expansion Hub Servo"
                 }
             ],
             "enums": [],
@@ -955,72 +682,7 @@
                     ],
                     "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
                     "functionName": "get_connection_port_type",
-                    "returnType": "list[port.PortType]",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_servo.ExpansionHubServo"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "get_manufacturer",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_servo.ExpansionHubServo"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "get_name",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_servo.ExpansionHubServo"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "get_part_number",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_servo.ExpansionHubServo"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "get_url",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_servo.ExpansionHubServo"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "get_version",
-                    "returnType": "tuple[int, int, int]",
+                    "returnType": "port.PortType | None",
                     "tooltip": ""
                 },
                 {
@@ -1045,7 +707,7 @@
                         }
                     ],
                     "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "periodic",
+                    "functionName": "opmode_end",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -1058,7 +720,20 @@
                         }
                     ],
                     "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "reset",
+                    "functionName": "opmode_periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "expansion_hub_servo.ExpansionHubServo"
+                        }
+                    ],
+                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
+                    "functionName": "opmode_start",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -1126,7 +801,7 @@
                         {
                             "defaultValue": "",
                             "name": "framePeriod",
-                            "type": "int"
+                            "type": "float"
                         }
                     ],
                     "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
@@ -1149,45 +824,6 @@
                     ],
                     "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
                     "functionName": "setPulseWidth",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_servo.ExpansionHubServo"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_servo.ExpansionHubServo"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "expansion_hub_servo.ExpansionHubServo"
-                        }
-                    ],
-                    "declaringClassName": "expansion_hub_servo.ExpansionHubServo",
-                    "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -1380,7 +1016,7 @@
                     "expectedPortType": "SMART_IO_PORT",
                     "functionName": "__init__",
                     "returnType": "rev_touch_sensor.RevTouchSensor",
-                    "tooltip": ""
+                    "tooltip": "REV Robotics Touch Sensor. Part number REV-31-1425. https://www.revrobotics.com/rev-31-1425"
                 }
             ],
             "enums": [],
@@ -1407,71 +1043,6 @@
                         }
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "get_manufacturer",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "rev_touch_sensor.RevTouchSensor"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "get_name",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "rev_touch_sensor.RevTouchSensor"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "get_part_number",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "rev_touch_sensor.RevTouchSensor"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "get_url",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "rev_touch_sensor.RevTouchSensor"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "get_version",
-                    "returnType": "tuple[int, int, int]",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "rev_touch_sensor.RevTouchSensor"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
                     "functionName": "is_pressed",
                     "returnType": "bool",
                     "tooltip": "Returns if the touch sensor is pressed or not"
@@ -1485,7 +1056,46 @@
                         }
                     ],
                     "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "periodic",
+                    "functionName": "opmode_end",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev_touch_sensor.RevTouchSensor"
+                        }
+                    ],
+                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
+                    "functionName": "opmode_periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev_touch_sensor.RevTouchSensor"
+                        }
+                    ],
+                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
+                    "functionName": "opmode_start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev_touch_sensor.RevTouchSensor"
+                        }
+                    ],
+                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
+                    "functionName": "opmode_stop",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -1524,58 +1134,6 @@
                     "functionName": "register_when_released",
                     "returnType": "None",
                     "tooltip": "Event when touch sensor is released (after being pressed)"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "rev_touch_sensor.RevTouchSensor"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "reset",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "rev_touch_sensor.RevTouchSensor"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "rev_touch_sensor.RevTouchSensor"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "rev_touch_sensor.RevTouchSensor"
-                        }
-                    ],
-                    "declaringClassName": "rev_touch_sensor.RevTouchSensor",
-                    "functionName": "update",
-                    "returnType": "None",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -1716,7 +1274,7 @@
                         }
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
-                    "functionName": "periodic",
+                    "functionName": "opmode_end",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -1729,7 +1287,20 @@
                         }
                     ],
                     "declaringClassName": "smart_motor.SmartMotor",
-                    "functionName": "reset",
+                    "functionName": "opmode_periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "smart_motor.SmartMotor"
+                        }
+                    ],
+                    "declaringClassName": "smart_motor.SmartMotor",
+                    "functionName": "opmode_start",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -1781,45 +1352,6 @@
                     "functionName": "set_speed",
                     "returnType": "None",
                     "tooltip": "Set the motor to a speed between -1 and 1"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "smart_motor.SmartMotor"
-                        }
-                    ],
-                    "declaringClassName": "smart_motor.SmartMotor",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "smart_motor.SmartMotor"
-                        }
-                    ],
-                    "declaringClassName": "smart_motor.SmartMotor",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "smart_motor.SmartMotor"
-                        }
-                    ],
-                    "declaringClassName": "smart_motor.SmartMotor",
-                    "functionName": "update",
-                    "returnType": "None",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -2131,7 +1663,7 @@
                         }
                     ],
                     "declaringClassName": "spark_mini.SparkMini",
-                    "functionName": "periodic",
+                    "functionName": "opmode_end",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -2144,7 +1676,20 @@
                         }
                     ],
                     "declaringClassName": "spark_mini.SparkMini",
-                    "functionName": "reset",
+                    "functionName": "opmode_periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "spark_mini.SparkMini"
+                        }
+                    ],
+                    "declaringClassName": "spark_mini.SparkMini",
+                    "functionName": "opmode_start",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -2247,46 +1792,7 @@
                         }
                     ],
                     "declaringClassName": "spark_mini.SparkMini",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "spark_mini.SparkMini"
-                        }
-                    ],
-                    "declaringClassName": "spark_mini.SparkMini",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "spark_mini.SparkMini"
-                        }
-                    ],
-                    "declaringClassName": "spark_mini.SparkMini",
                     "functionName": "stop_motor",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "spark_mini.SparkMini"
-                        }
-                    ],
-                    "declaringClassName": "spark_mini.SparkMini",
-                    "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -2411,7 +1917,7 @@
                         }
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
-                    "functionName": "periodic",
+                    "functionName": "opmode_end",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -2424,7 +1930,20 @@
                         }
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
-                    "functionName": "reset",
+                    "functionName": "opmode_periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "sparkfun_led_stick.SparkFunLEDStick"
+                        }
+                    ],
+                    "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
+                    "functionName": "opmode_start",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -2491,48 +2010,9 @@
                         }
                     ],
                     "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "sparkfun_led_stick.SparkFunLEDStick"
-                        }
-                    ],
-                    "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "sparkfun_led_stick.SparkFunLEDStick"
-                        }
-                    ],
-                    "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
                     "functionName": "turn_all_off",
                     "returnType": "None",
                     "tooltip": "Turn all LEDs off."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "sparkfun_led_stick.SparkFunLEDStick"
-                        }
-                    ],
-                    "declaringClassName": "sparkfun_led_stick.SparkFunLEDStick",
-                    "functionName": "update",
-                    "returnType": "None",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
