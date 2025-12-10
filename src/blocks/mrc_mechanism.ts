@@ -383,7 +383,7 @@ const MECHANISM = {
         let argInput = this.getInput('ARG' + i);
         if (argInput && argInput.connection && !argInput.connection.targetBlock()) {
           // The input is empty. Create a port block and connect it to the input.
-          const portBlockState = createPort(this.mrcParameters[i].type);
+          const portBlockState = createPort(this.mrcParameters[i].type).block;
           const portBlock = this.workspace.newBlock(portBlockState.type) as Blockly.BlockSvg;
           if (portBlockState.extraState && portBlock.loadExtraState) {
             portBlock.loadExtraState(portBlockState.extraState);
