@@ -28,12 +28,12 @@ import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
 import { upgrade_001_to_002 } from '../blocks/mrc_mechanism_component_holder';
-import { upgrade_002_to_003, upgrade_004_to_005 } from '../blocks/mrc_class_method_def';
+import { upgrade_002_to_003, upgrade_004_to_005, upgrade_006_to_007, upgrade_007_to_008 } from '../blocks/mrc_class_method_def';
 import { upgrade_005_to_006 } from '../blocks/mrc_component';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.6';
+export const CURRENT_VERSION = '0.0.8';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -72,6 +72,16 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.5':
         upgradeFrom_005_to_006(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.6'
+      // @ts-ignore
+      case '0.0.6':
+        upgradeFrom_006_to_007(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.7'
+      // @ts-ignore
+      case '0.0.7':
+        upgradeFrom_007_to_008(storage, projectName, projectInfo);
     }
     await storageProject.saveProjectInfo(storage, projectName);
   }
@@ -139,6 +149,14 @@ function anyModuleType(_moduleType: storageModule.ModuleType): boolean {
  */
 function isOpMode(moduleType: storageModule.ModuleType): boolean {
   return moduleType === storageModule.ModuleType.OPMODE;
+}
+
+/**
+ * Predicate function that can be passed to upgradeBlocksFiles indicating that only Mechanism
+ * modules should be affected.
+ */
+function isMechanism(moduleType: storageModule.ModuleType): boolean {
+  return moduleType === storageModule.ModuleType.MECHANISM;
 }
 
 /**
@@ -229,4 +247,28 @@ async function upgradeFrom_005_to_006(
       noModuleTypes, noPreupgrade,
       anyModuleType, upgrade_005_to_006);
   projectInfo.version = '0.0.6';
+}
+
+async function upgradeFrom_006_to_007(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // mrc_class_method_def blocks for opmode loop method need to be changed to 'Periodic'.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      isOpMode, upgrade_006_to_007);
+  projectInfo.version = '0.0.7';
+}
+
+async function upgradeFrom_007_to_008(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // mrc_class_method_def blocks for mechanism update method need to be changed to 'opmode_periodic'.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      isMechanism, upgrade_007_to_008);
+  projectInfo.version = '0.0.8';
 }

@@ -386,6 +386,30 @@ const CLASS_METHOD_DEF = {
       this.mrcReturnType = UNTYPED_RETURN_VALUE;
     }
   },
+  upgrade_006_to_007: function(this: ClassMethodDefBlock) {
+    // This function is called to upgrade ClassMethodDefBlocks in an opmode module.
+    if (this.getFieldValue('NAME') === 'loop' &&
+        !this.isOwnEditable() &&
+        !this.mrcCanChangeSignature &&
+        !this.mrcCanBeCalledWithinClass &&
+        !this.mrcCanBeCalledOutsideClass &&
+        this.mrcReturnType === 'None' &&
+        this.mrcParameters.length === 0) {
+      this.setFieldValue('Periodic', FIELD_METHOD_NAME);
+    }
+  },
+  upgrade_007_to_008: function(this: ClassMethodDefBlock) {
+    // This function is called to upgrade ClassMethodDefBlocks in a mechanism module.
+    if (this.getFieldValue('NAME') === 'update' &&
+        !this.isOwnEditable() &&
+        !this.mrcCanChangeSignature &&
+        !this.mrcCanBeCalledWithinClass &&
+        !this.mrcCanBeCalledOutsideClass &&
+        this.mrcReturnType === 'None' &&
+        this.mrcParameters.length === 0) {
+      this.setFieldValue('opmode_periodic', FIELD_METHOD_NAME);
+    }
+  },
 };
 
 export const setup = function () {
@@ -623,5 +647,25 @@ export function upgrade_002_to_003(workspace: Blockly.Workspace): void {
 export function upgrade_004_to_005(workspace: Blockly.Workspace): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as ClassMethodDefBlock).upgrade_004_to_005();
+  });
+}
+
+/**
+ * Upgrades the ClassMethodDefBlocks in the given workspace from version 006 to 007.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_006_to_007(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ClassMethodDefBlock).upgrade_006_to_007();
+  });
+}
+
+/**
+ * Upgrades the ClassMethodDefBlocks in the given workspace from version 007 to 008.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_007_to_008(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ClassMethodDefBlock).upgrade_007_to_008();
   });
 }
