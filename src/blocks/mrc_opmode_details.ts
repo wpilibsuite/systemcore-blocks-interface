@@ -68,6 +68,8 @@ const OPMODE_DETAILS = {
   },
   ...NONCOPYABLE_BLOCK,
   checkOpMode(this: OpmodeDetailsBlock, editor: Editor): void {
+    // Check that a Steps block is in the workspace or the Periodic method is overridden.
+    // It's ok to have both.
     if (editor.isStepsInWorkspace() ||
         editor.getMethodNamesAlreadyOverriddenInWorkspace().includes(PERIODIC_METHOD_NAME)) {
       // Remove the previous warning.
