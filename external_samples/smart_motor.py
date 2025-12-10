@@ -16,8 +16,7 @@
 # @fileoverview This is a sample for a smart motor
 # @author alan@porpoiseful.com (Alan Smith)
 
-from typing import Self
-from component import Component, PortType, InvalidPortException
+from component import Component
 from port import Port, PortType
 
 class SmartMotor(Component):
@@ -39,16 +38,10 @@ class SmartMotor(Component):
     def get_version(self) -> tuple[int, int, int]: 
         return (1, 0, 0)
 
-    def stop(self) -> None:
+    def opmode_end(self) -> None:
         # TODO: send stop command to motor
         pass
 
-    def reset(self) -> None:
-        pass
-
-    def periodic(self) -> None:
-        pass
-    
     # Component specific methods
 
     def set_speed(self, speed: float) -> None:

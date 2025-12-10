@@ -26,14 +26,14 @@ class Mechanism:
             for event_handler in self.event_handlers[event_name]:
                 event_handler(*args)
 
-    def start(self) -> None:
+    def opmode_start(self) -> None:
         for hardware in self.hardware:
-            hardware.start()
+            hardware.opmode_start()
 
-    def update(self) -> None:
+    def opmode_periodic(self) -> None:
         for hardware in self.hardware:
-            hardware.update()
+            hardware.opmode_periodic()
 
-    def stop(self) -> None:
+    def opmode_end(self) -> None:
         for hardware in self.hardware:
-            hardware.stop()
+            hardware.opmode_end()

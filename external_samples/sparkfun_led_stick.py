@@ -14,8 +14,7 @@
 
 __author__ = "lizlooney@google.com (Liz Looney)"
 
-from typing import Self
-from component import Component, PortType, InvalidPortException
+from component import Component
 from port import Port, PortType
 import wpilib
 
@@ -38,15 +37,9 @@ class SparkFunLEDStick(Component):
     def get_version(self) -> tuple[int, int, int]: 
         return (1, 0, 0)
 
-    def stop(self) -> None:
+    def opmode_end(self) -> None:
         self.turn_all_off()
 
-    def reset(self) -> None:
-        pass
-
-    def periodic(self) -> None:
-        pass
-    
     # SparkFunLEDStick methods
 
     def set_color(self, position: int, color: wpilib.Color) -> None:

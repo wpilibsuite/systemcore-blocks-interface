@@ -17,7 +17,7 @@
 # @author alan@porpoiseful.com (Alan Smith)
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Final, Self
+from typing import Final
 
 _BASE_COMPOUND: Final[int] = 256
 

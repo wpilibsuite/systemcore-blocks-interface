@@ -16,7 +16,7 @@
 # @fileoverview This is an abstract class for all components
 # @author alan@porpoiseful.com (Alan Smith)
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Protocol
 from port import Port, PortType
 
@@ -38,47 +38,14 @@ class Component(ABC):
 
         self.port = port
 
-    # Returns the manufacturer of the component
-    @abstractmethod
-    def get_manufacturer(self) -> str:
+    def opmode_start(self) -> None:
         pass
 
-    # Returns the name of the component
-    @abstractmethod
-    def get_name(self) -> str:
+    def opmode_periodic(self) -> None:
         pass
 
-    # Returns the part number of the component
-    @abstractmethod
-    def get_part_number(self) -> str:
-        pass
-
-    # Returns the URL of the component
-    @abstractmethod
-    def get_url(self) -> str:
-        pass
-
-    # Returns the version of the software (returned as a (major, minor, patch) tuple where
-    # major, minor and patch are all positive integers
-    # This MUST follow semantic versioning as described here: https://semver.org/
-    @abstractmethod
-    def get_version(self) -> tuple[int, int, int]:
-        pass
-
-    def start(self) -> None:
-        pass
-
-    def update(self) -> None:
-        pass
-
-    # This stops all movement (if any) for the component
-    def stop(self) -> None:
-        pass
-
-    # This performs any reset required (if any) at the beginning of each opmode
-    # This might remove any registered callbacks
-    @abstractmethod
-    def reset(self) -> None:
+    # Subclasses should override opmode_end to stop all movement (if any) for the component
+    def opmode_end(self) -> None:
         pass
 
     # Returns the port this connects to of the PortType enumeration
@@ -86,9 +53,3 @@ class Component(ABC):
         if self.port:
             return self.port.get_type()
         return None
-
-    # This is called periodically when an opmode is running. The component might use this
-    # to talk to hardware and then call callbacks
-    @abstractmethod
-    def periodic(self) -> None:
-        pass

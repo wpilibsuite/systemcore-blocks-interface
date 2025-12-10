@@ -20,8 +20,7 @@ Robotics SPARKMini Motor Controller with PWM control.
 
 __author__ = "lizlooney@google.com (Liz Looney)"
 
-from typing import Self
-from component import Component, PortType, InvalidPortException
+from component import Component
 from port import Port, PortType
 
 import wpilib
@@ -51,16 +50,10 @@ class SparkMini(Component):
     def get_version(self) -> tuple[int, int, int]:
         return (1, 0, 0)
 
-    def stop(self) -> None:
+    def opmode_end(self) -> None:
         # TODO: send stop command to motor
         pass
 
-    def reset(self) -> None:
-        pass
-
-    def periodic(self) -> None:
-        pass
-    
     # Component specific methods
 
     # Methods from wpilib.PWMMotorController
