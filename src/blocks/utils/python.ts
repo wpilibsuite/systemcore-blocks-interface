@@ -31,14 +31,20 @@ import * as SetPythonVariable from "../mrc_set_python_variable";
 
 // Utilities related to blocks for python modules and classes, including those from RobotPy, external samples, etc.
 
-export const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
+// The module for classes used by blocks that don't exist in wpilib.
+const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
 
-export const CLASS_NAME_ROBOT_BASE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.RobotBase';
+// TODO(lizlooney): Update these constants if necessary when we update wpilib.
+
+export const CLASS_NAME_ROBOT_BASE = 'wpilib_placeholders.OpModeRobot';
 export const ROBOT_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [
   'define_hardware',
   'fire_event',
   'register_event_handler',
   'unregister_event_handler',
+  'StartCompetition',
+  'EndCompetition',
+  'AddOpMode',
 ];
 
 export const CLASS_NAME_MECHANISM = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Mechanism';
@@ -48,11 +54,25 @@ export const MECHANISM_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [
   'unregister_event_handler',
 ];
 
-// TODO(lizlooney): what about PeriodicOpMode and LinearOpMode?
-export const CLASS_NAME_OPMODE = MODULE_NAME_BLOCKS_BASE_CLASSES + '.OpMode';
-export const OPMODE_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [];
-// TODO(lizlooney): Make sure to update the value of PERIODIC_METHOD_NAME when we update wpilib.
-export const PERIODIC_METHOD_NAME = 'loop';
+export const CLASS_NAME_OPMODE = 'wpilib_placeholders.PeriodicOpMode';
+export const OPMODE_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [
+  'GetLoopStartTime',
+  'AddPeriodic',
+  'GetPeriod',
+  'PrintWatchdogEpochs',
+  'OpModeRun',
+  'OpModeStop',
+  'LoopFunc',
+];
+export const START_METHOD_NAME = 'Start';
+export const PERIODIC_METHOD_NAME = 'Periodic';
+export const END_METHOD_NAME = 'End';
+
+export const TELEOP_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Teleop';
+export const AUTO_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Auto';
+export const TEST_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Test';
+export const NAME_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Name';
+export const GROUP_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Group';
 
 export const robotPyData = generatedRobotPyData as PythonData;
 const externalSamplesData = generatedExternalSamplesData as PythonData

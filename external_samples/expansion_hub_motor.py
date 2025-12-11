@@ -20,44 +20,19 @@ support for a motor connected to a REV Expansion Hub.
 
 __author__ = "lizlooney@google.com (Liz Looney)"
 
-from typing import Self
-from component import Component, InvalidPortException
+from component import Component
 from port import Port, PortType
-import expansion_hub
+from wpilib_placeholders import expansion_hub
 import wpimath
 
 class ExpansionHubMotor(Component):
     def __init__(self, port : Port):
+        '''REV Robotics Expansion Hub Motor''' 
         super().__init__(port, PortType.EXPANSION_HUB_MOTOR)
         self.expansion_hub_motor = expansion_hub.ExpansionHubMotor(self.port.port1.location, self.port.port2.location)
 
-    def get_manufacturer(self) -> str:
-        return "REV Robotics"
-
-    def get_name(self) -> str:
-        return "Expansion Hub Motor"
-
-    def get_part_number(self) -> str:
-        return ""
-
-    def get_url(self) -> str:
-        return ""
-
-    def get_version(self) -> tuple[int, int, int]:
-        return (1, 0, 0)
-
-    def start(self) -> None:
+    def opmode_start(self) -> None:
         self.expansion_hub_motor.setEnabled(True)
-
-    def stop(self) -> None:
-        # TODO: Send stop command to motor.
-        pass
-
-    def reset(self) -> None:
-        pass
-
-    def periodic(self) -> None:
-        pass
 
     # Component specific methods
 

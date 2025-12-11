@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Script to run an opmode class derived from the OpMode base class.
+Script to run an opmode class derived from the PeriodicOpMode base class.
 
 Usage:
     python run_opmode.py <opmode_file.py>
 
-The opmode file should contain a class that inherits from OpMode.
+The opmode file should contain a class that inherits from PeriodicOpMode.
 """
 
 import sys
@@ -16,23 +16,23 @@ import argparse
 import traceback
 from pathlib import Path
 
-from blocks_base_classes import OpMode
+from wpilib_placeholders import PeriodicOpMode
 
 from robot import Robot
 
 
 def find_opmode_class(module):
     """
-    Find the first class in the module that inherits from OpMode.
+    Find the first class in the module that inherits from PeriodicOpMode.
     
     Args:
         module: The imported Python module
         
     Returns:
-        The OpMode-derived class, or None if not found
+        The PeriodicOpMode-derived class, or None if not found
     """
     for name, obj in inspect.getmembers(module, inspect.isclass):
-        if obj != OpMode and issubclass(obj, OpMode):
+        if obj != PeriodicOpMode and issubclass(obj, PeriodicOpMode):
             return obj
     return None
 
@@ -45,17 +45,17 @@ def load_opmode_from_file(file_path):
         file_path: Path to the Python file containing the opmode class
         
     Returns:
-        The OpMode-derived class
+        The PeriodicOpMode-derived class
         
     Raises:
         FileNotFoundError: If the file doesn't exist
         ImportError: If the file can't be imported
-        ValueError: If no OpMode-derived class is found
+        ValueError: If no PeriodicOpMode-derived class is found
     """
     file_path = Path(file_path)
     
     if not file_path.exists():
-        raise FileNotFoundError(f"OpMode file not found: {file_path}")
+        raise FileNotFoundError(f"PeriodicOpMode file not found: {file_path}")
     
     if not file_path.suffix == '.py':
         raise ValueError(f"File must be a Python file (.py): {file_path}")
@@ -68,10 +68,10 @@ def load_opmode_from_file(file_path):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     
-    # Find the OpMode-derived class
+    # Find the PeriodicOpMode-derived class
     opmode_class = find_opmode_class(module)
     if opmode_class is None:
-        raise ValueError(f"No class derived from OpMode found in {file_path}")
+        raise ValueError(f"No class derived from PeriodicOpMode found in {file_path}")
     
     return opmode_class
 
@@ -89,8 +89,8 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
     
     try:
         # Load the opmode class
-        OpModeClass = load_opmode_from_file(opmode_file)
-        print(f"Found opmode class: {OpModeClass.__name__}")
+        PeriodicOpModeClass = load_opmode_from_file(opmode_file)
+        print(f"Found opmode class: {PeriodicOpModeClass.__name__}")
         
         # Create robot instance
         print("Creating robot instance...")
@@ -98,11 +98,11 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
         
         # Create opmode instance
         print("Initializing opmode...")
-        opmode = OpModeClass(robot)
+        opmode = PeriodicOpModeClass(robot)
         
         # Call start method
         print("Starting opmode...")
-        opmode.start()
+        opmode.Start()
         
         # Calculate loop timing
         loop_period = 1.0 / loop_frequency
@@ -117,7 +117,7 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
                 loop_start = time.time()
                 
                 # Call the loop method
-                opmode.loop()
+                opmode.Periodic()
                 loop_count += 1
                 
                 # Check if we should stop based on duration
@@ -139,7 +139,7 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
         
         # Call stop method
         print("Stopping opmode...")
-        opmode.stop()
+        opmode.End()
         
         # Print statistics
         total_time = time.time() - start_time
@@ -159,7 +159,7 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Run an opmode class derived from OpMode",
+        description="Run an opmode class derived from PeriodicOpMode",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

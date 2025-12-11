@@ -16,8 +16,8 @@
 # @fileoverview This is a sample for a color/range sensor
 # @author alan@porpoiseful.com (Alan Smith)
 
-from typing import Protocol, Self
-from component import Component, InvalidPortException
+from typing import Protocol
+from component import Component
 from port import Port, PortType
 
 class DistanceCallable(Protocol):
@@ -32,29 +32,9 @@ class ColorCallable(Protocol):
 
 class ColorRangeSensor(Component):    
     def __init__(self, port : Port):
+        '''REV Robotics Color Sensor v3. Part number REV-31-1557. https://www.revrobotics.com/rev-31-1557'''
         super().__init__( port, expectedType = PortType.I2C_PORT)
 
-    def get_manufacturer(self) -> str:   
-        return "REV Robotics" 
-
-    def get_name(self) -> str:  
-        return "Color Sensor v3"
-
-    def get_part_number(self) -> str:  
-        return "REV-31-1557"
-
-    def get_url(self) -> str:  
-        return "https://www.revrobotics.com/rev-31-1557"
-
-    def get_version(self) -> tuple[int, int, int]: 
-        return (1, 0, 0)
-
-    def reset(self) -> None:
-        pass
-
-    def periodic(self) -> None:
-        pass
-   
     # Component specific methods
 
     def get_color_rgb(self) -> tuple[int, int, int]:

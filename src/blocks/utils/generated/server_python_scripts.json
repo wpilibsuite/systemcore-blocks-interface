@@ -44,6 +44,45 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "blocks_base_classes.Mechanism"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "functionName": "opmode_end",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.Mechanism"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "functionName": "opmode_periodic",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.Mechanism"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "functionName": "opmode_start",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.Mechanism"
                         },
                         {
                             "defaultValue": "",
@@ -67,32 +106,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "blocks_base_classes.Mechanism"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
                         },
                         {
                             "defaultValue": "",
@@ -107,223 +120,6 @@
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
                     "functionName": "unregister_event_handler",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "update",
-                    "returnType": "None",
-                    "tooltip": ""
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "blocks_base_classes",
-            "staticMethods": []
-        },
-        {
-            "className": "blocks_base_classes.OpMode",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "robot",
-                            "type": "blocks_base_classes.RobotBase"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.OpMode",
-                    "functionName": "__init__",
-                    "returnType": "blocks_base_classes.OpMode",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.OpMode"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.OpMode",
-                    "functionName": "loop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.OpMode"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.OpMode",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.OpMode"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.OpMode",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                }
-            ],
-            "instanceVariables": [],
-            "moduleName": "blocks_base_classes",
-            "staticMethods": []
-        },
-        {
-            "className": "blocks_base_classes.RobotBase",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [],
-                    "declaringClassName": "blocks_base_classes.RobotBase",
-                    "functionName": "__init__",
-                    "returnType": "blocks_base_classes.RobotBase",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.RobotBase"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.RobotBase",
-                    "functionName": "define_hardware",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.RobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "args",
-                            "type": "tuple"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.RobotBase",
-                    "functionName": "fire_event",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.RobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_handler",
-                            "type": "typing.Callable"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.RobotBase",
-                    "functionName": "register_event_handler",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.RobotBase"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.RobotBase",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.RobotBase"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.RobotBase",
-                    "functionName": "stop",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.RobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_handler",
-                            "type": "typing.Callable"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.RobotBase",
-                    "functionName": "unregister_event_handler",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.RobotBase"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.RobotBase",
-                    "functionName": "update",
                     "returnType": "None",
                     "tooltip": ""
                 }
@@ -343,19 +139,13 @@
         {
             "enums": [],
             "functions": [],
+            "moduleName": "blocks_base_classes.decorators",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
             "moduleName": "blocks_base_classes.mechanism",
-            "moduleVariables": []
-        },
-        {
-            "enums": [],
-            "functions": [],
-            "moduleName": "blocks_base_classes.opmode",
-            "moduleVariables": []
-        },
-        {
-            "enums": [],
-            "functions": [],
-            "moduleName": "blocks_base_classes.robot_base",
             "moduleVariables": []
         }
     ],

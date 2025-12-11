@@ -27,9 +27,14 @@ import * as eventHandler from '../blocks/mrc_event_handler';
 import { STEPS_METHOD_NAME } from '../blocks/mrc_steps';
 
 import {
-    MODULE_NAME_BLOCKS_BASE_CLASSES,
-    CLASS_NAME_OPMODE,
+    TELEOP_DECORATOR_CLASS,
+    AUTO_DECORATOR_CLASS,
+    TEST_DECORATOR_CLASS,
+    NAME_DECORATOR_CLASS,
+    GROUP_DECORATOR_CLASS,
+    START_METHOD_NAME,
     PERIODIC_METHOD_NAME,
+    END_METHOD_NAME,
     getClassData,
 } from '../blocks/utils/python';
 import * as storageModule from '../storage/module';
@@ -40,15 +45,37 @@ export class OpModeDetails {
     let code = '';
 
     if (this.enabled) {
-      const typeDecorator = generator.importModuleName(MODULE_NAME_BLOCKS_BASE_CLASSES, this.type);
-      code += `@${typeDecorator}\n`;
+      let typeDecoratorClass: string = '';
+      switch (this.type) {
+        case 'Teleop':
+          typeDecoratorClass = TELEOP_DECORATOR_CLASS;
+          break;
+        case 'Auto':
+          typeDecoratorClass = AUTO_DECORATOR_CLASS;
+          break;
+        case 'Test':
+          typeDecoratorClass = TEST_DECORATOR_CLASS;
+          break;
+      }
+      // Import the module for the decorator, not the decorator class itself
+      // because otherwise the Teleop decorator collides with the class name of
+      // the OpMode module that is created automatically when a new project is
+      // created. Similarly, it is likely that the user might make an opmode
+      // named Test or Auto.
+      const lastDot = typeDecoratorClass.lastIndexOf('.');
+      if (lastDot === -1) {
+        throw new Error(`The decorator class ${typeDecoratorClass} should contain a '.'`);
+      }
+      const moduleName = typeDecoratorClass.substring(0, lastDot);
+      generator.importModule(moduleName);
+      code += `@${typeDecoratorClass}\n`;
 
       if (this.name) {
-        const nameDecorator = generator.importModuleName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'Name');
+        const nameDecorator = generator.importModuleDotClass(NAME_DECORATOR_CLASS);
         code += `@${nameDecorator}(${className}, '${this.name}')\n`;
       }
       if (this.group) {
-        const groupDecorator = generator.importModuleName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'Group');
+        const groupDecorator = generator.importModuleDotClass(GROUP_DECORATOR_CLASS);
         code += `@${groupDecorator}(${className}, '${this.group}')\n`;
       }
     }
@@ -109,9 +136,21 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   generateInitStatements(): string {
     let initStatements = '';
 
-    if (this.getModuleType() === storageModule.ModuleType.MECHANISM && this.hasAnyComponents) {
-      initStatements += this.INDENT + 'self.define_hardware(' +
-          this.getComponentPortParameters().join(', ') + ')\n';
+    switch (this.getModuleType()) {
+      case storageModule.ModuleType.ROBOT:
+        initStatements += this.INDENT + 'self.hardware = []\n';
+        initStatements += this.INDENT + 'self.event_handlers = {}\n';
+        initStatements += this.INDENT + 'self.define_hardware()\n';
+        break;
+      case storageModule.ModuleType.MECHANISM:
+        if (this.hasAnyComponents) {
+          initStatements += this.INDENT + 'self.define_hardware(' +
+              this.getComponentPortParameters().join(', ') + ')\n';
+        }
+        break;
+      case storageModule.ModuleType.OPMODE:
+        initStatements += this.INDENT + 'self.robot = robot\n';
+        break;
     }
 
     if (this.hasAnyEventHandlers) {
@@ -212,6 +251,19 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     return module + '.' + name;
   }
 
+  importModuleDotClass(moduleDotClass: string): string {
+    const lastDot = moduleDotClass.lastIndexOf('.');
+    if (lastDot !== -1) {
+      const moduleName = moduleDotClass.substring(0, lastDot);
+      const className = moduleDotClass.substring(lastDot + 1);
+      if (this.fromModuleImportName(moduleName, className)) {
+        return className;
+      }
+      this.importModule(moduleName);
+    }
+    return moduleDotClass;
+  }
+
   /**
    * Add a class method definition.
    */
@@ -239,31 +291,65 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           : '';
 
       let baseClassName = this.context.getBaseClassName();
-      if (baseClassName.startsWith(MODULE_NAME_BLOCKS_BASE_CLASSES + '.') &&
-          baseClassName.lastIndexOf('.') == MODULE_NAME_BLOCKS_BASE_CLASSES.length) {
-        const simpleName = baseClassName.substring(MODULE_NAME_BLOCKS_BASE_CLASSES.length + 1);
-        if (this.fromModuleImportName(MODULE_NAME_BLOCKS_BASE_CLASSES, simpleName)) {
-          baseClassName = simpleName;
-        } else {
-          this.importModule(MODULE_NAME_BLOCKS_BASE_CLASSES);
-        }
-      }
+      baseClassName = this.importModuleDotClass(baseClassName);
 
       code = decorators + 'class ' + className + '(' + baseClassName + '):\n';
 
-      if (this.getModuleType() ===  storageModule.ModuleType.OPMODE) {
-        // If the user has a steps method, we need to generate code to call it from the periodic method.
+      if (this.getModuleType() === storageModule.ModuleType.ROBOT) {
+        // Define methods that we use for blocks, but are not in wpilib.OpModeRobot.
+        this.fromModuleImportName('typing', 'Callable');
+        this.classMethods['register_event_handler'] = (
+            'def register_event_handler(self, event_name: str, event_handler: Callable) -> None:\n' +
+            this.INDENT + 'if event_name in self.event_handlers:\n' +
+            this.INDENT.repeat(2) + 'self.event_handlers[event_name].append(event_handler)\n' +
+            this.INDENT + 'else:\n' +
+            this.INDENT.repeat(2) + 'self.event_handlers[event_name] = [event_handler]\n'
+        );
+        this.classMethods['unregister_event_handler'] = (
+            'def unregister_event_handler(self, event_name: str, event_handler: Callable) -> None:\n' +
+            this.INDENT + 'if event_name in self.event_handlers:\n' +
+            this.INDENT.repeat(2) + 'if event_handler in self.event_handlers[event_name]:\n' +
+            this.INDENT.repeat(3) + 'self.event_handlers[event_name].remove(event_handler)\n' +
+            this.INDENT.repeat(3) + 'if not self.event_handlers[event_name]:\n' +
+            this.INDENT.repeat(4) + 'del self.event_handlers[event_name]\n'
+        )
+        this.classMethods['fire_event'] = (
+            'def fire_event(self, event_name: str, *args) -> None:\n' +
+            this.INDENT + 'if event_name in self.event_handlers:\n' +
+            this.INDENT.repeat(2) + 'for event_handler in self.event_handlers[event_name]:\n' +
+            this.INDENT.repeat(3) + 'event_handler(*args)\n'
+        )
+        this.classMethods['opmode_start'] = (
+            'def opmode_start(self) -> None:\n' +
+            this.INDENT + 'for hardware in self.hardware:\n' +
+            this.INDENT.repeat(2) + 'hardware.opmode_start()\n'
+        );
+        this.classMethods['opmode_periodic'] = (
+            'def opmode_periodic(self) -> None:\n' +
+            this.INDENT + 'for hardware in self.hardware:\n' +
+            this.INDENT.repeat(2) + 'hardware.opmode_periodic()\n'
+        );
+        this.classMethods['opmode_end'] = (
+            'def opmode_end(self) -> None:\n' +
+            this.INDENT + 'for hardware in self.hardware:\n' +
+            this.INDENT.repeat(2) + 'hardware.opmode_end()\n'
+        );
+      }
+
+      if (this.getModuleType() === storageModule.ModuleType.OPMODE) {
+        // Add code to the Start method to call robot.opmode_start.
+        this.classMethods[START_METHOD_NAME] = this.insertCodeToCallRobot(START_METHOD_NAME, 'opmode_start');
+
+        // Add code to the Periodic method to call robot.opmode_periodic.
+        let periodicCode = this.insertCodeToCallRobot(PERIODIC_METHOD_NAME, 'opmode_periodic');
         if (STEPS_METHOD_NAME in this.classMethods) {
-          let periodicCode: string;
-          if (PERIODIC_METHOD_NAME in this.classMethods) {
-            periodicCode = this.classMethods[PERIODIC_METHOD_NAME];
-          } else {
-            periodicCode = `def ${PERIODIC_METHOD_NAME}(self):\n`;
-            periodicCode += this.INDENT + `super().${PERIODIC_METHOD_NAME}()\n`;
-          }
+          // Generate code to call the steps method after the user's code.
           periodicCode += this.INDENT + `self.${STEPS_METHOD_NAME}()\n`;
-          this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
         }
+        this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
+
+        // Add code to the End method to call robot.opmode_end.
+        this.classMethods[END_METHOD_NAME] = this.insertCodeToCallRobot(END_METHOD_NAME, 'opmode_end');
       }
 
       const classMethods = [];
@@ -309,15 +395,31 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     return super.finish(code);
   }
 
+  private insertCodeToCallRobot(methodName: string, robotMethodName: string): string {
+    const defAndSuper = `def ${methodName}(self):\n` + this.INDENT + `super().${methodName}()\n`;
+    let code: string;
+    if (methodName in this.classMethods) {
+      code = this.classMethods[methodName];
+      // Make sure code starts with defAndSuper.
+      if (!code.startsWith(defAndSuper)) {
+        throw new Error(`The generated code for the ${methodName} method should start with ${defAndSuper}`);
+      }
+      code = code.substring(defAndSuper.length);
+    } else {
+      // The user has not defined the method. We will define it now.
+      code = '';
+    }
+    // Generate code to call the robot method immediately after calling the superclass method.
+    return defAndSuper + this.INDENT + `self.robot.${robotMethodName}()\n` + code;
+  }
+
   setOpModeDetails(opModeDetails: OpModeDetails) {
     this.opModeDetails = opModeDetails;
   }
 
   getSuperInitParameters(): string {
-    if (this.context?.getBaseClassName() == CLASS_NAME_OPMODE) {
-      return 'robot'
-    }
-    return ''
+    // wpilib.OpModeRobot, Mechanism, and wpilib.PeriodicOpMode all have no argument __init__ methods.
+    return '';
   }
 
   /**

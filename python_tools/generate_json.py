@@ -49,11 +49,12 @@ import wpimath.trajectory.constraint
 import wpimath.units
 import wpinet
 import wpiutil
+sys.path.append("../python")
+import wpilib_placeholders
 
 # Server python scripts
 sys.path.append("../server_python_scripts")
 import blocks_base_classes
-import expansion_hub  # TODO(lizlooney): update this when it is built into robotpy.
 
 # External samples
 sys.path.append("../external_samples")
@@ -87,9 +88,9 @@ def main(argv):
   pathlib.Path(f'{FLAGS.output_directory}/generated/').mkdir(parents=True, exist_ok=True)
 
   robotpy_modules = [
-    expansion_hub,  # TODO(lizlooney): update this when it is built into robotpy.
     ntcore,
     wpilib,
+    wpilib_placeholders,
     wpilib.counter,
     wpilib.drive,
     wpilib.event,
