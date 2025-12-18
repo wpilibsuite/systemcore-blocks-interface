@@ -28,14 +28,19 @@ import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
 import { upgrade_001_to_002 } from '../blocks/mrc_mechanism_component_holder';
-import { upgrade_002_to_003, upgrade_004_to_005, upgrade_006_to_007, upgrade_007_to_008 } from '../blocks/mrc_class_method_def';
+import {
+    upgrade_002_to_003,
+    upgrade_004_to_005,
+    upgrade_006_to_007,
+    upgrade_007_to_008,
+    upgrade_009_to_0010 } from '../blocks/mrc_class_method_def';
 import { upgrade_005_to_006 } from '../blocks/mrc_component';
 import { upgrade_008_to_009 as upgrade_component_008_to_009 } from '../blocks/mrc_component';
 import { upgrade_008_to_009 as upgrade_call_python_function_008_to_009 } from '../blocks/mrc_call_python_function';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.9';
+export const CURRENT_VERSION = '0.0.10';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -89,6 +94,11 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.8':
         await upgradeFrom_008_to_009(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.9'
+      // @ts-ignore
+      case '0.0.9':
+        await upgradeFrom_009_to_0010(storage, projectName, projectInfo);
     }
     await storageProject.saveProjectInfo(storage, projectName);
   }
@@ -293,4 +303,17 @@ async function upgradeFrom_008_to_009(
       anyModuleType, storageModuleContent.preupgrade_008_to_009,
       anyModuleType, upgrade);
   projectInfo.version = '0.0.9';
+}
+
+async function upgradeFrom_009_to_0010(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // mrc_class_method_def blocks for mechanism opmode_periodic method need to be
+  // changed to be a normal method def block that is editable and deletable.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      isMechanism, upgrade_009_to_0010);
+  projectInfo.version = '0.0.10';
 }

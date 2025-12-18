@@ -44,45 +44,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "blocks_base_classes.Mechanism"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "opmode_end",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "opmode_periodic",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "opmode_start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
                         },
                         {
                             "defaultValue": "",
