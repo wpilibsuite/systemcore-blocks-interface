@@ -44,6 +44,7 @@ export class ClassData {
   instanceMethods: FunctionData[] = [];
   staticMethods: FunctionData[] = [];
   enums: EnumData[] = [];
+  isComponent: boolean = false;
 }
 
 export class VarData {
@@ -59,8 +60,8 @@ export class FunctionData {
   returnType: string = '';
   args: ArgData[] = [];
   declaringClassName?: string = '';
-  // TODO: Make this less hacky...
-  expectedPortType?: string = '';
+  componentPortName?: string = '';
+  componentPortType?: string = '';
 }
 
 export class ArgData {

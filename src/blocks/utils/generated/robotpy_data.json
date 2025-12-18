@@ -474,6 +474,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -511,6 +512,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -567,6 +569,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -629,6 +632,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -644,6 +648,8 @@
                             "type": "typing.SupportsInt"
                         }
                     ],
+                    "componentPortName": "smart_io_port",
+                    "componentPortType": "SYSTEMCORE_SMART_IO_PORT",
                     "declaringClassName": "wpilib.AddressableLED",
                     "functionName": "__init__",
                     "returnType": "wpilib.AddressableLED",
@@ -752,6 +758,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": true,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -850,6 +857,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -1003,6 +1011,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -1144,6 +1153,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -1200,6 +1210,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -1305,6 +1316,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -1474,6 +1486,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -1729,6 +1742,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -1943,6 +1957,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -2053,6 +2068,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -2364,6 +2380,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -2413,6 +2430,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -2442,6 +2460,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -3432,6 +3451,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -3569,6 +3589,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -3804,6 +3825,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -3866,6 +3888,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -4191,6 +4214,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -4348,6 +4372,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -4377,6 +4402,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -4548,6 +4574,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -4769,6 +4796,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -4956,6 +4984,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -5012,6 +5041,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -5062,6 +5092,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -5562,6 +5593,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -5624,6 +5656,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -5716,6 +5749,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -5811,6 +5845,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -6042,6 +6077,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -6364,6 +6400,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -6491,6 +6528,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -6629,6 +6667,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -6826,6 +6865,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -6876,6 +6916,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -7283,6 +7324,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -7643,6 +7685,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -8635,6 +8678,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -8703,6 +8747,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -8753,6 +8798,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -9078,6 +9124,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -9414,6 +9461,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -9547,6 +9595,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -9590,6 +9639,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -9689,6 +9739,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -9894,6 +9945,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -9975,6 +10027,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -10079,6 +10132,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -10228,6 +10282,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -10374,6 +10429,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -10492,6 +10548,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -10718,6 +10775,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -10774,6 +10832,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -12287,6 +12346,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -12342,6 +12402,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -12445,6 +12506,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -13958,6 +14020,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -14013,6 +14076,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -14116,6 +14180,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -14257,6 +14322,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -14313,6 +14379,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -14643,6 +14710,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -14976,6 +15044,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -14999,6 +15068,8 @@
                             "type": "typing.SupportsInt"
                         }
                     ],
+                    "componentPortName": "smart_io_port",
+                    "componentPortType": "SYSTEMCORE_SMART_IO_PORT",
                     "declaringClassName": "wpilib.PWMSparkMax",
                     "functionName": "__init__",
                     "returnType": "wpilib.PWMSparkMax",
@@ -15309,6 +15380,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": true,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -15642,6 +15714,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -15975,6 +16048,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -16308,6 +16382,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -16641,6 +16716,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -17216,6 +17292,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -17423,6 +17500,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -17496,6 +17574,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -17551,6 +17630,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -17990,6 +18070,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -18607,6 +18688,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -18694,6 +18776,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -18998,6 +19081,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -19198,6 +19282,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -19248,6 +19333,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -19466,6 +19552,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -19521,6 +19608,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -19550,6 +19638,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -20077,6 +20166,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -20141,6 +20231,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -20370,6 +20461,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -20475,6 +20567,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -20800,6 +20893,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -21793,6 +21887,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -21907,6 +22002,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -21955,6 +22051,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -21984,6 +22081,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -22338,6 +22436,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -22400,6 +22499,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -22468,6 +22568,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -22536,6 +22637,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -22592,6 +22694,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -22642,6 +22745,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -22760,6 +22864,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -22849,6 +22954,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -22931,6 +23037,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -23690,6 +23797,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -24015,6 +24123,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -24348,6 +24457,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -25939,6 +26049,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -25982,6 +26093,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -26091,6 +26203,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -26120,6 +26233,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -26453,6 +26567,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -26916,6 +27031,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -27084,6 +27200,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -27589,6 +27706,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -27713,6 +27831,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -28038,6 +28157,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -28371,6 +28491,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": [
                 {
@@ -28554,6 +28675,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -29960,6 +30082,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -30015,6 +30138,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -30094,6 +30218,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib",
             "staticMethods": []
         },
@@ -30144,6 +30269,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib.counter",
             "staticMethods": []
         },
@@ -30324,6 +30450,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.counter",
             "staticMethods": []
         },
@@ -30416,6 +30543,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.counter",
             "staticMethods": []
         },
@@ -30742,6 +30870,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.drive",
             "staticMethods": [
                 {
@@ -30850,6 +30979,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib.drive",
             "staticMethods": []
         },
@@ -31173,6 +31303,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.drive",
             "staticMethods": [
                 {
@@ -31252,6 +31383,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib.drive",
             "staticMethods": []
         },
@@ -31447,6 +31579,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.drive",
             "staticMethods": [
                 {
@@ -31535,6 +31668,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib.drive",
             "staticMethods": []
         },
@@ -31663,6 +31797,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.event",
             "staticMethods": []
         },
@@ -31726,6 +31861,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.event",
             "staticMethods": []
         },
@@ -31946,6 +32082,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.event",
             "staticMethods": []
         },
@@ -32048,6 +32185,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
@@ -32104,6 +32242,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
@@ -32684,6 +32823,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
@@ -32824,6 +32964,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
@@ -32880,6 +33021,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
@@ -33005,6 +33147,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.interfaces",
             "staticMethods": []
         },
@@ -33084,6 +33227,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -33320,6 +33464,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -33441,6 +33586,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -33708,6 +33854,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -33726,6 +33873,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -34191,6 +34339,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -34258,6 +34407,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -34634,6 +34784,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -34968,6 +35119,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -35405,6 +35557,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -35516,6 +35669,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -35583,6 +35737,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -35620,6 +35775,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -35681,6 +35837,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -35881,6 +36038,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -36038,6 +36196,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -36056,6 +36215,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -36815,6 +36975,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -37015,6 +37176,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -37439,6 +37601,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -38025,6 +38188,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -38366,6 +38530,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -38666,6 +38831,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -39092,6 +39258,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -39261,6 +39428,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -39430,6 +39598,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -39599,6 +39768,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -39768,6 +39938,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -39937,6 +40108,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -40106,6 +40278,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -40766,6 +40939,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -41426,6 +41600,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -41477,6 +41652,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -41690,6 +41866,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -42057,6 +42234,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -42399,6 +42577,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -42827,6 +43006,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -42864,6 +43044,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -43277,6 +43458,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -43341,6 +43523,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -43397,6 +43580,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -43610,6 +43794,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -44051,6 +44236,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": [
                 {
@@ -44208,6 +44394,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -44850,6 +45037,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -45438,6 +45626,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.simulation",
             "staticMethods": []
         },
@@ -45506,6 +45695,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpilib.sysid",
             "staticMethods": []
         },
@@ -45567,6 +45757,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.sysid",
             "staticMethods": [
                 {
@@ -45783,6 +45974,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib.sysid",
             "staticMethods": []
         },
@@ -45870,6 +46062,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib_placeholders",
             "staticMethods": []
         },
@@ -45890,6 +46083,8 @@
                             "type": "int"
                         }
                     ],
+                    "componentPortName": "expansion_hub_motor",
+                    "componentPortType": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
                     "declaringClassName": "wpilib_placeholders.ExpansionHubMotor",
                     "functionName": "__init__",
                     "returnType": "wpilib_placeholders.ExpansionHubMotor",
@@ -46135,6 +46330,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": true,
             "moduleName": "wpilib_placeholders",
             "staticMethods": []
         },
@@ -46262,6 +46458,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib_placeholders",
             "staticMethods": []
         },
@@ -46282,6 +46479,8 @@
                             "type": "int"
                         }
                     ],
+                    "componentPortName": "expansion_hub_servo",
+                    "componentPortType": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT",
                     "declaringClassName": "wpilib_placeholders.ExpansionHubServo",
                     "functionName": "__init__",
                     "returnType": "wpilib_placeholders.ExpansionHubServo",
@@ -46395,6 +46594,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": true,
             "moduleName": "wpilib_placeholders",
             "staticMethods": []
         },
@@ -46494,6 +46694,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib_placeholders",
             "staticMethods": []
         },
@@ -46661,6 +46862,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpilib_placeholders",
             "staticMethods": []
         },
@@ -46993,6 +47195,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -47178,6 +47381,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -47365,6 +47569,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -47552,6 +47757,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -47739,6 +47945,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -47845,6 +48052,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -47887,6 +48095,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -48189,6 +48398,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -48373,6 +48583,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -48534,6 +48745,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -48695,6 +48907,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -48856,6 +49069,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -49018,6 +49232,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -49171,6 +49386,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -49340,6 +49556,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -49509,6 +49726,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -49678,6 +49896,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -49847,6 +50066,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -50255,6 +50475,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -50663,6 +50884,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -51071,6 +51293,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -51479,6 +51702,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -52012,6 +52236,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -52657,6 +52882,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -53302,6 +53528,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -53581,6 +53808,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -53860,6 +54088,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.controller",
             "staticMethods": []
         },
@@ -54196,6 +54425,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -54532,6 +54762,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -54805,6 +55036,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -55078,6 +55310,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -55379,6 +55612,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -55680,6 +55914,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -55981,6 +56216,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -56282,6 +56518,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -56535,6 +56772,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -56788,6 +57026,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -57041,6 +57280,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -57294,6 +57534,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -57547,6 +57788,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -57858,6 +58100,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -58169,6 +58412,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -58442,6 +58686,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -58715,6 +58960,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -59026,6 +59272,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -59337,6 +59584,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -59610,6 +59858,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -59883,6 +60132,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -60194,6 +60444,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -60505,6 +60756,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -60778,6 +61030,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -61051,6 +61304,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -61362,6 +61616,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -61673,6 +61928,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -61946,6 +62202,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -62219,6 +62476,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -62530,6 +62788,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -62841,6 +63100,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -63114,6 +63374,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -63387,6 +63648,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.estimator",
             "staticMethods": []
         },
@@ -63497,6 +63759,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.filter",
             "staticMethods": []
         },
@@ -63553,6 +63816,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.filter",
             "staticMethods": []
         },
@@ -63650,6 +63914,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.filter",
             "staticMethods": [
                 {
@@ -63769,6 +64034,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.filter",
             "staticMethods": []
         },
@@ -63866,6 +64132,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.filter",
             "staticMethods": []
         },
@@ -63900,6 +64167,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -63977,6 +64245,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -64316,6 +64585,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -64644,6 +64914,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -65041,6 +65312,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -65345,6 +65617,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -65571,6 +65844,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -65741,6 +66015,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -66082,6 +66357,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -66310,6 +66586,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -66571,6 +66848,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -66851,6 +67129,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -67197,6 +67476,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -67292,6 +67572,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -67438,6 +67719,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.geometry",
             "staticMethods": [
                 {
@@ -67587,6 +67869,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.interpolation",
             "staticMethods": []
         },
@@ -67697,6 +67980,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.interpolation",
             "staticMethods": []
         },
@@ -67807,6 +68091,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.interpolation",
             "staticMethods": []
         },
@@ -67917,6 +68202,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.interpolation",
             "staticMethods": []
         },
@@ -68027,6 +68313,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.interpolation",
             "staticMethods": []
         },
@@ -68137,6 +68424,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.interpolation",
             "staticMethods": []
         },
@@ -68247,6 +68535,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.interpolation",
             "staticMethods": []
         },
@@ -68391,6 +68680,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": [
                 {
@@ -68557,6 +68847,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -68663,6 +68954,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -68831,6 +69123,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -68989,6 +69282,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -69044,6 +69338,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -69117,6 +69412,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": [
                 {
@@ -69356,6 +69652,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -69462,6 +69759,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -69620,6 +69918,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -69778,6 +70077,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -69845,6 +70145,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -69952,6 +70253,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": [
                 {
@@ -70170,6 +70472,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": [
                 {
@@ -70328,6 +70631,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -70486,6 +70790,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -70644,6 +70949,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -70838,6 +71144,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": [
                 {
@@ -70996,6 +71303,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -71154,6 +71462,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -71312,6 +71621,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -71511,6 +71821,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": [
                 {
@@ -71669,6 +71980,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -71827,6 +72139,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -71985,6 +72298,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -72194,6 +72508,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": [
                 {
@@ -72352,6 +72667,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -72510,6 +72826,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -72668,6 +72985,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -72740,6 +73058,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -72825,6 +73144,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.kinematics",
             "staticMethods": []
         },
@@ -72883,6 +73203,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.optimization",
             "staticMethods": []
         },
@@ -72938,6 +73259,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.path",
             "staticMethods": []
         },
@@ -73035,6 +73357,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.spline",
             "staticMethods": []
         },
@@ -73132,6 +73455,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.spline",
             "staticMethods": []
         },
@@ -73208,6 +73532,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.spline",
             "staticMethods": []
         },
@@ -73250,6 +73575,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.spline",
             "staticMethods": []
         },
@@ -73326,6 +73652,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.spline",
             "staticMethods": []
         },
@@ -73368,6 +73695,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.spline",
             "staticMethods": []
         },
@@ -73386,6 +73714,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.spline",
             "staticMethods": [
                 {
@@ -73501,6 +73830,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.spline",
             "staticMethods": [
                 {
@@ -73919,6 +74249,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -74290,6 +74621,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -74661,6 +74993,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -75032,6 +75365,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -75403,6 +75737,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -75638,6 +75973,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -75873,6 +76209,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -76108,6 +76445,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -76343,6 +76681,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -76578,6 +76917,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -76813,6 +77153,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -77048,6 +77389,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -77283,6 +77625,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -77518,6 +77861,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -77753,6 +78097,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -77988,6 +78333,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -78223,6 +78569,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system",
             "staticMethods": []
         },
@@ -78445,6 +78792,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.system.plant",
             "staticMethods": [
                 {
@@ -78672,6 +79020,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.system.plant",
             "staticMethods": [
                 {
@@ -79099,6 +79448,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -79161,6 +79511,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": [
                 {
@@ -79258,6 +79609,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -79300,6 +79652,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -79425,6 +79778,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -79536,6 +79890,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -79811,6 +80166,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": [
                 {
@@ -79848,6 +80204,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": [
                 {
@@ -79998,6 +80355,7 @@
             "enums": [],
             "instanceMethods": [],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": [
                 {
@@ -80144,6 +80502,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -80186,6 +80545,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -80228,6 +80588,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -80330,6 +80691,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -80372,6 +80734,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -80414,6 +80777,7 @@
                     "writable": false
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory",
             "staticMethods": []
         },
@@ -80495,6 +80859,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": [
                 {
@@ -80595,6 +80960,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": [
                 {
@@ -80705,6 +81071,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": []
         },
@@ -80824,6 +81191,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": [
                 {
@@ -80939,6 +81307,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": [
                 {
@@ -81039,6 +81408,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": [
                 {
@@ -81167,6 +81537,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": []
         },
@@ -81253,6 +81624,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": [
                 {
@@ -81358,6 +81730,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": [
                 {
@@ -81463,6 +81836,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": [
                 {
@@ -81568,6 +81942,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": [
                 {
@@ -81662,6 +82037,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": []
         },
@@ -81711,6 +82087,7 @@
                     "writable": true
                 }
             ],
+            "isComponent": false,
             "moduleName": "wpimath.trajectory.constraint",
             "staticMethods": []
         }

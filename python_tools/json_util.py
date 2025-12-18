@@ -59,7 +59,9 @@ _KEY_ARGUMENT_TYPE = 'type'
 _KEY_ARGUMENT_DEFAULT_VALUE = 'defaultValue'
 _KEY_ALIASES = 'aliases'
 _KEY_SUBCLASSES = 'subclasses'
-_KEY_PORT_EXPECTED_TYPE = 'expectedPortType'
+_KEY_IS_COMPONENT = 'isComponent'
+_KEY_COMPONENT_PORT_NAME = 'componentPortName'
+_KEY_COMPONENT_PORT_TYPE = 'componentPortType'
 
 
 def ignoreModule(module_name: str) -> bool:
@@ -274,6 +276,7 @@ class JsonGenerator:
     class_data = {}
     class_data[_KEY_CLASS_NAME] = class_name
     class_data[_KEY_MODULE_NAME] = self._getModuleName(cls)
+    class_data[_KEY_IS_COMPONENT] = False  # Set to True later if it is a component.
 
     full_class_name = python_util.getFullClassName(cls)
 
@@ -283,7 +286,7 @@ class JsonGenerator:
       if not python_util.isClassVariableReadable(cls, key, value):
         continue
       if (key == "WPIStruct" and type(value).__name__ == "PyCapsule"):
-        continue;
+        continue
       var_data = {}
       var_data[_KEY_VARIABLE_NAME] = key
       var_data[_KEY_VARIABLE_TYPE] = self._getClassName(type(value), class_name)
@@ -360,10 +363,11 @@ class JsonGenerator:
         constructor_data[_KEY_FUNCTION_ARGS] = args
         constructor_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = declaring_class_name
         constructor_data[_KEY_FUNCTION_RETURN_TYPE] = declaring_class_name
-        expectedPortType = python_util.getPortTypeFromConstructor(value)
-        if expectedPortType:
-          constructor_data[_KEY_PORT_EXPECTED_TYPE] = python_util.getPortTypeFromConstructor(value)
-
+        componentPortTuple = python_util.getComponentPortNameAndType(declaring_class_name, value)
+        if componentPortTuple is not None:
+          constructor_data[_KEY_COMPONENT_PORT_NAME] = componentPortTuple[0]
+          constructor_data[_KEY_COMPONENT_PORT_TYPE] = componentPortTuple[1]
+          class_data[_KEY_IS_COMPONENT] = True
         constructors.append(constructor_data)
     class_data[_KEY_CONSTRUCTORS] = constructors
 
