@@ -26,23 +26,10 @@ import { MRC_STYLE_PORTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldNumberDropdown } from '../fields/field_number_dropdown';
-import { getOutputCheck } from './utils/python';
+import * as storageModuleContent from '../storage/module_content';
 
 export const BLOCK_NAME = 'mrc_port';
 export const OUTPUT_NAME = 'mrc_port';
-
-// PortType enum values defined in external_samples/port.py.
-const PORT_TYPE_CAN_PORT = 'CAN_PORT';
-const PORT_TYPE_SMART_IO_PORT = 'SMART_IO_PORT';
-const PORT_TYPE_I2C_PORT = 'I2C_PORT';
-const PORT_TYPE_USB_PORT = 'USB_PORT';
-const PORT_TYPE_SMART_MOTOR_PORT = 'SMART_MOTOR_PORT';
-const PORT_TYPE_USB_HUB_PORT = 'USB_HUB_PORT';
-const PORT_TYPE_EXPANSION_HUB_MOTOR_PORT = 'EXPANSION_HUB_MOTOR_PORT';
-const PORT_TYPE_EXPANSION_HUB_SERVO_PORT = 'EXPANSION_HUB_SERVO_PORT';
-const PORT_TYPE_USB_HUB = 'USB_HUB';
-const PORT_TYPE_EXPANSION_HUB_MOTOR = 'EXPANSION_HUB_MOTOR';
-const PORT_TYPE_EXPANSION_HUB_SERVO = 'EXPANSION_HUB_SERVO';
 
 const FIELD_PREFIX_TYPE = 'TYPE_';
 const FIELD_PREFIX_PORT_NUM = 'PORT_NUM_';
@@ -52,18 +39,21 @@ const VISIBLE_PORT_LABEL_SMART_IO = 'smart i/o';
 const VISIBLE_PORT_LABEL_I2C = 'i2c';
 const VISIBLE_PORT_LABEL_USB = 'usb';
 const VISIBLE_PORT_LABEL_MOTIONCORE = 'MotionCore port';
+const VISIBLE_PORT_LABEL_ENCODER = 'encoder';
 const VISIBLE_PORT_LABEL_USB_HUB = 'usb hub';
 const VISIBLE_PORT_LABEL_MOTOR = 'motor';
 const VISIBLE_PORT_LABEL_SERVO = 'servo';
 
 export type PortBlock = Blockly.Block & PortMixin;
 interface PortMixin extends PortMixinType {
-  mrcPortType: string,
-  mrcPortCount: number,
+  mrcPortTypeArray: storageModuleContent.PortType[],
 }
 type PortMixinType = typeof PORT;
 
 type PortExtraState = {
+  // A single string consisting of one or more port types. Multiple port types are
+  // separated by __ (two underscores). Each port type matches one of the PortType
+  // enum values in src/storage/module_content.ts.
   portType: string,
 }
 
@@ -72,6 +62,7 @@ const PORT = {
     * Block initialization.
     */
   init: function (this: PortBlock): void {
+    this.mrcPortTypeArray = [];
     this.setStyle(MRC_STYLE_PORTS);
     this.setOutput(true);
   },
@@ -81,9 +72,8 @@ const PORT = {
    */
   saveExtraState: function (this: PortBlock): PortExtraState {
     const state: PortExtraState = {
-      portType: this.mrcPortType,
+      portType: storageModuleContent.portTypeArrayToString(this.mrcPortTypeArray),
     };
-
     return state;
   },
 
@@ -91,36 +81,24 @@ const PORT = {
    * Load the ports from the block's extra state.
    */
   loadExtraState: function (this: PortBlock, state: PortExtraState): void {
-    let iField = 0;
-    switch (state.portType) {
-      case PORT_TYPE_CAN_PORT:
-      case PORT_TYPE_SMART_IO_PORT:
-      case PORT_TYPE_I2C_PORT:
-      case PORT_TYPE_USB_PORT:
-      case PORT_TYPE_SMART_MOTOR_PORT:
-      case PORT_TYPE_USB_HUB_PORT:
-      case PORT_TYPE_EXPANSION_HUB_MOTOR_PORT:
-      case PORT_TYPE_EXPANSION_HUB_SERVO_PORT:
-        appendFields(this.appendDummyInput(), state.portType, iField++);
-        break;
-      case PORT_TYPE_USB_HUB:
-        appendFields(this.appendDummyInput(), PORT_TYPE_USB_PORT, iField++);
-        appendFields(this.appendDummyInput(), PORT_TYPE_USB_HUB_PORT, iField++);
-        break;
-      case PORT_TYPE_EXPANSION_HUB_MOTOR:
-        appendFields(this.appendDummyInput(), PORT_TYPE_USB_PORT, iField++);
-        appendFields(this.appendDummyInput(), PORT_TYPE_EXPANSION_HUB_MOTOR_PORT, iField++);
-        break;
-      case PORT_TYPE_EXPANSION_HUB_SERVO:
-        appendFields(this.appendDummyInput(), PORT_TYPE_USB_PORT, iField++);
-        appendFields(this.appendDummyInput(), PORT_TYPE_EXPANSION_HUB_SERVO_PORT, iField++);
-        break;
-      default:
-        throw new Error('Unexpected portType: ' + state.portType);
+    this.mrcPortTypeArray.push(...storageModuleContent.stringToPortTypeArray(state.portType));
+
+    // Now create one input for each element of this.mrcPortTypeArray.
+    for (let i = 0; i < this.mrcPortTypeArray.length; i++) {
+      // Create the field but don't set the field value. The field value will be
+      // set by blockly as the block is loaded.
+      this.appendDummyInput()
+          .appendField(createFieldNonEditableText(''), FIELD_PREFIX_TYPE + i)
+          .appendField(createFieldDropdownForPortNumber(this.mrcPortTypeArray[i]), FIELD_PREFIX_PORT_NUM + i)
+          .setAlign(Blockly.inputs.Align.RIGHT);
     }
-    this.mrcPortType = state.portType;
-    this.mrcPortCount = iField;
-    this.setOutput(true, getOutputCheck(this.mrcPortType));
+
+    // Set the output check so that this port block can only be plugged into a component or
+    // mechanism's input socket that is for this kind of port.
+    this.setOutput(true, this.makeOutputCheck());
+  },
+  makeOutputCheck(this: PortBlock): string {
+    return storageModuleContent.portTypeArrayToString(this.mrcPortTypeArray)
   },
 }
 
@@ -130,130 +108,58 @@ export const setup = function () {
 
 export const pythonFromBlock = function (
     block: PortBlock,
-    generator: ExtendedPythonGenerator) {
-
-  const ports: string[] = [];
-  for (let i = 0; i < block.mrcPortCount; i++) {
-    ports.push(block.getFieldValue(FIELD_PREFIX_PORT_NUM + i));
-  }
-
-  const portType = generator.importModuleName('port', 'PortType');
-  const simplePort = generator.importModuleName('port', 'SimplePort');
-  const compoundPort = (ports.length === 2) ? generator.importModuleName('port', 'CompoundPort') : '';
-
+    _: ExtendedPythonGenerator) {
   let code = '';
-
-  if (ports.length === 1) {
-     code += `${simplePort}(port_type = ${portType}.${block.mrcPortType}, location = ${ports[0]})`;
-
-  } else if (ports.length === 2) {
-    let port1Type = 'UNKNOWN';
-    let port2Type = 'UNKNOWN';
-
-    switch (block.mrcPortType) {
-      case PORT_TYPE_USB_HUB:
-        port1Type = PORT_TYPE_USB_PORT;
-        port2Type = PORT_TYPE_USB_HUB_PORT;
-        break;
-      case PORT_TYPE_EXPANSION_HUB_MOTOR:
-        port1Type = PORT_TYPE_USB_PORT;
-        port2Type = PORT_TYPE_EXPANSION_HUB_MOTOR_PORT;
-        break;
-      case PORT_TYPE_EXPANSION_HUB_SERVO:
-        port1Type = PORT_TYPE_USB_PORT;
-        port2Type = PORT_TYPE_EXPANSION_HUB_SERVO_PORT;
-        break;
-    }
-    code += `${compoundPort}(port_type = ${portType}.${block.mrcPortType},\n`;
-    code += `${generator.INDENT}port1 = ${simplePort}(port_type = ${portType}.${port1Type}, location = ${ports[0]}),\n`;
-    code += `${generator.INDENT}port2 = ${simplePort}(port_type = ${portType}.${port2Type}, location = ${ports[1]}))`;
+  for (let i = 0; i < block.mrcPortTypeArray.length; i++) {
+    const portNum = block.getFieldValue(FIELD_PREFIX_PORT_NUM + i);
+    const portLabel = getLabelForPort(block.mrcPortTypeArray[i]);
+    code += portNum + ', # ' + portLabel + '\n';
   }
-
-  return [code, Order.FUNCTION_CALL];
+  return [code, Order.NONE];
 }
 
-function appendFields(input: Blockly.Input, portType: string, iField: number): void {
-  // Create the fields but don't set the field values. The field values will be
-  // set by blockly as the block is loaded.
-  input
-      .appendField(createFieldNonEditableText(''), FIELD_PREFIX_TYPE + iField)
-      .appendField(createFieldDropdownForPortNumber(portType), FIELD_PREFIX_PORT_NUM + iField)
-      .setAlign(Blockly.inputs.Align.RIGHT);
-}
-
-function createFieldDropdownForPortNumber(portType: string): Blockly.Field {
+function createFieldDropdownForPortNumber(portType: storageModuleContent.PortType): Blockly.Field {
   switch (portType) {
-    case PORT_TYPE_CAN_PORT:
+    case storageModuleContent.PortType.SYSTEMCORE_CAN_PORT:
       return createFieldNumberDropdown(0, 4);
-    case PORT_TYPE_SMART_IO_PORT:
+    case storageModuleContent.PortType.SYSTEMCORE_SMART_IO_PORT:
       return createFieldNumberDropdown(0, 5);
-    case PORT_TYPE_I2C_PORT:
+    case storageModuleContent.PortType.SYSTEMCORE_I2C_PORT:
       return createFieldNumberDropdown(0, 1);
-    case PORT_TYPE_USB_PORT:
+    case storageModuleContent.PortType.SYSTEMCORE_USB_PORT:
       return createFieldNumberDropdown(0, 3);
-    case PORT_TYPE_SMART_MOTOR_PORT:
-      return createFieldNumberDropdown(1, 6);
-    case PORT_TYPE_USB_HUB_PORT:
+    case storageModuleContent.PortType.EXPANSION_HUB_MOTOR_PORT:
+      return createFieldNumberDropdown(0, 3);
+    case storageModuleContent.PortType.EXPANSION_HUB_SERVO_PORT:
+      return createFieldNumberDropdown(0, 5);
+    case storageModuleContent.PortType.MOTIONCORE_DEVICE_PORT:
+      return createFieldNumberDropdown(0, 19);
+    case storageModuleContent.PortType.MOTIONCORE_ENCODER_PORT:
+      return createFieldNumberDropdown(0, 3);
+    case storageModuleContent.PortType.USB_HUB_PORT:
       // TODO: How many ports are on a USB hub? Some have 2, some have 4. Should they be numbered 0..N-1 or 1..N?
       return createFieldNumberDropdown(0, 3);
-    case PORT_TYPE_EXPANSION_HUB_MOTOR_PORT:
-      return createFieldNumberDropdown(0, 4);
-    case PORT_TYPE_EXPANSION_HUB_SERVO_PORT:
-      return createFieldNumberDropdown(0, 5);
     default:
       throw new Error('Unexpected portType: ' + portType)
   }
 }
 
-export function createPort(portType: string): any {
+export function createPort(portTypeString: string): any {
+  const portTypeArray = storageModuleContent.stringToPortTypeArray(portTypeString);
+
   // Based on the port type, specify the appropriate fields.
   const fields: {[key: string]: any} = {};
   let iField = 0;
-  switch (portType) {
-    case PORT_TYPE_CAN_PORT:
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_CAN;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      break;
-    case PORT_TYPE_SMART_IO_PORT:
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_SMART_IO;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      break;
-    case PORT_TYPE_I2C_PORT:
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_I2C;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      break;
-    case PORT_TYPE_USB_PORT:
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_USB;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      break;
-    case PORT_TYPE_SMART_MOTOR_PORT:
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_MOTIONCORE;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      break;
-    case PORT_TYPE_USB_HUB:
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_USB;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
+  for (const portType of portTypeArray) {
+    const label = getLabelForPort(portType);
+    if (label) {
+      fields[FIELD_PREFIX_TYPE + iField] = label;
+      fields[FIELD_PREFIX_PORT_NUM + iField] = '0';
       iField++;
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_USB_HUB;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      break;
-    case PORT_TYPE_EXPANSION_HUB_MOTOR:
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_USB;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      iField++;
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_MOTOR;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      break;
-    case PORT_TYPE_EXPANSION_HUB_SERVO:
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_USB;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      iField++;
-      fields[FIELD_PREFIX_TYPE + iField] = VISIBLE_PORT_LABEL_SERVO;
-      fields[FIELD_PREFIX_PORT_NUM + iField] = '1';
-      break;
+    }
   }
   const extraState: PortExtraState = {
-    portType: portType,
+    portType: portTypeString,
   };
   return {
     block: {
@@ -262,4 +168,29 @@ export function createPort(portType: string): any {
       fields,
     },
   };
+}
+
+function getLabelForPort(portType: storageModuleContent.PortType): string {
+  switch (portType) {
+    case storageModuleContent.PortType.SYSTEMCORE_CAN_PORT:
+      return VISIBLE_PORT_LABEL_CAN;
+    case storageModuleContent.PortType.SYSTEMCORE_SMART_IO_PORT:
+      return VISIBLE_PORT_LABEL_SMART_IO;
+    case storageModuleContent.PortType.SYSTEMCORE_I2C_PORT:
+      return VISIBLE_PORT_LABEL_I2C;
+    case storageModuleContent.PortType.SYSTEMCORE_USB_PORT:
+      return VISIBLE_PORT_LABEL_USB;
+    case storageModuleContent.PortType.EXPANSION_HUB_MOTOR_PORT:
+      return VISIBLE_PORT_LABEL_MOTOR;
+    case storageModuleContent.PortType.EXPANSION_HUB_SERVO_PORT:
+      return VISIBLE_PORT_LABEL_SERVO;
+    case storageModuleContent.PortType.MOTIONCORE_DEVICE_PORT:
+      return VISIBLE_PORT_LABEL_MOTIONCORE;
+    case storageModuleContent.PortType.MOTIONCORE_ENCODER_PORT:
+      return VISIBLE_PORT_LABEL_ENCODER;
+    case storageModuleContent.PortType.USB_HUB_PORT:
+      return VISIBLE_PORT_LABEL_USB_HUB;
+  }
+  console.error('Unknown port type ' + portType);
+  return '';
 }

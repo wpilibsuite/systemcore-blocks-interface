@@ -433,12 +433,13 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     const baseClassName = this.context?.getBaseClassName();
     if (baseClassName) {
       const classData = getClassData(baseClassName);
-      if (!classData) {
-        throw new Error('ClassData not found for ' + baseClassName);
+      if (classData) {
+        classData.instanceMethods.forEach(functionData => {
+            methodNames.push(functionData.functionName);
+        });
+      } else {
+        console.error('ClassData not found for ' + baseClassName);
       }
-      classData.instanceMethods.forEach(functionData => {
-          methodNames.push(functionData.functionName);
-      });
     }
 
     return methodNames;

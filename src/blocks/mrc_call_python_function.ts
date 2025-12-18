@@ -24,7 +24,7 @@ import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
 import { getClassData, getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
-import { ArgData, FunctionData, findSuperFunctionData } from './utils/python_json_types';
+import { ArgData, FunctionData } from './utils/python_json_types';
 import * as value from './utils/value';
 import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
@@ -896,6 +896,15 @@ const CALL_PYTHON_FUNCTION = {
       this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
     }
   },
+  upgrade_008_to_009: function(this: CallPythonFunctionBlock) {
+    if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
+      if (this.mrcComponentClassName === 'expansion_hub_motor.ExpansionHubMotor') {
+        this.mrcComponentClassName = 'wpilib_placeholders.ExpansionHubMotor';
+      } else if (this.mrcComponentClassName === 'expansion_hub_servo.ExpansionHubServo') {
+        this.mrcComponentClassName = 'wpilib_placeholders.ExpansionHubServo';
+      }
+    }
+  },
 };
 
 export function setup(): void {
@@ -1295,24 +1304,14 @@ export function getInstanceComponentBlocks(
   const contents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
-  if (!classData) {
-    throw new Error('Could not find classData for ' + component.className);
-  }
-  const functions = classData.instanceMethods;
-
-  const componentClassData = getClassData('component.Component');
-  if (!componentClassData) {
-    throw new Error('Could not find classData for component.Component');
-  }
-  const componentFunctions = componentClassData.instanceMethods;
-
-  for (const functionData of functions) {
-    // Skip the functions that are also defined in componentFunctions.
-    if (findSuperFunctionData(functionData, componentFunctions)) {
-      continue;
+  if (classData) {
+    const functions = classData.instanceMethods;
+    for (const functionData of functions) {
+      const block = createInstanceComponentBlock(component, functionData);
+      contents.push(block);
     }
-    const block = createInstanceComponentBlock(component, functionData);
-    contents.push(block);
+  } else {
+    console.error('Could not find classData for ' + component.className);
   }
 
   return contents;
@@ -1323,24 +1322,14 @@ export function getInstanceMechanismComponentBlocks(
   const contents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
-  if (!classData) {
-    throw new Error('Could not find classData for ' + component.className);
-  }
-  const functions = classData.instanceMethods;
-
-  const componentClassData = getClassData('component.Component');
-  if (!componentClassData) {
-    throw new Error('Could not find classData for component.Component');
-  }
-  const componentFunctions = componentClassData.instanceMethods;
-
-  for (const functionData of functions) {
-    // Skip the functions that are also defined in componentFunctions.
-    if (findSuperFunctionData(functionData, componentFunctions)) {
-      continue;
+  if (classData) {
+    const functions = classData.instanceMethods;
+    for (const functionData of functions) {
+      const block = createInstanceMechanismComponentBlock(component, functionData, mechanismInRobot);
+      contents.push(block);
     }
-    const block = createInstanceMechanismComponentBlock(component, functionData, mechanismInRobot);
-    contents.push(block);
+  } else {
+    console.error('Could not find classData for ' + component.className);
   }
 
   return contents;
@@ -1501,4 +1490,14 @@ function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.B
   });
   processArgs(args, extraState, inputs);
   return createBlock(extraState, fields, inputs);
+}
+
+/**
+ * Upgrades the CallPythonFunctionBlocks in the given workspace from version 008 to 009.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_008_to_009(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as CallPythonFunctionBlock).upgrade_008_to_009();
+  });
 }
