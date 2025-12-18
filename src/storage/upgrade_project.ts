@@ -46,42 +46,42 @@ export async function upgradeProjectIfNecessary(
       // Intentional fallthrough after case '0.0.0'
       // @ts-ignore
       case '0.0.0':
-        upgradeFrom_000_to_001(storage, projectName, projectInfo)
+        await upgradeFrom_000_to_001(storage, projectName, projectInfo)
 
       // Intentional fallthrough after case '0.0.1'
       // @ts-ignore
       case '0.0.1':
-        upgradeFrom_001_to_002(storage, projectName, projectInfo);
+        await upgradeFrom_001_to_002(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.2'
       // @ts-ignore
       case '0.0.2':
-        upgradeFrom_002_to_003(storage, projectName, projectInfo);
+        await upgradeFrom_002_to_003(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.3'
       // @ts-ignore
       case '0.0.3':
-        upgradeFrom_003_to_004(storage, projectName, projectInfo);
+        await upgradeFrom_003_to_004(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.4'
       // @ts-ignore
       case '0.0.4':
-        upgradeFrom_004_to_005(storage, projectName, projectInfo);
+        await upgradeFrom_004_to_005(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.5'
       // @ts-ignore
       case '0.0.5':
-        upgradeFrom_005_to_006(storage, projectName, projectInfo);
+        await upgradeFrom_005_to_006(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.6'
       // @ts-ignore
       case '0.0.6':
-        upgradeFrom_006_to_007(storage, projectName, projectInfo);
+        await upgradeFrom_006_to_007(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.7'
       // @ts-ignore
       case '0.0.7':
-        upgradeFrom_007_to_008(storage, projectName, projectInfo);
+        await upgradeFrom_007_to_008(storage, projectName, projectInfo);
     }
     await storageProject.saveProjectInfo(storage, projectName);
   }
