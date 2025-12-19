@@ -216,6 +216,8 @@
       "CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שאינה קיימת במודול זה.",
       "CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT": "בלוק זה קורא למתודה על רכיב פרטי במנגנון {{mechanismClassName}}.",
       "CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT": "בלוק זה קורא למתודה על רכיב שכבר לא קיים.",
+      "CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT_CLASS": "בלוק זה קורא למתודה על רכיב שהמחלקה שלו כבר לא קיימת.",
+      "CALL_COMPONENT_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שכבר לא קיימת ברכיב.",
       "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM": "בלוק זה קורא למתודה על רכיב ששייך למנגנון שכבר לא קיים.",
       "CALL_ROBOT_INSTANCE_METHOD_INSIDE_MECHANISM": "בלוק זה אינו מורשה לשימוש בתוך מנגנון.",
       "CALL_ROBOT_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שכבר לא קיימת ברובוט.",
@@ -225,6 +227,7 @@
       "EVENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור האירועים של הרובוט או המנגנון.",
       "COMPONENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור הרכיבים של הרובוט או המנגנון.",
       "MECHANISM_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לחלק המנגנונים של הרובוט.",
+      "COMPONENT_MISSING_COMPONENT_CLASS": "בלוק זה מייצג רכיב שהמחלקה שלו כבר לא קיימת.",
       "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "ל-PeriodicOpMode צריך להיות שלבים, את השיטה המחזורית, או את שניהם.",
       "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים."
     },

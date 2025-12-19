@@ -635,7 +635,7 @@ const CALL_PYTHON_FUNCTION = {
             this.mrcArgs.push({
               name: method.args[i].name,
               type: method.args[i].type,
-              });
+            });
           }
           this.updateBlock_();
 
@@ -752,7 +752,34 @@ const CALL_PYTHON_FUNCTION = {
         }
       }
 
-      // TODO(lizlooney): Could the component's method have change or been deleted?
+      const classData = getClassData(this.mrcComponentClassName);
+      if (classData) {
+        let foundComponentMethod = false;
+        for (const functionData of classData.instanceMethods) {
+          if (this.getFieldValue(FIELD_FUNCTION_NAME) === functionData.functionName) {
+            foundComponentMethod = true;
+            this.mrcReturnType = functionData.returnType;
+            this.mrcTooltip = functionData.tooltip;
+            this.mrcArgs = [];
+            // We don't include the arg for the self argument because we don't need a socket for it.
+            for (let i = 1; i < functionData.args.length; i++) {
+              this.mrcArgs.push({
+                name: functionData.args[i].name,
+                type: functionData.args[i].type,
+              });
+            }
+            this.updateBlock_();
+
+            // Since we found the method, we can break out of the loop.
+            break;
+          }
+        }
+        if (!foundComponentMethod) {
+          warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_METHOD);
+        }
+      } else {
+        warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT_CLASS);
+      }
     }
 
     // If this block is calling a robot method, check whether the robot method
@@ -1310,8 +1337,6 @@ export function getInstanceComponentBlocks(
       const block = createInstanceComponentBlock(component, functionData);
       contents.push(block);
     }
-  } else {
-    console.error('Could not find classData for ' + component.className);
   }
 
   return contents;
@@ -1328,8 +1353,6 @@ export function getInstanceMechanismComponentBlocks(
       const block = createInstanceMechanismComponentBlock(component, functionData, mechanismInRobot);
       contents.push(block);
     }
-  } else {
-    console.error('Could not find classData for ' + component.className);
   }
 
   return contents;

@@ -30,6 +30,7 @@ import { getModuleTypeForWorkspace } from './utils/workspaces';
 import { componentClasses } from './utils/python';
 import { makeLegalName } from './utils/validator';
 import * as toolboxItems from '../toolbox/items';
+import { getClassData } from './utils/python';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import * as storageNames from '../storage/names';
@@ -50,6 +51,7 @@ export const FIELD_NAME = 'NAME';
 export const FIELD_TYPE = 'TYPE';
 
 const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
+const WARNING_ID_COMPONENT_MISSING_COMPONENT_CLASS = 'missing component class';
 
 type ConstructorArg = {
   name: string,
@@ -216,6 +218,7 @@ const COMPONENT = {
    */
   mrcOnLoad: function(this: ComponentBlock, _editor: Editor): void {
     this.checkBlockIsInHolder();
+    this.checkComponentClass();
   },
   /**
    * mrcOnCreate is called for each ComponentBlock when it is created.
@@ -252,6 +255,29 @@ const COMPONENT = {
           icon.setBubbleVisible(true);
         }
         this.mrcHasNotInHolderWarning = true;
+      }
+    }
+  },
+  /**
+   * Checks whether the component class exists and if not, puts a warning on the block.
+   */
+  checkComponentClass: function(this: ComponentBlock): void {
+    const componentType = this.getFieldValue(FIELD_TYPE);
+    const classData = getClassData(componentType);
+    if (classData) {
+      // Remove previous warning.
+      this.setWarningText(null, WARNING_ID_COMPONENT_MISSING_COMPONENT_CLASS);
+    } else {
+      // Otherwise, add a warning to the block.
+      this.setWarningText(
+          Blockly.Msg.WARNING_COMPONENT_MISSING_COMPONENT_CLASS,
+          WARNING_ID_COMPONENT_MISSING_COMPONENT_CLASS);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).bringToFront();
       }
     }
   },
