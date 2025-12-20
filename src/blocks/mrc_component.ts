@@ -337,7 +337,6 @@ export const pythonFromBlock = function (
     }
   }
   code += ')\n';
-  code += 'self.hardware.append(self.' + componentName + ')\n';
 
   return code;
 }

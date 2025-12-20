@@ -32,7 +32,9 @@ import {
     TEST_DECORATOR_CLASS,
     NAME_DECORATOR_CLASS,
     GROUP_DECORATOR_CLASS,
+    START_METHOD_NAME,
     PERIODIC_METHOD_NAME,
+    END_METHOD_NAME,
     getClassData,
 } from '../blocks/utils/python';
 import * as storageModule from '../storage/module';
@@ -136,7 +138,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     switch (this.getModuleType()) {
       case storageModule.ModuleType.ROBOT:
-        initStatements += this.INDENT + 'self.hardware = []\n';
+        initStatements += this.INDENT + 'self.mechanisms = []\n';
         initStatements += this.INDENT + 'self.event_handlers = {}\n';
         initStatements += this.INDENT + 'self.define_hardware()\n';
         break;
@@ -317,21 +319,37 @@ export class ExtendedPythonGenerator extends PythonGenerator {
             this.INDENT.repeat(2) + 'for event_handler in self.event_handlers[event_name]:\n' +
             this.INDENT.repeat(3) + 'event_handler(*args)\n'
         )
+        this.classMethods['opmode_start'] = (
+            'def opmode_start(self) -> None:\n' +
+            this.INDENT + 'for mechanism in self.mechanisms:\n' +
+            this.INDENT.repeat(2) + 'mechanism.opmode_start()\n'
+        );
+        this.classMethods['opmode_periodic'] = (
+            'def opmode_periodic(self) -> None:\n' +
+            this.INDENT + 'for mechanism in self.mechanisms:\n' +
+            this.INDENT.repeat(2) + 'mechanism.opmode_periodic()\n'
+        );
+        this.classMethods['opmode_end'] = (
+            'def opmode_end(self) -> None:\n' +
+            this.INDENT + 'for mechanism in self.mechanisms:\n' +
+            this.INDENT.repeat(2) + 'mechanism.opmode_end()\n'
+        );
       }
 
       if (this.getModuleType() === storageModule.ModuleType.OPMODE) {
-        // If the user has a steps method, we need to generate code to call it from the periodic method.
+        // Add code to the Start method to call robot.opmode_start.
+        this.classMethods[START_METHOD_NAME] = this.insertCodeToCallRobot(START_METHOD_NAME, 'opmode_start');
+
+        // Add code to the Periodic method to call robot.opmode_periodic.
+        let periodicCode = this.insertCodeToCallRobot(PERIODIC_METHOD_NAME, 'opmode_periodic');
         if (STEPS_METHOD_NAME in this.classMethods) {
-          let periodicCode: string;
-          if (PERIODIC_METHOD_NAME in this.classMethods) {
-            periodicCode = this.classMethods[PERIODIC_METHOD_NAME];
-          } else {
-            periodicCode = `def ${PERIODIC_METHOD_NAME}(self):\n`;
-            periodicCode += this.INDENT + `super().${PERIODIC_METHOD_NAME}()\n`;
-          }
+          // Generate code to call the steps method after the user's code.
           periodicCode += this.INDENT + `self.${STEPS_METHOD_NAME}()\n`;
-          this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
         }
+        this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
+
+        // Add code to the End method to call robot.opmode_end.
+        this.classMethods[END_METHOD_NAME] = this.insertCodeToCallRobot(END_METHOD_NAME, 'opmode_end');
       }
 
       const classMethods = [];
@@ -375,6 +393,24 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     }
 
     return super.finish(code);
+  }
+
+  private insertCodeToCallRobot(methodName: string, robotMethodName: string): string {
+    const defAndSuper = `def ${methodName}(self):\n` + this.INDENT + `super().${methodName}()\n`;
+    let code: string;
+    if (methodName in this.classMethods) {
+      code = this.classMethods[methodName];
+      // Make sure code starts with defAndSuper.
+      if (!code.startsWith(defAndSuper)) {
+        throw new Error(`The generated code for the ${methodName} method should start with ${defAndSuper}`);
+      }
+      code = code.substring(defAndSuper.length);
+    } else {
+      // The user has not defined the method. We will define it now.
+      code = '';
+    }
+    // Generate code to call the robot method immediately after calling the superclass method.
+    return defAndSuper + this.INDENT + `self.robot.${robotMethodName}()\n` + code;
   }
 
   setOpModeDetails(opModeDetails: OpModeDetails) {

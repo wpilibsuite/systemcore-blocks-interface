@@ -462,7 +462,7 @@ export const pythonFromBlock = function (
     code += generator.INDENT + '),\n';
   }
   code += ')\n';
-  code += 'self.hardware.append(self.' + mechanismName + ')\n';
+  code += 'self.mechanisms.append(self.' + mechanismName + ')\n';
 
   return code;
 }

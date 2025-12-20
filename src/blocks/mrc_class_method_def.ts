@@ -410,22 +410,6 @@ const CLASS_METHOD_DEF = {
       this.setFieldValue('opmode_periodic', FIELD_METHOD_NAME);
     }
   },
-  upgrade_009_to_0010: function(this: ClassMethodDefBlock) {
-    // This function is called to upgrade ClassMethodDefBlocks in a mechanism module.
-    if (this.getFieldValue('NAME') === 'opmode_periodic' &&
-        !this.isOwnEditable() &&
-        !this.mrcCanChangeSignature &&
-        !this.mrcCanBeCalledWithinClass &&
-        !this.mrcCanBeCalledOutsideClass &&
-        this.mrcReturnType === 'None' &&
-        this.mrcParameters.length === 0) {
-      this.setEditable(true);
-      this.setDeletable(true);
-      this.mrcCanChangeSignature = true;
-      this.mrcCanBeCalledWithinClass = true;
-      this.mrcCanBeCalledOutsideClass = true;
-    }
-  },
 };
 
 export const setup = function () {
@@ -683,15 +667,5 @@ export function upgrade_006_to_007(workspace: Blockly.Workspace): void {
 export function upgrade_007_to_008(workspace: Blockly.Workspace): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as ClassMethodDefBlock).upgrade_007_to_008();
-  });
-}
-
-/**
- * Upgrades the ClassMethodDefBlocks in the given workspace from version 009 to 0010.
- * This function should only be called when upgrading old projects.
- */
-export function upgrade_009_to_0010(workspace: Blockly.Workspace): void {
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as ClassMethodDefBlock).upgrade_009_to_0010();
   });
 }

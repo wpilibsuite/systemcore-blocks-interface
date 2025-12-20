@@ -21,6 +21,22 @@
                 }
             },
             {
+                "type": "mrc_class_method_def",
+                "x": 10,
+                "y": 230,
+                "editable": false,
+                "extraState": {
+                    "canChangeSignature": false,
+                    "canBeCalledWithinClass": false,
+                    "canBeCalledOutsideClass": false,
+                    "returnType": "None",
+                    "params": []
+                },
+                "fields": {
+                    "NAME": "opmode_periodic"
+                }
+            },
+            {
                 "type": "mrc_mechanism_component_holder",
                 "x": 10,
                 "y": 10,
