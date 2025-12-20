@@ -63,6 +63,24 @@ export enum PortType {
 
 export const PORT_TYPE_DELIMITER = '__';
 
+export function stringToPortType(s: string): PortType | null {
+  return Object.prototype.hasOwnProperty.call(PortType, s)
+      ? (PortType as any)[s] as PortType
+      : null;
+}
+
+export function portTypeToString(portType: PortType): string {
+  return PortType[portType];
+}
+
+/**
+ * Upgrades the given port type string.
+ *
+ * @param str a port type string stored in version 0.0.8 and earlier.
+ * @returns A single string consisting of one or more port types.
+ * Multiple port types are separated by __ (two underscores). Each port type
+ * matches one of the PortType enum values.
+ */
 export function upgradePortTypeString(str: string): string {
   switch (str) {
     case 'CAN_PORT':
@@ -85,11 +103,18 @@ export function upgradePortTypeString(str: string): string {
   return str;
 }
 
+/**
+ * Parses the given string into an array of PortType.
+ *
+ * @param portTypeString A single string consisting of one or more port types.
+ * Multiple port types are separated by __ (two underscores). Each port type
+ * matches one of the PortType enum values.
+ */
 export function stringToPortTypeArray(str: string): PortType[] {
   const portTypeArray: PortType[] = [];
   for (const s of upgradePortTypeString(str).split(PORT_TYPE_DELIMITER)) {
-    if (Object.prototype.hasOwnProperty.call(PortType, s)) {
-      const portType = (PortType as any)[s] as PortType;
+    const portType = stringToPortType(s);
+    if (portType) {
       portTypeArray.push(portType);
     }
   }

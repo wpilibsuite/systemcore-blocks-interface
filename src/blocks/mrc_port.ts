@@ -46,15 +46,18 @@ const VISIBLE_PORT_LABEL_SERVO = 'servo';
 
 export type PortBlock = Blockly.Block & PortMixin;
 interface PortMixin extends PortMixinType {
-  mrcPortTypeArray: storageModuleContent.PortType[],
+  mrcPortTypes: storageModuleContent.PortType[],
 }
 type PortMixinType = typeof PORT;
 
 type PortExtraState = {
+  // TODO: Remove portType in the near future.
   // A single string consisting of one or more port types. Multiple port types are
   // separated by __ (two underscores). Each port type matches one of the PortType
   // enum values in src/storage/module_content.ts.
-  portType: string,
+  portType?: string,
+
+  portTypes?: string[],
 }
 
 const PORT = {
@@ -62,7 +65,7 @@ const PORT = {
     * Block initialization.
     */
   init: function (this: PortBlock): void {
-    this.mrcPortTypeArray = [];
+    this.mrcPortTypes = [];
     this.setStyle(MRC_STYLE_PORTS);
     this.setOutput(true);
   },
@@ -72,7 +75,7 @@ const PORT = {
    */
   saveExtraState: function (this: PortBlock): PortExtraState {
     const state: PortExtraState = {
-      portType: storageModuleContent.portTypeArrayToString(this.mrcPortTypeArray),
+      portTypes: this.mrcPortTypes.map((portType) => storageModuleContent.portTypeToString(portType)),
     };
     return state;
   },
@@ -81,15 +84,24 @@ const PORT = {
    * Load the ports from the block's extra state.
    */
   loadExtraState: function (this: PortBlock, state: PortExtraState): void {
-    this.mrcPortTypeArray.push(...storageModuleContent.stringToPortTypeArray(state.portType));
+    if (state.portTypes) {
+      state.portTypes.forEach((s) => {
+        const portType = storageModuleContent.stringToPortType(s);
+        if (portType) {
+          this.mrcPortTypes.push(portType);
+        }
+      });
+    } else if (state.portType) {
+      this.mrcPortTypes.push(...storageModuleContent.stringToPortTypeArray(state.portType));
+    }
 
-    // Now create one input for each element of this.mrcPortTypeArray.
-    for (let i = 0; i < this.mrcPortTypeArray.length; i++) {
+    // Now create one input for each element of this.mrcPortTypes.
+    for (let i = 0; i < this.mrcPortTypes.length; i++) {
       // Create the field but don't set the field value. The field value will be
       // set by blockly as the block is loaded.
       this.appendDummyInput()
           .appendField(createFieldNonEditableText(''), FIELD_PREFIX_TYPE + i)
-          .appendField(createFieldDropdownForPortNumber(this.mrcPortTypeArray[i]), FIELD_PREFIX_PORT_NUM + i)
+          .appendField(createFieldDropdownForPortNumber(this.mrcPortTypes[i]), FIELD_PREFIX_PORT_NUM + i)
           .setAlign(Blockly.inputs.Align.RIGHT);
     }
 
@@ -98,7 +110,7 @@ const PORT = {
     this.setOutput(true, this.makeOutputCheck());
   },
   makeOutputCheck(this: PortBlock): string {
-    return storageModuleContent.portTypeArrayToString(this.mrcPortTypeArray)
+    return storageModuleContent.portTypeArrayToString(this.mrcPortTypes)
   },
 }
 
@@ -110,9 +122,9 @@ export const pythonFromBlock = function (
     block: PortBlock,
     _: ExtendedPythonGenerator) {
   let code = '';
-  for (let i = 0; i < block.mrcPortTypeArray.length; i++) {
+  for (let i = 0; i < block.mrcPortTypes.length; i++) {
     const portNum = block.getFieldValue(FIELD_PREFIX_PORT_NUM + i);
-    const portLabel = getLabelForPort(block.mrcPortTypeArray[i]);
+    const portLabel = getLabelForPort(block.mrcPortTypes[i]);
     code += portNum + ', # ' + portLabel + '\n';
   }
   return [code, Order.NONE];
@@ -144,13 +156,20 @@ function createFieldDropdownForPortNumber(portType: storageModuleContent.PortTyp
   }
 }
 
+/**
+ * Parses the given string into an array of PortType.
+ *
+ * @param portTypeString A single string consisting of one or more port types.
+ * Multiple port types are separated by __ (two underscores). Each port type
+ * matches one of the PortType enum values.
+ */
 export function createPort(portTypeString: string): any {
-  const portTypeArray = storageModuleContent.stringToPortTypeArray(portTypeString);
+  const portTypes = storageModuleContent.stringToPortTypeArray(portTypeString);
 
   // Based on the port type, specify the appropriate fields.
   const fields: {[key: string]: any} = {};
   let iField = 0;
-  for (const portType of portTypeArray) {
+  for (const portType of portTypes) {
     const label = getLabelForPort(portType);
     if (label) {
       fields[FIELD_PREFIX_TYPE + iField] = label;
@@ -159,7 +178,7 @@ export function createPort(portTypeString: string): any {
     }
   }
   const extraState: PortExtraState = {
-    portType: portTypeString,
+    portTypes: portTypes.map((portType) => storageModuleContent.portTypeToString(portType)),
   };
   return {
     block: {
