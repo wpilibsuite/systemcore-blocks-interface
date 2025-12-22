@@ -69,9 +69,8 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     return (
       <Antd.Alert
         type="error"
-        message={props.alertErrorMessage}
-        closable
-        afterClose={handleClearError}
+        title={props.alertErrorMessage}
+        closable={{ closeIcon: true, onClose: handleClearError }}
       />
     );
   };

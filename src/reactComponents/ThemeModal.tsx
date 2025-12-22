@@ -193,7 +193,7 @@ const ThemeModal: React.FC<ThemeModalProps> = ({
                 <Antd.Divider />
 
                 <Antd.Alert
-                    message={t('THEME_MODAL.PREVIEW')}
+                    title={t('THEME_MODAL.PREVIEW')}
                     description={t('THEME_MODAL.PREVIEW_DESCRIPTION')}
                     type="info"
                     showIcon

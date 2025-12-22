@@ -166,9 +166,8 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
     return (
       <Antd.Alert
         type="error"
-        message={alertErrorMessage}
-        closable
-        afterClose={handleAlertClose}
+        title={alertErrorMessage}
+        closable={{ closeIcon: true, onClose: handleAlertClose}}
         style={{marginTop: ERROR_ALERT_MARGIN_TOP}}
       />
     );

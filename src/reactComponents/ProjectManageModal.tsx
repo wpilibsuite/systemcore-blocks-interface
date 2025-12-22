@@ -309,7 +309,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
       >
         {props.noProjects && (
           <Antd.Alert
-            message={t('NO_PROJECTS_FOUND')}
+            title={t('NO_PROJECTS_FOUND')}
             description={t('CREATE_PROJECT_TO_START')}
             type="info"
             showIcon
