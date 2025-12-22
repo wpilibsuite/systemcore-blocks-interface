@@ -56,18 +56,6 @@ import wpilib_placeholders
 sys.path.append("../server_python_scripts")
 import blocks_base_classes
 
-# External samples
-sys.path.append("../external_samples")
-import color_range_sensor
-import component
-import expansion_hub_motor
-import expansion_hub_servo
-import port
-import rev_touch_sensor
-import smart_motor
-import spark_mini
-import sparkfun_led_stick
-
 # Local modules
 import json_util
 import python_util
@@ -118,22 +106,6 @@ def main(argv):
   json_generator_robotpy = json_util.JsonGenerator(robotpy_modules)
   file_path = f'{FLAGS.output_directory}/generated/robotpy_data.json'
   json_generator_robotpy.writeJsonFile(file_path)
-
-  external_samples_modules = [
-    color_range_sensor,
-    component,
-    expansion_hub_motor,
-    expansion_hub_servo,
-    port,
-    rev_touch_sensor,
-    smart_motor,
-    spark_mini,
-    sparkfun_led_stick,
-  ]
-  json_generator_external_samples = json_util.JsonGenerator(
-      external_samples_modules, [json_generator_robotpy])
-  file_path = f'{FLAGS.output_directory}/generated/external_samples_data.json'
-  json_generator_external_samples.writeJsonFile(file_path)
 
   server_python_scripts = [
     blocks_base_classes,

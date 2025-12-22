@@ -403,7 +403,6 @@ export async function uploadProject(
     const filePath = storageNames.makeFilePath(projectName, fileName);
     await storage.saveFile(filePath, fileContentText);
   }
-  await saveProjectInfo(storage, projectName);
 }
 
 /**

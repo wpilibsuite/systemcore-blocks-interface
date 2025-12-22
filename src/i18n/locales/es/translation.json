@@ -217,6 +217,8 @@
             "CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD": "Este bloque llama a un método que no existe en este módulo.",
             "CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT": "Este bloque llama a un método en un componente privado en el mecanismo {{mechanismClassName}}.",
             "CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT": "Este bloque llama a un método en un componente que ya no existe.",
+            "CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT_CLASS": "Este bloque llama a un método de un componente cuya clase ya no existe.",
+            "CALL_COMPONENT_INSTANCE_METHOD_MISSING_METHOD": "Este bloque llama a un método que ya no existe en el componente.",
             "CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM": "Este bloque llama a un método de un componente que pertenece a un mecanismo que ya no existe.",
             "CALL_ROBOT_INSTANCE_METHOD_INSIDE_MECHANISM": "No se permite utilizar este bloque dentro de un mecanismo.",
             "CALL_ROBOT_INSTANCE_METHOD_MISSING_METHOD": "Este bloque llama a un método que ya no existe en el robot.",
@@ -226,6 +228,7 @@
             "EVENT_NOT_IN_HOLDER": "Este bloque solo puede ir en la sección de eventos del robot o mecanismo.",
             "COMPONENT_NOT_IN_HOLDER": "Este bloque solo puede ir en la sección de componentes del robot o mecanismo.",
             "MECHANISM_NOT_IN_HOLDER": "Este bloque solo puede ir en la sección de mecanismos del robot.",
+            "COMPONENT_MISSING_COMPONENT_CLASS": "Este bloque representa un componente cuya clase ya no existe.",
             "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "Un PeriodicOpMode debe tener pasos, el método periódico o ambos.",
             "MECHANISM_NOT_FOUND": "Este bloque se refiere a un mecanismo que ya no existe."
         },

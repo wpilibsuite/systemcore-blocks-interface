@@ -125,6 +125,7 @@
                 }
             ],
             "instanceVariables": [],
+            "isComponent": false,
             "moduleName": "blocks_base_classes",
             "staticMethods": []
         }

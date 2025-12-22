@@ -104,34 +104,27 @@ export function isValidClassName(name: string): boolean {
  */
 export function pascalCaseToSnakeCase(pascalCaseName: string): string {
   let snakeCaseName = '';
+  let prevCharWasLower = false;
   for (let i = 0; i < pascalCaseName.length; i++) {
     const char = pascalCaseName.charAt(i);
     if (char >= 'A' && char <= 'Z') {
       if (i > 0) {
-        snakeCaseName += '_';
+        let nextCharIsLower = false;
+        if (i + 1  < pascalCaseName.length) {
+          const nextChar = pascalCaseName.charAt(i + 1);
+          nextCharIsLower = nextChar >= 'a' && nextChar <= 'z';
+        }
+        if (prevCharWasLower || nextCharIsLower) {
+          snakeCaseName += '_';
+        }
       }
       snakeCaseName += char.toLowerCase();
     } else {
       snakeCaseName += char;
     }
+    prevCharWasLower = char >= 'a' && char <= 'z';
   }
   return snakeCaseName;
-}
-
-/**
- * Returns the PascalCase name for the given snake_case name.
- */
-export function snakeCaseToPascalCase(snakeCaseName: string): string {
-  let pascalCaseName = '';
-  let nextCharUpper = true;
-  for (let i = 0; i < snakeCaseName.length; i++) {
-    const char = snakeCaseName.charAt(i);
-    if (char !== '_') {
-      pascalCaseName += nextCharUpper ? char.toUpperCase() : char;
-    }
-    nextCharUpper = (char === '_');
-  }
-  return pascalCaseName;
 }
 
 /**

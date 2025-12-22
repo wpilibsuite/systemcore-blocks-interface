@@ -27,11 +27,13 @@ import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { getModuleTypeForWorkspace } from './utils/workspaces';
-import { getAllowedTypesForSetCheck, getClassData, getSubclassNames } from './utils/python';
+import { componentClasses } from './utils/python';
 import { makeLegalName } from './utils/validator';
 import * as toolboxItems from '../toolbox/items';
+import { getClassData } from './utils/python';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
+import * as storageNames from '../storage/names';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
@@ -49,6 +51,7 @@ export const FIELD_NAME = 'NAME';
 export const FIELD_TYPE = 'TYPE';
 
 const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
+const WARNING_ID_COMPONENT_MISSING_COMPONENT_CLASS = 'missing component class';
 
 type ConstructorArg = {
   name: string,
@@ -141,18 +144,15 @@ const COMPONENT = {
 
     if (extraState.params) {
       extraState.params.forEach((arg) => {
+        const upgradedArgType = storageModuleContent.upgradePortTypeString(arg.type);
         this.mrcArgs.push({
           name: arg.name,
-          type: arg.type,
+          type: upgradedArgType,
         });
       });
     }
-    this.updateBlock_(extraState);
-  },
-  /**
-   * Update the block to reflect the newly loaded extra state.
-   */
-  updateBlock_: function (this: ComponentBlock, extraState: ComponentExtraState): void {
+
+    // Update the block to reflect the newly loaded extra state.
     const moduleType = extraState.moduleType ? extraState.moduleType : getModuleTypeForWorkspace(this.workspace);
     if (moduleType === storageModule.ModuleType.ROBOT) {
       // Add input sockets for the arguments.
@@ -161,7 +161,7 @@ const COMPONENT = {
           .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(this.mrcArgs[i].name);
         if (this.mrcArgs[i].type) {
-          input.setCheck(getAllowedTypesForSetCheck(this.mrcArgs[i].type));
+          input.setCheck(this.mrcArgs[i].type);
         }
       }
     }
@@ -210,7 +210,7 @@ const COMPONENT = {
     // Collect the ports for this component block.
     for (let i = 0; i < this.mrcArgs.length; i++) {
       const argName = this.getArgName(i);
-      ports[argName] = this.mrcArgs[i].name;
+      ports[argName] = this.mrcArgs[i].type;
     }
   },
   /**
@@ -218,6 +218,7 @@ const COMPONENT = {
    */
   mrcOnLoad: function(this: ComponentBlock, _editor: Editor): void {
     this.checkBlockIsInHolder();
+    this.checkComponentClass();
   },
   /**
    * mrcOnCreate is called for each ComponentBlock when it is created.
@@ -258,6 +259,29 @@ const COMPONENT = {
     }
   },
   /**
+   * Checks whether the component class exists and if not, puts a warning on the block.
+   */
+  checkComponentClass: function(this: ComponentBlock): void {
+    const componentType = this.getFieldValue(FIELD_TYPE);
+    const classData = getClassData(componentType);
+    if (classData) {
+      // Remove previous warning.
+      this.setWarningText(null, WARNING_ID_COMPONENT_MISSING_COMPONENT_CLASS);
+    } else {
+      // Otherwise, add a warning to the block.
+      this.setWarningText(
+          Blockly.Msg.WARNING_COMPONENT_MISSING_COMPONENT_CLASS,
+          WARNING_ID_COMPONENT_MISSING_COMPONENT_CLASS);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).bringToFront();
+      }
+    }
+  },
+  /**
    * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
    */
   mrcChangeIds: function (this: ComponentBlock, oldIdToNewId: { [oldId: string]: string }): void {
@@ -270,6 +294,14 @@ const COMPONENT = {
       if (this.mrcArgs[i].type === 'Port') {
         this.mrcArgs[i].type = this.mrcArgs[i].name;
       }
+    }
+  },
+  upgrade_008_to_009: function(this: ComponentBlock) {
+    const fieldTypeValue = this.getFieldValue(FIELD_TYPE);
+    if (fieldTypeValue === 'expansion_hub_motor.ExpansionHubMotor') {
+      this.setFieldValue('wpilib_placeholders.ExpansionHubMotor', FIELD_TYPE);
+    } else if (fieldTypeValue === 'expansion_hub_servo.ExpansionHubServo') {
+      this.setFieldValue('wpilib_placeholders.ExpansionHubServo', FIELD_TYPE);
     }
   },
 };
@@ -285,36 +317,37 @@ export const pythonFromBlock = function (
   if (block.mrcImportModule) {
     generator.importModule(block.mrcImportModule);
   }
-  let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.getFieldValue(FIELD_TYPE) + "(";
+
+  const componentName = block.getFieldValue(FIELD_NAME);
+  const componentType = block.getFieldValue(FIELD_TYPE);
+  let code = 'self.' + componentName + ' = ' + componentType + '(\n';
 
   for (let i = 0; i < block.mrcArgs.length; i++) {
-    if (i != 0) {
-      code += ', ';
-    }
     if (generator.getModuleType() === storageModule.ModuleType.ROBOT) {
-      code += generator.valueToCode(block, 'ARG' + i, Order.NONE);
+      // In a robot, a component block has an input socket with a mrc_port block
+      // plugged into it.
+      code += generator.prefixLines(generator.valueToCode(block, 'ARG' + i, Order.NONE), generator.INDENT);
     } else {
-      code += block.getArgName(i);
+      // In a mechanism, a component block does not have input sockets.
+      // Each argument of the mechanism constructor is a tuple containing the
+      // constructor parameters of a component.
+      // Use the * operator to unpack the elements of the tuple and pass each
+      // element as a separate positional argument to the component constructor.
+      code += generator.INDENT + '*' + block.getArgName(i) + ',\n';
     }
   }
-  code += ')\n' + 'self.hardware.append(self.' + block.getFieldValue(FIELD_NAME) + ')\n';
+  code += ')\n';
+
   return code;
 }
 
 export function getAllPossibleComponents(
     moduleType: storageModule.ModuleType): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
-  // Iterate through all the components subclasses and add definition blocks.
-  const componentTypes = getSubclassNames('component.Component');
-
-  componentTypes.forEach(componentType => {
-    const classData = getClassData(componentType);
-    if (!classData) {
-      throw new Error('Could not find classData for ' + componentType);
-    }
-
-    const componentName = 'my_' + classData.moduleName;
-
+  // Iterate through all the component classes and add definition blocks.
+  componentClasses.forEach(classData => {
+    const simpleClassName = classData.className.substring(classData.className.lastIndexOf('.') + 1);
+    const componentName = 'my_' + storageNames.pascalCaseToSnakeCase(simpleClassName);
     classData.constructors.forEach(constructor => {
        contents.push(createComponentBlock(componentName, classData, constructor, moduleType));
     });
@@ -339,13 +372,13 @@ function createComponentBlock(
   fields[FIELD_TYPE] = classData.className;
   const inputs: {[key: string]: any} = {};
 
-  if (constructorData.expectedPortType) {
+  if (constructorData.componentPortName && constructorData.componentPortType) {
     extraState.params!.push({
-      name: constructorData.expectedPortType,
-      type: constructorData.expectedPortType,
+      name: constructorData.componentPortName,
+      type: constructorData.componentPortType,
     });
-    if (moduleType == storageModule.ModuleType.ROBOT ) {
-      inputs['ARG0'] = createPort(constructorData.expectedPortType);
+    if (moduleType == storageModule.ModuleType.ROBOT) {
+      inputs['ARG0'] = createPort(constructorData.componentPortType);
     }
   }
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
@@ -358,5 +391,15 @@ function createComponentBlock(
 export function upgrade_005_to_006(workspace: Blockly.Workspace): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as ComponentBlock).upgrade_005_to_006();
+  });
+}
+
+/**
+ * Upgrades the ComponentBlocks in the given workspace from version 008 to 009.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_008_to_009(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ComponentBlock).upgrade_008_to_009();
   });
 }

@@ -138,7 +138,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     switch (this.getModuleType()) {
       case storageModule.ModuleType.ROBOT:
-        initStatements += this.INDENT + 'self.hardware = []\n';
+        initStatements += this.INDENT + 'self.mechanisms = []\n';
         initStatements += this.INDENT + 'self.event_handlers = {}\n';
         initStatements += this.INDENT + 'self.define_hardware()\n';
         break;
@@ -321,18 +321,18 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         )
         this.classMethods['opmode_start'] = (
             'def opmode_start(self) -> None:\n' +
-            this.INDENT + 'for hardware in self.hardware:\n' +
-            this.INDENT.repeat(2) + 'hardware.opmode_start()\n'
+            this.INDENT + 'for mechanism in self.mechanisms:\n' +
+            this.INDENT.repeat(2) + 'mechanism.opmode_start()\n'
         );
         this.classMethods['opmode_periodic'] = (
             'def opmode_periodic(self) -> None:\n' +
-            this.INDENT + 'for hardware in self.hardware:\n' +
-            this.INDENT.repeat(2) + 'hardware.opmode_periodic()\n'
+            this.INDENT + 'for mechanism in self.mechanisms:\n' +
+            this.INDENT.repeat(2) + 'mechanism.opmode_periodic()\n'
         );
         this.classMethods['opmode_end'] = (
             'def opmode_end(self) -> None:\n' +
-            this.INDENT + 'for hardware in self.hardware:\n' +
-            this.INDENT.repeat(2) + 'hardware.opmode_end()\n'
+            this.INDENT + 'for mechanism in self.mechanisms:\n' +
+            this.INDENT.repeat(2) + 'mechanism.opmode_end()\n'
         );
       }
 
@@ -433,12 +433,13 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     const baseClassName = this.context?.getBaseClassName();
     if (baseClassName) {
       const classData = getClassData(baseClassName);
-      if (!classData) {
-        throw new Error('ClassData not found for ' + baseClassName);
+      if (classData) {
+        classData.instanceMethods.forEach(functionData => {
+            methodNames.push(functionData.functionName);
+        });
+      } else {
+        console.error('ClassData not found for ' + baseClassName);
       }
-      classData.instanceMethods.forEach(functionData => {
-          methodNames.push(functionData.functionName);
-      });
     }
 
     return methodNames;

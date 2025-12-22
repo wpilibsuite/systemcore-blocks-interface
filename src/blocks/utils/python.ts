@@ -20,7 +20,6 @@
  */
 
 import { ClassData, PythonData, ModuleData, organizeVarDataByType, VariableGettersAndSetters } from './python_json_types';
-import generatedExternalSamplesData from './generated/external_samples_data.json';
 import generatedRobotPyData from './generated/robotpy_data.json';
 import generatedServerPythonScripts from './generated/server_python_scripts.json';
 
@@ -29,7 +28,7 @@ import * as GetPythonVariable from "../mrc_get_python_variable";
 import * as SetPythonVariable from "../mrc_set_python_variable";
 
 
-// Utilities related to blocks for python modules and classes, including those from RobotPy, external samples, etc.
+// Utilities related to blocks for python modules and classes, including those from RobotPy.
 
 // The module for classes used by blocks that don't exist in wpilib.
 const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
@@ -75,18 +74,18 @@ export const NAME_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Name';
 export const GROUP_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Group';
 
 export const robotPyData = generatedRobotPyData as PythonData;
-const externalSamplesData = generatedExternalSamplesData as PythonData
 const serverPythonScripts = generatedServerPythonScripts as PythonData;
-
 
 const allPythonData: PythonData[] = [];
 allPythonData.push(robotPyData);
-allPythonData.push(externalSamplesData);
 allPythonData.push(serverPythonScripts);
 
+export const componentClasses: ClassData[] = []
 
 // Initializes enum and variable blocks for python modules and classes.
 export function initialize() {
+  componentClasses.length = 0;
+
   for (const pythonData of allPythonData) {
     // Process modules.
     for (const moduleData of pythonData.modules) {
@@ -162,6 +161,11 @@ export function initialize() {
                 variableGettersAndSetters.tooltipsForSetter);
           }
         }
+      }
+
+      // Check whether this class is a component.
+      if (classData.isComponent) {
+        componentClasses.push(classData);
       }
     }
   }

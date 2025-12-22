@@ -28,12 +28,18 @@ import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
 import { upgrade_001_to_002 } from '../blocks/mrc_mechanism_component_holder';
-import { upgrade_002_to_003, upgrade_004_to_005, upgrade_006_to_007, upgrade_007_to_008 } from '../blocks/mrc_class_method_def';
+import {
+    upgrade_002_to_003,
+    upgrade_004_to_005,
+    upgrade_006_to_007,
+    upgrade_007_to_008 } from '../blocks/mrc_class_method_def';
 import { upgrade_005_to_006 } from '../blocks/mrc_component';
+import { upgrade_008_to_009 as upgrade_component_008_to_009 } from '../blocks/mrc_component';
+import { upgrade_008_to_009 as upgrade_call_python_function_008_to_009 } from '../blocks/mrc_call_python_function';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.8';
+export const CURRENT_VERSION = '0.0.9';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -46,42 +52,47 @@ export async function upgradeProjectIfNecessary(
       // Intentional fallthrough after case '0.0.0'
       // @ts-ignore
       case '0.0.0':
-        upgradeFrom_000_to_001(storage, projectName, projectInfo)
+        await upgradeFrom_000_to_001(storage, projectName, projectInfo)
 
       // Intentional fallthrough after case '0.0.1'
       // @ts-ignore
       case '0.0.1':
-        upgradeFrom_001_to_002(storage, projectName, projectInfo);
+        await upgradeFrom_001_to_002(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.2'
       // @ts-ignore
       case '0.0.2':
-        upgradeFrom_002_to_003(storage, projectName, projectInfo);
+        await upgradeFrom_002_to_003(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.3'
       // @ts-ignore
       case '0.0.3':
-        upgradeFrom_003_to_004(storage, projectName, projectInfo);
+        await upgradeFrom_003_to_004(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.4'
       // @ts-ignore
       case '0.0.4':
-        upgradeFrom_004_to_005(storage, projectName, projectInfo);
+        await upgradeFrom_004_to_005(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.5'
       // @ts-ignore
       case '0.0.5':
-        upgradeFrom_005_to_006(storage, projectName, projectInfo);
+        await upgradeFrom_005_to_006(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.6'
       // @ts-ignore
       case '0.0.6':
-        upgradeFrom_006_to_007(storage, projectName, projectInfo);
+        await upgradeFrom_006_to_007(storage, projectName, projectInfo);
 
       // Intentional fallthrough after case '0.0.7'
       // @ts-ignore
       case '0.0.7':
-        upgradeFrom_007_to_008(storage, projectName, projectInfo);
+        await upgradeFrom_007_to_008(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.8'
+      // @ts-ignore
+      case '0.0.8':
+        await upgradeFrom_008_to_009(storage, projectName, projectInfo);
     }
     await storageProject.saveProjectInfo(storage, projectName);
   }
@@ -271,4 +282,19 @@ async function upgradeFrom_007_to_008(
       noModuleTypes, noPreupgrade,
       isMechanism, upgrade_007_to_008);
   projectInfo.version = '0.0.8';
+}
+
+async function upgradeFrom_008_to_009(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  const upgrade = function (workspace: Blockly.Workspace) {
+    upgrade_component_008_to_009(workspace);
+    upgrade_call_python_function_008_to_009(workspace);
+  };
+  await upgradeBlocksFiles(
+      storage, projectName,
+      anyModuleType, storageModuleContent.preupgrade_008_to_009,
+      anyModuleType, upgrade);
+  projectInfo.version = '0.0.9';
 }

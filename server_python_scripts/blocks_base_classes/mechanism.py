@@ -4,7 +4,6 @@ from typing import Callable
 
 class Mechanism:
     def __init__(self):
-        self.hardware = []
         # In self.event_handlers, the keys are the event names, the values are a list of handlers.
         self.event_handlers = {}
 
@@ -27,13 +26,10 @@ class Mechanism:
                 event_handler(*args)
 
     def opmode_start(self) -> None:
-        for hardware in self.hardware:
-            hardware.opmode_start()
+        pass
 
     def opmode_periodic(self) -> None:
-        for hardware in self.hardware:
-            hardware.opmode_periodic()
+        pass
 
     def opmode_end(self) -> None:
-        for hardware in self.hardware:
-            hardware.opmode_end()
+        pass

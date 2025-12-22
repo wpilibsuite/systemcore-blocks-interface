@@ -26,7 +26,6 @@ import { MRC_STYLE_MECHANISMS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { getAllowedTypesForSetCheck } from './utils/python';
 import { makeLegalName } from './utils/validator';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
@@ -127,7 +126,14 @@ const MECHANISM = {
     this.mrcParameters = [];
     if (extraState.parameters) {
       extraState.parameters.forEach((arg) => {
-        this.mrcParameters.push({...arg});
+        const upgradedArgType = storageModuleContent.upgradePortTypeString(arg.type);
+        if (upgradedArgType !== arg.type) {
+          const upgradedArg = {...arg};
+          upgradedArg.type = upgradedArgType;
+          this.mrcParameters.push(upgradedArg);
+        } else {
+          this.mrcParameters.push({...arg});
+        }
       });
     }
     this.updateBlock_();
@@ -156,7 +162,7 @@ const MECHANISM = {
             .appendField(argName, 'ARGNAME' + i);
       }
       if (this.mrcParameters[i].type) {
-        argInput.setCheck(getAllowedTypesForSetCheck(this.mrcParameters[i].type));
+        argInput.setCheck(this.mrcParameters[i].type);
       }
     }
     // Remove deleted inputs.
@@ -356,7 +362,7 @@ const MECHANISM = {
               }
             }
           }
-          argInput.setCheck(getAllowedTypesForSetCheck(this.mrcParameters[parametersIndex].type));
+          argInput.setCheck(this.mrcParameters[parametersIndex].type);
 
           componentPortsIndex++;
           parametersIndex++;
@@ -444,16 +450,19 @@ export const pythonFromBlock = function (
   if (block.mrcImportModule) {
     generator.importModule(block.mrcImportModule);
   }
-  let code = 'self.' + block.getFieldValue(FIELD_NAME) + ' = ' + block.mrcImportModule + '.' + block.getFieldValue(FIELD_TYPE) + '(';
+
+  const mechanismName = block.getFieldValue(FIELD_NAME);
+  const mechanismType = block.mrcImportModule + '.' + block.getFieldValue(FIELD_TYPE);
+  let code = 'self.' + mechanismName + ' = ' + mechanismType + '(\n';
 
   for (let i = 0; i < block.mrcParameters.length; i++) {
-    const fieldName = 'ARG' + i;
-    if (i != 0) {
-      code += ', '
-    }
-    code += block.mrcParameters[i].name + ' = ' + generator.valueToCode(block, fieldName, Order.NONE);
+    // Each parameter is a tuple.
+    code += generator.INDENT + block.mrcParameters[i].name + ' = (\n';
+    code += generator.prefixLines(generator.valueToCode(block, 'ARG' + i, Order.NONE), generator.INDENT.repeat(2));
+    code += generator.INDENT + '),\n';
   }
-  code += ')\n' + "self.hardware.append(self." + block.getFieldValue(FIELD_NAME) + ")\n";
+  code += ')\n';
+  code += 'self.mechanisms.append(self.' + mechanismName + ')\n';
 
   return code;
 }
