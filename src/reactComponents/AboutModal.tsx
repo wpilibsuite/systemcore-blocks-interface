@@ -27,12 +27,12 @@ declare const __APP_VERSION__: string;
 const __APP_NAME__ = "SystemCore Blocks";
 
 interface AboutDialogProps {
-    visible: boolean;
+    open: boolean;
     onClose: () => void;
 }
 
 const AboutDialog: React.FC<AboutDialogProps> = ({
-    visible,
+    open,
     onClose,
 }) => {
     const { t } = useTranslation();
@@ -41,11 +41,11 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
     const attributionsFile = '/attributions.txt'; // Path to the attributions file
 
     React.useEffect(() => {
-        if (visible) {
+        if (open) {
             loadAttributions();
             loadDependencies();
         }
-    }, [visible, attributionsFile]);
+    }, [open, attributionsFile]);
     interface LicenseInfo{
         name: string;
         version: string;
@@ -114,7 +114,7 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
                     {t('ABOUT.TITLE')}
                 </Antd.Space>
             }
-            open={visible}
+            open={open}
             footer={[<Antd.Button key="submit" onClick={onClose}>{t('ABOUT.OK')}</Antd.Button>]}
             onCancel={onClose}
             onOk={onClose}

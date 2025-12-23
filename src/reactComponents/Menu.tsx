@@ -509,7 +509,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         </div>
       )}
       <AboutDialog
-        visible={aboutDialogVisible}
+        open={aboutDialogVisible}
         onClose={() => setAboutDialogVisible(false)}
       />
       <ThemeModal

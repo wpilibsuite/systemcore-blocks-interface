@@ -134,9 +134,8 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
     return (
       <Antd.Alert
         type="error"
-        message={alertErrorMessage}
-        closable
-        afterClose={handleAlertClose}
+        title={alertErrorMessage}
+        closable={{ closeIcon: true, onClose: handleAlertClose }}
         style={{marginTop: ERROR_ALERT_MARGIN_TOP}}
       />
     );
