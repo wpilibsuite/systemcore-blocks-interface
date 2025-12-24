@@ -25,7 +25,6 @@ import {Order} from 'blockly/python';
 
 import { Editor } from '../editor/editor';
 import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
-import {createFieldNonEditableText} from '../fields/FieldNonEditableText';
 import {MRC_STYLE_VARIABLES} from '../themes/styles';
 import {BLOCK_NAME as MRC_CLASS_METHOD_DEF, ClassMethodDefBlock} from './mrc_class_method_def';
 import {BLOCK_NAME as MRC_EVENT_HANDLER, EventHandlerBlock } from './mrc_event_handler';
@@ -70,10 +69,72 @@ const GET_PARAMETER_BLOCK = {
     this.mrcHasWarning = false;
 
     this.setStyle(MRC_STYLE_VARIABLES);
+    
+    // Create a custom dropdown that accepts any value and displays it correctly
+    class CustomParameterDropdown extends Blockly.FieldDropdown {
+      override doClassValidation_(newValue?: string): string | null {
+        // Always accept the value, even if it's not in the current options
+        return newValue ?? null;
+      }
+      
+      override getText_(): string {
+        // Always return the current value, even if not in options
+        return this.value_ || '';
+      }
+    }
+    
+    const blockRef = this;
+    // Use a dummy initial option - it will be replaced when setValue is called
+    const dropdown: Blockly.Field = new CustomParameterDropdown(
+      function() {
+        // This function will be called to regenerate options when dropdown opens
+        return blockRef.getParameterOptions();
+      }
+    );
+    
+    dropdown.setValidator(this.validateParameterSelection.bind(this));
+    
     this.appendDummyInput()
         .appendField(Blockly.Msg.PARAMETER)
-        .appendField(createFieldNonEditableText(''), FIELD_PARAMETER_NAME);
+        .appendField(dropdown, FIELD_PARAMETER_NAME);
     this.setOutput(true, this.mrcParameterType);
+  },
+  getParameterOptions: function(this: GetParameterBlock): [string, string][] {
+    const legalParameterNames: string[] = [];
+
+    const rootBlock: Blockly.Block | null = this.getRootBlock();
+    if (rootBlock && rootBlock.type === MRC_CLASS_METHOD_DEF) {
+      const classMethodDefBlock = rootBlock as ClassMethodDefBlock;
+      legalParameterNames.push(...classMethodDefBlock.mrcGetParameterNames());
+    } else if (rootBlock && rootBlock.type === MRC_EVENT_HANDLER) {
+      const eventHandlerBlock = rootBlock as EventHandlerBlock;
+      legalParameterNames.push(...eventHandlerBlock.mrcGetParameterNames());
+    }
+
+    // Get the field to check its value
+    const field = this.getField(FIELD_PARAMETER_NAME) as Blockly.FieldDropdown | null;
+    const currentValue = field?.getValue();
+    
+    // Always include the current field value if it exists and isn't already in the list
+    if (currentValue && currentValue !== '' && !legalParameterNames.includes(currentValue)) {
+      legalParameterNames.unshift(currentValue);
+    }
+
+    if (legalParameterNames.length === 0) {
+      return [['(no parameters)', '']];
+    }
+
+    return legalParameterNames.map(name => [name, name]);
+  },
+  validateParameterSelection: function(this: GetParameterBlock, newValue: string): string {
+    // Clear any previous warnings
+    this.setWarningText(null, WARNING_ID_NOT_IN_METHOD);
+    this.mrcHasWarning = false;
+    
+    // Options will be regenerated automatically on next dropdown open
+    // via the function passed to the CustomParameterDropdown constructor
+    
+    return newValue;
   },
   setNameAndType: function(this: GetParameterBlock, name: string, type: string): void {
     this.setFieldValue(name, FIELD_PARAMETER_NAME);
