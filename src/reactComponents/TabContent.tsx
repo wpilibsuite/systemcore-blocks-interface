@@ -84,6 +84,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
   const [codePanelAnimating, setCodePanelAnimating] = React.useState(false);
   const autosave = useAutosave();
+  const isInitialActivation = React.useRef(true);
 
   /** Expose saveModule method via ref. */
   React.useImperativeHandle(ref, () => ({
@@ -123,8 +124,10 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     if (blocklyComponent.current &&
         event.workspaceId === blocklyComponent.current.getBlocklyWorkspace().id) {
       setTriggerPythonRegeneration(Date.now());
-      // Mark as modified when blocks change
-      autosave.markAsModified();
+      // Mark as modified when blocks change, but not during initial activation
+      if (!isInitialActivation.current) {
+        autosave.markAsModified();
+      }
     }
   }, [blocklyComponent, autosave]);
 
@@ -166,7 +169,13 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
       blocklyComponent.current.setActive(isActive);
     }
     if (editorInstance && isActive) {
+      // Set flag to ignore changes during activation
+      isInitialActivation.current = true;
       editorInstance.makeCurrent(project, modulePathToContentText);
+      // Clear the flag after a brief delay to allow workspace to settle
+      setTimeout(() => {
+        isInitialActivation.current = false;
+      }, 100);
     }
   }, [isActive, blocklyComponent, editorInstance, project, modulePathToContentText]);
 
