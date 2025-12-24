@@ -65,6 +65,7 @@ export interface MenuProps {
   openWPIToolboxSettings: () => void;
   theme: string;
   setTheme: (theme: string) => void;
+  saveCurrentTab: () => Promise<void>;
 }
 
 /** Default selected menu keys. */
@@ -294,6 +295,9 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
 
     try {
+      // Save current tab before deploying
+      await props.saveCurrentTab();
+      
       const blobUrl = await createPythonFiles.producePythonProjectBlob(props.currentProject, props.storage);
       
       // Check if the backend server is available

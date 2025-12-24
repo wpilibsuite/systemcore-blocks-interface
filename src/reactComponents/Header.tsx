@@ -22,6 +22,7 @@ import * as Antd from 'antd';
 import * as storageProject from '../storage/project';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAutosave } from './AutosaveManager';
 
 /** Function type for setting string values. */
 type StringFunction = (input: string) => void;
@@ -52,6 +53,7 @@ const TEXT_PADDING_LEFT = 20;
 export default function Header(props: HeaderProps): React.JSX.Element {
   const { token } = Antd.theme.useToken();
   const { t } = useTranslation();
+  const autosave = useAutosave();
 
   const isDarkTheme = token.colorBgLayout === '#000000';
 
@@ -80,6 +82,26 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     return props.project?.projectName || 'No Project Selected';
   };
 
+  /** Renders the unsaved changes indicator. */
+  const renderUnsavedIndicator = (): React.JSX.Element | null => {
+    if (!autosave.hasUnsavedChanges) {
+      return null;
+    }
+
+    return (
+      <Antd.Typography.Text
+        style={{
+          marginLeft: 8,
+          fontSize: '14px',
+          color: token.colorWarning,
+          fontStyle: 'italic',
+        }}
+      >
+        *
+      </Antd.Typography.Text>
+    );
+  };
+
   return (
     <Antd.Flex vertical>
       <Antd.Flex style={{alignItems: 'center'}}>
@@ -106,6 +128,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
           }}
         >
           {t("PROJECT")}: {getProjectName()}
+          {renderUnsavedIndicator()}
         </Antd.Typography>
         {renderErrorAlert()}
       </Antd.Flex>

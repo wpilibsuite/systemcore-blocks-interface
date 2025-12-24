@@ -48,6 +48,8 @@ export interface TabItem {
 export interface TabsRef {
   gotoTab: (tabKey: string) => void;
   closeTab: (tabKey: string) => void;
+  saveCurrentTab: () => Promise<void>;
+  getActiveTabKey: () => string;
 }
 
 /** Props for the Tabs component. */
@@ -172,6 +174,13 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
   React.useImperativeHandle(ref, () => ({
     gotoTab,
     closeTab: closeTabMethod,
+    saveCurrentTab: async () => {
+      const currentTabRef = tabContentRefs.current.get(activeKey);
+      if (currentTabRef) {
+        await currentTabRef.saveModule();
+      }
+    },
+    getActiveTabKey: () => activeKey,
   }));
 
   /** Handles tab edit actions (add/remove). */
