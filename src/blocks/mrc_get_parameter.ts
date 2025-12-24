@@ -180,9 +180,12 @@ const GET_PARAMETER_BLOCK = {
         if (rootBlock.type === MRC_CLASS_METHOD_DEF || rootBlock.type === MRC_EVENT_HANDLER) {
           // We're in a method/handler but the parameter doesn't exist
           if (currentParameterName && currentParameterName !== '') {
-            warningMessage = `Parameter "${currentParameterName}" does not exist in this ${rootBlock.type === MRC_CLASS_METHOD_DEF ? 'method' : 'event handler'}.`;
+            const messageTemplate = rootBlock.type === MRC_CLASS_METHOD_DEF 
+              ? Blockly.Msg.PARAMETER_DOES_NOT_EXIST_IN_METHOD
+              : Blockly.Msg.PARAMETER_DOES_NOT_EXIST_IN_EVENT_HANDLER;
+            warningMessage = messageTemplate.replace('%1', currentParameterName);
           } else {
-            warningMessage = `No parameter selected.`;
+            warningMessage = Blockly.Msg.NO_PARAMETER_SELECTED;
           }
         } else {
           // We're not even in a method/handler
