@@ -226,6 +226,16 @@ const CLASS_METHOD_DEF = {
         mutateMethodCallers(this.workspace, this.mrcMethodId, methodForWithin);
       }
     }
+    
+    // Update all mrc_get_parameter blocks to recheck validity
+    const nextBlock = this.getInputTargetBlock(INPUT_STACK);
+    if (nextBlock) {
+      findConnectedBlocksOfType(nextBlock, MRC_GET_PARAMETER_BLOCK_NAME).forEach((block) => {
+        if ('mrcCheckParameter' in block && typeof block.mrcCheckParameter === 'function') {
+          block.mrcCheckParameter();
+        }
+      });
+    }
   },
   decompose: function (this: ClassMethodDefBlock, workspace: Blockly.Workspace) {
     const parameterNames: string[] = [];
