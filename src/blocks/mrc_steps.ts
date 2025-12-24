@@ -26,8 +26,9 @@ import { MRC_STYLE_STEPS } from '../themes/styles';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createStepFieldFlydown } from '../fields/field_flydown';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
-import { renameSteps as updateJumpToStepBlocks } from './mrc_jump_to_step';
+import { renameSteps as updateJumpToStepBlocks, BLOCK_NAME as MRC_JUMP_TO_STEP } from './mrc_jump_to_step';
 import * as stepContainer from './mrc_step_container'
+import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 import { createBooleanShadowValue } from './utils/value';
 import * as toolboxItems from '../toolbox/items';
 
@@ -75,6 +76,9 @@ const STEPS = {
   loadExtraState: function (this: StepsBlock, state: StepsExtraState): void {
     this.mrcStepNames = state.stepNames;
     this.updateShape_();
+    
+    // Update all mrc_jump_to_step blocks to recheck validity
+    this.mrcCheckJumpBlocks();
   },
   /**
    * Populate the mutator's dialog with this block's components.
@@ -151,6 +155,28 @@ const STEPS = {
     if (Object.keys(mapOldStepNameToNewStepName).length) {
       // Update jump blocks for any renamed steps.
       updateJumpToStepBlocks(this.workspace, mapOldStepNameToNewStepName);
+    }
+    
+    // Update all mrc_jump_to_step blocks to recheck validity
+    this.mrcCheckJumpBlocks();
+  },
+  /**
+   * Checks all mrc_jump_to_step blocks within this steps block to revalidate
+   * that their step names are still valid.
+   */
+  mrcCheckJumpBlocks: function(this: StepsBlock): void {
+    // Check each statement input for jump blocks
+    for (let i = 0; i < this.mrcStepNames.length; i++) {
+      const statementInput = this.getInput(INPUT_STATEMENT_PREFIX + i);
+      const nextBlock = statementInput?.connection?.targetBlock();
+      if (nextBlock) {
+        const jumpBlocks = findConnectedBlocksOfType(nextBlock, MRC_JUMP_TO_STEP);
+        jumpBlocks.forEach((block) => {
+          if ('mrcCheckStep' in block && typeof block.mrcCheckStep === 'function') {
+            block.mrcCheckStep();
+          }
+        });
+      }
     }
   },
   /**
