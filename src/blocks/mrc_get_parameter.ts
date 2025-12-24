@@ -166,18 +166,40 @@ const GET_PARAMETER_BLOCK = {
       legalParameterNames.push(...eventHandlerBlock.mrcGetParameterNames());
     }
 
-    if (legalParameterNames.includes(this.getFieldValue(FIELD_PARAMETER_NAME))) {
+    const currentParameterName = this.getFieldValue(FIELD_PARAMETER_NAME);
+    
+    if (legalParameterNames.includes(currentParameterName)) {
       // If this blocks's parameter name is in legalParameterNames, it's good.
       this.setWarningText(null, WARNING_ID_NOT_IN_METHOD);
       this.mrcHasWarning = false;
     } else {
       // Otherwise, add a warning to this block.
       if (!this.mrcHasWarning) {
-        this.setWarningText(Blockly.Msg.PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK, WARNING_ID_NOT_IN_METHOD);
+        // Provide a more specific message depending on the situation
+        let warningMessage: string;
+        if (rootBlock.type === MRC_CLASS_METHOD_DEF || rootBlock.type === MRC_EVENT_HANDLER) {
+          // We're in a method/handler but the parameter doesn't exist
+          if (currentParameterName && currentParameterName !== '') {
+            warningMessage = `Parameter "${currentParameterName}" does not exist in this ${rootBlock.type === MRC_CLASS_METHOD_DEF ? 'method' : 'event handler'}.`;
+          } else {
+            warningMessage = `No parameter selected.`;
+          }
+        } else {
+          // We're not even in a method/handler
+          warningMessage = Blockly.Msg.PARAMETERS_CAN_ONLY_GO_IN_THEIR_METHODS_BLOCK;
+        }
+        
+        this.setWarningText(warningMessage, WARNING_ID_NOT_IN_METHOD);
         this.getIcon(Blockly.icons.IconType.WARNING)!.setBubbleVisible(true);
         this.mrcHasWarning = true;
       }
     }
+  },
+  /**
+   * Called to recheck parameter validity. Used when method parameters change.
+   */
+  mrcCheckParameter: function(this: GetParameterBlock): void {
+    this.checkBlockPlacement();
   },
 };
 
