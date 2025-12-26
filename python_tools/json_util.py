@@ -60,8 +60,7 @@ _KEY_ARGUMENT_DEFAULT_VALUE = 'defaultValue'
 _KEY_ALIASES = 'aliases'
 _KEY_SUBCLASSES = 'subclasses'
 _KEY_IS_COMPONENT = 'isComponent'
-_KEY_COMPONENT_PORT_NAME = 'componentPortName'
-_KEY_COMPONENT_PORT_TYPE = 'componentPortType'
+_KEY_COMPONENT_ARGS = 'componentArgs'
 
 
 def ignoreModule(module_name: str) -> bool:
@@ -120,6 +119,8 @@ class JsonGenerator:
           o = o.replace(exported_full_class_name + ']', exported_class_name + ']')
         if o.find(exported_full_class_name + ',') != -1:
           o = o.replace(exported_full_class_name + ',', exported_class_name + ',')
+      o = o.replace('typing.SupportsInt', 'int')
+      o = o.replace('typing.SupportsFloat', 'float')
       return o
     raise Exception(f'Invalid argument {o}')
 
@@ -135,6 +136,13 @@ class JsonGenerator:
   def _createFunctionIsEnumValue(
       self, enum_cls: type) -> typing.Callable[[object], bool]:
     return lambda value: type(value) == enum_cls
+
+  def _createArgData(self, arg_name: str, arg_type: str, default_value: str = ''):
+    arg_data = {}
+    arg_data[_KEY_ARGUMENT_NAME] = arg_name
+    arg_data[_KEY_ARGUMENT_TYPE] = arg_type
+    arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = default_value if default_value else ''
+    return arg_data
 
   def _processModule(self, module) -> dict:
     module_data = {}
@@ -194,14 +202,10 @@ class JsonGenerator:
           continue
         args = []
         for i in range(len(arg_names)):
-          arg_data = {}
-          arg_data[_KEY_ARGUMENT_NAME] = arg_names[i]
-          arg_data[_KEY_ARGUMENT_TYPE] = self._getClassName(arg_types[i])
-          if arg_default_values[i] is not None:
-            arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = arg_default_values[i]
-          else:
-            arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = ''
-          args.append(arg_data)
+          args.append(self._createArgData(
+              arg_names[i],
+              self._getClassName(arg_types[i]),
+              arg_default_values[i] if arg_default_values[i] is not None else ''))
         function_data = {}
         function_data[_KEY_FUNCTION_NAME] = function_name
         function_data[_KEY_FUNCTION_RETURN_TYPE] = self._getClassName(return_type)
@@ -352,22 +356,14 @@ class JsonGenerator:
               declaring_class_name = self._getClassName(arg_type, class_name)
             # Don't append the self argument to the args array.
             continue
-          arg_data = {}
-          arg_data[_KEY_ARGUMENT_NAME] = arg_name
-          arg_data[_KEY_ARGUMENT_TYPE] = self._getClassName(arg_type, class_name)
-          if arg_default_values[i] is not None:
-            arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = arg_default_values[i]
-          else:
-            arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = ''
-          args.append(arg_data)
+          args.append(self._createArgData(
+              arg_name,
+              self._getClassName(arg_type, class_name),
+              arg_default_values[i] if arg_default_values[i] is not None else ''))
         constructor_data[_KEY_FUNCTION_ARGS] = args
         constructor_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = declaring_class_name
         constructor_data[_KEY_FUNCTION_RETURN_TYPE] = declaring_class_name
-        componentPortTuple = python_util.getComponentPortNameAndType(declaring_class_name, value)
-        if componentPortTuple is not None:
-          constructor_data[_KEY_COMPONENT_PORT_NAME] = componentPortTuple[0]
-          constructor_data[_KEY_COMPONENT_PORT_TYPE] = componentPortTuple[1]
-          class_data[_KEY_IS_COMPONENT] = True
+        self._processComponent(class_data, constructor_data, declaring_class_name, arg_names, arg_types, arg_default_values)
         constructors.append(constructor_data)
     class_data[_KEY_CONSTRUCTORS] = constructors
 
@@ -406,14 +402,10 @@ class JsonGenerator:
             found_self_arg = True
             if arg_type != full_class_name:
               declaring_class_name = self._getClassName(arg_type, class_name)
-          arg_data = {}
-          arg_data[_KEY_ARGUMENT_NAME] = arg_name
-          arg_data[_KEY_ARGUMENT_TYPE] = self._getClassName(arg_type, class_name)
-          if arg_default_values[i] is not None:
-            arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = arg_default_values[i]
-          else:
-            arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = ''
-          args.append(arg_data)
+          args.append(self._createArgData(
+              arg_name,
+              self._getClassName(arg_type, class_name),
+              arg_default_values[i] if arg_default_values[i] is not None else ''))
         function_data = {}
         function_data[_KEY_FUNCTION_NAME] = function_name
         function_data[_KEY_FUNCTION_RETURN_TYPE] = self._getClassName(return_type, class_name)
@@ -455,6 +447,96 @@ class JsonGenerator:
       enums.append(enum_data)
     class_data[_KEY_ENUMS] = sorted(enums, key=lambda enum_data: enum_data[_KEY_ENUM_CLASS_NAME])
     return class_data
+
+
+  def _processComponent(self, class_data, constructor_data, declaring_class_name, arg_names, arg_types, arg_default_values):
+    """Determine whether this is a component and, if so, update the class_data and
+    constructor_data."""
+
+    # TODO(lizlooney): Replace the following temporary fake code with code that
+    # looks at doc string and/or parameter type aliases to tell whether this is
+    # a component and what the args are.
+
+    if declaring_class_name == 'wpilib_placeholders.ExpansionHubMotor':
+      args = []
+      args.append(self._createArgData('expansion_hub_motor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
+      constructor_data[_KEY_COMPONENT_ARGS] = args
+      constructor_data[_KEY_IS_COMPONENT] = True
+      class_data[_KEY_IS_COMPONENT] = True
+      return
+
+    if declaring_class_name == 'wpilib_placeholders.ExpansionHubServo':
+      args = []
+      args.append(self._createArgData('expansion_hub_servo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
+      constructor_data[_KEY_COMPONENT_ARGS] = args
+      constructor_data[_KEY_IS_COMPONENT] = True
+      class_data[_KEY_IS_COMPONENT] = True
+      return
+
+    if declaring_class_name == 'wpilib.AddressableLED':
+      args = []
+      args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
+      constructor_data[_KEY_COMPONENT_ARGS] = args
+      constructor_data[_KEY_IS_COMPONENT] = True
+      class_data[_KEY_IS_COMPONENT] = True
+      return
+
+    if declaring_class_name == 'wpilib.AnalogEncoder':
+      if (len(arg_names) == 4 and
+          arg_names[0] == 'self' and
+          arg_names[1] == 'channel' and
+          arg_names[2] == 'fullRange' and
+          arg_names[3] == 'expectedZero'):
+        args = []
+        args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
+        args.append(self._createArgData('full_range', self._getClassName(arg_types[2]), '1.0'))
+        args.append(self._createArgData('expected_zero', self._getClassName(arg_types[3]), '0.0'))
+        constructor_data[_KEY_COMPONENT_ARGS] = args
+        constructor_data[_KEY_COMPONENT_ARGS]
+        constructor_data[_KEY_IS_COMPONENT] = True
+        class_data[_KEY_IS_COMPONENT] = True
+      return
+
+    if declaring_class_name == 'wpilib.AnalogPotentiometer':
+      if (len(arg_names) == 4 and
+          arg_names[0] == 'self' and
+          arg_names[1] == 'channel' and
+          arg_names[2] == 'fullRange' and
+          arg_names[3] == 'offset'):
+        args = []
+        args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
+        args.append(self._createArgData('full_range', self._getClassName(arg_types[2]), arg_default_values[2]))
+        args.append(self._createArgData('offset', self._getClassName(arg_types[3]), arg_default_values[3]))
+        constructor_data[_KEY_COMPONENT_ARGS] = args
+        constructor_data[_KEY_IS_COMPONENT] = True
+        class_data[_KEY_IS_COMPONENT] = True
+      return
+
+    if declaring_class_name == 'wpilib.DigitalInput':
+      args = []
+      args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
+      constructor_data[_KEY_COMPONENT_ARGS] = args
+      constructor_data[_KEY_IS_COMPONENT] = True
+      class_data[_KEY_IS_COMPONENT] = True
+      return
+
+    if declaring_class_name == 'wpilib.OnboardIMU':
+      if (len(arg_names) == 2 and
+          arg_names[0] == 'self' and
+          arg_names[1] == 'mountOrientation'):
+        args = []
+        args.append(self._createArgData('mount_orientation', self._getClassName(arg_types[1]), arg_default_values[1]))
+        constructor_data[_KEY_COMPONENT_ARGS] = args
+        constructor_data[_KEY_IS_COMPONENT] = True
+        class_data[_KEY_IS_COMPONENT] = True
+      return
+
+    if declaring_class_name ==  'wpilib.PWMSparkMax':
+      args = []
+      args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
+      constructor_data[_KEY_COMPONENT_ARGS] = args
+      constructor_data[_KEY_IS_COMPONENT] = True
+      class_data[_KEY_IS_COMPONENT] = True
 
   def _processClasses(self):
     class_data_list = []
