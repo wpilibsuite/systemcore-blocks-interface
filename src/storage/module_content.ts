@@ -26,10 +26,12 @@ import startingOpModeBlocks from '../modules/opmode_start.json';
 import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
 import * as workspaces from '../blocks/utils/workspaces';
+import { upgradePortTypeString } from '../blocks/utils/python_json_types';
 
 export type MethodArg = {
   name: string,
   type: string, // '' for an untyped arg.
+  defaultValue?: string, // '' for no default value
 };
 
 export type Method = {
@@ -47,91 +49,11 @@ export type MechanismInRobot = {
   className: string, // Includes the module name, for example 'game_piece_shooter.GamePieceShooter'.
 }
 
-export enum PortType {
-  // Ports on the Systemcore.
-  SYSTEMCORE_CAN_PORT,
-  SYSTEMCORE_SMART_IO_PORT,
-  SYSTEMCORE_I2C_PORT,
-  SYSTEMCORE_USB_PORT,
-  // Ports on other devices that can be connected to the Systemcore.
-  EXPANSION_HUB_MOTOR_PORT,
-  EXPANSION_HUB_SERVO_PORT,
-  MOTIONCORE_DEVICE_PORT,
-  MOTIONCORE_ENCODER_PORT,
-  USB_HUB_PORT,
-}
-
-export const PORT_TYPE_DELIMITER = '__';
-
-export function stringToPortType(s: string): PortType | null {
-  return Object.prototype.hasOwnProperty.call(PortType, s)
-      ? (PortType as any)[s] as PortType
-      : null;
-}
-
-export function portTypeToString(portType: PortType): string {
-  return PortType[portType];
-}
-
-/**
- * Upgrades the given port type string.
- *
- * @param str a port type string stored in version 0.0.8 and earlier.
- * @returns A single string consisting of one or more port types.
- * Multiple port types are separated by __ (two underscores). Each port type
- * matches one of the PortType enum values.
- */
-export function upgradePortTypeString(str: string): string {
-  switch (str) {
-    case 'CAN_PORT':
-      return portTypeArrayToString([PortType.SYSTEMCORE_CAN_PORT]);
-    case 'SMART_IO_PORT':
-      return portTypeArrayToString([PortType.SYSTEMCORE_SMART_IO_PORT]);
-    case 'I2C_PORT':
-      return portTypeArrayToString([PortType.SYSTEMCORE_I2C_PORT]);
-    case 'USB_PORT':
-      return portTypeArrayToString([PortType.SYSTEMCORE_USB_PORT]);
-    case 'USB_HUB':
-      return portTypeArrayToString([PortType.SYSTEMCORE_USB_PORT, PortType.USB_HUB_PORT]);
-    case 'EXPANSION_HUB_MOTOR':
-      return portTypeArrayToString([PortType.SYSTEMCORE_USB_PORT, PortType.EXPANSION_HUB_MOTOR_PORT]);
-    case 'EXPANSION_HUB_SERVO':
-      return portTypeArrayToString([PortType.SYSTEMCORE_USB_PORT, PortType.EXPANSION_HUB_SERVO_PORT]);
-    case 'SMART_MOTOR_PORT':
-      return portTypeArrayToString([PortType.SYSTEMCORE_USB_PORT, PortType.MOTIONCORE_DEVICE_PORT]);
-  }
-  return str;
-}
-
-/**
- * Parses the given string into an array of PortType.
- *
- * @param portTypeString A single string consisting of one or more port types.
- * Multiple port types are separated by __ (two underscores). Each port type
- * matches one of the PortType enum values.
- */
-export function stringToPortTypeArray(str: string): PortType[] {
-  const portTypeArray: PortType[] = [];
-  for (const s of upgradePortTypeString(str).split(PORT_TYPE_DELIMITER)) {
-    const portType = stringToPortType(s);
-    if (portType) {
-      portTypeArray.push(portType);
-    }
-  }
-  return portTypeArray;
-}
-
-export function portTypeArrayToString(portTypeArray: PortType[]): string {
-  return portTypeArray
-      .map(portType => PortType[portType])
-      .join(PORT_TYPE_DELIMITER);
-}
-
 export type Component = {
   componentId: string, // The mrcComponentId of the mrc_component block that adds the component to the robot or to a mechanism.
   name: string,
   className: string, // Includes the module name, for example 'wpilib.ExpansionHubMotor'.
-  ports: {[portName: string]: string}, // The value is the port type.
+  args: MethodArg[],
 }
 
 export type Event = {
@@ -368,7 +290,7 @@ export function preupgrade_001_to_002(moduleContentText: string): string {
 export function preupgrade_008_to_009(moduleContentText: string): string {
   const parsedContent = JSON.parse(moduleContentText);
 
-  const allComponents: Component[] = [
+  const allComponents: any[] = [
       ...parsedContent.components,
       ...parsedContent.privateComponents
   ];
@@ -383,5 +305,30 @@ export function preupgrade_008_to_009(moduleContentText: string): string {
     }
   });
 
+  return JSON.stringify(parsedContent, null, 2);
+}
+
+/**
+ * Preupgrades the module content text by changing Component.ports to Component.args.
+ * This function should only be called when upgrading old projects.
+ */
+export function preupgrade_009_to_0010(moduleContentText: string): string {
+  const parsedContent = JSON.parse(moduleContentText);
+
+  const allComponents: any[] = [
+      ...parsedContent.components,
+      ...parsedContent.privateComponents
+  ];
+  allComponents.forEach((component) => {
+    component.args = []
+    for (const port in component.ports) {
+      component.args.push({
+          name: port,
+          type: component.ports[port],
+          defaultValue: '',
+      });
+    }
+    delete component.ports;
+  });
   return JSON.stringify(parsedContent, null, 2);
 }
