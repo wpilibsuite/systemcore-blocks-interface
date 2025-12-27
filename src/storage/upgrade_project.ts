@@ -39,7 +39,7 @@ import { upgrade_008_to_009 as upgrade_call_python_function_008_to_009 } from '.
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.9';
+export const CURRENT_VERSION = '0.0.10';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -93,6 +93,11 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.8':
         await upgradeFrom_008_to_009(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.9'
+      // @ts-ignore
+      case '0.0.9':
+        await upgradeFrom_009_to_0010(storage, projectName, projectInfo);
     }
     await storageProject.saveProjectInfo(storage, projectName);
   }
@@ -191,6 +196,12 @@ function noModuleTypes(_moduleType: storageModule.ModuleType): boolean {
  */
 function noPreupgrade(moduleContentText: string): string {
   return moduleContentText;
+}
+
+/**
+ * Upgrade function that makes no changes.
+ */
+function noUpgrade(_workspace: Blockly.Workspace) {
 }
 
 async function upgradeFrom_000_to_001(
@@ -297,4 +308,16 @@ async function upgradeFrom_008_to_009(
       anyModuleType, storageModuleContent.preupgrade_008_to_009,
       anyModuleType, upgrade);
   projectInfo.version = '0.0.9';
+}
+
+async function upgradeFrom_009_to_0010(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // Starting in 0010, Components are saved with args instead of ports.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      anyModuleType, storageModuleContent.preupgrade_009_to_0010,
+      noModuleTypes, noUpgrade);
+  projectInfo.version = '0.0.10';
 }
