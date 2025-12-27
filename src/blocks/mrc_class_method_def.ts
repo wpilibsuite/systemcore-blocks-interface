@@ -471,12 +471,12 @@ export const pythonFromBlock = function (
     branch = generator.PASS;
   }
 
-  const params = block.mrcParameters;
   let paramString = 'self';
+
   if (generator.getModuleType() === storageModule.ModuleType.MECHANISM && block.mrcPythonMethodName === '__init__') {
-    const ports: string[] = generator.getComponentPortParameters();
-    if (ports.length) {
-      paramString += ', ' + ports.join(', ');
+    const mechanismInitArgNames: string[] = generator.getMechanismInitArgNames();
+    if (mechanismInitArgNames.length) {
+      paramString += ', ' + mechanismInitArgNames.join(', ');
     }
   }
 
@@ -484,7 +484,7 @@ export const pythonFromBlock = function (
     paramString += ', robot';
   }
 
-  if (params.length != 0) {
+  if (block.mrcParameters.length != 0) {
     block.mrcParameters.forEach(param => {
       paramString += ', ' + param.name;
     });

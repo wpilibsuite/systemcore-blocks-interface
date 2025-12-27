@@ -53,3 +53,11 @@ export function createNoneShadowValue(): any {
     },
   }
 }
+
+export function createNoneBlock(): any {
+  return {
+    'block': {
+      'type': 'mrc_none',
+    },
+  }
+}

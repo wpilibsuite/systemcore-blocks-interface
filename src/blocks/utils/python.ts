@@ -19,7 +19,14 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { ClassData, PythonData, ModuleData, organizeVarDataByType, VariableGettersAndSetters } from './python_json_types';
+import {
+    ClassData,
+    EnumData,
+    isPortType,
+    ModuleData,
+    organizeVarDataByType,
+    PythonData,
+    VariableGettersAndSetters } from './python_json_types';
 import generatedRobotPyData from './generated/robotpy_data.json';
 import generatedServerPythonScripts from './generated/server_python_scripts.json';
 
@@ -183,6 +190,27 @@ export function getClassData(className: string): ClassData | null {
   return null;
 }
 
+// Returns the EnumData for the given enum class name.
+export function getEnumData(enumClassName: string): EnumData | null {
+  for (const pythonData of allPythonData) {
+    for (const moduleData of pythonData.modules) {
+      for (const enumData of moduleData.enums) {
+        if (enumData.enumClassName === enumClassName) {
+          return enumData;
+        }
+      }
+    }
+    for (const classData of pythonData.classes) {
+      for (const enumData of classData.enums) {
+        if (enumData.enumClassName === enumClassName) {
+          return enumData;
+        }
+      }
+    }
+  }
+  return null;
+}
+
 // Returns the ModuleData for the given module name.
 export function getModuleData(moduleName: string): ModuleData | null {
   for (const pythonData of allPythonData) {
@@ -227,13 +255,17 @@ export function getSubclassNames(type: string): string[] {
 // This function is used by multiple blocks to set the check for an input socket.
 export function getAllowedTypesForSetCheck(type: string): string[] {
   // For the given python type, returns an array of compatible input types.
-
   const allowedTypes: string[] = [];
   collectAllowedTypesForSetCheck(type, allowedTypes);
   return allowedTypes;
 }
 
 function collectAllowedTypesForSetCheck(type: string, allowedTypes: string[]) {
+  if (isPortType(type)) {
+    allowedTypes.push(type);
+    return;
+  }
+
   // Built-in python types.
   const check = getCheckForBuiltInType(type);
   if (check) {

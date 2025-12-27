@@ -27,6 +27,7 @@ import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { makeLegalName } from './utils/validator';
+import { valueForComponentArgInput } from './utils/value';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
@@ -37,20 +38,27 @@ import {
     MechanismComponentHolderBlock,
     mrcDescendantsMayHaveChanged } from './mrc_mechanism_component_holder';
 import { renameMethodCallers } from './mrc_call_python_function'
+import { getMechanismInitArgName } from './mrc_component'
 import { renameMechanismName as renameMechanismNameInEventHandlers } from './mrc_event_handler'
-import { createPort } from './mrc_port';
+import { getAllowedTypesForSetCheck } from './utils/python';
+import { isPortType, upgradePortTypeString } from './utils/python_json_types';
 
 export const BLOCK_NAME = 'mrc_mechanism';
 export const OUTPUT_NAME = 'mrc_mechansim';
 
 export const FIELD_NAME = 'NAME';
 export const FIELD_TYPE = 'TYPE';
+const INPUT_ARG_PREFIX = 'ARG';
+const FIELD_COMPONENT_NAME_PREFIX = 'COMPONENT'
+const FIELD_ARG_NAME_PREFIX = 'ARGNAME';
 
 type Parameter = {
   name: string,
   type: string,
+  defaultValue?: string,
   componentId?: string,
-  componentPortsIndex?: number,  // The zero-based number when iterating through component.ports.
+  componentName?: string,
+  componentArgsIndex?: number,  // The zero-based number when iterating through component.args.
 };
 
 type MechanismExtraState = {
@@ -126,7 +134,12 @@ const MECHANISM = {
     this.mrcParameters = [];
     if (extraState.parameters) {
       extraState.parameters.forEach((arg) => {
-        const upgradedArgType = storageModuleContent.upgradePortTypeString(arg.type);
+        // Prior to version 0.0.10, Parameter had a field named componentPortsIndex instead of componentArgsIndex.
+        if ('componentPortsIndex' in arg && arg['componentPortsIndex'] != undefined) {
+          arg.componentArgsIndex = arg['componentPortsIndex'] as number;
+          delete arg.componentPortsIndex;
+        }
+        const upgradedArgType = upgradePortTypeString(arg.type);
         if (upgradedArgType !== arg.type) {
           const upgradedArg = {...arg};
           upgradedArg.type = upgradedArgType;
@@ -136,38 +149,12 @@ const MECHANISM = {
         }
       });
     }
-    this.updateBlock_();
-  },
-  /**
-   * Update the block to reflect the newly loaded extra state.
-   */
-  updateBlock_: function (this: MechanismBlock): void {
-    // Update input sockets for the arguments.
+    // Create input sockets for the arguments.
     for (let i = 0; i < this.mrcParameters.length; i++) {
-      const argName = this.mrcParameters[i].name;
-      let argInput = this.getInput('ARG' + i);
-      const argField = this.getField('ARGNAME' + i);
-      if (argInput && argField) {
-        // Ensure argument name is up to date. No need to fire a change event.
-        Blockly.Events.disable();
-        try {
-          argField.setValue(argName);
-        } finally {
-          Blockly.Events.enable();
-        }
-      } else {
-        // Add new input.
-        argInput = this.appendValueInput('ARG' + i)
-            .setAlign(Blockly.inputs.Align.RIGHT)
-            .appendField(argName, 'ARGNAME' + i);
-      }
-      if (this.mrcParameters[i].type) {
-        argInput.setCheck(this.mrcParameters[i].type);
-      }
-    }
-    // Remove deleted inputs.
-    for (let i = this.mrcParameters.length; this.getInput('ARG' + i); i++) {
-      this.removeInput('ARG' + i);
+      this.appendValueInput(INPUT_ARG_PREFIX + i)
+          .setAlign(Blockly.inputs.Align.RIGHT)
+          .appendField('', FIELD_COMPONENT_NAME_PREFIX + i)
+          .appendField('', FIELD_ARG_NAME_PREFIX + i);
     }
   },
   mrcNameFieldValidator(this: MechanismBlock, nameField: Blockly.FieldTextInput, name: string): string {
@@ -293,7 +280,7 @@ const MECHANISM = {
 
     if (foundMechanism) {
       // Here we need all the components (regular and private) from the mechanism because we need
-      // to create port parameters for all the components.
+      // to create parameters for all the components.
       const components = editor.getAllComponentsFromMechanism(foundMechanism);
 
       // If the mechanism class name has changed, update this blcok.
@@ -310,46 +297,56 @@ const MECHANISM = {
       const oldConnectedBlocks: (Blockly.Block | null)[] = [];
       for (let i = 0; i < this.mrcParameters.length; i++) {
         oldParameters[i] = this.mrcParameters[i];
-        const argInput = this.getInput('ARG' + i);
-        if (argInput && argInput.connection && argInput.connection.targetBlock()) {
-          oldConnectedBlocks[i] = argInput.connection.targetBlock();
-        } else {
-          oldConnectedBlocks[i] = null;
+        oldConnectedBlocks[i] = null;
+        const argInput = this.getInput(INPUT_ARG_PREFIX + i);
+        if (argInput) {
+          argInput.setCheck(null);
+          if (argInput.connection && argInput.connection.targetBlock()) {
+            oldConnectedBlocks[i] = argInput.connection.targetBlock();
+          }
         }
       }
 
       // Regenerate mrc_parameters and create new inputs if necessary.
+      const foundOldParameter: boolean[] = [];
       this.mrcParameters = [];
       let parametersIndex = 0;
       components.forEach(component => {
-        let componentPortsIndex = 0;
-        for (const port in component.ports) {
+        let componentArgsIndex = 0;
+        component.args.forEach((componentArg) => {
+          const argName = componentArg.name;
           this.mrcParameters.push({
-            name: port,
-            type: component.ports[port],
+            name: argName,
+            type: componentArg.type,
+            defaultValue: componentArg.defaultValue,
             componentId: component.componentId,
-            componentPortsIndex,
+            componentName: component.name,
+            componentArgsIndex,
           });
-          let argInput = this.getInput('ARG' + parametersIndex);
-          const argField = this.getField('ARGNAME' + parametersIndex);
-          if (argInput && argField) {
-            argField.setValue(port);
+          let argInput = this.getInput(INPUT_ARG_PREFIX + parametersIndex);
+          if (argInput) {
+            // Update field values for component name and parameter name
+            this.setFieldValue(component.name, FIELD_COMPONENT_NAME_PREFIX + parametersIndex);
+            this.setFieldValue(argName, FIELD_ARG_NAME_PREFIX + parametersIndex);
           } else {
             // Add new input.
-            argInput = this.appendValueInput('ARG' + parametersIndex)
+            argInput = this.appendValueInput(INPUT_ARG_PREFIX + parametersIndex)
                 .setAlign(Blockly.inputs.Align.RIGHT)
-                .appendField(port, 'ARGNAME' + parametersIndex);
+                .appendField(component.name, FIELD_COMPONENT_NAME_PREFIX + parametersIndex)
+                .appendField(argName, FIELD_ARG_NAME_PREFIX + parametersIndex);
           }
           // Look in oldParameters to find the matching parameter.
           let foundOldParameterIndex = -1;
           for (let j = 0; j < oldParameters.length; j++) {
             if (oldParameters[j].componentId === this.mrcParameters[parametersIndex].componentId &&
-                oldParameters[j].componentPortsIndex === this.mrcParameters[parametersIndex].componentPortsIndex) {
+                oldParameters[j].componentArgsIndex === this.mrcParameters[parametersIndex].componentArgsIndex) {
               foundOldParameterIndex = j;
               break;
             }
           }
+          foundOldParameter.push((foundOldParameterIndex !== -1));
           if (foundOldParameterIndex !== -1) {
+            foundOldParameter[parametersIndex] = true;
             if (foundOldParameterIndex === parametersIndex) {
               // The old connected block is already connected to this input.
               oldConnectedBlocks[foundOldParameterIndex] = null;
@@ -361,17 +358,22 @@ const MECHANISM = {
                 oldConnectedBlocks[foundOldParameterIndex] = null;
               }
             }
+          } else {
+            // Disconnect the old connected block.
+            if (argInput.connection && argInput.connection.targetBlock()) {
+              argInput.connection.disconnect();
+            }
           }
-          argInput.setCheck(this.mrcParameters[parametersIndex].type);
+          argInput.setCheck(getAllowedTypesForSetCheck(this.mrcParameters[parametersIndex].type));
 
-          componentPortsIndex++;
+          componentArgsIndex++;
           parametersIndex++;
-        }
+        });
       });
 
-      // Remove deleted inputs.
-      for (let i = this.mrcParameters.length; this.getInput('ARG' + i); i++) {
-        this.removeInput('ARG' + i);
+      // Remove extra inputs.
+      for (let i = this.mrcParameters.length; this.getInput(INPUT_ARG_PREFIX + i); i++) {
+        this.removeInput(INPUT_ARG_PREFIX + i);
       }
 
       // Remove old blocks that are no longer connected to input sockets.
@@ -384,28 +386,40 @@ const MECHANISM = {
         }
       }
 
-      // Add port blocks to any empty inputs.
+      // Add blocks to inputs for new parameters.
       for (let i = 0; i < this.mrcParameters.length; i++) {
-        let argInput = this.getInput('ARG' + i);
-        if (argInput && argInput.connection && !argInput.connection.targetBlock()) {
-          // The input is empty. Create a port block and connect it to the input.
-          const portBlockState = createPort(this.mrcParameters[i].type).block;
-          const portBlock = this.workspace.newBlock(portBlockState.type) as Blockly.BlockSvg;
-          if (portBlockState.extraState && portBlock.loadExtraState) {
-            portBlock.loadExtraState(portBlockState.extraState);
+        if (foundOldParameter[i]) {
+          continue;
+        }
+        let defaultValue: string;
+        if (this.mrcParameters[i].defaultValue) {
+          defaultValue = this.mrcParameters[i].defaultValue as string;
+        } else {
+          defaultValue = '';
+        }
+        const value = valueForComponentArgInput(this.mrcParameters[i].type, defaultValue);
+        if (value) {
+          // Connect the new block to the input.
+          const newBlockState = value.block;
+          const newBlock = this.workspace.newBlock(newBlockState.type) as Blockly.BlockSvg;
+          if (newBlockState.extraState && newBlock.loadExtraState) {
+            newBlock.loadExtraState(newBlockState.extraState);
           }
-          if (portBlockState.fields) {
-            const keys = Object.keys(portBlockState.fields);
+          if (newBlockState.fields) {
+            const keys = Object.keys(newBlockState.fields);
             for (let i = 0; i < keys.length; i++) {
               const fieldName = keys[i];
-              const field = portBlock.getField(fieldName);
+              const field = newBlock.getField(fieldName);
               if (field) {
-                field.loadState(portBlockState.fields[fieldName]);
+                field.loadState(newBlockState.fields[fieldName]);
               }
             }
           }
-          portBlock.initSvg();
-          argInput.connection.connect(portBlock.outputConnection);
+          newBlock.initSvg();
+          const argInput = this.getInput(INPUT_ARG_PREFIX + i);
+          if (argInput && argInput.connection) {
+            argInput.connection.connect(newBlock.outputConnection);
+          }
         }
       }
     } else {
@@ -455,11 +469,32 @@ export const pythonFromBlock = function (
   const mechanismType = block.mrcImportModule + '.' + block.getFieldValue(FIELD_TYPE);
   let code = 'self.' + mechanismName + ' = ' + mechanismType + '(\n';
 
+  let previousComponentId: string | undefined = undefined;
   for (let i = 0; i < block.mrcParameters.length; i++) {
-    // Each parameter is a tuple.
-    code += generator.INDENT + block.mrcParameters[i].name + ' = (\n';
-    code += generator.prefixLines(generator.valueToCode(block, 'ARG' + i, Order.NONE), generator.INDENT.repeat(2));
-    code += generator.INDENT + '),\n';
+    // We pass a tuple of parameters for each component in the mechanism.
+    if (block.mrcParameters[i].componentId !== previousComponentId) {
+      const componentName = block.mrcParameters[i].componentName;
+      if (componentName) {
+        const argName = getMechanismInitArgName(componentName);
+        code += generator.INDENT + argName + ' = (\n';
+      }
+    }
+
+    let argCode = generator.valueToCode(block, INPUT_ARG_PREFIX + i, Order.NONE);
+    // mrc_port blocks generate python code where each port parameter is followed by a comma, a
+    // comment, and a newline. But other blocks don't do that.
+    if (!isPortType(block.mrcParameters[i].type)) {
+      argCode += ', # ' + block.mrcParameters[i].name + '\n';
+    }
+    code += generator.prefixLines(argCode, generator.INDENT.repeat(2));
+
+    const nextComponentId = (i + 1 < block.mrcParameters.length)
+        ? block.mrcParameters[i + 1].componentId
+        : '';
+    if (block.mrcParameters[i].componentId !== nextComponentId) {
+      code += generator.INDENT + '),\n';
+    }
+    previousComponentId = block.mrcParameters[i].componentId;
   }
   code += ')\n';
   code += 'self.mechanisms.append(self.' + mechanismName + ')\n';
@@ -476,25 +511,37 @@ export function createMechanismBlock(
     importModule: snakeCaseName,
     parameters: [],
   };
-  const inputs: {[key: string]: any} = {};
-  let i = 0;
-  components.forEach(component => {
-    let componentPortsIndex = 0;
-    for (const port in component.ports) {
-      const parameterType = component.ports[port];
-      extraState.parameters?.push({
-        name: port,
-        type: parameterType,
-        componentId: component.componentId,
-        componentPortsIndex,
-      });
-      inputs['ARG' + i] = createPort(parameterType);
-      componentPortsIndex++;
-      i++;
-    }
-  });
   const fields: {[key: string]: any} = {};
   fields[FIELD_NAME] = mechanismName;
   fields[FIELD_TYPE] = mechanism.className;
+  const inputs: {[key: string]: any} = {};
+  let i = 0;
+  components.forEach(component => {
+    let componentArgsIndex = 0;
+    component.args.forEach((componentArg) => {
+      extraState.parameters?.push({
+        name: componentArg.name,
+        type: componentArg.type,
+        defaultValue: componentArg.defaultValue,
+        componentId: component.componentId,
+        componentName: component.name,
+        componentArgsIndex,
+      });
+      fields[FIELD_COMPONENT_NAME_PREFIX + i] = component.name;
+      fields[FIELD_ARG_NAME_PREFIX + i] = componentArg.name;
+      let defaultValue: string;
+      if (componentArg.defaultValue) {
+        defaultValue = componentArg.defaultValue as string;
+      } else {
+        defaultValue = '';
+      }
+      const input = valueForComponentArgInput(componentArg.type, defaultValue);
+      if (input) {
+        inputs[INPUT_ARG_PREFIX + i] = input;
+      }
+      componentArgsIndex++;
+      i++;
+    });
+  });
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, inputs);
 }
