@@ -46,9 +46,6 @@ const TEXT_FONT_SIZE = '20px';
 /** Left padding for text elements. */
 const TEXT_PADDING_LEFT = 20;
 
-/** Font size for the unsaved changes indicator. */
-const UNSAVED_INDICATOR_FONT_SIZE = '14px';
-
 /**
  * Header component that displays the application logo, title, current project,
  * and any error messages.
@@ -95,7 +92,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
       <Antd.Typography.Text
         style={{
           marginLeft: 8,
-          fontSize: UNSAVED_INDICATOR_FONT_SIZE,
+          fontSize: TEXT_FONT_SIZE,
           color: token.colorWarning,
           fontStyle: 'italic',
         }}
