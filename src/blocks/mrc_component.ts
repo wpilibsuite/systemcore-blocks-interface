@@ -26,11 +26,12 @@ import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { valueForComponentArgInput } from './utils/value';
 import { getModuleTypeForWorkspace } from './utils/workspaces';
 import { componentClasses } from './utils/python';
 import { makeLegalName } from './utils/validator';
 import * as toolboxItems from '../toolbox/items';
-import { getClassData } from './utils/python';
+import { getAllowedTypesForSetCheck, getClassData } from './utils/python';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import * as storageNames from '../storage/names';
@@ -39,8 +40,7 @@ import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
     MechanismComponentHolderBlock,
     mrcDescendantsMayHaveChanged } from './mrc_mechanism_component_holder';
-import { createPort } from './mrc_port';
-import { ClassData, FunctionData } from './utils/python_json_types';
+import { ClassData, FunctionData, isPortType, upgradePortTypeString } from './utils/python_json_types';
 import { renameMethodCallers } from './mrc_call_python_function'
 
 
@@ -50,12 +50,15 @@ export const OUTPUT_NAME = 'mrc_component';
 export const FIELD_NAME = 'NAME';
 export const FIELD_TYPE = 'TYPE';
 
+const INPUT_ARG_PREFIX = 'ARG';
+
 const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
 const WARNING_ID_COMPONENT_MISSING_COMPONENT_CLASS = 'missing component class';
 
 type ConstructorArg = {
   name: string,
   type: string,
+  defaultValue: string,
 };
 
 type ComponentExtraState = {
@@ -122,6 +125,7 @@ const COMPONENT = {
         extraState.params!.push({
           name: arg.name,
           type: arg.type,
+          defaultValue: arg.defaultValue,
         });
       });
     }
@@ -144,10 +148,11 @@ const COMPONENT = {
 
     if (extraState.params) {
       extraState.params.forEach((arg) => {
-        const upgradedArgType = storageModuleContent.upgradePortTypeString(arg.type);
+        const upgradedArgType = upgradePortTypeString(arg.type);
         this.mrcArgs.push({
           name: arg.name,
           type: upgradedArgType,
+          defaultValue: arg.defaultValue,
         });
       });
     }
@@ -157,11 +162,11 @@ const COMPONENT = {
     if (moduleType === storageModule.ModuleType.ROBOT) {
       // Add input sockets for the arguments.
       for (let i = 0; i < this.mrcArgs.length; i++) {
-        const input = this.appendValueInput('ARG' + i)
+        const input = this.appendValueInput(INPUT_ARG_PREFIX + i)
           .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(this.mrcArgs[i].name);
         if (this.mrcArgs[i].type) {
-          input.setCheck(this.mrcArgs[i].type);
+          input.setCheck(getAllowedTypesForSetCheck(this.mrcArgs[i].type));
         }
       }
     }
@@ -194,23 +199,29 @@ const COMPONENT = {
   getComponent: function (this: ComponentBlock): storageModuleContent.Component | null {
     const componentName = this.getFieldValue(FIELD_NAME);
     const componentType = this.getFieldValue(FIELD_TYPE);
-    const ports: {[port: string]: string} = {};
-    this.getComponentPorts(ports);
+    const args: storageModuleContent.MethodArg[] = [];
+    this.getComponentArgs(args);
     return {
       componentId: this.mrcComponentId,
       name: componentName,
       className: componentType,
-      ports: ports,
+      args: args,
     };
   },
-  getArgName: function (this: ComponentBlock, _: number): string {
-    return this.getFieldValue(FIELD_NAME) + '__' + 'port';
+  getMechanismInitArgName: function (this: ComponentBlock): string {
+    // Return the name of the arg used to represent this component's arguments in a mechanism's
+    // constructor or a mechanism's define_hardware method.
+    return getMechanismInitArgName(this.getFieldValue(FIELD_NAME));
   },
-  getComponentPorts: function (this: ComponentBlock, ports: {[argName: string]: string}): void {
-    // Collect the ports for this component block.
+  getComponentArgs: function (this: ComponentBlock, args: storageModuleContent.MethodArg[]): void {
+    // Collect the args for this component block.
     for (let i = 0; i < this.mrcArgs.length; i++) {
-      const argName = this.getArgName(i);
-      ports[argName] = this.mrcArgs[i].type;
+      const arg: storageModuleContent.MethodArg = {
+        name: this.mrcArgs[i].name,
+        type: this.mrcArgs[i].type,
+        defaultValue: this.mrcArgs[i].defaultValue,
+      }
+      args.push(arg);
     }
   },
   /**
@@ -322,19 +333,24 @@ export const pythonFromBlock = function (
   const componentType = block.getFieldValue(FIELD_TYPE);
   let code = 'self.' + componentName + ' = ' + componentType + '(\n';
 
-  for (let i = 0; i < block.mrcArgs.length; i++) {
-    if (generator.getModuleType() === storageModule.ModuleType.ROBOT) {
-      // In a robot, a component block has an input socket with a mrc_port block
-      // plugged into it.
-      code += generator.prefixLines(generator.valueToCode(block, 'ARG' + i, Order.NONE), generator.INDENT);
-    } else {
-      // In a mechanism, a component block does not have input sockets.
-      // Each argument of the mechanism constructor is a tuple containing the
-      // constructor parameters of a component.
-      // Use the * operator to unpack the elements of the tuple and pass each
-      // element as a separate positional argument to the component constructor.
-      code += generator.INDENT + '*' + block.getArgName(i) + ',\n';
+  if (generator.getModuleType() === storageModule.ModuleType.ROBOT) {
+    // In a robot, a componet block has input sockets.
+    for (let i = 0; i < block.mrcArgs.length; i++) {
+      let argCode = generator.valueToCode(block, INPUT_ARG_PREFIX + i, Order.NONE);
+      // mrc_port blocks generate python code where each port parameter is followed by a comma, a
+      // comment, and a newline. But other blocks don't do that.
+      if (!isPortType(block.mrcArgs[i].type)) {
+        argCode += ', # ' + block.mrcArgs[i].name + '\n';
+      }
+      code += generator.prefixLines(argCode, generator.INDENT);
     }
+  } else {
+    // In a mechanism, a component block does not have input sockets.
+    // Each argument of the mechanism's constructor (and the mechanism's define_hardware method) is
+    // a tuple containing the constructor parameters of a component.
+    // Use the * operator to unpack the elements of the tuple and pass each
+    // element as a separate positional argument to the component constructor.
+    code += generator.INDENT + '*' + block.getMechanismInitArgName() + ',\n';
   }
   code += ')\n';
 
@@ -348,12 +364,18 @@ export function getAllPossibleComponents(
   componentClasses.forEach(classData => {
     const simpleClassName = classData.className.substring(classData.className.lastIndexOf('.') + 1);
     const componentName = 'my_' + storageNames.pascalCaseToSnakeCase(simpleClassName);
-    classData.constructors.forEach(constructor => {
-       contents.push(createComponentBlock(componentName, classData, constructor, moduleType));
+    classData.constructors.forEach(constructorData => {
+       if (constructorData.isComponent) {
+         contents.push(createComponentBlock(componentName, classData, constructorData, moduleType));
+       }
     });
   });
 
   return contents;
+}
+
+export function getMechanismInitArgName(componentName: string): string {
+  return componentName + '__args';
 }
 
 function createComponentBlock(
@@ -367,20 +389,29 @@ function createComponentBlock(
     params: [],
     moduleType: moduleType,
   };
+  if (!constructorData.componentArgs) {
+    throw new Error('ConstructorData does not have componentArgs.');
+  }
   const fields: {[key: string]: any} = {};
   fields[FIELD_NAME] = componentName;
   fields[FIELD_TYPE] = classData.className;
   const inputs: {[key: string]: any} = {};
 
-  if (constructorData.componentPortName && constructorData.componentPortType) {
+  let i = 0;
+  constructorData.componentArgs.forEach((argData) => {
     extraState.params!.push({
-      name: constructorData.componentPortName,
-      type: constructorData.componentPortType,
+      name: argData.name,
+      type: argData.type,
+      defaultValue: argData.defaultValue,
     });
     if (moduleType == storageModule.ModuleType.ROBOT) {
-      inputs['ARG0'] = createPort(constructorData.componentPortType);
+      const input = valueForComponentArgInput(argData.type, argData.defaultValue);
+      if (input) {
+        inputs[INPUT_ARG_PREFIX + i] = input;
+      }
     }
-  }
+    i++;
+  });
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
 }
 

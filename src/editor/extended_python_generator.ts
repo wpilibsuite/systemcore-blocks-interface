@@ -93,7 +93,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   // Fields related to generating the __init__ for a mechanism.
   private hasAnyComponents = false;
-  private componentPorts: {[key: string]: string} = Object.create(null);
+  private mechanismInitArgNames: string[] = [];
 
   // Has event handlers (ie, needs to call self.register_event_handlers in __init__)
   private hasAnyEventHandlers = false;
@@ -145,7 +145,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       case storageModule.ModuleType.MECHANISM:
         if (this.hasAnyComponents) {
           initStatements += this.INDENT + 'self.define_hardware(' +
-              this.getComponentPortParameters().join(', ') + ')\n';
+              this.mechanismInitArgNames.join(', ') + ')\n';
         }
         break;
       case storageModule.ModuleType.OPMODE:
@@ -173,7 +173,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     if (this.getModuleType() ===  storageModule.ModuleType.MECHANISM) {
       this.hasAnyComponents = mechanismContainerHolder.hasAnyComponents(workspace);
-      mechanismContainerHolder.getComponentPorts(workspace, this.componentPorts);
+      mechanismContainerHolder.getMechanismInitArgNames(workspace, this.mechanismInitArgNames);
     }
     this.hasAnyEventHandlers = eventHandler.getHasAnyEnabledEventHandlers(workspace);
 
@@ -183,7 +183,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.context.setModule(null);
     this.workspace = null;
     this.hasAnyComponents = false;
-    this.componentPorts = Object.create(null);
+    this.mechanismInitArgNames = [];
     this.hasAnyEventHandlers = false;
     this.classMethods = Object.create(null);
     this.registerEventHandlerStatements = [];
@@ -275,12 +275,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.registerEventHandlerStatements.push(registerEventHandlerStatement);
   }
 
-  getComponentPortParameters(): string[] {
-    const ports: string[] = []
-    for (const port in this.componentPorts) {
-      ports.push(port);
-    }
-    return ports;
+  getMechanismInitArgNames(): string[] {
+    return this.mechanismInitArgNames;
   }
 
   finish(code: string): string {
