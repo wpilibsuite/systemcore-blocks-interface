@@ -48,6 +48,8 @@ export interface TabItem {
 export interface TabsRef {
   gotoTab: (tabKey: string) => void;
   closeTab: (tabKey: string) => void;
+  saveCurrentTab: () => Promise<void>;
+  getActiveTabKey: () => string;
 }
 
 /** Props for the Tabs component. */
@@ -91,18 +93,31 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
   /** Handles tab change and updates current module. */
   const handleTabChange = async (key: string): Promise<void> => {
     if (key !== activeKey) {
-      // Save the tab we are changing away from. Wait for the save to complete before changing tabs.
-      const currentTabRef = tabContentRefs.current.get(activeKey);
-      if (currentTabRef) {
+      // Save the tab we're switching FROM to preserve any recent changes
+      const oldTabRef = tabContentRefs.current.get(activeKey);
+      if (oldTabRef) {
         try {
-          await currentTabRef.saveModule();
+          await oldTabRef.saveModule();
         } catch(error) {
-          console.error('Error saving module on tab switch:', error);
+          console.error('Error saving old module on tab switch:', error);
+          props.setAlertErrorMessage(t('FAILED_TO_SAVE_MODULE'));
+        }
+      }
+      
+      // Switch to the new tab
+      setActiveKey(key);
+      
+      // Immediately save the new tab to ensure it's up to date and prevent unsaved indicator
+      const newTabRef = tabContentRefs.current.get(key);
+      if (newTabRef) {
+        try {
+          await newTabRef.saveModule();
+        } catch(error) {
+          console.error('Error saving new module on tab switch:', error);
           props.setAlertErrorMessage(t('FAILED_TO_SAVE_MODULE'));
         }
       }
     }
-    setActiveKey(key);
   };
 
   /** Goes to a specific tab, adding it if needed or updating if renamed. */
@@ -172,6 +187,13 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
   React.useImperativeHandle(ref, () => ({
     gotoTab,
     closeTab: closeTabMethod,
+    saveCurrentTab: async () => {
+      const currentTabRef = tabContentRefs.current.get(activeKey);
+      if (currentTabRef) {
+        await currentTabRef.saveModule();
+      }
+    },
+    getActiveTabKey: () => activeKey,
   }));
 
   /** Handles tab edit actions (add/remove). */

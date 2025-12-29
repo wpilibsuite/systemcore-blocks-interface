@@ -65,6 +65,7 @@ export interface MenuProps {
   openWPIToolboxSettings: () => void;
   theme: string;
   setTheme: (theme: string) => void;
+  saveCurrentTab: () => Promise<void>;
 }
 
 /** Default selected menu keys. */
@@ -273,6 +274,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       setThemeModalOpen(true);
     } else if (key == 'deploy') {
       handleDeploy();
+    } else if (key == 'save') {
+      handleSave();
     } else if (key.startsWith('setlang:')) {
       const lang = key.split(':')[1];
       i18n.changeLanguage(lang);
@@ -280,6 +283,16 @@ export function Component(props: MenuProps): React.JSX.Element {
       // TODO: Handle other menu actions
 
       console.log(`Selected key that wasn't module: ${key}`);
+    }
+  };
+
+  /** Handles the save action to save the current tab. */
+  const handleSave = async (): Promise<void> => {
+    try {
+      await props.saveCurrentTab();
+    } catch (error) {
+      console.error('Failed to save current tab:', error);
+      props.setAlertErrorMessage(t('FAILED_TO_SAVE_MODULE') || 'Failed to save module');
     }
   };
 
@@ -294,6 +307,9 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
 
     try {
+      // Save current tab before deploying
+      await props.saveCurrentTab();
+      
       const blobUrl = await createPythonFiles.producePythonProjectBlob(props.currentProject, props.storage);
       
       // Check if the backend server is available
