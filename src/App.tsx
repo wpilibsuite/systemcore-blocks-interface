@@ -29,6 +29,7 @@ import SiderCollapseTrigger from './reactComponents/SiderCollapseTrigger';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
 import * as Tabs from './reactComponents/Tabs';
 import { TabType } from './types/TabType';
+import { AutosaveProvider } from './reactComponents/AutosaveManager';
 
 import { extendedPythonGenerator } from './editor/extended_python_generator';
 
@@ -471,6 +472,18 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     tabsRef.current?.closeTab(tabKey);
   };
 
+  /** Saves the currently active tab. */
+  const saveCurrentTab = async (): Promise<void> => {
+    if (tabsRef.current) {
+      await tabsRef.current.saveCurrentTab();
+    }
+  };
+
+  /** Gets the active tab key for autosave tracking. */
+  const getActiveTabKey = (): string => {
+    return tabsRef.current?.getActiveTabKey() || '';
+  };
+
   const { Sider } = Antd.Layout;
 
   return (
@@ -478,12 +491,16 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       theme={antdThemeFromString(theme)}
     >
       {contextHolder}
-      <Antd.Layout style={{ height: FULL_VIEWPORT_HEIGHT }}>
-          <Header
-            alertErrorMessage={alertErrorMessage}
-            setAlertErrorMessage={setAlertErrorMessage}
-            project={project}
-          />
+      <AutosaveProvider
+        saveCurrentTab={saveCurrentTab}
+        activeTabKey={getActiveTabKey()}
+      >
+        <Antd.Layout style={{ height: FULL_VIEWPORT_HEIGHT }}>
+            <Header
+              alertErrorMessage={alertErrorMessage}
+              setAlertErrorMessage={setAlertErrorMessage}
+              project={project}
+            />
           <Antd.Layout
             style={{
               background: LAYOUT_BACKGROUND_COLOR,
@@ -508,6 +525,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 theme={theme}
                 setTheme={setTheme}
+                saveCurrentTab={saveCurrentTab}
               />
               <SiderCollapseTrigger
                 collapsed={leftCollapsed}
@@ -538,6 +556,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
           onOk={handleToolboxSettingsConfirm}
           onCancel={handleToolboxSettingsCancel}
         />
+      </AutosaveProvider>
     </Antd.ConfigProvider>
   );
 };
