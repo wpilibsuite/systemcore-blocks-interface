@@ -183,10 +183,16 @@ def isEnum(object):
       inspect.isroutine(object.__init__) and
       inspect.ismethoddescriptor(object.__init__) and
       hasattr(object.__init__, "__doc__") and
-      object.__init__.__doc__ == f"__init__(self: {getFullClassName(object)}, value: int) -> None\n" and
+      (
+        object.__init__.__doc__ == f"__init__(self: {getFullClassName(object)}, value: int) -> None\n" or
+        object.__init__.__doc__ == f"__init__(self: {getFullClassName(object)}, value: typing.SupportsInt) -> None\n"
+      ) and
       hasattr(object, "name") and
       inspect.isdatadescriptor(object.name) and
-      object.name.__doc__ == 'name(self: object) -> str\n' and
+      (
+        object.name.__doc__ == 'name(self: object) -> str\n' or
+        object.name.__doc__ == 'name(self: object, /) -> str\n'
+      ) and
       hasattr(object, "value") and
       inspect.isdatadescriptor(object.value))
 
@@ -579,25 +585,3 @@ def collectSubclasses(classes: list[type]) -> dict[str, list[str]]:
       if subclass_name not in subclass_names:
         subclass_names.append(subclass_name)
   return dict_class_name_to_subclass_names
-
-
-def getComponentPortNameAndType(declaring_class_name, constructor) -> (str, str):
-  """Determine whether this is a component and, if so, get the port types that
-  correspond to the constructor parameters. The returned value is a single
-  string consisting of one or more port types. Multiple port types are
-  separated by __ (two underscores). Each port type matches one of the PortType
-  enum values in src/storage/module_content.ts."""
-
-  # TODO(lizlooney): Replace the following temporary fake code with code that
-  # looks at doc string and/or parameter type aliases to tell whether this is
-  # a component and what the port types are.
-  if declaring_class_name == "wpilib_placeholders.ExpansionHubMotor":
-    return ("expansion_hub_motor", "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT")
-  if declaring_class_name == "wpilib_placeholders.ExpansionHubServo":
-    return ("expansion_hub_servo", "SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT")
-  if declaring_class_name == "wpilib.PWMSparkMax":
-    return ("smart_io_port", "SYSTEMCORE_SMART_IO_PORT")
-  if declaring_class_name == "wpilib.AddressableLED":
-    return ("smart_io_port", "SYSTEMCORE_SMART_IO_PORT")
-
-  return None

@@ -167,7 +167,7 @@ export function addEnumBlocks(enums: EnumData[], contents: toolboxItems.Contents
   }
 }
 
-function createEnumBlock(enumValue: string, enumData: EnumData): toolboxItems.Block {
+export function createEnumBlock(enumValue: string, enumData: EnumData): toolboxItems.Block {
   const extraState: GetPythonEnumValueExtraState = {
     enumType: enumData.enumClassName,
     importModule: enumData.moduleName,

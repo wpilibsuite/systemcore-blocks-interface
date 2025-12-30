@@ -350,9 +350,9 @@ function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator:
 
 function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
   let code = 'def define_hardware(self';
-  const ports: string[] = generator.getComponentPortParameters();
-  if (ports.length) {
-    code += ', ' + ports.join(', ');
+  const mechanismInitArgNames: string[] = generator.getMechanismInitArgNames();
+  if (mechanismInitArgNames.length) {
+    code += ', ' + mechanismInitArgNames.join(', ');
   }
   code += '):\n';
 
@@ -420,36 +420,31 @@ export function hasAnyComponents(workspace: Blockly.Workspace): boolean {
 }
 
 /**
- * Collects the ports for components plugged into the mrc_mechanism_component_holder block.
+ * Collects the args for the mechanism's constructor and define_hardware method.
  */
-export function getComponentPorts(workspace: Blockly.Workspace, ports: {[key: string]: string}): void {
+export function getMechanismInitArgNames(workspace: Blockly.Workspace, mechanismInitArgNames: string[]): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach( block => {
+    const inputConnections: Blockly.Connection[] = [];
     const componentsInput = block.getInput(INPUT_COMPONENTS);
     if (componentsInput && componentsInput.connection) {
-      // Walk through all connected component blocks.
-      let componentBlock = componentsInput.connection.targetBlock();
-      while (componentBlock) {
-        if (componentBlock.type === MRC_COMPONENT_NAME && componentBlock.isEnabled()) {
-          (componentBlock as ComponentBlock).getComponentPorts(ports);
-        }
-        // Move to the next block in the chain
-        componentBlock = componentBlock.getNextBlock();
-      }
+      inputConnections.push(componentsInput.connection);
     }
-
-    // Also include private components for port collection
     const privateComponentsInput = block.getInput(INPUT_PRIVATE_COMPONENTS);
     if (privateComponentsInput && privateComponentsInput.connection) {
-      // Walk through all connected private component blocks.
-      let componentBlock = privateComponentsInput.connection.targetBlock();
+      inputConnections.push(privateComponentsInput.connection);
+    }
+
+    // Walk through all connected component blocks.
+    inputConnections.forEach((inputConnection) => {
+      let componentBlock = inputConnection.targetBlock();
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME && componentBlock.isEnabled()) {
-          (componentBlock as ComponentBlock).getComponentPorts(ports);
+          mechanismInitArgNames.push((componentBlock as ComponentBlock).getMechanismInitArgName());
         }
         // Move to the next block in the chain
         componentBlock = componentBlock.getNextBlock();
       }
-    }
+    });
   });
 }
 
