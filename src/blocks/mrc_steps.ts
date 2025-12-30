@@ -76,9 +76,6 @@ const STEPS = {
   loadExtraState: function (this: StepsBlock, state: StepsExtraState): void {
     this.mrcStepNames = state.stepNames;
     this.updateShape_();
-    
-    // Update all mrc_jump_to_step blocks to recheck validity
-    this.mrcCheckJumpBlocks();
   },
   /**
    * Populate the mutator's dialog with this block's components.
