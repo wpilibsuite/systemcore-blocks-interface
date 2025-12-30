@@ -135,9 +135,6 @@ const EVENT_HANDLER = {
       });
     });
     this.mrcUpdateParams();
-    
-    // Update all mrc_get_parameter blocks to recheck validity
-    this.mrcCheckParameterBlocks();
   },
 
   /**
