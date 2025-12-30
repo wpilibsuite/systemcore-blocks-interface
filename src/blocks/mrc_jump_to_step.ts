@@ -23,7 +23,6 @@ import * as Blockly from 'blockly';
 
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
 import { BLOCK_NAME as MRC_STEPS, StepsBlock } from './mrc_steps'
 
@@ -47,18 +46,79 @@ const JUMP_TO_STEP_BLOCK = {
    * Block initialization.
    */
   init: function (this: JumpToStepBlock): void {
+    this.mrcHasWarning = false;
+
+    this.setStyle(MRC_STYLE_VARIABLES);
+    
+    // Create a custom dropdown that accepts any value and displays it correctly
+    class CustomStepDropdown extends Blockly.FieldDropdown {
+      override doClassValidation_(newValue?: string): string | null {
+        // Always accept the value, even if it's not in the current options
+        return newValue ?? null;
+      }
+      
+      override getText_(): string {
+        // Always return the current value, even if not in options
+        return this.value_ || '';
+      }
+    }
+    
+    const blockRef = this;
+    // Use a function to dynamically generate options when dropdown opens
+    const dropdown: Blockly.Field = new CustomStepDropdown(
+      function() {
+        // This function will be called to regenerate options when dropdown opens
+        return blockRef.getStepOptions();
+      }
+    );
+    
+    dropdown.setValidator(this.validateStepSelection.bind(this));
+    
     this.appendDummyInput()
       .appendField(Blockly.Msg.JUMP_TO)
-      .appendField(createFieldNonEditableText(''), FIELD_STEP_NAME);
+      .appendField(dropdown, FIELD_STEP_NAME);
     this.setPreviousStatement(true, null);
     this.setInputsInline(true);
-    this.setStyle(MRC_STYLE_VARIABLES);
     this.setTooltip(() => {
       const stepName = this.getFieldValue(FIELD_STEP_NAME);
       let tooltip = Blockly.Msg.JUMP_TO_STEP_TOOLTIP;
       tooltip = tooltip.replace('{{stepName}}', stepName);
       return tooltip;
     });
+  },
+  getStepOptions: function(this: JumpToStepBlock): [string, string][] {
+    const legalStepNames: string[] = [];
+
+    const rootBlock: Blockly.Block | null = this.getRootBlock();
+    if (rootBlock && rootBlock.type === MRC_STEPS) {
+      const stepsBlock = rootBlock as StepsBlock;
+      legalStepNames.push(...stepsBlock.mrcGetStepNames());
+    }
+
+    // Get the field to check its value
+    const field = this.getField(FIELD_STEP_NAME) as Blockly.FieldDropdown | null;
+    const currentValue = field?.getValue();
+    
+    // Always include the current field value if it exists and isn't already in the list
+    if (currentValue && currentValue !== '' && !legalStepNames.includes(currentValue)) {
+      legalStepNames.unshift(currentValue);
+    }
+
+    if (legalStepNames.length === 0) {
+      return [[Blockly.Msg.NO_STEPS, '']];
+    }
+
+    return legalStepNames.map(name => [name, name]);
+  },
+  validateStepSelection: function(this: JumpToStepBlock, newValue: string): string {
+    // Clear any previous warnings
+    this.setWarningText(null, WARNING_ID_NOT_IN_STEP);
+    this.mrcHasWarning = false;
+    
+    // Options will be regenerated automatically on next dropdown open
+    // via the function passed to the CustomStepDropdown constructor
+    
+    return newValue;
   },
   /**
    * mrcOnMove is called when a JumpToStepBlock is moved.
@@ -80,14 +140,31 @@ const JUMP_TO_STEP_BLOCK = {
       legalStepNames.push(...stepsBlock.mrcGetStepNames());
     }
 
-    if (legalStepNames.includes(this.getFieldValue(FIELD_STEP_NAME))) {
+    const currentStepName = this.getFieldValue(FIELD_STEP_NAME);
+    
+    if (legalStepNames.includes(currentStepName)) {
       // If this blocks's step name is in legalStepNames, it's good.
       this.setWarningText(null, WARNING_ID_NOT_IN_STEP);
       this.mrcHasWarning = false;
     } else {
       // Otherwise, add a warning to this block.
       if (!this.mrcHasWarning) {
-        this.setWarningText(Blockly.Msg.JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK, WARNING_ID_NOT_IN_STEP);
+        // Provide a more specific message depending on the situation
+        let warningMessage: string;
+        if (rootBlock.type === MRC_STEPS) {
+          // We're in a steps block but the step doesn't exist
+          if (currentStepName && currentStepName !== '') {
+            const messageTemplate = Blockly.Msg.STEP_DOES_NOT_EXIST_IN_STEPS;
+            warningMessage = messageTemplate.replace('%1', currentStepName);
+          } else {
+            warningMessage = Blockly.Msg.NO_STEP_SELECTED;
+          }
+        } else {
+          // We're not even in a steps block
+          warningMessage = Blockly.Msg.JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK;
+        }
+        
+        this.setWarningText(warningMessage, WARNING_ID_NOT_IN_STEP);
         const icon = this.getIcon(Blockly.icons.IconType.WARNING);
         if (icon) {
           icon.setBubbleVisible(true);
@@ -95,6 +172,12 @@ const JUMP_TO_STEP_BLOCK = {
         this.mrcHasWarning = true;
       }
     }
+  },
+  /**
+   * Called to recheck step validity. Used when steps are changed.
+   */
+  mrcCheckStep: function(this: JumpToStepBlock): void {
+    this.checkBlockPlacement();
   },
 };
 
