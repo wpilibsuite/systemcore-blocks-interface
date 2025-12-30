@@ -134,6 +134,7 @@
         "JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK": "Jump can only go in their step's block",
         "STEP_DOES_NOT_EXIST_IN_STEPS": "Step \"%1\" does not exist in this steps block.",
         "NO_STEP_SELECTED": "No step selected.",
+        "NO_STEPS": "(no steps)",
         "CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE": "This method is already on the workspace.",
         "EVENT_HANDLER_ALREADY_ON_WORKSPACE": "This event handler is already on the workspace.",
         "EVENT_HANDLER_ROBOT_EVENT_NOT_FOUND": "This block is an event handler for an event that no longer exists.",

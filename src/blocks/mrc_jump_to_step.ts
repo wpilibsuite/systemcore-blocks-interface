@@ -105,7 +105,7 @@ const JUMP_TO_STEP_BLOCK = {
     }
 
     if (legalStepNames.length === 0) {
-      return [['(no steps)', '']];
+      return [[Blockly.Msg.NO_STEPS, '']];
     }
 
     return legalStepNames.map(name => [name, name]);

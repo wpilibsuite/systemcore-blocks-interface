@@ -135,6 +135,7 @@
         "JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK": "El salto solo puede ir en el bloque de su paso",
         "STEP_DOES_NOT_EXIST_IN_STEPS": "El paso \"%1\" no existe en este bloque de pasos.",
         "NO_STEP_SELECTED": "No se ha seleccionado ningún paso.",
+        "NO_STEPS": "(sin pasos)",
         "CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE": "Este método ya está en el espacio de trabajo.",
         "EVENT_HANDLER_ALREADY_ON_WORKSPACE": "Este controlador de eventos ya está en el espacio de trabajo.",
         "EVENT_HANDLER_ROBOT_EVENT_NOT_FOUND": "Este bloque es un controlador de eventos para un evento que ya no existe.",

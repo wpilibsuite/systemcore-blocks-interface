@@ -143,6 +143,7 @@ export function customTokens(t: (key: string) => string): typeof Blockly.Msg {
     JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK: t('BLOCKLY.JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK'),
     STEP_DOES_NOT_EXIST_IN_STEPS: t('BLOCKLY.STEP_DOES_NOT_EXIST_IN_STEPS'),
     NO_STEP_SELECTED: t('BLOCKLY.NO_STEP_SELECTED'),
+    NO_STEPS: t('BLOCKLY.NO_STEPS'),
   }
 };
 
