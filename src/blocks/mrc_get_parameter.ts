@@ -89,15 +89,15 @@ const GET_PARAMETER_BLOCK = {
     this.setOutput(true, this.mrcParameterType);
   },
   getParameterOptions: function(this: GetParameterBlock): [string, string][] {
-    const legalParameterNames: string[] = [];
+    const existingParameterNames: string[] = [];
 
     const rootBlock: Blockly.Block | null = this.getRootBlock();
     if (rootBlock && rootBlock.type === MRC_CLASS_METHOD_DEF) {
       const classMethodDefBlock = rootBlock as ClassMethodDefBlock;
-      legalParameterNames.push(...classMethodDefBlock.mrcGetParameterNames());
+      existingParameterNames.push(...classMethodDefBlock.mrcGetParameterNames());
     } else if (rootBlock && rootBlock.type === MRC_EVENT_HANDLER) {
       const eventHandlerBlock = rootBlock as EventHandlerBlock;
-      legalParameterNames.push(...eventHandlerBlock.mrcGetParameterNames());
+      existingParameterNames.push(...eventHandlerBlock.mrcGetParameterNames());
     }
 
     // Get the field to check its value
@@ -105,15 +105,15 @@ const GET_PARAMETER_BLOCK = {
     const currentValue = field?.getValue();
     
     // Always include the current field value if it exists and isn't already in the list
-    if (currentValue && currentValue !== '' && !legalParameterNames.includes(currentValue)) {
-      legalParameterNames.unshift(currentValue);
+    if (currentValue && !existingParameterNames.includes(currentValue)) {
+      existingParameterNames.unshift(currentValue);
     }
 
-    if (legalParameterNames.length === 0) {
+    if (existingParameterNames.length === 0) {
       return [[Blockly.Msg.NO_PARAMETERS, '']];
     }
 
-    return legalParameterNames.map(name => [name, name]);
+    return existingParameterNames.map(name => [name, name]);
   },
   validateParameterSelection: function(this: GetParameterBlock, newValue: string): string {
     // Clear any previous warnings
