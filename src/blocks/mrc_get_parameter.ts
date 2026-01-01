@@ -29,6 +29,7 @@ import {MRC_STYLE_VARIABLES} from '../themes/styles';
 import {BLOCK_NAME as MRC_CLASS_METHOD_DEF, ClassMethodDefBlock} from './mrc_class_method_def';
 import {BLOCK_NAME as MRC_EVENT_HANDLER, EventHandlerBlock } from './mrc_event_handler';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
+import { CustomDropdownWithoutValidation } from '../fields/FieldDropdown';
 
 
 export const BLOCK_NAME = 'mrc_get_parameter';
@@ -71,24 +72,9 @@ const GET_PARAMETER_BLOCK = {
 
     this.setStyle(MRC_STYLE_VARIABLES);
     
-    // Create a custom dropdown that accepts any value and displays it correctly
-    // This is necessary because we need to be able to force a parameter into the dropdown
-    // when we drag from it before it goes into a method or event that defines that parameter.
-    class CustomParameterDropdown extends Blockly.FieldDropdown {
-      override doClassValidation_(newValue?: string): string | null {
-        // Always accept the value, even if it's not in the current options
-        return newValue ?? null;
-      }
-      
-      override getText_(): string {
-        // Always return the current value, even if not in options
-        return this.value_ || '';
-      }
-    }
-    
     const blockRef = this;
     // Use a dummy initial option - it will be replaced when setValue is called
-    const dropdown: Blockly.Field = new CustomParameterDropdown(
+    const dropdown: Blockly.Field = new CustomDropdownWithoutValidation(
       function() {
         // This function will be called to regenerate options when dropdown opens
         return blockRef.getParameterOptions();
