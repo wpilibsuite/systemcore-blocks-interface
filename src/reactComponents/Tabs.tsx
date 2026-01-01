@@ -62,7 +62,6 @@ export interface TabsProps {
   storage: commonStorage.Storage | null;
   theme: string;
   shownPythonToolboxCategories: Set<string>;
-  modulePathToContentText: {[modulePath: string]: string};
   messageApi: MessageInstance;
 }
 
@@ -429,7 +428,6 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
             storage={props.storage}
             theme={props.theme}
             shownPythonToolboxCategories={props.shownPythonToolboxCategories}
-            modulePathToContentText={props.modulePathToContentText}
             messageApi={props.messageApi}
             setAlertErrorMessage={props.setAlertErrorMessage}
             isActive={activeKey === tab.key}

@@ -51,7 +51,6 @@ const MRC_ON_MUTATOR_OPEN = 'mrcOnMutatorOpen';
 
 export class Editor {
   private static workspaceIdToEditor: { [workspaceId: string]: Editor } = {};
-  private static currentEditor: Editor | null = null;
 
   private readonly blocklyWorkspace: Blockly.WorkspaceSvg;
   private readonly module: storageModule.Module;
@@ -74,7 +73,7 @@ export class Editor {
       module: storageModule.Module,
       project: storageProject.Project,
       storage: commonStorage.Storage,
-      modulePathToContentText: {[modulePath: string]: string}) {
+      moduleContentText: string) {
     workspaces.addWorkspace(blocklyWorkspace, module.moduleType);
     this.blocklyWorkspace = blocklyWorkspace;
     this.module = module;
@@ -82,8 +81,8 @@ export class Editor {
     this.storage = storage;
     this.modulePath = module.modulePath;
     this.robotPath = project.robot.modulePath;
-    this.moduleContentText = modulePathToContentText[module.modulePath];
-    this.parseModules(project, modulePathToContentText);
+    this.moduleContentText = moduleContentText;
+    // parseModules will be called async after construction
     Editor.workspaceIdToEditor[blocklyWorkspace.id] = this;
   }
 
@@ -205,13 +204,9 @@ export class Editor {
     }
   }
 
-  public makeCurrent(
-      project: storageProject.Project,
-      modulePathToContentText: {[modulePath: string]: string}): void {
-    Editor.currentEditor = this;
-
+  public async makeCurrent(project: storageProject.Project): Promise<void> {
     // Parse modules since they might have changed.
-    this.parseModules(project, modulePathToContentText);
+    await this.parseModules(project);
     this.updateToolboxImpl();
 
     // Go through all the blocks in the workspace and call their mrcOnModuleCurrent method.
@@ -234,17 +229,26 @@ export class Editor {
 
   public abandon(): void {
     workspaces.removeWorkspace(this.blocklyWorkspace);
-    if (Editor.currentEditor === this) {
-      Editor.currentEditor = null;
-    }
     if (this.blocklyWorkspace.id in Editor.workspaceIdToEditor) {
       delete Editor.workspaceIdToEditor[this.blocklyWorkspace.id];
     }
   }
 
-  private parseModules(
-      project: storageProject.Project,
-      modulePathToContentText: {[modulePath: string]: string}): void {
+  private async parseModules(project: storageProject.Project): Promise<void> {
+    // Fetch all module content from storage
+    const modulePaths: string[] = [
+      project.robot.modulePath,
+      ...project.mechanisms.map(m => m.modulePath),
+      ...project.opModes.map(o => o.modulePath),
+    ];
+
+    const modulePathToContentText: {[modulePath: string]: string} = {};
+    await Promise.all(
+      modulePaths.map(async (modulePath) => {
+        modulePathToContentText[modulePath] = await this.storage.fetchFileContentText(modulePath);
+      })
+    );
+
     // Parse the modules.
     this.modulePathToModuleContent = {}
     for (const modulePath in modulePathToContentText) {
@@ -643,10 +647,6 @@ export class Editor {
   public static getEditorForBlocklyWorkspaceId(workspaceId: string): Editor | null {
     const workspace = Blockly.Workspace.getById(workspaceId);
     return workspace ? Editor.getEditorForBlocklyWorkspace(workspace) : null;
-  }
-
-  public static getCurrentEditor(): Editor | null {
-    return Editor.currentEditor;
   }
 
   private setPasteLocation(): void {
