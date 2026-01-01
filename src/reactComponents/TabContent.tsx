@@ -53,7 +53,6 @@ export interface TabContentProps {
   storage: commonStorage.Storage;
   theme: string;
   shownPythonToolboxCategories: Set<string>;
-  modulePathToContentText: {[modulePath: string]: string};
   messageApi: MessageInstance;
   setAlertErrorMessage: (message: string) => void;
   isActive: boolean;
@@ -70,7 +69,6 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   storage,
   theme,
   shownPythonToolboxCategories,
-  modulePathToContentText,
   messageApi,
   setAlertErrorMessage,
   isActive,
@@ -90,11 +88,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   React.useImperativeHandle(ref, () => ({
     saveModule: async () => {
       if (editorInstance) {
-        const moduleContentText = await editorInstance.saveModule();
-        // Update modulePathToContentText.
-        // modulePathToContentText is passed to Editor.makeCurrent so the active editor will know
-        // about changes to other modules.
-        modulePathToContentText[modulePath] = moduleContentText;
+        await editorInstance.saveModule();
         // Mark as saved after successful save
         autosave.markAsSaved();
       }
@@ -138,23 +132,29 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   }, [isActive]);
 
   /** Called when workspace is created. */
-  const setupWorkspace = React.useCallback((_modulePath: string, newWorkspace: Blockly.WorkspaceSvg) => {
+  const setupWorkspace = React.useCallback(async (_modulePath: string, newWorkspace: Blockly.WorkspaceSvg) => {
     newWorkspace.addChangeListener(handleBlocksChanged);
     classMethodDef.registerToolboxButton(newWorkspace, messageApi);
     eventHandler.registerToolboxButton(newWorkspace, messageApi);
+
+    // Fetch the module content from storage
+    const moduleContentText = await storage.fetchFileContentText(modulePath);
 
     const newEditor = new editor.Editor(
       newWorkspace,
       module,
       project,
       storage,
-      modulePathToContentText
+      moduleContentText
     );
+    
+    // Parse modules after editor is created
+    await newEditor.makeCurrent(project);
     
     setEditorInstance(newEditor);
     newEditor.loadModuleBlocks();
     newEditor.updateToolbox(shownPythonToolboxCategories);
-  }, [module, project, storage, modulePathToContentText, shownPythonToolboxCategories, messageApi, handleBlocksChanged]);
+  }, [module, project, storage, modulePath, shownPythonToolboxCategories, messageApi, handleBlocksChanged]);
 
   /** Update editor toolbox when categories change. */
   React.useEffect(() => {
@@ -171,13 +171,14 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     if (editorInstance && isActive) {
       // Set flag to ignore changes during activation
       isInitialActivation.current = true;
-      editorInstance.makeCurrent(project, modulePathToContentText);
-      // Clear the flag after a brief delay to allow workspace to settle
-      setTimeout(() => {
-        isInitialActivation.current = false;
-      }, 100);
+      editorInstance.makeCurrent(project).then(() => {
+        // Clear the flag after a brief delay to allow workspace to settle
+        setTimeout(() => {
+          isInitialActivation.current = false;
+        }, 100);
+      });
     }
-  }, [isActive, blocklyComponent, editorInstance, project, modulePathToContentText]);
+  }, [isActive, blocklyComponent, editorInstance, project]);
 
   /** Generate code when regeneration is triggered. */
   React.useEffect(() => {

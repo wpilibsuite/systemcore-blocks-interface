@@ -139,7 +139,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
-  const [modulePathToContentText, setModulePathToContentText] = React.useState<{[modulePath: string]: string}>({});
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [isLoadingTabs, setIsLoadingTabs] = React.useState(false);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
@@ -268,46 +267,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   React.useEffect(() => {
     initializeShownPythonToolboxCategories();
   }, [storage]);
-
-  // Fetch any unfetched modules when project changes.
-  React.useEffect(() => {
-    fetchModules();
-  }, [project]);
-
-  const fetchModules = async () => {
-    if (!project || !storage) {
-      return;
-    }
-    const promises: {[modulePath: string]: Promise<string>} = {}; // value is promise of module content.
-    const updatedModulePathToContentText: {[modulePath: string]: string} = {}; // value is module content text
-    if (project.robot.modulePath in modulePathToContentText) {
-      updatedModulePathToContentText[project.robot.modulePath] = modulePathToContentText[project.robot.modulePath];
-    } else {
-      promises[project.robot.modulePath] = storage.fetchFileContentText(project.robot.modulePath);
-    }
-    project.mechanisms.forEach(mechanism => {
-      if (mechanism.modulePath in modulePathToContentText) {
-        updatedModulePathToContentText[mechanism.modulePath] = modulePathToContentText[mechanism.modulePath];
-      } else {
-        promises[mechanism.modulePath] = storage.fetchFileContentText(mechanism.modulePath);
-      }
-    });
-    project.opModes.forEach(opmode => {
-      if (opmode.modulePath in modulePathToContentText) {
-        updatedModulePathToContentText[opmode.modulePath] = modulePathToContentText[opmode.modulePath];
-      } else {
-        promises[opmode.modulePath] = storage.fetchFileContentText(opmode.modulePath);
-      }
-    });
-    if (Object.keys(promises).length) {
-      await Promise.all(
-        Object.entries(promises).map(async ([modulePath, promise]) => {
-          updatedModulePathToContentText[modulePath] = await promise;
-        })
-      );
-      setModulePathToContentText(updatedModulePathToContentText);
-    }
-  };
 
   // Load saved tabs when project changes
   React.useEffect(() => {
@@ -438,7 +397,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         setTabItems(updatedTabs);
       }
     }
-  }, [modulePathToContentText]);
+  }, [project, tabItems]);
 
   // Save tabs when tab list changes (but not during initial loading)
   React.useEffect(() => {
@@ -461,7 +420,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   }, [tabItems, project?.projectName, isLoadingTabs]);
 
   const onProjectChanged = async (): Promise<void> => {
-    await fetchModules();
+    // No need to fetch modules anymore - each editor fetches what it needs
   };
 
   const gotoTab = (tabKey: string): void => {
@@ -543,7 +502,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 storage={storage}
                 theme={theme}
                 shownPythonToolboxCategories={shownPythonToolboxCategories}
-                modulePathToContentText={modulePathToContentText}
                 messageApi={messageApi}
               />
             </Antd.Layout>
