@@ -28,6 +28,7 @@ import {ExtendedPythonGenerator} from '../editor/extended_python_generator';
 import {MRC_STYLE_VARIABLES} from '../themes/styles';
 import {BLOCK_NAME as MRC_CLASS_METHOD_DEF, ClassMethodDefBlock} from './mrc_class_method_def';
 import {BLOCK_NAME as MRC_EVENT_HANDLER, EventHandlerBlock } from './mrc_event_handler';
+import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 
 
 export const BLOCK_NAME = 'mrc_get_parameter';
@@ -205,6 +206,18 @@ const GET_PARAMETER_BLOCK = {
     this.checkBlockPlacement();
   },
 };
+
+/*
+ * Rechecks all Get Parameter blocks connected to the target block.
+ */
+export function checkParameterBlocks(targetBlock: Blockly.Block | null): void {
+  if (targetBlock) {
+    findConnectedBlocksOfType(targetBlock, BLOCK_NAME).forEach((block) => {
+      const getParameterBlock = block as GetParameterBlock;
+      getParameterBlock.mrcCheckParameter();
+    });
+  }
+}
 
 export const setup = function() {
   Blockly.Blocks[BLOCK_NAME] = GET_PARAMETER_BLOCK;

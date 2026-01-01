@@ -33,7 +33,7 @@ import { MRC_STYLE_EVENT_HANDLER } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
-import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
+import { checkParameterBlocks } from './mrc_get_parameter';
 
 export const BLOCK_NAME = 'mrc_event_handler';
 
@@ -269,8 +269,6 @@ const EVENT_HANDLER = {
               this.mrcUpdateParams();              
               // Update all mrc_get_parameter blocks to recheck validity
               this.mrcCheckParameterBlocks();              
-              // Update all mrc_get_parameter blocks to recheck validity
-              this.mrcCheckParameterBlocks();
 
               // Since we found the mechanism event, we can break out of the loop.
               break;
@@ -339,16 +337,7 @@ const EVENT_HANDLER = {
    * that their parameter names are still valid.
    */
   mrcCheckParameterBlocks: function(this: EventHandlerBlock): void {
-    const MRC_GET_PARAMETER_BLOCK_NAME = 'mrc_get_parameter';
-    const nextBlock = this.getInput('DO')?.connection?.targetBlock();
-    if (nextBlock) {
-      const paramBlocks = findConnectedBlocksOfType(nextBlock, MRC_GET_PARAMETER_BLOCK_NAME);
-      paramBlocks.forEach((block) => {
-        if ('mrcCheckParameter' in block && typeof block.mrcCheckParameter === 'function') {
-          block.mrcCheckParameter();
-        }
-      });
-    }
+    checkParameterBlocks(this.getInputTargetBlock('DO'));
   },
 };
 
