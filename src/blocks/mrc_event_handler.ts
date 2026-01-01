@@ -33,6 +33,7 @@ import { MRC_STYLE_EVENT_HANDLER } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
+import { checkParameterBlocks } from './mrc_get_parameter';
 
 export const BLOCK_NAME = 'mrc_event_handler';
 
@@ -265,7 +266,9 @@ const EVENT_HANDLER = {
                   type: arg.type,
                 });
               });
-              this.mrcUpdateParams();
+              this.mrcUpdateParams();              
+              // Update all mrc_get_parameter blocks to recheck validity
+              this.mrcCheckParameterBlocks();              
 
               // Since we found the mechanism event, we can break out of the loop.
               break;
@@ -327,6 +330,14 @@ const EVENT_HANDLER = {
       parameterNames.push(parameter.name);
     });
     return parameterNames;
+  },
+
+  /**
+   * Checks all mrc_get_parameter blocks within this event handler to revalidate
+   * that their parameter names are still valid.
+   */
+  mrcCheckParameterBlocks: function(this: EventHandlerBlock): void {
+    checkParameterBlocks(this.getInputTargetBlock('DO'));
   },
 };
 

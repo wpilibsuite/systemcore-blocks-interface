@@ -32,3 +32,23 @@ export function createFieldDropdown(items: string[]): Blockly.Field {
   });
   return new Blockly.FieldDropdown(options);
 }
+
+/*
+ * Create a custom dropdown that accepts any value and displays it correctly
+ * This is necessary because we need to be able to force a parameter or step into the dropdown
+ * when we drag from it before it goes into a method or event that defines that parameter or a 
+ * step container that contains that step.
+ * 
+ * WARNING: This class relies on Blockly internals that are not part of the public API.
+ */
+export class CustomDropdownWithoutValidation extends Blockly.FieldDropdown {
+  override doClassValidation_(newValue?: string): string | null {
+    // Always accept the value, even if it's not in the current options
+    return newValue ?? null;
+  }
+  
+  override getText_(): string {
+    // Always return the current value, even if not in options
+    return this.value_ || '';
+  }
+}

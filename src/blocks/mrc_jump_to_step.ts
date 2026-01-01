@@ -25,6 +25,7 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
 import { BLOCK_NAME as MRC_STEPS, StepsBlock } from './mrc_steps'
+import { CustomDropdownWithoutValidation } from '../fields/FieldDropdown';
 
 export const BLOCK_NAME = 'mrc_jump_to_step';
 
@@ -49,23 +50,10 @@ const JUMP_TO_STEP_BLOCK = {
     this.mrcHasWarning = false;
 
     this.setStyle(MRC_STYLE_VARIABLES);
-    
-    // Create a custom dropdown that accepts any value and displays it correctly
-    class CustomStepDropdown extends Blockly.FieldDropdown {
-      override doClassValidation_(newValue?: string): string | null {
-        // Always accept the value, even if it's not in the current options
-        return newValue ?? null;
-      }
-      
-      override getText_(): string {
-        // Always return the current value, even if not in options
-        return this.value_ || '';
-      }
-    }
-    
+       
     const blockRef = this;
     // Use a function to dynamically generate options when dropdown opens
-    const dropdown: Blockly.Field = new CustomStepDropdown(
+    const dropdown: Blockly.Field = new CustomDropdownWithoutValidation(
       function() {
         // This function will be called to regenerate options when dropdown opens
         return blockRef.getStepOptions();

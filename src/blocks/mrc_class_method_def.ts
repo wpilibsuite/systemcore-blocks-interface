@@ -37,7 +37,7 @@ import { FunctionData } from './utils/python_json_types';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 import { makeLegalName } from './utils/validator';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
-import { BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
+import { checkParameterBlocks, BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
 import * as paramContainer from './mrc_param_container'
 
 export const BLOCK_NAME = 'mrc_class_method_def';
@@ -226,6 +226,9 @@ const CLASS_METHOD_DEF = {
         mutateMethodCallers(this.workspace, this.mrcMethodId, methodForWithin);
       }
     }
+    
+    // Update all mrc_get_parameter blocks to recheck validity
+    checkParameterBlocks(this.getInputTargetBlock(INPUT_STACK));
   },
   decompose: function (this: ClassMethodDefBlock, workspace: Blockly.Workspace) {
     const parameterNames: string[] = [];
