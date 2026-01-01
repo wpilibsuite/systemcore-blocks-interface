@@ -72,6 +72,8 @@ const GET_PARAMETER_BLOCK = {
     this.setStyle(MRC_STYLE_VARIABLES);
     
     // Create a custom dropdown that accepts any value and displays it correctly
+    // This is necessary because we need to be able to force a parameter into the dropdown
+    // when we drag from it before it goes into a method or event that defines that parameter.
     class CustomParameterDropdown extends Blockly.FieldDropdown {
       override doClassValidation_(newValue?: string): string | null {
         // Always accept the value, even if it's not in the current options
