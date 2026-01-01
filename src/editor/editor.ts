@@ -51,7 +51,6 @@ const MRC_ON_MUTATOR_OPEN = 'mrcOnMutatorOpen';
 
 export class Editor {
   private static workspaceIdToEditor: { [workspaceId: string]: Editor } = {};
-  private static currentEditor: Editor | null = null;
 
   private readonly blocklyWorkspace: Blockly.WorkspaceSvg;
   private readonly module: storageModule.Module;
@@ -208,8 +207,6 @@ export class Editor {
   public makeCurrent(
       project: storageProject.Project,
       modulePathToContentText: {[modulePath: string]: string}): void {
-    Editor.currentEditor = this;
-
     // Parse modules since they might have changed.
     this.parseModules(project, modulePathToContentText);
     this.updateToolboxImpl();
@@ -234,9 +231,6 @@ export class Editor {
 
   public abandon(): void {
     workspaces.removeWorkspace(this.blocklyWorkspace);
-    if (Editor.currentEditor === this) {
-      Editor.currentEditor = null;
-    }
     if (this.blocklyWorkspace.id in Editor.workspaceIdToEditor) {
       delete Editor.workspaceIdToEditor[this.blocklyWorkspace.id];
     }
@@ -643,10 +637,6 @@ export class Editor {
   public static getEditorForBlocklyWorkspaceId(workspaceId: string): Editor | null {
     const workspace = Blockly.Workspace.getById(workspaceId);
     return workspace ? Editor.getEditorForBlocklyWorkspace(workspace) : null;
-  }
-
-  public static getCurrentEditor(): Editor | null {
-    return Editor.currentEditor;
   }
 
   private setPasteLocation(): void {
