@@ -134,6 +134,7 @@
         "PARAMETER_DOES_NOT_EXIST_IN_METHOD": "Parameter \"%1\" does not exist in this method.",
         "PARAMETER_DOES_NOT_EXIST_IN_EVENT_HANDLER": "Parameter \"%1\" does not exist in this event handler.",
         "NO_PARAMETER_SELECTED": "No parameter selected.",
+        "NO_PARAMETERS": "(no parameters)",
         "JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK": "Jump can only go in their step's block",
         "STEP_DOES_NOT_EXIST_IN_STEPS": "Step \"%1\" does not exist in this steps block.",
         "NO_STEP_SELECTED": "No step selected.",

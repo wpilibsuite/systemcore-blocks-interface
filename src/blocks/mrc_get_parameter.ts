@@ -110,7 +110,7 @@ const GET_PARAMETER_BLOCK = {
     }
 
     if (legalParameterNames.length === 0) {
-      return [['(no parameters)', '']];
+      return [[Blockly.Msg.NO_PARAMETERS, '']];
     }
 
     return legalParameterNames.map(name => [name, name]);

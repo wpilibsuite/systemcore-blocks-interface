@@ -135,6 +135,7 @@
         "PARAMETER_DOES_NOT_EXIST_IN_METHOD": "El parámetro \"%1\" no existe en este método.",
         "PARAMETER_DOES_NOT_EXIST_IN_EVENT_HANDLER": "El parámetro \"%1\" no existe en este controlador de eventos.",
         "NO_PARAMETER_SELECTED": "No se ha seleccionado ningún parámetro.",
+        "NO_PARAMETERS": "(sin parámetros)",
         "JUMP_CAN_ONLY_GO_IN_THEIR_STEPS_BLOCK": "El salto solo puede ir en el bloque de su paso",
         "STEP_DOES_NOT_EXIST_IN_STEPS": "El paso \"%1\" no existe en este bloque de pasos.",
         "NO_STEP_SELECTED": "No se ha seleccionado ningún paso.",
