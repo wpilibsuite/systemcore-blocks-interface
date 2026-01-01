@@ -33,6 +33,7 @@ import * as commonStorage from '../storage/common_storage';
 import * as classMethodDef from '../blocks/mrc_class_method_def'
 import * as eventHandler from '../blocks/mrc_event_handler'
 import { Content } from 'antd/es/layout/layout';
+import { useAutosave } from './AutosaveManager';
 
 /** Default size for code panel. */
 const CODE_PANEL_DEFAULT_SIZE = '25%';
@@ -82,6 +83,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   const [codePanelCollapsed, setCodePanelCollapsed] = React.useState(false);
   const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
   const [codePanelAnimating, setCodePanelAnimating] = React.useState(false);
+  const autosave = useAutosave();
+  const isInitialActivation = React.useRef(true);
 
   /** Expose saveModule method via ref. */
   React.useImperativeHandle(ref, () => ({
@@ -92,9 +95,11 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
         // modulePathToContentText is passed to Editor.makeCurrent so the active editor will know
         // about changes to other modules.
         modulePathToContentText[modulePath] = moduleContentText;
+        // Mark as saved after successful save
+        autosave.markAsSaved();
       }
     },
-  }), [editorInstance]);
+  }), [editorInstance, autosave]);
 
   /** Handles Blockly workspace changes and triggers code regeneration. */
   const handleBlocksChanged = React.useCallback((event: Blockly.Events.Abstract): void => {
@@ -119,9 +124,12 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     if (blocklyComponent.current &&
         event.workspaceId === blocklyComponent.current.getBlocklyWorkspace().id) {
       setTriggerPythonRegeneration(Date.now());
-      // Also notify parent
+      // Mark as modified when blocks change, but not during initial activation
+      if (!isInitialActivation.current) {
+        autosave.markAsModified();
+      }
     }
-  }, [blocklyComponent]);
+  }, [blocklyComponent, autosave]);
 
   /** Called when BlocklyComponent is created. */
   const setupBlocklyComponent = React.useCallback((_modulePath: string, newBlocklyComponent: BlocklyComponentType) => {
@@ -161,7 +169,13 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
       blocklyComponent.current.setActive(isActive);
     }
     if (editorInstance && isActive) {
+      // Set flag to ignore changes during activation
+      isInitialActivation.current = true;
       editorInstance.makeCurrent(project, modulePathToContentText);
+      // Clear the flag after a brief delay to allow workspace to settle
+      setTimeout(() => {
+        isInitialActivation.current = false;
+      }, 100);
     }
   }, [isActive, blocklyComponent, editorInstance, project, modulePathToContentText]);
 

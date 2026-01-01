@@ -26,7 +26,13 @@ import { MRC_STYLE_PORTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldNumberDropdown } from '../fields/field_number_dropdown';
-import * as storageModuleContent from '../storage/module_content';
+import {
+    PortType,
+    portTypeArrayToString,
+    portTypeToString,
+    stringToPortType,
+    stringToPortTypeArray,
+    upgradePortTypeString } from './utils/python_json_types';
 
 export const BLOCK_NAME = 'mrc_port';
 export const OUTPUT_NAME = 'mrc_port';
@@ -46,7 +52,7 @@ const VISIBLE_PORT_LABEL_SERVO = 'servo';
 
 export type PortBlock = Blockly.Block & PortMixin;
 interface PortMixin extends PortMixinType {
-  mrcPortTypes: storageModuleContent.PortType[],
+  mrcPortTypes: PortType[],
 }
 type PortMixinType = typeof PORT;
 
@@ -75,7 +81,7 @@ const PORT = {
    */
   saveExtraState: function (this: PortBlock): PortExtraState {
     const state: PortExtraState = {
-      portTypes: this.mrcPortTypes.map((portType) => storageModuleContent.portTypeToString(portType)),
+      portTypes: this.mrcPortTypes.map((portType) => portTypeToString(portType)),
     };
     return state;
   },
@@ -86,13 +92,14 @@ const PORT = {
   loadExtraState: function (this: PortBlock, state: PortExtraState): void {
     if (state.portTypes) {
       state.portTypes.forEach((s) => {
-        const portType = storageModuleContent.stringToPortType(s);
+        const portType = stringToPortType(s);
         if (portType) {
           this.mrcPortTypes.push(portType);
         }
       });
     } else if (state.portType) {
-      this.mrcPortTypes.push(...storageModuleContent.stringToPortTypeArray(state.portType));
+      const upgradedPortType = upgradePortTypeString(state.portType);
+      this.mrcPortTypes.push(...stringToPortTypeArray(upgradedPortType));
     }
 
     // Now create one input for each element of this.mrcPortTypes.
@@ -110,7 +117,7 @@ const PORT = {
     this.setOutput(true, this.makeOutputCheck());
   },
   makeOutputCheck(this: PortBlock): string {
-    return storageModuleContent.portTypeArrayToString(this.mrcPortTypes)
+    return portTypeArrayToString(this.mrcPortTypes)
   },
 }
 
@@ -130,25 +137,25 @@ export const pythonFromBlock = function (
   return [code, Order.NONE];
 }
 
-function createFieldDropdownForPortNumber(portType: storageModuleContent.PortType): Blockly.Field {
+function createFieldDropdownForPortNumber(portType: PortType): Blockly.Field {
   switch (portType) {
-    case storageModuleContent.PortType.SYSTEMCORE_CAN_PORT:
+    case PortType.SYSTEMCORE_CAN_PORT:
       return createFieldNumberDropdown(0, 4);
-    case storageModuleContent.PortType.SYSTEMCORE_SMART_IO_PORT:
+    case PortType.SYSTEMCORE_SMART_IO_PORT:
       return createFieldNumberDropdown(0, 5);
-    case storageModuleContent.PortType.SYSTEMCORE_I2C_PORT:
+    case PortType.SYSTEMCORE_I2C_PORT:
       return createFieldNumberDropdown(0, 1);
-    case storageModuleContent.PortType.SYSTEMCORE_USB_PORT:
+    case PortType.SYSTEMCORE_USB_PORT:
       return createFieldNumberDropdown(0, 3);
-    case storageModuleContent.PortType.EXPANSION_HUB_MOTOR_PORT:
+    case PortType.EXPANSION_HUB_MOTOR_PORT:
       return createFieldNumberDropdown(0, 3);
-    case storageModuleContent.PortType.EXPANSION_HUB_SERVO_PORT:
+    case PortType.EXPANSION_HUB_SERVO_PORT:
       return createFieldNumberDropdown(0, 5);
-    case storageModuleContent.PortType.MOTIONCORE_DEVICE_PORT:
+    case PortType.MOTIONCORE_DEVICE_PORT:
       return createFieldNumberDropdown(0, 19);
-    case storageModuleContent.PortType.MOTIONCORE_ENCODER_PORT:
+    case PortType.MOTIONCORE_ENCODER_PORT:
       return createFieldNumberDropdown(0, 3);
-    case storageModuleContent.PortType.USB_HUB_PORT:
+    case PortType.USB_HUB_PORT:
       // TODO: How many ports are on a USB hub? Some have 2, some have 4. Should they be numbered 0..N-1 or 1..N?
       return createFieldNumberDropdown(0, 3);
     default:
@@ -164,7 +171,7 @@ function createFieldDropdownForPortNumber(portType: storageModuleContent.PortTyp
  * matches one of the PortType enum values.
  */
 export function createPort(portTypeString: string): any {
-  const portTypes = storageModuleContent.stringToPortTypeArray(portTypeString);
+  const portTypes = stringToPortTypeArray(portTypeString);
 
   // Based on the port type, specify the appropriate fields.
   const fields: {[key: string]: any} = {};
@@ -178,7 +185,7 @@ export function createPort(portTypeString: string): any {
     }
   }
   const extraState: PortExtraState = {
-    portTypes: portTypes.map((portType) => storageModuleContent.portTypeToString(portType)),
+    portTypes: portTypes.map((portType) => portTypeToString(portType)),
   };
   return {
     block: {
@@ -189,25 +196,25 @@ export function createPort(portTypeString: string): any {
   };
 }
 
-function getLabelForPort(portType: storageModuleContent.PortType): string {
+function getLabelForPort(portType: PortType): string {
   switch (portType) {
-    case storageModuleContent.PortType.SYSTEMCORE_CAN_PORT:
+    case PortType.SYSTEMCORE_CAN_PORT:
       return VISIBLE_PORT_LABEL_CAN;
-    case storageModuleContent.PortType.SYSTEMCORE_SMART_IO_PORT:
+    case PortType.SYSTEMCORE_SMART_IO_PORT:
       return VISIBLE_PORT_LABEL_SMART_IO;
-    case storageModuleContent.PortType.SYSTEMCORE_I2C_PORT:
+    case PortType.SYSTEMCORE_I2C_PORT:
       return VISIBLE_PORT_LABEL_I2C;
-    case storageModuleContent.PortType.SYSTEMCORE_USB_PORT:
+    case PortType.SYSTEMCORE_USB_PORT:
       return VISIBLE_PORT_LABEL_USB;
-    case storageModuleContent.PortType.EXPANSION_HUB_MOTOR_PORT:
+    case PortType.EXPANSION_HUB_MOTOR_PORT:
       return VISIBLE_PORT_LABEL_MOTOR;
-    case storageModuleContent.PortType.EXPANSION_HUB_SERVO_PORT:
+    case PortType.EXPANSION_HUB_SERVO_PORT:
       return VISIBLE_PORT_LABEL_SERVO;
-    case storageModuleContent.PortType.MOTIONCORE_DEVICE_PORT:
+    case PortType.MOTIONCORE_DEVICE_PORT:
       return VISIBLE_PORT_LABEL_MOTIONCORE;
-    case storageModuleContent.PortType.MOTIONCORE_ENCODER_PORT:
+    case PortType.MOTIONCORE_ENCODER_PORT:
       return VISIBLE_PORT_LABEL_ENCODER;
-    case storageModuleContent.PortType.USB_HUB_PORT:
+    case PortType.USB_HUB_PORT:
       return VISIBLE_PORT_LABEL_USB_HUB;
   }
   console.error('Unknown port type ' + portType);
