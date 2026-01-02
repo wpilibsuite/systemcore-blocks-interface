@@ -573,8 +573,12 @@ export function Component(props: MenuProps): React.JSX.Element {
   };
 
   /** Handles closing the project management modal. */
-  const handleProjectModalClose = (): void => {
+  const handleProjectModalClose = async (): Promise<void> => {
     setProjectModalOpen(false);
+    // Refresh project names to reflect any changes (deletions, renames, etc.)
+    if (props.storage) {
+      await fetchListOfProjectNames();
+    }
   };
 
   // Initialize project names when storage is available
