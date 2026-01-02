@@ -448,8 +448,11 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
       setActiveKey(newActiveKey);
     } else if (props.tabList.length === 0) {
       setActiveKey('');
+    } else if (activeKey === '' && props.tabList.length > 0) {
+      // No active tab but tabs exist, activate the first tab
+      setActiveKey(props.tabList[0].key);
     }
-  }, [props.tabList.length]);
+  }, [props.tabList, activeKey]);
 
   return (
     <>
