@@ -169,6 +169,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
  */
 export function Component(props: MenuProps): React.JSX.Element {
   const {t, i18n} = I18Next.useTranslation();
+  const [modal, contextHolder] = Antd.Modal.useModal();
 
   const [projectNames, setProjectNames] = React.useState<string[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
@@ -452,7 +453,7 @@ export function Component(props: MenuProps): React.JSX.Element {
             // Show a modal to let the user rename the project
             let inputValue = uploadProjectName;
             
-            Antd.Modal.confirm({
+            modal.confirm({
               title: t('PROJECT_NAME_CONFLICT'),
               content: (
                 <div>
@@ -465,6 +466,8 @@ export function Component(props: MenuProps): React.JSX.Element {
                   />
                 </div>
               ),
+              okText: t('UPLOAD'),
+              cancelText: t('CANCEL'),
               onOk: async () => {
                 try {
                   if (props.storage) {
@@ -596,6 +599,7 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   return (
     <>
+      {contextHolder}
       <FileManageModal
         isOpen={fileModalOpen}
         onClose={handleFileModalClose}
