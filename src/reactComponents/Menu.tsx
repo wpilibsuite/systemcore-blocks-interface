@@ -475,6 +475,7 @@ export function Component(props: MenuProps): React.JSX.Element {
                     await fetchListOfProjectNames();
                     const project = await storageProject.fetchProject(props.storage, inputValue);
                     props.setCurrentProject(project);
+                    await props.onProjectChanged();
                     Antd.message.success(t('UPLOAD_SUCCESS', { projectName: inputValue }));
                   }
                 } catch (error) {
@@ -491,6 +492,7 @@ export function Component(props: MenuProps): React.JSX.Element {
                 await fetchListOfProjectNames();
                 const project = await storageProject.fetchProject(props.storage, uploadProjectName);
                 props.setCurrentProject(project);
+                await props.onProjectChanged();
                 Antd.message.success(t('UPLOAD_SUCCESS', { projectName: uploadProjectName }));
               }
             } catch (error) {
