@@ -123,6 +123,8 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
     getItem(t('PROJECT'), 'project', <FolderOutlined />, [
       getItem(t('SAVE'), 'save', <SaveOutlined />),
       getItem(t('DEPLOY'), 'deploy'),
+      getItem(t('DOWNLOAD'), 'download', <DownloadOutlined />),
+      getItem(t('UPLOAD') + '...', 'upload', <UploadOutlined />),
     ]),
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
@@ -276,6 +278,10 @@ export function Component(props: MenuProps): React.JSX.Element {
       handleDeploy();
     } else if (key == 'save') {
       handleSave();
+    } else if (key == 'download') {
+      handleDownload();
+    } else if (key == 'upload') {
+      handleUploadClick();
     } else if (key.startsWith('setlang:')) {
       const lang = key.split(':')[1];
       i18n.changeLanguage(lang);
@@ -389,6 +395,105 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   // TODO: Add UI for the upload action.
   /** Handles the upload action to upload a previously downloaded project. */
+  const handleUploadClick = (): void => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+    
+    input.onchange = async (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+      
+      if (!file) {
+        return;
+      }
+      
+      const isBlocks = file.name.endsWith(storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION);
+      if (!isBlocks) {
+        props.setAlertErrorMessage(t('UPLOAD_FILE_NOT_BLOCKS', { filename: file.name }));
+        return;
+      }
+      
+      try {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          if (!event.target || !props.storage) {
+            return;
+          }
+          
+          const dataUrl = event.target.result as string;
+          const existingProjectNames: string[] = projectNames;
+          
+          // Generate the initial project name
+          const preferredName = file.name.substring(
+            0, file.name.length - storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
+          let uploadProjectName = storageNames.makeUniqueName(preferredName, existingProjectNames);
+          
+          // Check if there's a conflict (meaning we had to change the name)
+          if (existingProjectNames.includes(preferredName)) {
+            // Show a modal to let the user rename the project
+            let inputValue = uploadProjectName;
+            
+            Antd.Modal.confirm({
+              title: t('PROJECT_NAME_CONFLICT'),
+              content: (
+                <div>
+                  <p>{t('PROJECT_NAME_EXISTS', { projectName: preferredName })}</p>
+                  <Antd.Input
+                    defaultValue={uploadProjectName}
+                    onChange={(e) => {
+                      inputValue = e.target.value;
+                    }}
+                  />
+                </div>
+              ),
+              onOk: async () => {
+                try {
+                  if (props.storage) {
+                    await storageProject.uploadProject(props.storage, inputValue, dataUrl);
+                    await fetchListOfProjectNames();
+                    const project = await storageProject.fetchProject(props.storage, inputValue);
+                    props.setCurrentProject(project);
+                    Antd.message.success(t('UPLOAD_SUCCESS', { projectName: inputValue }));
+                  }
+                } catch (error) {
+                  console.error('Error uploading file:', error);
+                  props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+                }
+              },
+            });
+          } else {
+            // No conflict, upload directly
+            try {
+              if (props.storage) {
+                await storageProject.uploadProject(props.storage, uploadProjectName, dataUrl);
+                await fetchListOfProjectNames();
+                const project = await storageProject.fetchProject(props.storage, uploadProjectName);
+                props.setCurrentProject(project);
+                Antd.message.success(t('UPLOAD_SUCCESS', { projectName: uploadProjectName }));
+              }
+            } catch (error) {
+              console.error('Error uploading file:', error);
+              props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+            }
+          }
+        };
+        
+        reader.onerror = (_error) => {
+          console.log('Error reading file: ' + reader.error);
+          props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+        };
+        
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error handling upload:', error);
+        props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+      }
+    };
+    
+    input.click();
+  };
+
   const handleUpload = (): Antd.UploadProps | null => {
     if (!props.storage) {
       return null;
