@@ -427,7 +427,25 @@ export function Component(props: MenuProps): React.JSX.Element {
           // Generate the initial project name
           const preferredName = file.name.substring(
             0, file.name.length - storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
-          let uploadProjectName = storageNames.makeUniqueName(preferredName, existingProjectNames);
+          
+          // Smart name conflict resolution: extract base name and trailing number
+          // e.g., "PrSimplify2" -> base="PrSimplify", num=2
+          const match = preferredName.match(/^(.+?)(\d+)$/);
+          let uploadProjectName: string;
+          
+          if (match && existingProjectNames.includes(preferredName)) {
+            // Name has a trailing number and conflicts - find next available
+            const baseName = match[1];
+            const startNum = parseInt(match[2], 10);
+            let num = startNum + 1;
+            while (existingProjectNames.includes(baseName + num)) {
+              num++;
+            }
+            uploadProjectName = baseName + num;
+          } else {
+            // No trailing number or no conflict - use standard logic
+            uploadProjectName = storageNames.makeUniqueName(preferredName, existingProjectNames);
+          }
           
           // Check if there's a conflict (meaning we had to change the name)
           if (existingProjectNames.includes(preferredName)) {
