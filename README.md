@@ -12,6 +12,4 @@ WARNING! This is not ready for use and is under heavy development of basic featu
 7. Make sure any python backends are running on your PC.
 
 ## Known Issues
-In addition to those listed in the issues on github, there are some major pieces not ready yet.
-1. Deploy doesn't connect to backend
-1. No ability to download or upload blocks code
+Please check the issues on github for known issues.
