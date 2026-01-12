@@ -520,6 +520,21 @@ class JsonGenerator:
       class_data[_KEY_IS_COMPONENT] = True
       return
 
+    if declaring_class_name == 'wpilib.DutyCycleEncoder':
+      if (len(arg_names) == 4 and
+          arg_names[0] == 'self' and
+          arg_names[1] == 'channel' and
+          arg_names[2] == 'fullRange' and
+          arg_names[3] == 'expectedZero'):
+        args = []
+        args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
+        args.append(self._createArgData('full_range', self._getClassName(arg_types[2]), '1'))
+        args.append(self._createArgData('expected_zero', self._getClassName(arg_types[3]), '0'))
+        constructor_data[_KEY_COMPONENT_ARGS] = args
+        constructor_data[_KEY_IS_COMPONENT] = True
+        class_data[_KEY_IS_COMPONENT] = True
+      return
+
     if declaring_class_name == 'wpilib.OnboardIMU':
       if (len(arg_names) == 2 and
           arg_names[0] == 'self' and

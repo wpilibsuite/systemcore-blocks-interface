@@ -5463,8 +5463,26 @@
                             "type": "float"
                         }
                     ],
+                    "componentArgs": [
+                        {
+                            "defaultValue": "",
+                            "name": "smart_io_port",
+                            "type": "SYSTEMCORE_SMART_IO_PORT"
+                        },
+                        {
+                            "defaultValue": "1",
+                            "name": "full_range",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "0",
+                            "name": "expected_zero",
+                            "type": "float"
+                        }
+                    ],
                     "declaringClassName": "wpilib.DutyCycleEncoder",
                     "functionName": "__init__",
+                    "isComponent": true,
                     "returnType": "wpilib.DutyCycleEncoder",
                     "tooltip": "Construct a new DutyCycleEncoder on a specific channel.\n\n:param channel:      the channel to attach to\n:param fullRange:    the value to report at maximum travel\n:param expectedZero: the reading where you would expect a 0 from get()"
                 },
@@ -5643,7 +5661,7 @@
                 }
             ],
             "instanceVariables": [],
-            "isComponent": false,
+            "isComponent": true,
             "moduleName": "wpilib",
             "staticMethods": []
         },
