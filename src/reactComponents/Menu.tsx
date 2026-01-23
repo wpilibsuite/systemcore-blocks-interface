@@ -179,7 +179,6 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
-  const [showUploadAndDownload, _setShowUploadAndDownload] = React.useState(false);
 
   const handleThemeChange = (newTheme: string) => {
     props.setTheme(newTheme);
@@ -282,7 +281,7 @@ export function Component(props: MenuProps): React.JSX.Element {
     } else if (key == 'download') {
       handleDownload();
     } else if (key == 'upload') {
-      handleUploadClick();
+      handleUpload();
     } else if (key.startsWith('setlang:')) {
       const lang = key.split(':')[1];
       i18n.changeLanguage(lang);
@@ -363,7 +362,6 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
   };
 
-  // TODO: Add UI for the download action.
   /** Handles the download action to generate and download json files. */
   const handleDownload = async (): Promise<void> => {
     if (!props.currentProject) {
@@ -394,9 +392,8 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
   }
 
-  // TODO: Add UI for the upload action.
   /** Handles the upload action to upload a previously downloaded project. */
-  const handleUploadClick = (): void => {
+  const handleUpload = (): void => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
@@ -517,56 +514,6 @@ export function Component(props: MenuProps): React.JSX.Element {
     input.click();
   };
 
-  const handleUpload = (): Antd.UploadProps | null => {
-    if (!props.storage) {
-      return null;
-    }
-
-    const uploadProps: Antd.UploadProps = {
-      accept: storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION,
-      beforeUpload: (file) => {
-        const isBlocks = file.name.endsWith(storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION)
-        if (!isBlocks) {
-          // TODO: i18n
-          props.setAlertErrorMessage(t('UPLOAD_FILE_NOT_BLOCKS', { filename: file.name }));
-          return false;
-        }
-        return isBlocks || Antd.Upload.LIST_IGNORE;
-      },
-      onChange: (_info) => {
-      },
-      customRequest: (options) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (!event.target) {
-            return;
-          }
-          const dataUrl = event.target.result as string;
-          const existingProjectNames: string[] = [];
-          projectNames.forEach(projectName => {
-            existingProjectNames.push(projectName);
-          });
-          const file = options.file as File;
-          const uploadProjectName = storageProject.makeUploadProjectName(file.name, existingProjectNames);
-          if (props.storage) {
-            storageProject.uploadProject(props.storage, uploadProjectName, dataUrl);
-          }
-          if (options.onSuccess) {
-            options.onSuccess(dataUrl);
-          }
-        };
-        reader.onerror = (_error) => {
-          console.log('Error reading file: ' + reader.error);
-          if (options.onError) {
-            options.onError(new Error(t('UPLOAD_FAILED')));
-          }
-        };
-        reader.readAsDataURL(options.file as Blob);
-      },
-    };
-    return uploadProps;
-  };
-
   /** Handles closing the file management modal. */
   const handleFileModalClose = (): void => {
     setFileModalOpen(false);
@@ -633,30 +580,6 @@ export function Component(props: MenuProps): React.JSX.Element {
         items={menuItems}
         onClick={handleClick}
       />
-      {showUploadAndDownload ? (
-        <div>
-          <Antd.Upload
-            {...handleUpload()}
-            showUploadList={false}
-          >
-            <Antd.Button
-              icon={<UploadOutlined />}
-              size="small"
-              style={{ color: 'white' }}
-            />
-          </Antd.Upload>
-          <Antd.Button
-            icon={<DownloadOutlined />}
-            size="small"
-            disabled={!props.currentProject}
-            onClick={handleDownload}
-            style={{ color: 'white' }}
-          />
-        </div>
-      ) : (
-        <div>
-        </div>
-      )}
       <AboutDialog
         open={aboutDialogVisible}
         onClose={() => setAboutDialogVisible(false)}
