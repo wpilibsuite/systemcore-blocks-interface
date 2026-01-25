@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @ant-design/colors
-8.0.0 <https://github.com/ant-design/ant-design-colors>
+8.0.1 <https://github.com/ant-design/ant-design-colors>
 MIT LICENSE
 
 Copyright (c) 2018-present Ant UED, https://xtech.antfin.com/
@@ -42,7 +42,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @ant-design/cssinjs
-2.0.1 <https://github.com/ant-design/cssinjs>
+2.0.3 <https://github.com/ant-design/cssinjs>
 The MIT License (MIT)
 
 Copyright (c) 2019-present afc163
@@ -199,7 +199,7 @@ SOFTWARE.
 ******************************
 
 @babel/runtime
-7.28.4 <https://github.com/babel/babel>
+7.28.6 <https://github.com/babel/babel>
 MIT License
 
 Copyright (c) 2014-present Sebastian McKenzie and other contributors
@@ -227,7 +227,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @blockly/theme-dark
-8.0.2 <https://github.com/google/blockly-samples>
+8.0.3 <https://github.com/RaspberryPiFoundation/blockly-samples>
 
                                  Apache License
                            Version 2.0, January 2004
@@ -434,7 +434,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @blockly/theme-deuteranopia
-7.0.2 <https://github.com/google/blockly-samples>
+7.0.3 <https://github.com/RaspberryPiFoundation/blockly-samples>
 
                                  Apache License
                            Version 2.0, January 2004
@@ -641,7 +641,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @blockly/theme-highcontrast
-7.0.2 <https://github.com/google/blockly-samples>
+7.0.3 <https://github.com/RaspberryPiFoundation/blockly-samples>
 
                                  Apache License
                            Version 2.0, January 2004
@@ -848,7 +848,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @blockly/theme-tritanopia
-7.0.2 <https://github.com/google/blockly-samples>
+7.0.3 <https://github.com/RaspberryPiFoundation/blockly-samples>
 
                                  Apache License
                            Version 2.0, January 2004
@@ -1361,7 +1361,7 @@ SOFTWARE.
 ******************************
 
 @rc-component/async-validator
-5.0.4 <https://github.com/react-component/async-validator>
+5.1.0 <https://github.com/react-component/async-validator>
 The MIT License (MIT)
 
 Copyright (c) 2014-present yiminghe
@@ -1376,7 +1376,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/cascader
-1.9.0 <https://github.com/react-component/cascader>
+1.11.0 <https://github.com/react-component/cascader>
 The MIT License (MIT)
 
 Copyright (c) 2014-present alipay.com
@@ -1404,7 +1404,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/collapse
-1.1.2 <https://github.com/react-component/collapse>
+1.2.0 <https://github.com/react-component/collapse>
 The MIT License (MIT)
 
 Copyright (c) 2014-present yiminghe
@@ -1449,7 +1449,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/dialog
-1.5.1 <https://github.com/react-component/dialog>
+1.8.0 <https://github.com/react-component/dialog>
 The MIT License (MIT)
 
 Copyright (c) 2014-present yiminghe
@@ -1464,7 +1464,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/drawer
-1.3.0 <https://github.com/react-component/drawer>
+1.4.0 <https://github.com/react-component/drawer>
 MIT LICENSE
 
 Copyright (c) 2015-present Alipay.com, https://www.alipay.com/
@@ -1518,7 +1518,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @rc-component/form
-1.5.0 <https://github.com/react-component/field-form>
+1.6.2 <https://github.com/react-component/field-form>
 MIT License
 
 Copyright (c) 2019-present react-component
@@ -1544,7 +1544,7 @@ SOFTWARE.
 ******************************
 
 @rc-component/image
-1.5.3 <https://github.com/react-component/image>
+1.6.0 <https://github.com/react-component/image>
 MIT LICENSE
 
 Copyright (c) 2015-present Alipay.com, https://www.alipay.com/
@@ -1746,7 +1746,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/portal
-2.0.1 <https://github.com/react-component/portal>
+2.2.0 <https://github.com/react-component/portal>
 MIT License
 
 Copyright (c) 2019-present react-component
@@ -1828,7 +1828,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/resize-observer
-1.0.1 <https://github.com/react-component/resize-observer>
+1.1.1 <https://github.com/react-component/resize-observer>
 The MIT License (MIT)
 
 Copyright (c) 2019-present afc163
@@ -1843,7 +1843,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/segmented
-1.2.3 <https://github.com/react-component/segmented>
+1.3.0 <https://github.com/react-component/segmented>
 The MIT License (MIT)
 
 Copyright (c) 2019-present afc163
@@ -1858,7 +1858,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/select
-1.3.6 <https://github.com/react-component/select>
+1.5.1 <https://github.com/react-component/select>
 The MIT License (MIT)
 
 Copyright (c) 2014-present alipay.com
@@ -1929,7 +1929,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ******************************
 
 @rc-component/table
-1.9.0 <https://github.com/react-component/table>
+1.9.1 <https://github.com/react-component/table>
 MIT LICENSE
 
 Copyright (c) 2015-present Alipay.com, https://www.alipay.com/
@@ -2001,7 +2001,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @rc-component/tour
-2.2.1 <https://github.com/react-component/tour>
+2.3.0 <https://github.com/react-component/tour>
 MIT License
 
 Copyright (c) 2019-present react-component
@@ -2055,7 +2055,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @rc-component/tree-select
-1.4.0 <https://github.com/react-component/tree-select>
+1.6.0 <https://github.com/react-component/tree-select>
 MIT LICENSE
 
 Copyright (c) 2015-present Alipay.com, https://www.alipay.com/
@@ -2083,7 +2083,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @rc-component/trigger
-3.7.2 <https://github.com/react-component/trigger>
+3.9.0 <https://github.com/react-component/trigger>
 The MIT License (MIT)
 Copyright (c) 2015-present Alipay.com, https://www.alipay.com/
 
@@ -2136,7 +2136,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 @rc-component/util
-1.6.0 <https://github.com/react-component/util>
+1.7.0 <https://github.com/react-component/util>
 The MIT License (MIT)
 
 Copyright (c) 2014-present yiminghe
@@ -2353,7 +2353,7 @@ SOFTWARE.
 ******************************
 
 @types/react
-19.2.7 <https://github.com/DefinitelyTyped/DefinitelyTyped>
+19.2.9 <https://github.com/DefinitelyTyped/DefinitelyTyped>
     MIT License
 
     Copyright (c) Microsoft Corporation.
@@ -2488,7 +2488,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 antd
-6.1.1 <https://github.com/ant-design/ant-design>
+6.2.1 <https://github.com/ant-design/ant-design>
 MIT LICENSE
 
 Copyright (c) 2015-present Ant UED, https://xtech.antfin.com/
@@ -2853,7 +2853,7 @@ authors: Michael Mclaughlin <M8ch88l@gmail.com>
 ******************************
 
 decode-named-character-reference
-1.2.0 <https://github.com/wooorm/decode-named-character-reference>
+1.3.0 <https://github.com/wooorm/decode-named-character-reference>
 (The MIT License)
 
 Copyright (c) Titus Wormer <tituswormer@gmail.com>
@@ -3360,7 +3360,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************
 
 i18next
-25.7.3 <https://github.com/i18next/i18next>
+25.8.0 <https://github.com/i18next/i18next>
 The MIT License (MIT)
 
 Copyright (c) 2025 i18next
@@ -5590,10 +5590,10 @@ SOFTWARE.
 ******************************
 
 react-i18next
-16.5.0 <https://github.com/i18next/react-i18next>
+16.5.3 <https://github.com/i18next/react-i18next>
 The MIT License (MIT)
 
-Copyright (c) 2025 i18next
+Copyright (c) 2015-present i18next
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -6834,7 +6834,7 @@ THE SOFTWARE.
 ******************************
 
 ws
-8.18.3 <https://github.com/websockets/ws>
+8.19.0 <https://github.com/websockets/ws>
 Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>
 Copyright (c) 2013 Arnout Kazemier and contributors
 Copyright (c) 2016 Luigi Pinca and contributors
