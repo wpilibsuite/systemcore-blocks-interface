@@ -18,6 +18,8 @@ __pycache__/
 venv/
 *.egg-info
 
+# oss attribution text file
+/oss-attribution/attribution.txt
 
 # misc
 .DS_Store
