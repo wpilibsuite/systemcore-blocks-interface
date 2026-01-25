@@ -38,14 +38,13 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
     const { t } = useTranslation();
     const [attributions, setAttributions] = React.useState<string>(t('ABOUT.LOADING_ATTRIBUTIONS'));
     const [dependencies, setDependencies] = React.useState<string>(t('ABOUT.LOADING_DEPENDENCIES'));
-    const attributionsFile = '/attributions.txt'; // Path to the attributions file
 
     React.useEffect(() => {
         if (open) {
             loadAttributions();
             loadDependencies();
         }
-    }, [open, attributionsFile]);
+    }, [open]);
     interface LicenseInfo{
         name: string;
         version: string;
