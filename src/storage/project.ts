@@ -382,16 +382,6 @@ export async function downloadProject(
   return URL.createObjectURL(content);
 }
 
-/**
- * Make a unique project name for an uploaded project.
- */
-export function makeUploadProjectName(
-    uploadFileName: string, existingProjectNames: string[]): string {
-  const preferredName = uploadFileName.substring(
-    0, uploadFileName.length - storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
-  return storageNames.makeUniqueName(preferredName, existingProjectNames);
-}
-
 export async function uploadProject(
     storage: commonStorage.Storage, projectName: string, blobUrl: string): Promise<void> {
   // Process the uploaded blob to get the file names and contents.
