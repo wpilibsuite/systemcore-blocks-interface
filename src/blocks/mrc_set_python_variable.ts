@@ -248,7 +248,12 @@ const SET_PYTHON_VARIABLE = {
           .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(this.mrcSelfLabel);
     }
-  }
+  },
+  mrcGetFullLabel: function(this: SetPythonVariableBlock): string {
+    return Blockly.Msg.SET + ' ' +
+        this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME) + '.' +
+        this.getFieldValue(FIELD_VARIABLE_NAME) + ' ' + Blockly.Msg.TO;
+  },
 };
 
 export const setup = function() {
@@ -256,41 +261,42 @@ export const setup = function() {
 };
 
 export const pythonFromBlock = function(
-    block: Blockly.Block,
+    block: SetPythonVariableBlock,
     generator: ExtendedPythonGenerator,
 ) {
-  const setPythonVariableBlock = block as SetPythonVariableBlock;
-  const varName = setPythonVariableBlock.mrcActualVariableName
-      ? setPythonVariableBlock.mrcActualVariableName
+  const varName = block.mrcActualVariableName
+      ? block.mrcActualVariableName
       : block.getFieldValue(FIELD_VARIABLE_NAME);
-  switch (setPythonVariableBlock.mrcVarKind) {
+  let code: string;
+  switch (block.mrcVarKind) {
     case VariableKind.MODULE: {
       const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
-      if (setPythonVariableBlock.mrcImportModule) {
-        generator.importModule(setPythonVariableBlock.mrcImportModule);
+      if (block.mrcImportModule) {
+        generator.importModule(block.mrcImportModule);
       }
-      const code = moduleName + '.' + varName + ' = ' + value + '\n';
-      return code;
+      code = moduleName + '.' + varName + ' = ' + value + '\n';
+      break;
     }
     case VariableKind.CLASS: {
       const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
-      if (setPythonVariableBlock.mrcImportModule) {
-        generator.importModule(setPythonVariableBlock.mrcImportModule);
+      if (block.mrcImportModule) {
+        generator.importModule(block.mrcImportModule);
       }
-      const code = className + '.' + varName + ' = ' + value + '\n';
-      return code;
+      code = className + '.' + varName + ' = ' + value + '\n';
+      break;
     }
     case VariableKind.INSTANCE: {
       const selfValue = generator.valueToCode(block, 'SELF', Order.MEMBER);
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
-      const code = selfValue + '.' + varName + ' = ' + value + '\n';
-      return code;
+      code = selfValue + '.' + varName + ' = ' + value + '\n';
+      break;
     }
     default:
       throw new Error(Blockly.Msg['VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE']);
   }
+  return generator.addErrorHandlingCode(block, block.mrcGetFullLabel(), code);
 };
 
 // Functions used for creating blocks for the toolbox.

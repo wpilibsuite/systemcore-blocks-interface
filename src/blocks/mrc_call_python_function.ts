@@ -923,6 +923,54 @@ const CALL_PYTHON_FUNCTION = {
       this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
     }
   },
+  mrcGetFullLabel: function(this: CallPythonFunctionBlock): string {
+    switch (this.mrcFunctionKind) {
+      case FunctionKind.BUILT_IN:
+        return Blockly.Msg.CALL + ' ' +
+            this.getFieldValue(FIELD_FUNCTION_NAME);
+      case FunctionKind.MODULE:
+        return Blockly.Msg.CALL + ' ' +
+            this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME) + '.' +
+            this.getFieldValue(FIELD_FUNCTION_NAME);
+      case FunctionKind.STATIC:
+        return Blockly.Msg.CALL + ' ' +
+            this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME) + '.' +
+            this.getFieldValue(FIELD_FUNCTION_NAME);
+      case FunctionKind.CONSTRUCTOR:
+        return Blockly.Msg.CREATE + ' ' +
+            this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+      case FunctionKind.INSTANCE:
+        return Blockly.Msg.CALL + ' ' +
+            this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME) + '.' +
+            this.getFieldValue(FIELD_FUNCTION_NAME);
+      case FunctionKind.INSTANCE_WITHIN:
+        return Blockly.Msg.CALL + ' ' +
+            this.getFieldValue(FIELD_FUNCTION_NAME);
+      case FunctionKind.EVENT:
+        return Blockly.Msg.FIRE + ' ' +
+            this.getFieldValue(FIELD_EVENT_NAME);
+      case FunctionKind.INSTANCE_COMPONENT:
+        if (this.mrcMechanismId) {
+          return Blockly.Msg.CALL + ' ' +
+              this.getFieldValue(FIELD_MECHANISM_NAME) + '.' +
+              this.getFieldValue(FIELD_COMPONENT_NAME) + '.' +
+              this.getFieldValue(FIELD_FUNCTION_NAME);
+        } else {
+          return Blockly.Msg.CALL + ' ' +
+              this.getFieldValue(FIELD_COMPONENT_NAME) + '.' +
+              this.getFieldValue(FIELD_FUNCTION_NAME);
+        }
+      case FunctionKind.INSTANCE_ROBOT:
+        return Blockly.Msg.CALL + ' ' +
+            Blockly.Msg.ROBOT_LOWER_CASE + '.' +
+            this.getFieldValue(FIELD_FUNCTION_NAME);
+      case FunctionKind.INSTANCE_MECHANISM:
+        return Blockly.Msg.CALL + ' ' +
+            this.getFieldValue(FIELD_MECHANISM_NAME) + '.' +
+            this.getFieldValue(FIELD_FUNCTION_NAME);
+    }
+    return '';
+  },
   upgrade_008_to_009: function(this: CallPythonFunctionBlock) {
     if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
       if (this.mrcComponentClassName === 'expansion_hub_motor.ExpansionHubMotor') {
@@ -1062,11 +1110,13 @@ export function pythonFromBlock(
     code += delimiterBeforeArgs + codeForArgs;
   }
   code += ')';
+  let result: string | [string, number];
   if (block.outputConnection) {
-    return [code, Order.FUNCTION_CALL];
+    result = [code, Order.FUNCTION_CALL];
   } else {
-    return code + '\n';
+    result = code + '\n';
   }
+  return generator.addErrorHandlingCode(block, block.mrcGetFullLabel(), result);
 };
 
 function generateCodeForArguments(

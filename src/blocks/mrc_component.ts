@@ -300,6 +300,9 @@ const COMPONENT = {
       this.mrcComponentId = oldIdToNewId[this.mrcComponentId];
     }
   },
+  mrcGetFullLabel: function(this: ComponentBlock): string {
+    return this.getFieldValue(FIELD_NAME) + ' ' + Blockly.Msg.OF_TYPE + ' ' + this.getFieldValue(FIELD_TYPE);
+  },
   upgrade_005_to_006: function(this: ComponentBlock) {
     for (let i = 0; i < this.mrcArgs.length; i++) {
       if (this.mrcArgs[i].type === 'Port') {
@@ -354,7 +357,7 @@ export const pythonFromBlock = function (
   }
   code += ')\n';
 
-  return code;
+  return generator.addErrorHandlingCode(block, block.mrcGetFullLabel(), code);
 }
 
 export function getAllPossibleComponents(

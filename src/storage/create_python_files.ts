@@ -69,7 +69,8 @@ async function generatePythonForModule(module: Module, storage: Storage): Promis
     Blockly.serialization.workspaces.load(blocks, workspace);
 
     // Generate Python code.
-    const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(workspace, module);
+    const generateErrorHandling = true;
+    const pythonCode = extendedPythonGenerator.mrcWorkspaceToCode(workspace, module, generateErrorHandling);
 
     // Clean up the workspace
     workspaces.destroyHeadlessWorkspace(workspace);

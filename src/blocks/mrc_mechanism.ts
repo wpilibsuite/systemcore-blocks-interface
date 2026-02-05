@@ -451,6 +451,9 @@ const MECHANISM = {
       this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
     }
   },
+  mrcGetFullLabel: function(this: MechanismBlock): string {
+    return this.getFieldValue(FIELD_NAME) + ' ' + Blockly.Msg.OF_TYPE + ' ' + this.getFieldValue(FIELD_TYPE);
+  },
 };
 
 export const setup = function () {
@@ -499,7 +502,7 @@ export const pythonFromBlock = function (
   code += ')\n';
   code += 'self.mechanisms.append(self.' + mechanismName + ')\n';
 
-  return code;
+  return generator.addErrorHandlingCode(block, block.mrcGetFullLabel(), code);
 }
 
 export function createMechanismBlock(
