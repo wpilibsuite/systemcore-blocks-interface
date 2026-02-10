@@ -152,7 +152,6 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
         
     except Exception as e:
         print(f"\nError running opmode: {e}")
-        #traceback.print_exc()
         BlockExecution.handleFatalError(e)
         sys.exit(1)
 
