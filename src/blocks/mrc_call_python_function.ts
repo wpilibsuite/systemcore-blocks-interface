@@ -23,8 +23,16 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
-import { getClassData, getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
-import { ArgData, FunctionData } from './utils/python_json_types';
+import {
+    getAllowedTypesForSetCheck,
+    getClassData,
+    getModuleData,
+    getOutputCheck } from './utils/python';
+import {
+    ArgData,
+    ClassData,
+    FunctionData,
+    ModuleData } from './utils/python_json_types';
 import * as value from './utils/value';
 import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
@@ -610,284 +618,31 @@ const CALL_PYTHON_FUNCTION = {
   checkFunction: function(this: CallPythonFunctionBlock, editor: Editor): void {
     const warnings: string[] = [];
 
-    // If this block is calling a method defined in this module, check whether the method still
-    // exists and whether it has been changed.
-    // If the method doesn't exist, put a visible warning on this block.
-    // If the robot method has changed, update the block if possible or put a
-    // visible warning on it.
-    if (this.mrcFunctionKind === FunctionKind.INSTANCE_WITHIN) {
-      let foundMethod = false;
-      const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
-      for (const method of methodsFromWorkspace) {
-        if (method.methodId === this.mrcMethodId) {
-          foundMethod = true;
-          if (this.mrcActualFunctionName !== method.pythonName) {
-            this.mrcActualFunctionName = method.pythonName;
-          }
-          if (this.getFieldValue(FIELD_FUNCTION_NAME) !== method.visibleName) {
-            this.setFieldValue(method.visibleName, FIELD_FUNCTION_NAME);
-          }
-
-          this.mrcReturnType = method.returnType;
-          this.mrcArgs = [];
-          // We don't include the arg for the self argument because we don't need a socket for it.
-          for (let i = 1; i < method.args.length; i++) {
-            this.mrcArgs.push({
-              name: method.args[i].name,
-              type: method.args[i].type,
-            });
-          }
-          this.updateBlock_();
-
-          // Since we found the method, we can break out of the loop.
-          break;
-        }
-      }
-      if (!foundMethod) {
-        warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD);
-      }
-    }
-
-    // If this block is calling a component method, check whether the component
-    // still exists and whether it has been changed.
-    // If the component doesn't exist, put a visible warning on this block.
-    // If the component has changed, update the block if possible or put a
-    // visible warning on it.
-    // If the component belongs to a mechanism, also check whether the mechanism
-    // still exists and whether it has been changed.
-    if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
-      const componentNames: string[] = [];
-      this.mrcMapComponentNameToId = {}
-      this.getComponents(editor).forEach(component => {
-        componentNames.push(component.name);
-        this.mrcMapComponentNameToId[component.name] = component.componentId;
-      });
-      let foundComponent = false;
-      for (const componentName of componentNames) {
-        const componentId = this.mrcMapComponentNameToId[componentName];
-        if (componentId === this.mrcComponentId) {
-          foundComponent = true;
-
-          // Replace the text field for the component name with a dropdown where the user can choose
-          // between different components of the same type. For example, they can easily switch from
-          // a motor component name "left_motor" to a motor component named "right_motor".
-          const titleInput = this.getInput(INPUT_TITLE)
-          if (!titleInput) {
-            throw new Error('Could not find the title input');
-          }
-          let indexOfComponentNameField = -1;
-          for (let i = 0, field; (field = titleInput.fieldRow[i]); i++) {
-            if (field.name === FIELD_COMPONENT_NAME) {
-              indexOfComponentNameField = i;
-              break;
-            }
-          }
-          if (indexOfComponentNameField === -1) {
-            throw new Error('Could not find the component name field');
-          }
-          titleInput.removeField(FIELD_COMPONENT_NAME);
-          titleInput.insertFieldAt(indexOfComponentNameField,
-              createFieldDropdown(componentNames), FIELD_COMPONENT_NAME);
-          // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
-          // items in the dropdown if the user adds or removes a component.
-
-          this.setFieldValue(componentName, FIELD_COMPONENT_NAME);
-
-          // Since we found the component, we can break out of the loop.
-          break;
-        }
-      }
-      if (!foundComponent) {
-        if (this.mrcMechanismId) {
-          // Check whether the the component still exists, but is a private component in the mechanism.
-          for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
-            if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
-              for (const mechanism of editor.getMechanisms()) {
-                if (mechanism.moduleId === mechanismInRobot.moduleId) {
-                  for (const privateComponent of editor.getPrivateComponentsFromMechanism(mechanism)) {
-                    if (privateComponent.className === this.mrcComponentClassName &&
-                        privateComponent.componentId === this.mrcComponentId) {
-                      foundComponent = true;
-                      let warning = Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT;
-                      warning = warning.replace('{{mechanismClassName}}', mechanism.className);
-                      warnings.push(warning);
-                      break
-                    }
-                  }
-                  break;
-                }
-                if (foundComponent) {
-                  break;
-                }
-              }
-              break;
-            }
-            if (foundComponent) {
-              break;
-            }
-          }
-        }
-      }
-
-      if (!foundComponent) {
-        warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT);
-      }
-
-      if (this.mrcMechanismId) {
-        let foundMechanism = false;
-        const mechanismsInRobot = editor.getMechanismsFromRobot();
-        for (const mechanismInRobot of mechanismsInRobot) {
-          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
-            foundMechanism = true;
-
-            // If the mechanism name has changed, we can handle that.
-            if (this.getFieldValue(FIELD_MECHANISM_NAME) !== mechanismInRobot.name) {
-              this.setFieldValue(mechanismInRobot.name, FIELD_MECHANISM_NAME);
-            }
-            break;
-          }
-        }
-        if (!foundMechanism) {
-          warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM);
-        }
-      }
-
-      const classData = getClassData(this.mrcComponentClassName);
-      if (classData) {
-        let foundComponentMethod = false;
-        for (const functionData of classData.instanceMethods) {
-          if (this.getFieldValue(FIELD_FUNCTION_NAME) === functionData.functionName) {
-            foundComponentMethod = true;
-            this.mrcReturnType = functionData.returnType;
-            this.mrcTooltip = functionData.tooltip;
-            this.mrcArgs = [];
-            // We don't include the arg for the self argument because we don't need a socket for it.
-            for (let i = 1; i < functionData.args.length; i++) {
-              this.mrcArgs.push({
-                name: functionData.args[i].name,
-                type: functionData.args[i].type,
-              });
-            }
-            this.updateBlock_();
-
-            // Since we found the method, we can break out of the loop.
-            break;
-          }
-        }
-        if (!foundComponentMethod) {
-          warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_METHOD);
-        }
-      } else {
-        warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT_CLASS);
-      }
-    }
-
-    // If this block is calling a robot method, check whether the robot method
-    // still exists and whether it has been changed.
-    // If the robot method doesn't exist, put a visible warning on this block.
-    // If the robot method has changed, update the block if possible or put a
-    // visible warning on it.
-    if (this.mrcFunctionKind === FunctionKind.INSTANCE_ROBOT) {
-      if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
-        warnings.push(Blockly.Msg.WARNING_CALL_ROBOT_INSTANCE_METHOD_INSIDE_MECHANISM);
-      } else {
-        let foundRobotMethod = false;
-        const robotMethods = editor.getMethodsFromRobot();
-        for (const robotMethod of robotMethods) {
-          if (robotMethod.methodId === this.mrcMethodId) {
-            foundRobotMethod = true;
-            if (this.mrcActualFunctionName !== robotMethod.pythonName) {
-              this.mrcActualFunctionName = robotMethod.pythonName;
-            }
-            if (this.getFieldValue(FIELD_FUNCTION_NAME) !== robotMethod.visibleName) {
-              this.setFieldValue(robotMethod.visibleName, FIELD_FUNCTION_NAME);
-            }
-
-            this.mrcReturnType = robotMethod.returnType;
-            this.mrcArgs = [];
-            // We don't include the arg for the self argument because we don't need a socket for it.
-            for (let i = 1; i < robotMethod.args.length; i++) {
-              this.mrcArgs.push({
-                name: robotMethod.args[i].name,
-                type: robotMethod.args[i].type,
-              });
-            }
-            this.updateBlock_();
-
-            // Since we found the robot method, we can break out of the loop.
-            break;
-          }
-        }
-        if (!foundRobotMethod) {
-          warnings.push(Blockly.Msg.WARNING_CALL_ROBOT_INSTANCE_METHOD_MISSING_METHOD);
-        }
-      }
-    }
-
-    // If this block is calling a mechanism method, check whether the mechanism
-    // still exists, whether it has been changed, whether the method still
-    // exists, and whether the method has been changed.
-    // If the mechanism doesn't exist, put a visible warning on this block.
-    // If the mechanism has changed, update the block if possible or put a
-    // visible warning on it.
-    // If the method doesn't exist, put a visible warning on this block.
-    // If the method has changed, update the block if possible or put a
-    // visible warning on it.
-    if (this.mrcFunctionKind === FunctionKind.INSTANCE_MECHANISM) {
-      if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
-        warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM);
-      } else {
-        let foundMechanism = false;
-        const mechanismsInRobot = editor.getMechanismsFromRobot();
-        for (const mechanismInRobot of mechanismsInRobot) {
-          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
-            foundMechanism = true;
-
-            // If the mechanism name has changed, we can handle that.
-            if (this.getFieldValue(FIELD_MECHANISM_NAME) !== mechanismInRobot.name) {
-              this.setFieldValue(mechanismInRobot.name, FIELD_MECHANISM_NAME);
-            }
-
-            let foundMechanismMethod = false;
-            const mechanism = editor.getMechanism(mechanismInRobot);
-            const mechanismMethods: storageModuleContent.Method[] = mechanism
-                ? editor.getMethodsFromMechanism(mechanism) : [];
-            for (const mechanismMethod of mechanismMethods) {
-              if (mechanismMethod.methodId === this.mrcMethodId) {
-                foundMechanismMethod = true;
-                if (this.mrcActualFunctionName !== mechanismMethod.pythonName) {
-                  this.mrcActualFunctionName = mechanismMethod.pythonName;
-                }
-                if (this.getFieldValue(FIELD_FUNCTION_NAME) !== mechanismMethod.visibleName) {
-                  this.setFieldValue(mechanismMethod.visibleName, FIELD_FUNCTION_NAME);
-                }
-                this.mrcReturnType = mechanismMethod.returnType;
-                this.mrcArgs = [];
-                // We don't include the arg for the self argument because we don't need a socket for it.
-                for (let i = 1; i < mechanismMethod.args.length; i++) {
-                  this.mrcArgs.push({
-                    name: mechanismMethod.args[i].name,
-                    type: mechanismMethod.args[i].type,
-                  });
-                }
-                this.updateBlock_();
-
-                // Since we found the mechanism method, we can break out of the loop.
-                break;
-              }
-            }
-            if (!foundMechanismMethod) {
-              warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD);
-            }
-
-            // Since we found the mechanism, we can break out of the loop.
-            break;
-          }
-        }
-        if (!foundMechanism) {
-          warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM);
-        }
-      }
+    switch (this.mrcFunctionKind) {
+      case FunctionKind.MODULE:
+        this.checkModuleFunction(warnings);
+        break;
+      case FunctionKind.STATIC:
+        this.checkStaticMethod(warnings);
+        break;
+      case FunctionKind.CONSTRUCTOR:
+        this.checkConstructor(warnings);
+        break;
+      case FunctionKind.INSTANCE:
+        this.checkInstanceMethod(warnings);
+        break;
+      case FunctionKind.INSTANCE_WITHIN:
+        this.checkInstanceMethodWithin(editor, warnings);
+        break;
+      case FunctionKind.INSTANCE_COMPONENT:
+        this.checkComponentInstanceMethod(editor, warnings);
+        break;
+      case FunctionKind.INSTANCE_ROBOT:
+        this.checkRobotInstanceMethod(editor, warnings);
+        break;
+      case FunctionKind.INSTANCE_MECHANISM:
+        this.checkMechanismInstanceMethod(editor, warnings);
+        break;
     }
 
     if (warnings.length) {
@@ -904,6 +659,369 @@ const CALL_PYTHON_FUNCTION = {
     } else {
       // Clear the existing warning on the block.
       this.setWarningText(null, WARNING_ID_FUNCTION_CHANGED);
+    }
+  },
+  checkModuleFunction: function(this: CallPythonFunctionBlock, warnings: string[]): void {
+    // If this block is calling a module function, check whether the module and function still
+    // exist. If the module or function doesn't exist, put a visible warning on this block.
+    const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const moduleData = getModuleData(moduleName);
+    if (moduleData) {
+      let foundFunction = false;
+      const blockFunctionName = this.getFieldValue(FIELD_FUNCTION_NAME);
+      for (const functionData of moduleData.functions) {
+        if (blockFunctionName === functionData.functionName &&
+            blockArgsMatchFunctionDataArgs(this.mrcArgs, functionData)) {
+          foundFunction = true;
+          break;
+        }
+      }
+      if (!foundFunction) {
+        warnings.push(Blockly.Msg.WARNING_CALL_MODULE_FUNCTION_MISSING_FUNCTION);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_CALL_MODULE_FUNCTION_MISSING_MODULE);
+    }
+  },
+  checkStaticMethod: function(this: CallPythonFunctionBlock, warnings: string[]): void {
+    // If this block is calling a static method, check whether the class and method still
+    // exist. If the class or method doesn't exist, put a visible warning on this block.
+    const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const classData = getClassData(className);
+    if (classData) {
+      let foundFunction = false;
+      const blockFunctionName = this.getFieldValue(FIELD_FUNCTION_NAME);
+      for (const functionData of classData.staticMethods) {
+        if (blockFunctionName === functionData.functionName &&
+            blockArgsMatchFunctionDataArgs(this.mrcArgs, functionData)) {
+          foundFunction = true;
+          break;
+        }
+      }
+      if (!foundFunction) {
+        warnings.push(Blockly.Msg.WARNING_CALL_STATIC_METHOD_MISSING_METHOD);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_CALL_STATIC_METHOD_MISSING_CLASS);
+    }
+  },
+  checkConstructor: function(this: CallPythonFunctionBlock, warnings: string[]): void {
+    // If this block is calling a constructor defined in a class, check whether the class and
+    // constructor still exist.
+    // If the class or constructor doesn't exist, put a visible warning on this block.
+   const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const classData = getClassData(className);
+    if (classData) {
+      let foundFunction = false;
+      for (const functionData of classData.constructors) {
+        if (blockArgsMatchFunctionDataArgs(this.mrcArgs, functionData)) {
+          foundFunction = true;
+          break;
+        }
+      }
+      if (!foundFunction) {
+        warnings.push(Blockly.Msg.WARNING_CALL_CONSTRUCTOR_MISSING_CONSTRUCTOR);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_CALL_CONSTRUCTOR_MISSING_CLASS);
+    }
+  },
+  checkInstanceMethod: function(this: CallPythonFunctionBlock, warnings: string[]): void {
+    // If this block is calling a class method, check whether the class and method still exist.
+    // If the class or method doesn't exist, put a visible warning on this block.
+   const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const classData = getClassData(className);
+    if (classData) {
+      let foundFunction = false;
+      const blockFunctionName = this.getFieldValue(FIELD_FUNCTION_NAME);
+      for (const functionData of classData.instanceMethods) {
+        if (blockFunctionName === functionData.functionName &&
+            blockArgsMatchFunctionDataArgs(this.mrcArgs, functionData)) {
+          foundFunction = true;
+          break;
+        }
+      }
+      if (!foundFunction) {
+        warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_METHOD_MISSING_METHOD);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_METHOD_MISSING_CLASS);
+    }
+  },
+  checkInstanceMethodWithin: function(this: CallPythonFunctionBlock, editor: Editor, warnings: string[]): void {
+    // If this block is calling a method defined in this module, check whether the method still
+    // exists and whether it has been changed.
+    // If the method doesn't exist, put a visible warning on this block.
+    // If the robot method has changed, update the block if possible or put a
+    // visible warning on it.
+    let foundMethod = false;
+    const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
+    for (const method of methodsFromWorkspace) {
+      if (method.methodId === this.mrcMethodId) {
+        foundMethod = true;
+        if (this.mrcActualFunctionName !== method.pythonName) {
+          this.mrcActualFunctionName = method.pythonName;
+        }
+        if (this.getFieldValue(FIELD_FUNCTION_NAME) !== method.visibleName) {
+          this.setFieldValue(method.visibleName, FIELD_FUNCTION_NAME);
+        }
+
+        this.mrcReturnType = method.returnType;
+        this.mrcArgs = [];
+        // We don't include the arg for the self argument because we don't need a socket for it.
+        for (let i = 1; i < method.args.length; i++) {
+          this.mrcArgs.push({
+            name: method.args[i].name,
+            type: method.args[i].type,
+          });
+        }
+        this.updateBlock_();
+
+        // Since we found the method, we can break out of the loop.
+        break;
+      }
+    }
+    if (!foundMethod) {
+      warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD);
+    }
+  },
+  checkComponentInstanceMethod: function(this: CallPythonFunctionBlock, editor: Editor, warnings: string[]): void {
+    // If this block is calling a component method, check whether the component
+    // still exists and whether it has been changed.
+    // If the component doesn't exist, put a visible warning on this block.
+    // If the component has changed, update the block if possible or put a
+    // visible warning on it.
+    // If the component belongs to a mechanism, also check whether the mechanism
+    // still exists and whether it has been changed.
+    const componentNames: string[] = [];
+    this.mrcMapComponentNameToId = {}
+    this.getComponents(editor).forEach(component => {
+      componentNames.push(component.name);
+      this.mrcMapComponentNameToId[component.name] = component.componentId;
+    });
+    let foundComponent = false;
+    for (const componentName of componentNames) {
+      const componentId = this.mrcMapComponentNameToId[componentName];
+      if (componentId === this.mrcComponentId) {
+        foundComponent = true;
+
+        // Replace the text field for the component name with a dropdown where the user can choose
+        // between different components of the same type. For example, they can easily switch from
+        // a motor component name "left_motor" to a motor component named "right_motor".
+        const titleInput = this.getInput(INPUT_TITLE)
+        if (!titleInput) {
+          throw new Error('Could not find the title input');
+        }
+        let indexOfComponentNameField = -1;
+        for (let i = 0, field; (field = titleInput.fieldRow[i]); i++) {
+          if (field.name === FIELD_COMPONENT_NAME) {
+            indexOfComponentNameField = i;
+            break;
+          }
+        }
+        if (indexOfComponentNameField === -1) {
+          throw new Error('Could not find the component name field');
+        }
+        titleInput.removeField(FIELD_COMPONENT_NAME);
+        titleInput.insertFieldAt(indexOfComponentNameField,
+            createFieldDropdown(componentNames), FIELD_COMPONENT_NAME);
+        // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
+        // items in the dropdown if the user adds or removes a component.
+
+        this.setFieldValue(componentName, FIELD_COMPONENT_NAME);
+
+        // Since we found the component, we can break out of the loop.
+        break;
+      }
+    }
+    if (!foundComponent) {
+      if (this.mrcMechanismId) {
+        // Check whether the the component still exists, but is a private component in the mechanism.
+        for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
+          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+            for (const mechanism of editor.getMechanisms()) {
+              if (mechanism.moduleId === mechanismInRobot.moduleId) {
+                for (const privateComponent of editor.getPrivateComponentsFromMechanism(mechanism)) {
+                  if (privateComponent.className === this.mrcComponentClassName &&
+                      privateComponent.componentId === this.mrcComponentId) {
+                    foundComponent = true;
+                    let warning = Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT;
+                    warning = warning.replace('{{mechanismClassName}}', mechanism.className);
+                    warnings.push(warning);
+                    break
+                  }
+                }
+                break;
+              }
+              if (foundComponent) {
+                break;
+              }
+            }
+            break;
+          }
+          if (foundComponent) {
+            break;
+          }
+        }
+      }
+    }
+
+    if (!foundComponent) {
+      warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT);
+    }
+
+    if (this.mrcMechanismId) {
+      let foundMechanism = false;
+      const mechanismsInRobot = editor.getMechanismsFromRobot();
+      for (const mechanismInRobot of mechanismsInRobot) {
+        if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+          foundMechanism = true;
+
+          // If the mechanism name has changed, we can handle that.
+          if (this.getFieldValue(FIELD_MECHANISM_NAME) !== mechanismInRobot.name) {
+            this.setFieldValue(mechanismInRobot.name, FIELD_MECHANISM_NAME);
+          }
+          break;
+        }
+      }
+      if (!foundMechanism) {
+        warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM);
+      }
+    }
+
+    const classData = getClassData(this.mrcComponentClassName);
+    if (classData) {
+      let foundComponentMethod = false;
+      for (const functionData of classData.instanceMethods) {
+        if (this.getFieldValue(FIELD_FUNCTION_NAME) === functionData.functionName) {
+          foundComponentMethod = true;
+          this.mrcReturnType = functionData.returnType;
+          this.mrcTooltip = functionData.tooltip;
+          this.mrcArgs = [];
+          // We don't include the arg for the self argument because we don't need a socket for it.
+          for (let i = 1; i < functionData.args.length; i++) {
+            this.mrcArgs.push({
+              name: functionData.args[i].name,
+              type: functionData.args[i].type,
+            });
+          }
+          this.updateBlock_();
+
+          // Since we found the method, we can break out of the loop.
+          break;
+        }
+      }
+      if (!foundComponentMethod) {
+        warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_METHOD);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT_CLASS);
+    }
+  },
+  checkRobotInstanceMethod: function(this: CallPythonFunctionBlock, editor: Editor, warnings: string[]): void {
+    // If this block is calling a robot method, check whether the robot method
+    // still exists and whether it has been changed.
+    // If the robot method doesn't exist, put a visible warning on this block.
+    // If the robot method has changed, update the block if possible or put a
+    // visible warning on it.
+    if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
+      warnings.push(Blockly.Msg.WARNING_CALL_ROBOT_INSTANCE_METHOD_INSIDE_MECHANISM);
+    } else {
+      let foundRobotMethod = false;
+      const robotMethods = editor.getMethodsFromRobot();
+      for (const robotMethod of robotMethods) {
+        if (robotMethod.methodId === this.mrcMethodId) {
+          foundRobotMethod = true;
+          if (this.mrcActualFunctionName !== robotMethod.pythonName) {
+            this.mrcActualFunctionName = robotMethod.pythonName;
+          }
+          if (this.getFieldValue(FIELD_FUNCTION_NAME) !== robotMethod.visibleName) {
+            this.setFieldValue(robotMethod.visibleName, FIELD_FUNCTION_NAME);
+          }
+
+          this.mrcReturnType = robotMethod.returnType;
+          this.mrcArgs = [];
+          // We don't include the arg for the self argument because we don't need a socket for it.
+          for (let i = 1; i < robotMethod.args.length; i++) {
+            this.mrcArgs.push({
+              name: robotMethod.args[i].name,
+              type: robotMethod.args[i].type,
+            });
+          }
+          this.updateBlock_();
+
+          // Since we found the robot method, we can break out of the loop.
+          break;
+        }
+      }
+      if (!foundRobotMethod) {
+        warnings.push(Blockly.Msg.WARNING_CALL_ROBOT_INSTANCE_METHOD_MISSING_METHOD);
+      }
+    }
+  },
+  checkMechanismInstanceMethod: function(this: CallPythonFunctionBlock, editor: Editor, warnings: string[]): void {
+    // If this block is calling a mechanism method, check whether the mechanism
+    // still exists, whether it has been changed, whether the method still
+    // exists, and whether the method has been changed.
+    // If the mechanism doesn't exist, put a visible warning on this block.
+    // If the mechanism has changed, update the block if possible or put a
+    // visible warning on it.
+    // If the method doesn't exist, put a visible warning on this block.
+    // If the method has changed, update the block if possible or put a
+    // visible warning on it.
+    if (editor.getModuleType() === storageModule.ModuleType.MECHANISM) {
+      warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM);
+    } else {
+      let foundMechanism = false;
+      const mechanismsInRobot = editor.getMechanismsFromRobot();
+      for (const mechanismInRobot of mechanismsInRobot) {
+        if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+          foundMechanism = true;
+
+          // If the mechanism name has changed, we can handle that.
+          if (this.getFieldValue(FIELD_MECHANISM_NAME) !== mechanismInRobot.name) {
+            this.setFieldValue(mechanismInRobot.name, FIELD_MECHANISM_NAME);
+          }
+
+          let foundMechanismMethod = false;
+          const mechanism = editor.getMechanism(mechanismInRobot);
+          const mechanismMethods: storageModuleContent.Method[] = mechanism
+              ? editor.getMethodsFromMechanism(mechanism) : [];
+          for (const mechanismMethod of mechanismMethods) {
+            if (mechanismMethod.methodId === this.mrcMethodId) {
+              foundMechanismMethod = true;
+              if (this.mrcActualFunctionName !== mechanismMethod.pythonName) {
+                this.mrcActualFunctionName = mechanismMethod.pythonName;
+              }
+              if (this.getFieldValue(FIELD_FUNCTION_NAME) !== mechanismMethod.visibleName) {
+                this.setFieldValue(mechanismMethod.visibleName, FIELD_FUNCTION_NAME);
+              }
+              this.mrcReturnType = mechanismMethod.returnType;
+              this.mrcArgs = [];
+              // We don't include the arg for the self argument because we don't need a socket for it.
+              for (let i = 1; i < mechanismMethod.args.length; i++) {
+                this.mrcArgs.push({
+                  name: mechanismMethod.args[i].name,
+                  type: mechanismMethod.args[i].type,
+                });
+              }
+              this.updateBlock_();
+
+              // Since we found the mechanism method, we can break out of the loop.
+              break;
+            }
+          }
+          if (!foundMechanismMethod) {
+            warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD);
+          }
+
+          // Since we found the mechanism, we can break out of the loop.
+          break;
+        }
+      }
+      if (!foundMechanism) {
+        warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM);
+      }
     }
   },
   /**
@@ -1233,6 +1351,27 @@ function processArgs(
   }
 }
 
+function blockArgsMatchFunctionDataArgs(
+    blockArgs: FunctionArg[],
+    functionData: FunctionData) {
+  if (blockArgs.length === functionData.args.length) {
+    for (let i = 0; i < blockArgs.length; i++) {
+      let argName = functionData.args[i].name
+      if (i === 0 && argName === 'self' && functionData.declaringClassName) {
+        argName = variable.getSelfArgName(functionData.declaringClassName)
+      }
+      if (argName != blockArgs[i].name) {
+        return false;
+      }
+      if (functionData.args[i].type != blockArgs[i].type) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+
 function createBlock(
     extraState: CallPythonFunctionExtraState,
     fields: {[key: string]: any},
@@ -1248,24 +1387,22 @@ function createBlock(
 }
 
 export function addModuleFunctionBlocks(
-    moduleName: string,
-    functions: FunctionData[],
+    moduleData: ModuleData,
     contents: toolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
+  moduleData.functions.forEach(functionData => {
     const block = createModuleFunctionOrStaticMethodBlock(
-        FunctionKind.MODULE, moduleName, moduleName, functionData);
+        FunctionKind.MODULE, moduleData.moduleName, moduleData.moduleName, functionData);
     contents.push(block);
   });
 }
 
 export function addStaticMethodBlocks(
-    importModule: string,
-    functions: FunctionData[],
+    classData: ClassData,
     contents: toolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
+  classData.staticMethods.forEach(functionData => {
     if (functionData.declaringClassName) {
       const block = createModuleFunctionOrStaticMethodBlock(
-          FunctionKind.STATIC, importModule, functionData.declaringClassName, functionData);
+          FunctionKind.STATIC, classData.moduleName, functionData.declaringClassName, functionData);
       contents.push(block);
     }
   });
@@ -1292,11 +1429,10 @@ function createModuleFunctionOrStaticMethodBlock(
 }
 
 export function addConstructorBlocks(
-    importModule: string,
-    functions: FunctionData[],
+    classData: ClassData,
     contents: toolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
-    contents.push(createConstructorBlock(importModule, functionData));
+  classData.constructors.forEach(functionData => {
+    contents.push(createConstructorBlock(classData.moduleName, functionData));
   });
 }
 
@@ -1318,9 +1454,9 @@ function createConstructorBlock(
 }
 
 export function addInstanceMethodBlocks(
-    functions: FunctionData[],
+    classData: ClassData,
     contents: toolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
+  classData.instanceMethods.forEach(functionData => {
     contents.push(createInstanceMethodBlock(functionData));
   });
 }

@@ -30,11 +30,7 @@ import {
     addModuleFunctionBlocks,
     addStaticMethodBlocks } from '../blocks/mrc_call_python_function';
 import { robotPyData } from '../blocks/utils/python';
-import {
-    ClassData,
-    ModuleData,
-    organizeVarDataByType,
-    VariableGettersAndSetters } from '../blocks/utils/python_json_types';
+import { ClassData, ModuleData } from '../blocks/utils/python_json_types';
 import * as toolboxItems from './items';
 
 
@@ -98,53 +94,29 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
 
 function addModuleBlocks(moduleData: ModuleData, contents: toolboxItems.ContentsType[]) {
   // Module variable blocks.
-  if (moduleData.moduleVariables.length) {
-    const varsByType: {[key: string]: VariableGettersAndSetters} =
-        organizeVarDataByType(moduleData.moduleVariables);
-    addModuleVariableBlocks(moduleData.moduleName, varsByType, contents);
-  }
+  addModuleVariableBlocks(moduleData, contents);
 
   // Module function blocks
-  if (moduleData.functions.length) {
-    addModuleFunctionBlocks(moduleData.moduleName, moduleData.functions, contents);
-  }
+  addModuleFunctionBlocks(moduleData, contents);
 
   // Enum blocks
-  if (moduleData.enums.length) {
-    addEnumBlocks(moduleData.enums, contents);
-  }
+  addEnumBlocks(moduleData.enums, contents);
 }
 
 function addClassBlocks(classData: ClassData, contents: toolboxItems.ContentsType[]) {
   // Function blocks (constructors, instance methods, static methods)
-  if (classData.constructors.length) {
-    addConstructorBlocks(classData.moduleName, classData.constructors, contents);
-  }
-  if (classData.instanceMethods.length) {
-    addInstanceMethodBlocks(classData.instanceMethods, contents);
-  }
-  if (classData.staticMethods.length) {
-    addStaticMethodBlocks(classData.moduleName, classData.staticMethods, contents);
-  }
+  addConstructorBlocks(classData, contents);
+  addInstanceMethodBlocks(classData, contents);
+  addStaticMethodBlocks(classData, contents);
 
   // Instance variable blocks
-  if (classData.instanceVariables.length) {
-    const varsByType: {[key: string]: VariableGettersAndSetters} =
-        organizeVarDataByType(classData.instanceVariables);
-    addInstanceVariableBlocks(classData.className, varsByType, contents);
-  }
+  addInstanceVariableBlocks(classData, contents);
 
   // Class variable blocks.
-  if (classData.classVariables.length) {
-    const varsByType: {[key: string]: VariableGettersAndSetters} =
-        organizeVarDataByType(classData.classVariables);
-    addClassVariableBlocks(classData.moduleName, classData.className, varsByType, contents);
-  }
+  addClassVariableBlocks(classData, contents);
 
   // Enum blocks
-  if (classData.enums.length) {
-    addEnumBlocks(classData.enums, contents);
-  }
+  addEnumBlocks(classData.enums, contents);
 }
 
 function addCategoriesToParents(
