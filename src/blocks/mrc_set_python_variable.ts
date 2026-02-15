@@ -28,10 +28,6 @@ import {
     getAllowedTypesForSetCheck,
     getClassData,
     getModuleData } from './utils/python';
-import {
-    ClassData,
-    ModuleData,
-    VarData } from './utils/python_json_types';
 import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
