@@ -32,6 +32,14 @@ _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
   'wpiutil',
 ]
 
+_LIST_MODULE_NAMES_INTERNAL = [
+  'blocks_base_classes.block_execution',
+]
+
+_LIST_CLASS_NAMES_INTERNAL = [
+  'blocks_base_classes.BlockExecution',
+]
+
 _KEY_MODULES = 'modules'
 _KEY_CLASSES = 'classes'
 _KEY_MODULE_NAME = 'moduleName'
@@ -127,7 +135,12 @@ class JsonGenerator:
   def _getPublicModules(self) -> list[types.ModuleType]:
     public_modules = []
     for m in self._modules:
-      if '._' in python_util.getFullModuleName(m):
+      module_name = python_util.getFullModuleName(m)
+      if '._' in module_name:
+        continue
+      if module_name in _LIST_MODULE_NAMES_INTERNAL:
+        print(f'HeyLiz: skipping internal module {module_name}',
+            file=sys.stderr)
         continue
       public_modules.append(m)
     public_modules.sort(key=lambda m: python_util.getFullModuleName(m))
@@ -261,6 +274,10 @@ class JsonGenerator:
     for cls in self._classes:
       class_name = self._getClassName(cls)
       if '._' in class_name:
+        continue
+      if class_name in _LIST_CLASS_NAMES_INTERNAL:
+        print(f'HeyLiz: skipping internal class {class_name}',
+            file=sys.stderr)
         continue
       for base_class in inspect.getmro(cls):
         if python_util.isBuiltInClass(base_class):
