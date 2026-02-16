@@ -139,8 +139,6 @@ class JsonGenerator:
       if '._' in module_name:
         continue
       if module_name in _LIST_MODULE_NAMES_INTERNAL:
-        print(f'HeyLiz: skipping internal module {module_name}',
-            file=sys.stderr)
         continue
       public_modules.append(m)
     public_modules.sort(key=lambda m: python_util.getFullModuleName(m))
@@ -276,8 +274,6 @@ class JsonGenerator:
       if '._' in class_name:
         continue
       if class_name in _LIST_CLASS_NAMES_INTERNAL:
-        print(f'HeyLiz: skipping internal class {class_name}',
-            file=sys.stderr)
         continue
       for base_class in inspect.getmro(cls):
         if python_util.isBuiltInClass(base_class):
