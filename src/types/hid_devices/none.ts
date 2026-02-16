@@ -18,7 +18,6 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-import * as Blockly from 'blockly';
 
 /** Returns the button configuration for when nothing is attached. */
 export function getButtonConfig() {
