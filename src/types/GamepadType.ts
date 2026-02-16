@@ -39,8 +39,8 @@ export enum GamepadType {
 }
 
 interface GamepadConfigModule {
-  getButtonConfig: () => ReturnType<typeof GenericGamepad.getButtonConfig>;
-  getAxisConfig: () => ReturnType<typeof GenericGamepad.getAxisConfig>;
+  getButtonConfig: () => ReturnType<typeof GenericGamepad.getButtonConfig> | null;
+  getAxisConfig: () => ReturnType<typeof GenericGamepad.getAxisConfig> | null;
   getRumbleConfig: () => ReturnType<typeof GenericGamepad.getRumbleConfig> | null;
   getLEDConfig: () => ReturnType<typeof GenericGamepad.getLEDConfig> | null;
 }
