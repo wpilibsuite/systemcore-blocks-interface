@@ -25,6 +25,7 @@
  */
 
 import * as Blockly from 'blockly/core';
+import {Order} from 'blockly/python';
 import { PythonGenerator } from 'blockly/python';
 import { MRC_STYLE_DRIVER_STATION } from '../themes/styles';
 import * as Gamepad from '../fields/field_gamepads';
@@ -50,8 +51,8 @@ export const pythonFromBlock = function(
     block: Blockly.Block,
     _: PythonGenerator,
 ) {
-  return Gamepad.methodForButton(
+  return [Gamepad.methodForButton(
     block.getFieldValue(Gamepad.PORT_FIELD_NAME), 
     block.getFieldValue(Gamepad.BUTTON_FIELD_NAME), 
-    block.getFieldValue(Gamepad.ACTION_FIELD_NAME));
+    block.getFieldValue(Gamepad.ACTION_FIELD_NAME)), Order.ATOMIC];
 }
