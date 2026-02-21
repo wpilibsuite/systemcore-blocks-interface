@@ -36,8 +36,9 @@ function getDriverStationGamepadsCategory(_editor: Editor): toolboxItems.Categor
                 ),
                 new toolboxItems.Block(MRC_GAMEPAD_BOOLEAN, null, null, null),
                 new toolboxItems.Block(MRC_GAMEPAD_ANALOG, null, null, null),
-                new toolboxItems.Label("Events"),
-                new toolboxItems.Block(MRC_GAMEPAD_BOOLEAN_EVENT, null, null, null),
+                // TODO: Add events back here when we figure out how the code will be generated
+                //new toolboxItems.Label("Events"),
+                //new toolboxItems.Block(MRC_GAMEPAD_BOOLEAN_EVENT, null, null, null),
               ],
               toolboxItems.ExpandedState.EXPANDED);
 }
