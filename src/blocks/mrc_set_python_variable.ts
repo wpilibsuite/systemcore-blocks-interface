@@ -24,8 +24,12 @@ import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
 import { VariableKind } from './mrc_get_python_variable';
-import { getAllowedTypesForSetCheck } from './utils/python';
+import {
+    getAllowedTypesForSetCheck,
+    getClassData,
+    getModuleData } from './utils/python';
 import * as variable from './utils/variable';
+import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
@@ -40,6 +44,8 @@ export const BLOCK_NAME = 'mrc_set_python_variable';
 
 const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
 const FIELD_VARIABLE_NAME = 'VAR';
+
+const WARNING_ID_VARIABLE_CHANGED = 'variable changed';
 
 // Variables and functions used for populating the drop down field for the variable names.
 
@@ -253,6 +259,123 @@ const SET_PYTHON_VARIABLE = {
     return Blockly.Msg.SET + ' ' +
         this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME) + '.' +
         this.getFieldValue(FIELD_VARIABLE_NAME) + ' ' + Blockly.Msg.TO;
+  },
+
+  /**
+   * mrcOnLoad is called for each SetPythonVariableBlock when the blocks are loaded in the blockly
+   * workspace.
+   */
+  mrcOnLoad: function(this: SetPythonVariableBlock, _editor: Editor): void {
+    this.checkBlock();
+  },
+  checkBlock: function(this: SetPythonVariableBlock): void {
+    const warnings: string[] = [];
+
+    switch (this.mrcVarKind) {
+      case VariableKind.MODULE:
+        this.checkModuleVariable(warnings);
+        break;
+      case VariableKind.CLASS:
+        this.checkClassVariable(warnings);
+        break;
+      case VariableKind.INSTANCE:
+        this.checkInstanceVariable(warnings);
+        break;
+    }
+
+    if (warnings.length) {
+      // Add a warnings to the block.
+      const warningText = warnings.join('\n\n');
+      this.setWarningText(warningText, WARNING_ID_VARIABLE_CHANGED);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).bringToFront();
+      }
+    } else {
+      // Clear the existing warning on the block.
+      this.setWarningText(null, WARNING_ID_VARIABLE_CHANGED);
+    }
+  },
+  checkModuleVariable: function(this: SetPythonVariableBlock, warnings: string[]): void {
+    // If this block is setting a module variable, check whether the module and variable still
+    // exist. If the module or variable doesn't exist, put a visible warning on this block.
+    const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const moduleData = getModuleData(moduleName);
+    if (moduleData) {
+      let foundVariable = false;
+      const blockVarName = this.getFieldValue(FIELD_VARIABLE_NAME);
+      for (const varData of moduleData.moduleVariables) {
+        if (blockVarName === varData.name &&
+            this.mrcVarType === varData.type) {
+          foundVariable = true;
+          if (!varData.writable) {
+            warnings.push(Blockly.Msg.WARNING_SET_MODULE_VARIABLE_NOT_SETTABLE);
+            continue;
+          }
+          break;
+        }
+      }
+      if (!foundVariable) {
+        warnings.push(Blockly.Msg.WARNING_SET_MODULE_VARIABLE_MISSING_VARIABLE);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_SET_MODULE_VARIABLE_MISSING_MODULE);
+    }
+  },
+  checkClassVariable: function(this: SetPythonVariableBlock, warnings: string[]): void {
+    // If this block is setting a class variable, check whether the class and variable still
+    // exist. If the class or variable doesn't exist, put a visible warning on this block.
+    const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const classData = getClassData(className);
+    if (classData) {
+      let foundVariable = false;
+      const blockVarName = this.getFieldValue(FIELD_VARIABLE_NAME);
+      for (const varData of classData.classVariables) {
+        if (blockVarName === varData.name &&
+            this.mrcVarType === varData.type) {
+          foundVariable = true;
+          if (!varData.writable) {
+            warnings.push(Blockly.Msg.WARNING_SET_CLASS_VARIABLE_NOT_SETTABLE);
+            continue;
+          }
+          break;
+        }
+      }
+      if (!foundVariable) {
+        warnings.push(Blockly.Msg.WARNING_SET_CLASS_VARIABLE_MISSING_VARIABLE);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_SET_CLASS_VARIABLE_MISSING_CLASS);
+    }
+  },
+  checkInstanceVariable: function(this: SetPythonVariableBlock, warnings: string[]): void {
+    // If this block is setting an instance variable, check whether the class and variable still
+    // exist. If the class or variable doesn't exist, put a visible warning on this block.
+    const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const classData = getClassData(className);
+    if (classData) {
+      let foundVariable = false;
+      const blockVarName = this.getFieldValue(FIELD_VARIABLE_NAME);
+      for (const varData of classData.instanceVariables) {
+        if (blockVarName === varData.name &&
+            this.mrcVarType === varData.type) {
+          foundVariable = true;
+          if (!varData.writable) {
+            warnings.push(Blockly.Msg.WARNING_SET_INSTANCE_VARIABLE_NOT_SETTABLE);
+            continue;
+          }
+          break;
+        }
+      }
+      if (!foundVariable) {
+        warnings.push(Blockly.Msg.WARNING_SET_INSTANCE_VARIABLE_MISSING_VARIABLE);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_SET_INSTANCE_VARIABLE_MISSING_CLASS);
+    }
   },
 };
 
