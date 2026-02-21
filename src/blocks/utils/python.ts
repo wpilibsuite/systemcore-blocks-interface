@@ -38,7 +38,7 @@ import * as SetPythonVariable from "../mrc_set_python_variable";
 // Utilities related to blocks for python modules and classes, including those from RobotPy.
 
 // The module for classes used by blocks that don't exist in wpilib.
-const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
+export const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
 
 // TODO(lizlooney): Update these constants if necessary when we update wpilib.
 

@@ -20,13 +20,14 @@
  */
 
 import * as Blockly from 'blockly/core';
-import { PythonGenerator } from 'blockly/python';
+import { Order, PythonGenerator } from 'blockly/python';
 import { createGeneratorContext, GeneratorContext } from './generator_context';
 import * as mechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import { STEPS_METHOD_NAME } from '../blocks/mrc_steps';
 
 import {
+    MODULE_NAME_BLOCKS_BASE_CLASSES,
     TELEOP_DECORATOR_CLASS,
     AUTO_DECORATOR_CLASS,
     TEST_DECORATOR_CLASS,
@@ -38,6 +39,13 @@ import {
     getClassData,
 } from '../blocks/utils/python';
 import * as storageModule from '../storage/module';
+
+type BlockExecutionDetails = {
+  className: string,
+  blockId: string,
+  blockType: string,
+  blockLabel: string,
+};
 
 export class OpModeDetails {
   constructor(private name: string, private group: string, private enabled: boolean, private type: string) {}
@@ -107,6 +115,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   // Opmode details
   private opModeDetails: OpModeDetails | null  = null;
 
+  private generateErrorHandling: boolean = false;
+
   constructor() {
     super('Python');
     this.context = createGeneratorContext();
@@ -127,6 +137,39 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       );
     }
     this.definitions_['variables'] = defvars.join('\n');
+  }
+
+  addErrorHandlingCode(block: Blockly.Block, blockLabel: string, originalCode: string | [string, number]): string | [string, number] {
+    if (!this.generateErrorHandling) {
+      return originalCode;
+    }
+
+    const blockExecutionDetails: BlockExecutionDetails = {
+      className: this.context.getClassName(),
+      blockId: block.id,
+      blockType: block.type,
+      blockLabel: blockLabel,
+    };
+    const startBlockExecution = 'BlockExecution.startBlockExecution(' +
+        "'" + JSON.stringify(blockExecutionDetails) + "')";
+
+    // originalCode might be an array, for value blocks, or a string, for statement blocks.
+    if (Array.isArray(originalCode)) {
+      // Handle value blocks, where originalCode[0] is the generated code.
+
+      // BlockExecution.startBlockExecution always returns True and
+      // BlockExecution.endBlockExecution returns whatever is passed to it.
+      // This allows us to wrap the original code, which is a value, not a
+      // statement.
+      const code = '(BlockExecution.endBlockExecution(' + originalCode[0] + ') ' +
+          'if ' + startBlockExecution + ' else None)';
+      return [code, Order.CONDITIONAL];
+    } else {
+      // Handle statement blocks, where originalCode is the generated code.
+      return startBlockExecution + '\n' +
+          originalCode +
+          'BlockExecution.endBlockExecution(None)\n';
+    }
   }
 
   /*
@@ -165,10 +208,14 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     return "self." + varName;
   }
 
-  mrcWorkspaceToCode(workspace: Blockly.Workspace, module: storageModule.Module): string {
+  mrcWorkspaceToCode(workspace: Blockly.Workspace, module: storageModule.Module, opt_generateErrorHandling?: boolean): string {
     this.workspace = workspace;
 
     this.context.setModule(module);
+    if (opt_generateErrorHandling) {
+      this.generateErrorHandling = true;
+      this.fromModuleImportName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'BlockExecution');
+    }
     this.init(workspace);
 
     if (this.getModuleType() ===  storageModule.ModuleType.MECHANISM) {
@@ -190,6 +237,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.importedNames = Object.create(null);
     this.fromModuleImportNames = Object.create(null);
     this.opModeDetails = null;
+    this.generateErrorHandling = false;
 
     return code;
   }

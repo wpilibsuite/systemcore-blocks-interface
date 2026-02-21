@@ -2,6 +2,7 @@
 
 from .decorators import Teleop, Auto, Test, Name, Group
 from .mechanism import Mechanism
+from .block_execution import BlockExecution
 
 __all__ = [
     'Teleop',
@@ -10,4 +11,5 @@ __all__ = [
     'Name',
     'Group',
     'Mechanism',
+    'BlockExecution',
 ]

@@ -23,8 +23,9 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
-import { getOutputCheck } from './utils/python';
+import { getEnumData, getOutputCheck } from './utils/python';
 import { EnumData } from './utils/python_json_types';
+import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
@@ -39,6 +40,8 @@ export const BLOCK_NAME = 'mrc_get_python_enum_value';
 
 const FIELD_ENUM_CLASS_NAME = 'ENUM_TYPE';
 const FIELD_ENUM_VALUE = 'ENUM_VALUE';
+
+const WARNING_ID_ENUM_CHANGED = 'enum changed';
 
 // Variables and functions used for populating the drop down field for the enum values.
 
@@ -132,10 +135,55 @@ const GET_PYTHON_ENUM_VALUE = {
       this.setOutput(true);
     }
     // Create the drop-down with the enum values.
-    const enumValues = PythonEnumValues[this.mrcEnumType];
-    this.getInput('ENUM')!
-        .appendField(createFieldDropdown(enumValues), FIELD_ENUM_VALUE);
-  }
+    let enumValues = PythonEnumValues[this.mrcEnumType];
+    if (enumValues) {
+      this.getInput('ENUM')!
+          .appendField(createFieldDropdown(enumValues), FIELD_ENUM_VALUE);
+    } else {
+      // This enum no longer exists. Create a field to hold the enum value.
+      // In checkBlock, we'll put a warning on the block.
+      this.getInput('ENUM')!
+        .appendField(createFieldNonEditableText(''), FIELD_ENUM_VALUE)
+    }
+  },
+
+  /**
+   * mrcOnLoad is called for each GetPythonEnumValueBlock when the blocks are loaded in the blockly
+   * workspace.
+   */
+  mrcOnLoad: function(this: GetPythonEnumValueBlock, _editor: Editor): void {
+    this.checkBlock();
+  },
+  checkBlock: function(this: GetPythonEnumValueBlock): void {
+    const warnings: string[] = [];
+
+    const enumClassName = this.getFieldValue(FIELD_ENUM_CLASS_NAME);
+    const enumData = getEnumData(enumClassName);
+    if (enumData) {
+      const blockEnumValue = this.getFieldValue(FIELD_ENUM_VALUE);
+      if (!enumData.enumValues.includes(blockEnumValue)) {
+        warnings.push(Blockly.Msg.WARNING_GET_ENUM_VALUE_MISSING_VALUE);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_GET_ENUM_VALUE_MISSING_ENUM);
+    }
+
+    if (warnings.length) {
+      // Add a warnings to the block.
+      const warningText = warnings.join('\n\n');
+      this.setWarningText(warningText, WARNING_ID_ENUM_CHANGED);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).bringToFront();
+      }
+    } else {
+      // Clear the existing warning on the block.
+      this.setWarningText(null, WARNING_ID_ENUM_CHANGED);
+    }
+  },
 };
 
 export const setup = function() {

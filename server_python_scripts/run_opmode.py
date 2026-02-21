@@ -17,8 +17,8 @@ import traceback
 from pathlib import Path
 
 from wpilib_placeholders import PeriodicOpMode
-
 from robot import Robot
+from blocks_base_classes import BlockExecution
 
 
 def find_opmode_class(module):
@@ -151,8 +151,8 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
         print(f"  Average frequency: {actual_frequency:.1f} Hz")
         
     except Exception as e:
-        print(f"Error running opmode: {e}")
-        traceback.print_exc()
+        print(f"\nError running opmode: {e}")
+        BlockExecution.handleFatalError(e)
         sys.exit(1)
 
 
