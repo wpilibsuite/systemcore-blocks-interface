@@ -22,6 +22,8 @@ function getDriverStationDisplayCategory(_editor: Editor): toolboxItems.Category
     return new toolboxItems.Category(
         Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY'],
         [
+          //TODO: This is hacky.   When the display part of the driver station
+          // is done for real, we'll use that JSON to generate this block instead of hardcoding it like this.
             new toolboxItems.Block(
                 MRC_CALL_PYTHON_FUNCTION,
                 {
