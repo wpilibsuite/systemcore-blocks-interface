@@ -20,7 +20,18 @@
  */
 import * as Blockly from 'blockly';
 
-const BUTTON_CONFIG = new Map([
+export type ConfigEntry = {
+  display: () => string;
+  method: string;
+  comment: string;
+};
+
+export type RumbleConfigEntry = {
+  display: () => string;
+  rumbleType: string;
+};
+
+const BUTTON_CONFIG : Map<string, ConfigEntry> = new Map([
     ['SOUTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_SOUTH_FACE'], method: 'getSouthFace', comment: '' }],
     ['EAST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_EAST_FACE'], method: 'getEastFace', comment: '' }],
     ['WEST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_WEST_FACE'], method: 'getWestFace', comment: '' }],
@@ -49,7 +60,7 @@ const BUTTON_CONFIG = new Map([
     ['MISC6', { display: () => Blockly.Msg['GAMEPAD_BUTTON_MISC6'], method: 'getMisc6', comment: '' }],
 ]);
 
-const AXIS_CONFIG = new Map([
+const AXIS_CONFIG  : Map<string, ConfigEntry> = new Map([
     ['LEFT_STICK_X', { display: () => Blockly.Msg['GAMEPAD_AXIS_LEFT_STICK_X'], method: 'getLeftStickX', comment: '' }],
     ['LEFT_STICK_Y', { display: () => Blockly.Msg['GAMEPAD_AXIS_LEFT_STICK_Y'], method: 'getLeftStickY', comment: '' }],
     ['RIGHT_STICK_X', { display: () => Blockly.Msg['GAMEPAD_AXIS_RIGHT_STICK_X'], method: 'getRightStickX', comment: '' }],
@@ -58,15 +69,15 @@ const AXIS_CONFIG = new Map([
     ['RIGHT_TRIGGER', { display: () => Blockly.Msg['GAMEPAD_AXIS_RIGHT_TRIGGER'], method: 'getRightTrigger', comment: '' }],
 ]);
 
-const RUMBLE_CONFIG = new Map([
+const RUMBLE_CONFIG : Map<string, RumbleConfigEntry> = new Map([
     ['LEFT_RUMBLE', { display: () => Blockly.Msg['GAMEPAD_RUMBLE_LEFT'], rumbleType: 'kLeftRumble'}],
     ['RIGHT_RUMBLE', { display: () => Blockly.Msg['GAMEPAD_RUMBLE_RIGHT'], rumbleType: 'kRightRumble'}],
     ['TRIGGER_LEFT_RUMBLE', { display: () => Blockly.Msg['GAMEPAD_RUMBLE_LEFT_TRIGGER'], rumbleType: 'kLeftTriggerRumble'}],
     ['TRIGGER_RIGHT_RUMBLE', { display: () => Blockly.Msg['GAMEPAD_RUMBLE_RIGHT_TRIGGER'], rumbleType: 'kRightTriggerRumble'}],
 ]);
 
-const LED_CONFIG = new Map([
-    ['LEDS', { display: () => Blockly.Msg['GAMEPAD_LEDS'], method: 'setLeds'}],
+const LED_CONFIG : Map<string, ConfigEntry> = new Map([
+    ['LEDS', { display: () => Blockly.Msg['GAMEPAD_LEDS'], method: 'setLeds', comment: ''}],
 ]);
 
 

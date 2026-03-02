@@ -25,6 +25,7 @@ function getDriverStationDisplayCategory(_editor: Editor): toolboxItems.Category
               ],
               toolboxItems.ExpandedState.EXPANDED);
 }
+
 function getDriverStationGamepadsCategory(_editor: Editor): toolboxItems.Category {
     return new toolboxItems.Category(
               Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_GAMEPADS'],

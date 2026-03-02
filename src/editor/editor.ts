@@ -59,6 +59,7 @@ export class Editor {
   private readonly modulePath: string;
   private readonly robotPath: string;
   private moduleContentText: string;
+  private projectInfo: storageProject.ProjectInfo;
   private modulePathToModuleContent: {[modulePath: string]: storageModuleContent.ModuleContent} = {};
   private robotContent: storageModuleContent.ModuleContent | null = null;
   private mechanisms: storageModule.Mechanism[] = [];
@@ -82,6 +83,7 @@ export class Editor {
     this.modulePath = module.modulePath;
     this.robotPath = project.robot.modulePath;
     this.moduleContentText = moduleContentText;
+    this.projectInfo = project.projectInfo;
     // parseModules will be called async after construction
     Editor.workspaceIdToEditor[blocklyWorkspace.id] = this;
   }
@@ -205,6 +207,8 @@ export class Editor {
   }
 
   public async makeCurrent(project: storageProject.Project): Promise<void> {
+    // Update project info to keep it synchronized
+    this.projectInfo = project.projectInfo;
     // Parse modules since they might have changed.
     await this.parseModules(project);
     this.updateToolboxImpl();
@@ -476,7 +480,7 @@ export class Editor {
       try {
         await this.storage.saveFile(this.modulePath, moduleContentText);
         this.moduleContentText = moduleContentText;
-        await storageProject.saveProjectInfo(this.storage, this.projectName);
+        await storageProject.saveProjectInfo(this.storage, this.projectName, this.projectInfo);
       } catch (e) {
         throw e;
       }

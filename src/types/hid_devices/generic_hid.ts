@@ -19,6 +19,7 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
+import * as GenericGamepad from './gamepad_generic';
 
 const BUTTON_CONFIG = new Map([
     ['1', { display: () => '1', method: 'getRawButton(1)', comment: '' }],
@@ -66,27 +67,27 @@ const RUMBLE_CONFIG = new Map([
 ]);
 
 const LED_CONFIG = new Map([
-    ['LEDS', { display: () => Blockly.Msg['GAMEPAD_LEDS'], method: 'setLeds'}],
+    ['LEDS', { display: () => Blockly.Msg['GAMEPAD_LEDS'], method: 'setLeds', comment: ''}],
 ]);
 
 
 /** Returns the button configuration for generic gamepad. */
-export function getButtonConfig() {
+export function getButtonConfig() : Map<string, GenericGamepad.ConfigEntry> {
     return BUTTON_CONFIG;
 }
 
 /** Returns the axis configuration for generic gamepad. */
-export function getAxisConfig() {
+export function getAxisConfig() : Map<string, GenericGamepad.ConfigEntry> {
     return AXIS_CONFIG;
 }
 
 /** Returns the rumble configuration for generic gamepad. */
-export function getRumbleConfig() {
+export function getRumbleConfig() : Map<string, GenericGamepad.RumbleConfigEntry> {
     return RUMBLE_CONFIG;
 }
 
 /** Returns the LED configuration for generic gamepad. */
-export function getLEDConfig() {
+export function getLEDConfig() : Map<string, GenericGamepad.ConfigEntry> {
     return LED_CONFIG;
 }
 

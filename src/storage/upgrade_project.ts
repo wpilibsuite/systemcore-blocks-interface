@@ -100,13 +100,13 @@ export async function upgradeProjectIfNecessary(
       case '0.0.9':
         await upgradeFrom_009_to_0010(storage, projectName, projectInfo);
 
-        // Intentional fallthrough after case '0.0.9'
+      // Intentional fallthrough after case '0.0.10'
       // @ts-ignore
       case '0.0.10':
-        await upgradeFrom_010_to_0011(storage, projectName, projectInfo);
+        await upgradeFrom_0010_to_0011(storage, projectName, projectInfo);
 
     }
-    await storageProject.saveProjectInfo(storage, projectName);
+    await storageProject.saveProjectInfo(storage, projectName, projectInfo);
   }
 }
 
@@ -329,7 +329,7 @@ async function upgradeFrom_009_to_0010(
   projectInfo.version = '0.0.10';
 }
 
-async function upgradeFrom_010_to_0011(
+async function upgradeFrom_0010_to_0011(
     storage: commonStorage.Storage,
     projectName: string,
     projectInfo: storageProject.ProjectInfo): Promise<void> {

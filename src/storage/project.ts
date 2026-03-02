@@ -146,7 +146,8 @@ export async function createProject(
   const opmodeContent = storageModuleContent.newOpModeContent(
       newProjectName, storageNames.CLASS_NAME_TELEOP);
   await storage.saveFile(opmodePath, opmodeContent);
-  await saveProjectInfo(storage, newProjectName);
+  await saveProjectInfo(storage, newProjectName, { version: CURRENT_VERSION, gamepadConfig: GamepadTypeUtils.getDefaultGamepadConfig()});
+  
 }
 
 /**
@@ -460,11 +461,9 @@ async function processUploadedBlob(blobUrl: string): Promise<{ [fileName: string
 }
 
 export async function saveProjectInfo(
-    storage: commonStorage.Storage, projectName: string, projectInfo?: ProjectInfo): Promise<void> {
-  const info: ProjectInfo = projectInfo || {
-    version: CURRENT_VERSION,
-    gamepadConfig: {},
-  };
+    storage: commonStorage.Storage, projectName: string, projectInfo: ProjectInfo): Promise<void> {
+  const info: ProjectInfo = projectInfo;
+
   // Ensure version is set
   if (!info.version) {
     info.version = CURRENT_VERSION;
