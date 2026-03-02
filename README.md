@@ -13,3 +13,6 @@ WARNING! This is not ready for use and is under heavy development of basic featu
 
 ## Known Issues
 Please check the issues on github for known issues.
+
+## To update versions 
+npm update --save
