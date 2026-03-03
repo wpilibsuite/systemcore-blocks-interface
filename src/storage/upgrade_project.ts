@@ -36,10 +36,11 @@ import {
 import { upgrade_005_to_006 } from '../blocks/mrc_component';
 import { upgrade_008_to_009 as upgrade_component_008_to_009 } from '../blocks/mrc_component';
 import { upgrade_008_to_009 as upgrade_call_python_function_008_to_009 } from '../blocks/mrc_call_python_function';
+import { GamepadTypeUtils } from '../types/GamepadType';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.10';
+export const CURRENT_VERSION = '0.0.11';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -98,8 +99,14 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.9':
         await upgradeFrom_009_to_0010(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.10'
+      // @ts-ignore
+      case '0.0.10':
+        await upgradeFrom_0010_to_0011(storage, projectName, projectInfo);
+
     }
-    await storageProject.saveProjectInfo(storage, projectName);
+    await storageProject.saveProjectInfo(storage, projectName, projectInfo);
   }
 }
 
@@ -320,4 +327,17 @@ async function upgradeFrom_009_to_0010(
       anyModuleType, storageModuleContent.preupgrade_009_to_0010,
       noModuleTypes, noUpgrade);
   projectInfo.version = '0.0.10';
+}
+
+async function upgradeFrom_0010_to_0011(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // Starting in 0011, Project Info now has gamepads.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      anyModuleType, storageModuleContent.preupgrade_009_to_0010,
+      noModuleTypes, noUpgrade);
+  projectInfo.gamepadConfig = GamepadTypeUtils.getDefaultGamepadConfig();
+  projectInfo.version = '0.0.11';
 }

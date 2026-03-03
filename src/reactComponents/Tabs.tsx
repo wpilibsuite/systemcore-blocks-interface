@@ -63,6 +63,7 @@ export interface TabsProps {
   theme: string;
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
+  openGamepadConfigDialog?: () => void;
 }
 
 /** Default copy suffix for tab names. */
@@ -431,6 +432,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
             messageApi={props.messageApi}
             setAlertErrorMessage={props.setAlertErrorMessage}
             isActive={activeKey === tab.key}
+            openGamepadConfigDialog={props.openGamepadConfigDialog}
           />
         ) : null,
       };

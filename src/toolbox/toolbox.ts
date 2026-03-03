@@ -5,6 +5,7 @@ import * as common from './toolbox_common'
 import { Editor } from '../editor/editor';
 import { getHardwareCategory } from './hardware_category';
 import { getCategory as getEventCategory } from './event_category';
+import { getDriverStationCategory } from './driver_station_category';
 
 export function getToolboxJSON(
     shownPythonToolboxCategories: Set<string> | null,
@@ -24,6 +25,7 @@ export function getToolboxJSON(
       toolbox.contents.push(getEventCategory(editor));
       break;
     case storageModule.ModuleType.OPMODE:
+      toolbox.contents.push(getDriverStationCategory(editor));
       toolbox.contents.push(getHardwareCategory(editor));
       toolbox.contents.push(new toolboxItems.Sep());
       toolbox.contents.push(...common.getToolboxItems(shownPythonToolboxCategories, editor));

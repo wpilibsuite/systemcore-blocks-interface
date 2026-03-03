@@ -26,18 +26,25 @@ import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import { upgradeProjectIfNecessary, CURRENT_VERSION, NO_VERSION } from './upgrade_project';
+import { GamepadTypeUtils } from '../types/GamepadType';
 
 // Types, constants, and functions related to projects, regardless of where the projects are stored.
+
+export type GamepadConfig = {
+  [gamepadIndex: number]: string; // name of gamepad type 
+};
 
 export type Project = {
   projectName: string, // For example, WackyWheelerRobot
   robot: storageModule.Robot,
   mechanisms: storageModule.Mechanism[],
   opModes: storageModule.OpMode[],
+  projectInfo: ProjectInfo,
 };
 
 export type ProjectInfo = {
   version: string,
+  gamepadConfig: GamepadConfig,
 };
 
 /**
@@ -96,6 +103,7 @@ export async function fetchProject(
           robot: robot,
           mechanisms: [],
           opModes: [],
+          projectInfo: { version: '', gamepadConfig: {} }, // Will be populated below
         };
         break;
       case storageModule.ModuleType.MECHANISM:
@@ -114,6 +122,10 @@ export async function fetchProject(
 
   project.mechanisms.push(...mechanisms);
   project.opModes.push(...opModes);
+  
+  // Load project info
+  project.projectInfo = await fetchProjectInfo(storage, projectName);
+  
   return project;
 }
 
@@ -134,7 +146,8 @@ export async function createProject(
   const opmodeContent = storageModuleContent.newOpModeContent(
       newProjectName, storageNames.CLASS_NAME_TELEOP);
   await storage.saveFile(opmodePath, opmodeContent);
-  await saveProjectInfo(storage, newProjectName);
+  await saveProjectInfo(storage, newProjectName, { version: CURRENT_VERSION, gamepadConfig: GamepadTypeUtils.getDefaultGamepadConfig()});
+  
 }
 
 /**
@@ -218,7 +231,7 @@ export async function addModuleToProject(
       } as storageModule.OpMode);
       break;
   }
-  await saveProjectInfo(storage, project.projectName);
+  await saveProjectInfo(storage, project.projectName, project.projectInfo);
 }
 
 /**
@@ -242,7 +255,7 @@ export async function removeModuleFromProject(
         break;
     }
     await storage.delete(modulePath);
-    await saveProjectInfo(storage, project.projectName);
+    await saveProjectInfo(storage, project.projectName, project.projectInfo);
   }
 }
 
@@ -283,7 +296,7 @@ export async function renameModuleInProject(
       }
       break;
   }
-  await saveProjectInfo(storage, project.projectName);
+  await saveProjectInfo(storage, project.projectName, project.projectInfo);
 
   return newModulePath;
 }
@@ -448,11 +461,20 @@ async function processUploadedBlob(blobUrl: string): Promise<{ [fileName: string
 }
 
 export async function saveProjectInfo(
-    storage: commonStorage.Storage, projectName: string): Promise<void> {
-  const projectInfo: ProjectInfo = {
-    version: CURRENT_VERSION,
-  };
-  const projectInfoContentText = JSON.stringify(projectInfo, null, 2);
+    storage: commonStorage.Storage, projectName: string, projectInfo: ProjectInfo): Promise<void> {
+  const info: ProjectInfo = projectInfo;
+
+  // Ensure version is set
+  if (!info.version) {
+    info.version = CURRENT_VERSION;
+  }
+  // Ensure gamepadConfig is set
+  if (!info.gamepadConfig) {
+    info.gamepadConfig = {};
+  }
+  info.gamepadConfig = GamepadTypeUtils.removeNoneEntries(info.gamepadConfig);
+  
+  const projectInfoContentText = JSON.stringify(info, null, 2);
   const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
   await storage.saveFile(projectInfoPath, projectInfoContentText);
 }
@@ -464,6 +486,7 @@ function parseProjectInfoContentText(projectInfoContentText: string): ProjectInf
   }
   const projectInfo: ProjectInfo = {
     version: parsedContent.version,
+    gamepadConfig: parsedContent.gamepadConfig || {},
   };
   return projectInfo;
 }
@@ -479,7 +502,14 @@ export async function fetchProjectInfo(
     // The file doesn't exist.
     projectInfo = {
       version: NO_VERSION,
+      gamepadConfig: {},
     };
   }
   return projectInfo;
+}
+
+export async function updateProjectGamepadConfig(
+    storage: commonStorage.Storage, project: Project, gamepadConfig: GamepadConfig): Promise<void> {
+  project.projectInfo.gamepadConfig = gamepadConfig;
+  await saveProjectInfo(storage, project.projectName, project.projectInfo);
 }

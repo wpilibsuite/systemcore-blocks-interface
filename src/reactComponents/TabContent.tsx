@@ -56,6 +56,7 @@ export interface TabContentProps {
   messageApi: MessageInstance;
   setAlertErrorMessage: (message: string) => void;
   isActive: boolean;
+  openGamepadConfigDialog?: () => void;
 }
 
 /**
@@ -72,6 +73,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   messageApi,
   setAlertErrorMessage,
   isActive,
+  openGamepadConfigDialog,
 }, ref) => {
   const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
   const [editorInstance, setEditorInstance] = React.useState<editor.Editor | null>(null);
@@ -136,6 +138,11 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     newWorkspace.addChangeListener(handleBlocksChanged);
     classMethodDef.registerToolboxButton(newWorkspace, messageApi);
     eventHandler.registerToolboxButton(newWorkspace, messageApi);
+    
+    // Register gamepad config button callback if the function is provided
+    if (openGamepadConfigDialog) {
+      newWorkspace.registerButtonCallback('CONFIG_GAMEPADS_BUTTON', openGamepadConfigDialog);
+    }
 
     // Fetch the module content from storage
     const moduleContentText = await storage.fetchFileContentText(modulePath);
@@ -154,7 +161,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     setEditorInstance(newEditor);
     newEditor.loadModuleBlocks();
     newEditor.updateToolbox(shownPythonToolboxCategories);
-  }, [module, project, storage, modulePath, shownPythonToolboxCategories, messageApi, handleBlocksChanged]);
+  }, [module, project, storage, modulePath, shownPythonToolboxCategories, messageApi, handleBlocksChanged, openGamepadConfigDialog]);
 
   /** Update editor toolbox when categories change. */
   React.useEffect(() => {

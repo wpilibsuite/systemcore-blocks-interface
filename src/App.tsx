@@ -27,6 +27,9 @@ import Header from './reactComponents/Header';
 import * as Menu from './reactComponents/Menu';
 import SiderCollapseTrigger from './reactComponents/SiderCollapseTrigger';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
+import ConfigGamepadsDialog from './reactComponents/ConfigGamepadsDialog';
+import { GamepadTypeUtils } from './types/GamepadType';
+import * as fieldGamepads from './fields/field_gamepads';
 import * as Tabs from './reactComponents/Tabs';
 import { TabType } from './types/TabType';
 import { AutosaveProvider } from './reactComponents/AutosaveManager';
@@ -139,6 +142,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+  const [configGamepadsDialogIsOpen, setConfigGamepadsDialogIsOpen] = React.useState(false);
+  const [gamepadConfig, setGamepadConfig] = React.useState<storageProject.GamepadConfig>(GamepadTypeUtils.getDefaultGamepadConfig());
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [isLoadingTabs, setIsLoadingTabs] = React.useState(false);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
@@ -259,6 +264,45 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     handleToolboxSettingsOk(updatedShownCategories);
   };
 
+  /** Initializes gamepad configuration from current project. */
+  const initializeGamepadConfig = (): void => {
+    if (!project) {
+      const defaultConfig = GamepadTypeUtils.getDefaultGamepadConfig();
+      setGamepadConfig(defaultConfig);
+      fieldGamepads.updateGamepadConfig(defaultConfig);
+      return;
+    }
+
+    // Load from project, use default for any missing config
+    const config = Object.keys(project.projectInfo.gamepadConfig).length > 0 
+      ? project.projectInfo.gamepadConfig 
+      : GamepadTypeUtils.getDefaultGamepadConfig();
+    setGamepadConfig(config);
+    fieldGamepads.updateGamepadConfig(config);
+  };
+
+  /** Handles gamepad configuration dialog confirmation. */
+  const handleGamepadConfigOk = async (updatedConfig: storageProject.GamepadConfig): Promise<void> => {
+    if (!storage || !project) {
+      return;
+    }
+
+    setGamepadConfig(updatedConfig);
+    fieldGamepads.updateGamepadConfig(updatedConfig);
+    await storageProject.updateProjectGamepadConfig(storage, project, updatedConfig);
+    setConfigGamepadsDialogIsOpen(false);
+  };
+
+  /** Handles gamepad configuration dialog close. */
+  const handleGamepadConfigCancel = (): void => {
+    setConfigGamepadsDialogIsOpen(false);
+  };
+
+  /** Opens the gamepad configuration dialog. */
+  const openGamepadConfigDialog = (): void => {
+    setConfigGamepadsDialogIsOpen(true);
+  };
+
   // Initialize blocks when app loads
   React.useEffect(() => {
     initializeBlocks();
@@ -267,6 +311,11 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   React.useEffect(() => {
     initializeShownPythonToolboxCategories();
   }, [storage]);
+
+  // Initialize gamepad config when project changes
+  React.useEffect(() => {
+    initializeGamepadConfig();
+  }, [project]);
 
   // Load saved tabs when project changes
   React.useEffect(() => {
@@ -503,6 +552,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 theme={theme}
                 shownPythonToolboxCategories={shownPythonToolboxCategories}
                 messageApi={messageApi}
+                openGamepadConfigDialog={openGamepadConfigDialog}
               />
             </Antd.Layout>
           </Antd.Layout>
@@ -513,6 +563,13 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
           shownCategories={shownPythonToolboxCategories}
           onOk={handleToolboxSettingsConfirm}
           onCancel={handleToolboxSettingsCancel}
+        />
+
+        <ConfigGamepadsDialog
+          isOpen={configGamepadsDialogIsOpen}
+          currentConfig={gamepadConfig}
+          onOk={handleGamepadConfigOk}
+          onCancel={handleGamepadConfigCancel}
         />
       </AutosaveProvider>
     </Antd.ConfigProvider>
