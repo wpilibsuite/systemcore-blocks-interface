@@ -340,7 +340,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
 
   // Load project names when storage becomes available or modal opens
   React.useEffect(() => {
-    if (props.storage) {
+    if (props.storage && props.isOpen) {
       loadProjectNames(props.storage);
     }
   }, [props.storage, props.isOpen]);
