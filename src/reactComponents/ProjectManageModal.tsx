@@ -19,6 +19,7 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Antd from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
@@ -31,6 +32,7 @@ interface ProjectManageModalProps {
   isOpen: boolean;
   noProjects: boolean;
   onCancel: () => void;
+  onUpload?: () => void;
   currentProject: storageProject.Project | null;
   setCurrentProject: (project: storageProject.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
@@ -316,6 +318,20 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             style={getAlertStyle()}
           />
         )}
+        {props.noProjects && props.onUpload && (
+          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+            <Antd.Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={props.onUpload}
+            >
+              {t('UPLOAD_EXISTING_PROJECT')}
+            </Antd.Button>
+          </div>
+        )}
+        {props.noProjects && (
+          <Antd.Divider>{t('OR')}</Antd.Divider>
+        )}
         {!props.noProjects && (
           <ManageTable
             textOnEmpty={t('NO_PROJECTS_FOUND')}
@@ -328,7 +344,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             onDelete={(record) => handleDeleteProject(record)}
           />
         )}
-        <br />
+        {!props.noProjects && <br />}
         <h4 style={{margin: '0 0 8px 0'}}>
             {t('CREATE_NEW', { type: t('PROJECT') })}
         </h4>

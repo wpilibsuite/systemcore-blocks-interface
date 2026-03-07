@@ -170,6 +170,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
 export function Component(props: MenuProps): React.JSX.Element {
   const {t, i18n} = I18Next.useTranslation();
   const [modal, contextHolder] = Antd.Modal.useModal();
+  const [messageApi, messageContextHolder] = Antd.message.useMessage();
 
   const [projectNames, setProjectNames] = React.useState<string[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
@@ -393,7 +394,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   }
 
   /** Handles the upload action to upload a previously downloaded project. */
-  const handleUpload = (): void => {
+  const handleUpload = (onSuccess?: () => void): void => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
@@ -473,7 +474,8 @@ export function Component(props: MenuProps): React.JSX.Element {
                     const project = await storageProject.fetchProject(props.storage, inputValue);
                     props.setCurrentProject(project);
                     await props.onProjectChanged();
-                    Antd.message.success(t('UPLOAD_SUCCESS', { projectName: inputValue }));
+                    messageApi.success(t('UPLOAD_SUCCESS', { projectName: inputValue }));
+                    onSuccess?.();
                   }
                 } catch (error) {
                   console.error('Error uploading file:', error);
@@ -490,7 +492,8 @@ export function Component(props: MenuProps): React.JSX.Element {
                 const project = await storageProject.fetchProject(props.storage, uploadProjectName);
                 props.setCurrentProject(project);
                 await props.onProjectChanged();
-                Antd.message.success(t('UPLOAD_SUCCESS', { projectName: uploadProjectName }));
+                messageApi.success(t('UPLOAD_SUCCESS', { projectName: uploadProjectName }));
+                onSuccess?.();
               }
             } catch (error) {
               console.error('Error uploading file:', error);
@@ -553,6 +556,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   return (
     <>
       {contextHolder}
+      {messageContextHolder}
       <FileManageModal
         isOpen={fileModalOpen}
         onClose={handleFileModalClose}
@@ -568,6 +572,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         noProjects={noProjects}
         isOpen={projectModalOpen}
         onCancel={handleProjectModalClose}
+        onUpload={() => handleUpload(() => setProjectModalOpen(false))}
         storage={props.storage}
         currentProject={props.currentProject}
         setCurrentProject={props.setCurrentProject}
