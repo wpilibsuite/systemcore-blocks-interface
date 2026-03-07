@@ -42,7 +42,6 @@ import {
   GlobalOutlined,
   CheckOutlined,
   DownloadOutlined,
-  UploadOutlined,
   ControlOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
@@ -124,7 +123,6 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
       getItem(t('SAVE'), 'save', <SaveOutlined />),
       getItem(t('DEPLOY'), 'deploy'),
       getItem(t('DOWNLOAD'), 'download', <DownloadOutlined />),
-      getItem(t('UPLOAD') + '...', 'upload', <UploadOutlined />),
     ]),
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
@@ -169,8 +167,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
  */
 export function Component(props: MenuProps): React.JSX.Element {
   const {t, i18n} = I18Next.useTranslation();
-  const [modal, contextHolder] = Antd.Modal.useModal();
-  const [messageApi, messageContextHolder] = Antd.message.useMessage();
+  const [, contextHolder] = Antd.Modal.useModal();
 
   const [projectNames, setProjectNames] = React.useState<string[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
@@ -281,8 +278,6 @@ export function Component(props: MenuProps): React.JSX.Element {
       handleSave();
     } else if (key == 'download') {
       handleDownload();
-    } else if (key == 'upload') {
-      handleUpload();
     } else if (key.startsWith('setlang:')) {
       const lang = key.split(':')[1];
       i18n.changeLanguage(lang);
@@ -393,130 +388,6 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
   }
 
-  /** Handles the upload action to upload a previously downloaded project. */
-  const handleUpload = (onSuccess?: () => void): void => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
-    
-    input.onchange = async (e: Event) => {
-      const target = e.target as HTMLInputElement;
-      const file = target.files?.[0];
-      
-      if (!file) {
-        return;
-      }
-      
-      const isBlocks = file.name.endsWith(storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION);
-      if (!isBlocks) {
-        props.setAlertErrorMessage(t('UPLOAD_FILE_NOT_BLOCKS', { filename: file.name }));
-        return;
-      }
-      
-      try {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          if (!event.target || !props.storage) {
-            return;
-          }
-          
-          const dataUrl = event.target.result as string;
-          const existingProjectNames: string[] = projectNames;
-          
-          // Generate the initial project name
-          const preferredName = file.name.substring(
-            0, file.name.length - storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
-          
-          // Smart name conflict resolution: extract base name and trailing number
-          // e.g., "PrSimplify2" -> base="PrSimplify", num=2
-          const match = preferredName.match(/^(.+?)(\d+)$/);
-          let uploadProjectName: string;
-          
-          if (match && existingProjectNames.includes(preferredName)) {
-            // Name has a trailing number and conflicts - find next available
-            const baseName = match[1];
-            const startNum = parseInt(match[2], 10);
-            let num = startNum + 1;
-            while (existingProjectNames.includes(baseName + num)) {
-              num++;
-            }
-            uploadProjectName = baseName + num;
-          } else {
-            // No trailing number or no conflict - use standard logic
-            uploadProjectName = storageNames.makeUniqueName(preferredName, existingProjectNames);
-          }
-          
-          // Check if there's a conflict (meaning we had to change the name)
-          if (existingProjectNames.includes(preferredName)) {
-            // Show a modal to let the user rename the project
-            let inputValue = uploadProjectName;
-            
-            modal.confirm({
-              title: t('PROJECT_NAME_CONFLICT'),
-              content: (
-                <div>
-                  <p>{t('PROJECT_NAME_EXISTS', { projectName: preferredName })}</p>
-                  <Antd.Input
-                    defaultValue={uploadProjectName}
-                    onChange={(e) => {
-                      inputValue = e.target.value;
-                    }}
-                  />
-                </div>
-              ),
-              okText: t('UPLOAD'),
-              cancelText: t('CANCEL'),
-              onOk: async () => {
-                try {
-                  if (props.storage) {
-                    await storageProject.uploadProject(props.storage, inputValue, dataUrl);
-                    await fetchListOfProjectNames();
-                    const project = await storageProject.fetchProject(props.storage, inputValue);
-                    props.setCurrentProject(project);
-                    await props.onProjectChanged();
-                    messageApi.success(t('UPLOAD_SUCCESS', { projectName: inputValue }));
-                    onSuccess?.();
-                  }
-                } catch (error) {
-                  console.error('Error uploading file:', error);
-                  props.setAlertErrorMessage(t('UPLOAD_FAILED'));
-                }
-              },
-            });
-          } else {
-            // No conflict, upload directly
-            try {
-              if (props.storage) {
-                await storageProject.uploadProject(props.storage, uploadProjectName, dataUrl);
-                await fetchListOfProjectNames();
-                const project = await storageProject.fetchProject(props.storage, uploadProjectName);
-                props.setCurrentProject(project);
-                await props.onProjectChanged();
-                messageApi.success(t('UPLOAD_SUCCESS', { projectName: uploadProjectName }));
-                onSuccess?.();
-              }
-            } catch (error) {
-              console.error('Error uploading file:', error);
-              props.setAlertErrorMessage(t('UPLOAD_FAILED'));
-            }
-          }
-        };
-        
-        reader.onerror = (_error) => {
-          console.log('Error reading file: ' + reader.error);
-          props.setAlertErrorMessage(t('UPLOAD_FAILED'));
-        };
-        
-        reader.readAsDataURL(file);
-      } catch (error) {
-        console.error('Error handling upload:', error);
-        props.setAlertErrorMessage(t('UPLOAD_FAILED'));
-      }
-    };
-    
-    input.click();
-  };
-
   /** Handles closing the file management modal. */
   const handleFileModalClose = (): void => {
     setFileModalOpen(false);
@@ -556,7 +427,6 @@ export function Component(props: MenuProps): React.JSX.Element {
   return (
     <>
       {contextHolder}
-      {messageContextHolder}
       <FileManageModal
         isOpen={fileModalOpen}
         onClose={handleFileModalClose}
@@ -572,7 +442,6 @@ export function Component(props: MenuProps): React.JSX.Element {
         noProjects={noProjects}
         isOpen={projectModalOpen}
         onCancel={handleProjectModalClose}
-        onUpload={() => handleUpload(() => setProjectModalOpen(false))}
         storage={props.storage}
         currentProject={props.currentProject}
         setCurrentProject={props.setCurrentProject}

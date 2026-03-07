@@ -23,6 +23,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
+import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
 import ProjectNameComponent from './ProjectNameComponent';
 import ManageTable from './ManageTable';
@@ -32,7 +33,6 @@ interface ProjectManageModalProps {
   isOpen: boolean;
   noProjects: boolean;
   onCancel: () => void;
-  onUpload?: () => void;
   currentProject: storageProject.Project | null;
   setCurrentProject: (project: storageProject.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
@@ -65,6 +65,8 @@ const CONTAINER_PADDING = '12px';
 export default function ProjectManageModal(props: ProjectManageModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
   const { token } = Antd.theme.useToken();
+  const [modal, modalContextHolder] = Antd.Modal.useModal();
+  const [messageApi, messageContextHolder] = Antd.message.useMessage();
   const [allProjectNames, setAllProjectNames] = React.useState<string[]>([]);
   const [allProjectRecords, setAllProjectRecords] = React.useState<ProjectRecord[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
@@ -241,6 +243,101 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     marginBottom: ALERT_MARGIN_BOTTOM,
   });
 
+  /** Handles uploading a previously downloaded project file. */
+  const handleUpload = (): void => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+
+    input.onchange = async (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+      if (!file) return;
+
+      if (!file.name.endsWith(storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION)) {
+        props.setAlertErrorMessage(t('UPLOAD_FILE_NOT_BLOCKS', { filename: file.name }));
+        return;
+      }
+
+      try {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          if (!event.target || !props.storage) return;
+
+          const dataUrl = event.target.result as string;
+          const existingProjectNames = allProjectNames;
+          const preferredName = file.name.substring(
+            0, file.name.length - storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
+
+          // Smart name conflict resolution: extract base name and trailing number
+          // e.g., "PrSimplify2" -> base="PrSimplify", num=2
+          const match = preferredName.match(/^(.+?)(\d+)$/);
+          let uploadProjectName: string;
+          if (match && existingProjectNames.includes(preferredName)) {
+            const baseName = match[1];
+            let num = parseInt(match[2], 10) + 1;
+            while (existingProjectNames.includes(baseName + num)) num++;
+            uploadProjectName = baseName + num;
+          } else {
+            uploadProjectName = storageNames.makeUniqueName(preferredName, existingProjectNames);
+          }
+
+          const doUpload = async (name: string) => {
+            if (!props.storage) return;
+            await storageProject.uploadProject(props.storage, name, dataUrl);
+            await loadProjectNames(props.storage);
+            const project = await storageProject.fetchProject(props.storage, name);
+            props.setCurrentProject(project);
+            messageApi.success(t('UPLOAD_SUCCESS', { projectName: name }));
+            props.onCancel();
+          };
+
+          if (existingProjectNames.includes(preferredName)) {
+            let inputValue = uploadProjectName;
+            modal.confirm({
+              title: t('PROJECT_NAME_CONFLICT'),
+              content: (
+                <div>
+                  <p>{t('PROJECT_NAME_EXISTS', { projectName: preferredName })}</p>
+                  <Antd.Input
+                    defaultValue={uploadProjectName}
+                    onChange={(e) => { inputValue = e.target.value; }}
+                  />
+                </div>
+              ),
+              okText: t('UPLOAD'),
+              cancelText: t('CANCEL'),
+              onOk: async () => {
+                try {
+                  await doUpload(inputValue);
+                } catch (error) {
+                  console.error('Error uploading file:', error);
+                  props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+                }
+              },
+            });
+          } else {
+            try {
+              await doUpload(uploadProjectName);
+            } catch (error) {
+              console.error('Error uploading file:', error);
+              props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+            }
+          }
+        };
+        reader.onerror = () => {
+          props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error handling upload:', error);
+        props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+      }
+    };
+
+    input.click();
+  };
+
   // Load project names when storage becomes available or modal opens
   React.useEffect(() => {
     if (props.storage) {
@@ -250,6 +347,8 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
 
   return (
     <>
+      {modalContextHolder}
+      {messageContextHolder}
       <Antd.Modal
         title={getRenameModalTitle()}
         open={renameModalOpen}
@@ -318,12 +417,12 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             style={getAlertStyle()}
           />
         )}
-        {props.noProjects && props.onUpload && (
+        {props.noProjects && (
           <div style={{ textAlign: 'center', marginBottom: '16px' }}>
             <Antd.Button
               type="primary"
               icon={<UploadOutlined />}
-              onClick={props.onUpload}
+              onClick={handleUpload}
             >
               {t('UPLOAD_EXISTING_PROJECT')}
             </Antd.Button>
@@ -345,8 +444,18 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
           />
         )}
         {!props.noProjects && <br />}
+        {!props.noProjects && (
+          <div style={{ marginBottom: '8px' }}>
+            <Antd.Button
+              icon={<UploadOutlined />}
+              onClick={handleUpload}
+            >
+              {t('UPLOAD_EXISTING_PROJECT')}
+            </Antd.Button>
+          </div>
+        )}
         <h4 style={{margin: '0 0 8px 0'}}>
-            {t('CREATE_NEW', { type: t('PROJECT') })}
+          {t('CREATE_NEW', { type: t('PROJECT') })}
         </h4>
         <div style={getContainerStyle()}>
           <ProjectNameComponent
