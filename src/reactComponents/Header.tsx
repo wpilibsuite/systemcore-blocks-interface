@@ -79,7 +79,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
 
   /** Gets the project name or fallback text. */
   const getProjectName = (): string => {
-    return props.project?.projectName || t('NO_PPROJECT_SELECTED');
+    return props.project?.projectName || t('NO_PROJECT_SELECTED');
   };
 
   /** Renders the unsaved changes indicator. */
