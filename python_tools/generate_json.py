@@ -25,32 +25,13 @@ from absl import logging
 
 # robotpy
 import ntcore
-import pyfrc
 import wpilib
-import wpilib.counter
-import wpilib.drive
-import wpilib.event
-import wpilib.interfaces
 import wpilib.simulation
 import wpimath
-import wpimath.controller
-import wpimath.estimator
-import wpimath.filter
-import wpimath.geometry
-import wpimath.interpolation
-import wpimath.kinematics
-import wpimath.optimization
-import wpimath.path
-import wpimath.spline
-import wpimath.system
-import wpimath.system.plant
-import wpimath.trajectory
-import wpimath.trajectory.constraint
 import wpimath.units
 import wpinet
 import wpiutil
 sys.path.append("../python")
-import wpilib_placeholders
 
 # Server python scripts
 sys.path.append("../server_python_scripts")
@@ -78,27 +59,9 @@ def main(argv):
   robotpy_modules = [
     ntcore,
     wpilib,
-    wpilib_placeholders,
-    wpilib.counter,
-    wpilib.drive,
-    wpilib.event,
-    wpilib.interfaces,
     wpilib.simulation,
     python_util.getModule('wpilib.sysid'),
     wpimath,
-    wpimath.controller,
-    wpimath.estimator,
-    wpimath.filter,
-    wpimath.geometry,
-    wpimath.interpolation,
-    wpimath.kinematics,
-    wpimath.optimization,
-    wpimath.path,
-    wpimath.spline,
-    wpimath.system,
-    wpimath.system.plant,
-    wpimath.trajectory,
-    wpimath.trajectory.constraint,
     wpimath.units,
     wpinet,
     wpiutil,
