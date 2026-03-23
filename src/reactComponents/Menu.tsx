@@ -34,7 +34,6 @@ import {
   FileOutlined,
   FolderOutlined,
   RobotOutlined,
-  SaveOutlined,
   QuestionCircleOutlined,
   InfoCircleOutlined,
   BgColorsOutlined,
@@ -117,10 +116,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
   });
 
   return [
-    getItem(t('PROJECT'), 'project', <FolderOutlined />, [
-      getItem(t('SAVE'), 'save', <SaveOutlined />),
-      getItem(t('DEPLOY'), 'deploy'),
-    ]),
+    getItem(t('DEPLOY'), 'deploy'),
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
       getItem(t('MECHANISMS') + '...', 'manageMechanisms', <BlockOutlined />),
@@ -271,8 +267,6 @@ export function Component(props: MenuProps): React.JSX.Element {
       setThemeModalOpen(true);
     } else if (key == 'deploy') {
       handleDeploy();
-    } else if (key == 'save') {
-      handleSave();
     } else if (key.startsWith('setlang:')) {
       const lang = key.split(':')[1];
       i18n.changeLanguage(lang);
@@ -280,16 +274,6 @@ export function Component(props: MenuProps): React.JSX.Element {
       // TODO: Handle other menu actions
 
       console.log(`Selected key that wasn't module: ${key}`);
-    }
-  };
-
-  /** Handles the save action to save the current tab. */
-  const handleSave = async (): Promise<void> => {
-    try {
-      await props.saveCurrentTab();
-    } catch (error) {
-      console.error('Failed to save current tab:', error);
-      props.setAlertErrorMessage(t('FAILED_TO_SAVE_MODULE') || 'Failed to save module');
     }
   };
 
