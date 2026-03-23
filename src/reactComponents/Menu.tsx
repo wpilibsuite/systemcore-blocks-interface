@@ -21,7 +21,6 @@
 import * as Antd from 'antd';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
-import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
 import * as createPythonFiles from '../storage/create_python_files';
 import * as serverSideStorage from '../storage/server_side_storage';
@@ -41,7 +40,6 @@ import {
   BgColorsOutlined,
   GlobalOutlined,
   CheckOutlined,
-  DownloadOutlined,
   ControlOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
@@ -122,7 +120,6 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
     getItem(t('PROJECT'), 'project', <FolderOutlined />, [
       getItem(t('SAVE'), 'save', <SaveOutlined />),
       getItem(t('DEPLOY'), 'deploy'),
-      getItem(t('DOWNLOAD'), 'download', <DownloadOutlined />),
     ]),
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
@@ -276,8 +273,6 @@ export function Component(props: MenuProps): React.JSX.Element {
       handleDeploy();
     } else if (key == 'save') {
       handleSave();
-    } else if (key == 'download') {
-      handleDownload();
     } else if (key.startsWith('setlang:')) {
       const lang = key.split(':')[1];
       i18n.changeLanguage(lang);
@@ -357,36 +352,6 @@ export function Component(props: MenuProps): React.JSX.Element {
       props.setAlertErrorMessage(t('DEPLOY_FAILED') || 'Failed to deploy project');
     }
   };
-
-  /** Handles the download action to generate and download json files. */
-  const handleDownload = async (): Promise<void> => {
-    if (!props.currentProject) {
-      props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
-      return;
-    }
-    if (!props.storage) {
-      return;
-    }
-
-    try {
-      const blobUrl = await storageProject.downloadProject(props.storage, props.currentProject.projectName);
-      const filename = props.currentProject.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
-
-      // Create a temporary link to download the file
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Clean up the blob URL
-      URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error('Failed to download project:', error);
-      props.setAlertErrorMessage(t('DOWNLOAD_FAILED'));
-    }
-  }
 
   /** Handles closing the file management modal. */
   const handleFileModalClose = (): void => {

@@ -13,6 +13,7 @@
     "NO_PROJECT_SELECTED": "No hay ningún proyecto seleccionado.",
     "DEPLOY_FAILED": "Error al implementar el proyecto.",
     "DOWNLOAD_FAILED": "Error al descargar el proyecto.",
+    "DOWNLOAD_CURRENT_PROJECT": "Descargar Proyecto Actual",
     "UPLOAD_FILE_NOT_BLOCKS": "{{filename}} no es un archivo de bloques.",
     "UPLOAD_FAILED": "Error al cargar el proyecto.",
     "PROJECT_NAME_CONFLICT": "Conflicto de Nombre de Proyecto",
