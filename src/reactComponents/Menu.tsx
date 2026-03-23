@@ -39,7 +39,8 @@ import {
   BgColorsOutlined,
   GlobalOutlined,
   CheckOutlined,
-  ControlOutlined
+  ControlOutlined,
+  PlaySquareOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
@@ -116,7 +117,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
   });
 
   return [
-    getItem(t('DEPLOY'), 'deploy'),
+    getItem(t('DEPLOY'), 'deploy', <PlaySquareOutlined />),
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
       getItem(t('MECHANISMS') + '...', 'manageMechanisms', <BlockOutlined />),
