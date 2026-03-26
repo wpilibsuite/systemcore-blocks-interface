@@ -16,7 +16,7 @@ import argparse
 import traceback
 from pathlib import Path
 
-from wpilib_placeholders import PeriodicOpMode
+from wpilib import PeriodicOpMode
 from robot import Robot
 from blocks_base_classes import BlockExecution
 
@@ -102,7 +102,7 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
         
         # Call start method
         print("Starting opmode...")
-        opmode.Start()
+        opmode.start()
         
         # Calculate loop timing
         loop_period = 1.0 / loop_frequency
@@ -117,7 +117,7 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
                 loop_start = time.time()
                 
                 # Call the loop method
-                opmode.Periodic()
+                opmode.periodic()
                 loop_count += 1
                 
                 # Check if we should stop based on duration
@@ -139,7 +139,7 @@ def run_opmode(opmode_file, duration=None, loop_frequency=50):
         
         # Call stop method
         print("Stopping opmode...")
-        opmode.End()
+        opmode.end()
         
         # Print statistics
         total_time = time.time() - start_time

@@ -413,6 +413,18 @@ const CLASS_METHOD_DEF = {
       this.setFieldValue('opmode_periodic', FIELD_METHOD_NAME);
     }
   },
+  upgrade_0011_to_0012: function(this: ClassMethodDefBlock) {
+    // This function is called to upgrade ClassMethodDefBlocks in an opmode module.
+    if (this.getFieldValue('NAME') === 'Periodic' &&
+        !this.isOwnEditable() &&
+        !this.mrcCanChangeSignature &&
+        !this.mrcCanBeCalledWithinClass &&
+        !this.mrcCanBeCalledOutsideClass &&
+        this.mrcReturnType === 'None' &&
+        this.mrcParameters.length === 0) {
+      this.setFieldValue('periodic', FIELD_METHOD_NAME);
+    }
+  },
 };
 
 export const setup = function () {
@@ -463,10 +475,10 @@ export const pythonFromBlock = function (
     branch = generator.INDENT + 'super().__init__(' + superInitParameters + ')\n' +
         generator.generateInitStatements() + branch;
   }
-  else if (generator.inBaseClassMethod(blocklyName)) {
+  else if (generator.shouldGenerateSuperCall(blocklyName)) {
     // Special case for methods inherited from the based class: generate the
     // call to the method in the base class.
-    branch = generator.INDENT + 'super().' + blocklyName + '()\n' + branch;
+    branch = generator.INDENT + `super().${blocklyName}()\n` + branch;
   }
   if (returnValue) {
     returnValue = generator.INDENT + 'return ' + returnValue + '\n';
@@ -670,5 +682,15 @@ export function upgrade_006_to_007(workspace: Blockly.Workspace): void {
 export function upgrade_007_to_008(workspace: Blockly.Workspace): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as ClassMethodDefBlock).upgrade_007_to_008();
+  });
+}
+
+/**
+ * Upgrades the ClassMethodDefBlocks in the given workspace from version 0011 to 0012.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_0011_to_0012(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ClassMethodDefBlock).upgrade_0011_to_0012();
   });
 }

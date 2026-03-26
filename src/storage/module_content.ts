@@ -332,3 +332,28 @@ export function preupgrade_009_to_0010(moduleContentText: string): string {
   });
   return JSON.stringify(parsedContent, null, 2);
 }
+
+/**
+ * Preupgrades the module content text by upgrading the port types for all compoments.
+ * This function should only be called when upgrading old projects.
+ */
+export function preupgrade_0011_to_0012(moduleContentText: string): string {
+  const parsedContent = JSON.parse(moduleContentText);
+
+  const allComponents: any[] = [
+      ...parsedContent.components,
+      ...parsedContent.privateComponents
+  ];
+  allComponents.forEach((component) => {
+    for (const port in component.ports) {
+      component.ports[port] = upgradePortTypeString(component.ports[port]);
+    }
+    if (component.className === 'wpilib_placeholders.ExpansionHubMotor') {
+      component.className = 'wpilib.ExpansionHubMotor';
+    } else if (component.className === 'wpilib_placeholders.ExpansionHubServo') {
+      component.className = 'wpilib.ExpansionHubServo';
+    }
+  });
+
+  return JSON.stringify(parsedContent, null, 2);
+}
