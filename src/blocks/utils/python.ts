@@ -43,45 +43,24 @@ export const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
 // TODO(lizlooney): Update these constants if necessary when we update wpilib.
 
 export const CLASS_NAME_ROBOT_BASE = 'wpilib.OpModeRobot';
-export const ROBOT_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [
-  'addOpMode',
-  'addOpModeFactory',
-  'clearOpModes',
-  'endCompetition',
-  'getOpMode',
-  'getOpModeId',
-  'getRuntimeType',
-  'isAutonomous',
-  'isAutonomousEnabled',
-  'isDisabled',
-  'isEnabled',
-  'isReal',
-  'isSimulation',
-  'isTeleop',
-  'isTeleopEnabled',
-  'isTest',
-  'isTestEnabled',
-  'main',
-  'publishOpModes',
-  'removeOpMode',
-  'startCompetition',
+export const ROBOT_METHOD_NAMES_OVERRIDEABLE: string[] = [
+  'driverStationConnected',
+  'nonePeriodic',
 ];
 
 export const CLASS_NAME_MECHANISM = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Mechanism';
-export const MECHANISM_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [
-  'fire_event',
-  'register_event_handler',
-  'unregister_event_handler',
+export const MECHANISM_METHOD_NAMES_OVERRIDEABLE: string[] = [
+  'opmode_end',
+  'opmode_periodic',
+  'opmode_start',
 ];
 
 export const CLASS_NAME_OPMODE = 'wpilib.PeriodicOpMode';
-export const OPMODE_METHOD_NAMES_NOT_OVERRIDEABLE: string[] = [
-  'addPeriodic',
-  'getLoopStartTime',
-  'getPeriod',
-  'opModeRun',
-  'opModeStop',
-  'printWatchdogEpochs',
+export const OPMODE_METHOD_NAMES_OVERRIDEABLE: string[] = [
+  'disabledPeriodic',
+  'end',
+  'periodic',
+  'start',
 ];
 export const START_METHOD_NAME = 'start';
 export const PERIODIC_METHOD_NAME = 'periodic';

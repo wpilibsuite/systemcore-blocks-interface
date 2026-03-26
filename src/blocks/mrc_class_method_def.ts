@@ -556,13 +556,13 @@ export function createCustomMethodBlockWithReturn(): toolboxItems.Block {
 }
 
 export function getBaseClassBlocks(
-    workspace: Blockly.WorkspaceSvg, baseClassName: string, methodNamesNotOverrideable: string[],
+    workspace: Blockly.WorkspaceSvg, baseClassName: string, methodNamesOverrideable: string[],
     methodNamesAlreadyOverridden: string[]): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
   const classData = getClassData(baseClassName);
   if (classData) {
     classData.instanceMethods
-        .filter(functionData => !methodNamesNotOverrideable.includes(functionData.functionName))
+        .filter(functionData => methodNamesOverrideable.includes(functionData.functionName))
         .forEach(functionData => {
             if (methodNamesAlreadyOverridden.includes(functionData.functionName)) {
               contents.push(createButton(workspace, functionData));
