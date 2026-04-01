@@ -259,6 +259,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         setFileModalOpen(true);
       }, 0);
     } else if (key === 'manageProjects') {
+      props.saveCurrentTab();
       setProjectModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
