@@ -13,11 +13,11 @@ export default defineConfig({
   plugins: [react(), viteStaticCopy({
     targets: [
       {
-        src: 'oss-attribution/**/*',
+        src: 'oss-attribution/*',
         dest: "./",
       },
       {
-        src: 'src/i18n/locales/**/*',
+        src: 'src/i18n/locales/*',
         dest: "./locales/",
       },
     ],
