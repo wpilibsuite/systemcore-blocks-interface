@@ -28,9 +28,9 @@ import {
     CLASS_NAME_MECHANISM,
     CLASS_NAME_OPMODE,
     CLASS_NAME_ROBOT_BASE,
-    MECHANISM_METHOD_NAMES_NOT_OVERRIDEABLE,
-    OPMODE_METHOD_NAMES_NOT_OVERRIDEABLE,
-    ROBOT_METHOD_NAMES_NOT_OVERRIDEABLE } from '../blocks/utils/python';
+    MECHANISM_METHOD_NAMES_OVERRIDEABLE,
+    OPMODE_METHOD_NAMES_OVERRIDEABLE,
+    ROBOT_METHOD_NAMES_OVERRIDEABLE } from '../blocks/utils/python';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
 import {
     createCustomMethodBlock,
@@ -79,13 +79,13 @@ class MethodsCategory {
         // Add the methods for a Robot.
         this.addBaseClassBlocksForCurrentModule(
             workspace, Blockly.Msg['MORE_ROBOT_METHODS_LABEL'], CLASS_NAME_ROBOT_BASE,
-            ROBOT_METHOD_NAMES_NOT_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
+            ROBOT_METHOD_NAMES_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.MECHANISM:
         // Add the methods for a Mechanism.
         this.addBaseClassBlocksForCurrentModule(
             workspace, Blockly.Msg['MORE_MECHANISM_METHODS_LABEL'], CLASS_NAME_MECHANISM,
-            MECHANISM_METHOD_NAMES_NOT_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
+            MECHANISM_METHOD_NAMES_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
         break;
       case storageModule.ModuleType.OPMODE:
         const hasSteps = editor.isStepsInWorkspace();
@@ -95,7 +95,7 @@ class MethodsCategory {
         // Add the methods for an OpMode.
         this.addBaseClassBlocksForCurrentModule(
             workspace, Blockly.Msg['MORE_OPMODE_METHODS_LABEL'], CLASS_NAME_OPMODE,
-            OPMODE_METHOD_NAMES_NOT_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
+            OPMODE_METHOD_NAMES_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
         break;
     }
 
@@ -118,10 +118,10 @@ class MethodsCategory {
 
   private addBaseClassBlocksForCurrentModule(
       workspace: Blockly.WorkspaceSvg, label: string, baseClassName: string,
-      methodNamesNotOverrideable: string[], methodNamesAlreadyOverridden: string[],
+      methodNamesOverrideable: string[], methodNamesAlreadyOverridden: string[],
       contents: toolboxItems.ContentsType[]) {
     const baseClassBlocks: toolboxItems.ContentsType[] = getBaseClassBlocks(
-        workspace, baseClassName, methodNamesNotOverrideable, methodNamesAlreadyOverridden);
+        workspace, baseClassName, methodNamesOverrideable, methodNamesAlreadyOverridden);
     if (baseClassBlocks.length) {
       contents.push(
           new toolboxItems.Label(label),

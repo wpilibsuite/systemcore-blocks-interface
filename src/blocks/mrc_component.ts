@@ -318,6 +318,16 @@ const COMPONENT = {
       this.setFieldValue('wpilib_placeholders.ExpansionHubServo', FIELD_TYPE);
     }
   },
+  upgrade_0011_to_0012: function(this: ComponentBlock) {
+    const fieldTypeValue = this.getFieldValue(FIELD_TYPE);
+    if (fieldTypeValue === 'wpilib_placeholders.ExpansionHubMotor') {
+      this.setFieldValue('wpilib.ExpansionHubMotor', FIELD_TYPE);
+      this.mrcImportModule = 'wpilib';
+    } else if (fieldTypeValue === 'wpilib_placeholders.ExpansionHubServo') {
+      this.setFieldValue('wpilib.ExpansionHubServo', FIELD_TYPE);
+      this.mrcImportModule = 'wpilib';
+    }
+  },
 };
 
 export const setup = function () {
@@ -435,5 +445,15 @@ export function upgrade_005_to_006(workspace: Blockly.Workspace): void {
 export function upgrade_008_to_009(workspace: Blockly.Workspace): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as ComponentBlock).upgrade_008_to_009();
+  });
+}
+
+/**
+ * Upgrades the ComponentBlocks in the given workspace from version 0011 to 0012.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_0011_to_0012(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ComponentBlock).upgrade_0011_to_0012();
   });
 }

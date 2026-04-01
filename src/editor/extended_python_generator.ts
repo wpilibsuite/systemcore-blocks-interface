@@ -384,7 +384,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         // Add code to the Start method to call robot.opmode_start.
         this.classMethods[START_METHOD_NAME] = this.insertCodeToCallRobot(START_METHOD_NAME, 'opmode_start');
 
-        // Add code to the Periodic method to call robot.opmode_periodic.
+        // Add code to the periodic method to call robot.opmode_periodic.
         let periodicCode = this.insertCodeToCallRobot(PERIODIC_METHOD_NAME, 'opmode_periodic');
         if (STEPS_METHOD_NAME in this.classMethods) {
           // Generate code to call the steps method after the user's code.
@@ -440,7 +440,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   private insertCodeToCallRobot(methodName: string, robotMethodName: string): string {
-    const defAndSuper = `def ${methodName}(self):\n` + this.INDENT + `super().${methodName}()\n`;
+    let defAndSuper = `def ${methodName}(self):\n`;
+    if (this.shouldGenerateSuperCall(methodName)) {
+      defAndSuper += this.INDENT + `super().${methodName}()\n`;
+    }
     let code: string;
     if (methodName in this.classMethods) {
       code = this.classMethods[methodName];
@@ -467,34 +470,29 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   }
 
   /**
-   * This returns the list of methods that are derived from so that mrc_class_method_def
-   * knows whether to call super() or not.
-   * @returns list of method names
+   * Returns true if the call to super().<MethodName>(<args>) should be generated.
+   * @param methodName the name of the method to check
    */
-  getBaseClassMethods(): string[] {
-    const methodNames: string[] = [];
-
+  shouldGenerateSuperCall(methodName: string): boolean {
     const baseClassName = this.context?.getBaseClassName();
+
+    // Special case for PeriodicOpMode.periodic(), which is an abstract method.
+    if (baseClassName == 'wpilib.PeriodicOpMode' && methodName == 'periodic') {
+      return false;
+    }
+
+    const baseMethods: string[] = [];
     if (baseClassName) {
       const classData = getClassData(baseClassName);
       if (classData) {
         classData.instanceMethods.forEach(functionData => {
-            methodNames.push(functionData.functionName);
+            baseMethods.push(functionData.functionName);
         });
       } else {
         console.error('ClassData not found for ' + baseClassName);
       }
     }
 
-    return methodNames;
-  }
-
-  /**
-   * Returns true if the method is in the base class.
-   * @param methodName the name of the method to check
-   */
-  inBaseClassMethod(methodName: string): boolean {
-    const baseMethods = this.getBaseClassMethods();
     return baseMethods.includes(methodName);
   }
 }

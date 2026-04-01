@@ -123,6 +123,8 @@ def processSignature(signature_line: str) -> tuple[str, list[str], list[str], li
     # Get the argument type.
     iStartOfArgType = i + 2 # Skip over ": "
     i = _findEndOfToken(args, iStartOfArgType, [",", " "])
+    while i + 2 < len(args) and args[i:i + 3] == " | ":
+      i = _findEndOfToken(args, i + 3, [",", " "])
     arg_type = args[iStartOfArgType:i]
     arg_types.append(arg_type)
     if i + 2 < len(args) and args[i:i + 3] == " = ":
@@ -185,7 +187,8 @@ def isEnum(object):
       hasattr(object.__init__, "__doc__") and
       (
         object.__init__.__doc__ == f"__init__(self: {getFullClassName(object)}, value: int) -> None\n" or
-        object.__init__.__doc__ == f"__init__(self: {getFullClassName(object)}, value: typing.SupportsInt) -> None\n"
+        object.__init__.__doc__ == f"__init__(self: {getFullClassName(object)}, value: typing.SupportsInt) -> None\n" or
+        object.__init__.__doc__ == f"__init__(self: {getFullClassName(object)}, value: typing.SupportsInt | typing.SupportsIndex) -> None\n"
       ) and
       hasattr(object, "name") and
       inspect.isdatadescriptor(object.name) and

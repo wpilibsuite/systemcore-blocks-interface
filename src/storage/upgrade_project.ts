@@ -32,15 +32,23 @@ import {
     upgrade_002_to_003,
     upgrade_004_to_005,
     upgrade_006_to_007,
-    upgrade_007_to_008 } from '../blocks/mrc_class_method_def';
+    upgrade_007_to_008,
+    upgrade_0011_to_0012 as upgrade_class_method_def_0011_to_0012
+    } from '../blocks/mrc_class_method_def';
 import { upgrade_005_to_006 } from '../blocks/mrc_component';
-import { upgrade_008_to_009 as upgrade_component_008_to_009 } from '../blocks/mrc_component';
-import { upgrade_008_to_009 as upgrade_call_python_function_008_to_009 } from '../blocks/mrc_call_python_function';
+import {
+    upgrade_008_to_009 as upgrade_component_008_to_009,
+    upgrade_0011_to_0012 as upgrade_component_0011_to_0012
+    } from '../blocks/mrc_component';
+import {
+    upgrade_008_to_009 as upgrade_call_python_function_008_to_009,
+    upgrade_0011_to_0012 as upgrade_call_python_function_0011_to_0012
+    } from '../blocks/mrc_call_python_function';
 import { GamepadTypeUtils } from '../types/GamepadType';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.11';
+export const CURRENT_VERSION = '0.0.12';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -104,6 +112,11 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.10':
         await upgradeFrom_0010_to_0011(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.11'
+      // @ts-ignore
+      case '0.0.11':
+        await upgradeFrom_0011_to_0012(storage, projectName, projectInfo);
 
     }
     await storageProject.saveProjectInfo(storage, projectName, projectInfo);
@@ -340,4 +353,20 @@ async function upgradeFrom_0010_to_0011(
       noModuleTypes, noUpgrade);
   projectInfo.gamepadConfig = GamepadTypeUtils.getDefaultGamepadConfig();
   projectInfo.version = '0.0.11';
+}
+
+async function upgradeFrom_0011_to_0012(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  const upgrade = function (workspace: Blockly.Workspace) {
+    upgrade_component_0011_to_0012(workspace);
+    upgrade_call_python_function_0011_to_0012(workspace);
+    upgrade_class_method_def_0011_to_0012(workspace);
+  };
+  await upgradeBlocksFiles(
+      storage, projectName,
+      anyModuleType, storageModuleContent.preupgrade_0011_to_0012,
+      anyModuleType, upgrade);
+  projectInfo.version = '0.0.12';
 }
