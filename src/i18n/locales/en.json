@@ -12,6 +12,7 @@
     "NO_PROJECT_SELECTED": "No project selected.",
     "DEPLOY_FAILED": "Failed to deploy project.",
     "DOWNLOAD_FAILED": "Failed to download project.",
+    "DOWNLOAD_CURRENT_PROJECT": "Download Current Project",
     "UPLOAD_FILE_NOT_BLOCKS": "{{filename}} is not a blocks file.",
     "UPLOAD_FAILED": "Failed to upload project.",
     "PROJECT_NAME_CONFLICT": "Project Name Conflict",

@@ -19,7 +19,7 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Antd from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
@@ -243,6 +243,27 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     marginBottom: ALERT_MARGIN_BOTTOM,
   });
 
+  /** Handles downloading the current project as a json file. */
+  const handleDownload = async (): Promise<void> => {
+    if (!props.currentProject || !props.storage) {
+      return;
+    }
+    try {
+      const blobUrl = await storageProject.downloadProject(props.storage, props.currentProject.projectName);
+      const filename = props.currentProject.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Failed to download project:', error);
+      props.setAlertErrorMessage(t('DOWNLOAD_FAILED'));
+    }
+  };
+
   /** Handles uploading a previously downloaded project file. */
   const handleUpload = (): void => {
     const input = document.createElement('input');
@@ -445,12 +466,19 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
         )}
         {!props.noProjects && <br />}
         {!props.noProjects && (
-          <div style={{ marginBottom: '8px' }}>
+          <div style={{ marginBottom: '8px', display: 'flex', gap: '8px' }}>
             <Antd.Button
               icon={<UploadOutlined />}
               onClick={handleUpload}
             >
               {t('UPLOAD_EXISTING_PROJECT')}
+            </Antd.Button>
+            <Antd.Button
+              icon={<DownloadOutlined />}
+              onClick={handleDownload}
+              disabled={!props.currentProject}
+            >
+              {t('DOWNLOAD_CURRENT_PROJECT')}
             </Antd.Button>
           </div>
         )}

@@ -29,7 +29,6 @@ _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
   'hal',
   'ntcore',
   'wpinet',
-  'wpiutil',
 ]
 
 _LIST_MODULE_NAMES_INTERNAL = [
@@ -120,14 +119,14 @@ class JsonGenerator:
         return containing_class_name
       if o in self._exported_class_names:
         return self._exported_class_names[o]
+      endings = [' | None', '.', ']', ',']
       for exported_full_class_name, exported_class_name in self._exported_class_names.items():
-        if o.find(exported_full_class_name + '.') != -1:
-          o = o.replace(exported_full_class_name + '.', exported_class_name + '.')
-        if o.find(exported_full_class_name + ']') != -1:
-          o = o.replace(exported_full_class_name + ']', exported_class_name + ']')
-        if o.find(exported_full_class_name + ',') != -1:
-          o = o.replace(exported_full_class_name + ',', exported_class_name + ',')
+        for ending in endings:
+          if o.find(exported_full_class_name + ending) != -1:
+            o = o.replace(exported_full_class_name + ending, exported_class_name + ending)
+      o = o.replace('typing.SupportsInt | typing.SupportsIndex', 'int')
       o = o.replace('typing.SupportsInt', 'int')
+      o = o.replace('typing.SupportsFloat | typing.SupportsIndex', 'float')
       o = o.replace('typing.SupportsFloat', 'float')
       return o
     raise Exception(f'Invalid argument {o}')
@@ -149,6 +148,8 @@ class JsonGenerator:
     return lambda value: type(value) == enum_cls
 
   def _createArgData(self, arg_name: str, arg_type: str, default_value: str = ''):
+    if default_value and default_value.startswith('<') and default_value.endswith('>'):
+      default_value = '<' + self._getClassName(default_value[1:-1]) + '>'
     arg_data = {}
     arg_data[_KEY_ARGUMENT_NAME] = arg_name
     arg_data[_KEY_ARGUMENT_TYPE] = arg_type
@@ -470,7 +471,7 @@ class JsonGenerator:
     # looks at doc string and/or parameter type aliases to tell whether this is
     # a component and what the args are.
 
-    if declaring_class_name == 'wpilib_placeholders.ExpansionHubMotor':
+    if declaring_class_name == 'wpilib.ExpansionHubMotor':
       args = []
       args.append(self._createArgData('expansion_hub_motor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
       constructor_data[_KEY_COMPONENT_ARGS] = args
@@ -478,7 +479,7 @@ class JsonGenerator:
       class_data[_KEY_IS_COMPONENT] = True
       return
 
-    if declaring_class_name == 'wpilib_placeholders.ExpansionHubServo':
+    if declaring_class_name == 'wpilib.ExpansionHubServo':
       args = []
       args.append(self._createArgData('expansion_hub_servo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
       constructor_data[_KEY_COMPONENT_ARGS] = args
