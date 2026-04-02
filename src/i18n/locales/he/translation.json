@@ -12,6 +12,7 @@
   "NO_PROJECT_SELECTED": "לא נבחר פרויקט.",
   "DEPLOY_FAILED": "פריסת הפרויקט נכשלה.",
   "DOWNLOAD_FAILED": "הורדת הפרויקט נכשלה.",
+  "DOWNLOAD_CURRENT_PROJECT": "הורד פרויקט נוכחי",
   "UPLOAD_FILE_NOT_BLOCKS": "{{filename}} אינו קובץ בלוקים.",
   "UPLOAD_FAILED": "העלאת הפרויקט נכשלה.",
   "PROJECT_NAME_CONFLICT": "התנגשות בשם הפרויקט",
