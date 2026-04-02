@@ -49,7 +49,7 @@ i18n
     },
     backend: {
       // Path to the translation files
-      loadPath: import.meta.env.BASE_URL + "locales/{{lng}}/{{ns}}.json",
+      loadPath: import.meta.env.BASE_URL + "locales/{{lng}}.json",
     },
   });
 
