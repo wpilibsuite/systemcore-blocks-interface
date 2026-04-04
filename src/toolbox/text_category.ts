@@ -1,7 +1,7 @@
-export const category =
-{
+import * as Blockly from 'blockly/core';
+export const getCategory = () => ({
     kind: 'category',
-    name: 'Text',
+    name: Blockly.Msg['MRC_CATEGORY_TEXT'],
     categorystyle: 'text_category',
     contents: [
         {
@@ -201,4 +201,4 @@ export const category =
             },
           },
     ],
-}
+});

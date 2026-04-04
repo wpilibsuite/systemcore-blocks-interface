@@ -1,6 +1,8 @@
-export const category = {
+import * as Blockly from 'blockly/core';
+
+export const getCategory = () => ({
     kind: 'category',
-    name: 'Lists',
+    name: Blockly.Msg['MRC_CATEGORY_LISTS'],
     categorystyle: 'list_category',
     contents: [
       {
@@ -151,4 +153,4 @@ export const category = {
         type: 'lists_reverse',
       },
     ],
-  }
+  });

@@ -1,13 +1,13 @@
-export const category =
-{
+import * as Blockly from 'blockly/core';
+export const getCategory = () => ({
     kind: 'category',
-    name: 'Miscellaneous',
+    name: Blockly.Msg['MRC_CATEGORY_MISC'],
     contents: [
         {
             kind: 'block',
             type: 'mrc_misc_comment',
             fields: {
-                COMMENT: 'Enter your comment here!',
+                COMMENT: Blockly.Msg['COMMENT_DEFAULT_TEXT'],
             },
         },
         {
@@ -15,4 +15,4 @@ export const category =
             type: 'mrc_misc_evaluate_but_ignore_result',
         },
     ],
-}
+});

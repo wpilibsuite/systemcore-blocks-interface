@@ -20,27 +20,74 @@
  */
 
 import * as Blockly from 'blockly/core';
-import { PythonGenerator } from 'blockly/python';
-import { GeneratorContext } from './generator_context';
-import { Block } from '../toolbox/items';
-import { FunctionArg } from '../blocks/mrc_call_python_function';
-import * as MechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
-import * as commonStorage from '../storage/common_storage';
+import { Order, PythonGenerator } from 'blockly/python';
+import { createGeneratorContext, GeneratorContext } from './generator_context';
+import * as mechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
+import * as eventHandler from '../blocks/mrc_event_handler';
+import { STEPS_METHOD_NAME } from '../blocks/mrc_steps';
+
+import {
+    MODULE_NAME_BLOCKS_BASE_CLASSES,
+    TELEOP_DECORATOR_CLASS,
+    AUTO_DECORATOR_CLASS,
+    TEST_DECORATOR_CLASS,
+    NAME_DECORATOR_CLASS,
+    GROUP_DECORATOR_CLASS,
+    START_METHOD_NAME,
+    PERIODIC_METHOD_NAME,
+    END_METHOD_NAME,
+    getClassData,
+} from '../blocks/utils/python';
+import * as storageModule from '../storage/module';
+
+type BlockExecutionDetails = {
+  className: string,
+  blockId: string,
+  blockType: string,
+  blockLabel: string,
+};
 
 export class OpModeDetails {
-  constructor(private name: string, private group : string, private enabled : boolean, private type : string) {}
-  annotations() : string{
+  constructor(private name: string, private group: string, private enabled: boolean, private type: string) {}
+  generateDecorators(generator: ExtendedPythonGenerator, className: string): string {
     let code = '';
 
-    if (this.enabled){
-      code += '@' + this.type + "\n";
-      if (this.name){
-        code += '@name("' + this.name + '")\n';
+    if (this.enabled) {
+      let typeDecoratorClass: string = '';
+      switch (this.type) {
+        case 'Teleop':
+          typeDecoratorClass = TELEOP_DECORATOR_CLASS;
+          break;
+        case 'Auto':
+          typeDecoratorClass = AUTO_DECORATOR_CLASS;
+          break;
+        case 'Test':
+          typeDecoratorClass = TEST_DECORATOR_CLASS;
+          break;
       }
-      if (this.group){
-        code += '@group("' + this.group + '")\n';
+      // Import the module for the decorator, not the decorator class itself
+      // because otherwise the Teleop decorator collides with the class name of
+      // the OpMode module that is created automatically when a new project is
+      // created. Similarly, it is likely that the user might make an opmode
+      // named Test or Auto.
+      const lastDot = typeDecoratorClass.lastIndexOf('.');
+      if (lastDot === -1) {
+        throw new Error(`The decorator class ${typeDecoratorClass} should contain a '.'`);
+      }
+      const moduleName = typeDecoratorClass.substring(0, lastDot);
+      generator.importModule(moduleName);
+      code += `@${typeDecoratorClass}\n`;
+
+      if (this.name) {
+        const nameDecorator = generator.importModuleDotClass(NAME_DECORATOR_CLASS);
+        code += `@${nameDecorator}(${className}, '${this.name}')\n`;
+      }
+      if (this.group) {
+        const groupDecorator = generator.importModuleDotClass(GROUP_DECORATOR_CLASS);
+        code += `@${groupDecorator}(${className}, '${this.group}')\n`;
       }
     }
+
     return code;
   }
 }
@@ -49,20 +96,33 @@ export class OpModeDetails {
 // variables that have been defined so they can be used in other modules.
 
 export class ExtendedPythonGenerator extends PythonGenerator {
+  private readonly context: GeneratorContext;
   private workspace: Blockly.Workspace | null = null;
-  private context: GeneratorContext | null = null;
+
+  // Fields related to generating the __init__ for a mechanism.
+  private hasAnyComponents = false;
+  private mechanismInitArgNames: string[] = [];
+
+  // Has event handlers (ie, needs to call self.register_event_handlers in __init__)
+  private hasAnyEventHandlers = false;
 
   private classMethods: {[key: string]: string} = Object.create(null);
-  private events: {[key: string]: {sender: string, eventName: string}} = Object.create(null);
-  private ports: {[key: string]: string} = Object.create(null);
-    // Opmode details
-  private details : OpModeDetails | null  = null;
-  
+  private registerEventHandlerStatements: string[] = [];
+
+  private importedNames: {[name: string]: string} = Object.create(null); // value is an import statement
+  private fromModuleImportNames: {[module: string]: string[]} = Object.create(null); // value is an array of names being imported from the module.
+
+  // Opmode details
+  private opModeDetails: OpModeDetails | null  = null;
+
+  private generateErrorHandling: boolean = false;
+
   constructor() {
     super('Python');
+    this.context = createGeneratorContext();
   }
 
-  init(workspace: Blockly.Workspace){
+  init(workspace: Blockly.Workspace) {
     super.init(workspace);
 
     // super.init will have put all variables in this.definitions_['variables'] but we need to make
@@ -79,53 +139,177 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.definitions_['variables'] = defvars.join('\n');
   }
 
+  addErrorHandlingCode(block: Blockly.Block, blockLabel: string, originalCode: string | [string, number]): string | [string, number] {
+    if (!this.generateErrorHandling) {
+      return originalCode;
+    }
+
+    const blockExecutionDetails: BlockExecutionDetails = {
+      className: this.context.getClassName(),
+      blockId: block.id,
+      blockType: block.type,
+      blockLabel: blockLabel,
+    };
+    const startBlockExecution = 'BlockExecution.startBlockExecution(' +
+        "'" + JSON.stringify(blockExecutionDetails) + "')";
+
+    // originalCode might be an array, for value blocks, or a string, for statement blocks.
+    if (Array.isArray(originalCode)) {
+      // Handle value blocks, where originalCode[0] is the generated code.
+
+      // BlockExecution.startBlockExecution always returns True and
+      // BlockExecution.endBlockExecution returns whatever is passed to it.
+      // This allows us to wrap the original code, which is a value, not a
+      // statement.
+      const code = '(BlockExecution.endBlockExecution(' + originalCode[0] + ') ' +
+          'if ' + startBlockExecution + ' else None)';
+      return [code, Order.CONDITIONAL];
+    } else {
+      // Handle statement blocks, where originalCode is the generated code.
+      return startBlockExecution + '\n' +
+          originalCode +
+          'BlockExecution.endBlockExecution(None)\n';
+    }
+  }
+
   /*
    * This is called from the python generator for the mrc_class_method_def for the
    * init method
    */
-  defineClassVariables() : string {
-    let variableDefinitions = '';
+  generateInitStatements(): string {
+    let initStatements = '';
 
-    if (this.context?.getHasHardware()) {
-      variableDefinitions += this.INDENT + "self.define_hardware(";
-      variableDefinitions += this.getListOfPorts(true);
-      variableDefinitions += ')\n';
-      if (this.events && Object.keys(this.events).length > 0){
-        variableDefinitions += this.INDENT + "self.register_events()\n";
-      }
+    switch (this.getModuleType()) {
+      case storageModule.ModuleType.ROBOT:
+        initStatements += this.INDENT + 'self.mechanisms = []\n';
+        initStatements += this.INDENT + 'self.event_handlers = {}\n';
+        initStatements += this.INDENT + 'self.define_hardware()\n';
+        break;
+      case storageModule.ModuleType.MECHANISM:
+        if (this.hasAnyComponents) {
+          initStatements += this.INDENT + 'self.define_hardware(' +
+              this.mechanismInitArgNames.join(', ') + ')\n';
+        }
+        break;
+      case storageModule.ModuleType.OPMODE:
+        initStatements += this.INDENT + 'self.robot = robot\n';
+        break;
     }
 
-    return variableDefinitions;
+    if (this.hasAnyEventHandlers) {
+      initStatements += this.INDENT + "self.register_event_handlers()\n";
+    }
+
+    return initStatements;
   }
+
   getVariableName(nameOrId: string): string {
     const varName = super.getVariableName(nameOrId);
     return "self." + varName;
   }
-  setHasHardware() : void{
-    this.context?.setHasHardware();
-  }
 
-  mrcWorkspaceToCode(workspace: Blockly.Workspace, context: GeneratorContext): string {
+  mrcWorkspaceToCode(workspace: Blockly.Workspace, module: storageModule.Module, opt_generateErrorHandling?: boolean): string {
     this.workspace = workspace;
-    this.context = context;
-    this.context.clear();
 
-    if (this.workspace.getBlocksByType(MechanismContainerHolder.BLOCK_NAME).length > 0){
-      this.setHasHardware();
+    this.context.setModule(module);
+    if (opt_generateErrorHandling) {
+      this.generateErrorHandling = true;
+      this.fromModuleImportName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'BlockExecution');
     }
+    this.init(workspace);
+
+    if (this.getModuleType() ===  storageModule.ModuleType.MECHANISM) {
+      this.hasAnyComponents = mechanismContainerHolder.hasAnyComponents(workspace);
+      mechanismContainerHolder.getMechanismInitArgNames(workspace, this.mechanismInitArgNames);
+    }
+    this.hasAnyEventHandlers = eventHandler.getHasAnyEnabledEventHandlers(workspace);
 
     const code = super.workspaceToCode(workspace);
 
-    this.workspace = workspace;
-    this.context = null;
+    // Clean up.
+    this.context.setModule(null);
+    this.workspace = null;
+    this.hasAnyComponents = false;
+    this.mechanismInitArgNames = [];
+    this.hasAnyEventHandlers = false;
+    this.classMethods = Object.create(null);
+    this.registerEventHandlerStatements = [];
+    this.importedNames = Object.create(null);
+    this.fromModuleImportNames = Object.create(null);
+    this.opModeDetails = null;
+    this.generateErrorHandling = false;
+
     return code;
   }
 
+  getModuleType(): storageModule.ModuleType | null {
+    if (this.context) {
+      return this.context.getModuleType();
+    }
+    return null;
+  }
+
   /**
-   * Add an import statement for a python module.
+   * Import a python module.
    */
-  addImport(importModule: string): void {
-    this.definitions_['import_' + importModule] = 'import ' + importModule;
+  importModule(module: string): void {
+    const key = 'import_' + module;
+    const importStatement = 'import ' + module;
+    // Note(lizlooney): We can't really handle name collisions for "import <module>" statements.
+    // For the user's code, we could try to do "import <module> as <unique name>", but that would be
+    // more difficulat to do for robotpy modules.
+    this.definitions_[key] = importStatement;
+    this.importedNames[module] = importStatement;
+  }
+
+  /**
+   * Add an import statement of the form "from <module> import <name>".
+   * Returns true if successful.
+   */
+  private fromModuleImportName(module: string, name: string): boolean {
+    const importStatement = 'from ' + module + ' import ' + name;
+    if (name in this.importedNames) {
+      // This name is already in the importedNames map.
+      // If the previously stored value is the same import statement, we don't need to do anything; return true.
+      // Otherwise, we can't import this because the name will collide; return false.
+      return (this.importedNames[name] === importStatement);
+    }
+    this.importedNames[name] = importStatement;
+
+    if (!(module in this.fromModuleImportNames)) {
+      this.fromModuleImportNames[module] = [];
+    }
+    this.fromModuleImportNames[module].push(name);
+
+    return true;
+  }
+
+  /**
+   * Import a name from a python module.
+   * If possible, a "from <module> import <name>" import will be used, otherwise a "import <module>"
+   * import will be used.
+   * Returns the name, which may be qualified with the module, that can be used in generated python
+   * code.
+   */
+  importModuleName(module: string, name: string): string {
+    if (this.fromModuleImportName(module, name)) {
+      return name;
+    }
+    this.importModule(module);
+    return module + '.' + name;
+  }
+
+  importModuleDotClass(moduleDotClass: string): string {
+    const lastDot = moduleDotClass.lastIndexOf('.');
+    if (lastDot !== -1) {
+      const moduleName = moduleDotClass.substring(0, lastDot);
+      const className = moduleDotClass.substring(lastDot + 1);
+      if (this.fromModuleImportName(moduleName, className)) {
+        return className;
+      }
+      this.importModule(moduleName);
+    }
+    return moduleDotClass;
   }
 
   /**
@@ -135,188 +319,181 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.classMethods[methodName] = code;
   }
 
-  addEventHandler(sender: string, eventName: string, funcName: string): void {
-    this.events[funcName] = {
-      'sender': sender,
-      'eventName': eventName,}
-    }    
-
-  /**
-   * Add a Hardware Port
-   */
-  addHardwarePort(portName: string, type: string): void{
-    this.ports[portName] = type;
+  addRegisterEventHandlerStatement(registerEventHandlerStatement: string): void {
+    this.registerEventHandlerStatements.push(registerEventHandlerStatement);
   }
 
-  getListOfPorts(startWithFirst: boolean): string{
-    let returnString = ''
-    let firstPort = startWithFirst;
-    for (const port in this.ports) {
-      if (!firstPort){
-        returnString += ', ';
-      }
-      else{
-        firstPort = false;
-      }
-      returnString += port;
-    }
-    return returnString;
+  getMechanismInitArgNames(): string[] {
+    return this.mechanismInitArgNames;
   }
 
   finish(code: string): string {
-    if (this.context && this.workspace) {
+    if (this.workspace) {
       const className = this.context.getClassName();
-      const classParent = this.context.getClassParent();
-      const annotations = this.details?.annotations();
-      this.addImport(classParent);
+      const decorators = this.opModeDetails
+          ? this.opModeDetails.generateDecorators(this, className)
+          : '';
 
-      const classDef = 'class ' + className + '(' + classParent + '):\n';
+      let baseClassName = this.context.getBaseClassName();
+      baseClassName = this.importModuleDotClass(baseClassName);
+
+      code = decorators + 'class ' + className + '(' + baseClassName + '):\n';
+
+      if (this.getModuleType() === storageModule.ModuleType.ROBOT) {
+        // Define methods that we use for blocks, but are not in wpilib.OpModeRobot.
+        this.fromModuleImportName('typing', 'Callable');
+        this.classMethods['register_event_handler'] = (
+            'def register_event_handler(self, event_name: str, event_handler: Callable) -> None:\n' +
+            this.INDENT + 'if event_name in self.event_handlers:\n' +
+            this.INDENT.repeat(2) + 'self.event_handlers[event_name].append(event_handler)\n' +
+            this.INDENT + 'else:\n' +
+            this.INDENT.repeat(2) + 'self.event_handlers[event_name] = [event_handler]\n'
+        );
+        this.classMethods['unregister_event_handler'] = (
+            'def unregister_event_handler(self, event_name: str, event_handler: Callable) -> None:\n' +
+            this.INDENT + 'if event_name in self.event_handlers:\n' +
+            this.INDENT.repeat(2) + 'if event_handler in self.event_handlers[event_name]:\n' +
+            this.INDENT.repeat(3) + 'self.event_handlers[event_name].remove(event_handler)\n' +
+            this.INDENT.repeat(3) + 'if not self.event_handlers[event_name]:\n' +
+            this.INDENT.repeat(4) + 'del self.event_handlers[event_name]\n'
+        )
+        this.classMethods['fire_event'] = (
+            'def fire_event(self, event_name: str, *args) -> None:\n' +
+            this.INDENT + 'if event_name in self.event_handlers:\n' +
+            this.INDENT.repeat(2) + 'for event_handler in self.event_handlers[event_name]:\n' +
+            this.INDENT.repeat(3) + 'event_handler(*args)\n'
+        )
+        this.classMethods['opmode_start'] = (
+            'def opmode_start(self) -> None:\n' +
+            this.INDENT + 'for mechanism in self.mechanisms:\n' +
+            this.INDENT.repeat(2) + 'mechanism.opmode_start()\n'
+        );
+        this.classMethods['opmode_periodic'] = (
+            'def opmode_periodic(self) -> None:\n' +
+            this.INDENT + 'for mechanism in self.mechanisms:\n' +
+            this.INDENT.repeat(2) + 'mechanism.opmode_periodic()\n'
+        );
+        this.classMethods['opmode_end'] = (
+            'def opmode_end(self) -> None:\n' +
+            this.INDENT + 'for mechanism in self.mechanisms:\n' +
+            this.INDENT.repeat(2) + 'mechanism.opmode_end()\n'
+        );
+      }
+
+      if (this.getModuleType() === storageModule.ModuleType.OPMODE) {
+        // Add code to the Start method to call robot.opmode_start.
+        this.classMethods[START_METHOD_NAME] = this.insertCodeToCallRobot(START_METHOD_NAME, 'opmode_start');
+
+        // Add code to the periodic method to call robot.opmode_periodic.
+        let periodicCode = this.insertCodeToCallRobot(PERIODIC_METHOD_NAME, 'opmode_periodic');
+        if (STEPS_METHOD_NAME in this.classMethods) {
+          // Generate code to call the steps method after the user's code.
+          periodicCode += this.INDENT + `self.${STEPS_METHOD_NAME}()\n`;
+        }
+        this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
+
+        // Add code to the End method to call robot.opmode_end.
+        this.classMethods[END_METHOD_NAME] = this.insertCodeToCallRobot(END_METHOD_NAME, 'opmode_end');
+      }
+
       const classMethods = [];
 
-      if (this.events && Object.keys(this.events).length > 0) {
-        let code = 'def register_events(self):\n';
-        for (const eventName in this.events) {
-          const event = this.events[eventName];
-          code += this.INDENT + 'self.' + event.sender + '.register_event("' + event.eventName + '", self.' + eventName + ')\n';
-        }
-        classMethods.push(code);
+      // Generate the __init__ method first.
+      if ('__init__' in this.classMethods) {
+        classMethods.push(this.classMethods['__init__'])
       }
+
+      // Generate the define_hardware method next.
+      if ('define_hardware' in this.classMethods) {
+        classMethods.push(this.classMethods['define_hardware'])
+      }
+
+      // Generate the register_event_handlers method next.
+      if (this.registerEventHandlerStatements && this.registerEventHandlerStatements.length > 0) {
+        let registerEventHandlers = 'def register_event_handlers(self):\n';
+        for (const registerEventHandlerStatement of this.registerEventHandlerStatements) {
+          registerEventHandlers += this.INDENT + registerEventHandlerStatement;
+        }
+        classMethods.push(registerEventHandlers);
+      }
+
+      // Generate the remaining methods.
       for (const name in this.classMethods) {
+        if (name === '__init__' || name === 'define_hardware') {
+          continue;
+        }
         classMethods.push(this.classMethods[name])
       }
-      this.events = Object.create(null);
-      this.classMethods = Object.create(null);
-      this.ports = Object.create(null);
-      code = classDef + this.prefixLines(classMethods.join('\n\n'), this.INDENT);
-      if (annotations){
-        code = annotations + code;
-      }
-      this.details = null;
 
-      this.context.setExportedBlocks(this.produceExportedBlocks(this.workspace));
+      code += this.prefixLines(classMethods.join('\n\n'), this.INDENT);
+    }
+
+    // Process the fromModuleImportNames to generate "from <module> import <name1>, <name2>, ..." statements.
+    for (const module in this.fromModuleImportNames) {
+      const names = this.fromModuleImportNames[module];
+      const key = 'import_from_' + module;
+      const importStatement = 'from ' + module + ' import ' + names.sort().join(', ');
+      this.definitions_[key] = importStatement;
     }
 
     return super.finish(code);
   }
 
-  private produceExportedBlocks(workspace: Blockly.Workspace): Block[] {
-    // The exported blocks produced here have the extraState.importModule and fields.MODULE values
-    // set to the MODULE_NAME_PLACEHOLDER. This is so blocks modules can be renamed and copied
-    // without having to change the contents of the modules.
-    // The placeholders will be replaced with the actual module name before they are added to the
-    // toolbox.
-
-    const exportedBlocks = [];
-
-    // All functions are exported.
-    // TODO(lizlooney): instead of looking at procedure blocks, this code needs
-    // to look at mrc_class_method_def blocks.
-    const allProcedures = Blockly.Procedures.allProcedures(workspace);
-    const procedureTuples = allProcedures[0].concat(allProcedures[1]);
-    for (const procedureTuple of procedureTuples) {
-      const functionName = procedureTuple[0];
-      const blockDefinition = Blockly.Procedures.getDefinition(functionName, workspace);
-      if (!blockDefinition || !blockDefinition.isEnabled()) {
-        continue;
-      }
-      const actualFunctionName = super.getProcedureName(functionName);
-      const hasReturnValue = procedureTuple[2];
-      const args: FunctionArg[] = [];
-      const parameterNames = procedureTuple[1];
-      parameterNames.forEach((parameterName) => {
-        args.push({
-          'name': parameterName,
-          'type': '',
-        })
-      });
-      const callFunctionBlock: Block = {
-        'kind': 'block',
-        'type': 'mrc_call_python_function',
-        'extraState': {
-          'functionKind': 'module',
-          'returnType': hasReturnValue ? '' : 'None',
-          'args': args,
-          'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
-          'actualFunctionName': actualFunctionName,
-          'exportedFunction': true,
-        },
-        'fields': {
-          'MODULE_OR_CLASS': commonStorage.MODULE_NAME_PLACEHOLDER,
-          'FUNC': functionName,
-        },
-      };
-      exportedBlocks.push(callFunctionBlock);
+  private insertCodeToCallRobot(methodName: string, robotMethodName: string): string {
+    let defAndSuper = `def ${methodName}(self):\n`;
+    if (this.shouldGenerateSuperCall(methodName)) {
+      defAndSuper += this.INDENT + `super().${methodName}()\n`;
     }
-
-    const allVariables = workspace.getAllVariables();
-    for (const variableModel of allVariables) {
-      // Only variables that are used outside of functions are exported. (I'm not sure if this is
-      // the right choice, since all blockly variables are global variables.)
-      let exported = false;
-      const variableUsesById = workspace.getVariableUsesById(variableModel.getId())
-      if (variableUsesById.length === 0) {
-        continue;
+    let code: string;
+    if (methodName in this.classMethods) {
+      code = this.classMethods[methodName];
+      // Make sure code starts with defAndSuper.
+      if (!code.startsWith(defAndSuper)) {
+        throw new Error(`The generated code for the ${methodName} method should start with ${defAndSuper}`);
       }
-      variableUsesById.forEach((block) => {
-        if (block.type === 'variables_get' ||
-          block.type === 'variables_set' ||
-          block.type === 'math_change' ||
-          block.type === 'text_append') {
-          const rootBlock = block.getRootBlock();
-          if (rootBlock.type !== 'procedures_defnoreturn' &&
-            rootBlock.type !== 'procedures_defreturn') {
-            exported = true;
-          }
-        }
-      });
-      if (exported) {
-        const variableName = variableModel.getName();
-        const actualVariableName = super.getVariableName(variableModel.getId());
-        const getPythonModuleVariableBlock = {
-          'kind': 'block',
-          'type': 'mrc_get_python_variable',
-          'extraState': {
-            'varKind': 'module',
-            'moduleOrClassName': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'actualVariableName': actualVariableName,
-            'exportedVariable': true,
-          },
-          'fields': {
-            'MODULE_OR_CLASS': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'VAR': variableName,
-          },
-        };
-        exportedBlocks.push(getPythonModuleVariableBlock);
-        const setPythonModuleVariableBlock = {
-          'kind': 'block',
-          'type': 'mrc_set_python_variable',
-          'extraState': {
-            'varKind': 'module',
-            'moduleOrClassName': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'importModule': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'actualVariableName': actualVariableName,
-            'exportedVariable': true,
-          },
-          'fields': {
-            'MODULE_OR_CLASS': commonStorage.MODULE_NAME_PLACEHOLDER,
-            'VAR': variableName,
-          },
-        };
-        exportedBlocks.push(setPythonModuleVariableBlock);
-      }
+      code = code.substring(defAndSuper.length);
+    } else {
+      // The user has not defined the method. We will define it now.
+      code = '';
     }
-    return exportedBlocks;
+    // Generate code to call the robot method immediately after calling the superclass method.
+    return defAndSuper + this.INDENT + `self.robot.${robotMethodName}()\n` + code;
   }
-  setOpModeDetails(details : OpModeDetails) {
-    this.details = details;
+
+  setOpModeDetails(opModeDetails: OpModeDetails) {
+    this.opModeDetails = opModeDetails;
   }
-  getClassSpecificForInit() : string{
-    let classParent = this.context?.getClassParent();
-    if (classParent == 'OpMode'){
-      return 'robot'
+
+  getSuperInitParameters(): string {
+    // wpilib.OpModeRobot, Mechanism, and wpilib.PeriodicOpMode all have no argument __init__ methods.
+    return '';
+  }
+
+  /**
+   * Returns true if the call to super().<MethodName>(<args>) should be generated.
+   * @param methodName the name of the method to check
+   */
+  shouldGenerateSuperCall(methodName: string): boolean {
+    const baseClassName = this.context?.getBaseClassName();
+
+    // Special case for PeriodicOpMode.periodic(), which is an abstract method.
+    if (baseClassName == 'wpilib.PeriodicOpMode' && methodName == 'periodic') {
+      return false;
     }
-    return ''
+
+    const baseMethods: string[] = [];
+    if (baseClassName) {
+      const classData = getClassData(baseClassName);
+      if (classData) {
+        classData.instanceMethods.forEach(functionData => {
+            baseMethods.push(functionData.functionName);
+        });
+      } else {
+        console.error('ClassData not found for ' + baseClassName);
+      }
+    }
+
+    return baseMethods.includes(methodName);
   }
 }
 

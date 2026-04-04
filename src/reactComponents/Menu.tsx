@@ -21,8 +21,12 @@
 import * as Antd from 'antd';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
+import * as storageProject from '../storage/project';
+import * as createPythonFiles from '../storage/create_python_files';
+import * as serverSideStorage from '../storage/server_side_storage';
 import * as I18Next from 'react-i18next';
-import {TabType} from './Tabs';
+import {TabType } from '../types/TabType';
+
 import {
   SettingOutlined,
   CodeOutlined,
@@ -30,31 +34,42 @@ import {
   FileOutlined,
   FolderOutlined,
   RobotOutlined,
-  SaveOutlined,
   QuestionCircleOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  BgColorsOutlined,
+  GlobalOutlined,
+  CheckOutlined,
+  ControlOutlined,
+  PlaySquareOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
 import AboutDialog from './AboutModal';
+import ThemeModal from './ThemeModal';
 
 /** Type definition for menu items. */
 type MenuItem = Required<Antd.MenuProps>['items'][number];
 
 /** Props for the Menu component. */
 export interface MenuProps {
-  setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
+  setAlertErrorMessage: (message: string) => void;
   gotoTab: (tabKey: string) => void;
-  project: commonStorage.Project | null;
-  setProject: (project: commonStorage.Project | null) => void;
+  closeTab: (tabKey: string) => void;
+  currentProject: storageProject.Project | null;
+  setCurrentProject: (project: storageProject.Project | null) => void;
+  onProjectChanged: () => Promise<void>;
+  openWPIToolboxSettings: () => void;
+  theme: string;
+  setTheme: (theme: string) => void;
+  saveCurrentTab: () => Promise<void>;
 }
 
 /** Default selected menu keys. */
 const DEFAULT_SELECTED_KEYS = ['1'];
 
-/** Storage key for the most recent project. */
-const MOST_RECENT_PROJECT_KEY = 'mostRecentProject';
+/** Storage key for the most recent project name. */
+const MOST_RECENT_PROJECT_NAME_KEY = 'mostRecentProject';
 
 /**
  * Creates a menu item with the specified properties.
@@ -75,19 +90,11 @@ function getItem(
   } as MenuItem;
 }
 
-/**
- * Creates a divider menu item.
- */
-function getDivider(): MenuItem {
-  return {
-    type: 'divider',
-  } as MenuItem;
-}
 
 /**
  * Generates menu items for a given project.
  */
-function getMenuItems(t: (key: string) => string, project: commonStorage.Project): MenuItem[] {
+function getMenuItems(t: (key: string) => string, project: storageProject.Project, currentLanguage: string): MenuItem[] {
   const mechanisms: MenuItem[] = [];
   const opmodes: MenuItem[] = [];
 
@@ -99,10 +106,6 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
         <BlockOutlined />
     ));
   });
-  if (mechanisms.length > 0) {
-    mechanisms.push(getDivider());
-  }
-  mechanisms.push(getItem('Manage...', 'manageMechanisms'));
 
   // Build opmodes menu items
   project.opModes.forEach((opmode) => {
@@ -112,30 +115,42 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
         <CodeOutlined />
     ));
   });
-  if (opmodes.length > 0) {
-    opmodes.push(getDivider());
-  }
-  opmodes.push(getItem('Manage...', 'manageOpmodes'));
 
   return [
-    getItem(t('Project'), 'project', <FolderOutlined />, [
-      getItem(t('Save'), 'save', <SaveOutlined />),
-      getItem(t('Deploy'), 'deploy', undefined, undefined, true),
-      getDivider(),
-      getItem(t('Manage') + '...', 'manageProjects'),
+    getItem(t('DEPLOY'), 'deploy', <PlaySquareOutlined />),
+    getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
+      getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
+      getItem(t('MECHANISMS') + '...', 'manageMechanisms', <BlockOutlined />),
+      getItem(t('OPMODES') + '...', 'manageOpmodes', <CodeOutlined />),
     ]),
-    getItem(t('Explorer'), 'explorer', <FileOutlined />, [
-      getItem(t('Robot'), project.modulePath, <RobotOutlined />),
-      getItem(t('Mechanisms'), 'mechanisms', <BlockOutlined />, mechanisms),
-      getItem(t('OpModes'), 'opmodes', <CodeOutlined />, opmodes),
+    getItem(t('EXPLORER'), 'explorer', <FileOutlined />, [
+      getItem(t('ROBOT'), project.robot.modulePath, <RobotOutlined />),
+      getItem(t('MECHANISMS'), 'mechanisms', <BlockOutlined />, mechanisms),
+      getItem(t('OPMODES'), 'opmodes', <CodeOutlined />, opmodes),
     ]),
-    getItem(t('Settings'), 'settings', <SettingOutlined />, [
-      getItem(t('WPI toolbox'), 'wpi_toolbox'),
-      getItem(t('Theme') + '...', 'theme')
+    getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
+      getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
+      getItem(t('THEME') + '...', 'theme', <BgColorsOutlined />),
+      getItem(t('LANGUAGE'), 'language', <GlobalOutlined />, [
+        getItem(
+          t('ENGLISH'),
+          'setlang:en',
+          currentLanguage === 'en' ? <CheckOutlined /> : undefined
+        ),
+        getItem(
+          t('SPANISH'),
+          'setlang:es',
+          currentLanguage === 'es' ? <CheckOutlined /> : undefined
+        ),
+        getItem(
+          t('HEBREW'),
+          'setlang:he',
+          currentLanguage === 'he' ? <CheckOutlined /> : undefined
+        ),
+      ]),
     ]),
-    getItem(t('Help'), 'help', <QuestionCircleOutlined />, [
-      getItem(t('About') + '...', 'about', <InfoCircleOutlined />
-),
+    getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
+      getItem(t('ABOUT.TITLE') + '...', 'about', <InfoCircleOutlined />),
     ]),
   ];
 }
@@ -145,38 +160,44 @@ function getMenuItems(t: (key: string) => string, project: commonStorage.Project
  * Provides access to mechanisms, opmodes, and project management functionality.
  */
 export function Component(props: MenuProps): React.JSX.Element {
-  const {t} = I18Next.useTranslation();
+  const {t, i18n} = I18Next.useTranslation();
+  const [, contextHolder] = Antd.Modal.useModal();
 
-  const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
+  const [projectNames, setProjectNames] = React.useState<string[]>([]);
   const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
   const [fileModalOpen, setFileModalOpen] = React.useState<boolean>(false);
   const [projectModalOpen, setProjectModalOpen] = React.useState<boolean>(false);
-  const [moduleType, setModuleType] = React.useState<TabType>(TabType.MECHANISM);
+  const [tabType, setTabType] = React.useState<TabType>(TabType.MECHANISM);
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
+  const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
 
-  /** Fetches the list of modules from storage. */
-  const fetchListOfModules = async (): Promise<commonStorage.Project[]> => {
+  const handleThemeChange = (newTheme: string) => {
+    props.setTheme(newTheme);
+  };
+
+  /** Fetches the list of project names from storage. */
+  const fetchListOfProjectNames = async (): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
       if (!props.storage) {
         reject(new Error('Storage not available'));
         return;
       }
       try {
-        const array = await props.storage.listModules();
-        setModules(array);
+        const array = await storageProject.listProjectNames(props.storage);
+        setProjectNames(array);
         resolve(array);
       } catch (e) {
-        console.error('Failed to load the list of modules:', e);
-        props.setAlertErrorMessage(t('fail_list_modules'));
-        reject(new Error(t('fail_list_modules')));
+        console.error('Failed to load the list of project names:', e);
+        props.setAlertErrorMessage(t('fail_list_projects'));
+        reject(new Error(t('fail_list_projects')));
       }
     });
   };
 
-  /** Initializes the modules and handles empty project state. */
-  const initializeModules = async (): Promise<void> => {
-    const array = await fetchListOfModules();
+  /** Initializes the project names and handles no projects state. */
+  const initializeProjectNames = async (): Promise<void> => {
+    const array = await fetchListOfProjectNames();
     if (array.length === 0) {
       setNoProjects(true);
       setProjectModalOpen(true);
@@ -185,39 +206,38 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   /** Fetches and sets the most recent project. */
   const fetchMostRecentProject = async (): Promise<void> => {
-    let found = false;
-
     if (props.storage) {
-      const mostRecentProject = await props.storage.fetchEntry(
-          MOST_RECENT_PROJECT_KEY,
+      const mostRecentProjectName = await props.storage.fetchEntry(
+          MOST_RECENT_PROJECT_NAME_KEY,
           ''
       );
-      modules.forEach((module) => {
-        if (module.projectName === mostRecentProject) {
-          props.setProject(module);
-          found = true;
-        }
-      });
-      if (!found && modules.length > 0) {
-        props.setProject(modules[0]);
+      let projectNameToFetch: string = '';
+      if (projectNames.includes(mostRecentProjectName)) {
+        projectNameToFetch = mostRecentProjectName;
+      } else if (projectNames.length) {
+        projectNameToFetch = projectNames[0];
+      }
+      if (projectNameToFetch) {
+        const project = await storageProject.fetchProject(props.storage, projectNameToFetch);
+        props.setCurrentProject(project);
       }
     }
   };
 
-  /** Saves the most recent project to storage. */
-  const setMostRecentProject = async (): Promise<void> => {
+  /** Saves the most recent project name to storage. */
+  const setMostRecentProjectName = async (): Promise<void> => {
     if (props.storage) {
       await props.storage.saveEntry(
-          MOST_RECENT_PROJECT_KEY,
-          props.project?.projectName || ''
+          MOST_RECENT_PROJECT_NAME_KEY,
+          props.currentProject?.projectName || ''
       );
     }
   };
 
   /** Handles menu item clicks. */
   const handleClick: Antd.MenuProps['onClick'] = ({key}): void => {
-    const newModule = props.project ?
-      commonStorage.findModuleInProject(props.project, key) :
+    const newModule = props.currentProject ?
+      storageProject.findModuleByModulePath(props.currentProject, key) :
       null;
 
     if (newModule) {
@@ -227,35 +247,100 @@ export function Component(props: MenuProps): React.JSX.Element {
 
     // Handle management actions
     if (key === 'manageMechanisms') {
-      console.log('Opening mechanisms modal');
       setFileModalOpen(false);
-      setModuleType(TabType.MECHANISM);
+      setTabType(TabType.MECHANISM);
       setTimeout(() => {
-        console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
       }, 0);
     } else if (key === 'manageOpmodes') {
-      console.log('Opening opmodes modal');
       setFileModalOpen(false);
-      setModuleType(TabType.OPMODE);
+      setTabType(TabType.OPMODE);
       setTimeout(() => {
-        console.log('Setting fileModalOpen to true');
         setFileModalOpen(true);
       }, 0);
     } else if (key === 'manageProjects') {
-      console.log('Opening projects modal');
+      props.saveCurrentTab();
       setProjectModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
+    } else if (key === 'wpi_toolbox'){
+      props.openWPIToolboxSettings();
+    } else if (key === 'theme') {
+      setThemeModalOpen(true);
+    } else if (key == 'deploy') {
+      handleDeploy();
+    } else if (key.startsWith('setlang:')) {
+      const lang = key.split(':')[1];
+      i18n.changeLanguage(lang);
     } else {
       // TODO: Handle other menu actions
+
       console.log(`Selected key that wasn't module: ${key}`);
+    }
+  };
+
+  /** Handles the deploy action to generate and download Python files. */
+  const handleDeploy = async (): Promise<void> => {
+    if (!props.currentProject) {
+      props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
+      return;
+    }
+    if (!props.storage) {
+      return;
+    }
+
+    try {
+      // Save current tab before deploying
+      await props.saveCurrentTab();
+      
+      const blobUrl = await createPythonFiles.producePythonProjectBlob(props.currentProject, props.storage);
+      
+      // Check if the backend server is available
+      const serverAvailable = await serverSideStorage.isServerAvailable();
+      console.log('Server available:', serverAvailable);
+      
+      if (serverAvailable) {
+        // Send the file to the backend /deploy endpoint
+        const response = await fetch(blobUrl);
+        const blob = await response.blob();
+        
+        const formData = new FormData();
+        formData.append('file', blob, `${props.currentProject.projectName}.zip`);
+        
+        const deployResponse = await fetch('/deploy', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!deployResponse.ok) {
+          throw new Error('Deploy to server failed');
+        }
+        
+        const result = await deployResponse.json();
+        console.log('Deployment successful:', result);
+        
+        // Clean up the blob URL
+        URL.revokeObjectURL(blobUrl);
+      } else {
+        // Download the file locally
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `${props.currentProject.projectName}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the blob URL
+        URL.revokeObjectURL(blobUrl);
+      }
+    } catch (error) {
+      console.error('Failed to deploy project:', error);
+      props.setAlertErrorMessage(t('DEPLOY_FAILED') || 'Failed to deploy project');
     }
   };
 
   /** Handles closing the file management modal. */
   const handleFileModalClose = (): void => {
-    console.log('Modal onCancel called');
     setFileModalOpen(false);
   };
 
@@ -264,47 +349,49 @@ export function Component(props: MenuProps): React.JSX.Element {
     setProjectModalOpen(false);
   };
 
-  // Initialize modules when storage is available
+  // Initialize project names when storage is available
   React.useEffect(() => {
     if (!props.storage) {
       return;
     }
-    initializeModules();
+    initializeProjectNames();
   }, [props.storage]);
 
-  // Fetch most recent project when modules change
+  // Fetch most recent project when projectNames change
   React.useEffect(() => {
     fetchMostRecentProject();
-  }, [modules]);
+  }, [projectNames]);
 
-  // Update menu items and save project when project changes
+  // Update menu items and save project when project or language changes
   React.useEffect(() => {
-    if (props.project) {
-      setMostRecentProject();
-      setMenuItems(getMenuItems(t, props.project));
+    if (props.currentProject) {
+      setMostRecentProjectName();
+      setMenuItems(getMenuItems(t, props.currentProject, i18n.language));
       setNoProjects(false);
     }
-  }, [props.project]);
+  }, [props.currentProject, i18n.language]);
 
   return (
     <>
+      {contextHolder}
       <FileManageModal
         isOpen={fileModalOpen}
-        onCancel={handleFileModalClose}
-        project={props.project}
+        onClose={handleFileModalClose}
+        project={props.currentProject}
         storage={props.storage}
-        moduleType={moduleType}
-        setProject={props.setProject}
+        tabType={tabType}
+        onProjectChanged={props.onProjectChanged}
         setAlertErrorMessage={props.setAlertErrorMessage}
         gotoTab={props.gotoTab}
+        closeTab={props.closeTab}
       />
       <ProjectManageModal
         noProjects={noProjects}
         isOpen={projectModalOpen}
         onCancel={handleProjectModalClose}
         storage={props.storage}
-        moduleType={moduleType}
-        setProject={props.setProject}
+        currentProject={props.currentProject}
+        setCurrentProject={props.setCurrentProject}
         setAlertErrorMessage={props.setAlertErrorMessage}
       />
       <Antd.Menu
@@ -315,9 +402,15 @@ export function Component(props: MenuProps): React.JSX.Element {
         onClick={handleClick}
       />
       <AboutDialog
-        visible={aboutDialogVisible}
+        open={aboutDialogVisible}
         onClose={() => setAboutDialogVisible(false)}
       />
+      <ThemeModal
+          open={themeModalOpen}
+          onClose={() => setThemeModalOpen(false)}
+          currentTheme={props.theme}
+          onThemeChange={handleThemeChange}
+        />
     </>
   );
 }

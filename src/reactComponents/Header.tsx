@@ -19,8 +19,10 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Antd from 'antd';
-import * as commonStorage from '../storage/common_storage';
+import * as storageProject from '../storage/project';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAutosave } from './AutosaveManager';
 
 /** Function type for setting string values. */
 type StringFunction = (input: string) => void;
@@ -29,7 +31,7 @@ type StringFunction = (input: string) => void;
 interface HeaderProps {
   alertErrorMessage: string;
   setAlertErrorMessage: StringFunction;
-  project: commonStorage.Project | null;
+  project: storageProject.Project | null;
 }
 
 /** Height of the logo image in pixels. */
@@ -49,6 +51,12 @@ const TEXT_PADDING_LEFT = 20;
  * and any error messages.
  */
 export default function Header(props: HeaderProps): React.JSX.Element {
+  const { token } = Antd.theme.useToken();
+  const { t } = useTranslation();
+  const autosave = useAutosave();
+
+  const isDarkTheme = token.colorBgLayout === '#000000';
+
   /** Handles clearing the error message. */
   const handleClearError = (): void => {
     props.setAlertErrorMessage('');
@@ -63,46 +71,64 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     return (
       <Antd.Alert
         type="error"
-        message={props.alertErrorMessage}
-        closable
-        afterClose={handleClearError}
+        title={props.alertErrorMessage}
+        closable={{ closeIcon: true, onClose: handleClearError }}
       />
     );
   };
 
   /** Gets the project name or fallback text. */
   const getProjectName = (): string => {
-    return props.project?.className || 'No Project Selected';
+    return props.project?.projectName || t('NO_PROJECT_SELECTED');
+  };
+
+  /** Renders the unsaved changes indicator. */
+  const renderUnsavedIndicator = (): React.JSX.Element | null => {
+    if (!autosave.hasUnsavedChanges) {
+      return null;
+    }
+
+    return (
+      <Antd.Typography.Text
+        style={{
+          marginLeft: 8,
+          fontSize: TEXT_FONT_SIZE,
+          color: token.colorWarning,
+          fontStyle: 'italic',
+        }}
+      >
+        *
+      </Antd.Typography.Text>
+    );
   };
 
   return (
-    <Antd.Flex vertical style={{background: '#000'}}>
+    <Antd.Flex vertical>
       <Antd.Flex style={{alignItems: 'center'}}>
         <img
           height={LOGO_HEIGHT}
           style={{objectFit: 'contain'}}
-          src="/FIRST_HorzRGB_reverse.png"
+          src={import.meta.env.BASE_URL + (isDarkTheme ? "/FIRST_HorzRGB_reverse.png" : "/FIRST_HorzRGB.png")}
           alt="FIRST Logo"
         />
         <Antd.Typography
           style={{
-            color: 'white',
             paddingLeft: TEXT_PADDING_LEFT,
             fontSize: TEXT_FONT_SIZE,
             fontWeight: TITLE_FONT_WEIGHT,
           }}
         >
-          Blocks
+          {t("BLOCKS")}
         </Antd.Typography>
         <Antd.Typography
           style={{
-            color: 'white',
             paddingLeft: TEXT_PADDING_LEFT,
             fontSize: TEXT_FONT_SIZE,
             fontWeight: 'normal',
           }}
         >
-          Project: {getProjectName()}
+          {t("PROJECT")}: {getProjectName()}
+          {renderUnsavedIndicator()}
         </Antd.Typography>
         {renderErrorAlert()}
       </Antd.Flex>

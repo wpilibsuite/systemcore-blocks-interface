@@ -19,29 +19,78 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { PythonData, organizeVarDataByType, VariableGettersAndSetters } from './python_json_types';
-import { robotPyData } from './robotpy_data';
-import { externalSamplesData } from './external_samples_data';
+import {
+    ClassData,
+    EnumData,
+    isPortType,
+    ModuleData,
+    organizeVarDataByType,
+    PythonData,
+    VariableGettersAndSetters } from './python_json_types';
+import generatedRobotPyData from './generated/robotpy_data.json';
+import generatedServerPythonScripts from './generated/server_python_scripts.json';
 
-import * as pythonEnum from "../mrc_get_python_enum_value";
-import * as getPythonVariable from "../mrc_get_python_variable";
-import * as setPythonVariable from "../mrc_set_python_variable";
+import * as PythonEnum from "../mrc_get_python_enum_value";
+import * as GetPythonVariable from "../mrc_get_python_variable";
+import * as SetPythonVariable from "../mrc_set_python_variable";
 
-// Utilities related to blocks for python modules and classes, including those from RobotPy, external samples, etc.
+
+// Utilities related to blocks for python modules and classes, including those from RobotPy.
+
+// The module for classes used by blocks that don't exist in wpilib.
+export const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
+
+// TODO(lizlooney): Update these constants if necessary when we update wpilib.
+
+export const CLASS_NAME_ROBOT_BASE = 'wpilib.OpModeRobot';
+export const ROBOT_METHOD_NAMES_OVERRIDEABLE: string[] = [
+  'driverStationConnected',
+  'nonePeriodic',
+];
+
+export const CLASS_NAME_MECHANISM = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Mechanism';
+export const MECHANISM_METHOD_NAMES_OVERRIDEABLE: string[] = [
+  'opmode_end',
+  'opmode_periodic',
+  'opmode_start',
+];
+
+export const CLASS_NAME_OPMODE = 'wpilib.PeriodicOpMode';
+export const OPMODE_METHOD_NAMES_OVERRIDEABLE: string[] = [
+  'disabledPeriodic',
+  'end',
+  'periodic',
+  'start',
+];
+export const START_METHOD_NAME = 'start';
+export const PERIODIC_METHOD_NAME = 'periodic';
+export const END_METHOD_NAME = 'end';
+
+export const TELEOP_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Teleop';
+export const AUTO_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Auto';
+export const TEST_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Test';
+export const NAME_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Name';
+export const GROUP_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Group';
+
+export const robotPyData = generatedRobotPyData as PythonData;
+const serverPythonScripts = generatedServerPythonScripts as PythonData;
 
 const allPythonData: PythonData[] = [];
 allPythonData.push(robotPyData);
-allPythonData.push(externalSamplesData);
+allPythonData.push(serverPythonScripts);
 
+export const componentClasses: ClassData[] = []
 
 // Initializes enum and variable blocks for python modules and classes.
 export function initialize() {
+  componentClasses.length = 0;
+
   for (const pythonData of allPythonData) {
     // Process modules.
     for (const moduleData of pythonData.modules) {
       // Initialize enums.
       for (const enumData of moduleData.enums) {
-        pythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
+        PythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
       }
 
       // Initialize module variables.
@@ -49,13 +98,13 @@ export function initialize() {
           organizeVarDataByType(moduleData.moduleVariables);
       for (const varType in varsByType) {
         const variableGettersAndSetters = varsByType[varType];
-        getPythonVariable.initializeModuleVariableGetter(
+        GetPythonVariable.initializeModuleVariableGetter(
             moduleData.moduleName,
             varType,
             variableGettersAndSetters.varNamesForGetter,
             variableGettersAndSetters.tooltipsForGetter);
         if (variableGettersAndSetters.varNamesForSetter.length) {
-          setPythonVariable.initializeModuleVariableSetter(
+          SetPythonVariable.initializeModuleVariableSetter(
               moduleData.moduleName,
               varType,
               variableGettersAndSetters.varNamesForSetter,
@@ -68,7 +117,7 @@ export function initialize() {
     for (const classData of pythonData.classes) {
       // Initialize enums.
       for (const enumData of classData.enums) {
-        pythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
+        PythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
       }
 
       // Initialize instance variables.
@@ -77,13 +126,13 @@ export function initialize() {
             organizeVarDataByType(classData.instanceVariables);
         for (const varType in varsByType) {
           const variableGettersAndSetters = varsByType[varType];
-          getPythonVariable.initializeInstanceVariableGetter(
+          GetPythonVariable.initializeInstanceVariableGetter(
               classData.className,
               varType,
               variableGettersAndSetters.varNamesForGetter,
               variableGettersAndSetters.tooltipsForGetter);
           if (variableGettersAndSetters.varNamesForSetter.length) {
-            setPythonVariable.initializeInstanceVariableSetter(
+            SetPythonVariable.initializeInstanceVariableSetter(
                 classData.className,
                 varType,
                 variableGettersAndSetters.varNamesForSetter,
@@ -98,13 +147,13 @@ export function initialize() {
             organizeVarDataByType(classData.classVariables);
         for (const varType in varsByType) {
           const variableGettersAndSetters = varsByType[varType];
-          getPythonVariable.initializeClassVariableGetter(
+          GetPythonVariable.initializeClassVariableGetter(
               classData.className,
               varType,
               variableGettersAndSetters.varNamesForGetter,
               variableGettersAndSetters.tooltipsForGetter);
           if (variableGettersAndSetters.varNamesForSetter.length) {
-            setPythonVariable.initializeClassVariableSetter(
+            SetPythonVariable.initializeClassVariableSetter(
                 classData.className,
                 varType,
                 variableGettersAndSetters.varNamesForSetter,
@@ -112,10 +161,59 @@ export function initialize() {
           }
         }
       }
+
+      // Check whether this class is a component.
+      if (classData.isComponent) {
+        componentClasses.push(classData);
+      }
     }
   }
 }
 
+// Returns the ClassData for the given class name.
+export function getClassData(className: string): ClassData | null {
+  for (const pythonData of allPythonData) {
+    for (const classData of pythonData.classes) {
+      if (classData.className === className) {
+        return classData;
+      }
+    }
+  }
+  return null;
+}
+
+// Returns the EnumData for the given enum class name.
+export function getEnumData(enumClassName: string): EnumData | null {
+  for (const pythonData of allPythonData) {
+    for (const moduleData of pythonData.modules) {
+      for (const enumData of moduleData.enums) {
+        if (enumData.enumClassName === enumClassName) {
+          return enumData;
+        }
+      }
+    }
+    for (const classData of pythonData.classes) {
+      for (const enumData of classData.enums) {
+        if (enumData.enumClassName === enumClassName) {
+          return enumData;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+// Returns the ModuleData for the given module name.
+export function getModuleData(moduleName: string): ModuleData | null {
+  for (const pythonData of allPythonData) {
+    for (const moduleData of pythonData.modules) {
+      if (moduleData.moduleName === moduleName) {
+        return moduleData;
+      }
+    }
+  }
+  return null;
+}
 
 // If the given type is a type alias, returns the value of the type alias.
 // For example, if type is 'wpimath.units.nanoseconds', this function will return 'float'
@@ -134,7 +232,7 @@ export function getAlias(type: string): string | null {
 // Returns the list of subclass names for the given type.
 // For example, if type is 'wpilib.drive.RobotDriveBase', this function will
 // return ['wpilib.drive.DifferentialDrive', 'wpilib.drive.MecanumDrive'].
-function getSubclassNames(type: string): string[] | null {
+export function getSubclassNames(type: string): string[] {
   for (const pythonData of allPythonData) {
     for (const className in pythonData.subclasses) {
       if (type === className) {
@@ -142,20 +240,24 @@ function getSubclassNames(type: string): string[] | null {
       }
     }
   }
-  return null;
+  return [];
 }
 
 // Returns the array of allowed types for the given string.
 // This function is used by multiple blocks to set the check for an input socket.
 export function getAllowedTypesForSetCheck(type: string): string[] {
   // For the given python type, returns an array of compatible input types.
-
   const allowedTypes: string[] = [];
   collectAllowedTypesForSetCheck(type, allowedTypes);
   return allowedTypes;
 }
 
 function collectAllowedTypesForSetCheck(type: string, allowedTypes: string[]) {
+  if (isPortType(type)) {
+    allowedTypes.push(type);
+    return;
+  }
+
   // Built-in python types.
   const check = getCheckForBuiltInType(type);
   if (check) {
@@ -227,24 +329,14 @@ export function getOutputCheck(type: string): string {
   return type;
 }
 
-// Function to return a legal name based off of proposed names and making sure it doesn't conflict
-// This is a legal name for python methods and variables. 
-export function getLegalName(proposedName: string, existingNames: string[]){
-  let newName = proposedName.trim().replace(' ', '_');
-  
-  if (!/^[A-Za-z_]/.test(newName)){
-      newName = "_" + newName;
-  }
-      
-  while (existingNames.includes(newName)){
-      const match = /(.*?)(\d+)$/.exec(newName)
-
-      if(match){
-          let lastNumber  = +match[2]
-          newName = match[1] + (lastNumber + 1)
-      }else{
-          newName += "2"
+export function isExistingPythonModule(moduleName: string): boolean {
+  for (const pythonData of allPythonData) {
+    // Process modules.
+    for (const moduleData of pythonData.modules) {
+      if (moduleData.moduleName === moduleName) {
+        return true;
       }
+    }
   }
-  return newName;
+  return false;
 }

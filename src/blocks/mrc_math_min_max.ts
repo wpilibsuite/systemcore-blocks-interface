@@ -16,7 +16,7 @@
  */
 
 /**
- * @fileoverview Miscellaneous blocks.
+ * @fileoverview Blocks for math min and max.
  * @author lizlooney@google.com (Liz Looney)
  */
 

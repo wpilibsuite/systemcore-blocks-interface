@@ -19,8 +19,8 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { Block } from "../toolbox/items";
-import * as commonStorage from '../storage/common_storage';
+import * as storageModule from '../storage/module';
+import { CLASS_NAME_ROBOT_BASE, CLASS_NAME_OPMODE, CLASS_NAME_MECHANISM } from '../blocks/utils/python';
 
 
 export function createGeneratorContext(): GeneratorContext {
@@ -28,69 +28,38 @@ export function createGeneratorContext(): GeneratorContext {
 }
 
 export class GeneratorContext {
-  private module: commonStorage.Module | null = null;
+  private module: storageModule.Module | null = null;
 
-  // The exported blocks for the current module.
-  private exportedBlocks: Block[] = [];
-
-  // Has mechanisms (ie, needs in init)
-  private hasHardware = false;
-
-  setModule(module: commonStorage.Module | null) {
+  setModule(module: storageModule.Module | null) {
     this.module = module;
-    this.clear();
   }
 
-  clear(): void {
-    this.clearExportedBlocks();
-    this.hasHardware= false;
-  }
-
-  setHasHardware():void{
-    this.hasHardware = true;
-  }
-
-  getHasHardware():boolean{
-    return this.hasHardware;
+  getModuleType(): storageModule.ModuleType | null {
+    if (this.module) {
+      return this.module.moduleType;
+    }
+    return null;
   }
 
   getClassName(): string {
     if (!this.module) {
       throw new Error('getClassName: this.module is null.');
     }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
-      return 'Robot';
-    }
-
     return this.module.className;
   }
 
-  getClassParent(): string {
+  getBaseClassName(): string {
     if (!this.module) {
-      throw new Error('getClassParent: this.module is null.');
+      throw new Error('getParentClassName: this.module is null.');
     }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_PROJECT) {
-      return 'RobotBase';
-    }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_OPMODE) {
-      return 'OpMode';
-    }
-    if (this.module.moduleType === commonStorage.MODULE_TYPE_MECHANISM) {
-      return 'Mechanism';
+    switch (this.module.moduleType) {
+      case storageModule.ModuleType.ROBOT:
+        return CLASS_NAME_ROBOT_BASE;
+      case storageModule.ModuleType.OPMODE:
+        return CLASS_NAME_OPMODE;
+      case storageModule.ModuleType.MECHANISM:
+        return CLASS_NAME_MECHANISM;
     }
     return '';
-  }
-
-  clearExportedBlocks() {
-    this.exportedBlocks.length = 0;
-  }
-
-  setExportedBlocks(exportedBlocks: Block[]) {
-    this.exportedBlocks.length = 0;
-    this.exportedBlocks.push(...exportedBlocks);
-  }
-
-  getExportedBlocks(): Block[] {
-    return this.exportedBlocks;
   }
 }

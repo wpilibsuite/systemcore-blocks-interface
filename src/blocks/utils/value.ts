@@ -19,8 +19,12 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { getAlias } from './python';
+import { getAlias, getEnumData } from './python';
+import { isPortType } from './python_json_types';
 import * as variable from './variable';
+import { createNoneBlock, createNoneShadowValue } from '../mrc_none';
+import { createEnumBlock } from '../mrc_get_python_enum_value';
+import { createPort } from '../mrc_port';
 
 
 export function valueForFunctionArgInput(argType: string, argDefaultValue: string): any {
@@ -50,12 +54,11 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
       break;
     case 'str':
       if (argDefaultValue === 'None') {
-        // TODO(lizlooney): Make a block for python None
-        // In RobotPy function hal.report(), the arg named feature has a default value of None.
-        return null;
+        return createNoneShadowValue();
       }
-      // If argDefaultValue has single quotes, it's a literal string.
-      if (argDefaultValue.startsWith("'") && argDefaultValue.endsWith("'")) {
+      // If argDefaultValue is surrounded by single or double quotes, it's a literal string.
+      if (argDefaultValue.startsWith("'") && argDefaultValue.endsWith("'") ||
+          argDefaultValue.startsWith('"') && argDefaultValue.endsWith('"')) {
         const textValue = argDefaultValue.substring(1, argDefaultValue.length-1);
         return createTextShadowValue(textValue);
       }
@@ -72,12 +75,97 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
   return null;
 }
 
+export function valueForComponentArgInput(argType: string, argDefaultValue: string): any {
+  if (isPortType(argType)) {
+    return createPort(argType);
+  }
+
+  const alias = getAlias(argType);
+  if (alias) {
+    argType = alias;
+  }
+  switch (argType) {
+    case 'int':
+      if (argDefaultValue) {
+        const intNum = parseInt(argDefaultValue, 10);
+        if (!isNaN(intNum) && intNum.toString() === argDefaultValue) {
+          return createNumberBlock(intNum);
+        }
+      }
+      return createNumberBlock(0);
+    case 'float':
+      if (argDefaultValue) {
+        const floatNum = Number(argDefaultValue);
+        if (!isNaN(floatNum)) {
+          return createNumberBlock(floatNum);
+        }
+      }
+      return createNumberBlock(0);
+    case 'str':
+      if (argDefaultValue === 'None') {
+        return createNoneBlock();
+      }
+      // If argDefaultValue is surrounded by single or double quotes, it's a literal string.
+      if (argDefaultValue.startsWith("'") && argDefaultValue.endsWith("'") ||
+          argDefaultValue.startsWith('"') && argDefaultValue.endsWith('"')) {
+        const textValue = argDefaultValue.substring(1, argDefaultValue.length-1);
+        return createTextBlock(textValue);
+      }
+      return createTextBlock('');
+    case 'bool':
+      if (argDefaultValue === 'True') {
+        return createBooleanBlock(true);
+      }
+      return createBooleanBlock(false);
+  }
+
+  const enumData = getEnumData(argType);
+  if (enumData && enumData.enumValues.length) {
+    let enumValue: string = enumData.enumValues[0];
+    if (argDefaultValue) {
+      for (const v of enumData.enumValues) {
+        if (v === argDefaultValue) {
+          enumValue = argDefaultValue;
+          break;
+        }
+      }
+    }
+    return {
+      block: createEnumBlock(enumValue, enumData),
+    };
+  }
+
+  return null;
+}
+
+export function createNumberBlock(numValue: number): any {
+  return {
+    'block': {
+      'type': 'math_number',
+      'fields': {
+        'NUM': numValue,
+      },
+    },
+  };
+}
+
 export function createNumberShadowValue(numValue: number): any {
   return {
     'shadow': {
       'type': 'math_number',
       'fields': {
         'NUM': numValue,
+      },
+    },
+  };
+}
+
+export function createTextBlock(textValue: string): any {
+  return {
+    'block': {
+      'type': 'text',
+      'fields': {
+        'TEXT': textValue,
       },
     },
   };
@@ -92,6 +180,17 @@ export function createTextShadowValue(textValue: string): any {
       },
     },
   };
+}
+
+export function createBooleanBlock(boolValue: boolean): any {
+  return {
+    'block': {
+      'type': 'logic_boolean',
+      'fields': {
+        'BOOL': (boolValue ? 'TRUE' : 'FALSE'),
+      },
+    },
+  }
 }
 
 export function createBooleanShadowValue(boolValue: boolean): any {

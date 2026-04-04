@@ -18,33 +18,33 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
-import {TabType} from './Tabs';
 import * as Antd from 'antd';
+import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
-import {EditOutlined, DeleteOutlined, CopyOutlined, SelectOutlined} from '@ant-design/icons';
+import * as storageNames from '../storage/names';
+import * as storageProject from '../storage/project';
 import ProjectNameComponent from './ProjectNameComponent';
+import ManageTable from './ManageTable';
 
 /** Props for the ProjectManageModal component. */
 interface ProjectManageModalProps {
   isOpen: boolean;
   noProjects: boolean;
   onCancel: () => void;
-  setProject: (project: commonStorage.Project | null) => void;
+  currentProject: storageProject.Project | null;
+  setCurrentProject: (project: storageProject.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
-  moduleType: TabType;
 }
 
-/** Default page size for table pagination. */
-const DEFAULT_PAGE_SIZE = 5;
+type ProjectRecord = {
+  name: string,
+};
 
 /** Modal width in pixels. */
 const MODAL_WIDTH = 800;
-
-/** Actions column width in pixels. */
-const ACTIONS_COLUMN_WIDTH = 160;
 
 /** Default copy suffix for project names. */
 const COPY_SUFFIX = 'Copy';
@@ -64,162 +64,176 @@ const CONTAINER_PADDING = '12px';
  */
 export default function ProjectManageModal(props: ProjectManageModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
-  const [modules, setModules] = React.useState<commonStorage.Project[]>([]);
+  const { token } = Antd.theme.useToken();
+  const [modal, modalContextHolder] = Antd.Modal.useModal();
+  const [messageApi, messageContextHolder] = Antd.message.useMessage();
+  const [allProjectNames, setAllProjectNames] = React.useState<string[]>([]);
+  const [allProjectRecords, setAllProjectRecords] = React.useState<ProjectRecord[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
-  const [currentRecord, setCurrentRecord] = React.useState<commonStorage.Project | null>(null);
+  const [currentRecord, setCurrentRecord] = React.useState<ProjectRecord | null>(null);
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
 
-  /** Loads modules from storage and sorts them alphabetically. */
-  const loadModules = async (storage: commonStorage.Storage): Promise<void> => {
-    const projects = await storage.listModules();
+  /** Loads project names from storage and sorts them alphabetically. */
+  const loadProjectNames = async (storage: commonStorage.Storage): Promise<void> => {
+    const projectNames = await storageProject.listProjectNames(storage);
+    projectNames.sort();
+    setAllProjectNames(projectNames);
 
-    // Sort modules alphabetically by class name
-    projects.sort((a, b) => a.className.localeCompare(b.className));
-    setModules(projects);
-    
-    if (projects.length > 0 && props.noProjects) {
-      props.setProject(projects[0]); // Set the first project as the current project
+    const projectRecords: ProjectRecord[] = [];
+    projectNames.forEach(projectName => {
+      projectRecords.push({
+        name: projectName,
+      });
+    });
+    setAllProjectRecords(projectRecords);
+
+    if (projectNames.length > 0 && props.noProjects) {
+      // Set the first project as the current project
+      const project = await storageProject.fetchProject(storage, projectNames[0]);
+      props.setCurrentProject(project);
       props.onCancel(); // Close the modal after selecting
     }
   };
 
   /** Handles renaming a project. */
-  const handleRename = async (origModule: commonStorage.Project, newName: string): Promise<void> => {
+  const handleRename = async (origProjectName: string, newProjectName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
     try {
-      await props.storage.renameModule(
-          commonStorage.MODULE_TYPE_PROJECT,
-          origModule.className,
-          origModule.className,
-          newName
+      await storageProject.renameProject(
+          props.storage,
+          origProjectName,
+          newProjectName
       );
-      await loadModules(props.storage);
+      await loadProjectNames(props.storage);
     } catch (error) {
-      console.error('Error renaming module:', error);
-      props.setAlertErrorMessage('Failed to rename module');
+      console.error('Error renaming project:', error);
+      props.setAlertErrorMessage(t('FAILED_TO_RENAME_PROJECT'));
     }
-    
+
     setRenameModalOpen(false);
   };
 
   /** Handles copying a project. */
-  const handleCopy = async (origModule: commonStorage.Project, newName: string): Promise<void> => {
+  const handleCopy = async (origProjectName: string, newProjectName: string): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
     try {
-      await props.storage.copyModule(
-          commonStorage.MODULE_TYPE_PROJECT,
-          origModule.className,
-          origModule.className,
-          newName
+      await storageProject.copyProject(
+          props.storage,
+          origProjectName,
+          newProjectName
       );
-      await loadModules(props.storage);
+      await loadProjectNames(props.storage);
     } catch (error) {
-      console.error('Error copying module:', error);
-      props.setAlertErrorMessage('Failed to copy module');
+      console.error('Error copying project:', error);
+      props.setAlertErrorMessage(t('FAILED_TO_COPY_PROJECT'));
     }
-    
+
     setCopyModalOpen(false);
   };
 
   /** Handles adding a new project. */
   const handleAddNewItem = async (): Promise<void> => {
-    const trimmedName = newItemName.trim();
-    if (!trimmedName || !props.storage) {
+    const newProjectName = newItemName.trim();
+    if (!newProjectName || !props.storage) {
       return;
     }
 
-    const newProjectName = commonStorage.classNameToModuleName(trimmedName);
-    const newProjectPath = commonStorage.makeProjectPath(newProjectName);
-    const projectContent = commonStorage.newProjectContent(newProjectName);
-
     try {
-      await props.storage.createModule(
-          commonStorage.MODULE_TYPE_PROJECT,
-          newProjectPath,
-          projectContent
+      await storageProject.createProject(
+          props.storage,
+          newProjectName
       );
     } catch (e) {
       console.error('Failed to create a new project:', e);
-      props.setAlertErrorMessage('Failed to create a new project.');
+      props.setAlertErrorMessage(t('FAILED_TO_CREATE_PROJECT'));
     }
 
     setNewItemName('');
-    await loadModules(props.storage);
+    await loadProjectNames(props.storage);
+    handleSelectProject({ name: newProjectName });
   };
 
   /** Handles project deletion with proper cleanup. */
-  const handleDeleteProject = async (record: commonStorage.Project): Promise<void> => {
+  const handleDeleteProject = async (projectToDelete: ProjectRecord): Promise<void> => {
     if (!props.storage) {
       return;
     }
 
-    const newModules = modules.filter((m) => m.modulePath !== record.modulePath);
-    setModules(newModules);
+    const updatedProjectNames = allProjectNames.filter(projectName => projectName !== projectToDelete.name);
+    setAllProjectNames(updatedProjectNames);
+    const updatedProjectRecords = allProjectRecords.filter((r) => r.name !== projectToDelete.name);
+    setAllProjectRecords(updatedProjectRecords);
 
-    // Find another project to set as current
-    let foundAnotherProject = false;
-    for (const project of modules) {
-      if (project.modulePath !== record.modulePath) {
-        props.setProject(project);
-        foundAnotherProject = true;
-        break;
+    let projectToSelect: storageProject.Project | null = null;
+    if (props.currentProject && props.currentProject.projectName === projectToDelete.name) {
+      // Find another project to set as current
+      for (const projectName of allProjectNames) {
+        if (projectName !== projectToDelete.name) {
+          projectToSelect = await storageProject.fetchProject(props.storage, projectName);
+          break;
+        }
       }
     }
 
-    if (!foundAnotherProject) {
-      props.setProject(null);
-    }
-
     try {
-      await props.storage.deleteModule(commonStorage.MODULE_TYPE_PROJECT, record.modulePath);
+      await storageProject.deleteProject(props.storage, projectToDelete.name);
     } catch (e) {
       console.error('Failed to delete the project:', e);
-      props.setAlertErrorMessage('Failed to delete the project.');
+      props.setAlertErrorMessage(t('FAILED_TO_DELETE_PROJECT'));
+    }
+
+    if (projectToSelect) {
+      props.setCurrentProject(projectToSelect);
     }
   };
 
   /** Handles project selection. */
-  const handleSelectProject = (record: commonStorage.Project): void => {
-    props.setProject(record);
+  const handleSelectProject = async (projectRecord: ProjectRecord): Promise<void> => {
+    if (!props.storage) {
+      return;
+    }
+
+    const project = await storageProject.fetchProject(props.storage, projectRecord.name);
+    props.setCurrentProject(project);
     props.onCancel();
   };
 
   /** Opens the rename modal for a specific project. */
-  const openRenameModal = (record: commonStorage.Project): void => {
+  const openRenameModal = (record: ProjectRecord): void => {
     setCurrentRecord(record);
-    setName(record.className);
+    setName(record.name);
     setRenameModalOpen(true);
   };
 
   /** Opens the copy modal for a specific project. */
-  const openCopyModal = (record: commonStorage.Project): void => {
+  const openCopyModal = (record: ProjectRecord): void => {
     setCurrentRecord(record);
-    setName(record.className + COPY_SUFFIX);
+    setName(record.name + COPY_SUFFIX);
     setCopyModalOpen(true);
   };
 
   /** Gets the rename modal title. */
   const getRenameModalTitle = (): string => {
-    return `Rename Project: ${currentRecord ? currentRecord.className : ''}`;
+    return `${t('RENAME_PROJECT')}: ${currentRecord ? currentRecord.name : ''}`;
   };
 
   /** Gets the copy modal title. */
   const getCopyModalTitle = (): string => {
-    return `Copy Project: ${currentRecord ? currentRecord.className : ''}`;
+    return `${t('COPY_PROJECT')}: ${currentRecord ? currentRecord.name : ''}`;
   };
 
   /** Creates the container style object. */
   const getContainerStyle = (): React.CSSProperties => ({
     marginBottom: ALERT_MARGIN_BOTTOM,
-    border: '1px solid #d9d9d9',
+    border: `1px solid ${token.colorBorder}`,
     borderRadius: CONTAINER_BORDER_RADIUS,
     padding: CONTAINER_PADDING,
   });
@@ -229,95 +243,144 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     marginBottom: ALERT_MARGIN_BOTTOM,
   });
 
-  /** Table column configuration. */
-  const columns: Antd.TableProps<commonStorage.Project>['columns'] = [
-    {
-      title: 'Name',
-      dataIndex: 'className',
-      key: 'className',
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (className: string) => (
-        <Antd.Tooltip title={className}>
-          {className}
-        </Antd.Tooltip>
-      ),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: ACTIONS_COLUMN_WIDTH,
-      render: (_, record: commonStorage.Project) => (
-        <Antd.Space size="small">
-          <Antd.Tooltip title={t('Select')}>
-            <Antd.Button
-              type="text"
-              size="small"
-              icon={<SelectOutlined />}
-              onClick={() => handleSelectProject(record)}
-            />
-          </Antd.Tooltip>
-          <Antd.Tooltip title={t('Rename')}>
-            <Antd.Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => openRenameModal(record)}
-            />
-          </Antd.Tooltip>
-          <Antd.Tooltip title={t('Copy')}>
-            <Antd.Button
-              type="text"
-              size="small"
-              icon={<CopyOutlined />}
-              onClick={() => openCopyModal(record)}
-            />
-          </Antd.Tooltip>
-          {modules.length > 1 && (
-            <Antd.Tooltip title={t('Delete')}>
-              <Antd.Popconfirm
-                title={`Delete ${record.className}?`}
-                description="This action cannot be undone."
-                onConfirm={() => handleDeleteProject(record)}
-                okText={t('Delete')}
-                cancelText={t('Cancel')}
-                okType="danger"
-              >
-                <Antd.Button
-                  type="text"
-                  size="small"
-                  icon={<DeleteOutlined />}
-                  danger
-                />
-              </Antd.Popconfirm>
-            </Antd.Tooltip>
-          )}
-        </Antd.Space>
-      ),
-    },
-  ];
+  /** Handles downloading the current project as a json file. */
+  const handleDownload = async (): Promise<void> => {
+    if (!props.currentProject || !props.storage) {
+      return;
+    }
+    try {
+      const blobUrl = await storageProject.downloadProject(props.storage, props.currentProject.projectName);
+      const filename = props.currentProject.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Failed to download project:', error);
+      props.setAlertErrorMessage(t('DOWNLOAD_FAILED'));
+    }
+  };
 
-  // Load modules when storage becomes available or modal opens
+  /** Handles uploading a previously downloaded project file. */
+  const handleUpload = (): void => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
+
+    input.onchange = async (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+      if (!file) return;
+
+      if (!file.name.endsWith(storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION)) {
+        props.setAlertErrorMessage(t('UPLOAD_FILE_NOT_BLOCKS', { filename: file.name }));
+        return;
+      }
+
+      try {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          if (!event.target || !props.storage) return;
+
+          const dataUrl = event.target.result as string;
+          const existingProjectNames = allProjectNames;
+          const preferredName = file.name.substring(
+            0, file.name.length - storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
+
+          // Smart name conflict resolution: extract base name and trailing number
+          // e.g., "PrSimplify2" -> base="PrSimplify", num=2
+          const match = preferredName.match(/^(.+?)(\d+)$/);
+          let uploadProjectName: string;
+          if (match && existingProjectNames.includes(preferredName)) {
+            const baseName = match[1];
+            let num = parseInt(match[2], 10) + 1;
+            while (existingProjectNames.includes(baseName + num)) num++;
+            uploadProjectName = baseName + num;
+          } else {
+            uploadProjectName = storageNames.makeUniqueName(preferredName, existingProjectNames);
+          }
+
+          const doUpload = async (name: string) => {
+            if (!props.storage) return;
+            await storageProject.uploadProject(props.storage, name, dataUrl);
+            await loadProjectNames(props.storage);
+            const project = await storageProject.fetchProject(props.storage, name);
+            props.setCurrentProject(project);
+            messageApi.success(t('UPLOAD_SUCCESS', { projectName: name }));
+            props.onCancel();
+          };
+
+          if (existingProjectNames.includes(preferredName)) {
+            let inputValue = uploadProjectName;
+            modal.confirm({
+              title: t('PROJECT_NAME_CONFLICT'),
+              content: (
+                <div>
+                  <p>{t('PROJECT_NAME_EXISTS', { projectName: preferredName })}</p>
+                  <Antd.Input
+                    defaultValue={uploadProjectName}
+                    onChange={(e) => { inputValue = e.target.value; }}
+                  />
+                </div>
+              ),
+              okText: t('UPLOAD'),
+              cancelText: t('CANCEL'),
+              onOk: async () => {
+                try {
+                  await doUpload(inputValue);
+                } catch (error) {
+                  console.error('Error uploading file:', error);
+                  props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+                }
+              },
+            });
+          } else {
+            try {
+              await doUpload(uploadProjectName);
+            } catch (error) {
+              console.error('Error uploading file:', error);
+              props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+            }
+          }
+        };
+        reader.onerror = () => {
+          props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error handling upload:', error);
+        props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+      }
+    };
+
+    input.click();
+  };
+
+  // Load project names when storage becomes available or modal opens
   React.useEffect(() => {
-    if (props.storage) {
-      loadModules(props.storage);
+    if (props.storage && props.isOpen) {
+      loadProjectNames(props.storage);
     }
   }, [props.storage, props.isOpen]);
 
   return (
     <>
+      {modalContextHolder}
+      {messageContextHolder}
       <Antd.Modal
         title={getRenameModalTitle()}
         open={renameModalOpen}
         onCancel={() => setRenameModalOpen(false)}
         onOk={() => {
           if (currentRecord) {
-            handleRename(currentRecord, name);
+            handleRename(currentRecord.name, name);
           }
         }}
-        okText={t('Rename')}
-        cancelText={t('Cancel')}
+        okText={t('RENAME')}
+        cancelText={t('CANCEL')}
       >
         {currentRecord && (
           <ProjectNameComponent
@@ -325,11 +388,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             setNewItemName={setName}
             onAddNewItem={() => {
               if (currentRecord) {
-                handleRename(currentRecord, name);
+                handleRename(currentRecord.name, name);
               }
             }}
-            projects={modules}
-            setProjects={setModules}
+            projectNames={allProjectNames}
           />
         )}
       </Antd.Modal>
@@ -340,11 +402,11 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
         onCancel={() => setCopyModalOpen(false)}
         onOk={() => {
           if (currentRecord) {
-            handleCopy(currentRecord, name);
+            handleCopy(currentRecord.name, name);
           }
         }}
-        okText={t('Copy')}
-        cancelText={t('Cancel')}
+        okText={t('COPY')}
+        cancelText={t('CANCEL')}
       >
         {currentRecord && (
           <ProjectNameComponent
@@ -352,66 +414,85 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             setNewItemName={setName}
             onAddNewItem={() => {
               if (currentRecord) {
-                handleCopy(currentRecord, name);
+                handleCopy(currentRecord.name, name);
               }
             }}
-            projects={modules}
-            setProjects={setModules}
+            projectNames={allProjectNames}
           />
         )}
       </Antd.Modal>
 
       <Antd.Modal
-        title={t('Project Management')}
+        title={t('PROJECT_MANAGEMENT')}
         open={props.isOpen}
         onCancel={props.onCancel}
-        footer={[
-          <Antd.Button key="close" onClick={props.onCancel}>
-            {t('Close')}
-          </Antd.Button>,
-        ]}
+        footer={null}
         width={MODAL_WIDTH}
       >
         {props.noProjects && (
           <Antd.Alert
-            message="No projects found"
-            description="Please create a new project to get started."
+            title={t('NO_PROJECTS_FOUND')}
+            description={t('CREATE_PROJECT_TO_START')}
             type="info"
             showIcon
             style={getAlertStyle()}
           />
         )}
+        {props.noProjects && (
+          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+            <Antd.Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={handleUpload}
+            >
+              {t('UPLOAD_EXISTING_PROJECT')}
+            </Antd.Button>
+          </div>
+        )}
+        {props.noProjects && (
+          <Antd.Divider>{t('OR')}</Antd.Divider>
+        )}
+        {!props.noProjects && (
+          <ManageTable
+            textOnEmpty={t('NO_PROJECTS_FOUND')}
+            records={allProjectRecords}
+            showDelete={allProjectRecords.length > 1}
+            deleteDialogTitle="DELETE_PROJECT_CONFIRM"
+            onSelect={(record) => handleSelectProject(record)}
+            onRename={(record) => openRenameModal(record)}
+            onCopy={(record) => openCopyModal(record)}
+            onDelete={(record) => handleDeleteProject(record)}
+          />
+        )}
+        {!props.noProjects && <br />}
+        {!props.noProjects && (
+          <div style={{ marginBottom: '8px', display: 'flex', gap: '8px' }}>
+            <Antd.Button
+              icon={<UploadOutlined />}
+              onClick={handleUpload}
+            >
+              {t('UPLOAD_EXISTING_PROJECT')}
+            </Antd.Button>
+            <Antd.Button
+              icon={<DownloadOutlined />}
+              onClick={handleDownload}
+              disabled={!props.currentProject}
+            >
+              {t('DOWNLOAD_CURRENT_PROJECT')}
+            </Antd.Button>
+          </div>
+        )}
+        <h4 style={{margin: '0 0 8px 0'}}>
+          {t('CREATE_NEW', { type: t('PROJECT') })}
+        </h4>
         <div style={getContainerStyle()}>
           <ProjectNameComponent
             newItemName={newItemName}
             setNewItemName={setNewItemName}
             onAddNewItem={handleAddNewItem}
-            projects={modules}
-            setProjects={setModules}
+            projectNames={allProjectNames}
           />
         </div>
-        {!props.noProjects && (
-          <Antd.Table<commonStorage.Project>
-            columns={columns}
-            dataSource={modules}
-            rowKey="modulePath"
-            size="small"
-            pagination={modules.length > DEFAULT_PAGE_SIZE ? {
-              pageSize: DEFAULT_PAGE_SIZE,
-              showSizeChanger: false,
-              showQuickJumper: false,
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} items`,
-            } : false}
-            bordered
-            locale={{
-              emptyText: 'No projects found',
-            }}
-            onRow={(record) => ({
-              onDoubleClick: () => handleSelectProject(record),
-            })}
-          />
-        )}
       </Antd.Modal>
     </>
   );

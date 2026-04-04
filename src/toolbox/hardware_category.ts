@@ -1,172 +1,225 @@
-export const category =
-{
-  kind: 'category',
-  name: 'Hardware',
-  contents: [
-    {
-      kind: 'label',
-      text: 'Mechanisms',
-    },
-    {
-      kind: 'block',
-      type: 'mrc_mechanism',
-      fields: {
-        NAME: 'claw',
-        TYPE: 'Claw'
-      },
-      extraState: {
-        importModule: 'claw',
-        params: [{ name: 'gripper_port', type: 'int' },
-        { name: 'piece_sensor_port', type: 'int' },
-        ]
-      },
-      inputs: {
-        ARG0: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartMotor',
-              PORT_NUM: 1
-            },
-          },
-        },
-        ARG1: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartIO',
-              PORT_NUM: 1
-            },
-          },
-        },
+/**
+ * @license
+ * Copyright 2025 Porpoiseful LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @author alan@porpoiseful.com (Alan Smith)
+ */
+
+import * as Blockly from 'blockly/core';
+import * as storageModule from '../storage/module';
+import * as toolboxItems from './items';
+import { getRobotEventHandlersCategory, getMechanismEventHandlersCategory } from './event_handlers_category';
+import { createMechanismBlock } from '../blocks/mrc_mechanism';
+import { getAllPossibleComponents } from '../blocks/mrc_component';
+import {
+    getInstanceComponentBlocks,
+    getInstanceMechanismComponentBlocks,
+    addInstanceRobotBlocks,
+    addInstanceMechanismBlocks } from '../blocks/mrc_call_python_function';
+import { Editor } from '../editor/editor';
+
+export function getHardwareCategory(editor: Editor): toolboxItems.Category {
+  const moduleType = editor.getModuleType();
+  switch (moduleType) {
+    case storageModule.ModuleType.ROBOT:
+      return new toolboxItems.Category(
+          Blockly.Msg['MRC_CATEGORY_HARDWARE'],
+          [
+            getRobotMechanismsCategory(editor),
+            getComponentsCategory(editor, moduleType),
+          ],
+          toolboxItems.ExpandedState.EXPANDED);
+    case storageModule.ModuleType.MECHANISM:
+      return getComponentsCategory(editor, moduleType);
+    case storageModule.ModuleType.OPMODE:
+      return new toolboxItems.Category(
+          Blockly.Msg['MRC_CATEGORY_ROBOT'],
+          [
+            getRobotMechanismsCategory(editor),
+            getRobotComponentsCategory(editor),
+            getRobotMethodsCategory(editor),
+            getRobotEventHandlersCategory(editor),
+          ],
+          toolboxItems.ExpandedState.EXPANDED);
+  }
+  throw new Error('moduleType has unexpected value: ' + moduleType);
+}
+
+function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
+  // getRobotMechanismsCategory is called when the user is editing the robot or an opmode.
+  // If the user is editing the robot, it allows the user to add a mechanism to
+  // the robot or use an existing mechanism.
+  // If the user is editing an opmode, it allows the user to use a mechanism that
+  // was previously added to the Robot.
+
+  const contents: toolboxItems.ContentsType[] = [];
+
+  // Include the "+ Mechanism" category if the user it editing the robot and there are any mechanism modules.
+  if (editor.getModuleType() === storageModule.ModuleType.ROBOT) {
+    const mechanisms = editor.getMechanisms();
+    if (mechanisms.length) {
+      const mechanismBlocks: toolboxItems.Block[] = [];
+      mechanisms.forEach(mechanism => {
+        // Here we need all the components (regular and private) from the mechanism because we need
+        // to create port parameters for all the components.
+        const components = editor.getAllComponentsFromMechanism(mechanism);
+        mechanismBlocks.push(createMechanismBlock(mechanism, components));
+      });
+
+      contents.push({
+        kind: 'category',
+        name: Blockly.Msg['MRC_CATEGORY_ADD_MECHANISM'],
+        contents: mechanismBlocks,
+      });
+    }
+  }
+
+  editor.getMechanismsFromRobot().forEach(mechanismInRobot => {
+    // Add the blocks for this mechanism's methods and events.
+    const mechanism = editor.getMechanism(mechanismInRobot);
+    if (mechanism) {
+      const mechanismCategories: toolboxItems.Category[] = [];
+
+      // Get the list of methods from the mechanism and add the blocks for calling the methods.
+      const mechanismMethodBlocks: toolboxItems.Item[] = [];
+      const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
+      addInstanceMechanismBlocks(mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks);
+      if (mechanismMethodBlocks.length === 0) {
+        const label : toolboxItems.Label = new toolboxItems.Label(Blockly.Msg['NO_MECHANISM_CONTENTS']);
+        mechanismMethodBlocks.push(label);
       }
-    },
-    {
-      kind: 'block',
-      type: 'mrc_mechanism',
-      fields: {
-        NAME: 'drive',
-        TYPE: 'DriveMecanum'
-      },
-      extraState: {
-        importModule: 'DriveMecanum',
-        params: [{ name: 'front_left_drive_port', type: 'int' },
-        { name: 'front_right_drive_port', type: 'int' },
-        { name: 'back_left_drive_port', type: 'int' },
-        { name: 'back_right_drive_port', type: 'int' },
-        ]
-      },
-      inputs: {
-        ARG0: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartMotor',
-              PORT_NUM: 1
-            },
-          },
-        },
-        ARG1: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartMotor',
-              PORT_NUM: 2
-            },
-          },
-        },
-        ARG2: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartMotor',
-              PORT_NUM: 3
-            },
-          },
-        },
-        ARG3: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartMotor',
-              PORT_NUM: 4
-            },
-          },
-        },
+      mechanismCategories.push({
+        kind: 'category',
+        name: Blockly.Msg['MRC_CATEGORY_METHODS'],
+        contents: mechanismMethodBlocks,
+      });
+
+      // Get the public components from the mechanism and add the blocks for calling the
+      // component functions.
+      const componentsFromMechanism = editor.getComponentsFromMechanism(mechanism);
+      if (componentsFromMechanism.length > 0) {
+        const componentBlocks: toolboxItems.ContentsType[] = [];
+        componentsFromMechanism.forEach(component => {
+          // Get the blocks for this specific component.
+          componentBlocks.push({
+            kind: 'category',
+            name: component.name,
+            contents: getInstanceMechanismComponentBlocks(component, mechanismInRobot),
+          });
+        });
+        mechanismCategories.push({
+          kind: 'category',
+          name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
+          contents: componentBlocks,
+        });
       }
-    },
-    {
-      kind: 'label',
-      text: 'Components',
-    },
-    {
-      kind: 'block',
-      type: 'mrc_component',
-      fields: {
-        NAME: 'my_motor',
-        TYPE: 'SmartMotor'
-      },
-      extraState: {
-        importModule: 'smart_motor',
-        params: [{ name: 'motor_port', type: 'int' }]
-      },
-      inputs: {
-        ARG0: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartMotor',
-              PORT_NUM: 1
-            },
-          },
-        },
-      }
-    },
-    {
-      kind: 'block',
-      type: 'mrc_component',
-      fields: {
-        NAME: 'my_color_range_sensor',
-        TYPE: 'ColorRangeSensor'
-      },
-      extraState: {
-        importModule: 'color_range_sensor',
-        params: [{ name: 'i2c_port', type: 'int' }]
-      },
-      inputs: {
-        ARG0: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'I2C',
-              PORT_NUM: 1
-            },
-          },
-        },
-      }
-    },
-    {
-      kind: 'block',
-      type: 'mrc_component',
-      fields: {
-        NAME: 'my_touch_sensor',
-        TYPE: 'RevTouchSensor'
-      },
-      extraState: {
-        importModule: 'rev_touch_sensor',
-        params: [{ name: 'smartIO_port', type: 'int' }]
-      },
-      inputs: {
-        ARG0: {
-          shadow: {
-            type: 'mrc_port',
-            fields: {
-              TYPE: 'SmartIO',
-              PORT_NUM: 1
-            },
-          },
-        },
-      }
-    },
-  ],
+
+      mechanismCategories.push(getMechanismEventHandlersCategory(editor, mechanismInRobot));
+
+      contents.push({
+        kind: 'category',
+        name: mechanismInRobot.name,
+        contents: mechanismCategories,
+      });
+    }
+  });
+
+  return {
+    kind: 'category',
+    name: Blockly.Msg['MRC_CATEGORY_MECHANISMS'],
+    contents,
+  };
+}
+
+function getRobotComponentsCategory(editor: Editor): toolboxItems.Category {
+  // getRobotComponentsCategory is called when the user is editing an opmode.
+  // It allows the user to use a component that was previously added to the Robot.
+
+  const contents: toolboxItems.ContentsType[] = [];
+
+  // Get the list of components from the robot and add the blocks for calling the
+  // component functions.
+  editor.getComponentsFromRobot().forEach(component => {
+    // Get the blocks for this specific component.
+    contents.push({
+      kind: 'category',
+      name: component.name,
+      contents: getInstanceComponentBlocks(component),
+    });
+  });
+
+  return {
+    kind: 'category',
+    name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
+    contents,
+  };
+}
+
+function getRobotMethodsCategory(editor: Editor): toolboxItems.Category {
+  // getRobotMethodsCategory is called when the user is editing an opmode.
+  // It allows the user to use methods that were previously defined in the Robot.
+
+  const contents: toolboxItems.ContentsType[] = [];
+
+  // Get the list of methods from the robot and add the blocks for calling the
+  // robot functions.
+  const methodsFromRobot = editor.getMethodsFromRobot();
+  addInstanceRobotBlocks(methodsFromRobot, contents);
+
+  return {
+    kind: 'category',
+    name: Blockly.Msg['MRC_CATEGORY_METHODS'],
+    contents,
+  };
+}
+
+function getComponentsCategory(
+    editor: Editor,
+    moduleType: storageModule.ModuleType): toolboxItems.Category {
+  // getComponentsCategory is called when the user is editing the robot or a
+  // mechanism. It allows the user to add a component or use an existing component.
+
+  const contents: toolboxItems.ContentsType[] = [];
+
+  // Add the "+ Component" category
+  contents.push({
+    kind: 'category',
+    name: Blockly.Msg['MRC_CATEGORY_ADD_COMPONENT'],
+    contents: getAllPossibleComponents(moduleType),
+  });
+
+  // Get all (regular and private) components from the current workspace.
+  // For a robot module, we can only have regular components. For a mechanism module, we can have
+  // regular and/or private components. Rather than checking what the current module type is, it's
+  // simpler to just call getAllComponentsFromWorkspace for both robot and mechanism modules. Since
+  // robot modules don't have private components, getAllComponentsFromWorkspace is equivalent to
+  // getComponentsFromWorkspace for a robot module.
+  editor.getAllComponentsFromWorkspace().forEach(component => {
+    // Get the blocks for this specific component
+    contents.push({
+      kind: 'category',
+      name: component.name,
+      contents: getInstanceComponentBlocks(component),
+    });
+  });
+
+  return {
+    kind: 'category',
+    name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
+    contents,
+  };
 }

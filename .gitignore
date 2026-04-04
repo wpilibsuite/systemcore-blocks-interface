@@ -10,6 +10,19 @@
 
 # production
 /build
+/dist
+/backend/deploy
+
+# python stuff
+__pycache__/
+venv/
+*.egg-info
+
+# oss attribution text file
+# This is excluded because it is a duplicate of /oss-attribution/licenseInfos.json
+# The command npx generate-attribution generates both files and it was easier
+# to exclude it than to modify the script to delete the file
+/oss-attribution/attribution.txt
 
 # misc
 .DS_Store
@@ -18,6 +31,7 @@
 .env.test.local
 .env.production.local
 .vscode 
+projects.db
 
 npm-debug.log*
 yarn-debug.log*

@@ -20,11 +20,13 @@
  */
 import * as Antd from 'antd';
 import * as React from 'react';
-import {CopyOutlined as CopyIcon} from '@ant-design/icons';
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
-import {dracula} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { CopyOutlined as CopyIcon } from '@ant-design/icons';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import SiderCollapseTrigger from './SiderCollapseTrigger';
+import { dracula, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-import type {MessageInstance} from 'antd/es/message/interface';
+import type { MessageInstance } from 'antd/es/message/interface';
+import { useTranslation } from 'react-i18next';
 
 /** Function type for setting string values. */
 type StringFunction = (input: string) => void;
@@ -32,24 +34,12 @@ type StringFunction = (input: string) => void;
 /** Props for the CodeDisplay component. */
 interface CodeDisplayProps {
   generatedCode: string;
+  theme: string;
   messageApi: MessageInstance;
   setAlertErrorMessage: StringFunction;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
-
-/** Background color for the syntax highlighter. */
-const SYNTAX_HIGHLIGHTER_BACKGROUND = '#333';
-
-/** Full dimensions style for the syntax highlighter. */
-const FULL_SIZE_STYLE = {
-  width: '100%',
-  height: '100%',
-};
-
-/** Header text color. */
-const HEADER_TEXT_COLOR = '#fff';
-
-/** Button text color. */
-const BUTTON_TEXT_COLOR = 'white';
 
 /** Success message for copy operation. */
 const COPY_SUCCESS_MESSAGE = 'Copy completed successfully.';
@@ -62,37 +52,51 @@ const COPY_ERROR_MESSAGE_PREFIX = 'Could not copy code: ';
  * Shows generated Python code in a dark theme with a copy button.
  */
 export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element {
+  const syntaxHighligherFromTheme = (theme: string) => {
+    const isDarkTheme = theme.endsWith('-dark') || theme === 'dark';
+    
+    if (isDarkTheme){
+      return dracula
+    }
+    return oneLight
+  }
+
+  const { token } = Antd.theme.useToken();
+  const { t } = useTranslation();
+  const syntaxStyle = syntaxHighligherFromTheme(props.theme);
+
   /** Handles copying the generated code to clipboard. */
   const handleCopyCode = (): void => {
     navigator.clipboard.writeText(props.generatedCode).then(
-        () => {
-          props.messageApi.open({
-            type: 'success',
-            content: COPY_SUCCESS_MESSAGE,
-          });
-        },
-        (err) => {
-          props.setAlertErrorMessage(COPY_ERROR_MESSAGE_PREFIX + err);
-        }
+      () => {
+        props.messageApi.open({
+          type: 'success',
+          content: COPY_SUCCESS_MESSAGE,
+        });
+      },
+      (err) => {
+        props.setAlertErrorMessage(COPY_ERROR_MESSAGE_PREFIX + err);
+      }
     );
   };
 
   /** Creates the custom style object for the syntax highlighter. */
   const getSyntaxHighlighterStyle = (): React.CSSProperties => ({
-    backgroundColor: SYNTAX_HIGHLIGHTER_BACKGROUND,
-    ...FULL_SIZE_STYLE,
+    backgroundColor: token.colorBgContainer,
+    width: '100%',
+    overflowX: 'auto',
+    overflowY: 'auto',
   });
 
   /** Renders the header section with title and copy button. */
   const renderHeader = (): React.JSX.Element => (
-    <Antd.Space>
-      <h3 style={{color: HEADER_TEXT_COLOR, margin: 0}}>Code</h3>
-      <Antd.Tooltip title="Copy">
+    <Antd.Space align="center">
+      <Antd.Typography.Title level={3} style={{ margin: 0 }}>{t("CODE")}</Antd.Typography.Title>
+      <Antd.Tooltip title={t("COPY")}>
         <Antd.Button
           icon={<CopyIcon />}
           size="small"
           onClick={handleCopyCode}
-          style={{color: BUTTON_TEXT_COLOR}}
         />
       </Antd.Tooltip>
     </Antd.Space>
@@ -102,17 +106,33 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
   const renderCodeBlock = (): React.JSX.Element => (
     <SyntaxHighlighter
       language="python"
-      style={dracula}
+      style={syntaxStyle}
       customStyle={getSyntaxHighlighterStyle()}
     >
       {props.generatedCode}
     </SyntaxHighlighter>
   );
 
+  /** Renders the collapse/expand trigger at the bottom center of the panel. */
+  const renderCollapseTrigger = (): React.JSX.Element | null => {
+    if (!props.onToggleCollapse) return null;
+    
+    return (
+      <SiderCollapseTrigger
+        collapsed={props.isCollapsed || false}
+        onToggle={props.onToggleCollapse}
+        isRightPanel={true}
+      />
+    );
+  };
+
   return (
-    <Antd.Flex vertical gap="small">
-      {renderHeader()}
-      {renderCodeBlock()}
-    </Antd.Flex>
+    <div style={{ height: '100%', position: 'relative' }}>
+      <Antd.Flex vertical gap="small" style={{ height: '100%' }}>
+        {renderHeader()}
+        {renderCodeBlock()}
+      </Antd.Flex>
+      {renderCollapseTrigger()}
+    </div>
   );
 }

@@ -1,17 +1,25 @@
 /// <reference types="vitest" />
 /// <reference types="@vitest/browser/matchers" />
-import react from "@vitejs/plugin-react";
-import path from "path";
-import { defineConfig } from "vite";
+
+import { defineConfig } from "vitest/config";
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import tsconfigPaths from "vite-tsconfig-paths";
+import { playwright } from '@vitest/browser-playwright'
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  plugins: [react(), tsconfigPaths(), viteStaticCopy({
+  base: '/blocks/',
+  resolve: {
+    tsconfigPaths: true,
+  },
+  plugins: [react(), viteStaticCopy({
     targets: [
       {
-        src: path.resolve(__dirname, './oss-attribution') + '/**/*',
-        dest: "./public",
+        src: 'oss-attribution/*',
+        dest: "./",
+      },
+      {
+        src: 'src/i18n/locales/*',
+        dest: "./locales/",
       },
     ],
   }),
@@ -26,12 +34,13 @@ export default defineConfig({
   },
   test: {
     setupFiles: ['./tests/setupTests.ts'],
-
     browser: {
-      provider: "playwright",
       enabled: true,
-      instances: [{ browser: "chromium" }],
+      provider: playwright(),
       headless: true,
+      instances: [
+        { browser: 'chromium' },
+      ]
     },
   },
 });

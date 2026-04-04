@@ -20,40 +20,40 @@
  */
 import * as React from 'react';
 import * as Antd from 'antd';
-import * as Blockly from 'blockly/core';
-import {pythonGenerator} from 'blockly/python';
+
+import { pythonGenerator } from 'blockly/python';
 
 import Header from './reactComponents/Header';
 import * as Menu from './reactComponents/Menu';
-import CodeDisplay from './reactComponents/CodeDisplay';
-import BlocklyComponent, {BlocklyComponentType} from './reactComponents/BlocklyComponent';
+import SiderCollapseTrigger from './reactComponents/SiderCollapseTrigger';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
+import ConfigGamepadsDialog from './reactComponents/ConfigGamepadsDialog';
+import { GamepadTypeUtils } from './types/GamepadType';
+import * as fieldGamepads from './fields/field_gamepads';
 import * as Tabs from './reactComponents/Tabs';
+import { TabType } from './types/TabType';
+import { AutosaveProvider } from './reactComponents/AutosaveManager';
 
-import {createGeneratorContext, GeneratorContext} from './editor/generator_context';
-import * as editor from './editor/editor';
-import {extendedPythonGenerator} from './editor/extended_python_generator';
+import { extendedPythonGenerator } from './editor/extended_python_generator';
 
 import * as commonStorage from './storage/common_storage';
+import * as storageModule from './storage/module';
+import * as storageProject from './storage/project';
 import * as clientSideStorage from './storage/client_side_storage';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
-import * as ChangeFramework from './blocks/utils/change_framework'
-import { mutatorOpenListener } from './blocks/mrc_param_container'
+import { antdThemeFromString } from './reactComponents/ThemeModal';
+import { useTranslation } from 'react-i18next';
+import { UserSettingsProvider } from './reactComponents/UserSettingsProvider';
+import { useUserSettings } from './reactComponents/useUserSettings';
 
 /** Storage key for shown toolbox categories. */
 const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';
 
 /** Default toolbox categories JSON. */
 const DEFAULT_TOOLBOX_CATEGORIES_JSON = '[]';
-
-/** Success message for save operations. */
-const SAVE_SUCCESS_MESSAGE = 'Save completed successfully.';
-
-/** Error message for save failures. */
-const SAVE_ERROR_MESSAGE = 'Failed to save the blocks.';
 
 /** Error message for storage opening failures. */
 const STORAGE_ERROR_MESSAGE = 'Failed to open client side storage. Caught the following error...';
@@ -67,12 +67,6 @@ const FULL_VIEWPORT_HEIGHT = '100vh';
 /** Layout height for remaining space. */
 const FULL_HEIGHT = '100%';
 
-/** Default size for code panel. */
-const CODE_PANEL_DEFAULT_SIZE = '25%';
-
-/** Minimum size for code panel. */
-const CODE_PANEL_MIN_SIZE = 40;
-
 /** Background color for testing layout. */
 const LAYOUT_BACKGROUND_COLOR = '#0F0';
 
@@ -81,22 +75,7 @@ const LAYOUT_BACKGROUND_COLOR = '#0F0';
  * project management, and user interface layout.
  */
 const App: React.FC = (): React.JSX.Element => {
-  const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [storage, setStorage] = React.useState<commonStorage.Storage | null>(null);
-  const [currentModule, setCurrentModule] = React.useState<commonStorage.Module | null>(null);
-  const [messageApi, contextHolder] = Antd.message.useMessage();
-  const [generatedCode, setGeneratedCode] = React.useState<string>('');
-  const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
-  const [project, setProject] = React.useState<commonStorage.Project | null>(null);
-  const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
-  const [activeTab, setActiveTab] = React.useState('');
-  const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
-  const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
-  const [leftCollapsed, setLeftCollapsed] = React.useState(false);
-
-  const blocksEditor = React.useRef<editor.Editor | null>(null);
-  const generatorContext = React.useRef<GeneratorContext | null>(null);
-  const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
 
   /** Opens client-side storage asynchronously. */
   const openStorage = async (): Promise<void> => {
@@ -108,6 +87,134 @@ const App: React.FC = (): React.JSX.Element => {
       console.error(e);
     }
   };
+
+  // Initialize storage when app loads
+  React.useEffect(() => {
+    openStorage();
+  }, []);
+
+  if (!storage) {
+    return (
+      <Antd.ConfigProvider>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh' 
+        }}>
+          <Antd.Spin size="large" />
+        </div>
+      </Antd.ConfigProvider>
+    );
+  }
+
+  return <AppWithUserSettings storage={storage} />;
+};
+
+/**
+ * App wrapper that manages project state and provides it to UserSettingsProvider.
+ */
+const AppWithUserSettings: React.FC<{ storage: commonStorage.Storage }> = ({ storage }) => {
+  const [project, setProject] = React.useState<storageProject.Project | null>(null);
+
+  return (
+    <UserSettingsProvider
+      storage={storage}
+      currentProjectName={project?.projectName}
+    >
+      <AppContent project={project} setProject={setProject} />
+    </UserSettingsProvider>
+  );
+};
+
+/**
+ * Inner application content component that has access to UserSettings context.
+ */
+interface AppContentProps {
+  project: storageProject.Project | null;
+  setProject: React.Dispatch<React.SetStateAction<storageProject.Project | null>>;
+}
+
+const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.JSX.Element => {
+  const { t, i18n } = useTranslation();
+  const { settings, updateLanguage, updateTheme, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
+
+  const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
+  const [messageApi, contextHolder] = Antd.message.useMessage();
+  const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+  const [configGamepadsDialogIsOpen, setConfigGamepadsDialogIsOpen] = React.useState(false);
+  const [gamepadConfig, setGamepadConfig] = React.useState<storageProject.GamepadConfig>(GamepadTypeUtils.getDefaultGamepadConfig());
+  const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
+  const [isLoadingTabs, setIsLoadingTabs] = React.useState(false);
+  const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
+  const [leftCollapsed, setLeftCollapsed] = React.useState(false);
+  const [theme, setTheme] = React.useState('dark');
+  const [languageInitialized, setLanguageInitialized] = React.useState(false);
+  const [themeInitialized, setThemeInitialized] = React.useState(false);
+  
+  const tabsRef = React.useRef<Tabs.TabsRef>(null);
+
+  /** Initialize language from UserSettings when app first starts. */
+  React.useEffect(() => {
+    // Only proceed if settings are loaded
+    if (!isLoading) {
+      if (!languageInitialized && settings.language && i18n.language !== settings.language) {
+        i18n.changeLanguage(settings.language);
+        setLanguageInitialized(true);
+      } else if (!languageInitialized) {
+        setLanguageInitialized(true);
+      }
+    }
+  }, [settings.language, i18n, languageInitialized, isLoading]);
+
+  /** Initialize theme from UserSettings when app first starts. */
+  React.useEffect(() => {
+    // Only proceed if settings are loaded
+    if (!isLoading) {
+      if (!themeInitialized && settings.theme && settings.theme !== theme) {
+        setTheme(settings.theme);
+        setThemeInitialized(true);
+      } else if (!themeInitialized) {
+        setThemeInitialized(true);
+      }
+    }
+  }, [settings.theme, theme, themeInitialized, isLoading]);
+
+  /** Save language changes to UserSettings when i18n language changes. */
+  React.useEffect(() => {
+    const handleLanguageChange = async (newLanguage: string) => {
+      // Only save if this is not the initial load and the language is different
+      if (languageInitialized && newLanguage !== settings.language) {
+        try {
+          await updateLanguage(newLanguage);
+        } catch (error) {
+          console.error('Failed to save language setting:', error);
+        }
+      }
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [languageInitialized, settings.language, updateLanguage, i18n]);
+
+  /** Save theme changes to UserSettings when theme changes. */
+  React.useEffect(() => {
+    const saveThemeChange = async () => {
+      // Only save if this is not the initial load and theme is different from settings
+      if (themeInitialized && theme !== settings.theme && !isLoading) {
+        try {
+          await updateTheme(theme);
+        } catch (error) {
+          console.error('Failed to save theme setting:', error);
+        }
+      }
+    };
+
+    saveThemeChange();
+  }, [theme, settings.theme, updateTheme, themeInitialized, isLoading]);
 
   /** Initializes custom blocks and Python generator. */
   const initializeBlocks = (): void => {
@@ -126,61 +233,12 @@ const App: React.FC = (): React.JSX.Element => {
 
     try {
       const value = await storage.fetchEntry(SHOWN_TOOLBOX_CATEGORIES_KEY, DEFAULT_TOOLBOX_CATEGORIES_JSON);
-      const shownCategories: string[] = JSON.parse(value);
-      setShownPythonToolboxCategories(new Set(shownCategories));
+      const shownCategories: Set<string> = new Set(JSON.parse(value));
+      setShownPythonToolboxCategories(shownCategories);
     } catch (e) {
       console.error(TOOLBOX_FETCH_ERROR_MESSAGE);
       console.error(e);
     }
-  };
-
-  /** Handles Blockly workspace changes and triggers code regeneration. */
-  const handleBlocksChanged = (event: Blockly.Events.Abstract): void => {
-    if (event.isUiEvent) {
-      // UI events are things like scrolling, zooming, etc.
-      // No need to regenerate python code after one of these.
-      return;
-    }
-
-    if (!event.workspaceId) {
-      return;
-    }
-
-    const blocklyWorkspace = Blockly.common.getWorkspaceById(event.workspaceId);
-    if (!blocklyWorkspace) {
-      return;
-    }
-
-    if ((blocklyWorkspace as Blockly.WorkspaceSvg).isDragging()) {
-      // Don't regenerate python code mid-drag.
-      return;
-    }
-
-    setTriggerPythonRegeneration(Date.now());
-  };
-
-  /** Saves blocks to storage with success/error messaging. */
-  const saveBlocks = async (): Promise<boolean> => {
-    return new Promise(async (resolve, reject) => {
-      if (!blocksEditor.current) {
-        reject(new Error('Blocks editor not initialized'));
-        return;
-      }
-
-      try {
-        await blocksEditor.current.saveBlocks();
-        messageApi.open({
-          type: 'success',
-          content: SAVE_SUCCESS_MESSAGE,
-        });
-        resolve(true);
-      } catch (e) {
-        console.error('Failed to save the blocks. Caught the following error...');
-        console.error(e);
-        setAlertErrorMessage(SAVE_ERROR_MESSAGE);
-        reject(new Error(SAVE_ERROR_MESSAGE));
-      }
-    });
   };
 
   /** Handles toolbox settings modal confirmation. */
@@ -195,24 +253,6 @@ const App: React.FC = (): React.JSX.Element => {
     await storage.saveEntry(SHOWN_TOOLBOX_CATEGORIES_KEY, JSON.stringify(array));
   };
 
-  /** Checks if blocks have been modified. */
-  const areBlocksModified = (): boolean => {
-    return blocksEditor.current ? blocksEditor.current.isModified() : false;
-  };
-
-  /** Changes current module with automatic saving if modified. */
-  const changeModule = async (module: commonStorage.Module | null): Promise<void> => {
-    if (currentModule && areBlocksModified()) {
-      await saveBlocks();
-    }
-    setCurrentModule(module);
-  };
-
-  /** Handles left sidebar collapse state change. */
-  const handleSiderCollapse = (collapsed: boolean): void => {
-    setLeftCollapsed(collapsed);
-  };
-
   /** Handles toolbox settings modal close. */
   const handleToolboxSettingsCancel = (): void => {
     setToolboxSettingsModalIsOpen(false);
@@ -224,190 +264,314 @@ const App: React.FC = (): React.JSX.Element => {
     handleToolboxSettingsOk(updatedShownCategories);
   };
 
-  /** Creates tab items from project data. */
-  const createTabItemsFromProject = (projectData: commonStorage.Project): Tabs.TabItem[] => {
-    const tabs: Tabs.TabItem[] = [
-      {
-        key: projectData.modulePath,
-        title: 'Robot',
-        type: Tabs.TabType.ROBOT,
-      },
-    ];
-
-    projectData.mechanisms.forEach((mechanism) => {
-      tabs.push({
-        key: mechanism.modulePath,
-        title: mechanism.className,
-        type: Tabs.TabType.MECHANISM,
-      });
-    });
-
-    projectData.opModes.forEach((opmode) => {
-      tabs.push({
-        key: opmode.modulePath,
-        title: opmode.className,
-        type: Tabs.TabType.OPMODE,
-      });
-    });
-
-    return tabs;
-  };
-
-  // Initialize storage and blocks when app loads
-  React.useEffect(() => {
-    openStorage();
-    initializeBlocks();
-  }, []);
-
-  // Update generator context and load module blocks when current module changes
-  React.useEffect(() => {
-    if (generatorContext.current) {
-      generatorContext.current.setModule(currentModule);
-    }
-    if (blocksEditor.current) {
-      blocksEditor.current.loadModuleBlocks(currentModule);
-    }
-  }, [currentModule]);
-
-  // Update toolbox when shown categories change
-  React.useEffect(() => {
-    if (blocksEditor.current) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
-    }
-  }, [shownPythonToolboxCategories]);
-
-  // Initialize Blockly workspace and editor when component and storage are ready
-  React.useEffect(() => {
-    if (!blocklyComponent.current || !storage) {
+  /** Initializes gamepad configuration from current project. */
+  const initializeGamepadConfig = (): void => {
+    if (!project) {
+      const defaultConfig = GamepadTypeUtils.getDefaultGamepadConfig();
+      setGamepadConfig(defaultConfig);
+      fieldGamepads.updateGamepadConfig(defaultConfig);
       return;
     }
 
-    const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-    if (blocklyWorkspace) {
-      ChangeFramework.setup(blocklyWorkspace);
-      blocklyWorkspace.addChangeListener(mutatorOpenListener);
-      blocklyWorkspace.addChangeListener(handleBlocksChanged);
+    // Load from project, use default for any missing config
+    const config = Object.keys(project.projectInfo.gamepadConfig).length > 0 
+      ? project.projectInfo.gamepadConfig 
+      : GamepadTypeUtils.getDefaultGamepadConfig();
+    setGamepadConfig(config);
+    fieldGamepads.updateGamepadConfig(config);
+  };
+
+  /** Handles gamepad configuration dialog confirmation. */
+  const handleGamepadConfigOk = async (updatedConfig: storageProject.GamepadConfig): Promise<void> => {
+    if (!storage || !project) {
+      return;
     }
 
-    generatorContext.current = createGeneratorContext();
-    if (currentModule) {
-      generatorContext.current.setModule(currentModule);
-    }
+    setGamepadConfig(updatedConfig);
+    fieldGamepads.updateGamepadConfig(updatedConfig);
+    await storageProject.updateProjectGamepadConfig(storage, project, updatedConfig);
+    setConfigGamepadsDialogIsOpen(false);
+  };
 
-    blocksEditor.current = new editor.Editor(blocklyWorkspace, generatorContext.current, storage);
-  }, [blocklyComponent, storage]);
+  /** Handles gamepad configuration dialog close. */
+  const handleGamepadConfigCancel = (): void => {
+    setConfigGamepadsDialogIsOpen(false);
+  };
 
-  // Generate code when module or regeneration trigger changes
+  /** Opens the gamepad configuration dialog. */
+  const openGamepadConfigDialog = (): void => {
+    setConfigGamepadsDialogIsOpen(true);
+  };
+
+  // Initialize blocks when app loads
   React.useEffect(() => {
-    if (currentModule && blocklyComponent.current && generatorContext.current) {
-      const blocklyWorkspace = blocklyComponent.current.getBlocklyWorkspace();
-      setGeneratedCode(extendedPythonGenerator.mrcWorkspaceToCode(
-          blocklyWorkspace,
-          generatorContext.current
-      ));
-    } else {
-      setGeneratedCode('');
-    }
-  }, [currentModule, triggerPythonRegeneration, blocklyComponent]);
+    initializeBlocks();
+  }, []);
 
-  // Update toolbox when module or categories change
   React.useEffect(() => {
-    if (blocksEditor.current) {
-      blocksEditor.current.updateToolbox(shownPythonToolboxCategories);
-    }
-  }, [currentModule, shownPythonToolboxCategories]);
+    initializeShownPythonToolboxCategories();
+  }, [storage]);
 
-  // Update tab items when project changes
+  // Initialize gamepad config when project changes
   React.useEffect(() => {
-    if (project) {
-      const tabs = createTabItemsFromProject(project);
-      setTabItems(tabs);
-      setActiveTab(project.modulePath);
-    }
+    initializeGamepadConfig();
   }, [project]);
 
-  const {Sider} = Antd.Layout;
+  // Load saved tabs when project changes
+  React.useEffect(() => {
+    const loadSavedTabs = async () => {
+      if (project && !isLoading) {
+        setIsLoadingTabs(true);
+
+        // Add a small delay to ensure UserSettingsProvider context is updated
+        await new Promise(resolve => setTimeout(resolve, 0));
+        
+        let tabsToSet: Tabs.TabItem[] = [];
+        let usedSavedTabs = false;
+        
+        // Try to load saved tabs first
+        try {
+          const savedTabPaths = await getOpenTabs(project.projectName);
+          
+          if (savedTabPaths.length > 0) {
+            // Filter saved tabs to only include those that still exist in the project
+            const validSavedTabs = savedTabPaths.filter((tabPath: string) => {
+              const module = storageProject.findModuleByModulePath(project!, tabPath);
+              return module !== null;
+            });
+            
+            if (validSavedTabs.length > 0) {
+              usedSavedTabs = true;
+              // Convert paths back to TabItem objects
+              tabsToSet = validSavedTabs.map((path: string) => {
+                const module = storageProject.findModuleByModulePath(project!, path);
+                if (!module) return null;
+                
+                let type: TabType;
+                let title: string;
+                
+                switch (module.moduleType) {
+                  case storageModule.ModuleType.ROBOT:
+                    type = TabType.ROBOT;
+                    title = t('ROBOT');
+                    break;
+                  case storageModule.ModuleType.MECHANISM:
+                    type = TabType.MECHANISM;
+                    title = module.className;
+                    break;
+                  case storageModule.ModuleType.OPMODE:
+                    type = TabType.OPMODE;
+                    title = module.className;
+                    break;
+                  default:
+                    return null;
+                }
+                
+                return {
+                  key: path,
+                  title,
+                  type,
+                };
+              }).filter((item): item is Tabs.TabItem => item !== null);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load saved tabs:', error);
+        }
+        
+        // If no saved tabs or loading failed, create default tabs (all project files)
+        if (tabsToSet.length === 0) {
+          tabsToSet = [
+            {
+              key: project.robot.modulePath,
+              title: t('ROBOT'),
+              type: TabType.ROBOT,
+            }
+          ];
+
+          // Add all mechanisms
+          project.mechanisms.forEach((mechanism) => {
+            tabsToSet.push({
+              key: mechanism.modulePath,
+              title: mechanism.className,
+              type: TabType.MECHANISM,
+            });
+          });
+
+          // Add all opmodes
+          project.opModes.forEach((opmode) => {
+            tabsToSet.push({
+              key: opmode.modulePath,
+              title: opmode.className,
+              type: TabType.OPMODE,
+            });
+          });
+        }
+        
+        // Set the tabs
+        setTabItems(tabsToSet);
+        
+        // Only auto-save if we didn't use saved tabs (i.e., this is a new project or the first time)
+        if (!usedSavedTabs) {
+          try {
+            const tabPaths = tabsToSet.map(tab => tab.key);
+            await updateOpenTabs(project.projectName, tabPaths);
+          } catch (error) {
+            console.error('Failed to auto-save default tabs:', error);
+          }
+        }
+        
+        setIsLoadingTabs(false);
+      }
+    };
+    
+    loadSavedTabs();
+  }, [project?.projectName, isLoading, getOpenTabs]);
+
+  // Update tab items when modules in project change (for title updates, etc)
+  React.useEffect(() => {
+    if (project && tabItems.length > 0) {
+      // Update existing tab titles in case they changed
+      const updatedTabs = tabItems.map(tab => {
+        const module = storageProject.findModuleByModulePath(project, tab.key);
+        if (module && module.moduleType !== storageModule.ModuleType.ROBOT) {
+          return { ...tab, title: module.className };
+        }
+        return tab;
+      });
+
+      // Only update if something actually changed
+      const titlesChanged = updatedTabs.some((tab, index) => tab.title !== tabItems[index]?.title);
+      if (titlesChanged) {
+        setTabItems(updatedTabs);
+      }
+    }
+  }, [project, tabItems]);
+
+  // Save tabs when tab list changes (but not during initial loading)
+  React.useEffect(() => {
+    const saveTabs = async () => {
+      // Don't save tabs while we're in the process of loading them
+      if (project?.projectName && tabItems.length > 0 && !isLoadingTabs) {
+        try {
+          const tabPaths = tabItems.map(tab => tab.key);
+          await updateOpenTabs(project.projectName, tabPaths);
+        } catch (error) {
+          console.error('Failed to save open tabs:', error);
+          // Don't show alert for save failures as they're not critical to user workflow
+        }
+      }
+    };
+    
+    // Use a small delay to debounce rapid tab changes
+    const timeoutId = setTimeout(saveTabs, 100);
+    return () => clearTimeout(timeoutId);
+  }, [tabItems, project?.projectName, isLoadingTabs]);
+
+  const onProjectChanged = async (): Promise<void> => {
+    // No need to fetch modules anymore - each editor fetches what it needs
+  };
+
+  const gotoTab = (tabKey: string): void => {
+    tabsRef.current?.gotoTab(tabKey);
+  };
+
+  const closeTab = (tabKey: string): void => {
+    tabsRef.current?.closeTab(tabKey);
+  };
+
+  /** Saves the currently active tab. */
+  const saveCurrentTab = async (): Promise<void> => {
+    if (tabsRef.current) {
+      await tabsRef.current.saveCurrentTab();
+    }
+  };
+
+  /** Gets the active tab key for autosave tracking. */
+  const getActiveTabKey = (): string => {
+    return tabsRef.current?.getActiveTabKey() || '';
+  };
+
+  const { Sider } = Antd.Layout;
 
   return (
     <Antd.ConfigProvider
-      theme={{
-        algorithm: Antd.theme.darkAlgorithm,
-        components: {
-          Tree: {
-            directoryNodeSelectedBg: '#1677ff',
-            directoryNodeSelectedColor: '#fff',
-            nodeSelectedBg: '#1677ff',
-            nodeSelectedColor: '#fff',
-            nodeHoverBg: '#333',
-            nodeHoverColor: '#fff',
-          },
-        },
-      }}
+      theme={antdThemeFromString(theme)}
     >
       {contextHolder}
-      <Antd.Layout style={{height: FULL_VIEWPORT_HEIGHT}}>
-        <Header
-          alertErrorMessage={alertErrorMessage}
-          setAlertErrorMessage={setAlertErrorMessage}
-          project={project}
-        />
-        <Antd.Layout
-          style={{
-            background: LAYOUT_BACKGROUND_COLOR,
-            height: FULL_HEIGHT,
-          }}
-        >
-          <Sider
-            collapsible
-            collapsed={leftCollapsed}
-            onCollapse={handleSiderCollapse}
+      <AutosaveProvider
+        saveCurrentTab={saveCurrentTab}
+        activeTabKey={getActiveTabKey()}
+      >
+        <Antd.Layout style={{ height: FULL_VIEWPORT_HEIGHT }}>
+            <Header
+              alertErrorMessage={alertErrorMessage}
+              setAlertErrorMessage={setAlertErrorMessage}
+              project={project}
+            />
+          <Antd.Layout
+            style={{
+              background: LAYOUT_BACKGROUND_COLOR,
+              height: FULL_HEIGHT,
+            }}
           >
-            <Menu.Component
-              storage={storage}
-              setAlertErrorMessage={setAlertErrorMessage}
-              gotoTab={setActiveTab}
-              project={project}
-              setProject={setProject}
-            />
-          </Sider>
-          <Antd.Layout>
-            <Tabs.Component
-              tabList={tabItems}
-              activeTab={activeTab}
-              setTabList={setTabItems}
-              setAlertErrorMessage={setAlertErrorMessage}
-              currentModule={currentModule}
-              setCurrentModule={changeModule}
-              project={project}
-              setProject={setProject}
-              storage={storage}
-            />
-            <Antd.Splitter>
-              <Antd.Splitter.Panel>
-                <BlocklyComponent ref={blocklyComponent} />
-              </Antd.Splitter.Panel>
-              <Antd.Splitter.Panel
-                min={CODE_PANEL_MIN_SIZE}
-                defaultSize={CODE_PANEL_DEFAULT_SIZE}
-                collapsible={true}
-              >
-                <CodeDisplay
-                  generatedCode={generatedCode}
-                  messageApi={messageApi}
-                  setAlertErrorMessage={setAlertErrorMessage}
-                />
-              </Antd.Splitter.Panel>
-            </Antd.Splitter>
+            <Sider
+              collapsible
+              collapsed={leftCollapsed}
+              onCollapse={(collapsed: boolean) => setLeftCollapsed(collapsed)}
+              trigger={null}
+              style={{ position: 'relative' }}
+            >
+              <Menu.Component
+                storage={storage}
+                setAlertErrorMessage={setAlertErrorMessage}
+                gotoTab={gotoTab}
+                closeTab={closeTab}
+                currentProject={project}
+                setCurrentProject={setProject}
+                onProjectChanged={onProjectChanged}
+                openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
+                theme={theme}
+                setTheme={setTheme}
+                saveCurrentTab={saveCurrentTab}
+              />
+              <SiderCollapseTrigger
+                collapsed={leftCollapsed}
+                onToggle={() => setLeftCollapsed(!leftCollapsed)}
+              />
+            </Sider>
+            <Antd.Layout>
+              <Tabs.Component
+                ref={tabsRef}
+                tabList={tabItems}
+                setTabList={setTabItems}
+                setAlertErrorMessage={setAlertErrorMessage}
+                project={project}
+                onProjectChanged={onProjectChanged}
+                storage={storage}
+                theme={theme}
+                shownPythonToolboxCategories={shownPythonToolboxCategories}
+                messageApi={messageApi}
+                openGamepadConfigDialog={openGamepadConfigDialog}
+              />
+            </Antd.Layout>
           </Antd.Layout>
         </Antd.Layout>
-      </Antd.Layout>
 
-      <ToolboxSettingsModal
-        isOpen={toolboxSettingsModalIsOpen}
-        shownCategories={shownPythonToolboxCategories}
-        onOk={handleToolboxSettingsConfirm}
-        onCancel={handleToolboxSettingsCancel}
-      />
+        <ToolboxSettingsModal
+          isOpen={toolboxSettingsModalIsOpen}
+          shownCategories={shownPythonToolboxCategories}
+          onOk={handleToolboxSettingsConfirm}
+          onCancel={handleToolboxSettingsCancel}
+        />
+
+        <ConfigGamepadsDialog
+          isOpen={configGamepadsDialogIsOpen}
+          currentConfig={gamepadConfig}
+          onOk={handleGamepadConfigOk}
+          onCancel={handleGamepadConfigCancel}
+        />
+      </AutosaveProvider>
     </Antd.ConfigProvider>
   );
 };

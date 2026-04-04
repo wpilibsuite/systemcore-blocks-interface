@@ -12,7 +12,7 @@ WARNING! This is not ready for use and is under heavy development of basic featu
 7. Make sure any python backends are running on your PC.
 
 ## Known Issues
-1. Mechanisms aren't limited to init
-2. Mechanisms aren't limited to only Robot or Mechanism class
-3. No way to specify whether an opmode is auto or teleop
-4. Since we changed the "Workspace" terminology to "Project", existing Workspaces are no longer supported. They can be deleted via the browser's Developer Tools - Application tab.
+Please check the issues on github for known issues.
+
+## To update versions 
+npm update --save

@@ -23,6 +23,8 @@
  * https://github.com/mit-cml/blockly-plugins/blob/main/block-lexical-variables/src/fields/field_flydown.js
  */
 import * as Blockly from 'blockly';
+import {BLOCK_NAME as JUMP_TO_STEP} from '../blocks/mrc_jump_to_step';
+import {BLOCK_NAME as GET_PARAMETER} from '../blocks/mrc_get_parameter';
 
 enum FlydownLocation {
     DISPLAY_BELOW = 'displayBelow',
@@ -34,12 +36,35 @@ class CustomFlyout extends Blockly.VerticalFlyout {
     protected x: number = 0;
     protected y: number = 0;
 
-    public setPosition(x: number, y: number): void {
-        this.x = x;
-        this.y = y;
+    public setPosition(fieldRect: DOMRect, workspaceRect: DOMRect, location: FlydownLocation): void {
+        // Calculate position based on field element, workspace, and desired location
+        switch (location) {
+            case FlydownLocation.DISPLAY_BELOW:
+                this.x = fieldRect.left - workspaceRect.left;
+                this.y = fieldRect.bottom - workspaceRect.top;
+                break;
+                
+            case FlydownLocation.DISPLAY_ABOVE:
+                this.x = fieldRect.left - workspaceRect.left;
+                this.y = fieldRect.top - workspaceRect.top - this.getHeight();
+                break;
+                
+            case FlydownLocation.DISPLAY_LEFT:
+                this.x = fieldRect.left - workspaceRect.left - this.width_;
+                this.y = fieldRect.top - workspaceRect.top;
+                break;
+                
+            case FlydownLocation.DISPLAY_RIGHT:
+            default:
+                this.x = fieldRect.right - workspaceRect.left;
+                this.y = fieldRect.top - workspaceRect.top;
+                break;
+        }
+
+        // Position the flyout at the calculated coordinates
         this.position();
     }
-
+    
     override position() {
         if (!this.isVisible() || !this.targetWorkspace!.isVisible()) {
             return;
@@ -145,7 +170,7 @@ export class FieldFlydown extends Blockly.FieldTextInput {
      * @type {number}
      * @const
      */
-    static TIME_OUT = 500;
+    static TIME_OUT = 250;
 
 
     private displayLocation_: FlydownLocation;
@@ -156,10 +181,17 @@ export class FieldFlydown extends Blockly.FieldTextInput {
     private boundMouseOutHandler_: (e: Event) => void;
     private showTimeout_: number | null = null;
     private hideTimeout_: number | null = null;
+    private createFlyoutDefinition_: (text: string) => Blockly.utils.toolbox.FlyoutDefinition;
 
-    constructor(value: string, isEditable: boolean, displayLocation: FlydownLocation = FlydownLocation.DISPLAY_BELOW) {
+    constructor(
+        value: string, 
+        isEditable: boolean, 
+        createFlyoutDefinition: (text: string) => Blockly.utils.toolbox.FlyoutDefinition,
+        displayLocation: FlydownLocation = FlydownLocation.DISPLAY_RIGHT
+    ) {
         super(value);
         this.EDITABLE = isEditable;
+        this.createFlyoutDefinition_ = createFlyoutDefinition;
         this.displayLocation_ = displayLocation;
 
         // Bind the handlers
@@ -198,13 +230,13 @@ export class FieldFlydown extends Blockly.FieldTextInput {
         // Add small delay to prevent flickering
         this.showTimeout_ = window.setTimeout(() => {
             this.showFlydown_();
-        }, 250); // 250ms delay
+        }, 100); // 100ms delay
 
         // This event has been handled.  No need to bubble up to the document.
         e.stopPropagation();
     }
 
-    private onMouseOut_(e: Event) {
+    private onMouseOut_(_e: Event) {
         // Clear any pending show timeout
         if (this.showTimeout_) {
             clearTimeout(this.showTimeout_);
@@ -244,12 +276,8 @@ export class FieldFlydown extends Blockly.FieldTextInput {
             const fieldRect = fieldElement.getBoundingClientRect();
             const workspaceRect = mainWorkspace.getParentSvg().getBoundingClientRect();
 
-            const x = fieldRect.right - workspaceRect.left;
-            const y = fieldRect.top - workspaceRect.top;
-
-
             // Set flydown position
-            this.flydown_.setPosition(x, y);
+            this.flydown_.setPosition(fieldRect, workspaceRect, this.displayLocation_);
             // Create the flydown without explicit DOM manipulation
             this.flydown_.setVisible(true);
 
@@ -279,11 +307,8 @@ export class FieldFlydown extends Blockly.FieldTextInput {
             const fieldRect = fieldElement!.getBoundingClientRect();
             const workspaceRect = mainWorkspace.getParentSvg().getBoundingClientRect();
 
-            const x = fieldRect.right - workspaceRect.left;
-            const y = fieldRect.top - workspaceRect.top;
-
             // Set flydown position
-            this.flydown_.setPosition(x, y);
+            this.flydown_.setPosition(fieldRect, workspaceRect, this.displayLocation_);
             // Show the flydown with your blocks
             this.flydown_.show(this.getBlocksForFlydown_());
 
@@ -293,17 +318,7 @@ export class FieldFlydown extends Blockly.FieldTextInput {
     }
     private getBlocksForFlydown_() {
         const name = this.getText();
-        return {
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'mrc_get_parameter',
-                    fields: {
-                        PARAMETER_NAME: name,
-                    },
-                },
-            ]
-        };
+        return this.createFlyoutDefinition_(name);
     }
 
 
@@ -356,9 +371,48 @@ export class FieldFlydown extends Blockly.FieldTextInput {
         }
         super.dispose();
     }
-
 }
 
-export function createFieldFlydown(label: string, isEditable: boolean): Blockly.Field {
-    return new FieldFlydown(label, isEditable);
+function createParameterBlock(paramName: string): Blockly.utils.toolbox.FlyoutDefinition {
+    return {
+        contents: [
+            {
+                kind: 'block',
+                type: GET_PARAMETER,
+                fields: {
+                    PARAMETER_NAME: paramName,
+                },
+            },
+        ]
+    };
+}
+
+function createJumpToStepBlock(stepName: string): Blockly.utils.toolbox.FlyoutDefinition {
+    return {
+        contents: [
+            {
+                kind: 'block',
+                type: JUMP_TO_STEP,
+                fields: {
+                    STEP_NAME: stepName,
+                },
+            },
+        ]
+    };
+}
+
+export function createFieldFlydown(
+    label: string, 
+    isEditable: boolean,
+    createFlyoutDefinition: (text: string) => Blockly.utils.toolbox.FlyoutDefinition
+): Blockly.Field {
+    return new FieldFlydown(label, isEditable, createFlyoutDefinition);
+}
+
+export function createParameterFieldFlydown(paramName: string, isEditable: boolean): Blockly.Field {
+    return new FieldFlydown(paramName, isEditable, createParameterBlock);
+}
+
+export function createStepFieldFlydown(stepName: string, isEditable: boolean): Blockly.Field {
+    return new FieldFlydown(stepName, isEditable, createJumpToStepBlock);
 }

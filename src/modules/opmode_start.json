@@ -4,34 +4,29 @@
         "blocks": [
             {
                 "type": "mrc_opmode_details",
-                "id": "ElbONc{)gh,UprTW(|1C",
                 "x": 10,
                 "y": 10,
                 "deletable": false,
+                "editable": true,
                 "fields": {
+                    "TYPE": "Teleop",
+                    "ENABLED": true,
                     "NAME": "",
-                    "GROUP": "",
-                    "TYPE": "Auto",
-                    "ENABLED": true 
+                    "GROUP": ""
                 }
             },
             {
                 "type": "mrc_class_method_def",
-                "id": "ElbONc{)s(,UprTW(|1C",
                 "x": 10,
-                "y": 120,
+                "y": 110,
                 "deletable": false,
+                "editable": false,
                 "extraState": {
                     "canChangeSignature": false,
                     "canBeCalledWithinClass": false,
                     "canBeCalledOutsideClass": false,
                     "returnType": "None",
-                    "params": [
-                        {
-                            "name": "robot",
-                            "type": "Robot"
-                        }
-                    ],
+                    "params": [],
                     "pythonMethodName": "__init__"
                 },
                 "fields": {
@@ -40,10 +35,9 @@
             },
             {
                 "type": "mrc_class_method_def",
-                "id": "wxFAh6eaR1|3fTuV:UAd",
                 "x": 10,
-                "y": 300,
-                "deletable": false,
+                "y": 190,
+                "editable": false,
                 "extraState": {
                     "canChangeSignature": false,
                     "canBeCalledWithinClass": false,
@@ -52,7 +46,7 @@
                     "params": []
                 },
                 "fields": {
-                    "NAME": "loop"
+                    "NAME": "periodic"
                 }
             }
         ]

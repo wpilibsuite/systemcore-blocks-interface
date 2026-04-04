@@ -16,7 +16,7 @@
  */
 
 /**
- * @fileoverview Miscellaneous blocks.
+ * @fileoverview Block for a comment.
  * @author lizlooney@google.com (Liz Looney)
  */
 

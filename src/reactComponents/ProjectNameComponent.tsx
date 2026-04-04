@@ -21,15 +21,14 @@
 import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
-import * as commonStorage from '../storage/common_storage';
+import * as storageNames from '../storage/names';
 
 /** Props for the ProjectNameComponent. */
 interface ProjectNameComponentProps {
   newItemName: string;
   setNewItemName: (name: string) => void;
   onAddNewItem: () => void;
-  projects: commonStorage.Project[] | null;
-  setProjects: (projects: commonStorage.Project[]) => void;
+  projectNames: string[];
 }
 
 /** Full width style for input components. */
@@ -58,18 +57,18 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
 
   /** Handles adding a new item with validation. */
   const handleAddNewItem = (): void => {
-    const trimmedName = props.newItemName.trim();
-    if (!trimmedName || !props.projects) {
+    const newProjectName = props.newItemName.trim();
+    if (!newProjectName) {
       return;
     }
 
-    if (!commonStorage.isValidClassName(trimmedName)) {
-      showError(trimmedName + INVALID_NAME_MESSAGE_SUFFIX);
+    if (!storageNames.isValidClassName(newProjectName)) {
+      showError(newProjectName + INVALID_NAME_MESSAGE_SUFFIX);
       return;
     }
 
-    if (props.projects.some((project) => project.className === trimmedName)) {
-      showError(DUPLICATE_NAME_MESSAGE_PREFIX + trimmedName + DUPLICATE_NAME_MESSAGE_SUFFIX);
+    if (props.projectNames.includes(newProjectName)) {
+      showError(DUPLICATE_NAME_MESSAGE_PREFIX + newProjectName + DUPLICATE_NAME_MESSAGE_SUFFIX);
       return;
     }
 
@@ -110,7 +109,6 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
   const renderInput = (): React.JSX.Element => (
     <Antd.Input
       style={FULL_WIDTH_STYLE}
-      placeholder={t('addTabDialog.newItemPlaceholder')}
       value={props.newItemName}
       onChange={handleInputChange}
       onPressEnter={handleAddNewItem}
@@ -123,7 +121,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
       type="primary"
       onClick={handleAddNewItem}
     >
-      {t('New')}
+      {t('CREATE')}
     </Antd.Button>
   );
 
@@ -136,9 +134,8 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
     return (
       <Antd.Alert
         type="error"
-        message={alertErrorMessage}
-        closable
-        afterClose={handleAlertClose}
+        title={alertErrorMessage}
+        closable={{ closeIcon: true, onClose: handleAlertClose }}
         style={{marginTop: ERROR_ALERT_MARGIN_TOP}}
       />
     );

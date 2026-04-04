@@ -1,7 +1,8 @@
-export const category = 
-{
+import * as Blockly from 'blockly/core';
+
+export const getCategory = () => ({
     kind: 'category',
-    name: 'Loops',
+    name: Blockly.Msg['MRC_CATEGORY_LOOPS'],
     categorystyle: 'loop_category',
     contents: [
       {
@@ -61,4 +62,4 @@ export const category =
         type: 'controls_flow_statements',
       },
     ],
-  }
+  });

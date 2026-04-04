@@ -26,21 +26,31 @@ import { Order } from 'blockly/python';
 import {
     createModuleOrClassVariableSetterBlock,
     createInstanceVariableSetterBlock } from '../blocks/mrc_set_python_variable';
-import { getAllowedTypesForSetCheck, getOutputCheck } from './utils/python';
-import { VariableGettersAndSetters } from './utils/python_json_types';
+import {
+    getAllowedTypesForSetCheck,
+    getClassData,
+    getModuleData,
+    getOutputCheck } from './utils/python';
+import {
+    ClassData,
+    ModuleData,
+    organizeVarDataByType,
+    VariableGettersAndSetters } from './utils/python_json_types';
 import * as variable from './utils/variable';
+import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
+import { replaceTokens } from './tokens';
 
 
 // A block to get a python variable.
 
 export const BLOCK_NAME = 'mrc_get_python_variable';
 
-enum VariableKind {
+export enum VariableKind {
   MODULE = 'module',
   CLASS = 'class',
   INSTANCE = 'instance',
@@ -48,6 +58,8 @@ enum VariableKind {
 
 const FIELD_MODULE_OR_CLASS_NAME = 'MODULE_OR_CLASS';
 const FIELD_VARIABLE_NAME = 'VAR';
+
+const WARNING_ID_VARIABLE_CHANGED = 'variable changed';
 
 // Variables and functions used for populating the drop down field for the variable names.
 
@@ -80,108 +92,6 @@ export function initializeInstanceVariableGetter(
   PythonVariableGetterTooltips[key] = tooltips;
 }
 
-// Functions used for creating blocks for the toolbox.
-
-export function addModuleVariableBlocks(
-    moduleName: string,
-    varsByType: {[key: string]: VariableGettersAndSetters},
-    contents: toolboxItems.ContentsType[]) {
-  addModuleOrClassVariableBlocks(
-      VariableKind.MODULE, moduleName, moduleName, varsByType, contents);
-}
-
-export function addClassVariableBlocks(
-    importModule: string,
-    className: string,
-    varsByType: {[key: string]: VariableGettersAndSetters},
-    contents: toolboxItems.ContentsType[]) {
-  addModuleOrClassVariableBlocks(
-      VariableKind.CLASS, importModule, className, varsByType, contents);
-}
-
-function addModuleOrClassVariableBlocks(
-    varKind: VariableKind, 
-    importModule: string,
-    moduleOrClassName: string,
-    varsByType: {[key: string]: VariableGettersAndSetters},
-    contents: toolboxItems.ContentsType[]) {
-  for (const varType in varsByType) {
-    const variableGettersAndSetters = varsByType[varType];
-    for (let i = 0; i < variableGettersAndSetters.varNamesForGetter.length; i++) {
-      const varName = variableGettersAndSetters.varNamesForGetter[i];
-      const getterBlock = createModuleOrClassVariableGetterBlock(
-          varKind, importModule, moduleOrClassName, varType, varName);
-      contents.push(getterBlock);
-      if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
-        const setterBlock = createModuleOrClassVariableSetterBlock(
-            VariableKind.CLASS, importModule, moduleOrClassName, varType, varName);
-        contents.push(setterBlock);
-      }
-    }
-  }
-}
-
-function createModuleOrClassVariableGetterBlock(
-    varKind: VariableKind,
-    importModule: string,
-    moduleOrClassName: string,
-    varType: string,
-    varName: string): toolboxItems.Block {
-  const extraState: GetPythonVariableExtraState = {
-    varKind: varKind,
-    moduleOrClassName: moduleOrClassName,
-    varType: varType,
-    importModule: importModule,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
-  fields[FIELD_VARIABLE_NAME] = varName;
-  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
-}
-
-export function addInstanceVariableBlocks(
-    className: string,
-    varsByType: {[key: string]: VariableGettersAndSetters},
-    contents: toolboxItems.ContentsType[]) {
-  for (const varType in varsByType) {
-    const variableGettersAndSetters = varsByType[varType];
-    for (let i = 0; i < variableGettersAndSetters.varNamesForGetter.length; i++) {
-      const varName = variableGettersAndSetters.varNamesForGetter[i];
-      const getterBlock = createInstanceVariableGetterBlock(className, varType, varName);
-      contents.push(getterBlock);
-      if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
-        const setterBlock = createInstanceVariableSetterBlock(className, varType, varName);
-        contents.push(setterBlock);
-      }
-    }
-  }
-}
-
-function createInstanceVariableGetterBlock(
-    className: string,
-    varType: string,
-    varName: string): toolboxItems.Block {
-  const selfLabel = variable.getSelfArgName(className);
-  const extraState: GetPythonVariableExtraState = {
-    varKind: VariableKind.INSTANCE,
-    moduleOrClassName: className,
-    varType: varType,
-    selfLabel: selfLabel,
-    selfType: className,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = className;
-  fields[FIELD_VARIABLE_NAME] = varName;
-  const inputs: {[key: string]: any} = {};
-  const selfVarName = variable.varNameForType(className);
-  if (selfVarName) {
-    inputs['SELF'] = variable.createVariableGetterBlockValue(selfVarName);
-  }
-  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
-}
-
-//..............................................................................
-
 type GetPythonVariableBlock = Blockly.Block & GetPythonVariableMixin;
 interface GetPythonVariableMixin extends GetPythonVariableMixinType {
   mrcVarKind: VariableKind,
@@ -191,7 +101,6 @@ interface GetPythonVariableMixin extends GetPythonVariableMixinType {
   mrcSelfType: string,
   mrcImportModule: string,
   mrcActualVariableName: string,
-  mrcExportedVariable: boolean,
   mrcKey: string,
 }
 type GetPythonVariableMixinType = typeof GET_PYTHON_VARIABLE;
@@ -227,11 +136,6 @@ type GetPythonVariableExtraState = {
    * the FIELD_VARIABLE_NAME field.
    */
   actualVariableName?: string,
-  /**
-   * True if this blocks refers to an exported variable (for example, from a
-   * user's Project).
-   */
-  exportedVariable?: boolean,
 };
 
 const GET_PYTHON_VARIABLE = {
@@ -240,7 +144,7 @@ const GET_PYTHON_VARIABLE = {
    */
   init: function(this: GetPythonVariableBlock): void {
     this.appendDummyInput('VAR')
-        .appendField('get')
+        .appendField(Blockly.Msg['GET'])
         .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
         .appendField('.');
     this.setStyle(MRC_STYLE_VARIABLES);
@@ -250,21 +154,30 @@ const GET_PYTHON_VARIABLE = {
       switch (this.mrcVarKind) {
         case VariableKind.MODULE: {
           const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Gets the variable ' + moduleName + '.' + varName + '.';
+          tooltip = replaceTokens(Blockly.Msg['GET_MODULE_VARIABLE_TOOLTIP'], {
+            moduleName: moduleName,
+            varName: varName
+          });
           break;
         }
         case VariableKind.CLASS: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Gets the variable ' + className + '.' + varName + '.';
+          tooltip = replaceTokens(Blockly.Msg['GET_CLASS_VARIABLE_TOOLTIP'], {
+            className: className,
+            varName: varName
+          });
           break;
         }
         case VariableKind.INSTANCE: {
           const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-          tooltip = 'Gets the variable ' + varName + ' for the given ' + className + ' object.';
+          tooltip = replaceTokens(Blockly.Msg['GET_INSTANCE_VARIABLE_TOOLTIP'], {
+            varName: varName,
+            className: className
+          });
           break;
         }
         default:
-          throw new Error('mrcVarKind must be "module", "class", or "instance".')
+          throw new Error(Blockly.Msg['VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE']);
       }
       const varTooltips = PythonVariableGetterTooltips[this.mrcKey];
       if (varTooltips) {
@@ -290,7 +203,6 @@ const GET_PYTHON_VARIABLE = {
     const extraState: GetPythonVariableExtraState = {
       varKind: this.mrcVarKind,
       moduleOrClassName: this.mrcModuleOrClassName,
-      exportedVariable: this.mrcExportedVariable,
     };
     if (this.mrcVarType) {
       extraState.varType = this.mrcVarType;
@@ -325,8 +237,6 @@ const GET_PYTHON_VARIABLE = {
         ? extraState.importModule : '';
     this.mrcActualVariableName = extraState.actualVariableName
         ? extraState.actualVariableName : '';
-    this.mrcExportedVariable = extraState.exportedVariable
-        ? extraState.exportedVariable : false;
     this.mrcKey = createKey(this.mrcVarKind, this.mrcModuleOrClassName, this.mrcVarType);
     this.updateBlock_();
   },
@@ -359,7 +269,112 @@ const GET_PYTHON_VARIABLE = {
           .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(this.mrcSelfLabel);
     }
-  }
+  },
+
+  /**
+   * mrcOnLoad is called for each GetPythonVariableBlock when the blocks are loaded in the blockly
+   * workspace.
+   */
+  mrcOnLoad: function(this: GetPythonVariableBlock, _editor: Editor): void {
+    this.checkBlock();
+  },
+  checkBlock: function(this: GetPythonVariableBlock): void {
+    const warnings: string[] = [];
+
+    switch (this.mrcVarKind) {
+      case VariableKind.MODULE:
+        this.checkModuleVariable(warnings);
+        break;
+      case VariableKind.CLASS:
+        this.checkClassVariable(warnings);
+        break;
+      case VariableKind.INSTANCE:
+        this.checkInstanceVariable(warnings);
+        break;
+    }
+
+    if (warnings.length) {
+      // Add a warnings to the block.
+      const warningText = warnings.join('\n\n');
+      this.setWarningText(warningText, WARNING_ID_VARIABLE_CHANGED);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
+      if (this.rendered) {
+        (this as unknown as Blockly.BlockSvg).bringToFront();
+      }
+    } else {
+      // Clear the existing warning on the block.
+      this.setWarningText(null, WARNING_ID_VARIABLE_CHANGED);
+    }
+  },
+  checkModuleVariable: function(this: GetPythonVariableBlock, warnings: string[]): void {
+    // If this block is getting a module variable, check whether the module and variable still
+    // exist. If the module or variable doesn't exist, put a visible warning on this block.
+    const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const moduleData = getModuleData(moduleName);
+    if (moduleData) {
+      let foundVariable = false;
+      const blockVarName = this.getFieldValue(FIELD_VARIABLE_NAME);
+      for (const varData of moduleData.moduleVariables) {
+        if (blockVarName === varData.name &&
+            this.mrcVarType === varData.type) {
+          foundVariable = true;
+          break;
+        }
+      }
+      if (!foundVariable) {
+        warnings.push(Blockly.Msg.WARNING_GET_MODULE_VARIABLE_MISSING_VARIABLE);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_GET_MODULE_VARIABLE_MISSING_MODULE);
+    }
+  },
+  checkClassVariable: function(this: GetPythonVariableBlock, warnings: string[]): void {
+    // If this block is getting a class variable, check whether the class and variable still
+    // exist. If the class or variable doesn't exist, put a visible warning on this block.
+    const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const classData = getClassData(className);
+    if (classData) {
+      let foundVariable = false;
+      const blockVarName = this.getFieldValue(FIELD_VARIABLE_NAME);
+      for (const varData of classData.classVariables) {
+        if (blockVarName === varData.name &&
+            this.mrcVarType === varData.type) {
+          foundVariable = true;
+          break;
+        }
+      }
+      if (!foundVariable) {
+        warnings.push(Blockly.Msg.WARNING_GET_CLASS_VARIABLE_MISSING_VARIABLE);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_GET_CLASS_VARIABLE_MISSING_CLASS);
+    }
+  },
+  checkInstanceVariable: function(this: GetPythonVariableBlock, warnings: string[]): void {
+    // If this block is getting an instance variable, check whether the class and variable still
+    // exist. If the class or variable doesn't exist, put a visible warning on this block.
+    const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const classData = getClassData(className);
+    if (classData) {
+      let foundVariable = false;
+      const blockVarName = this.getFieldValue(FIELD_VARIABLE_NAME);
+      for (const varData of classData.instanceVariables) {
+        if (blockVarName === varData.name &&
+            this.mrcVarType === varData.type) {
+          foundVariable = true;
+          break;
+        }
+      }
+      if (!foundVariable) {
+        warnings.push(Blockly.Msg.WARNING_GET_INSTANCE_VARIABLE_MISSING_VARIABLE);
+      }
+    } else {
+      warnings.push(Blockly.Msg.WARNING_GET_INSTANCE_VARIABLE_MISSING_CLASS);
+    }
+  },
 };
 
 export const setup = function() {
@@ -378,7 +393,7 @@ export const pythonFromBlock = function(
     case VariableKind.MODULE: {
       const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       if (getPythonVariableBlock.mrcImportModule) {
-        generator.addImport(getPythonVariableBlock.mrcImportModule);
+        generator.importModule(getPythonVariableBlock.mrcImportModule);
       }
       const code = moduleName + '.' + varName;
       return [code, Order.MEMBER];
@@ -386,7 +401,7 @@ export const pythonFromBlock = function(
     case VariableKind.CLASS: {
       const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
       if (getPythonVariableBlock.mrcImportModule) {
-        generator.addImport(getPythonVariableBlock.mrcImportModule);        
+        generator.importModule(getPythonVariableBlock.mrcImportModule);
       }
       const code = className + '.' + varName;
       return [code, Order.MEMBER];
@@ -397,6 +412,114 @@ export const pythonFromBlock = function(
       return [code, Order.MEMBER];
     }
     default:
-      throw new Error('mrcVarKind must be "module", "class", or "instance".')
+      throw new Error(Blockly.Msg['VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE']);
   }
 };
+
+// Functions used for creating blocks for the toolbox.
+
+export function addModuleVariableBlocks(
+    moduleData: ModuleData,
+    contents: toolboxItems.ContentsType[]) {
+  if (moduleData.moduleVariables.length) {
+    const varsByType: {[key: string]: VariableGettersAndSetters} =
+        organizeVarDataByType(moduleData.moduleVariables);
+    addModuleOrClassVariableBlocks(
+        VariableKind.MODULE, moduleData.moduleName, moduleData.moduleName, varsByType, contents);
+  }
+}
+
+export function addClassVariableBlocks(
+    classData: ClassData,
+    contents: toolboxItems.ContentsType[]) {
+  if (classData.classVariables.length) {
+    const varsByType: {[key: string]: VariableGettersAndSetters} =
+        organizeVarDataByType(classData.classVariables);
+    addModuleOrClassVariableBlocks(
+        VariableKind.CLASS, classData.moduleName, classData.className, varsByType, contents);
+  }
+}
+
+function addModuleOrClassVariableBlocks(
+    varKind: VariableKind, 
+    importModule: string,
+    moduleOrClassName: string,
+    varsByType: {[key: string]: VariableGettersAndSetters},
+    contents: toolboxItems.ContentsType[]) {
+  for (const varType in varsByType) {
+    const variableGettersAndSetters = varsByType[varType];
+    for (let i = 0; i < variableGettersAndSetters.varNamesForGetter.length; i++) {
+      const varName = variableGettersAndSetters.varNamesForGetter[i];
+      const getterBlock = createModuleOrClassVariableGetterBlock(
+          varKind, importModule, moduleOrClassName, varType, varName);
+      contents.push(getterBlock);
+      if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
+        const setterBlock = createModuleOrClassVariableSetterBlock(
+            varKind, importModule, moduleOrClassName, varType, varName);
+        contents.push(setterBlock);
+      }
+    }
+  }
+}
+
+function createModuleOrClassVariableGetterBlock(
+    varKind: VariableKind,
+    importModule: string,
+    moduleOrClassName: string,
+    varType: string,
+    varName: string): toolboxItems.Block {
+  const extraState: GetPythonVariableExtraState = {
+    varKind: varKind,
+    moduleOrClassName: moduleOrClassName,
+    varType: varType,
+    importModule: importModule,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
+  fields[FIELD_VARIABLE_NAME] = varName;
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
+}
+
+export function addInstanceVariableBlocks(
+    classData: ClassData,
+    contents: toolboxItems.ContentsType[]) {
+  if (classData.instanceVariables.length) {
+    const varsByType: {[key: string]: VariableGettersAndSetters} =
+        organizeVarDataByType(classData.instanceVariables);
+    for (const varType in varsByType) {
+      const variableGettersAndSetters = varsByType[varType];
+      for (let i = 0; i < variableGettersAndSetters.varNamesForGetter.length; i++) {
+        const varName = variableGettersAndSetters.varNamesForGetter[i];
+        const getterBlock = createInstanceVariableGetterBlock(classData.className, varType, varName);
+        contents.push(getterBlock);
+        if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
+          const setterBlock = createInstanceVariableSetterBlock(classData.className, varType, varName);
+          contents.push(setterBlock);
+        }
+      }
+    }
+  }
+}
+
+function createInstanceVariableGetterBlock(
+    className: string,
+    varType: string,
+    varName: string): toolboxItems.Block {
+  const selfLabel = variable.getSelfArgName(className);
+  const extraState: GetPythonVariableExtraState = {
+    varKind: VariableKind.INSTANCE,
+    moduleOrClassName: className,
+    varType: varType,
+    selfLabel: selfLabel,
+    selfType: className,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_MODULE_OR_CLASS_NAME] = className;
+  fields[FIELD_VARIABLE_NAME] = varName;
+  const inputs: {[key: string]: any} = {};
+  const selfVarName = variable.varNameForType(className);
+  if (selfVarName) {
+    inputs['SELF'] = variable.createVariableGetterBlockValue(selfVarName);
+  }
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
+}

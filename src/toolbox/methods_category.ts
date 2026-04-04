@@ -22,120 +22,92 @@
 import * as Blockly from 'blockly/core';
 
 import * as toolboxItems from './items';
-import * as commonStorage from '../storage/common_storage';
-import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles'
-import { mechanism_class_blocks } from './mechanism_class_methods';
-import { opmode_class_blocks } from './opmode_class_methods';
-import { robot_class_blocks } from './robot_class_methods';
-import { ClassMethodDefBlock } from '../blocks/mrc_class_method_def'
+import * as storageModule from '../storage/module';
+import { MRC_CATEGORY_STYLE_METHODS } from '../themes/styles';
+import {
+    CLASS_NAME_MECHANISM,
+    CLASS_NAME_OPMODE,
+    CLASS_NAME_ROBOT_BASE,
+    MECHANISM_METHOD_NAMES_OVERRIDEABLE,
+    OPMODE_METHOD_NAMES_OVERRIDEABLE,
+    ROBOT_METHOD_NAMES_OVERRIDEABLE } from '../blocks/utils/python';
+import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
+import {
+    createCustomMethodBlock,
+    createCustomMethodBlockWithReturn,
+    getBaseClassBlocks } from '../blocks/mrc_class_method_def';
+import { createStepsBlock } from '../blocks/mrc_steps';
+import { Editor } from '../editor/editor';
 
 
-const CUSTOM_CATEGORY_METHODS = 'METHODS';
+const CUSTOM_CATEGORY_METHODS = 'MRC_METHODS';
 
-export const category = {
-  kind: 'category',
-  categorystyle: MRC_CATEGORY_STYLE_METHODS,
-  name: 'Methods',
-  custom: CUSTOM_CATEGORY_METHODS,
-};
+export function getCategory(editor: Editor): toolboxItems.Category {
+  const blocklyWorkspace = editor.getBlocklyWorkspace();
 
-export class MethodsCategory {
-  private currentModule: commonStorage.Module | null = null;
-
-  constructor(blocklyWorkspace: Blockly.WorkspaceSvg) {
-    blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS, this.methodsFlyout.bind(this));
+  // If this category hasn't been register yet, do it now.
+  if (!blocklyWorkspace.getToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS)) {
+    const category = new MethodsCategory();
+    blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS, category.methodsFlyout.bind(category));
   }
+  return {
+    kind: 'category',
+    categorystyle: MRC_CATEGORY_STYLE_METHODS,
+    name: Blockly.Msg['MRC_CATEGORY_METHODS'],
+    custom: CUSTOM_CATEGORY_METHODS,
+  };
+}
 
-  public setCurrentModule(currentModule: commonStorage.Module | null) {
-    this.currentModule = currentModule;
-  }
-
+class MethodsCategory {
   public methodsFlyout(workspace: Blockly.WorkspaceSvg) {
+    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
+    if (!editor) {
+      throw new Error('No editor for blockly workspace');
+    }
+
     const contents: toolboxItems.ContentsType[] = [];
 
     // Add blocks for defining any methods that can be defined in the current
     // module. For example, if the current module is an OpMode, add blocks to
     // define the methods declared in the OpMode class.
-    if (this.currentModule) {
-      // Collect the method names for mrc_class_method_def blocks that are
-      // already in the blockly workspace.
-      const methodNamesAlreadyUsed: string[] = [];
-      workspace.getBlocksByType('mrc_class_method_def', false).forEach((block) => {
-        const classMethodDefBlock = block as ClassMethodDefBlock;
-        if (!classMethodDefBlock.mrcCanChangeSignature) {
-          methodNamesAlreadyUsed.push(classMethodDefBlock.getFieldValue('NAME'));
-        }
-      });
-    
-      if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_PROJECT) {
-        // Add the methods for a Project (Robot).
-        this.addClassBlocksForCurrentModule(
-            'More Robot Methods', robot_class_blocks,
-            methodNamesAlreadyUsed, contents);
-      } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_MECHANISM) {
+
+    // Collect the method names that are already overridden in the blockly workspace.
+    const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
+
+    switch (editor.getModuleType()) {
+      case storageModule.ModuleType.ROBOT:
+        // Add the methods for a Robot.
+        this.addBaseClassBlocksForCurrentModule(
+            workspace, Blockly.Msg['MORE_ROBOT_METHODS_LABEL'], CLASS_NAME_ROBOT_BASE,
+            ROBOT_METHOD_NAMES_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
+        break;
+      case storageModule.ModuleType.MECHANISM:
         // Add the methods for a Mechanism.
-        this.addClassBlocksForCurrentModule(
-            'More Mechanism Methods', mechanism_class_blocks,
-            methodNamesAlreadyUsed, contents);
-      } else if (this.currentModule.moduleType == commonStorage.MODULE_TYPE_OPMODE) {
+        this.addBaseClassBlocksForCurrentModule(
+            workspace, Blockly.Msg['MORE_MECHANISM_METHODS_LABEL'], CLASS_NAME_MECHANISM,
+            MECHANISM_METHOD_NAMES_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
+        break;
+      case storageModule.ModuleType.OPMODE:
+        const hasSteps = editor.isStepsInWorkspace();
+        if (!hasSteps) {
+          contents.push(createStepsBlock());
+        }
         // Add the methods for an OpMode.
-        this.addClassBlocksForCurrentModule(
-            'More OpMode Methods', opmode_class_blocks,
-            methodNamesAlreadyUsed, contents);
-      }
+        this.addBaseClassBlocksForCurrentModule(
+            workspace, Blockly.Msg['MORE_OPMODE_METHODS_LABEL'], CLASS_NAME_OPMODE,
+            OPMODE_METHOD_NAMES_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
+        break;
     }
 
     // Add a block that lets the user define a new method.
     contents.push(
-      {
-        kind: 'label',
-        text: 'Custom Methods',
-      },
-      {
-        kind: 'block',
-        type: 'mrc_class_method_def',
-        fields: {NAME: "my_method"},
-        extraState: {
-          canChangeSignature: true,
-          canBeCalledWithinClass: true,
-          canBeCalledOutsideClass: true,
-          canDelete: true,
-          returnType: 'None',
-          params: [],
-        },
-      });
+        new toolboxItems.Label(Blockly.Msg['CUSTOM_METHODS_LABEL']),
+        createCustomMethodBlock(),
+        createCustomMethodBlockWithReturn());
 
-    // For each mrc_class_method_def block in the blockly workspace, check if it
-    // can be called from within the class, and if so, add a
-    // mrc_call_python_function block.
-    workspace.getBlocksByType('mrc_class_method_def', false).forEach((block) => {
-      const classMethodDefBlock = block as ClassMethodDefBlock;
-      if (classMethodDefBlock.mrcCanBeCalledWithinClass) {
-        const callPythonFunctionBlock: toolboxItems.Block = {
-          kind: 'block',
-          type: 'mrc_call_python_function',
-          extraState: {
-            functionKind: 'instance_within',
-            returnType: classMethodDefBlock.mrcReturnType,
-            args: [],
-            importModule: '',
-          },
-          fields: {
-            FUNC: classMethodDefBlock.getFieldValue('NAME'),
-          },
-        };
-        classMethodDefBlock.mrcParameters.forEach((param) => {
-          if (callPythonFunctionBlock.extraState) {
-            callPythonFunctionBlock.extraState.args.push(
-              {
-                name: param.name,
-                type: param.type ?? '',
-              });
-            }
-          });
-        contents.push(callPythonFunctionBlock);
-      }
-    });
+    // Get blocks for calling methods defined in the current workspace.
+    const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
+    addInstanceWithinBlocks(methodsFromWorkspace, contents);
 
     const toolboxInfo = {
       contents: contents,
@@ -144,26 +116,16 @@ export class MethodsCategory {
     return toolboxInfo;
   }
 
-  private addClassBlocksForCurrentModule(
-      label: string, class_blocks: toolboxItems.Block[],
-      methodNamesAlreadyUsed: string[], contents: toolboxItems.ContentsType[]) {
-    let labelAdded = false;
-    class_blocks.forEach((blockInfo) => {
-      if (blockInfo.fields) {
-        const methodName = blockInfo.fields['NAME'];
-        if (!methodNamesAlreadyUsed.includes(methodName)) {
-          if (!labelAdded) {
-            contents.push(
-              {
-                kind: 'label',
-                text: label,
-              },
-            );
-            labelAdded = true;
-          }
-          contents.push(blockInfo);
-        }
-      }
-    });
+  private addBaseClassBlocksForCurrentModule(
+      workspace: Blockly.WorkspaceSvg, label: string, baseClassName: string,
+      methodNamesOverrideable: string[], methodNamesAlreadyOverridden: string[],
+      contents: toolboxItems.ContentsType[]) {
+    const baseClassBlocks: toolboxItems.ContentsType[] = getBaseClassBlocks(
+        workspace, baseClassName, methodNamesOverrideable, methodNamesAlreadyOverridden);
+    if (baseClassBlocks.length) {
+      contents.push(
+          new toolboxItems.Label(label),
+          ...baseClassBlocks);
+    }
   }
 }
