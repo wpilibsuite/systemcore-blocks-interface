@@ -31,6 +31,8 @@ import {
   CopyOutlined,
   EditOutlined,
   CloseCircleOutlined,
+  RobotOutlined,
+  CodeOutlined,
 } from '@ant-design/icons';
 import AddTabDialog from './AddTabDialog';
 import ClassNameComponent from './ClassNameComponent';
@@ -411,7 +413,6 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
             <span>{tab.title}</span>
           </Antd.Dropdown>
         ),
-        icon: TabTypeUtils.getIcon(tab.type),
         closable: tab.type !== TabType.ROBOT,
         children: null,
       }));
@@ -528,6 +529,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
           tabBarStyle={{ padding: 0, margin: 0 }}
           hideAdd={false}
           items={createRowTabItems([TabType.ROBOT, TabType.MECHANISM])}
+          tabBarExtraContent={{ left: <RobotOutlined style={{ marginRight: 8 }} /> }}
         />
         <Antd.Tabs
           className="tabs-row"
@@ -538,6 +540,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
           tabBarStyle={{ padding: 0, margin: 0 }}
           hideAdd={false}
           items={createRowTabItems([TabType.OPMODE])}
+          tabBarExtraContent={{ left: <CodeOutlined style={{ marginRight: 8 }} /> }}
         />
         <div style={{ flex: '1 1 auto', overflow: 'hidden', position: 'relative' }}>
           {props.tabList.map((tab) => {
