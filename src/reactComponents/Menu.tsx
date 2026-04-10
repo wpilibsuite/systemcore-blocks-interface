@@ -25,15 +25,12 @@ import * as storageProject from '../storage/project';
 import * as createPythonFiles from '../storage/create_python_files';
 import * as serverSideStorage from '../storage/server_side_storage';
 import * as I18Next from 'react-i18next';
-import {TabType } from '../types/TabType';
+import {TabType, TabTypeUtils } from '../types/TabType';
 
 import {
   SettingOutlined,
-  CodeOutlined,
-  BlockOutlined,
   FileOutlined,
   FolderOutlined,
-  RobotOutlined,
   QuestionCircleOutlined,
   InfoCircleOutlined,
   BgColorsOutlined,
@@ -103,7 +100,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
     mechanisms.push(getItem(
         mechanism.className,
         mechanism.modulePath,
-        <BlockOutlined />
+        TabTypeUtils.getIcon(TabType.MECHANISM) // Use mechanism icon for mechanisms
     ));
   });
 
@@ -112,7 +109,7 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
     opmodes.push(getItem(
         opmode.className,
         opmode.modulePath,
-        <CodeOutlined />
+        TabTypeUtils.getIcon(TabType.OPMODE) // Use opmode icon for opmodes
     ));
   });
 
@@ -120,13 +117,13 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
     getItem(t('DEPLOY'), 'deploy', <PlaySquareOutlined />),
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
-      getItem(t('MECHANISMS') + '...', 'manageMechanisms', <BlockOutlined />),
-      getItem(t('OPMODES') + '...', 'manageOpmodes', <CodeOutlined />),
+      getItem(t('MECHANISMS') + '...', 'manageMechanisms', TabTypeUtils.getIcon(TabType.MECHANISM)),
+      getItem(t('OPMODES') + '...', 'manageOpmodes', TabTypeUtils.getIcon(TabType.OPMODE)),
     ]),
     getItem(t('EXPLORER'), 'explorer', <FileOutlined />, [
-      getItem(t('ROBOT'), project.robot.modulePath, <RobotOutlined />),
-      getItem(t('MECHANISMS'), 'mechanisms', <BlockOutlined />, mechanisms),
-      getItem(t('OPMODES'), 'opmodes', <CodeOutlined />, opmodes),
+      getItem(t('ROBOT'), project.robot.modulePath, TabTypeUtils.getIcon(TabType.ROBOT)),
+      getItem(t('MECHANISMS'), 'mechanisms', TabTypeUtils.getIcon(TabType.MECHANISM), mechanisms),
+      getItem(t('OPMODES'), 'opmodes', TabTypeUtils.getIcon(TabType.OPMODE), opmodes),
     ]),
     getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
       getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
