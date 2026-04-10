@@ -44,6 +44,7 @@ interface AddTabDialogProps {
   onProjectChanged: () => Promise<void>;
   currentTabs: TabItem[];
   storage: commonStorage.Storage | null;
+  initialType?: TabType;
 }
 
 /** Height of the scrollable lists in pixels. */
@@ -58,9 +59,15 @@ const EMPTY_HEIGHT = 60;
 export default function AddTabDialog(props: AddTabDialogProps) {
   const {t} = I18Next.useTranslation();
   const { token } = Antd.theme.useToken();
-  const [tabType, setTabType] = React.useState<TabType>(TabType.OPMODE);
+  const [tabType, setTabType] = React.useState<TabType>(props.initialType ?? TabType.OPMODE);
   const [availableItems, setAvailableItems] = React.useState<Module[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
+
+  React.useEffect(() => {
+    if (props.isOpen) {
+      setTabType(props.initialType ?? TabType.OPMODE);
+    }
+  }, [props.isOpen, props.initialType]);
 
   React.useEffect(() => {
     if (!props.project) {
@@ -147,7 +154,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
     >
       <div style={{marginTop: 16}}>
         <Antd.Radio.Group
-          defaultValue="opmode"
+          value={tabType === TabType.MECHANISM ? 'mechanism' : 'opmode'}
           buttonStyle="solid"
           style={{marginBottom: 16}}
           onChange={handleTabTypeChange}

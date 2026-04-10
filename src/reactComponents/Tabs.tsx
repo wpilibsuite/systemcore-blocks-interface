@@ -84,6 +84,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
   const [activeKey, setActiveKey] = React.useState(props.tabList.length > 0 ? props.tabList[0].key : '');
   const [addTabDialogOpen, setAddTabDialogOpen] = React.useState(false);
+  const [addTabDialogInitialType, setAddTabDialogInitialType] = React.useState<TabType>(TabType.MECHANISM);
   const [name, setName] = React.useState('');
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
@@ -222,6 +223,26 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
       props.setTabList(newItems);
     }
+  };
+
+  const handleRowOneEdit = (
+    targetKey: React.MouseEvent | React.KeyboardEvent | string,
+    action: 'add' | 'remove'
+  ): void => {
+    if (action === 'add') {
+      setAddTabDialogInitialType(TabType.MECHANISM);
+    }
+    handleTabEdit(targetKey, action);
+  };
+
+  const handleRowTwoEdit = (
+    targetKey: React.MouseEvent | React.KeyboardEvent | string,
+    action: 'add' | 'remove'
+  ): void => {
+    if (action === 'add') {
+      setAddTabDialogInitialType(TabType.OPMODE);
+    }
+    handleTabEdit(targetKey, action);
   };
 
   /** Handles successful addition of new tabs. */
@@ -459,6 +480,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
         onProjectChanged={props.onProjectChanged}
         currentTabs={props.tabList}
         storage={props.storage}
+        initialType={addTabDialogInitialType}
       />
 
       <Antd.Modal
@@ -524,7 +546,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
           className="tabs-row"
           type="editable-card"
           onChange={handleTabChange}
-          onEdit={handleTabEdit}
+          onEdit={handleRowOneEdit}
           activeKey={activeKey}
           tabBarStyle={{ padding: 0, margin: 0 }}
           hideAdd={false}
@@ -535,7 +557,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
           className="tabs-row"
           type="editable-card"
           onChange={handleTabChange}
-          onEdit={handleTabEdit}
+          onEdit={handleRowTwoEdit}
           activeKey={activeKey}
           tabBarStyle={{ padding: 0, margin: 0 }}
           hideAdd={false}
