@@ -88,6 +88,7 @@
     "COPY_ELLIPSIS": "Copiar...",
     "addTabDialog": {
         "title": "Agregar Pestaña",
+        "titleWithType": "Agregar Pestaña de {{type}}",
         "search": "Buscar..."
     },
     "MECHANISMS": "Mecanismos",

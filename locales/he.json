@@ -26,6 +26,7 @@
   "example_project": "לדוגמה: WackyWheelerRobot",
   "addTabDialog": {
     "title": "הוסף לשונית",
+    "titleWithType": "הוסף לשונית {{type}}",
     "search": "חיפוש..."
   },
   "PROJECT": "פרויקט",
