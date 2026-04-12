@@ -26,6 +26,7 @@
     "example_project": "For example: WackyWheelerRobot",
     "addTabDialog": {
         "title": "Add Tab",
+        "titleWithType": "Add {{type}} Tab",
         "search": "Search..."
     },
     "PROJECT": "Project",

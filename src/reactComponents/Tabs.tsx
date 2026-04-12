@@ -31,6 +31,8 @@ import {
   CopyOutlined,
   EditOutlined,
   CloseCircleOutlined,
+  RobotOutlined,
+  CodeOutlined,
 } from '@ant-design/icons';
 import AddTabDialog from './AddTabDialog';
 import ClassNameComponent from './ClassNameComponent';
@@ -82,6 +84,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
   const [activeKey, setActiveKey] = React.useState(props.tabList.length > 0 ? props.tabList[0].key : '');
   const [addTabDialogOpen, setAddTabDialogOpen] = React.useState(false);
+  const [addTabDialogInitialType, setAddTabDialogInitialType] = React.useState<TabType>(TabType.MECHANISM);
   const [name, setName] = React.useState('');
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
@@ -220,6 +223,26 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
       props.setTabList(newItems);
     }
+  };
+
+  const handleRowOneEdit = (
+    targetKey: React.MouseEvent | React.KeyboardEvent | string,
+    action: 'add' | 'remove'
+  ): void => {
+    if (action === 'add') {
+      setAddTabDialogInitialType(TabType.MECHANISM);
+    }
+    handleTabEdit(targetKey, action);
+  };
+
+  const handleRowTwoEdit = (
+    targetKey: React.MouseEvent | React.KeyboardEvent | string,
+    action: 'add' | 'remove'
+  ): void => {
+    if (action === 'add') {
+      setAddTabDialogInitialType(TabType.OPMODE);
+    }
+    handleTabEdit(targetKey, action);
   };
 
   /** Handles successful addition of new tabs. */
@@ -397,12 +420,11 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     },
   ];
 
-  /** Creates tab items for the Antd.Tabs component. */
-  const createTabItems = (): any[] => {
-    return props.tabList.map((tab) => {
-      const module = props.project ? storageProject.findModuleByModulePath(props.project, tab.key) : null;
-      
-      return {
+  /** Creates tab items for one tab row (no content children — content is rendered separately). */
+  const createRowTabItems = (types: TabType[]): any[] => {
+    return props.tabList
+      .filter((tab) => types.includes(tab.type))
+      .map((tab) => ({
         key: tab.key,
         label: (
           <Antd.Dropdown
@@ -412,31 +434,9 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
             <span>{tab.title}</span>
           </Antd.Dropdown>
         ),
-        icon: TabTypeUtils.getIcon(tab.type),
         closable: tab.type !== TabType.ROBOT,
-        children: module && props.project && props.storage ? (
-          <TabContent
-            ref={(ref) => {
-              if (ref) {
-                tabContentRefs.current.set(tab.key, ref);
-              } else {
-                tabContentRefs.current.delete(tab.key);
-              }
-            }}
-            modulePath={tab.key}
-            module={module}
-            project={props.project}
-            storage={props.storage}
-            theme={props.theme}
-            shownPythonToolboxCategories={props.shownPythonToolboxCategories}
-            messageApi={props.messageApi}
-            setAlertErrorMessage={props.setAlertErrorMessage}
-            isActive={activeKey === tab.key}
-            openGamepadConfigDialog={props.openGamepadConfigDialog}
-          />
-        ) : null,
-      };
-    });
+        children: null,
+      }));
   };
 
   // Effect to ensure activeKey is valid when tab list changes
@@ -458,11 +458,15 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
   return (
     <>
-      <style>{`        
+      <style>{`
+        .tabs-row .ant-tabs-content-holder {
+          display: none;
+        }
+
         .ant-tabs-content {
           height: 100%;
         }
-        
+
         .ant-tabs-tabpane {
           height: 100%;
         }
@@ -476,6 +480,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
         onProjectChanged={props.onProjectChanged}
         currentTabs={props.tabList}
         storage={props.storage}
+        initialType={addTabDialogInitialType}
       />
 
       <Antd.Modal
@@ -536,16 +541,65 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
         )}
       </Antd.Modal>
 
-      <Antd.Tabs
-        type="editable-card"
-        onChange={handleTabChange}
-        onEdit={handleTabEdit}
-        activeKey={activeKey}
-        tabBarStyle={{ padding: 0, margin: 0, flex: '0 0 auto' }}
-        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-        hideAdd={false}
-        items={createTabItems()}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Antd.Tabs
+          className="tabs-row"
+          type="editable-card"
+          onChange={handleTabChange}
+          onEdit={handleRowOneEdit}
+          activeKey={activeKey}
+          tabBarStyle={{ padding: 0, margin: 0 }}
+          hideAdd={false}
+          items={createRowTabItems([TabType.ROBOT, TabType.MECHANISM])}
+          tabBarExtraContent={{ left: <RobotOutlined style={{ marginRight: 8 }} /> }}
+        />
+        <Antd.Tabs
+          className="tabs-row"
+          type="editable-card"
+          onChange={handleTabChange}
+          onEdit={handleRowTwoEdit}
+          activeKey={activeKey}
+          tabBarStyle={{ padding: 0, margin: 0 }}
+          hideAdd={false}
+          items={createRowTabItems([TabType.OPMODE])}
+          tabBarExtraContent={{ left: <CodeOutlined style={{ marginRight: 8 }} /> }}
+        />
+        <div style={{ flex: '1 1 auto', overflow: 'hidden', position: 'relative' }}>
+          {props.tabList.map((tab) => {
+            const module = props.project
+              ? storageProject.findModuleByModulePath(props.project, tab.key)
+              : null;
+            return (
+              <div
+                key={tab.key}
+                style={{ display: activeKey === tab.key ? 'block' : 'none', height: '100%' }}
+              >
+                {module && props.project && props.storage ? (
+                  <TabContent
+                    ref={(ref) => {
+                      if (ref) {
+                        tabContentRefs.current.set(tab.key, ref);
+                      } else {
+                        tabContentRefs.current.delete(tab.key);
+                      }
+                    }}
+                    modulePath={tab.key}
+                    module={module}
+                    project={props.project}
+                    storage={props.storage}
+                    theme={props.theme}
+                    shownPythonToolboxCategories={props.shownPythonToolboxCategories}
+                    messageApi={props.messageApi}
+                    setAlertErrorMessage={props.setAlertErrorMessage}
+                    isActive={activeKey === tab.key}
+                    openGamepadConfigDialog={props.openGamepadConfigDialog}
+                  />
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </>
   );
 });
