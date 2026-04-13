@@ -23,6 +23,8 @@ import * as storageProject from '../storage/project';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAutosave } from './AutosaveManager';
+import lightFIRSTLogo from '../assets/FIRST_HorzRGB.png';
+import darkFIRSTLogo from '../assets/FIRST_HorzRGB_reverse.png';
 
 /** Function type for setting string values. */
 type StringFunction = (input: string) => void;
@@ -82,6 +84,11 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     return props.project?.projectName || t('NO_PROJECT_SELECTED');
   };
 
+  const getFIRSTLogo = () => {
+    return <img height={LOGO_HEIGHT} style={{objectFit: 'contain'}} 
+        src={isDarkTheme ? darkFIRSTLogo : lightFIRSTLogo} alt="FIRST Logo" />;
+  }
+
   /** Renders the unsaved changes indicator. */
   const renderUnsavedIndicator = (): React.JSX.Element | null => {
     if (!autosave.hasUnsavedChanges) {
@@ -105,12 +112,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
   return (
     <Antd.Flex vertical>
       <Antd.Flex style={{alignItems: 'center'}}>
-        <img
-          height={LOGO_HEIGHT}
-          style={{objectFit: 'contain'}}
-          src={import.meta.env.BASE_URL + (isDarkTheme ? "/FIRST_HorzRGB_reverse.png" : "/FIRST_HorzRGB.png")}
-          alt="FIRST Logo"
-        />
+        {getFIRSTLogo()}
         <Antd.Typography
           style={{
             paddingLeft: TEXT_PADDING_LEFT,

@@ -1,5 +1,5 @@
 import { render } from 'vitest-browser-react';
-import App from '../src/App.tsx';
+import App from '../frontend/App.tsx';
 import { beforeAll, /*expect,*/ test } from "vitest";
 import i18n from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
