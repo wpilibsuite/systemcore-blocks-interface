@@ -17,9 +17,13 @@ export default defineConfig({
         dest: "./",
       },
       {
-        src: 'src/i18n/locales/*',
+        src: 'frontend/i18n/locales/*',
         dest: "./locales/",
       },
+      {
+        src: 'frontend/public/*',
+        dest: "./",
+      }
     ],
   }),
   ],
