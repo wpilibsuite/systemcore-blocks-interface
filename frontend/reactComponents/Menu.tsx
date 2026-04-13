@@ -122,8 +122,8 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
     ]),
     getItem(t('EXPLORER'), 'explorer', <FileOutlined />, [
       getItem(t('ROBOT'), project.robot.modulePath, TabTypeUtils.getIcon(TabType.ROBOT)),
-      getItem(t('MECHANISMS'), 'mechanisms', TabTypeUtils.getIcon(TabType.MECHANISM), mechanisms),
-      getItem(t('OPMODES'), 'opmodes', TabTypeUtils.getIcon(TabType.OPMODE), opmodes),
+      ...(mechanisms.length > 0 ? [getItem(t('MECHANISMS'), 'mechanisms', TabTypeUtils.getIcon(TabType.MECHANISM), mechanisms)] : []),
+      ...(opmodes.length > 0 ? [getItem(t('OPMODES'), 'opmodes', TabTypeUtils.getIcon(TabType.OPMODE), opmodes)] : []),
     ]),
     getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
       getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
