@@ -212,11 +212,20 @@ class JsonGenerator:
           print(f'ERROR: signature has different function name. {module_name}.{key}',
                 file=sys.stderr)
           continue
+        if hasattr(module, return_type) and inspect.isclass(getattr(module, return_type)):
+          # return_type is a type alias defined in this module.
+          # Use the qualified name for the type.
+          return_type = module_name + '.' + return_type
         args = []
         for i in range(len(arg_names)):
+          arg_type = arg_types[i]
+          if hasattr(module, arg_type) and inspect.isclass(getattr(module, arg_type)):
+            # arg_type is a type alias defined in this module.
+            # Use the qualified name for the type.
+            arg_type = module_name + '.' + arg_type
           args.append(self._createArgData(
               arg_names[i],
-              self._getClassName(arg_types[i]),
+              self._getClassName(arg_type),
               arg_default_values[i] if arg_default_values[i] is not None else ''))
         function_data = {}
         function_data[_KEY_FUNCTION_NAME] = function_name
@@ -370,6 +379,11 @@ class JsonGenerator:
               declaring_class_name = self._getClassName(arg_type, class_name)
             # Don't append the self argument to the args array.
             continue
+          # TODO(lizlooney): The following might not work for type aliases declared in a super class.
+          if hasattr(cls, arg_type) and inspect.isclass(getattr(cls, arg_type)):
+            # arg_type is a type alias defined in this class.
+            # Use the qualified name for the type.
+            arg_type = class_name + '.' + arg_type
           args.append(self._createArgData(
               arg_name,
               self._getClassName(arg_type, class_name),
@@ -407,6 +421,11 @@ class JsonGenerator:
                 file=sys.stderr)
           continue
         declaring_class_name = class_name
+        # TODO(lizlooney): The following might not work for type aliases declared in a super class.
+        if hasattr(cls, return_type) and inspect.isclass(getattr(cls, return_type)):
+          # return_type is a type alias defined in this class.
+          # Use the qualified name for the type.
+          return_type = class_name + '.' + return_type
         args = []
         found_self_arg = False
         for i in range(len(arg_names)):
@@ -416,6 +435,11 @@ class JsonGenerator:
             found_self_arg = True
             if arg_type != full_class_name:
               declaring_class_name = self._getClassName(arg_type, class_name)
+          # TODO(lizlooney): The following might not work for type aliases declared in a super class.
+          if hasattr(cls, arg_type) and inspect.isclass(getattr(cls, arg_type)):
+            # arg_type is a type alias defined in this class.
+            # Use the qualified name for the type.
+            arg_type = class_name + '.' + arg_type
           args.append(self._createArgData(
               arg_name,
               self._getClassName(arg_type, class_name),
