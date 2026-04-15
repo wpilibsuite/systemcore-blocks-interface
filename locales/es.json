@@ -91,6 +91,7 @@
         "titleWithType": "Agregar Pestaña de {{type}}",
         "search": "Buscar..."
     },
+    "TOOLTIP_ADD_TAB_WITH_TYPE": "Agregar Pestaña de {{type}}",
     "MECHANISMS": "Mecanismos",
     "OPMODES": "OpModes",
     "ABOUT": {

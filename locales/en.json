@@ -29,6 +29,7 @@
         "titleWithType": "Add {{type}} Tab",
         "search": "Search..."
     },
+    "TOOLTIP_ADD_TAB_WITH_TYPE": "Add {{type}} Tab",
     "PROJECT": "Project",
     "PROJECTS": "Projects",
     "SAVE": "Save",
