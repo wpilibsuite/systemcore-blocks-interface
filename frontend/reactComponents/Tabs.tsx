@@ -33,6 +33,7 @@ import {
   CloseCircleOutlined,
   RobotOutlined,
   CodeOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import AddTabDialog from './AddTabDialog';
 import ClassNameComponent from './ClassNameComponent';
@@ -439,6 +440,34 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
       }));
   };
 
+  const addIcon = (type: TabType): React.JSX.Element => {
+    return (
+      <Antd.Tooltip title={t('TOOLTIP_ADD_TAB_WITH_TYPE', { type: type === TabType.MECHANISM ? t('MECHANISM') : t('OPMODE') })}>
+        <PlusOutlined />
+      </Antd.Tooltip>
+    );
+  };
+
+  const tabRowIcon = (type: TabType): React.JSX.Element => {
+    switch (type) {
+      case TabType.MECHANISM:
+        return (
+      <Antd.Tooltip title={t('MECHANISMS')}>
+        <RobotOutlined style={{ marginRight: 8 }} />
+      </Antd.Tooltip>
+        );       
+      case TabType.OPMODE:
+        return (
+      <Antd.Tooltip title={t('OPMODES')}>
+        <CodeOutlined style={{ marginRight: 8 }} />
+      </Antd.Tooltip>
+        );       
+      default:
+        return (<></>);
+    }
+  }
+    
+
   // Effect to ensure activeKey is valid when tab list changes
   React.useEffect(() => {
     // Check if current activeKey is still in the tab list
@@ -543,6 +572,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Antd.Tabs
+          addIcon={addIcon(TabType.MECHANISM)}
           className="tabs-row"
           type="editable-card"
           onChange={handleTabChange}
@@ -551,9 +581,10 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
           tabBarStyle={{ padding: 0, margin: 0 }}
           hideAdd={false}
           items={createRowTabItems([TabType.ROBOT, TabType.MECHANISM])}
-          tabBarExtraContent={{ left: <RobotOutlined style={{ marginRight: 8 }} /> }}
+          tabBarExtraContent={{ left: tabRowIcon(TabType.MECHANISM) }}
         />
         <Antd.Tabs
+          addIcon={addIcon(TabType.OPMODE)}
           className="tabs-row"
           type="editable-card"
           onChange={handleTabChange}
@@ -562,7 +593,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
           tabBarStyle={{ padding: 0, margin: 0 }}
           hideAdd={false}
           items={createRowTabItems([TabType.OPMODE])}
-          tabBarExtraContent={{ left: <CodeOutlined style={{ marginRight: 8 }} /> }}
+          tabBarExtraContent={{ left: tabRowIcon(TabType.OPMODE) }}
         />
         <div style={{ flex: '1 1 auto', overflow: 'hidden', position: 'relative' }}>
           {props.tabList.map((tab) => {

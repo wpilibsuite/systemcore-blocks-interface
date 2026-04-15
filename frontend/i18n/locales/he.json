@@ -29,6 +29,7 @@
     "titleWithType": "הוסף לשונית {{type}}",
     "search": "חיפוש..."
   },
+  "TOOLTIP_ADD_TAB_WITH_TYPE": "הוסף לשונית {{type}}",
   "PROJECT": "פרויקט",
   "PROJECTS": "פרויקטים",
   "SAVE": "שמור",
