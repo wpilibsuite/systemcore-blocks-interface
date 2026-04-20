@@ -19,7 +19,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-import { getAlias } from './python';
+import { getAlias, simpleClassName } from './python';
 import * as toolboxItems from '../../toolbox/items';
 
 
@@ -83,9 +83,8 @@ export function varNameForType(type: string): string {
   }
   // If the type has a dot, it is an object and we should provide a variable
   // block for this type.
-  const lastDot = type.lastIndexOf('.')
-  if (lastDot !== -1) {
-    return 'my' + type.substring(lastDot + 1);
+  if (type.includes('.')) {
+    return 'my' + simpleClassName(type);
   }
   // Otherwise, we don't provide a variable block for this type.
   return ''
@@ -93,9 +92,6 @@ export function varNameForType(type: string): string {
 
 /** Returns a reasonable name for a label of a self argument of a block that calls an instance method. */
 export function getSelfArgName(className: string): string {
-  const lastDot = className.lastIndexOf('.')
-  const shortClassName = (lastDot !== -1)
-    ? className.substring(lastDot + 1)
-    : className;
-  return shortClassName.charAt(0).toLowerCase() + shortClassName.substring(1);
+  const simpleClassNameClassName = simpleClassName(className);
+  return simpleClassNameClassName.charAt(0).toLowerCase() + simpleClassNameClassName.substring(1);
 }

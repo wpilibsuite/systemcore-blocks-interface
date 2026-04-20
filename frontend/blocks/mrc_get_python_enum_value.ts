@@ -23,7 +23,7 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
-import { getEnumData, getOutputCheck } from './utils/python';
+import { classNameToShowOnBlocks, getEnumData, getOutputCheck } from './utils/python';
 import { EnumData } from './utils/python_json_types';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
@@ -77,7 +77,7 @@ const GET_PYTHON_ENUM_VALUE = {
         .appendField('.');
     this.setStyle(MRC_STYLE_ENUM);
     this.setTooltip(() => {
-      const enumClassName = this.getFieldValue(FIELD_ENUM_CLASS_NAME);
+      const enumClassName = this.mrcEnumType;
       const enumValue = this.getFieldValue(FIELD_ENUM_VALUE);
       let tooltip = replaceTokens(Blockly.Msg['GET_ENUM_VALUE_TOOLTIP'], {
         enumName: enumClassName,
@@ -157,7 +157,7 @@ const GET_PYTHON_ENUM_VALUE = {
   checkBlock: function(this: GetPythonEnumValueBlock): void {
     const warnings: string[] = [];
 
-    const enumClassName = this.getFieldValue(FIELD_ENUM_CLASS_NAME);
+    const enumClassName = this.mrcEnumType;
     const enumData = getEnumData(enumClassName);
     if (enumData) {
       const blockEnumValue = this.getFieldValue(FIELD_ENUM_VALUE);
@@ -184,6 +184,17 @@ const GET_PYTHON_ENUM_VALUE = {
       this.setWarningText(null, WARNING_ID_ENUM_CHANGED);
     }
   },
+
+  /**
+   * mrcShowSimpleClassNames is called for each GetPythonEnumValueBlock:
+   * 1. after a block is loaded in the blockly workspace
+   * 2. after a block is created
+   * 3. when showSimpleClassNames has been changed
+   */
+  mrcShowSimpleClassNames: function(this: GetPythonEnumValueBlock, _editor: Editor, showSimpleClassNames: boolean): void {
+      this.setFieldValue(
+          classNameToShowOnBlocks(this.mrcEnumType, showSimpleClassNames), FIELD_ENUM_CLASS_NAME);
+  },
 };
 
 export const setup = function() {
@@ -191,14 +202,13 @@ export const setup = function() {
 };
 
 export const pythonFromBlock = function(
-    block: Blockly.Block,
+    block: GetPythonEnumValueBlock,
     generator: ExtendedPythonGenerator,
 ) {
-  const getPythonEnumValueBlock = block as GetPythonEnumValueBlock;
-  const enumClassName = block.getFieldValue(FIELD_ENUM_CLASS_NAME);
+  const enumClassName = block.mrcEnumType;
   const enumValue = block.getFieldValue(FIELD_ENUM_VALUE);
-  if (getPythonEnumValueBlock.mrcImportModule) {
-    generator.importModule(getPythonEnumValueBlock.mrcImportModule);
+  if (block.mrcImportModule) {
+    generator.importModule(block.mrcImportModule);
   }
   const code = enumClassName + '.' + enumValue;
   return [code, Order.MEMBER];
@@ -206,22 +216,28 @@ export const pythonFromBlock = function(
 
 // Functions used for creating blocks for the toolbox.
 
-export function addEnumBlocks(enums: EnumData[], contents: toolboxItems.ContentsType[]) {
+export function addEnumBlocks(
+    enums: EnumData[],
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   for (const enumData of enums) {
     for (const enumValue of enumData.enumValues) {
-      const block = createEnumBlock(enumValue, enumData);
+      const block = createEnumBlock(enumValue, enumData, showSimpleClassNames);
       contents.push(block);
     }
   }
 }
 
-export function createEnumBlock(enumValue: string, enumData: EnumData): toolboxItems.Block {
+export function createEnumBlock(
+    enumValue: string,
+    enumData: EnumData,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: GetPythonEnumValueExtraState = {
     enumType: enumData.enumClassName,
     importModule: enumData.moduleName,
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_ENUM_CLASS_NAME] = enumData.enumClassName;
+  fields[FIELD_ENUM_CLASS_NAME] = classNameToShowOnBlocks(enumData.enumClassName, showSimpleClassNames);
   fields[FIELD_ENUM_VALUE] = enumValue;
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
 }

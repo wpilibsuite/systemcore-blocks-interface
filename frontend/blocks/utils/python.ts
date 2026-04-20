@@ -340,3 +340,14 @@ export function isExistingPythonModule(moduleName: string): boolean {
   }
   return false;
 }
+
+export function classNameToShowOnBlocks(className: string, showSimpleClassNames: boolean): string {
+  return showSimpleClassNames ? simpleClassName(className) : className;
+}
+
+export function simpleClassName(className: string): string {
+  const lastDot = className.lastIndexOf('.')
+  return (lastDot !== -1)
+    ? className.substring(lastDot + 1)
+    : className;
+}

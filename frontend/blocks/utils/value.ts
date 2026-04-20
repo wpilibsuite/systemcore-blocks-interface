@@ -75,7 +75,7 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
   return null;
 }
 
-export function valueForComponentArgInput(argType: string, argDefaultValue: string): any {
+export function valueForComponentArgInput(argType: string, argDefaultValue: string, showSimpleClassNames: boolean): any {
   if (isPortType(argType)) {
     return createPort(argType);
   }
@@ -131,7 +131,7 @@ export function valueForComponentArgInput(argType: string, argDefaultValue: stri
       }
     }
     return {
-      block: createEnumBlock(enumValue, enumData),
+      block: createEnumBlock(enumValue, enumData, showSimpleClassNames),
     };
   }
 

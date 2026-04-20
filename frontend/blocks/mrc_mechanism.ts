@@ -397,7 +397,7 @@ const MECHANISM = {
         } else {
           defaultValue = '';
         }
-        const value = valueForComponentArgInput(this.mrcParameters[i].type, defaultValue);
+        const value = valueForComponentArgInput(this.mrcParameters[i].type, defaultValue, editor.getShowSimpleClassNames());
         if (value) {
           // Connect the new block to the input.
           const newBlockState = value.block;
@@ -506,7 +506,9 @@ export const pythonFromBlock = function (
 }
 
 export function createMechanismBlock(
-    mechanism: storageModule.Mechanism, components: storageModuleContent.Component[]): toolboxItems.Block {
+    mechanism: storageModule.Mechanism,
+    components: storageModuleContent.Component[],
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const snakeCaseName = storageNames.pascalCaseToSnakeCase(mechanism.className);
   const mechanismName = 'my_' + snakeCaseName;
   const extraState: MechanismExtraState = {
@@ -538,7 +540,7 @@ export function createMechanismBlock(
       } else {
         defaultValue = '';
       }
-      const input = valueForComponentArgInput(componentArg.type, defaultValue);
+      const input = valueForComponentArgInput(componentArg.type, defaultValue, showSimpleClassNames);
       if (input) {
         inputs[INPUT_ARG_PREFIX + i] = input;
       }
