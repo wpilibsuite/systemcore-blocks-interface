@@ -34,7 +34,9 @@ import { ClassData, ModuleData } from '../blocks/utils/python_json_types';
 import * as toolboxItems from './items';
 
 
-export function getToolboxCategories(shownPythonToolboxCategories: Set<string> | null): toolboxItems.Category[] {
+export function getToolboxCategories(
+    shownPythonToolboxCategories: Set<string> | null,
+    showSimpleClassNames: boolean): toolboxItems.Category[] {
   const contents: toolboxItems.Category[] = [];
 
   const allCategories: {[key: string]: toolboxItems.Category} = {};
@@ -48,7 +50,7 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
     const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
 
     const contents: toolboxItems.ContentsType[] = [];
-    addModuleBlocks(moduleData, contents);
+    addModuleBlocks(moduleData, contents, showSimpleClassNames);
 
     const moduleCategory: toolboxItems.PythonModuleCategory = {
       kind: 'category',
@@ -67,7 +69,7 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
     const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
 
     const contents: toolboxItems.ContentsType[] = [];
-    addClassBlocks(classData, contents);
+    addClassBlocks(classData, contents, showSimpleClassNames);
     const classCategory: toolboxItems.PythonClassCategory = {
       kind: 'category',
       name: name,
@@ -92,7 +94,10 @@ export function getToolboxCategories(shownPythonToolboxCategories: Set<string> |
   return contents;
 }
 
-function addModuleBlocks(moduleData: ModuleData, contents: toolboxItems.ContentsType[]) {
+function addModuleBlocks(
+    moduleData: ModuleData,
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   // Module variable blocks.
   addModuleVariableBlocks(moduleData, contents);
 
@@ -100,23 +105,26 @@ function addModuleBlocks(moduleData: ModuleData, contents: toolboxItems.Contents
   addModuleFunctionBlocks(moduleData, contents);
 
   // Enum blocks
-  addEnumBlocks(moduleData.enums, contents);
+  addEnumBlocks(moduleData.enums, contents, showSimpleClassNames);
 }
 
-function addClassBlocks(classData: ClassData, contents: toolboxItems.ContentsType[]) {
+function addClassBlocks(
+    classData: ClassData,
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   // Function blocks (constructors, instance methods, static methods)
-  addConstructorBlocks(classData, contents);
-  addInstanceMethodBlocks(classData, contents);
-  addStaticMethodBlocks(classData, contents);
+  addConstructorBlocks(classData, contents, showSimpleClassNames);
+  addInstanceMethodBlocks(classData, contents, showSimpleClassNames);
+  addStaticMethodBlocks(classData, contents, showSimpleClassNames);
 
   // Instance variable blocks
-  addInstanceVariableBlocks(classData, contents);
+  addInstanceVariableBlocks(classData, contents, showSimpleClassNames);
 
   // Class variable blocks.
-  addClassVariableBlocks(classData, contents);
+  addClassVariableBlocks(classData, contents, showSimpleClassNames);
 
   // Enum blocks
-  addEnumBlocks(classData.enums, contents);
+  addEnumBlocks(classData.enums, contents, showSimpleClassNames);
 }
 
 function addCategoriesToParents(

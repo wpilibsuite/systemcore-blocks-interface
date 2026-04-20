@@ -8,9 +8,7 @@ import { getCategory as getEventCategory } from './event_category';
 import { getDriverStationCategory } from './driver_station_category';
 
 export function getToolboxJSON(
-    shownPythonToolboxCategories: Set<string> | null,
     editor: Editor): Blockly.utils.toolbox.ToolboxInfo {
-
   const toolbox: Blockly.utils.toolbox.ToolboxInfo = {
     kind: 'categoryToolbox',
     contents: []
@@ -21,14 +19,14 @@ export function getToolboxJSON(
     case storageModule.ModuleType.MECHANISM:
       toolbox.contents.push(getHardwareCategory(editor));
       toolbox.contents.push(new toolboxItems.Sep());
-      toolbox.contents.push(...common.getToolboxItems(shownPythonToolboxCategories, editor));
+      toolbox.contents.push(...common.getToolboxItems(editor));
       toolbox.contents.push(getEventCategory(editor));
       break;
     case storageModule.ModuleType.OPMODE:
       toolbox.contents.push(getDriverStationCategory(editor));
       toolbox.contents.push(getHardwareCategory(editor));
       toolbox.contents.push(new toolboxItems.Sep());
-      toolbox.contents.push(...common.getToolboxItems(shownPythonToolboxCategories, editor));
+      toolbox.contents.push(...common.getToolboxItems(editor));
       break;
   }
 
