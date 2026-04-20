@@ -137,7 +137,7 @@ interface AppContentProps {
 
 const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.JSX.Element => {
   const { t, i18n } = useTranslation();
-  const { settings, updateLanguage, updateTheme, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
+  const { settings, updateLanguage, updateTheme, updateShowSimpleClassNames, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
 
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [messageApi, contextHolder] = Antd.message.useMessage();
@@ -151,6 +151,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [theme, setTheme] = React.useState('dark');
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
+  const [showSimpleClassNames, setShowSimpleClassNames] = React.useState(true);
+  const [showSimpleClassNamesInitialized, setShowSimpleClassNamesInitialized] = React.useState(false);
   
   const tabsRef = React.useRef<Tabs.TabsRef>(null);
 
@@ -179,6 +181,19 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       }
     }
   }, [settings.theme, theme, themeInitialized, isLoading]);
+
+  /** Initialize showSimpleClassNames from UserSettings when app first starts. */
+  React.useEffect(() => {
+    // Only proceed if settings are loaded
+    if (!isLoading) {
+      if (!showSimpleClassNamesInitialized && settings.showSimpleClassNames && settings.showSimpleClassNames !== showSimpleClassNames) {
+        setShowSimpleClassNames(settings.showSimpleClassNames);
+        setShowSimpleClassNamesInitialized(true);
+      } else if (!showSimpleClassNamesInitialized) {
+        setShowSimpleClassNamesInitialized(true);
+      }
+    }
+  }, [settings.showSimpleClassNames, showSimpleClassNames, showSimpleClassNamesInitialized, isLoading]);
 
   /** Save language changes to UserSettings when i18n language changes. */
   React.useEffect(() => {
@@ -215,6 +230,22 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
     saveThemeChange();
   }, [theme, settings.theme, updateTheme, themeInitialized, isLoading]);
+
+  /** Save showSimpleClassNames changes to UserSettings when showSimpleClassNames changes. */
+  React.useEffect(() => {
+    const saveShowSimpleClassNamesChange = async () => {
+      // Only save if this is not the initial load and showSimpleClassNames is different from settings
+      if (showSimpleClassNamesInitialized && showSimpleClassNames !== settings.showSimpleClassNames && !isLoading) {
+        try {
+          await updateShowSimpleClassNames(showSimpleClassNames);
+        } catch (error) {
+          console.error('Failed to save showSimpleClassNames setting:', error);
+        }
+      }
+    };
+
+    saveShowSimpleClassNamesChange();
+  }, [showSimpleClassNames, settings.showSimpleClassNames, updateShowSimpleClassNames, showSimpleClassNamesInitialized, isLoading]);
 
   /** Initializes custom blocks and Python generator. */
   const initializeBlocks = (): void => {
@@ -533,6 +564,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 theme={theme}
                 setTheme={setTheme}
+                showSimpleClassNames={showSimpleClassNames}
+                setShowSimpleClassNames={setShowSimpleClassNames}
                 saveCurrentTab={saveCurrentTab}
               />
               <SiderCollapseTrigger
@@ -550,6 +583,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 onProjectChanged={onProjectChanged}
                 storage={storage}
                 theme={theme}
+                showSimpleClassNames={showSimpleClassNames}
                 shownPythonToolboxCategories={shownPythonToolboxCategories}
                 messageApi={messageApi}
                 openGamepadConfigDialog={openGamepadConfigDialog}

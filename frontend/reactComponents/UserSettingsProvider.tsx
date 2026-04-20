@@ -26,10 +26,12 @@ import { Storage } from '../storage/common_storage';
 /** Storage keys for user settings. */
 const USER_LANGUAGE_KEY = 'userLanguage';
 const USER_THEME_KEY = 'userTheme';
+const USER_SHOW_SIMPLE_CLASS_NAMES_KEY = 'userShowSimpleClassNames';
 
 /** Default values for user settings. */
 const DEFAULT_LANGUAGE = 'en';
 const DEFAULT_THEME = 'dark';
+const DEFAULT_SHOW_SIMPLE_CLASS_NAMES = true;
 
 /** Helper function to generate project-specific storage key for open tabs. */
 const getUserOptionsKey = (projectName: string): string => `user_options_${projectName}`;
@@ -38,6 +40,7 @@ const getUserOptionsKey = (projectName: string): string => `user_options_${proje
 export interface UserSettings {
   language: string;
   theme: string;
+  showSimpleClassNames: boolean;
 }
 
 /** User settings context interface. */
@@ -45,6 +48,7 @@ export interface UserSettingsContextType {
   settings: UserSettings;
   updateLanguage: (language: string) => Promise<void>;
   updateTheme: (theme: string) => Promise<void>;
+  updateShowSimpleClassNames: (showSimpleClassNames: boolean) => Promise<void>;
   updateOpenTabs: (projectName: string, tabPaths: string[]) => Promise<void>;
   getOpenTabs: (projectName: string) => Promise<string[]>;
   isLoading: boolean;
@@ -71,6 +75,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
   const [settings, setSettings] = React.useState<UserSettings>({
     language: DEFAULT_LANGUAGE,
     theme: DEFAULT_THEME,
+    showSimpleClassNames: DEFAULT_SHOW_SIMPLE_CLASS_NAMES,
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -82,14 +87,16 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
         setIsLoading(true);
         setError(null);
 
-        const [language, theme] = await Promise.all([
+        const [language, theme, showSimpleClassNames] = await Promise.all([
           validStorage.fetchEntry(USER_LANGUAGE_KEY, DEFAULT_LANGUAGE),
           validStorage.fetchEntry(USER_THEME_KEY, DEFAULT_THEME),
+          validStorage.fetchEntry(USER_SHOW_SIMPLE_CLASS_NAMES_KEY, DEFAULT_SHOW_SIMPLE_CLASS_NAMES.toString()),
         ]);
 
         setSettings({
           language,
           theme,
+          showSimpleClassNames: showSimpleClassNames.toLowerCase() === "true",
         });
       } catch (err) {
         setError(`Failed to load user settings: ${err}`);
@@ -139,6 +146,21 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     }
   };
 
+  /** Update showSimpleClassNames setting. */
+  const updateShowSimpleClassNames = async (showSimpleClassNames: boolean): Promise<void> => {
+    try {
+      setError(null);
+      if (storage) {
+        await storage.saveEntry(USER_SHOW_SIMPLE_CLASS_NAMES_KEY, showSimpleClassNames.toString());
+        setSettings(prev => ({ ...prev, showSimpleClassNames }));
+      }
+    } catch (err) {
+      setError(`Failed to save showPackageName setting: ${err}`);
+      console.error('Error saving showPackageName setting:', err);
+      throw err;
+    }
+  };
+
   /** Update open tabs for a specific project. */
   const updateOpenTabs = async (projectName: string, tabPaths: string[]): Promise<void> => {
     try {
@@ -183,6 +205,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     settings,
     updateLanguage,
     updateTheme,
+    updateShowSimpleClassNames,
     updateOpenTabs,
     getOpenTabs,
     isLoading,
