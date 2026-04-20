@@ -59,6 +59,8 @@ export interface MenuProps {
   openWPIToolboxSettings: () => void;
   theme: string;
   setTheme: (theme: string) => void;
+  showSimpleClassNames: boolean;
+  setShowSimpleClassNames: (show: boolean) => void;
   saveCurrentTab: () => Promise<void>;
 }
 
@@ -91,7 +93,11 @@ function getItem(
 /**
  * Generates menu items for a given project.
  */
-function getMenuItems(t: (key: string) => string, project: storageProject.Project, currentLanguage: string): MenuItem[] {
+function getMenuItems(
+    t: (key: string) => string,
+    project: storageProject.Project,
+    currentLanguage: string,
+    showSimpleClassNames: boolean): MenuItem[] {
   const mechanisms: MenuItem[] = [];
   const opmodes: MenuItem[] = [];
 
@@ -127,6 +133,11 @@ function getMenuItems(t: (key: string) => string, project: storageProject.Projec
     ]),
     getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
       getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
+        getItem(
+          t('SHOW_SIMPLE_CLASS_NAMES'),
+          'toggle_show_simple_classNames',
+          showSimpleClassNames ? <CheckOutlined /> : undefined
+        ),
       getItem(t('THEME') + '...', 'theme', <BgColorsOutlined />),
       getItem(t('LANGUAGE'), 'language', <GlobalOutlined />, [
         getItem(
@@ -262,6 +273,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       setAboutDialogVisible(true);
     } else if (key === 'wpi_toolbox'){
       props.openWPIToolboxSettings();
+    } else if (key === 'toggle_show_simple_classNames'){
+      props.setShowSimpleClassNames(!props.showSimpleClassNames)
     } else if (key === 'theme') {
       setThemeModalOpen(true);
     } else if (key == 'deploy') {
@@ -359,14 +372,14 @@ export function Component(props: MenuProps): React.JSX.Element {
     fetchMostRecentProject();
   }, [projectNames]);
 
-  // Update menu items and save project when project or language changes
+  // Update menu items and save project when project, language, or showSimpleClassNames changes
   React.useEffect(() => {
     if (props.currentProject) {
       setMostRecentProjectName();
-      setMenuItems(getMenuItems(t, props.currentProject, i18n.language));
+      setMenuItems(getMenuItems(t, props.currentProject, i18n.language, props.showSimpleClassNames));
       setNoProjects(false);
     }
-  }, [props.currentProject, i18n.language]);
+  }, [props.currentProject, i18n.language, props.showSimpleClassNames]);
 
   return (
     <>
