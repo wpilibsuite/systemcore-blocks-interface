@@ -48,6 +48,7 @@ const MRC_ON_DESCENDANT_DISCONNECT = 'mrcOnDescendantDisconnect';
 const MRC_ON_ANCESTOR_MOVE = 'mrcOnAncestorMove';
 const MRC_ON_MODULE_CURRENT = 'mrcOnModuleCurrent';
 const MRC_ON_MUTATOR_OPEN = 'mrcOnMutatorOpen';
+const MRC_SHOW_SIMPLE_CLASS_NAMES = 'mrcShowSimpleClassNames';
 
 export class Editor {
   private static workspaceIdToEditor: { [workspaceId: string]: Editor } = {};
@@ -66,6 +67,7 @@ export class Editor {
   private mechanismClassNameToModuleContent: {[mechanismClassName: string]: storageModuleContent.ModuleContent} = {};
   private bindedOnChange: any = null;
   private shownPythonToolboxCategories: Set<string> | null = null;
+  private showSimpleClassNames: boolean = false;
   private toolbox: Blockly.utils.toolbox.ToolboxInfo = EMPTY_TOOLBOX;
   private toolboxUpdateTimeout: NodeJS.Timeout | null = null;
 
@@ -109,6 +111,9 @@ export class Editor {
             if (MRC_ON_LOAD in block && typeof block[MRC_ON_LOAD] === 'function') {
               block[MRC_ON_LOAD](this);
             }
+            if (MRC_SHOW_SIMPLE_CLASS_NAMES in block && typeof block[MRC_SHOW_SIMPLE_CLASS_NAMES] === 'function') {
+              block[MRC_SHOW_SIMPLE_CLASS_NAMES](this, this.showSimpleClassNames);
+            }
           }
         });
       }
@@ -149,6 +154,9 @@ export class Editor {
           if (block) {
             if (MRC_ON_CREATE in block && typeof block[MRC_ON_CREATE] === 'function') {
               block[MRC_ON_CREATE](this);
+            }
+            if (MRC_SHOW_SIMPLE_CLASS_NAMES in block && typeof block[MRC_SHOW_SIMPLE_CLASS_NAMES] === 'function') {
+              block[MRC_SHOW_SIMPLE_CLASS_NAMES](this, this.showSimpleClassNames);
             }
           }
         });
@@ -298,6 +306,26 @@ export class Editor {
     }, 100);
   }
 
+  public updateShowSimpleClassNames(showSimpleClassNames: boolean): void {
+    this.showSimpleClassNames = showSimpleClassNames;
+    this.updateToolboxImpl();
+
+    // Go through all the blocks in the workspace and call their mrcOnShowSimpleClassNamesChanged method.
+    this.blocklyWorkspace.getAllBlocks().forEach(block => {
+      if (MRC_SHOW_SIMPLE_CLASS_NAMES in block && typeof block[MRC_SHOW_SIMPLE_CLASS_NAMES] === 'function') {
+        block[MRC_SHOW_SIMPLE_CLASS_NAMES](this, this.showSimpleClassNames);
+      }
+    });
+  }
+
+  public getShowSimpleClassNames(): boolean {
+    return this.showSimpleClassNames;
+  }
+
+  public getShownPythonToolboxCategories(): Set<string> | null {
+    return this.shownPythonToolboxCategories;
+  }
+
   public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
     this.shownPythonToolboxCategories = shownPythonToolboxCategories;
     this.updateToolboxImpl();
@@ -308,7 +336,7 @@ export class Editor {
       // This editor has been abandoned.
       return;
     }
-    const toolbox = getToolboxJSON(this.shownPythonToolboxCategories, this);
+    const toolbox = getToolboxJSON(this);
     const previousToolbox = this.blocklyWorkspace.getToolbox();
     if (previousToolbox) {
       applyExpandedCategories(previousToolbox, toolbox);

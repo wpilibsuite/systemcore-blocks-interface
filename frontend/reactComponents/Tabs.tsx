@@ -64,6 +64,7 @@ export interface TabsProps {
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
   theme: string;
+  showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
   openGamepadConfigDialog?: () => void;
@@ -619,6 +620,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
                     project={props.project}
                     storage={props.storage}
                     theme={props.theme}
+                    showSimpleClassNames={props.showSimpleClassNames}
                     shownPythonToolboxCategories={props.shownPythonToolboxCategories}
                     messageApi={props.messageApi}
                     setAlertErrorMessage={props.setAlertErrorMessage}
