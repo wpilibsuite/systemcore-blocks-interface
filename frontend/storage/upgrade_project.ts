@@ -38,17 +38,19 @@ import {
 import { upgrade_005_to_006 } from '../blocks/mrc_component';
 import {
     upgrade_008_to_009 as upgrade_component_008_to_009,
-    upgrade_0011_to_0012 as upgrade_component_0011_to_0012
+    upgrade_0011_to_0012 as upgrade_component_0011_to_0012,
+    upgrade_0012_to_0013 as upgrade_component_0012_to_0013
     } from '../blocks/mrc_component';
 import {
     upgrade_008_to_009 as upgrade_call_python_function_008_to_009,
-    upgrade_0011_to_0012 as upgrade_call_python_function_0011_to_0012
+    upgrade_0011_to_0012 as upgrade_call_python_function_0011_to_0012,
+    upgrade_0012_to_0013 as upgrade_call_python_function_0012_to_0013
     } from '../blocks/mrc_call_python_function';
 import { GamepadTypeUtils } from '../types/GamepadType';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.12';
+export const CURRENT_VERSION = '0.0.13';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -117,6 +119,11 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.11':
         await upgradeFrom_0011_to_0012(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.12'
+      // @ts-ignore
+      case '0.0.12':
+        await upgradeFrom_0012_to_0013(storage, projectName, projectInfo);
 
     }
     await storageProject.saveProjectInfo(storage, projectName, projectInfo);
@@ -369,4 +376,19 @@ async function upgradeFrom_0011_to_0012(
       anyModuleType, storageModuleContent.preupgrade_0011_to_0012,
       anyModuleType, upgrade);
   projectInfo.version = '0.0.12';
+}
+
+async function upgradeFrom_0012_to_0013(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  const upgrade = function (workspace: Blockly.Workspace) {
+    upgrade_component_0012_to_0013(workspace);
+    upgrade_call_python_function_0012_to_0013(workspace);
+  };
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      anyModuleType, upgrade);
+  projectInfo.version = '0.0.13';
 }

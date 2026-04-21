@@ -52,6 +52,7 @@ export interface TabContentProps {
   project: storageProject.Project;
   storage: commonStorage.Storage;
   theme: string;
+  showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
   setAlertErrorMessage: (message: string) => void;
@@ -69,6 +70,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   project,
   storage,
   theme,
+  showSimpleClassNames,
   shownPythonToolboxCategories,
   messageApi,
   setAlertErrorMessage,
@@ -159,9 +161,17 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     await newEditor.makeCurrent(project);
     
     setEditorInstance(newEditor);
+    newEditor.updateShowSimpleClassNames(showSimpleClassNames);
     newEditor.loadModuleBlocks();
     newEditor.updateToolbox(shownPythonToolboxCategories);
-  }, [module, project, storage, modulePath, shownPythonToolboxCategories, messageApi, handleBlocksChanged, openGamepadConfigDialog]);
+  }, [module, project, storage, modulePath, showSimpleClassNames, shownPythonToolboxCategories, messageApi, handleBlocksChanged, openGamepadConfigDialog]);
+
+  /** Update editor when showSimpleClassNames changes. */
+  React.useEffect(() => {
+    if (editorInstance) {
+      editorInstance.updateShowSimpleClassNames(showSimpleClassNames);
+    }
+  }, [showSimpleClassNames, editorInstance]);
 
   /** Update editor toolbox when categories change. */
   React.useEffect(() => {

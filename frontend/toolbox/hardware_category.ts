@@ -32,7 +32,8 @@ import {
     addInstanceMechanismBlocks } from '../blocks/mrc_call_python_function';
 import { Editor } from '../editor/editor';
 
-export function getHardwareCategory(editor: Editor): toolboxItems.Category {
+export function getHardwareCategory(
+    editor: Editor): toolboxItems.Category {
   const moduleType = editor.getModuleType();
   switch (moduleType) {
     case storageModule.ModuleType.ROBOT:
@@ -77,7 +78,7 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
         // Here we need all the components (regular and private) from the mechanism because we need
         // to create port parameters for all the components.
         const components = editor.getAllComponentsFromMechanism(mechanism);
-        mechanismBlocks.push(createMechanismBlock(mechanism, components));
+        mechanismBlocks.push(createMechanismBlock(mechanism, components, editor.getShowSimpleClassNames()));
       });
 
       contents.push({
@@ -199,7 +200,7 @@ function getComponentsCategory(
   contents.push({
     kind: 'category',
     name: Blockly.Msg['MRC_CATEGORY_ADD_COMPONENT'],
-    contents: getAllPossibleComponents(moduleType),
+    contents: getAllPossibleComponents(moduleType, editor.getShowSimpleClassNames()),
   });
 
   // Get all (regular and private) components from the current workspace.

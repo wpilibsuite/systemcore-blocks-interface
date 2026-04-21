@@ -24,6 +24,7 @@ import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
 import {
+    classNameToShowOnBlocks,
     getAllowedTypesForSetCheck,
     getClassData,
     getModuleData,
@@ -93,6 +94,7 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcComponentClassName: string,
   mrcOriginalComponentName: string,
   mrcMechanismClassName: string,
+  mrcModuleOrClassName: string,
   mrcMapComponentNameToId: {[componentName: string]: string},
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
@@ -161,6 +163,11 @@ type CallPythonFunctionExtraState = {
    * The mechanism class name. Specified only if the function kind is INSTANCE_MECHANISM.
    */
   mechanismClassName?: string,
+  /**
+   * The module or class name. Specified only if the function kind is MODULE, STATIC, CONSTRUCTOR,
+   * or INSTANCE.
+   */
+  moduleOrClassName?: string,
 }
 
 const CALL_PYTHON_FUNCTION = {
@@ -179,7 +186,7 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.MODULE: {
-          const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const moduleName = this.mrcModuleOrClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = Blockly.Msg.CALL_MODULE_FUNCTION_TOOLTIP;
           tooltip = tooltip
@@ -188,7 +195,7 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.STATIC: {
-          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const className = this.mrcModuleOrClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = Blockly.Msg.CALL_STATIC_METHOD_TOOLTIP;
           tooltip = tooltip
@@ -197,13 +204,13 @@ const CALL_PYTHON_FUNCTION = {
           break;
         }
         case FunctionKind.CONSTRUCTOR: {
-          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const className = this.mrcModuleOrClassName;
           tooltip = Blockly.Msg.CALL_CONSTRUCTOR_TOOLTIP;
           tooltip = tooltip.replace('{{className}}', className);
           break;
         }
         case FunctionKind.INSTANCE: {
-          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const className = this.mrcModuleOrClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_TOOLTIP;
           tooltip = tooltip
@@ -321,6 +328,9 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcMechanismClassName) {
       extraState.mechanismClassName = this.mrcMechanismClassName;
     }
+    if (this.mrcModuleOrClassName) {
+      extraState.moduleOrClassName = this.mrcModuleOrClassName;
+    }
     return extraState;
   },
   /**
@@ -348,6 +358,7 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : '';
     this.mrcComponentClassName = extraState.componentClassName ? extraState.componentClassName : '';
     this.mrcMechanismClassName = extraState.mechanismClassName ? extraState.mechanismClassName : '';
+    this.mrcModuleOrClassName = extraState.moduleOrClassName ? extraState.moduleOrClassName : '';
     // Initialize mrcMapComponentNameToId here. It will be filled during checkFunction.
     this.mrcMapComponentNameToId = {};
     this.updateBlock_();
@@ -664,7 +675,7 @@ const CALL_PYTHON_FUNCTION = {
   checkModuleFunction: function(this: CallPythonFunctionBlock, warnings: string[]): void {
     // If this block is calling a module function, check whether the module and function still
     // exist. If the module or function doesn't exist, put a visible warning on this block.
-    const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const moduleName = this.mrcModuleOrClassName;
     const moduleData = getModuleData(moduleName);
     if (moduleData) {
       let foundFunction = false;
@@ -686,7 +697,7 @@ const CALL_PYTHON_FUNCTION = {
   checkStaticMethod: function(this: CallPythonFunctionBlock, warnings: string[]): void {
     // If this block is calling a static method, check whether the class and method still
     // exist. If the class or method doesn't exist, put a visible warning on this block.
-    const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const className = this.mrcModuleOrClassName;
     const classData = getClassData(className);
     if (classData) {
       let foundFunction = false;
@@ -709,7 +720,7 @@ const CALL_PYTHON_FUNCTION = {
     // If this block is calling a constructor defined in a class, check whether the class and
     // constructor still exist.
     // If the class or constructor doesn't exist, put a visible warning on this block.
-   const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+   const className = this.mrcModuleOrClassName;
     const classData = getClassData(className);
     if (classData) {
       let foundFunction = false;
@@ -729,7 +740,7 @@ const CALL_PYTHON_FUNCTION = {
   checkInstanceMethod: function(this: CallPythonFunctionBlock, warnings: string[]): void {
     // If this block is calling a class method, check whether the class and method still exist.
     // If the class or method doesn't exist, put a visible warning on this block.
-   const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+   const className = this.mrcModuleOrClassName;
     const classData = getClassData(className);
     if (classData) {
       let foundFunction = false;
@@ -1024,6 +1035,23 @@ const CALL_PYTHON_FUNCTION = {
       }
     }
   },
+
+  /**
+   * mrcShowSimpleClassNames is called for each CallPythonFunctionBlock:
+   * 1. after a block is loaded in the blockly workspace
+   * 2. after a block is created
+   * 3. when showSimpleClassNames has been changed
+   */
+  mrcShowSimpleClassNames: function(this: CallPythonFunctionBlock, _editor: Editor, showSimpleClassNames: boolean): void {
+    if (this.mrcFunctionKind === FunctionKind.STATIC ||
+        this.mrcFunctionKind === FunctionKind.CONSTRUCTOR ||
+        this.mrcFunctionKind === FunctionKind.INSTANCE) {
+      this.setFieldValue(
+          classNameToShowOnBlocks(this.mrcModuleOrClassName, showSimpleClassNames),
+          FIELD_MODULE_OR_CLASS_NAME);
+    }
+  },
+
   /**
    * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
    */
@@ -1048,18 +1076,18 @@ const CALL_PYTHON_FUNCTION = {
             this.getFieldValue(FIELD_FUNCTION_NAME);
       case FunctionKind.MODULE:
         return Blockly.Msg.CALL + ' ' +
-            this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME) + '.' +
+            this.mrcModuleOrClassName + '.' +
             this.getFieldValue(FIELD_FUNCTION_NAME);
       case FunctionKind.STATIC:
         return Blockly.Msg.CALL + ' ' +
-            this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME) + '.' +
+            this.mrcModuleOrClassName + '.' +
             this.getFieldValue(FIELD_FUNCTION_NAME);
       case FunctionKind.CONSTRUCTOR:
         return Blockly.Msg.CREATE + ' ' +
-            this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+            this.mrcModuleOrClassName;
       case FunctionKind.INSTANCE:
         return Blockly.Msg.CALL + ' ' +
-            this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME) + '.' +
+            this.mrcModuleOrClassName + '.' +
             this.getFieldValue(FIELD_FUNCTION_NAME);
       case FunctionKind.INSTANCE_WITHIN:
         return Blockly.Msg.CALL + ' ' +
@@ -1109,6 +1137,16 @@ const CALL_PYTHON_FUNCTION = {
       }
     }
   },
+  upgrade_0012_to_0013: function(this: CallPythonFunctionBlock) {
+    if (this.mrcFunctionKind === FunctionKind.MODULE ||
+        this.mrcFunctionKind === FunctionKind.STATIC ||
+        this.mrcFunctionKind === FunctionKind.CONSTRUCTOR ||
+        this.mrcFunctionKind === FunctionKind.INSTANCE) {
+      if (this.mrcModuleOrClassName === '') {
+        this.mrcModuleOrClassName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+      }
+    }
+  },
 };
 
 export function setup(): void {
@@ -1135,7 +1173,7 @@ export function pythonFromBlock(
       break;
     }
     case FunctionKind.MODULE: {
-      const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+      const moduleName = block.mrcModuleOrClassName;
       const functionName = (block.mrcActualFunctionName)
           ? block.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
@@ -1143,7 +1181,7 @@ export function pythonFromBlock(
       break;
     }
     case FunctionKind.STATIC: {
-      const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+      const className = block.mrcModuleOrClassName;
       const functionName = (block.mrcActualFunctionName)
           ? block.mrcActualFunctionName
           : block.getFieldValue(FIELD_FUNCTION_NAME);
@@ -1151,7 +1189,7 @@ export function pythonFromBlock(
       break;
     }
     case FunctionKind.CONSTRUCTOR: {
-      const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+      const className = block.mrcModuleOrClassName;
       code = className;
       break;
     }
@@ -1402,18 +1440,27 @@ export function addModuleFunctionBlocks(
     contents: toolboxItems.ContentsType[]) {
   moduleData.functions.forEach(functionData => {
     const block = createModuleFunctionOrStaticMethodBlock(
-        FunctionKind.MODULE, moduleData.moduleName, moduleData.moduleName, functionData);
+        FunctionKind.MODULE,
+        moduleData.moduleName,
+        moduleData.moduleName,
+        functionData,
+        false);
     contents.push(block);
   });
 }
 
 export function addStaticMethodBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   classData.staticMethods.forEach(functionData => {
     if (functionData.declaringClassName) {
       const block = createModuleFunctionOrStaticMethodBlock(
-          FunctionKind.STATIC, classData.moduleName, functionData.declaringClassName, functionData);
+          FunctionKind.STATIC,
+          classData.moduleName,
+          functionData.declaringClassName,
+          functionData,
+          showSimpleClassNames);
       contents.push(block);
     }
   });
@@ -1423,16 +1470,22 @@ function createModuleFunctionOrStaticMethodBlock(
     functionKind: FunctionKind,
     importModule: string,
     moduleOrClassName: string,
-    functionData: FunctionData): toolboxItems.Block {
+    functionData: FunctionData,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: functionKind,
+    moduleOrClassName: moduleOrClassName,
     returnType: functionData.returnType,
     args: [],
     tooltip: functionData.tooltip,
     importModule: importModule,
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
+  if (functionKind === FunctionKind.MODULE) {
+    fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
+  } else {
+    fields[FIELD_MODULE_OR_CLASS_NAME] = classNameToShowOnBlocks(moduleOrClassName, showSimpleClassNames);
+  }
   fields[FIELD_FUNCTION_NAME] = functionData.functionName;
   const inputs: {[key: string]: any} = {};
   processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
@@ -1441,24 +1494,30 @@ function createModuleFunctionOrStaticMethodBlock(
 
 export function addConstructorBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   classData.constructors.forEach(functionData => {
-    contents.push(createConstructorBlock(classData.moduleName, functionData));
+    contents.push(createConstructorBlock(classData.moduleName, functionData, showSimpleClassNames));
   });
 }
 
 function createConstructorBlock(
     importModule: string,
-    functionData: FunctionData): toolboxItems.Block {
+    functionData: FunctionData,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.CONSTRUCTOR,
+    moduleOrClassName: functionData.declaringClassName,
     returnType: functionData.returnType,
     args: [],
     tooltip: functionData.tooltip,
     importModule: importModule,
   };
+  if (!functionData.declaringClassName) {
+    throw new Error('functionData.declaringClassName is missing');
+  }
   const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = functionData.declaringClassName;
+  fields[FIELD_MODULE_OR_CLASS_NAME] = classNameToShowOnBlocks(functionData.declaringClassName, showSimpleClassNames);
   const inputs: {[key: string]: any} = {};
   processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
   return createBlock(extraState, fields, inputs);
@@ -1466,22 +1525,28 @@ function createConstructorBlock(
 
 export function addInstanceMethodBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   classData.instanceMethods.forEach(functionData => {
-    contents.push(createInstanceMethodBlock(functionData));
+    contents.push(createInstanceMethodBlock(functionData, showSimpleClassNames));
   });
 }
 
 function createInstanceMethodBlock(
-    functionData: FunctionData): toolboxItems.Block {
+    functionData: FunctionData,
+    showSimpleClassNames: boolean): toolboxItems.Block {
+  if (!functionData.declaringClassName) {
+    throw new Error('functionData.declaringClassName is missing');
+  }
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE,
+    moduleOrClassName: functionData.declaringClassName,
     returnType: functionData.returnType,
     args: [],
     tooltip: functionData.tooltip,
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = functionData.declaringClassName;
+  fields[FIELD_MODULE_OR_CLASS_NAME] = classNameToShowOnBlocks(functionData.declaringClassName, showSimpleClassNames);
   fields[FIELD_FUNCTION_NAME] = functionData.functionName;
   const inputs: {[key: string]: any} = {};
   // We include the arg for the self argument for INSTANCE methods because we want a socket that
@@ -1729,5 +1794,15 @@ export function upgrade_008_to_009(workspace: Blockly.Workspace): void {
 export function upgrade_0011_to_0012(workspace: Blockly.Workspace): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as CallPythonFunctionBlock).upgrade_0011_to_0012();
+  });
+}
+
+/**
+ * Upgrades the CallPythonFunctionBlocks in the given workspace from version 0012 to 0013.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_0012_to_0013(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as CallPythonFunctionBlock).upgrade_0012_to_0013();
   });
 }

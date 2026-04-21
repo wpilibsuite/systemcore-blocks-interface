@@ -25,6 +25,7 @@ import { Order } from 'blockly/python';
 
 import { VariableKind } from './mrc_get_python_variable';
 import {
+    classNameToShowOnBlocks,
     getAllowedTypesForSetCheck,
     getClassData,
     getModuleData } from './utils/python';
@@ -139,7 +140,7 @@ const SET_PYTHON_VARIABLE = {
       let tooltip: string;
       switch (this.mrcVarKind) {
         case VariableKind.MODULE: {
-          const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const moduleName = this.mrcModuleOrClassName;
           tooltip = replaceTokens(Blockly.Msg['SET_MODULE_VARIABLE_TOOLTIP'], {
             moduleName: moduleName,
             varName: varName
@@ -147,7 +148,7 @@ const SET_PYTHON_VARIABLE = {
           break;
         }
         case VariableKind.CLASS: {
-          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const className = this.mrcModuleOrClassName;
           tooltip = replaceTokens(Blockly.Msg['SET_CLASS_VARIABLE_TOOLTIP'], {
             className: className,
             varName: varName
@@ -155,7 +156,7 @@ const SET_PYTHON_VARIABLE = {
           break;
         }
         case VariableKind.INSTANCE: {
-          const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+          const className = this.mrcModuleOrClassName;
           tooltip = replaceTokens(Blockly.Msg['SET_INSTANCE_VARIABLE_TOOLTIP'], {
             varName: varName,
             className: className
@@ -257,7 +258,7 @@ const SET_PYTHON_VARIABLE = {
   },
   mrcGetFullLabel: function(this: SetPythonVariableBlock): string {
     return Blockly.Msg.SET + ' ' +
-        this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME) + '.' +
+        this.mrcModuleOrClassName + '.' +
         this.getFieldValue(FIELD_VARIABLE_NAME) + ' ' + Blockly.Msg.TO;
   },
 
@@ -302,7 +303,7 @@ const SET_PYTHON_VARIABLE = {
   checkModuleVariable: function(this: SetPythonVariableBlock, warnings: string[]): void {
     // If this block is setting a module variable, check whether the module and variable still
     // exist. If the module or variable doesn't exist, put a visible warning on this block.
-    const moduleName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const moduleName = this.mrcModuleOrClassName;
     const moduleData = getModuleData(moduleName);
     if (moduleData) {
       let foundVariable = false;
@@ -328,7 +329,7 @@ const SET_PYTHON_VARIABLE = {
   checkClassVariable: function(this: SetPythonVariableBlock, warnings: string[]): void {
     // If this block is setting a class variable, check whether the class and variable still
     // exist. If the class or variable doesn't exist, put a visible warning on this block.
-    const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const className = this.mrcModuleOrClassName;
     const classData = getClassData(className);
     if (classData) {
       let foundVariable = false;
@@ -354,7 +355,7 @@ const SET_PYTHON_VARIABLE = {
   checkInstanceVariable: function(this: SetPythonVariableBlock, warnings: string[]): void {
     // If this block is setting an instance variable, check whether the class and variable still
     // exist. If the class or variable doesn't exist, put a visible warning on this block.
-    const className = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+    const className = this.mrcModuleOrClassName;
     const classData = getClassData(className);
     if (classData) {
       let foundVariable = false;
@@ -377,6 +378,21 @@ const SET_PYTHON_VARIABLE = {
       warnings.push(Blockly.Msg.WARNING_SET_INSTANCE_VARIABLE_MISSING_CLASS);
     }
   },
+
+  /**
+   * mrcShowSimpleClassNames is called for each SetPythonVariableBlock:
+   * 1. after a block is loaded in the blockly workspace
+   * 2. after a block is created
+   * 3. when showSimpleClassNames has been changed
+   */
+  mrcShowSimpleClassNames: function(this: SetPythonVariableBlock, _editor: Editor, showSimpleClassNames: boolean): void {
+    if (this.mrcVarKind === VariableKind.CLASS ||
+        this.mrcVarKind === VariableKind.INSTANCE) {
+      this.setFieldValue(
+          classNameToShowOnBlocks(this.mrcModuleOrClassName, showSimpleClassNames),
+          FIELD_MODULE_OR_CLASS_NAME);
+    }
+  },
 };
 
 export const setup = function() {
@@ -393,7 +409,7 @@ export const pythonFromBlock = function(
   let code: string;
   switch (block.mrcVarKind) {
     case VariableKind.MODULE: {
-      const moduleName = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+      const moduleName = block.mrcModuleOrClassName;
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
       if (block.mrcImportModule) {
         generator.importModule(block.mrcImportModule);
@@ -402,7 +418,7 @@ export const pythonFromBlock = function(
       break;
     }
     case VariableKind.CLASS: {
-      const className = block.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
+      const className = block.mrcModuleOrClassName;
       const value = generator.valueToCode(block, 'VALUE', Order.NONE);
       if (block.mrcImportModule) {
         generator.importModule(block.mrcImportModule);
@@ -429,7 +445,8 @@ export function createModuleOrClassVariableSetterBlock(
     importModule: string,
     moduleOrClassName: string,
     varType: string,
-    varName: string): toolboxItems.Block {
+    varName: string,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: SetPythonVariableExtraState = {
     varKind: varKind,
     moduleOrClassName: moduleOrClassName,
@@ -437,7 +454,11 @@ export function createModuleOrClassVariableSetterBlock(
     importModule: importModule,
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
+  if (varKind === VariableKind.MODULE) {
+    fields[FIELD_MODULE_OR_CLASS_NAME] = moduleOrClassName;
+  } else {
+    fields[FIELD_MODULE_OR_CLASS_NAME] = classNameToShowOnBlocks(moduleOrClassName, showSimpleClassNames);
+  }
   fields[FIELD_VARIABLE_NAME] = varName;
   const inputs: {[key: string]: any} = {};
   const valueVarName = variable.varNameForType(varType);
@@ -450,7 +471,8 @@ export function createModuleOrClassVariableSetterBlock(
 export function createInstanceVariableSetterBlock(
     className: string,
     varType: string,
-    varName: string): toolboxItems.Block {
+    varName: string,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const selfLabel = variable.getSelfArgName(className);
   const extraState: SetPythonVariableExtraState = {
     varKind: VariableKind.INSTANCE,
@@ -460,7 +482,7 @@ export function createInstanceVariableSetterBlock(
     selfType: className,
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = className;
+  fields[FIELD_MODULE_OR_CLASS_NAME] = classNameToShowOnBlocks(className, showSimpleClassNames);
   fields[FIELD_VARIABLE_NAME] = varName;
   const inputs: {[key: string]: any} = {};
   const valueVarName = variable.varNameForType(varType);

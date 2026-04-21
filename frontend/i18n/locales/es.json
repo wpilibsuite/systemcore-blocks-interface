@@ -36,6 +36,7 @@
     "ROBOT": "Robot",
     "SETTINGS": "Configuración",
     "WPI_TOOLBOX": "Caja de Herramientas WPI",
+    "SHOW_SIMPLE_CLASS_NAMES": "Acortar los nombres de clase en los bloques",
     "THEME": "Tema",
     "LANGUAGE": "Idioma",
     "ENGLISH": "Inglés",

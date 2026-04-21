@@ -34,11 +34,11 @@ import { Editor } from '../editor/editor';
 
 
 export function getToolboxItems(
-    shownPythonToolboxCategories: Set<string> | null,
     editor: Editor): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
 
-  const robotPyCategories: toolboxItems.ContentsType[] = robotPyToolbox.getToolboxCategories(shownPythonToolboxCategories);
+  const robotPyCategories: toolboxItems.ContentsType[] = robotPyToolbox.getToolboxCategories(
+      editor.getShownPythonToolboxCategories(), editor.getShowSimpleClassNames());
 
   if (robotPyCategories.length) {
     contents.push.apply(contents, robotPyCategories);

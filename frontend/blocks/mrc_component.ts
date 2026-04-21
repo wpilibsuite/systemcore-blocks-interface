@@ -28,13 +28,16 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { valueForComponentArgInput } from './utils/value';
 import { getModuleTypeForWorkspace } from './utils/workspaces';
-import { componentClasses } from './utils/python';
+import {
+    classNameToShowOnBlocks,
+    componentClasses,
+    getAllowedTypesForSetCheck,
+    getClassData,
+    simpleClassName } from './utils/python';
 import { makeLegalName } from './utils/validator';
 import * as toolboxItems from '../toolbox/items';
-import { getAllowedTypesForSetCheck, getClassData } from './utils/python';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
-import * as storageNames from '../storage/names';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
@@ -64,6 +67,7 @@ type ConstructorArg = {
 type ComponentExtraState = {
   componentId?: string,
   importModule?: string,
+  className?: string,
   tooltip?: string,
   params?: ConstructorArg[],
   /**
@@ -78,6 +82,7 @@ interface ComponentMixin extends ComponentMixinType {
   mrcComponentId: string,
   mrcArgs: ConstructorArg[],
   mrcImportModule: string,
+  mrcClassName: string,
   mrcTooltip: string,
 
   /**
@@ -132,6 +137,9 @@ const COMPONENT = {
     if (this.mrcImportModule) {
       extraState.importModule = this.mrcImportModule;
     }
+    if (this.mrcClassName) {
+      extraState.className = this.mrcClassName;
+    }
     if (this.mrcTooltip) {
       extraState.tooltip = this.mrcTooltip;
     }
@@ -143,6 +151,7 @@ const COMPONENT = {
   loadExtraState: function (this: ComponentBlock, extraState: ComponentExtraState): void {
     this.mrcComponentId = extraState.componentId ? extraState.componentId : this.id;
     this.mrcImportModule = extraState.importModule ? extraState.importModule : '';
+    this.mrcClassName = extraState.className ? extraState.className : '';
     this.mrcTooltip = extraState.tooltip ? extraState.tooltip : '';
     this.mrcArgs = [];
 
@@ -198,7 +207,7 @@ const COMPONENT = {
   },
   getComponent: function (this: ComponentBlock): storageModuleContent.Component | null {
     const componentName = this.getFieldValue(FIELD_NAME);
-    const componentType = this.getFieldValue(FIELD_TYPE);
+    const componentType = this.mrcClassName;
     const args: storageModuleContent.MethodArg[] = [];
     this.getComponentArgs(args);
     return {
@@ -273,7 +282,7 @@ const COMPONENT = {
    * Checks whether the component class exists and if not, puts a warning on the block.
    */
   checkComponentClass: function(this: ComponentBlock): void {
-    const componentType = this.getFieldValue(FIELD_TYPE);
+    const componentType = this.mrcClassName;
     const classData = getClassData(componentType);
     if (classData) {
       // Remove previous warning.
@@ -292,6 +301,17 @@ const COMPONENT = {
       }
     }
   },
+
+  /**
+   * mrcShowSimpleClassNames is called for each ComponentBlock:
+   * 1. after a block is loaded in the blockly workspace
+   * 2. after a block is created
+   * 3. when showSimpleClassNames has been changed
+   */
+  mrcShowSimpleClassNames: function(this: ComponentBlock, _editor: Editor, showSimpleClassNames: boolean): void {
+    this.setFieldValue(classNameToShowOnBlocks(this.mrcClassName, showSimpleClassNames), FIELD_TYPE);
+  },
+
   /**
    * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
    */
@@ -301,7 +321,7 @@ const COMPONENT = {
     }
   },
   mrcGetFullLabel: function(this: ComponentBlock): string {
-    return this.getFieldValue(FIELD_NAME) + ' ' + Blockly.Msg.OF_TYPE + ' ' + this.getFieldValue(FIELD_TYPE);
+    return this.getFieldValue(FIELD_NAME) + ' ' + Blockly.Msg.OF_TYPE + ' ' + this.mrcClassName;
   },
   upgrade_005_to_006: function(this: ComponentBlock) {
     for (let i = 0; i < this.mrcArgs.length; i++) {
@@ -328,6 +348,11 @@ const COMPONENT = {
       this.mrcImportModule = 'wpilib';
     }
   },
+  upgrade_0012_to_0013: function(this: ComponentBlock) {
+    if (this.mrcClassName === '') {
+      this.mrcClassName = this.getFieldValue(FIELD_TYPE);
+    }
+  }
 };
 
 export const setup = function () {
@@ -343,7 +368,7 @@ export const pythonFromBlock = function (
   }
 
   const componentName = block.getFieldValue(FIELD_NAME);
-  const componentType = block.getFieldValue(FIELD_TYPE);
+  const componentType = block.mrcClassName;
   let code = 'self.' + componentName + ' = ' + componentType + '(\n';
 
   if (generator.getModuleType() === storageModule.ModuleType.ROBOT) {
@@ -371,15 +396,15 @@ export const pythonFromBlock = function (
 }
 
 export function getAllPossibleComponents(
-    moduleType: storageModule.ModuleType): toolboxItems.ContentsType[] {
+    moduleType: storageModule.ModuleType,
+    showSimpleClassNames: boolean): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
   // Iterate through all the component classes and add definition blocks.
   componentClasses.forEach(classData => {
-    const simpleClassName = classData.className.substring(classData.className.lastIndexOf('.') + 1);
-    const componentName = 'my_' + storageNames.pascalCaseToSnakeCase(simpleClassName);
+    const componentName = 'my' + simpleClassName(classData.className);
     classData.constructors.forEach(constructorData => {
        if (constructorData.isComponent) {
-         contents.push(createComponentBlock(componentName, classData, constructorData, moduleType));
+         contents.push(createComponentBlock(componentName, classData, constructorData, moduleType, showSimpleClassNames));
        }
     });
   });
@@ -395,9 +420,11 @@ function createComponentBlock(
     componentName: string,
     classData: ClassData,
     constructorData: FunctionData,
-    moduleType: storageModule.ModuleType): toolboxItems.Block {
+    moduleType: storageModule.ModuleType,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: ComponentExtraState = {
     importModule: classData.moduleName,
+    className: classData.className,
     tooltip: constructorData.tooltip,
     params: [],
     moduleType: moduleType,
@@ -407,7 +434,7 @@ function createComponentBlock(
   }
   const fields: {[key: string]: any} = {};
   fields[FIELD_NAME] = componentName;
-  fields[FIELD_TYPE] = classData.className;
+  fields[FIELD_TYPE] = classNameToShowOnBlocks(classData.className, showSimpleClassNames);
   const inputs: {[key: string]: any} = {};
 
   let i = 0;
@@ -418,7 +445,7 @@ function createComponentBlock(
       defaultValue: argData.defaultValue,
     });
     if (moduleType == storageModule.ModuleType.ROBOT) {
-      const input = valueForComponentArgInput(argData.type, argData.defaultValue);
+      const input = valueForComponentArgInput(argData.type, argData.defaultValue, showSimpleClassNames);
       if (input) {
         inputs[INPUT_ARG_PREFIX + i] = input;
       }
@@ -455,5 +482,15 @@ export function upgrade_008_to_009(workspace: Blockly.Workspace): void {
 export function upgrade_0011_to_0012(workspace: Blockly.Workspace): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as ComponentBlock).upgrade_0011_to_0012();
+  });
+}
+
+/**
+ * Upgrades the ComponentBlocks in the given workspace from version 0012 to 0013.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_0012_to_0013(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ComponentBlock).upgrade_0012_to_0013();
   });
 }
