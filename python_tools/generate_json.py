@@ -31,10 +31,9 @@ import wpimath
 import wpimath.units
 import wpinet
 import wpiutil
-sys.path.append("../python")
 
-# Server python scripts
-sys.path.append("../server_python_scripts")
+# Runtime python
+sys.path.append("../runtime_python")
 import blocks_base_classes
 
 # Local modules
