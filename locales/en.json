@@ -41,6 +41,7 @@
     "ROBOT": "Robot",
     "SETTINGS": "Settings",
     "WPI_TOOLBOX": "WPI Toolbox",
+    "SHOW_SIMPLE_CLASS_NAMES": "Shorten Class Names on Blocks",
     "THEME": "Theme",
     "LANGUAGE": "Language",
     "ENGLISH": "English",
