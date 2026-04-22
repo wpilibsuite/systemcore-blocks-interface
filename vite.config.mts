@@ -15,14 +15,17 @@ export default defineConfig({
       {
         src: 'oss-attribution/*',
         dest: "./",
+        rename: { stripBase: true },
       },
       {
         src: 'frontend/i18n/locales/*',
         dest: "./locales/",
+        rename: { stripBase: true },
       },
       {
         src: 'frontend/public/*',
         dest: "./",
+        rename: { stripBase: true },
       }
     ],
   }),
