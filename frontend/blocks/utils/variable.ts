@@ -63,7 +63,6 @@ export function varNameForType(type: string): string {
   }
 
   // TODO(lizlooney): Should the prefix "my" in myTuple, myDict, myCallable, myArray, and my<type> be localized?
-  // TODO(lizlooney): Should variable names be lowerPascalCase or snake_case?
 
   if (type.startsWith('tuple[') || type.startsWith('Tuple[')) {
     return 'myTuple';
