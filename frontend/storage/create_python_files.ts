@@ -24,8 +24,9 @@
 import * as Blockly from 'blockly/core';
 import * as workspaces from '../blocks/utils/workspaces';
 import { extendedPythonGenerator } from '../editor/extended_python_generator';
+import { getOpModeDetailsFromBlocksJson } from '../blocks/mrc_opmode_details';
 import { Storage } from './common_storage';
-import { Module } from './module';
+import { Module, ModuleType } from './module';
 import { parseModuleContentText } from './module_content';
 import { Project } from './project';
 import { pascalCaseToSnakeCase } from './names';
@@ -100,6 +101,19 @@ async function generatePythonForModule(module: Module, storage: Storage): Promis
 async function generatePythonForProject(project: Project, storage: Storage): Promise<ProjectPythonResult> {
   const moduleResults: ModulePythonResult[] = [];
   let errorCount = 0;
+
+  // Extract opmode details from all opmode modules and set on the generator
+  // so the robot constructor can emit RegisterOpMode calls.
+  const allOpModeDetails = await Promise.all(
+    project.opModes.map(async (opMode) => {
+      const contentText = await storage.fetchFileContentText(opMode.modulePath);
+      const moduleContent = parseModuleContentText(contentText);
+      return getOpModeDetailsFromBlocksJson(moduleContent.getBlocks());
+    })
+  );
+  extendedPythonGenerator.setAllOpModeDetails(
+    allOpModeDetails.filter((d): d is NonNullable<typeof d> => d !== null)
+  );
 
   // Process the robot module
   const robotResult = await generatePythonForModule(project.robot, storage);

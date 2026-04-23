@@ -113,6 +113,27 @@ export const pythonFromBlock = function (
 
 // Misc
 
+/**
+ * Extracts OpModeDetails from a module's blocks JSON without creating a workspace.
+ * The blocksJson is the value returned by ModuleContent.getBlocks().
+ */
+export function getOpModeDetailsFromBlocksJson(blocksJson: {[key: string]: any}): OpModeDetails | null {
+  const blocks = blocksJson?.blocks?.blocks;
+  if (!Array.isArray(blocks)) return null;
+  for (const block of blocks) {
+    if (block.type === BLOCK_NAME) {
+      return new OpModeDetails(
+        block.fields?.NAME ?? '',
+        block.fields?.GROUP ?? '',
+        block.fields?.DESCRIPTION ?? '',
+        block.fields?.ENABLED !== false && block.fields?.ENABLED !== 'FALSE',
+        block.fields?.TYPE ?? 'Teleop',
+      );
+    }
+  }
+  return null;
+}
+
 export function checkOpMode(workspace: Blockly.Workspace, editor: Editor) {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as OpmodeDetailsBlock).checkOpMode(editor);

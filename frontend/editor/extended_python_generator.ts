@@ -49,6 +49,11 @@ type BlockExecutionDetails = {
 
 export class OpModeDetails {
   constructor(private name: string, private group: string, private description: string, private enabled: boolean, private type: string) {}
+  getName(): string { return this.name; }
+  getGroup(): string { return this.group; }
+  getDescription(): string { return this.description; }
+  getEnabled(): boolean { return this.enabled; }
+  getType(): string { return this.type; }
   generateDecorators(generator: ExtendedPythonGenerator, className: string): string {
     let code = '';
 
@@ -114,6 +119,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   // Opmode details
   private opModeDetails: OpModeDetails | null  = null;
+
+  // All opmodes in the project (used when generating robot code)
+  private allOpModeDetails: OpModeDetails[] = [];
 
   private generateErrorHandling: boolean = false;
 
@@ -184,6 +192,19 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         initStatements += this.INDENT + 'self.mechanisms = []\n';
         initStatements += this.INDENT + 'self.eventHandlers = {}\n';
         initStatements += this.INDENT + 'self.defineHardware()\n';
+        for (const opModeDetails of this.allOpModeDetails) {
+          this.importModule('wpilib');
+          const name = opModeDetails.getName();
+          const group = opModeDetails.getGroup();
+          const description = opModeDetails.getDescription();
+          const type = opModeDetails.getType();
+          const call = `wpilib.RegisterOpMode('${name}', '${group}', '${description}', '${type}')`;
+          if (opModeDetails.getEnabled()) {
+            initStatements += this.INDENT + call + '\n';
+          } else {
+            initStatements += this.INDENT + '# ' + call + '\n';
+          }
+        }
         break;
       case storageModule.ModuleType.MECHANISM:
         if (this.hasAnyComponents) {
@@ -237,6 +258,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.importedNames = Object.create(null);
     this.fromModuleImportNames = Object.create(null);
     this.opModeDetails = null;
+    this.allOpModeDetails = [];
     this.generateErrorHandling = false;
 
     return code;
@@ -462,6 +484,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   setOpModeDetails(opModeDetails: OpModeDetails) {
     this.opModeDetails = opModeDetails;
+  }
+
+  setAllOpModeDetails(details: OpModeDetails[]) {
+    this.allOpModeDetails = details;
   }
 
   getSuperInitParameters(): string {

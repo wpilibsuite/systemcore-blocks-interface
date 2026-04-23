@@ -21,7 +21,7 @@
 
 import * as Blockly from 'blockly/core';
 
-import { extendedPythonGenerator } from './extended_python_generator';
+import { extendedPythonGenerator, OpModeDetails } from './extended_python_generator';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
@@ -52,6 +52,7 @@ const MRC_SHOW_SIMPLE_CLASS_NAMES = 'mrcShowSimpleClassNames';
 
 export class Editor {
   private static workspaceIdToEditor: { [workspaceId: string]: Editor } = {};
+  private static modulePathToEditor: { [modulePath: string]: Editor } = {};
 
   private readonly blocklyWorkspace: Blockly.WorkspaceSvg;
   private readonly module: storageModule.Module;
@@ -65,6 +66,7 @@ export class Editor {
   private robotContent: storageModuleContent.ModuleContent | null = null;
   private mechanisms: storageModule.Mechanism[] = [];
   private mechanismClassNameToModuleContent: {[mechanismClassName: string]: storageModuleContent.ModuleContent} = {};
+  private opModes: storageModule.OpMode[] = [];
   private bindedOnChange: any = null;
   private shownPythonToolboxCategories: Set<string> | null = null;
   private showSimpleClassNames: boolean = false;
@@ -88,6 +90,7 @@ export class Editor {
     this.projectInfo = project.projectInfo;
     // parseModules will be called async after construction
     Editor.workspaceIdToEditor[blocklyWorkspace.id] = this;
+    Editor.modulePathToEditor[this.modulePath] = this;
   }
 
   private onChangeWhileLoading(event: Blockly.Events.Abstract) {
@@ -244,6 +247,9 @@ export class Editor {
     if (this.blocklyWorkspace.id in Editor.workspaceIdToEditor) {
       delete Editor.workspaceIdToEditor[this.blocklyWorkspace.id];
     }
+    if (this.modulePath in Editor.modulePathToEditor) {
+      delete Editor.modulePathToEditor[this.modulePath];
+    }
   }
 
   private async parseModules(project: storageProject.Project): Promise<void> {
@@ -282,6 +288,8 @@ export class Editor {
       }
       this.mechanismClassNameToModuleContent[mechanism.className] = moduleContent;
     }
+
+    this.opModes = project.opModes;
   }
 
   public loadModuleBlocks() {
@@ -356,6 +364,30 @@ export class Editor {
     return this.module.moduleType;
   }
 
+  public getAllOpModeDetails(): OpModeDetails[] {
+    const result: OpModeDetails[] = [];
+    for (const opMode of this.opModes) {
+      // If there's a live editor for this opmode, read directly from its workspace
+      // so we pick up changes that haven't been saved to storage yet —
+      // the same way getAllComponentsFromMechanism reads from the live workspace.
+      const liveEditor = Editor.modulePathToEditor[opMode.modulePath];
+      if (liveEditor && liveEditor !== this) {
+        const blocks = Blockly.serialization.workspaces.save(liveEditor.getBlocklyWorkspace());
+        const details = opmodeDetails.getOpModeDetailsFromBlocksJson(blocks);
+        if (details) {
+          result.push(details);
+          continue;
+        }
+      }
+      // Fall back to the cached content fetched from storage during parseModules.
+      const moduleContent = this.modulePathToModuleContent[opMode.modulePath];
+      if (!moduleContent) continue;
+      const details = opmodeDetails.getOpModeDetailsFromBlocksJson(moduleContent.getBlocks());
+      if (details) result.push(details);
+    }
+    return result;
+  }
+
   private getModuleContentText(): string {
     if (!this.blocklyWorkspace.rendered) {
       // This editor has been abandoned.
@@ -363,6 +395,9 @@ export class Editor {
     }
 
     // Generate python because some parts of components, events, and methods are affected.
+    if (this.module.moduleType === storageModule.ModuleType.ROBOT) {
+      extendedPythonGenerator.setAllOpModeDetails(this.getAllOpModeDetails());
+    }
     extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.module);
 
     const blocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
