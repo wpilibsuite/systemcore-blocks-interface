@@ -98,16 +98,9 @@ export const setup = function () {
 }
 
 export const pythonFromBlock = function (
-  block: OpmodeDetailsBlock,
-  generator: ExtendedPythonGenerator,
-) {
-    generator.setOpModeDetails(new OpModeDetails(
-                                block.getFieldValue('NAME'),
-                                block.getFieldValue('GROUP'),
-                                block.getFieldValue('DESCRIPTION'),
-                                block.getFieldValue('ENABLED') == 'TRUE',
-                                block.getFieldValue('TYPE')
-                              ));
+  _block: OpmodeDetailsBlock,
+  _generator: ExtendedPythonGenerator,
+) {  
     return '';
 }
 
@@ -117,13 +110,13 @@ export const pythonFromBlock = function (
  * Extracts OpModeDetails from a module's blocks JSON without creating a workspace.
  * The blocksJson is the value returned by ModuleContent.getBlocks().
  */
-export function getOpModeDetailsFromBlocksJson(blocksJson: {[key: string]: any}): OpModeDetails | null {
+export function getOpModeDetailsFromBlocksJson(blocksJson: {[key: string]: any}, className: string = ''): OpModeDetails | null {
   const blocks = blocksJson?.blocks?.blocks;
   if (!Array.isArray(blocks)) return null;
   for (const block of blocks) {
     if (block.type === BLOCK_NAME) {
       return new OpModeDetails(
-        block.fields?.NAME ?? '',
+        block.fields?.NAME || className,
         block.fields?.GROUP ?? '',
         block.fields?.DESCRIPTION ?? '',
         block.fields?.ENABLED !== false && block.fields?.ENABLED !== 'FALSE',

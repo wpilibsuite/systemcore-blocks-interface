@@ -26,7 +26,7 @@ import * as workspaces from '../blocks/utils/workspaces';
 import { extendedPythonGenerator } from '../editor/extended_python_generator';
 import { getOpModeDetailsFromBlocksJson } from '../blocks/mrc_opmode_details';
 import { Storage } from './common_storage';
-import { Module, ModuleType } from './module';
+import { Module } from './module';
 import { parseModuleContentText } from './module_content';
 import { Project } from './project';
 import { pascalCaseToSnakeCase } from './names';
@@ -108,7 +108,7 @@ async function generatePythonForProject(project: Project, storage: Storage): Pro
     project.opModes.map(async (opMode) => {
       const contentText = await storage.fetchFileContentText(opMode.modulePath);
       const moduleContent = parseModuleContentText(contentText);
-      return getOpModeDetailsFromBlocksJson(moduleContent.getBlocks());
+      return getOpModeDetailsFromBlocksJson(moduleContent.getBlocks(), opMode.className);
     })
   );
   extendedPythonGenerator.setAllOpModeDetails(

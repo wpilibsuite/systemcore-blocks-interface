@@ -490,6 +490,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.allOpModeDetails = details;
   }
 
+  getClassName(): string {
+    return this.context.getClassName();
+  }
+
   getSuperInitParameters(): string {
     // wpilib.OpModeRobot, Mechanism, and wpilib.PeriodicOpMode all have no argument __init__ methods.
     return '';

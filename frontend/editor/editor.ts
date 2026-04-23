@@ -373,7 +373,7 @@ export class Editor {
       const liveEditor = Editor.modulePathToEditor[opMode.modulePath];
       if (liveEditor && liveEditor !== this) {
         const blocks = Blockly.serialization.workspaces.save(liveEditor.getBlocklyWorkspace());
-        const details = opmodeDetails.getOpModeDetailsFromBlocksJson(blocks);
+        const details = opmodeDetails.getOpModeDetailsFromBlocksJson(blocks, opMode.className);
         if (details) {
           result.push(details);
           continue;
@@ -382,7 +382,7 @@ export class Editor {
       // Fall back to the cached content fetched from storage during parseModules.
       const moduleContent = this.modulePathToModuleContent[opMode.modulePath];
       if (!moduleContent) continue;
-      const details = opmodeDetails.getOpModeDetailsFromBlocksJson(moduleContent.getBlocks());
+      const details = opmodeDetails.getOpModeDetailsFromBlocksJson(moduleContent.getBlocks(), opMode.className);
       if (details) result.push(details);
     }
     return result;
