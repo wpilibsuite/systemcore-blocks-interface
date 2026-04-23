@@ -4,32 +4,32 @@ from typing import Callable
 
 class Mechanism:
     def __init__(self):
-        # In self.event_handlers, the keys are the event names, the values are a list of handlers.
-        self.event_handlers = {}
+        # In self.eventHandlers, the keys are the event names, the values are a list of handlers.
+        self.eventHandlers = {}
 
-    def register_event_handler(self, event_name: str, event_handler: Callable) -> None:
-        if event_name in self.event_handlers:
-            self.event_handlers[event_name].append(event_handler)
+    def registerEventHandler(self, eventName: str, eventHandler: Callable) -> None:
+        if eventName in self.eventHandlers:
+            self.eventHandlers[eventName].append(eventHandler)
         else:
-            self.event_handlers[event_name] = [event_handler]
+            self.eventHandlers[eventName] = [eventHandler]
 
-    def unregister_event_handler(self, event_name: str, event_handler: Callable) -> None:
-        if event_name in self.event_handlers:
-            if event_handler in self.event_handlers[event_name]:
-                self.event_handlers[event_name].remove(event_handler)
-                if not self.event_handlers[event_name]:
-                    del self.event_handlers[event_name]
+    def unregisterEventHandler(self, eventName: str, eventHandler: Callable) -> None:
+        if eventName in self.eventHandlers:
+            if eventHandler in self.eventHandlers[eventName]:
+                self.eventHandlers[eventName].remove(eventHandler)
+                if not self.eventHandlers[eventName]:
+                    del self.eventHandlers[eventName]
 
-    def fire_event(self, event_name: str, *args) -> None:
-        if event_name in self.event_handlers:
-            for event_handler in self.event_handlers[event_name]:
-                event_handler(*args)
+    def fireEvent(self, eventName: str, *args) -> None:
+        if eventName in self.eventHandlers:
+            for eventHandler in self.eventHandlers[eventName]:
+                eventHandler(*args)
 
-    def opmode_start(self) -> None:
+    def opmodeStart(self) -> None:
         pass
 
-    def opmode_periodic(self) -> None:
+    def opmodePeriodic(self) -> None:
         pass
 
-    def opmode_end(self) -> None:
+    def opmodeEnd(self) -> None:
         pass

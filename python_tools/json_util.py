@@ -497,7 +497,7 @@ class JsonGenerator:
 
     if declaring_class_name == 'wpilib.ExpansionHubMotor':
       args = []
-      args.append(self._createArgData('expansion_hub_motor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
+      args.append(self._createArgData('expansionHubMotor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
       constructor_data[_KEY_COMPONENT_ARGS] = args
       constructor_data[_KEY_IS_COMPONENT] = True
       class_data[_KEY_IS_COMPONENT] = True
@@ -505,7 +505,7 @@ class JsonGenerator:
 
     if declaring_class_name == 'wpilib.ExpansionHubServo':
       args = []
-      args.append(self._createArgData('expansion_hub_servo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
+      args.append(self._createArgData('expansionHubServo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
       constructor_data[_KEY_COMPONENT_ARGS] = args
       constructor_data[_KEY_IS_COMPONENT] = True
       class_data[_KEY_IS_COMPONENT] = True
@@ -513,7 +513,7 @@ class JsonGenerator:
 
     if declaring_class_name == 'wpilib.AddressableLED':
       args = []
-      args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
+      args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
       constructor_data[_KEY_COMPONENT_ARGS] = args
       constructor_data[_KEY_IS_COMPONENT] = True
       class_data[_KEY_IS_COMPONENT] = True
@@ -526,9 +526,9 @@ class JsonGenerator:
           arg_names[2] == 'fullRange' and
           arg_names[3] == 'expectedZero'):
         args = []
-        args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
-        args.append(self._createArgData('full_range', self._getClassName(arg_types[2]), '1.0'))
-        args.append(self._createArgData('expected_zero', self._getClassName(arg_types[3]), '0.0'))
+        args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+        args.append(self._createArgData(arg_names[2], self._getClassName(arg_types[2]), '1.0'))
+        args.append(self._createArgData(arg_names[3], self._getClassName(arg_types[3]), '0.0'))
         constructor_data[_KEY_COMPONENT_ARGS] = args
         constructor_data[_KEY_COMPONENT_ARGS]
         constructor_data[_KEY_IS_COMPONENT] = True
@@ -542,9 +542,9 @@ class JsonGenerator:
           arg_names[2] == 'fullRange' and
           arg_names[3] == 'offset'):
         args = []
-        args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
-        args.append(self._createArgData('full_range', self._getClassName(arg_types[2]), arg_default_values[2]))
-        args.append(self._createArgData('offset', self._getClassName(arg_types[3]), arg_default_values[3]))
+        args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+        args.append(self._createArgData(arg_names[2], self._getClassName(arg_types[2]), arg_default_values[2]))
+        args.append(self._createArgData(arg_names[3], self._getClassName(arg_types[3]), arg_default_values[3]))
         constructor_data[_KEY_COMPONENT_ARGS] = args
         constructor_data[_KEY_IS_COMPONENT] = True
         class_data[_KEY_IS_COMPONENT] = True
@@ -552,7 +552,7 @@ class JsonGenerator:
 
     if declaring_class_name == 'wpilib.DigitalInput':
       args = []
-      args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
+      args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
       constructor_data[_KEY_COMPONENT_ARGS] = args
       constructor_data[_KEY_IS_COMPONENT] = True
       class_data[_KEY_IS_COMPONENT] = True
@@ -565,9 +565,9 @@ class JsonGenerator:
           arg_names[2] == 'fullRange' and
           arg_names[3] == 'expectedZero'):
         args = []
-        args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
-        args.append(self._createArgData('full_range', self._getClassName(arg_types[2]), '1'))
-        args.append(self._createArgData('expected_zero', self._getClassName(arg_types[3]), '0'))
+        args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+        args.append(self._createArgData(arg_names[2], self._getClassName(arg_types[2]), '1'))
+        args.append(self._createArgData(arg_names[3], self._getClassName(arg_types[3]), '0'))
         constructor_data[_KEY_COMPONENT_ARGS] = args
         constructor_data[_KEY_IS_COMPONENT] = True
         class_data[_KEY_IS_COMPONENT] = True
@@ -578,7 +578,7 @@ class JsonGenerator:
           arg_names[0] == 'self' and
           arg_names[1] == 'mountOrientation'):
         args = []
-        args.append(self._createArgData('mount_orientation', self._getClassName(arg_types[1]), arg_default_values[1]))
+        args.append(self._createArgData(arg_names[1], self._getClassName(arg_types[1]), arg_default_values[1]))
         constructor_data[_KEY_COMPONENT_ARGS] = args
         constructor_data[_KEY_IS_COMPONENT] = True
         class_data[_KEY_IS_COMPONENT] = True
@@ -586,7 +586,7 @@ class JsonGenerator:
 
     if declaring_class_name ==  'wpilib.PWMSparkMax':
       args = []
-      args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
+      args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
       constructor_data[_KEY_COMPONENT_ARGS] = args
       constructor_data[_KEY_IS_COMPONENT] = True
       class_data[_KEY_IS_COMPONENT] = True

@@ -437,7 +437,7 @@ function generateRegisterEventHandler(
   }
   if (fullSender) {
     generator.addRegisterEventHandlerStatement(
-        fullSender + '.register_event_handler(\'' + eventName + '\', self.' + funcName + ')\n');
+        fullSender + '.registerEventHandler(\'' + eventName + '\', self.' + funcName + ')\n');
   }
 }
 

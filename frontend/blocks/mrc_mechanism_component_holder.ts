@@ -333,7 +333,7 @@ export const setup = function () {
 }
 
 function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
-  let code = 'def define_hardware(self):\n';
+  let code = 'def defineHardware(self):\n';
 
   const mechanisms = generator.statementToCode(block, INPUT_MECHANISMS);
   const components = generator.statementToCode(block, INPUT_COMPONENTS);
@@ -345,11 +345,11 @@ function pythonFromBlockInRobot(block: MechanismComponentHolderBlock, generator:
     code += generator.INDENT + 'pass\n';
   }
 
-  generator.addClassMethodDefinition('define_hardware', code);
+  generator.addClassMethodDefinition('defineHardware', code);
 }
 
 function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, generator: ExtendedPythonGenerator) {
-  let code = 'def define_hardware(self';
+  let code = 'def defineHardware(self';
   const mechanismInitArgNames: string[] = generator.getMechanismInitArgNames();
   if (mechanismInitArgNames.length) {
     code += ', ' + mechanismInitArgNames.join(', ');
@@ -362,7 +362,7 @@ function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, genera
   const allComponents = components + privateComponents;
   if (allComponents) {
     code += allComponents;
-    generator.addClassMethodDefinition('define_hardware', code);
+    generator.addClassMethodDefinition('defineHardware', code);
   }
 }
 
@@ -420,7 +420,7 @@ export function hasAnyComponents(workspace: Blockly.Workspace): boolean {
 }
 
 /**
- * Collects the args for the mechanism's constructor and define_hardware method.
+ * Collects the args for the mechanism's constructor and defineHardware method.
  */
 export function getMechanismInitArgNames(workspace: Blockly.Workspace, mechanismInitArgNames: string[]): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach( block => {
