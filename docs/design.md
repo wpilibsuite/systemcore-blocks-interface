@@ -8,6 +8,7 @@
 * Programming in Blocks is still programming.   You can make logic errors and programs that don't work and have errors
 * Some students will move on from Blocks to text based languages
     * Students who want to do more than they can in Blocks can export from Blocks and use that as a starting point for their own Python coding.
+* We want to minimize the work needed for Blocks when WPILib changes from season to season
 
 # Intentional Limitations (for simplicity)
 * Each blockly workspace goes to one Python file (module) and can only contain one class
