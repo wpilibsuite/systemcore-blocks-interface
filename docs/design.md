@@ -19,7 +19,7 @@
 # Design thoughts
 (We assume that these bullet points apply to programming in C++, Java, and Python too.)
 ## OpModes
-* An OpMode can be either Autonomous or Teleop
+* An OpMode can be Autonomous, Teleop, or Utility
 * An OpMode can be marked as Disabled or Enabled
 * An OpMode has access to a singleton instance of the Robot class
 ## Robot
