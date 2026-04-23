@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Porpoiseful LLC
+ * Copyright 2025-26 Porpoiseful LLC
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ const OPMODE_DETAILS = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.TYPE)
       // These aren't Blockly.Msg because they need to match the Python generator's expected values.
-      .appendField(createFieldDropdown(["Auto", "Teleop", "Test"]), 'TYPE')
+      .appendField(createFieldDropdown(["Auto", "Teleop", "Utility"]), 'TYPE')
       .appendField('    ')
       .appendField(Blockly.Msg.ENABLED)
       .appendField(new Blockly.FieldCheckbox(true), 'ENABLED');
@@ -60,11 +60,15 @@ const OPMODE_DETAILS = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.DISPLAY_GROUP)
         .appendField(new Blockly.FieldTextInput(''), 'GROUP');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.DISPLAY_DESCRIPTION)
+        .appendField(new Blockly.FieldTextInput(''), 'DESCRIPTION');        
 
     this.getField('TYPE')?.setTooltip(Blockly.Msg.OPMODE_TYPE_TOOLTIP);
     this.getField('ENABLED')?.setTooltip(Blockly.Msg.OPMODE_ENABLED_TOOLTIP);
     this.getField('NAME')?.setTooltip(Blockly.Msg.OPMODE_NAME_TOOLTIP);
     this.getField('GROUP')?.setTooltip(Blockly.Msg.OPMODE_GROUP_TOOLTIP);
+    this.getField('DESCRIPTION')?.setTooltip(Blockly.Msg.OPMODE_DESCRIPTION_TOOLTIP);
   },
   ...NONCOPYABLE_BLOCK,
   checkOpMode(this: OpmodeDetailsBlock, editor: Editor): void {
@@ -100,6 +104,7 @@ export const pythonFromBlock = function (
     generator.setOpModeDetails(new OpModeDetails(
                                 block.getFieldValue('NAME'),
                                 block.getFieldValue('GROUP'),
+                                block.getFieldValue('DESCRIPTION'),
                                 block.getFieldValue('ENABLED') == 'TRUE',
                                 block.getFieldValue('TYPE')
                               ));

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Google LLC
+ * Copyright 2024-2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import {
     MODULE_NAME_BLOCKS_BASE_CLASSES,
     TELEOP_DECORATOR_CLASS,
     AUTO_DECORATOR_CLASS,
-    TEST_DECORATOR_CLASS,
+    UTILITY_DECORATOR_CLASS,
     NAME_DECORATOR_CLASS,
     GROUP_DECORATOR_CLASS,
     START_METHOD_NAME,
@@ -48,7 +48,7 @@ type BlockExecutionDetails = {
 };
 
 export class OpModeDetails {
-  constructor(private name: string, private group: string, private enabled: boolean, private type: string) {}
+  constructor(private name: string, private group: string, private description: string, private enabled: boolean, private type: string) {}
   generateDecorators(generator: ExtendedPythonGenerator, className: string): string {
     let code = '';
 
@@ -61,8 +61,8 @@ export class OpModeDetails {
         case 'Auto':
           typeDecoratorClass = AUTO_DECORATOR_CLASS;
           break;
-        case 'Test':
-          typeDecoratorClass = TEST_DECORATOR_CLASS;
+        case 'Utility':
+          typeDecoratorClass = UTILITY_DECORATOR_CLASS;
           break;
       }
       // Import the module for the decorator, not the decorator class itself
