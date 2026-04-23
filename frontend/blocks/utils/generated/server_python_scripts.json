@@ -34,7 +34,7 @@
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "fire_event",
+                    "functionName": "fireEvent",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -47,7 +47,7 @@
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "opmode_end",
+                    "functionName": "opmodeEnd",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -60,7 +60,7 @@
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "opmode_periodic",
+                    "functionName": "opmodePeriodic",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -73,30 +73,7 @@
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "opmode_start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_handler",
-                            "type": "typing.Callable"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "register_event_handler",
+                    "functionName": "opmodeStart",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -119,7 +96,30 @@
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "unregister_event_handler",
+                    "functionName": "registerEventHandler",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "blocks_base_classes.Mechanism"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "event_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "event_handler",
+                            "type": "typing.Callable"
+                        }
+                    ],
+                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "functionName": "unregisterEventHandler",
                     "returnType": "None",
                     "tooltip": ""
                 }

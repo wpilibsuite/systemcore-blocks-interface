@@ -510,7 +510,7 @@ export function createMechanismBlock(
     components: storageModuleContent.Component[],
     showSimpleClassNames: boolean): toolboxItems.Block {
   const snakeCaseName = storageNames.pascalCaseToSnakeCase(mechanism.className);
-  const mechanismName = 'my_' + snakeCaseName;
+  const mechanismName = 'my' + mechanism.className;
   const extraState: MechanismExtraState = {
     mechanismModuleId: mechanism.moduleId,
     importModule: snakeCaseName,

@@ -425,6 +425,24 @@ const CLASS_METHOD_DEF = {
       this.setFieldValue('periodic', FIELD_METHOD_NAME);
     }
   },
+  upgrade_0013_to_0014: function(this: ClassMethodDefBlock) {
+    // opmode_start is now opmodeStart
+    // opmode_periodic is now opmodePeriodic
+    // opmode_end is now opmodeEnd
+    if (!this.mrcCanChangeSignature &&
+        !this.mrcCanBeCalledWithinClass &&
+        !this.mrcCanBeCalledOutsideClass &&
+        this.mrcReturnType === 'None' &&
+        this.mrcParameters.length === 0) {
+      if (this.getFieldValue('NAME') === 'opmode_start') {
+        this.setFieldValue('opmodeStart', FIELD_METHOD_NAME);
+      } else if (this.getFieldValue('NAME') === 'opmode_periodic') {
+        this.setFieldValue('opmodePeriodic', FIELD_METHOD_NAME);
+      } else if (this.getFieldValue('NAME') === 'opmode_end') {
+        this.setFieldValue('opmodeEnd', FIELD_METHOD_NAME);
+      }
+    }
+  },
 };
 
 export const setup = function () {
@@ -534,7 +552,7 @@ export function createCustomMethodBlock(): toolboxItems.Block {
     params: [],
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_METHOD_NAME] = 'my_method';
+  fields[FIELD_METHOD_NAME] = 'myMethod';
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
 }
 
@@ -547,7 +565,7 @@ export function createCustomMethodBlockWithReturn(): toolboxItems.Block {
       params: [],
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_METHOD_NAME] = 'my_method_with_return';
+  fields[FIELD_METHOD_NAME] = 'myMethodWithReturn';
   const inputs: {[key: string]: any} = {};
   inputs[INPUT_RETURN] = {
     type: 'input_value',
@@ -692,5 +710,15 @@ export function upgrade_007_to_008(workspace: Blockly.Workspace): void {
 export function upgrade_0011_to_0012(workspace: Blockly.Workspace): void {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as ClassMethodDefBlock).upgrade_0011_to_0012();
+  });
+}
+
+/**
+ * Upgrades the ClassMethodDefBlocks in the given workspace from version 0013 to 0014.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_0013_to_0014(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ClassMethodDefBlock).upgrade_0013_to_0014();
   });
 }

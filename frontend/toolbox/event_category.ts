@@ -64,7 +64,7 @@ class EventsCategory {
     // Add a block that lets the user define a new event.
     contents.push(
         new toolboxItems.Label(Blockly.Msg['CUSTOM_EVENTS_LABEL']),
-        createCustomEventBlock(storageNames.makeUniqueName('my_event', eventNames)));
+        createCustomEventBlock(storageNames.makeUniqueName('myEvent', eventNames)));
 
     // Get blocks for firing events defined in the current workspace.
     addFireEventBlocks(eventsFromWorkspace, contents);

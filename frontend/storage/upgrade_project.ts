@@ -33,7 +33,8 @@ import {
     upgrade_004_to_005,
     upgrade_006_to_007,
     upgrade_007_to_008,
-    upgrade_0011_to_0012 as upgrade_class_method_def_0011_to_0012
+    upgrade_0011_to_0012 as upgrade_class_method_def_0011_to_0012,
+    upgrade_0013_to_0014 as upgrade_class_method_def_0013_to_0014
     } from '../blocks/mrc_class_method_def';
 import { upgrade_005_to_006 } from '../blocks/mrc_component';
 import {
@@ -50,7 +51,7 @@ import { GamepadTypeUtils } from '../types/GamepadType';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.13';
+export const CURRENT_VERSION = '0.0.14';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -124,6 +125,11 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.12':
         await upgradeFrom_0012_to_0013(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.13'
+      // @ts-ignore
+      case '0.0.13':
+        await upgradeFrom_0013_to_0014(storage, projectName, projectInfo);
 
     }
     await storageProject.saveProjectInfo(storage, projectName, projectInfo);
@@ -391,4 +397,18 @@ async function upgradeFrom_0012_to_0013(
       noModuleTypes, noPreupgrade,
       anyModuleType, upgrade);
   projectInfo.version = '0.0.13';
+}
+
+async function upgradeFrom_0013_to_0014(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // mrc_class_method_def blocks for mechanism 'opmode_start' method need to be changed to 'opmodeStart'.
+  // mrc_class_method_def blocks for mechanism 'opmode_periodic' method need to be changed to 'opmodePeriodic'.
+  // mrc_class_method_def blocks for mechanism 'opmode_end' method need to be changed to 'opmodeEnd'.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      isMechanism, upgrade_class_method_def_0013_to_0014);
+  projectInfo.version = '0.0.14';
 }
