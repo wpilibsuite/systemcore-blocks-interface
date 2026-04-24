@@ -207,8 +207,16 @@ export function Component(props: MenuProps): React.JSX.Element {
   const initializeProjectNames = async (): Promise<void> => {
     const array = await fetchListOfProjectNames();
     if (array.length === 0) {
-      setNoProjects(true);
-      setProjectModalOpen(true);
+      if (!props.storage) {
+        return;
+      }
+      const defaultProjectName = 'MyRobot';
+      await storageProject.createProject(props.storage, defaultProjectName);
+      const updatedArray = await fetchListOfProjectNames();
+      if (updatedArray.length === 0) {
+        setNoProjects(true);
+        setProjectModalOpen(true);
+      }
     }
   };
 
