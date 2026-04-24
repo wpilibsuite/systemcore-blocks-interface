@@ -90,6 +90,11 @@ const OPMODE_DETAILS = {
         this.mrcHasStepsOrPeriodicRequiredWarning = true;
       }
     }
+  },
+  upgrade_0014_to_0016: function(this: OpmodeDetailsBlock) {
+      if (this.getField('TYPE') && this.getFieldValue('TYPE') === 'Test') {
+        this.setFieldValue('Utility', 'TYPE');
+      }
   }
 }
 
