@@ -62,6 +62,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
   const tabType = props.initialType ?? TabType.OPMODE;
   const [availableItems, setAvailableItems] = React.useState<Module[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
+  const inputRef = React.useRef<Antd.InputRef>(null);
 
   React.useEffect(() => {
     if (!props.project) {
@@ -136,6 +137,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
       open={props.isOpen}
       onCancel={props.onCancel}
       footer={null}
+      afterOpenChange={(open) => { if (open) inputRef.current?.focus(); }}
     >
       <div style={{marginTop: 16}}>
         <h4 style={{margin: '0 0 8px 0'}}>
@@ -211,6 +213,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
             project={props.project}
             storage={props.storage}
             buttonLabel={t('CREATE')}
+            inputRef={inputRef}
           />
         </div>
       </div>

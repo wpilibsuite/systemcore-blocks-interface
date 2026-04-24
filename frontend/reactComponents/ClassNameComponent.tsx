@@ -37,6 +37,7 @@ interface ClassNameComponentProps {
   project: storageProject.Project | null;
   storage: commonStorage.Storage | null;
   buttonLabel: string;
+  inputRef?: React.Ref<Antd.InputRef>;
 }
 
 /** Width calculation for input when button is present. */
@@ -134,6 +135,7 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
   /** Renders the input field. */
   const renderInput = (): React.JSX.Element => (
     <Antd.Input
+      ref={props.inputRef}
       style={{width: getInputWidth()}}
       value={props.newItemName}
       onChange={handleInputChange}
