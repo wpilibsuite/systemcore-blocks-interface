@@ -48,6 +48,11 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       target: null,
     },
     {
+      title: t('TOUR.PROJECT_NAME_TITLE'),
+      description: t('TOUR.PROJECT_NAME_DESC'),
+      target: tourTarget('[data-tour="project-name"]'),
+    },
+    {
       title: t('TOUR.DEPLOY_TITLE'),
       description: t('TOUR.DEPLOY_DESC'),
       target: tourTarget('[data-menu-id$="-deploy"]'),
@@ -73,11 +78,6 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       target: tourTarget('[data-menu-id$="-help"]'),
     },
     {
-      title: t('TOUR.SIDEBAR_COLLAPSE_TITLE'),
-      description: t('TOUR.SIDEBAR_COLLAPSE_DESC'),
-      target: tourTarget('[data-tour="sider-collapse"]'),
-    },
-    {
       title: t('TOUR.MECHANISM_TABS_TITLE'),
       description: t('TOUR.MECHANISM_TABS_DESC'),
       target: tourTarget('[data-tour="tab-row-mechanisms"]'),
@@ -88,11 +88,6 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       target: tourTarget('[data-tour="tab-row-opmodes"]'),
     },
     {
-      title: t('TOUR.ADD_TAB_TITLE'),
-      description: t('TOUR.ADD_TAB_DESC'),
-      target: tourTarget('[data-tour="tab-row-mechanisms"] .ant-tabs-nav-add'),
-    },
-    {
       title: t('TOUR.WORKSPACE_TITLE'),
       description: t('TOUR.WORKSPACE_DESC'),
       target: tourTarget('[data-tour="blockly-workspace"]'),
@@ -101,6 +96,16 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       title: t('TOUR.CODE_PANEL_TITLE'),
       description: t('TOUR.CODE_PANEL_DESC'),
       target: tourTarget('[data-tour="code-panel"]'),
+    },
+    {
+      title: t('TOUR.CODE_PANEL_RESIZE_TITLE'),
+      description: t('TOUR.CODE_PANEL_RESIZE_DESC'),
+      target: tourTarget('[data-tour="code-panel-resize"]'),
+    },
+    {
+      title: t('TOUR.CODE_PANEL_COLLAPSE_TITLE'),
+      description: t('TOUR.CODE_PANEL_COLLAPSE_DESC'),
+      target: tourTarget('[data-tour="code-panel-collapse"]'),
     },
   ];
 

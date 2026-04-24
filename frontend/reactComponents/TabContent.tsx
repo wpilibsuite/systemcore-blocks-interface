@@ -264,6 +264,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
         }}
       >
         <div
+          data-tour="code-panel-resize"
           style={{
             position: 'absolute',
             left: 0,
