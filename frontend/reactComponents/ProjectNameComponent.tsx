@@ -29,6 +29,7 @@ interface ProjectNameComponentProps {
   setNewItemName: (name: string) => void;
   onAddNewItem: () => void;
   projectNames: string[];
+  showCreateButton?: boolean;
 }
 
 /** Full width style for input components. */
@@ -151,7 +152,7 @@ export default function ProjectNameComponent(props: ProjectNameComponentProps): 
       </Antd.Typography.Paragraph>
       <Antd.Space.Compact style={FULL_WIDTH_STYLE}>
         {renderInput()}
-        {renderButton()}
+        {props.showCreateButton && renderButton()}
       </Antd.Space.Compact>
       {renderErrorAlert()}
     </>
