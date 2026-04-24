@@ -159,7 +159,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [showSimpleClassNamesInitialized, setShowSimpleClassNamesInitialized] = React.useState(false);
   const [tourOpen, setTourOpen] = React.useState(false);
 
-  const siderRef = React.useRef<HTMLDivElement>(null);
   const hasCheckedTour = React.useRef(false);
   const tabsRef = React.useRef<Tabs.TabsRef>(null);
 
@@ -574,15 +573,15 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               height: FULL_HEIGHT,
             }}
           >
-            <div ref={siderRef} style={{ display: 'contents' }}>
             <Sider
               collapsible
               collapsed={leftCollapsed}
               onCollapse={(collapsed: boolean) => setLeftCollapsed(collapsed)}
               trigger={null}
               style={{ position: 'relative' }}
+              data-tour="menu"
             >
-              <Menu.Component
+              <Menu.Component 
                 storage={storage}
                 setAlertErrorMessage={setAlertErrorMessage}
                 gotoTab={gotoTab}
@@ -605,7 +604,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 />
               </div>
             </Sider>
-            </div>
             <Antd.Layout>
               <Tabs.Component
                 ref={tabsRef}
@@ -642,7 +640,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         <AppTour
           isOpen={tourOpen}
           onClose={handleTourClose}
-          siderRef={siderRef}
         />
       </AutosaveProvider>
     </Antd.ConfigProvider>

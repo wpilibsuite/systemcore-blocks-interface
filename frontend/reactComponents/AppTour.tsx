@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Porpoiseful LLC
+ * Copyright 2026 Porpoiseful LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import { useTranslation } from 'react-i18next';
 export interface AppTourProps {
   isOpen: boolean;
   onClose: () => void;
-  siderRef: React.RefObject<HTMLDivElement>;
 }
 
 /** Returns a function that queries for a tour target element. */
@@ -39,7 +38,7 @@ const tourTarget = (selector: string): (() => HTMLElement) =>
  * Guided tour component that highlights key areas of the UI.
  * Shown automatically on first use and available via Help > Tour.
  */
-const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose, siderRef }) => {
+const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
 
   const steps: Antd.TourProps['steps'] = [
@@ -49,9 +48,29 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose, siderRef }) => {
       target: null,
     },
     {
-      title: t('TOUR.SIDEBAR_TITLE'),
-      description: t('TOUR.SIDEBAR_DESC'),
-      target: () => siderRef.current as HTMLElement,
+      title: t('TOUR.DEPLOY_TITLE'),
+      description: t('TOUR.DEPLOY_DESC'),
+      target: tourTarget('[data-menu-id$="-deploy"]'),
+    },
+    {
+      title: t('TOUR.MANAGE_TITLE'),
+      description: t('TOUR.MANAGE_DESC'),
+      target: tourTarget('[data-menu-id$="-manage"]'),
+    },
+    {
+      title: t('TOUR.EXPLORER_TITLE'),
+      description: t('TOUR.EXPLORER_DESC'),
+      target: tourTarget('[data-menu-id$="-explorer"]'),
+    },
+    {
+      title: t('TOUR.SETTINGS_TITLE'),
+      description: t('TOUR.SETTINGS_DESC'),
+      target: tourTarget('[data-menu-id$="-settings"]'),
+    },
+    {
+      title: t('TOUR.HELP_TITLE'),
+      description: t('TOUR.HELP_DESC'),
+      target: tourTarget('[data-menu-id$="-help"]'),
     },
     {
       title: t('TOUR.SIDEBAR_COLLAPSE_TITLE'),
