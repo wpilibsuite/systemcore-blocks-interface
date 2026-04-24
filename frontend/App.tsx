@@ -48,9 +48,13 @@ import { antdThemeFromString } from './reactComponents/ThemeModal';
 import { useTranslation } from 'react-i18next';
 import { UserSettingsProvider } from './reactComponents/UserSettingsProvider';
 import { useUserSettings } from './reactComponents/useUserSettings';
+import AppTour from './reactComponents/AppTour';
 
 /** Storage key for shown toolbox categories. */
 const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';
+
+/** Storage key that tracks whether the user has completed the tour. */
+const TOUR_COMPLETED_KEY = 'tourCompleted';
 
 /** Default toolbox categories JSON. */
 const DEFAULT_TOOLBOX_CATEGORIES_JSON = '[]';
@@ -153,7 +157,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [themeInitialized, setThemeInitialized] = React.useState(false);
   const [showSimpleClassNames, setShowSimpleClassNames] = React.useState(true);
   const [showSimpleClassNamesInitialized, setShowSimpleClassNamesInitialized] = React.useState(false);
-  
+  const [tourOpen, setTourOpen] = React.useState(false);
+
+  const siderRef = React.useRef<HTMLDivElement>(null);
+  const hasCheckedTour = React.useRef(false);
   const tabsRef = React.useRef<Tabs.TabsRef>(null);
 
   /** Initialize language from UserSettings when app first starts. */
@@ -503,6 +510,27 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     // No need to fetch modules anymore - each editor fetches what it needs
   };
 
+  /** Closes the tour and persists completion to storage. */
+  const handleTourClose = async (): Promise<void> => {
+    setTourOpen(false);
+    if (storage) {
+      await storage.saveEntry(TOUR_COMPLETED_KEY, 'true');
+    }
+  };
+
+  // Show tour automatically on first use
+  React.useEffect(() => {
+    if (!storage || isLoading || !project || hasCheckedTour.current) {
+      return;
+    }
+    hasCheckedTour.current = true;
+    storage.fetchEntry(TOUR_COMPLETED_KEY, 'false').then((value) => {
+      if (value === 'false') {
+        setTourOpen(true);
+      }
+    });
+  }, [storage, isLoading, project]);
+
   const gotoTab = (tabKey: string): void => {
     tabsRef.current?.gotoTab(tabKey);
   };
@@ -546,6 +574,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               height: FULL_HEIGHT,
             }}
           >
+            <div ref={siderRef} style={{ display: 'contents' }}>
             <Sider
               collapsible
               collapsed={leftCollapsed}
@@ -567,12 +596,16 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 showSimpleClassNames={showSimpleClassNames}
                 setShowSimpleClassNames={setShowSimpleClassNames}
                 saveCurrentTab={saveCurrentTab}
+                startTour={() => setTourOpen(true)}
               />
-              <SiderCollapseTrigger
-                collapsed={leftCollapsed}
-                onToggle={() => setLeftCollapsed(!leftCollapsed)}
-              />
+              <div data-tour="sider-collapse">
+                <SiderCollapseTrigger
+                  collapsed={leftCollapsed}
+                  onToggle={() => setLeftCollapsed(!leftCollapsed)}
+                />
+              </div>
             </Sider>
+            </div>
             <Antd.Layout>
               <Tabs.Component
                 ref={tabsRef}
@@ -604,6 +637,12 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
           currentConfig={gamepadConfig}
           onOk={handleGamepadConfigOk}
           onCancel={handleGamepadConfigCancel}
+        />
+
+        <AppTour
+          isOpen={tourOpen}
+          onClose={handleTourClose}
+          siderRef={siderRef}
         />
       </AutosaveProvider>
     </Antd.ConfigProvider>

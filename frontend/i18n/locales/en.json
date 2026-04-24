@@ -135,6 +135,25 @@
         "PREVIEW": "Theme Preview",
         "PREVIEW_DESCRIPTION": "The selected theme will be applied to the entire application interface."
     },
+    "TOUR": {
+        "MENU_ITEM": "Tour",
+        "WELCOME_TITLE": "Welcome to the Blocks Interface",
+        "WELCOME_DESC": "This tool lets you program your robot by connecting visual blocks, then generates Python code automatically.",
+        "SIDEBAR_TITLE": "Sidebar",
+        "SIDEBAR_DESC": "Use the sidebar to navigate your project — switch between projects, manage mechanisms, and add OpModes.",
+        "SIDEBAR_COLLAPSE_TITLE": "Collapse the Sidebar",
+        "SIDEBAR_COLLAPSE_DESC": "Click this arrow at the bottom of the sidebar to collapse or expand it, giving you more space for your workspace.",
+        "MECHANISM_TABS_TITLE": "Mechanisms & Robot Tabs",
+        "MECHANISM_TABS_DESC": "The top row shows the Robot tab and any Mechanism tabs you have created.",
+        "OPMODE_TABS_TITLE": "OpMode Tabs",
+        "OPMODE_TABS_DESC": "The bottom row shows your OpMode tabs — autonomous and teleop programs.",
+        "ADD_TAB_TITLE": "Add a Tab",
+        "ADD_TAB_DESC": "Click the + button to add a new Mechanism or OpMode to your project.",
+        "WORKSPACE_TITLE": "Block Workspace",
+        "WORKSPACE_DESC": "Drag and drop blocks here to define your robot's behavior. Blocks connect together like puzzle pieces.",
+        "CODE_PANEL_TITLE": "Generated Python Code",
+        "CODE_PANEL_DESC": "The Python code generated from your blocks appears here. You can copy it or deploy it directly to your robot."
+    },
     "BLOCKLY":{
         "OF_TYPE": "of type",
         "WITH": "with",

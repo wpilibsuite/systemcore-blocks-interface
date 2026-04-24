@@ -253,6 +253,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
         />
       </Content>
       <div
+        data-tour="code-panel"
         style={{
           width: typeof codePanelSize === 'string' ? codePanelSize : `${codePanelSize}px`,
           minWidth: CODE_PANEL_MIN_SIZE,
