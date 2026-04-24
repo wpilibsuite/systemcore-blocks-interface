@@ -186,13 +186,12 @@ export default function Header(props: HeaderProps): React.JSX.Element {
           }}
         >
           {t("PROJECT")}:{' '}
-          <Antd.Typography.Link
-            onClick={openRenameModal}
-            style={{ fontSize: TEXT_FONT_SIZE }}
-            disabled={!props.project}
+          <span
+            onClick={props.project ? openRenameModal : undefined}
+            style={{ cursor: props.project ? 'pointer' : 'default' }}
           >
             {getProjectName()}
-          </Antd.Typography.Link>
+          </span>
           {renderUnsavedIndicator()}
         </Antd.Typography>
         {renderErrorAlert()}
