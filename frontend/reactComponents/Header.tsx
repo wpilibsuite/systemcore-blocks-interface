@@ -19,12 +19,14 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Antd from 'antd';
+import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAutosave } from './AutosaveManager';
 import lightFIRSTLogo from '../assets/FIRST_HorzRGB.png';
 import darkFIRSTLogo from '../assets/FIRST_HorzRGB_reverse.png';
+import ProjectNameComponent from './ProjectNameComponent';
 
 /** Function type for setting string values. */
 type StringFunction = (input: string) => void;
@@ -34,6 +36,8 @@ interface HeaderProps {
   alertErrorMessage: string;
   setAlertErrorMessage: StringFunction;
   project: storageProject.Project | null;
+  storage: commonStorage.Storage | null;
+  setProject: (project: storageProject.Project | null) => void;
 }
 
 /** Height of the logo image in pixels. */
@@ -58,6 +62,43 @@ export default function Header(props: HeaderProps): React.JSX.Element {
   const autosave = useAutosave();
 
   const isDarkTheme = token.colorBgLayout === '#000000';
+
+  const [renameModalOpen, setRenameModalOpen] = React.useState(false);
+  const [newName, setNewName] = React.useState('');
+  const [allProjectNames, setAllProjectNames] = React.useState<string[]>([]);
+
+  /** Opens the rename modal and loads existing project names. */
+  const openRenameModal = async (): Promise<void> => {
+    if (!props.project || !props.storage) {
+      return;
+    }
+    const names = await storageProject.listProjectNames(props.storage);
+    names.sort();
+    setAllProjectNames(names);
+    setNewName(props.project.projectName);
+    setRenameModalOpen(true);
+  };
+
+  /** Handles confirming the rename. */
+  const handleRename = async (): Promise<void> => {
+    if (!props.project || !props.storage) {
+      return;
+    }
+    const trimmed = newName.trim();
+    if (!trimmed || trimmed === props.project.projectName) {
+      setRenameModalOpen(false);
+      return;
+    }
+    try {
+      await storageProject.renameProject(props.storage, props.project.projectName, trimmed);
+      const updated = await storageProject.fetchProject(props.storage, trimmed);
+      props.setProject(updated);
+    } catch (error) {
+      console.error('Error renaming project:', error);
+      props.setAlertErrorMessage(t('FAILED_TO_RENAME_PROJECT'));
+    }
+    setRenameModalOpen(false);
+  };
 
   /** Handles clearing the error message. */
   const handleClearError = (): void => {
@@ -111,6 +152,21 @@ export default function Header(props: HeaderProps): React.JSX.Element {
 
   return (
     <Antd.Flex vertical>
+      <Antd.Modal
+        title={`${t('RENAME_PROJECT')}: ${props.project?.projectName ?? ''}`}
+        open={renameModalOpen}
+        onCancel={() => setRenameModalOpen(false)}
+        onOk={handleRename}
+        okText={t('RENAME')}
+        cancelText={t('CANCEL')}
+      >
+        <ProjectNameComponent
+          newItemName={newName}
+          setNewItemName={setNewName}
+          onAddNewItem={handleRename}
+          projectNames={allProjectNames.filter(n => n !== props.project?.projectName)}
+        />
+      </Antd.Modal>
       <Antd.Flex style={{alignItems: 'center'}}>
         {getFIRSTLogo()}
         <Antd.Typography
@@ -129,7 +185,13 @@ export default function Header(props: HeaderProps): React.JSX.Element {
             fontWeight: 'normal',
           }}
         >
-          {t("PROJECT")}: {getProjectName()}
+          {t("PROJECT")}:{' '}
+          <span
+            onClick={props.project ? openRenameModal : undefined}
+            style={{ cursor: props.project ? 'pointer' : 'default' }}
+          >
+            {getProjectName()}
+          </span>
           {renderUnsavedIndicator()}
         </Antd.Typography>
         {renderErrorAlert()}

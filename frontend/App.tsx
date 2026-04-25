@@ -539,6 +539,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               alertErrorMessage={alertErrorMessage}
               setAlertErrorMessage={setAlertErrorMessage}
               project={project}
+              storage={storage}
+              setProject={setProject}
             />
           <Antd.Layout
             style={{
