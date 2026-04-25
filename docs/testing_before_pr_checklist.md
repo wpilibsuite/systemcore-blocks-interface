@@ -1,9 +1,9 @@
 For each PR, make sure each of these works
 
 # New items
-* [ ] Make a new project and make sure you can edit in Robot and TeleOp
-* [ ] Add an opmode "Auto" from the + next to Tabs
-* [ ] Add a mechanism "Arm" from the + next to Tabs
+* [ ] Make a new project 
+* [ ] Add an opmode "Auto" from the + next to Tabs on the Opmode line
+* [ ] Add a mechanism "Arm" from the + next to Tabs on the Robot and Mechanism arm
 # Using robot
 * [ ] Add a component to the Robot
 * [ ] Add a mechanism to the Robot
