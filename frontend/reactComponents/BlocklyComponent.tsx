@@ -321,7 +321,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
   }, []);
 
   return (
-    <div className="blockly-workspace-container" style={FULL_SIZE_STYLE}>
+    <div className="blockly-workspace-container" data-tour="blockly-workspace" style={FULL_SIZE_STYLE}>
       <div ref={blocklyDiv} style={WORKSPACE_STYLE} />
     </div>
   );

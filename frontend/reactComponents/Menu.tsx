@@ -62,6 +62,7 @@ export interface MenuProps {
   showSimpleClassNames: boolean;
   setShowSimpleClassNames: (show: boolean) => void;
   saveCurrentTab: () => Promise<void>;
+  startTour?: () => void;
 }
 
 /** Default selected menu keys. */
@@ -158,6 +159,7 @@ function getMenuItems(
       ]),
     ]),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
+      getItem(t('TOUR.MENU_ITEM') + '...', 'tour', <QuestionCircleOutlined />),
       getItem(t('ABOUT.TITLE') + '...', 'about', <InfoCircleOutlined />),
     ]),
   ];
@@ -207,8 +209,16 @@ export function Component(props: MenuProps): React.JSX.Element {
   const initializeProjectNames = async (): Promise<void> => {
     const array = await fetchListOfProjectNames();
     if (array.length === 0) {
-      setNoProjects(true);
-      setProjectModalOpen(true);
+      if (!props.storage) {
+        return;
+      }
+      const defaultProjectName = 'MyRobot';
+      await storageProject.createProject(props.storage, defaultProjectName);
+      const updatedArray = await fetchListOfProjectNames();
+      if (updatedArray.length === 0) {
+        setNoProjects(true);
+        setProjectModalOpen(true);
+      }
     }
   };
 
@@ -271,6 +281,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       setProjectModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
+    } else if (key === 'tour') {
+      props.startTour?.();
     } else if (key === 'wpi_toolbox'){
       props.openWPIToolboxSettings();
     } else if (key === 'toggle_show_simple_classNames'){

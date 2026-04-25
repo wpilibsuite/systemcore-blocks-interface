@@ -572,30 +572,34 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
       </Antd.Modal>
 
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Antd.Tabs
-          addIcon={addIcon(TabType.MECHANISM)}
-          className="tabs-row"
-          type="editable-card"
-          onChange={handleTabChange}
-          onEdit={handleRowOneEdit}
-          activeKey={activeKey}
-          tabBarStyle={{ padding: 0, margin: 0 }}
-          hideAdd={false}
-          items={createRowTabItems([TabType.ROBOT, TabType.MECHANISM])}
-          tabBarExtraContent={{ left: tabRowIcon(TabType.MECHANISM) }}
-        />
-        <Antd.Tabs
-          addIcon={addIcon(TabType.OPMODE)}
-          className="tabs-row"
-          type="editable-card"
-          onChange={handleTabChange}
-          onEdit={handleRowTwoEdit}
-          activeKey={activeKey}
-          tabBarStyle={{ padding: 0, margin: 0 }}
-          hideAdd={false}
-          items={createRowTabItems([TabType.OPMODE])}
-          tabBarExtraContent={{ left: tabRowIcon(TabType.OPMODE) }}
-        />
+        <div data-tour="tab-row-mechanisms">
+          <Antd.Tabs
+            addIcon={addIcon(TabType.MECHANISM)}
+            className="tabs-row"
+            type="editable-card"
+            onChange={handleTabChange}
+            onEdit={handleRowOneEdit}
+            activeKey={activeKey}
+            tabBarStyle={{ padding: 0, margin: 0 }}
+            hideAdd={false}
+            items={createRowTabItems([TabType.ROBOT, TabType.MECHANISM])}
+            tabBarExtraContent={{ left: tabRowIcon(TabType.MECHANISM) }}
+          />
+        </div>
+        <div data-tour="tab-row-opmodes">
+          <Antd.Tabs
+            addIcon={addIcon(TabType.OPMODE)}
+            className="tabs-row"
+            type="editable-card"
+            onChange={handleTabChange}
+            onEdit={handleRowTwoEdit}
+            activeKey={activeKey}
+            tabBarStyle={{ padding: 0, margin: 0 }}
+            hideAdd={false}
+            items={createRowTabItems([TabType.OPMODE])}
+            tabBarExtraContent={{ left: tabRowIcon(TabType.OPMODE) }}
+          />
+        </div>
         <div style={{ flex: '1 1 auto', overflow: 'hidden', position: 'relative' }}>
           {props.tabList.map((tab) => {
             const module = props.project
