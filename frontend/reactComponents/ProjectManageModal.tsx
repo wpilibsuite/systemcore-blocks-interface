@@ -491,6 +491,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
             setNewItemName={setNewItemName}
             onAddNewItem={handleAddNewItem}
             projectNames={allProjectNames}
+            showCreateButton={true}
           />
         </div>
       </Antd.Modal>
