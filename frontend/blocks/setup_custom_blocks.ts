@@ -24,6 +24,7 @@ import * as JumpToStep from './mrc_jump_to_step';
 import * as GamepadBoolean from './mrc_gamepad_boolean';
 import * as GamepadAnalog from './mrc_gamepad_analog';
 import * as GamepadBooleanEvent from './mrc_gamepad_boolean_event';
+import * as GamepadRumble from './mrc_gamepad_rumble';
 
 const customBlocks = [
   CallPythonFunction,
@@ -51,6 +52,7 @@ const customBlocks = [
   GamepadBoolean,
   GamepadAnalog,
   GamepadBooleanEvent,
+  GamepadRumble
 ];
 
 export const setup = function(forBlock: any) {
