@@ -5,6 +5,7 @@ import { Editor } from '../editor/editor';
 import { BLOCK_NAME as MRC_CALL_PYTHON_FUNCTION } from '../blocks/mrc_call_python_function';
 import { BLOCK_NAME as MRC_GAMEPAD_BOOLEAN  } from '../blocks/mrc_gamepad_boolean';
 import { BLOCK_NAME as MRC_GAMEPAD_ANALOG  } from '../blocks/mrc_gamepad_analog';
+import { BLOCK_NAME as MRC_GAMEPAD_RUMBLE  } from '../blocks/mrc_gamepad_rumble';
 
 // import { BLOCK_NAME as MRC_GAMEPAD_BOOLEAN_EVENT  } from '../blocks/mrc_gamepad_boolean_event';
 
@@ -57,6 +58,7 @@ function getDriverStationGamepadsCategory(_editor: Editor): toolboxItems.Categor
                 ),
                 new toolboxItems.Block(MRC_GAMEPAD_BOOLEAN, null, null, null),
                 new toolboxItems.Block(MRC_GAMEPAD_ANALOG, null, null, null),
+                new toolboxItems.Block(MRC_GAMEPAD_RUMBLE, null, null, null),
                 // TODO: Add events back here when we figure out how the code will be generated
                 //new toolboxItems.Label("Events"),
                 //new toolboxItems.Block(MRC_GAMEPAD_BOOLEAN_EVENT, null, null, null),

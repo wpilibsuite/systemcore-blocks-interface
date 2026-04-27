@@ -44,6 +44,7 @@ export const BUTTON_FIELD_NAME = 'GAMEPAD_BUTTON';
 export const ACTION_FIELD_NAME = 'GAMEPAD_ACTION';
 export const AXIS_FIELD_NAME = 'GAMEPAD_AXIS';
 export const EVENT_FIELD_NAME = 'GAMEPAD_EVENT';
+export const RUMBLE_FIELD_NAME = 'GAMEPAD_RUMBLE';
 
 const ACTION_CONFIG = new Map([
     ['IS_DOWN', { display: () => Blockly.Msg['GAMEPAD_IS_DOWN'], suffix: '' }],
@@ -62,7 +63,7 @@ export function createTitleField(): Blockly.Field {
     return new Blockly.FieldLabel(Blockly.Msg['GAMEPAD']);   
 }
 
-export function createPortField(): Blockly.FieldDropdown {
+export function createPortField(onlyWithRumble: boolean = false): Blockly.FieldDropdown {
     return new Blockly.FieldDropdown(function(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
         const options: Blockly.MenuOption[] = [];
 
@@ -70,6 +71,9 @@ export function createPortField(): Blockly.FieldDropdown {
         for (let port = MIN_GAMEPAD_PORT; port <= MAX_GAMEPAD_PORT; port++) {
             const gamepadType = GamepadTypeUtils.getGamepad(port, currentGamepadConfig);
             if (gamepadType !== GamepadType.NONE) {
+                if (onlyWithRumble && !GamepadTypeUtils.getRumbleConfig(gamepadType)) {
+                    continue;
+                }
                 const portStr = port.toString();
                 options.push([portStr, portStr]);
             }
@@ -538,12 +542,233 @@ export class FieldGamepadAxisDropdown extends Blockly.FieldDropdown {
   }
 }
 
+/**
+ * A dropdown field for gamepad rumble motors that automatically updates its options
+ * based on the selected gamepad port. When the port changes, the rumble options
+ * update to match the capabilities of the newly selected gamepad type.
+ */
+export class FieldGamepadRumbleDropdown extends Blockly.FieldDropdown {
+  /**
+   * Contains data used by this dropdown field's menu generator.
+   * This is public so that the GamepadDropdownOptionsChange event can
+   * update it while undoing/redoing.
+   */
+  dependencyData: DependencyData;
+
+  /** The name of the field that determines this field's options. */
+  private parentName: string;
+
+  /**
+   * Constructs a new FieldGamepadRumbleDropdown.
+   *
+   * @param parentName The name of the parent field whose value determines this
+   *    field's available options. Defaults to PORT_FIELD_NAME.
+   * @param validator An optional function that is called to validate changes to
+   *    this field's value.
+   * @param config An optional map of general options used to configure the
+   *    field, such as a tooltip.
+   */
+  constructor(
+    parentName: string = PORT_FIELD_NAME,
+    validator?: Blockly.FieldValidator,
+    config?: Blockly.FieldConfig,
+  ) {
+    const dependencyData: DependencyData = {};
+
+    // A menu option generator function for this child field that reads the
+    // derived options in the dependency data if available.
+    const menuGenerator: Blockly.MenuGeneratorFunction = () => {
+      // If derivedOptions has been initialized, use that.
+      if (dependencyData.derivedOptions) {
+        return dependencyData.derivedOptions;
+      }
+
+      // Fall back on the options corresponding to the parent field's current value.
+      if (dependencyData.parentField) {
+        const portValue = dependencyData.parentField.getValue();
+        if (portValue) {
+          const port = Number(portValue);
+          const gamepadType = GamepadTypeUtils.getGamepad(port, currentGamepadConfig);
+          const rumbleConfig = GamepadTypeUtils.getRumbleConfig(gamepadType);
+          if (rumbleConfig) {
+            const options: Blockly.MenuOption[] = [];
+            for (const [key, configItem] of rumbleConfig.entries()) {
+              options.push([configItem.display(), key]);
+            }
+            if (options.length > 0) {
+              return options;
+            }
+          }
+        }
+      }
+
+      // Fall back on basic default options.
+      return [['---', '---']];
+    };
+
+    super(menuGenerator, validator, config);
+    this.parentName = parentName;
+    this.dependencyData = dependencyData;
+  }
+
+  /**
+   * Constructs a FieldGamepadRumbleDropdown from a JSON arg object.
+   *
+   * @param options A JSON object with optional "parentName" property.
+   * @returns The new field instance.
+   */
+  static fromJson(options: any): FieldGamepadRumbleDropdown {
+    return new FieldGamepadRumbleDropdown(
+      options['parentName'],
+      undefined,
+      options,
+    );
+  }
+
+  /**
+   * Attach this field to a block.
+   *
+   * @param block The block containing this field.
+   */
+  setSourceBlock(block: Blockly.Block) {
+    super.setSourceBlock(block);
+
+    const parentField: Blockly.Field<string> | null = block.getField(
+      this.parentName,
+    );
+
+    if (!parentField) {
+      throw new Error(
+        'Could not find a parent field with the name ' +
+          this.parentName +
+          ' for the gamepad rumble dropdown.',
+      );
+    }
+
+    this.dependencyData.parentField = parentField;
+
+    const oldValidator = parentField.getValidator();
+
+    // A validator function for the parent field that has the side effect of
+    // updating the options of this child dropdown field based on the new value
+    // of the parent field whenever it changes.
+    parentField.setValidator((newValue) => {
+      if (oldValidator) {
+        const validatedValue = oldValidator(newValue);
+        // If a validator returns null, that means the new value is invalid and
+        // the change should be canceled.
+        if (validatedValue === null) {
+          return null;
+        }
+        // If a validator returns undefined, that means no change. Otherwise,
+        // use the returned value as the new value.
+        if (validatedValue !== undefined) {
+          newValue = validatedValue;
+        }
+      }
+      this.updateOptionsBasedOnNewValue(newValue);
+      return newValue;
+    });
+    this.updateOptionsBasedOnNewValue(parentField.getValue() ?? undefined);
+  }
+
+  /**
+   * Updates the options of this child dropdown field based on the new value of
+   * the parent field.
+   *
+   * @param newValue The newly assigned port value.
+   */
+  private updateOptionsBasedOnNewValue(newValue: string | undefined): void {
+    if (newValue == undefined) {
+      return;
+    }
+
+    const block = this.getSourceBlock();
+    if (!block) {
+      throw new Error(
+        'Could not validate a field that is not attached to a block: ' +
+          this.name,
+      );
+    }
+
+    const port = Number(newValue);
+    const gamepadType = GamepadTypeUtils.getGamepad(port, currentGamepadConfig);
+    const rumbleConfig = GamepadTypeUtils.getRumbleConfig(gamepadType);
+
+    const oldChildValue = this.getValue();
+    const oldChildOptions = this.getOptions(false);
+    let newChildOptions: Blockly.MenuOption[] = [];
+
+    if (rumbleConfig) {
+      for (const [key, configItem] of rumbleConfig.entries()) {
+        newChildOptions.push([configItem.display(), key]);
+      }
+    }
+
+    // If no options available, use placeholder
+    if (newChildOptions.length === 0) {
+      newChildOptions = [['---', '---']];
+    }
+
+    // If the child field's value is still available in the new options, keep
+    // it, otherwise change the field's value to the first available option.
+    const newOptionsIncludeOldValue =
+      newChildOptions.find((option) => option[1] == oldChildValue) != undefined;
+    const newChildValue = newOptionsIncludeOldValue
+      ? oldChildValue
+      : newChildOptions[0][1];
+
+    // Record the options so that the option generator can access them.
+    this.dependencyData.derivedOptions = newChildOptions;
+
+    // Re-run the option generator to update the options on the dropdown.
+    this.getOptions(false);
+
+    // Update this child field's value without broadcasting the normal change
+    // event. The normal value change event can't be properly undone, because
+    // the old value may not be one of the currently valid options, so a custom
+    // change event will be broadcast instead that handles swapping the options
+    // and the value at the same time.
+    Blockly.Events.disable();
+    this.setValue(newChildValue);
+    Blockly.Events.enable();
+
+    if (Blockly.Events.getRecordUndo()) {
+      if (!Blockly.Events.getGroup()) {
+        // Start a change group before the change event. The change event for
+        // the parent field value will be created after this function returns
+        // and will be part of the same group.
+        Blockly.Events.setGroup(true);
+        // Clear the change group later, after all related events have been
+        // broadcast, but before the user performs any more actions.
+        setTimeout(() => Blockly.Events.setGroup(false));
+      }
+
+      // Record that the child field's options and value have changed.
+      Blockly.Events.fire(
+        new GamepadDropdownOptionsChange(
+          block,
+          this.name,
+          oldChildValue ?? undefined,
+          newChildValue ?? undefined,
+          oldChildOptions,
+          newChildOptions,
+        ),
+      );
+    }
+  }
+}
+
 export function createButtonField(): Blockly.Field {
     return new FieldGamepadButtonDropdown();
 }
 
 export function createAnalogAxisField(): Blockly.Field {
     return new FieldGamepadAxisDropdown();
+}
+
+export function createRumbleField(): Blockly.Field {
+    return new FieldGamepadRumbleDropdown();
 }
 
 export function createActionField(): Blockly.Field {
@@ -590,6 +815,16 @@ export function methodForAxis(gamepad: number, axis: string): string {
         (axisConfig?.get(axis)?.method ?? '') + '()';
 }
 
+export function methodForRumble(gamepad: number, rumble: string, value : number): string {
+    const gamepadType = GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
+    
+    // Get the rumble configuration for this gamepad type
+    const rumbleConfig = GamepadTypeUtils.getRumbleConfig(gamepadType);
+    
+    return getGamepad(gamepad) + '.setRumble(' +
+        (rumbleConfig?.get(rumble)?.rumbleType ?? '') + ', ' + value + ')\n';
+}
+
 // Register field types with Blockly
 Blockly.fieldRegistry.register(
   'field_gamepad_button_dropdown',
@@ -599,4 +834,9 @@ Blockly.fieldRegistry.register(
 Blockly.fieldRegistry.register(
   'field_gamepad_axis_dropdown',
   FieldGamepadAxisDropdown,
+);
+
+Blockly.fieldRegistry.register(
+  'field_gamepad_rumble_dropdown',
+  FieldGamepadRumbleDropdown,
 );
