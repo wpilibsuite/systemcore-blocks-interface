@@ -47,6 +47,7 @@ import {
     upgrade_0011_to_0012 as upgrade_call_python_function_0011_to_0012,
     upgrade_0012_to_0013 as upgrade_call_python_function_0012_to_0013
     } from '../blocks/mrc_call_python_function';
+import { upgrade_0014_to_0015 } from '../blocks/mrc_opmode_details';
 import { GamepadTypeUtils } from '../types/GamepadType';
 import * as workspaces from '../blocks/utils/workspaces';
 
@@ -426,6 +427,6 @@ async function upgradeFrom_0014_to_0015(
   await upgradeBlocksFiles(
       storage, projectName,
       noModuleTypes, noPreupgrade,
-      isOpMode, upgrade_002_to_003);
+      isOpMode, upgrade_0014_to_0015);
   projectInfo.version = '0.0.15';
 }

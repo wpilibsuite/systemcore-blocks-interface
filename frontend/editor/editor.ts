@@ -371,7 +371,7 @@ export class Editor {
       // so we pick up changes that haven't been saved to storage yet —
       // the same way getAllComponentsFromMechanism reads from the live workspace.
       const liveEditor = Editor.modulePathToEditor[opMode.modulePath];
-      if (liveEditor && liveEditor !== this) {
+      if (liveEditor) {
         const blocks = Blockly.serialization.workspaces.save(liveEditor.getBlocklyWorkspace());
         const details = opmodeDetails.getOpModeDetailsFromBlocksJson(blocks, opMode.className);
         if (details) {

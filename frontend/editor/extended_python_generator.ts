@@ -48,12 +48,13 @@ type BlockExecutionDetails = {
 };
 
 export class OpModeDetails {
-  constructor(private name: string, private group: string, private description: string, private enabled: boolean, private type: string) {}
+  constructor(private className: string, private name: string, private group: string, private description: string, private enabled: boolean, private type: string) {}
   getName(): string { return this.name; }
   getGroup(): string { return this.group; }
   getDescription(): string { return this.description; }
   getEnabled(): boolean { return this.enabled; }
   getType(): string { return this.type; }
+  getClassName(): string { return this.className; }
   generateDecorators(generator: ExtendedPythonGenerator, className: string): string {
     let code = '';
 
@@ -198,7 +199,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           const group = opModeDetails.getGroup();
           const description = opModeDetails.getDescription();
           const type = opModeDetails.getType();
-          const call = `wpilib.RegisterOpMode('${name}', '${group}', '${description}', '${type}')`;
+          const opModeClassName = opModeDetails.getClassName();
+          // We call type what WPILib calls mode (Teleop, Auto, Utility)
+          // TODO: Convert the string here to match the enum that wpilib uses
+          const call = `self.addOpMode('${opModeClassName}', '${type}, '${name}', '${group}', '${description}')`;
           if (opModeDetails.getEnabled()) {
             initStatements += this.INDENT + call + '\n';
           } else {

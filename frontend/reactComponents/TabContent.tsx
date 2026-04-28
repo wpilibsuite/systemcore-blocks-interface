@@ -193,7 +193,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
         setTimeout(() => {
           isInitialActivation.current = false;
           // Re-generate code for the robot tab so opmode details (name, group, description, etc.)
-          // from any recently-edited opmode tabs are reflected without requiring a block change.
+          // from any recently-edited opmode tabs are reflected.
           if (module.moduleType === storageModule.ModuleType.ROBOT) {
             setTriggerPythonRegeneration(Date.now());
           }
