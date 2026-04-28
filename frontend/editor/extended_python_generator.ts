@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Google LLC
+ * Copyright 2024-2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import {
     MODULE_NAME_BLOCKS_BASE_CLASSES,
     TELEOP_DECORATOR_CLASS,
     AUTO_DECORATOR_CLASS,
-    TEST_DECORATOR_CLASS,
+    UTILITY_DECORATOR_CLASS,
     NAME_DECORATOR_CLASS,
     GROUP_DECORATOR_CLASS,
     START_METHOD_NAME,
@@ -48,7 +48,13 @@ type BlockExecutionDetails = {
 };
 
 export class OpModeDetails {
-  constructor(private name: string, private group: string, private enabled: boolean, private type: string) {}
+  constructor(private className: string, private name: string, private group: string, private description: string, private enabled: boolean, private type: string) {}
+  getName(): string { return this.name; }
+  getGroup(): string { return this.group; }
+  getDescription(): string { return this.description; }
+  getEnabled(): boolean { return this.enabled; }
+  getType(): string { return this.type; }
+  getClassName(): string { return this.className; }
   generateDecorators(generator: ExtendedPythonGenerator, className: string): string {
     let code = '';
 
@@ -61,8 +67,8 @@ export class OpModeDetails {
         case 'Auto':
           typeDecoratorClass = AUTO_DECORATOR_CLASS;
           break;
-        case 'Test':
-          typeDecoratorClass = TEST_DECORATOR_CLASS;
+        case 'Utility':
+          typeDecoratorClass = UTILITY_DECORATOR_CLASS;
           break;
       }
       // Import the module for the decorator, not the decorator class itself
@@ -114,6 +120,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   // Opmode details
   private opModeDetails: OpModeDetails | null  = null;
+
+  // All opmodes in the project (used when generating robot code)
+  private allOpModeDetails: OpModeDetails[] = [];
 
   private generateErrorHandling: boolean = false;
 
@@ -184,6 +193,22 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         initStatements += this.INDENT + 'self.mechanisms = []\n';
         initStatements += this.INDENT + 'self.eventHandlers = {}\n';
         initStatements += this.INDENT + 'self.defineHardware()\n';
+        for (const opModeDetails of this.allOpModeDetails) {
+          this.importModule('wpilib');
+          const name = opModeDetails.getName();
+          const group = opModeDetails.getGroup();
+          const description = opModeDetails.getDescription();
+          const type = opModeDetails.getType();
+          const opModeClassName = opModeDetails.getClassName();
+          // We call type what WPILib calls mode (Teleop, Auto, Utility)
+          // TODO: Convert the string here to match the enum that wpilib uses
+          const call = `self.addOpMode('${opModeClassName}', '${type}, '${name}', '${group}', '${description}')`;
+          if (opModeDetails.getEnabled()) {
+            initStatements += this.INDENT + call + '\n';
+          } else {
+            initStatements += this.INDENT + '# ' + call + '\n';
+          }
+        }
         break;
       case storageModule.ModuleType.MECHANISM:
         if (this.hasAnyComponents) {
@@ -237,6 +262,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.importedNames = Object.create(null);
     this.fromModuleImportNames = Object.create(null);
     this.opModeDetails = null;
+    this.allOpModeDetails = [];
     this.generateErrorHandling = false;
 
     return code;
@@ -462,6 +488,14 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   setOpModeDetails(opModeDetails: OpModeDetails) {
     this.opModeDetails = opModeDetails;
+  }
+
+  setAllOpModeDetails(details: OpModeDetails[]) {
+    this.allOpModeDetails = details;
+  }
+
+  getClassName(): string {
+    return this.context.getClassName();
   }
 
   getSuperInitParameters(): string {

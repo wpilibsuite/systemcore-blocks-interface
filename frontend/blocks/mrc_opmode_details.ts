@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Porpoiseful LLC
+ * Copyright 2025-26 Porpoiseful LLC
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,17 @@ import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 
 export const BLOCK_NAME = 'mrc_opmode_details';
 
+const OPMODE_TYPE_AUTO = 'Auto';
+const OPMODE_TYPE_TELEOP = 'Teleop';
+const OPMODE_TYPE_UTILITY = 'Utility';
+const OPMOODE_TYPES = [OPMODE_TYPE_AUTO, OPMODE_TYPE_TELEOP, OPMODE_TYPE_UTILITY];
+
+const FIELD_TYPE = 'TYPE';
+const FIELD_ENABLED = 'ENABLED';
+const FIELD_NAME = 'NAME';
+const FIELD_GROUP = 'GROUP';
+const FIELD_DESCRIPTION = 'DESCRIPTION';
+
 const WARNING_ID_STEPS_OR_PERIODIC_REQUIRED = 'id_steps_or_periodic_required';
 
 type OpmodeDetailsBlock = Blockly.Block & OpmodeDetailsMixin;
@@ -49,7 +60,7 @@ const OPMODE_DETAILS = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.TYPE)
       // These aren't Blockly.Msg because they need to match the Python generator's expected values.
-      .appendField(createFieldDropdown(["Auto", "Teleop", "Test"]), 'TYPE')
+      .appendField(createFieldDropdown(OPMOODE_TYPES), 'TYPE')
       .appendField('    ')
       .appendField(Blockly.Msg.ENABLED)
       .appendField(new Blockly.FieldCheckbox(true), 'ENABLED');
@@ -60,11 +71,15 @@ const OPMODE_DETAILS = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.DISPLAY_GROUP)
         .appendField(new Blockly.FieldTextInput(''), 'GROUP');
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.DISPLAY_DESCRIPTION)
+        .appendField(new Blockly.FieldTextInput(''), 'DESCRIPTION');        
 
-    this.getField('TYPE')?.setTooltip(Blockly.Msg.OPMODE_TYPE_TOOLTIP);
-    this.getField('ENABLED')?.setTooltip(Blockly.Msg.OPMODE_ENABLED_TOOLTIP);
-    this.getField('NAME')?.setTooltip(Blockly.Msg.OPMODE_NAME_TOOLTIP);
-    this.getField('GROUP')?.setTooltip(Blockly.Msg.OPMODE_GROUP_TOOLTIP);
+    this.getField(FIELD_TYPE)?.setTooltip(Blockly.Msg.OPMODE_TYPE_TOOLTIP);
+    this.getField(FIELD_ENABLED)?.setTooltip(Blockly.Msg.OPMODE_ENABLED_TOOLTIP);
+    this.getField(FIELD_NAME)?.setTooltip(Blockly.Msg.OPMODE_NAME_TOOLTIP);
+    this.getField(FIELD_GROUP)?.setTooltip(Blockly.Msg.OPMODE_GROUP_TOOLTIP);
+    this.getField(FIELD_DESCRIPTION)?.setTooltip(Blockly.Msg.OPMODE_DESCRIPTION_TOOLTIP);
   },
   ...NONCOPYABLE_BLOCK,
   checkOpMode(this: OpmodeDetailsBlock, editor: Editor): void {
@@ -86,6 +101,11 @@ const OPMODE_DETAILS = {
         this.mrcHasStepsOrPeriodicRequiredWarning = true;
       }
     }
+  },
+  upgrade_0014_to_0015: function(this: OpmodeDetailsBlock) {
+      if (this.getField(FIELD_TYPE) && this.getFieldValue(FIELD_TYPE) === 'Test') {
+        this.setFieldValue(OPMODE_TYPE_UTILITY, FIELD_TYPE);
+      }
   }
 }
 
@@ -94,22 +114,48 @@ export const setup = function () {
 }
 
 export const pythonFromBlock = function (
-  block: OpmodeDetailsBlock,
-  generator: ExtendedPythonGenerator,
-) {
-    generator.setOpModeDetails(new OpModeDetails(
-                                block.getFieldValue('NAME'),
-                                block.getFieldValue('GROUP'),
-                                block.getFieldValue('ENABLED') == 'TRUE',
-                                block.getFieldValue('TYPE')
-                              ));
+  _block: OpmodeDetailsBlock,
+  _generator: ExtendedPythonGenerator,
+) {  
     return '';
 }
 
 // Misc
+
+/**
+ * Extracts OpModeDetails from a module's blocks JSON without creating a workspace.
+ * The blocksJson is the value returned by ModuleContent.getBlocks().
+ */
+export function getOpModeDetailsFromBlocksJson(blocksJson: {[key: string]: any}, className: string = ''): OpModeDetails | null {
+  const blocks = blocksJson?.blocks?.blocks;
+  if (!Array.isArray(blocks)) return null;
+  for (const block of blocks) {
+    if (block.type === BLOCK_NAME) {
+      return new OpModeDetails(
+        className,
+        block.fields?.FIELD_NAME || className,
+        block.fields?.FIELD_GROUP ?? '',
+        block.fields?.FIELD_DESCRIPTION ?? '',
+        block.fields?.FIELD_ENABLED !== false && block.fields?.FIELD_ENABLED !== 'FALSE',
+        block.fields?.FIELD_TYPE ?? 'Teleop',
+      );
+    }
+  }
+  return null;
+}
 
 export function checkOpMode(workspace: Blockly.Workspace, editor: Editor) {
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as OpmodeDetailsBlock).checkOpMode(editor);
   });
 }
+
+/**  
+ * Upgrades the OpmodeDetailsBlocks in the given workspace from version 0014 to 0015.  
+ * This function should only be called when upgrading old projects.  
+ */  
+export function upgrade_0014_to_0015(workspace: Blockly.Workspace): void {  
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {  
+    (block as OpmodeDetailsBlock).upgrade_0014_to_0015();  
+  });  
+}  
