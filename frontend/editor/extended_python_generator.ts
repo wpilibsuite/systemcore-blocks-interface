@@ -25,6 +25,7 @@ import { createGeneratorContext, GeneratorContext } from './generator_context';
 import * as mechanismContainerHolder from '../blocks/mrc_mechanism_component_holder';
 import * as eventHandler from '../blocks/mrc_event_handler';
 import { STEPS_METHOD_NAME } from '../blocks/mrc_steps';
+import { OPMODE_TYPE_AUTO, OPMODE_TYPE_TELEOP, OPMODE_TYPE_UTILITY } from '../blocks/mrc_opmode_details';
 
 import {
     MODULE_NAME_BLOCKS_BASE_CLASSES,
@@ -61,13 +62,13 @@ export class OpModeDetails {
     if (this.enabled) {
       let typeDecoratorClass: string = '';
       switch (this.type) {
-        case 'Teleop':
+        case OPMODE_TYPE_TELEOP:
           typeDecoratorClass = TELEOP_DECORATOR_CLASS;
           break;
-        case 'Auto':
+        case OPMODE_TYPE_AUTO:
           typeDecoratorClass = AUTO_DECORATOR_CLASS;
           break;
-        case 'Utility':
+        case OPMODE_TYPE_UTILITY:
           typeDecoratorClass = UTILITY_DECORATOR_CLASS;
           break;
       }
@@ -200,9 +201,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           const description = opModeDetails.getDescription();
           const type = opModeDetails.getType();
           const opModeClassName = opModeDetails.getClassName();
-          // We call type what WPILib calls mode (Teleop, Auto, Utility)
           // TODO: Convert the string here to match the enum that wpilib uses
-          const call = `self.addOpMode('${opModeClassName}', '${type}, '${name}', '${group}', '${description}')`;
+          const call = `self.addOpMode('${opModeClassName}', '${type}', '${name}', '${group}', '${description}')`;
           if (opModeDetails.getEnabled()) {
             initStatements += this.INDENT + call + '\n';
           } else {

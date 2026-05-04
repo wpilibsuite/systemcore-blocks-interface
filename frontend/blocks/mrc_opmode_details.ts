@@ -31,10 +31,10 @@ import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 
 export const BLOCK_NAME = 'mrc_opmode_details';
 
-const OPMODE_TYPE_AUTO = 'Auto';
-const OPMODE_TYPE_TELEOP = 'Teleop';
-const OPMODE_TYPE_UTILITY = 'Utility';
-const OPMOODE_TYPES = [OPMODE_TYPE_AUTO, OPMODE_TYPE_TELEOP, OPMODE_TYPE_UTILITY];
+export const OPMODE_TYPE_AUTO = 'Auto';
+export const OPMODE_TYPE_TELEOP = 'Teleop';
+export const OPMODE_TYPE_UTILITY = 'Utility';
+export const OPMODE_TYPES = [OPMODE_TYPE_AUTO, OPMODE_TYPE_TELEOP, OPMODE_TYPE_UTILITY];
 
 const FIELD_TYPE = 'TYPE';
 const FIELD_ENABLED = 'ENABLED';
@@ -60,20 +60,20 @@ const OPMODE_DETAILS = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.TYPE)
       // These aren't Blockly.Msg because they need to match the Python generator's expected values.
-      .appendField(createFieldDropdown(OPMOODE_TYPES), 'TYPE')
+      .appendField(createFieldDropdown(OPMODE_TYPES), FIELD_TYPE)
       .appendField('    ')
       .appendField(Blockly.Msg.ENABLED)
-      .appendField(new Blockly.FieldCheckbox(true), 'ENABLED');
+      .appendField(new Blockly.FieldCheckbox(true), FIELD_ENABLED);
 
     this.appendDummyInput()
         .appendField(Blockly.Msg.DISPLAY_NAME)
-        .appendField(new Blockly.FieldTextInput(''), 'NAME')
+        .appendField(new Blockly.FieldTextInput(''), FIELD_NAME)
     this.appendDummyInput()
         .appendField(Blockly.Msg.DISPLAY_GROUP)
-        .appendField(new Blockly.FieldTextInput(''), 'GROUP');
+        .appendField(new Blockly.FieldTextInput(''), FIELD_GROUP);
     this.appendDummyInput()
         .appendField(Blockly.Msg.DISPLAY_DESCRIPTION)
-        .appendField(new Blockly.FieldTextInput(''), 'DESCRIPTION');        
+        .appendField(new Blockly.FieldTextInput(''), FIELD_DESCRIPTION);        
 
     this.getField(FIELD_TYPE)?.setTooltip(Blockly.Msg.OPMODE_TYPE_TOOLTIP);
     this.getField(FIELD_ENABLED)?.setTooltip(Blockly.Msg.OPMODE_ENABLED_TOOLTIP);
@@ -133,11 +133,11 @@ export function getOpModeDetailsFromBlocksJson(blocksJson: {[key: string]: any},
     if (block.type === BLOCK_NAME) {
       return new OpModeDetails(
         className,
-        block.fields?.FIELD_NAME || className,
-        block.fields?.FIELD_GROUP ?? '',
-        block.fields?.FIELD_DESCRIPTION ?? '',
-        block.fields?.FIELD_ENABLED !== false && block.fields?.FIELD_ENABLED !== 'FALSE',
-        block.fields?.FIELD_TYPE ?? 'Teleop',
+        block.fields[FIELD_NAME] || className,
+        block.fields[FIELD_GROUP] ?? '',
+        block.fields[FIELD_DESCRIPTION] ?? '',
+        block.fields[FIELD_ENABLED] !== false && block.fields[FIELD_ENABLED] !== 'FALSE',
+        block.fields[FIELD_TYPE] ?? OPMODE_TYPE_TELEOP,
       );
     }
   }
