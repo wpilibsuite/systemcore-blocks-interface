@@ -179,6 +179,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
           {t("BLOCKS")}
         </Antd.Typography>
         <Antd.Typography
+          data-tour="project-name"
           style={{
             paddingLeft: TEXT_PADDING_LEFT,
             fontSize: TEXT_FONT_SIZE,
