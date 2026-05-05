@@ -48,8 +48,31 @@ type BlockExecutionDetails = {
   blockLabel: string,
 };
 
+export interface OpModeDetailsParams {
+  className: string;
+  name: string;
+  group: string;
+  description: string;
+  enabled: boolean;
+  type: string;
+}
+
 export class OpModeDetails {
-  constructor(private className: string, private name: string, private group: string, private description: string, private enabled: boolean, private type: string) {}
+  private className: string;
+  private name: string;
+  private group: string;
+  private description: string;
+  private enabled: boolean;
+  private type: string;
+
+  constructor({ className, name, group, description, enabled, type }: OpModeDetailsParams) {
+    this.className = className;
+    this.name = name;
+    this.group = group;
+    this.description = description;
+    this.enabled = enabled;
+    this.type = type;
+  }
   getName(): string { return this.name; }
   getGroup(): string { return this.group; }
   getDescription(): string { return this.description; }

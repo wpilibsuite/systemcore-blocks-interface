@@ -24,7 +24,7 @@ import * as Blockly from 'blockly';
 
 import { PERIODIC_METHOD_NAME } from './utils/python';
 import { Editor } from '../editor/editor';
-import { ExtendedPythonGenerator, OpModeDetails } from '../editor/extended_python_generator';
+import { ExtendedPythonGenerator, OpModeDetails, OpModeDetailsParams } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
@@ -131,14 +131,15 @@ export function getOpModeDetailsFromBlocksJson(blocksJson: {[key: string]: any},
   if (!Array.isArray(blocks)) return null;
   for (const block of blocks) {
     if (block.type === BLOCK_NAME) {
-      return new OpModeDetails(
+      const params: OpModeDetailsParams = {
         className,
-        block.fields[FIELD_NAME] || className,
-        block.fields[FIELD_GROUP] ?? '',
-        block.fields[FIELD_DESCRIPTION] ?? '',
-        block.fields[FIELD_ENABLED] !== false && block.fields[FIELD_ENABLED] !== 'FALSE',
-        block.fields[FIELD_TYPE] ?? OPMODE_TYPE_TELEOP,
-      );
+        name: block.fields[FIELD_NAME] || className,
+        group: block.fields[FIELD_GROUP] ?? '',
+        description: block.fields[FIELD_DESCRIPTION] ?? '',
+        enabled: block.fields[FIELD_ENABLED] !== false && block.fields[FIELD_ENABLED] !== 'FALSE',
+        type: block.fields[FIELD_TYPE] ?? OPMODE_TYPE_TELEOP,
+      };
+      return new OpModeDetails(params);
     }
   }
   return null;
