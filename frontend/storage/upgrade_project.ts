@@ -47,11 +47,12 @@ import {
     upgrade_0011_to_0012 as upgrade_call_python_function_0011_to_0012,
     upgrade_0012_to_0013 as upgrade_call_python_function_0012_to_0013
     } from '../blocks/mrc_call_python_function';
+import { upgrade_0014_to_0015 } from '../blocks/mrc_opmode_details';
 import { GamepadTypeUtils } from '../types/GamepadType';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.14';
+export const CURRENT_VERSION = '0.0.15';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -131,6 +132,10 @@ export async function upgradeProjectIfNecessary(
       case '0.0.13':
         await upgradeFrom_0013_to_0014(storage, projectName, projectInfo);
 
+      // Intentional fallthrough after case '0.0.14'
+      // @ts-ignore
+      case '0.0.14':
+        await upgradeFrom_0014_to_0015(storage, projectName, projectInfo);
     }
     await storageProject.saveProjectInfo(storage, projectName, projectInfo);
   }
@@ -411,4 +416,17 @@ async function upgradeFrom_0013_to_0014(
       noModuleTypes, noPreupgrade,
       isMechanism, upgrade_class_method_def_0013_to_0014);
   projectInfo.version = '0.0.14';
+}
+
+async function upgradeFrom_0014_to_0015(
+    storage: commonStorage.Storage,
+    projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  
+  // OpModes now have Utility instead of Test as a category of class method definitions.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      isOpMode, upgrade_0014_to_0015);
+  projectInfo.version = '0.0.15';
 }
