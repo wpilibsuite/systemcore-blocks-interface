@@ -1,0 +1,23 @@
+
+{
+  "name": "systemcore-blocks-interface",
+  "dockerComposeFile": "compose.yml",
+  "service": "app",
+  "remoteUser": "node",
+  "workspaceFolder": "/app/",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ms-python.python"
+      ]
+    }
+  },
+  "forwardPorts": [
+    3000
+  ],
+  "postCreateCommand": "npm install",
+  "postAttachCommand": "npm run start"
+}
