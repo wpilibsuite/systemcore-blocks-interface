@@ -24,7 +24,7 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "event_name",
+                            "name": "eventName",
                             "type": "str"
                         },
                         {
@@ -86,12 +86,12 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "event_name",
+                            "name": "eventName",
                             "type": "str"
                         },
                         {
                             "defaultValue": "",
-                            "name": "event_handler",
+                            "name": "eventHandler",
                             "type": "typing.Callable"
                         }
                     ],
@@ -109,12 +109,12 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "event_name",
+                            "name": "eventName",
                             "type": "str"
                         },
                         {
                             "defaultValue": "",
-                            "name": "event_handler",
+                            "name": "eventHandler",
                             "type": "typing.Callable"
                         }
                     ],

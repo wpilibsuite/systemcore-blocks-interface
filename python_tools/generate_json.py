@@ -69,13 +69,13 @@ def main(argv):
   file_path = f'{FLAGS.output_directory}/generated/robotpy_data.json'
   json_generator_robotpy.writeJsonFile(file_path)
 
-  server_python_scripts = [
+  runtime_python = [
     blocks_base_classes,
   ]
-  json_generator_server_python = json_util.JsonGenerator(
-      server_python_scripts, [json_generator_robotpy])
-  file_path = f'{FLAGS.output_directory}/generated/server_python_scripts.json'
-  json_generator_server_python.writeJsonFile(file_path)
+  json_generator_runtime_python = json_util.JsonGenerator(
+      runtime_python, [json_generator_robotpy])
+  file_path = f'{FLAGS.output_directory}/generated/runtime_python.json'
+  json_generator_runtime_python.writeJsonFile(file_path)
 
 if __name__ == '__main__':
   app.run(main)

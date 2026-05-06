@@ -28,7 +28,7 @@ import {
     PythonData,
     VariableGettersAndSetters } from './python_json_types';
 import generatedRobotPyData from './generated/robotpy_data.json';
-import generatedServerPythonScripts from './generated/server_python_scripts.json';
+import generatedRuntimePython from './generated/runtime_python.json';
 
 import * as PythonEnum from "../mrc_get_python_enum_value";
 import * as GetPythonVariable from "../mrc_get_python_variable";
@@ -73,11 +73,11 @@ export const NAME_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Name';
 export const GROUP_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Group';
 
 export const robotPyData = generatedRobotPyData as PythonData;
-const serverPythonScripts = generatedServerPythonScripts as PythonData;
+const runtimePython = generatedRuntimePython as PythonData;
 
 const allPythonData: PythonData[] = [];
 allPythonData.push(robotPyData);
-allPythonData.push(serverPythonScripts);
+allPythonData.push(runtimePython);
 
 export const componentClasses: ClassData[] = []
 
