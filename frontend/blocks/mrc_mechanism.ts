@@ -95,6 +95,10 @@ const MECHANISM = {
     */
   init: function (this: MechanismBlock): void {
     this.mrcHasNotInHolderWarning = false;
+    this.mrcMechanismModuleId = '';
+    this.mrcMechanismId = this.id;
+    this.mrcImportModule = '';
+    this.mrcParameters = [];
     this.setStyle(MRC_STYLE_MECHANISMS);
     const nameField = new Blockly.FieldTextInput('')
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));

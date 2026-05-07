@@ -26,6 +26,7 @@ import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
+import { Editor } from '../editor/editor';
 import ClassNameComponent from './ClassNameComponent';
 
 /** Represents a module item in the dialog. */
@@ -117,6 +118,13 @@ export default function AddTabDialog(props: AddTabDialogProps) {
 
     const newModule = storageProject.findModuleByClassName(props.project, newClassName);
     if (newModule) {
+      // If a mechanism was added and the robot tab is open, add the mechanism block live.
+      if (moduleType === storageModule.ModuleType.MECHANISM && props.project) {
+        const robotEditor = Editor.getEditorForModulePath(props.project.robot.modulePath);
+        if (robotEditor) {
+          robotEditor.incorporateNewMechanism(newModule as storageModule.Mechanism);
+        }
+      }
       const newTab: TabItem = {
         key: newModule.modulePath,
         title: newModule.className,

@@ -213,12 +213,22 @@ export async function addModuleToProject(
     case storageModule.ModuleType.MECHANISM:
       const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
       await storage.saveFile(newModulePath, mechanismContent);
+      const parsedMechanismContent = storageModuleContent.parseModuleContentText(mechanismContent);
+      const mechanismModuleId = parsedMechanismContent.getModuleId();
       project.mechanisms.push({
         modulePath: newModulePath,
         moduleType: storageModule.ModuleType.MECHANISM,
+        moduleId: mechanismModuleId,
         projectName: project.projectName,
         className: newClassName
       } as storageModule.Mechanism);
+      // Add a mechanism block to the robot's stored workspace so it appears when the robot tab
+      // is opened (or re-opened).
+      const robotPath = project.robot.modulePath;
+      const robotContentText = await storage.fetchFileContentText(robotPath);
+      const robotContent = storageModuleContent.parseModuleContentText(robotContentText);
+      storageModuleContent.addMechanismBlockToRobotContent(robotContent, mechanismModuleId, newClassName);
+      await storage.saveFile(robotPath, robotContent.getModuleContentText());
       break;
     case storageModule.ModuleType.OPMODE:
       const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);

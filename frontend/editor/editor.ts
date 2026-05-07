@@ -716,6 +716,48 @@ export class Editor {
     return workspace ? Editor.getEditorForBlocklyWorkspace(workspace) : null;
   }
 
+  public static getEditorForModulePath(modulePath: string): Editor | undefined {
+    return Editor.modulePathToEditor[modulePath];
+  }
+
+  /**
+   * Adds a newly-created mechanism to this robot editor's live workspace by serializing
+   * the current workspace state, injecting the mechanism block JSON, and reloading.
+   * Should only be called on the robot editor.
+   */
+  public incorporateNewMechanism(mechanism: storageModule.Mechanism): void {
+    if (this.module.moduleType !== storageModule.ModuleType.ROBOT) {
+      return;
+    }
+    if (!this.blocklyWorkspace.rendered) {
+      return;
+    }
+
+    // Register the mechanism in mechanismClassNameToModuleContent so checkMechanism can find it
+    // during the reload (via getAllComponentsFromMechanism). Note: we must NOT push to
+    // this.mechanisms here because it references the same array as project.mechanisms, which
+    // already contains the new mechanism from addModuleToProject — pushing again would duplicate it.
+    const emptyContent = storageModuleContent.parseModuleContentText(
+        storageModuleContent.newMechanismContent(this.projectName, mechanism.className));
+    this.mechanismClassNameToModuleContent[mechanism.className] = emptyContent;
+
+    // Capture the live workspace state, append the mechanism block, then reload.
+    const currentBlocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
+    const tempContentText = storageModuleContent.makeModuleContentText(
+        this.module, currentBlocks, [], [], [], [], []);
+    const tempContent = storageModuleContent.parseModuleContentText(tempContentText);
+    storageModuleContent.addMechanismBlockToRobotContent(
+        tempContent, mechanism.moduleId, mechanism.className);
+
+    // Remove the existing change listener before reloading to avoid double-registration.
+    if (this.bindedOnChange) {
+      this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
+      this.bindedOnChange = null;
+    }
+    this.modulePathToModuleContent[this.modulePath] = tempContent;
+    this.loadModuleBlocks();
+  }
+
   private setPasteLocation(): void {
     const copyData = Blockly.clipboard.getLastCopiedData();
     if (copyData && copyData.paster === 'block') {
