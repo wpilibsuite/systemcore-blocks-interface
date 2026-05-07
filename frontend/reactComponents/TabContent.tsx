@@ -192,6 +192,11 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
         // Clear the flag after a brief delay to allow workspace to settle
         setTimeout(() => {
           isInitialActivation.current = false;
+          // Re-generate code for the robot tab so opmode details (name, group, description, etc.)
+          // from any recently-edited opmode tabs are reflected.
+          if (module.moduleType === storageModule.ModuleType.ROBOT) {
+            setTriggerPythonRegeneration(Date.now());
+          }
         }, 100);
       });
     }
@@ -200,13 +205,16 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   /** Generate code when regeneration is triggered. */
   React.useEffect(() => {
     if (blocklyComponent.current && module) {
+      if (module.moduleType === storageModule.ModuleType.ROBOT && editorInstance) {
+        extendedPythonGenerator.setAllOpModeDetails(editorInstance.getAllOpModeDetails());
+      }
       const code = extendedPythonGenerator.mrcWorkspaceToCode(
         blocklyComponent.current.getBlocklyWorkspace(),
         module
       );
       setGeneratedCode(code);
     }
-  }, [triggerPythonRegeneration, blocklyComponent, module]);
+  }, [triggerPythonRegeneration, blocklyComponent, module, editorInstance]);
 
   /** Cleanup on unmount. */
   React.useEffect(() => {
