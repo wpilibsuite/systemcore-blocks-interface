@@ -26,6 +26,7 @@ import * as mechanismContainerHolder from '../blocks/mrc_mechanism_component_hol
 import * as eventHandler from '../blocks/mrc_event_handler';
 import { STEPS_METHOD_NAME } from '../blocks/mrc_steps';
 import { OPMODE_TYPE_AUTO, OPMODE_TYPE_TELEOP, OPMODE_TYPE_UTILITY } from '../blocks/mrc_opmode_details';
+import { pascalCaseToSnakeCase } from '../storage/names';
 
 import {
     MODULE_NAME_BLOCKS_BASE_CLASSES,
@@ -218,14 +219,26 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         initStatements += this.INDENT + 'self.eventHandlers = {}\n';
         initStatements += this.INDENT + 'self.defineHardware()\n';
         for (const opModeDetails of this.allOpModeDetails) {
-          this.importModule('wpilib');
+          this.fromModuleImportName('hal', 'RobotMode');
           const name = opModeDetails.getName();
           const group = opModeDetails.getGroup();
           const description = opModeDetails.getDescription();
-          const type = opModeDetails.getType();
+          let robotMode: string = '';  
+          switch (opModeDetails.getType()) {  
+            case OPMODE_TYPE_TELEOP:  
+              robotMode = 'RobotMode.TELEOPERATED';  
+              break;  
+            case OPMODE_TYPE_AUTO:  
+              robotMode = 'RobotMode.AUTONOMOUS';  
+              break;  
+            case OPMODE_TYPE_UTILITY:  
+              robotMode = 'RobotMode.UTILITY';  
+              break;  
+           }  
           const opModeClassName = opModeDetails.getClassName();
-          // TODO: Convert the string here to match the enum that wpilib uses
-          const call = `self.addOpMode('${opModeClassName}', '${type}', '${name}', '${group}', '${description}')`;
+          const opModeModuleName = pascalCaseToSnakeCase(opModeClassName);
+          this.importModule(opModeModuleName);
+          const call = `self.addOpMode(${opModeModuleName}.${opModeClassName}, ${robotMode}, '${name}', '${group}', '${description}')`;
           if (opModeDetails.getEnabled()) {
             initStatements += this.INDENT + call + '\n';
           } else {
