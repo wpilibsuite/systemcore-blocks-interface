@@ -1,6 +1,10 @@
 # SystemCore Blocks Interface
 WARNING! This is not ready for use and is under heavy development of basic features
 
+## For more information
+Check the docs/ for design intentions and goals.
+Check the agents.md file for information on how the project is structured.
+
 ## Setup
 
 1. Install VSCode and clone this repository
