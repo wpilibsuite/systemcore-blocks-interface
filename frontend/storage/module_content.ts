@@ -27,6 +27,7 @@ import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
 import * as workspaces from '../blocks/utils/workspaces';
 import { upgradePortTypeString } from '../blocks/utils/python_json_types';
+import { OPMODE_TYPE_AUTO, OPMODE_TYPE_UTILITY } from '../blocks/mrc_opmode_details';
 
 export type MethodArg = {
   name: string,
@@ -121,7 +122,21 @@ export function newOpModeContent(projectName: string, opModeClassName: string): 
     className: opModeClassName,
   };
 
-  return startingBlocksToModuleContentText(module, startingOpModeBlocks);
+  let startingBlocks: {[key: string]: any} = startingOpModeBlocks;
+  // Default is TELEOP, but if the class name includes "auto" or "util", change the default to AUTO or UTILITY.
+  const opModeType = /auto/i.test(opModeClassName) ? OPMODE_TYPE_AUTO
+      : /util/i.test(opModeClassName) ? OPMODE_TYPE_UTILITY
+      : null;
+  if (opModeType !== null) {
+    startingBlocks = JSON.parse(JSON.stringify(startingOpModeBlocks));
+    const detailsBlock = startingBlocks.blocks.blocks.find(
+        (b: {type: string}) => b.type === 'mrc_opmode_details');
+    if (detailsBlock) {
+      detailsBlock.fields.TYPE = opModeType;
+    }
+  }
+
+  return startingBlocksToModuleContentText(module, startingBlocks);
 }
 
 /**
