@@ -27,7 +27,7 @@ import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
 import * as workspaces from '../blocks/utils/workspaces';
 import { upgradePortTypeString } from '../blocks/utils/python_json_types';
-import { OPMODE_TYPE_AUTO, OPMODE_TYPE_UTILITY } from '../blocks/mrc_opmode_details';
+import { OPMODE_TYPE_AUTO, OPMODE_TYPE_UTILITY, BLOCK_NAME as MRC_OPMODE_BLOCK_NAME } from '../blocks/mrc_opmode_details';
 
 export type MethodArg = {
   name: string,
@@ -128,9 +128,10 @@ export function newOpModeContent(projectName: string, opModeClassName: string): 
       : /util/i.test(opModeClassName) ? OPMODE_TYPE_UTILITY
       : null;
   if (opModeType !== null) {
+    // This is to make a copy of the starting blocks so that we don't modify the original startingOpModeBlocks when we change the default op mode type.
     startingBlocks = JSON.parse(JSON.stringify(startingOpModeBlocks));
     const detailsBlock = startingBlocks.blocks.blocks.find(
-        (b: {type: string}) => b.type === 'mrc_opmode_details');
+        (b: {type: string}) => b.type === MRC_OPMODE_BLOCK_NAME);
     if (detailsBlock) {
       detailsBlock.fields.TYPE = opModeType;
     }
