@@ -330,12 +330,13 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     const isRow2 = currentTab.type === TabType.OPMODE;
     const newTabs = props.tabList.filter((tab) => {
       if (tab.key === currentTabKey) return true;
+      if (tab.type === TabType.ROBOT) return true; // Always keep ROBOT tabs
       if (isRow2) {
-        // Keep all row 1 tabs (ROBOT and MECHANISM)
-        return tab.type === TabType.ROBOT || tab.type === TabType.MECHANISM;
+        // Keep all MECHANISM tabs (row 1)
+        return tab.type === TabType.MECHANISM;
       } else {
-        // Keep all ROBOT tabs and all row 2 (OPMODE) tabs
-        return tab.type === TabType.ROBOT || tab.type === TabType.OPMODE;
+        // Keep all row 2 (OPMODE) tabs
+        return tab.type === TabType.OPMODE;
       }
     });
     props.setTabList(newTabs);
