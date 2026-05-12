@@ -73,9 +73,6 @@ export interface TabsProps {
 /** Default copy suffix for tab names. */
 const COPY_SUFFIX = 'Copy';
 
-/** Minimum number of tabs required to show close others option. */
-const MIN_TABS_FOR_CLOSE_OTHERS = 2;
-
 /**
  * Tab component that manages project module tabs with add, edit, delete, and rename functionality.
  * Provides context menus for tab operations and modal dialogs for user input.
@@ -326,13 +323,33 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     setCopyModalOpen(false);
   };
 
-  /** Handles closing other tabs except the current one. */
+  /** Handles closing other tabs except the current one, scoped to the same row. */
   const handleCloseOtherTabs = (currentTabKey: string): void => {
-    const newTabs = props.tabList.filter(
-      (tab) => tab.key === currentTabKey || tab.type === TabType.ROBOT
-    );
+    const currentTab = props.tabList.find((tab) => tab.key === currentTabKey);
+    if (!currentTab) return;
+    const isRow2 = currentTab.type === TabType.OPMODE;
+    const newTabs = props.tabList.filter((tab) => {
+      if (tab.key === currentTabKey) return true;
+      if (tab.type === TabType.ROBOT) return true; // Always keep ROBOT tabs
+      if (isRow2) {
+        // Keep all MECHANISM tabs (row 1)
+        return tab.type === TabType.MECHANISM;
+      } else {
+        // Keep all row 2 (OPMODE) tabs
+        return tab.type === TabType.OPMODE;
+      }
+    });
     props.setTabList(newTabs);
     setActiveKey(currentTabKey);
+  };
+
+  /** Gets the count of other closeable tabs in the same row as the given tab. */
+  const getOtherCloseableTabsInRowCount = (tab: TabItem): number => {
+    if (tab.type === TabType.OPMODE) {
+      return props.tabList.filter((t) => t.type === TabType.OPMODE && t.key !== tab.key).length;
+    }
+    // Row 1: only MECHANISM tabs are closeable
+    return props.tabList.filter((t) => t.type === TabType.MECHANISM && t.key !== tab.key).length;
   };
 
   /** Handles opening the rename modal. */
@@ -378,11 +395,6 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     });
   };
 
-  /** Gets the minimum tabs count for close others functionality. */
-  const getMinTabsForCloseOthers = (tabType: TabType): number => {
-    return tabType === TabType.ROBOT ? 1 : MIN_TABS_FOR_CLOSE_OTHERS;
-  };
-
   /** Creates context menu items for a tab. */
   const createTabContextMenuItems = (tab: TabItem): any[] => [
     {
@@ -396,7 +408,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
       key: 'close-others',
       label: t('CLOSE_OTHER_TABS'),
       onClick: () => handleCloseOtherTabs(tab.key),
-      disabled: props.tabList.length <= getMinTabsForCloseOthers(tab.type),
+      disabled: getOtherCloseableTabsInRowCount(tab) === 0,
       icon: <CloseCircleOutlined />,
     },
     {
