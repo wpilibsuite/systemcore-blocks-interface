@@ -35,6 +35,7 @@ import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_hol
 import * as workspaces from '../blocks/utils/workspaces';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { applyExpandedCategories, getToolboxJSON } from '../toolbox/toolbox';
+import { mrcAddMechanismBlockToRobotContent } from '../blocks/mrc_mechanism_component_holder';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
   kind: 'categoryToolbox',
@@ -746,8 +747,8 @@ export class Editor {
     const tempContentText = storageModuleContent.makeModuleContentText(
         this.module, currentBlocks, [], [], [], [], []);
     const tempContent = storageModuleContent.parseModuleContentText(tempContentText);
-    storageModuleContent.addMechanismBlockToRobotContent(
-        tempContent, mechanism.moduleId, mechanism.className);
+    
+    mrcAddMechanismBlockToRobotContent(tempContent, mechanism);
 
     // Remove the existing change listener before reloading to avoid double-registration.
     if (this.bindedOnChange) {

@@ -62,56 +62,6 @@ export type Event = {
   args: MethodArg[],
 };
 
-/**
- * Adds a new mrc_mechanism block to the robot's mrc_mechanism_component_holder in storage JSON.
- * Call this after creating a new mechanism to keep the robot's stored blocks in sync.
- */
-export function addMechanismBlockToRobotContent(
-    robotContent: ModuleContent,
-    mechanismModuleId: string,
-    mechanismClassName: string): void {
-  const importModule = storageNames.pascalCaseToSnakeCase(mechanismClassName);
-  // Use the same default naming convention as createMechanismBlock (used by the toolbox).
-  const instanceName = 'my' + mechanismClassName;
-  const newMechanismBlockState: {[key: string]: any} = {
-    type: 'mrc_mechanism',
-    id: Blockly.utils.idGenerator.genUid(),
-    fields: {
-      NAME: instanceName,
-      TYPE: mechanismClassName,
-    },
-    extraState: {
-      mechanismModuleId: mechanismModuleId,
-      mechanismId: Blockly.utils.idGenerator.genUid(),
-      importModule: importModule,
-      parameters: [],
-    },
-  };
-
-  const workspaceState = robotContent.getBlocks();
-  // workspaceState shape: { blocks: { languageVersion: 0, blocks: [...] } }
-  const topLevelBlocks: any[] = workspaceState.blocks.blocks;
-  const holder = topLevelBlocks.find(
-      (b: any) => b.type === 'mrc_mechanism_component_holder');
-  if (!holder) {
-    return;
-  }
-
-  if (!holder.inputs) {
-    holder.inputs = {};
-  }
-  if (!holder.inputs['MECHANISMS']) {
-    holder.inputs['MECHANISMS'] = { block: newMechanismBlockState };
-  } else {
-    // Walk to the last block in the chain and append.
-    let lastBlock = holder.inputs['MECHANISMS'].block;
-    while (lastBlock.next && lastBlock.next.block) {
-      lastBlock = lastBlock.next.block;
-    }
-    lastBlock.next = { block: newMechanismBlockState };
-  }
-}
-
 function startingBlocksToModuleContentText(
     module: storageModule.Module, startingBlocks: {[key: string]: any}): string {
   const mechanisms: MechanismInRobot[] = [];

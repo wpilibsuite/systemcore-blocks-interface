@@ -28,13 +28,13 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
-import { BLOCK_NAME as  MRC_MECHANISM_NAME } from './mrc_mechanism';
+import { createMechanismBlock, BLOCK_NAME as MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { MechanismBlock } from './mrc_mechanism';
-import { BLOCK_NAME as  MRC_COMPONENT_NAME } from './mrc_component';
+import { BLOCK_NAME as MRC_COMPONENT_NAME } from './mrc_component';
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
 import { ComponentBlock } from './mrc_component';
-import { BLOCK_NAME as  MRC_EVENT_NAME } from './mrc_event';
+import { BLOCK_NAME as MRC_EVENT_NAME } from './mrc_event';
 import { OUTPUT_NAME as EVENT_OUTPUT } from './mrc_event';
 import { EventBlock } from './mrc_event';
 import { getModuleTypeForWorkspace } from './utils/workspaces';
@@ -103,49 +103,49 @@ const MECHANISM_COMPONENT_HOLDER = {
     // Handle mechanisms input visibility
     if (!this.mrcHideMechanisms) {
       this.appendStatementInput(INPUT_MECHANISMS)
-          .setCheck(MECHANISM_OUTPUT)
-          .appendField(Blockly.Msg.MECHANISMS);
+        .setCheck(MECHANISM_OUTPUT)
+        .appendField(Blockly.Msg.MECHANISMS);
     }
 
     const componentsField = new Blockly.FieldLabel(Blockly.Msg.COMPONENTS);
     this.appendStatementInput(INPUT_COMPONENTS)
-        .setCheck(COMPONENT_OUTPUT)
-        .appendField(componentsField);
+      .setCheck(COMPONENT_OUTPUT)
+      .appendField(componentsField);
 
     // Handle private components input visibility
     if (!this.mrcHidePrivateComponents) {
-        const privateComponentsField = new Blockly.FieldLabel(Blockly.Msg.PRIVATE_COMPONENTS);
-        this.appendStatementInput(INPUT_PRIVATE_COMPONENTS)
-            .setCheck(COMPONENT_OUTPUT)
-            .appendField(privateComponentsField);
-        // Set tooltips on both componentsField and privateComponentsField.
-        componentsField.setTooltip(Blockly.Msg.COMPONENTS_TOOLTIP);
-        privateComponentsField.setTooltip(Blockly.Msg.PRIVATE_COMPONENTS_TOOLTIP);
+      const privateComponentsField = new Blockly.FieldLabel(Blockly.Msg.PRIVATE_COMPONENTS);
+      this.appendStatementInput(INPUT_PRIVATE_COMPONENTS)
+        .setCheck(COMPONENT_OUTPUT)
+        .appendField(privateComponentsField);
+      // Set tooltips on both componentsField and privateComponentsField.
+      componentsField.setTooltip(Blockly.Msg.COMPONENTS_TOOLTIP);
+      privateComponentsField.setTooltip(Blockly.Msg.PRIVATE_COMPONENTS_TOOLTIP);
     }
 
     this.appendStatementInput(INPUT_EVENTS)
-        .setCheck(EVENT_OUTPUT)
-        .appendField(Blockly.Msg.EVENTS);
+      .setCheck(EVENT_OUTPUT)
+      .appendField(Blockly.Msg.EVENTS);
   },
   /**
    * mrcOnLoad is called for each MechanismComponentHolderBlock when the blocks are loaded in the blockly
    * workspace.
    */
-  mrcOnLoad: function(this: MechanismComponentHolderBlock, editor: Editor): void {
+  mrcOnLoad: function (this: MechanismComponentHolderBlock, editor: Editor): void {
     this.collectDescendants(editor, false);
   },
   /**
    * mrcOnDescendantDisconnect is called for each MechanismComponentHolderBlock when any descendant is
    * disconnected.
    */
-  mrcOnDescendantDisconnect: function(this: MechanismComponentHolderBlock, editor: Editor): void {
+  mrcOnDescendantDisconnect: function (this: MechanismComponentHolderBlock, editor: Editor): void {
     this.collectDescendants(editor, true);
   },
   mrcDescendantsMayHaveChanged: function (this: MechanismComponentHolderBlock, editor: Editor): void {
     this.collectDescendants(editor, true);
   },
   collectDescendants: function (
-      this: MechanismComponentHolderBlock, editor: Editor, updateToolboxIfDescendantsChanged: boolean): void {
+    this: MechanismComponentHolderBlock, editor: Editor, updateToolboxIfDescendantsChanged: boolean): void {
     let mechanismBlockIds = '';
     let componentBlockIds = '';
     let privateComponentBlockIds = '';
@@ -202,9 +202,9 @@ const MECHANISM_COMPONENT_HOLDER = {
 
     if (updateToolboxIfDescendantsChanged) {
       if (mechanismBlockIds !== this.mrcMechanismBlockIds ||
-          componentBlockIds !== this.mrcComponentBlockIds ||
-          privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
-          eventBlockIds !== this.mrcEventBlockIds) {
+        componentBlockIds !== this.mrcComponentBlockIds ||
+        privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
+        eventBlockIds !== this.mrcEventBlockIds) {
         editor.updateToolboxAfterDelay();
       }
     }
@@ -221,14 +221,14 @@ const MECHANISM_COMPONENT_HOLDER = {
   setNameOfChildBlock(this: MechanismComponentHolderBlock, child: Blockly.Block): void {
     const otherNames: string[] = []
     this.getDescendants(true)
-        .filter(descendant =>
-            descendant.type === MRC_MECHANISM_NAME ||
-            descendant.type === MRC_COMPONENT_NAME ||
-            descendant.type === MRC_EVENT_NAME)
-        .filter(descendant => descendant.id !== child.id)
-        .forEach(descendant => {
-          otherNames.push(descendant.getFieldValue('NAME'));
-        });
+      .filter(descendant =>
+        descendant.type === MRC_MECHANISM_NAME ||
+        descendant.type === MRC_COMPONENT_NAME ||
+        descendant.type === MRC_EVENT_NAME)
+      .filter(descendant => descendant.id !== child.id)
+      .forEach(descendant => {
+        otherNames.push(descendant.getFieldValue('NAME'));
+      });
     const currentName = child.getFieldValue('NAME');
     // mechanism and component names must be valid python identifiers.
     // event names do not need to be valid python identifiers.
@@ -367,8 +367,8 @@ function pythonFromBlockInMechanism(block: MechanismComponentHolderBlock, genera
 }
 
 export const pythonFromBlock = function (
-    block: MechanismComponentHolderBlock,
-    generator: ExtendedPythonGenerator) {
+  block: MechanismComponentHolderBlock,
+  generator: ExtendedPythonGenerator) {
   switch (generator.getModuleType()) {
     case storageModule.ModuleType.ROBOT:
       pythonFromBlockInRobot(block, generator);
@@ -423,7 +423,7 @@ export function hasAnyComponents(workspace: Blockly.Workspace): boolean {
  * Collects the args for the mechanism's constructor and defineHardware method.
  */
 export function getMechanismInitArgNames(workspace: Blockly.Workspace, mechanismInitArgNames: string[]): void {
-  workspace.getBlocksByType(BLOCK_NAME).forEach( block => {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     const inputConnections: Blockly.Connection[] = [];
     const componentsInput = block.getInput(INPUT_COMPONENTS);
     if (componentsInput && componentsInput.connection) {
@@ -449,8 +449,8 @@ export function getMechanismInitArgNames(workspace: Blockly.Workspace, mechanism
 }
 
 export function getMechanisms(
-    workspace: Blockly.Workspace,
-    mechanisms: storageModuleContent.MechanismInRobot[]): void {
+  workspace: Blockly.Workspace,
+  mechanisms: storageModuleContent.MechanismInRobot[]): void {
   // Get the holder block and ask it for the mechanisms.
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     const mechanismsFromHolder: storageModuleContent.MechanismInRobot[] =
@@ -460,8 +460,8 @@ export function getMechanisms(
 }
 
 export function getComponents(
-    workspace: Blockly.Workspace,
-    components: storageModuleContent.Component[]): void {
+  workspace: Blockly.Workspace,
+  components: storageModuleContent.Component[]): void {
   // Get the holder block and ask it for the components.
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     const componentsFromHolder: storageModuleContent.Component[] =
@@ -471,8 +471,8 @@ export function getComponents(
 }
 
 export function getPrivateComponents(
-    workspace: Blockly.Workspace,
-    components: storageModuleContent.Component[]): void {
+  workspace: Blockly.Workspace,
+  components: storageModuleContent.Component[]): void {
   // Get the holder block and ask it for the private components.
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     const privateComponentsFromHolder: storageModuleContent.Component[] =
@@ -482,16 +482,16 @@ export function getPrivateComponents(
 }
 
 export function getAllComponents(
-    workspace: Blockly.Workspace,
-    components: storageModuleContent.Component[]): void {
+  workspace: Blockly.Workspace,
+  components: storageModuleContent.Component[]): void {
   // Get both regular and private components for when creating a mechanism
   getComponents(workspace, components);
   getPrivateComponents(workspace, components);
 }
 
 export function getEvents(
-    workspace: Blockly.Workspace,
-    events: storageModuleContent.Event[]): void {
+  workspace: Blockly.Workspace,
+  events: storageModuleContent.Event[]): void {
   // Get the holder block and ask it for the events.
   workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     const eventsFromHolder: storageModuleContent.Event[] =
@@ -507,17 +507,61 @@ export function mrcDescendantsMayHaveChanged(workspace: Blockly.Workspace, edito
   });
 }
 
+// This is called to add a mechanims block to the robot's workspace when a new mechanism is created
+// since we aren't guaranteed that the robot has a live workspace at this time, we have to work in JSON.
+export function mrcAddMechanismBlockToRobotContent(robotContent: storageModuleContent.ModuleContent,
+  mechanism: storageModule.Mechanism): void {
+  const mechanismBlock = createMechanismBlock(mechanism, [], false);
+
+  // Build the plain JSON object for the new mechanism block (Blockly serialization format).
+  const mechanismBlockJson: {[key: string]: unknown} = { type: mechanismBlock.type };
+  if (mechanismBlock.extraState) {
+    mechanismBlockJson['extraState'] = mechanismBlock.extraState;
+  }
+  if (mechanismBlock.fields) {
+    mechanismBlockJson['fields'] = mechanismBlock.fields;
+  }
+  if (mechanismBlock.inputs) {
+    mechanismBlockJson['inputs'] = mechanismBlock.inputs;
+  }
+
+  // Mutate the JSON blocks directly (no live workspace needed).
+  const blocks = robotContent.getBlocks();
+  const topBlocks: {[key: string]: any}[] = blocks?.blocks?.blocks ?? [];
+
+  for (const block of topBlocks) {
+    if (block.type !== BLOCK_NAME) {
+      continue;
+    }
+    if (!block.inputs) {
+      block.inputs = {};
+    }
+    if (!block.inputs[INPUT_MECHANISMS]) {
+      block.inputs[INPUT_MECHANISMS] = { block: mechanismBlockJson };
+    } else {
+      // Walk to the last block in the chain and append.
+      let lastBlock = block.inputs[INPUT_MECHANISMS].block;
+      while (lastBlock.next?.block) {
+        lastBlock = lastBlock.next.block;
+      }
+      lastBlock.next = { block: mechanismBlockJson };
+    }
+  }
+
+  robotContent.setBlocks(blocks);
+}
+
 /**
  * Upgrades the MechanismComponentHolderBlock in the given workspace from version 001 to 002 by
  * setting mrcHidePrivateComponents to true.
  * This function should only be called when upgrading old projects.
  */
 export function upgrade_001_to_002(workspace: Blockly.Workspace) {
-  // Make sure the module type is ROBOT.
-  if (getModuleTypeForWorkspace(workspace) !== storageModule.ModuleType.ROBOT) {
-    throw new Error('upgrade_001_to_002 should only be called for a robot module.');
+    // Make sure the module type is ROBOT.
+    if (getModuleTypeForWorkspace(workspace) !== storageModule.ModuleType.ROBOT) {
+      throw new Error('upgrade_001_to_002 should only be called for a robot module.');
+    }
+    workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+      (block as MechanismComponentHolderBlock).mrcHidePrivateComponents = true;
+    });
   }
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as MechanismComponentHolderBlock).mrcHidePrivateComponents = true;
-  });
-}

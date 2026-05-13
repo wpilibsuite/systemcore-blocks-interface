@@ -27,6 +27,7 @@ import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import { upgradeProjectIfNecessary, CURRENT_VERSION, NO_VERSION } from './upgrade_project';
 import { GamepadTypeUtils } from '../types/GamepadType';
+import { mrcAddMechanismBlockToRobotContent } from '../blocks/mrc_mechanism_component_holder';
 
 // Types, constants, and functions related to projects, regardless of where the projects are stored.
 
@@ -215,19 +216,20 @@ export async function addModuleToProject(
       await storage.saveFile(newModulePath, mechanismContent);
       const parsedMechanismContent = storageModuleContent.parseModuleContentText(mechanismContent);
       const mechanismModuleId = parsedMechanismContent.getModuleId();
-      project.mechanisms.push({
+      const newMechanism: storageModule.Mechanism = {
         modulePath: newModulePath,
         moduleType: storageModule.ModuleType.MECHANISM,
         moduleId: mechanismModuleId,
         projectName: project.projectName,
         className: newClassName
-      } as storageModule.Mechanism);
+      }        
+      project.mechanisms.push(newMechanism);
       // Add a mechanism block to the robot's stored workspace so it appears when the robot tab
       // is opened (or re-opened).
       const robotPath = project.robot.modulePath;
       const robotContentText = await storage.fetchFileContentText(robotPath);
       const robotContent = storageModuleContent.parseModuleContentText(robotContentText);
-      storageModuleContent.addMechanismBlockToRobotContent(robotContent, mechanismModuleId, newClassName);
+      mrcAddMechanismBlockToRobotContent(robotContent, newMechanism);
       await storage.saveFile(robotPath, robotContent.getModuleContentText());
       break;
     case storageModule.ModuleType.OPMODE:
