@@ -27,7 +27,9 @@ import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
 import * as workspaces from '../blocks/utils/workspaces';
 import { upgradePortTypeString } from '../blocks/utils/python_json_types';
-import { OPMODE_TYPE_AUTO, OPMODE_TYPE_UTILITY, BLOCK_NAME as MRC_OPMODE_BLOCK_NAME } from '../blocks/mrc_opmode_details';
+import { OPMODE_TYPE_AUTO, OPMODE_TYPE_UTILITY, 
+     BLOCK_NAME as MRC_OPMODE_BLOCK_NAME,
+    FIELD_TYPE as MRC_OPMODE_FIELD_TYPE } from '../blocks/mrc_opmode_details';
 
 export type MethodArg = {
   name: string,
@@ -133,7 +135,7 @@ export function newOpModeContent(projectName: string, opModeClassName: string): 
     const detailsBlock = startingBlocks.blocks.blocks.find(
         (b: {type: string}) => b.type === MRC_OPMODE_BLOCK_NAME);
     if (detailsBlock) {
-      detailsBlock.fields.TYPE = opModeType;
+      detailsBlock.fields[MRC_OPMODE_FIELD_TYPE] = opModeType;
     }
   }
 
