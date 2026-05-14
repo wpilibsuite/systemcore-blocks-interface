@@ -207,7 +207,8 @@ export async function addModuleToProject(
     storage: commonStorage.Storage,
     project: Project,
     moduleType: storageModule.ModuleType,
-    newClassName: string): Promise<void> {
+    newClassName: string,
+    onMechanismAdded?: (mechanism: storageModule.Mechanism) => void): Promise<void> {
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, moduleType);
 
   switch (moduleType) {
@@ -231,6 +232,8 @@ export async function addModuleToProject(
       const robotContent = storageModuleContent.parseModuleContentText(robotContentText);
       mrcAddMechanismBlockToRobotContent(robotContent, newMechanism);
       await storage.saveFile(robotPath, robotContent.getModuleContentText());
+      // If the robot workspace is currently open, add the mechanism block to it as well so it appears immediately without needing to reopen the tab.
+      onMechanismAdded?.(newMechanism);
       break;
     case storageModule.ModuleType.OPMODE:
       const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);
@@ -322,7 +325,8 @@ export async function renameModuleInProject(
  * @returns The new path of the module, as a promise that resolves when the module has been copied.
  */
 export async function copyModuleInProject(
-    storage: commonStorage.Storage, project: Project, newClassName: string, oldModulePath: string): Promise<string> {
+    storage: commonStorage.Storage, project: Project, newClassName: string, oldModulePath: string,
+    onMechanismAdded?: (mechanism: storageModule.Mechanism) => void): Promise<string> {
   const oldModule = findModuleByModulePath(project, oldModulePath);
   if (!oldModule) {
     throw new Error('Failed to find module with path ' + oldModulePath);
@@ -338,7 +342,7 @@ export async function copyModuleInProject(
   moduleContent.changeIds();
   moduleContentText = moduleContent.getModuleContentText();
 
-  await addModuleToProject(storage, project, oldModule.moduleType, newClassName);
+  await addModuleToProject(storage, project, oldModule.moduleType, newClassName, onMechanismAdded);
 
   return newModulePath;
 }

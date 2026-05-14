@@ -113,18 +113,17 @@ export default function AddTabDialog(props: AddTabDialogProps) {
       : storageModule.ModuleType.OPMODE;
 
     await storageProject.addModuleToProject(
-        props.storage, props.project, moduleType, newClassName);
+        props.storage, props.project, moduleType, newClassName,
+        moduleType === storageModule.ModuleType.MECHANISM
+          ? (mech) => {
+              Editor.getEditorForModulePath(props.project!.robot.modulePath)
+                ?.incorporateNewMechanism(mech);
+            }
+          : undefined);
     await props.onProjectChanged();
 
     const newModule = storageProject.findModuleByClassName(props.project, newClassName);
     if (newModule) {
-      // If a mechanism was added and the robot tab is open, add the mechanism block live.
-      if (moduleType === storageModule.ModuleType.MECHANISM && props.project) {
-        const robotEditor = Editor.getEditorForModulePath(props.project.robot.modulePath);
-        if (robotEditor) {
-          robotEditor.incorporateNewMechanism(newModule as storageModule.Mechanism);
-        }
-      }
       const newTab: TabItem = {
         key: newModule.modulePath,
         title: newModule.className,
