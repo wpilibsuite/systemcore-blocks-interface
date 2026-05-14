@@ -507,7 +507,7 @@ export function mrcDescendantsMayHaveChanged(workspace: Blockly.Workspace, edito
   });
 }
 
-// This is called to add a mechanims block to the robot's workspace when a new mechanism is created
+// This is called to add a mechanism block to the robot's workspace when a new mechanism is created
 // since we aren't guaranteed that the robot has a live workspace at this time, we have to work in JSON.
 export function mrcAddMechanismBlockToRobotContent(robotContent: storageModuleContent.ModuleContent,
   mechanism: storageModule.Mechanism): void {
