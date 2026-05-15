@@ -24,6 +24,7 @@ import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
 import * as I18Next from 'react-i18next';
+import { Editor } from '../editor/editor';
 import { MessageInstance } from 'antd/es/message/interface';
 import {
   CloseOutlined,
@@ -293,6 +294,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     }
 
     const oldModulePath = key;
+    const originalTab = props.tabList.find((tab) => tab.key === key);
 
     try {
       const newModulePath = await storageProject.copyModuleInProject(
@@ -300,11 +302,16 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
         props.project,
         newClassName,
         oldModulePath,
+        originalTab?.type === TabType.MECHANISM
+          ? (mech) => {
+              Editor.getEditorForModulePath(props.project!.robot.modulePath)
+                ?.incorporateNewMechanism(mech);
+            }
+          : undefined,
       );
       await props.onProjectChanged();
 
       const newTabs = [...props.tabList];
-      const originalTab = props.tabList.find((tab) => tab.key === key);
 
       if (!originalTab) {
         console.error('Original tab not found for copying:', key);

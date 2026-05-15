@@ -6,13 +6,13 @@ For each PR, make sure each of these works
 * [ ] Add a mechanism "Arm" from the + next to Tabs on the Robot and Mechanism arm
 # Using robot
 * [ ] Add a component to the Robot
-* [ ] Add a mechanism to the Robot
+* [ ] Make sure that the Arm shows up as myArm in the robot
 * [ ] When editing an OpMode, make sure the component shows up in the toolbox Robot -> Components ->
-* [ ] When editing an OpMode, make sure the mechanism shows up in the toolbox Robot -> Mechanisms -> my_arm
+* [ ] When editing an OpMode, make sure the mechanism shows up in the toolbox Robot -> Mechanisms -> myArm
 # Events
 * [ ] Add an event to the Mechanism
-* [ ] In Robot, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> my_arm -> Events
-* [ ] In Opmode, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> my_arm -> Events
+* [ ] In Robot, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> myArm -> Events
+* [ ] In Opmode, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> myArm -> Events
 # Mechanisms
 * [ ] Add a public component to the mechanism
 * [ ] Add a private component to the mechanism

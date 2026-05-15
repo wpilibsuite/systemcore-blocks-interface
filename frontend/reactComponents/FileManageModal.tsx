@@ -25,6 +25,7 @@ import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
+import { Editor } from '../editor/editor';
 import ClassNameComponent from './ClassNameComponent';
 import ManageTable from './ManageTable';
 
@@ -132,7 +133,13 @@ export default function FileManageModal(props: FileManageModalProps) {
           props.storage,
           props.project,
           newClassName,
-          origModule.path
+          origModule.path,
+          props.tabType === TabType.MECHANISM
+            ? (mech) => {
+                Editor.getEditorForModulePath(props.project!.robot.modulePath)
+                  ?.incorporateNewMechanism(mech);
+              }
+            : undefined
       );
       await props.onProjectChanged();
 
@@ -182,7 +189,13 @@ export default function FileManageModal(props: FileManageModalProps) {
         props.storage,
         props.project,
         moduleType,
-        newClassName
+        newClassName,
+        moduleType === storageModule.ModuleType.MECHANISM
+          ? (mech) => {
+              Editor.getEditorForModulePath(props.project!.robot.modulePath)
+                ?.incorporateNewMechanism(mech);
+            }
+          : undefined
     );
     await props.onProjectChanged();
 
