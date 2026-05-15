@@ -39,6 +39,8 @@ _LIST_CLASS_NAMES_INTERNAL = [
   'blocks_base_classes.BlockExecution',
 ]
 
+_COMMON_MARKER = '@Common'
+
 _KEY_MODULES = 'modules'
 _KEY_CLASSES = 'classes'
 _KEY_MODULE_NAME = 'moduleName'
@@ -234,6 +236,8 @@ class JsonGenerator:
         function_data[_KEY_FUNCTION_ARGS] = args
         if comments[iSignature] is not None:
           function_data[_KEY_TOOLTIP] = comments[iSignature]
+          if _COMMON_MARKER in comments[iSignature]:
+            function_data[_KEY_IS_COMMON] = True
         else:
           function_data[_KEY_TOOLTIP] = ''
         functions.append(function_data)
@@ -335,6 +339,8 @@ class JsonGenerator:
       var_data[_KEY_VARIABLE_WRITABLE] = python_util.isInstanceVariableWritable(cls, key, value)
       if value.__doc__ is not None:
         var_data[_KEY_TOOLTIP] = value.__doc__
+        if _COMMON_MARKER in value.__doc__:
+          var_data[_KEY_IS_COMMON] = True
       else:
         var_data[_KEY_TOOLTIP] = ''
       instance_variables.append(var_data)
@@ -369,6 +375,8 @@ class JsonGenerator:
         constructor_data[_KEY_FUNCTION_NAME] = function_name
         if comments[iSignature] is not None:
           constructor_data[_KEY_TOOLTIP] = comments[iSignature]
+          if _COMMON_MARKER in comments[iSignature]:
+            constructor_data[_KEY_IS_COMMON] = True
         else:
           constructor_data[_KEY_TOOLTIP] = ''
         args = []
@@ -451,6 +459,8 @@ class JsonGenerator:
         function_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = declaring_class_name
         if comments[iSignature] is not None:
           function_data[_KEY_TOOLTIP] = comments[iSignature]
+          if _COMMON_MARKER in comments[iSignature]:
+            function_data[_KEY_IS_COMMON] = True
         else:
           function_data[_KEY_TOOLTIP] = ''
         if found_self_arg:
