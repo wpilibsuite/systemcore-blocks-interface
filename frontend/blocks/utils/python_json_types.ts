@@ -52,6 +52,7 @@ export class VarData {
   type: string = '';
   writable: boolean = false;
   tooltip: string = '';
+  isCommon?: boolean = false;
 }
 
 export class FunctionData {
@@ -62,6 +63,7 @@ export class FunctionData {
   declaringClassName?: string = '';
   isComponent?: boolean = false;
   componentArgs?: ArgData[] = [];
+  isCommon?: boolean = false;
 }
 
 export class ArgData {

@@ -68,6 +68,7 @@ _KEY_ALIASES = 'aliases'
 _KEY_SUBCLASSES = 'subclasses'
 _KEY_IS_COMPONENT = 'isComponent'
 _KEY_COMPONENT_ARGS = 'componentArgs'
+_KEY_IS_COMMON = 'isCommon'
 
 
 def ignoreModule(module_name: str) -> bool:
@@ -491,7 +492,6 @@ class JsonGenerator:
     """Determine whether the given class_data represents a component and, if so,
     set the isComponent field and add componentArgs to the constructor that
     blocks will use."""
-
     # TODO(lizlooney): Replace the following temporary fake code with code that
     # looks at doc string and/or parameter type aliases to tell whether this is
     # a component and what the args are.
@@ -509,6 +509,18 @@ class JsonGenerator:
           component_args.append(self._createArgData('expansionHubMotor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        if (function_name == 'getEncoderPosition' or
+            function_name == 'getEncoderVelocity' or
+            function_name == 'isHubConnected' or
+            function_name == 'resetEncoder' or
+            function_name == 'setEnabled' or
+            function_name == 'setPositionSetpoint' or
+            function_name == 'setReversed' or
+            function_name == 'setThrottle' or
+            function_name == 'setVelocitySetpoint'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
     if class_name == 'wpilib.ExpansionHubServo':
@@ -522,6 +534,16 @@ class JsonGenerator:
           component_args.append(self._createArgData('expansionHubServo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'isHubConnected' or
+            function_name == 'setAngle' or
+            function_name == 'setAngleRange' or
+            function_name == 'setEnabled' or
+            function_name == 'setPosition' or
+            function_name == 'setReversed'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
     if class_name == 'wpilib.AddressableLED':
@@ -534,6 +556,13 @@ class JsonGenerator:
           component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'setColorOrder' or
+            function_name == 'setLength' or
+            function_name == 'setStart'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
     if class_name == 'wpilib.AnalogEncoder':
@@ -550,6 +579,12 @@ class JsonGenerator:
           component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0.0'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'get' or
+            function_name == 'setInverted'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
     if class_name == 'wpilib.AnalogPotentiometer':
@@ -566,6 +601,11 @@ class JsonGenerator:
           component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), args[2][_KEY_ARGUMENT_DEFAULT_VALUE]))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'get'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
     if class_name == 'wpilib.DigitalInput':
@@ -578,6 +618,11 @@ class JsonGenerator:
           component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'get'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
     if class_name == 'wpilib.DutyCycleEncoder':
@@ -594,6 +639,13 @@ class JsonGenerator:
           component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'get' or
+            function_name == 'isConnected' or
+            function_name == 'setInverted'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
     if class_name == 'wpilib.OnboardIMU':
@@ -606,6 +658,21 @@ class JsonGenerator:
           component_args.append(self._createArgData(args[0][_KEY_ARGUMENT_NAME], self._getClassName(args[0][_KEY_ARGUMENT_TYPE]), args[0][_KEY_ARGUMENT_DEFAULT_VALUE]))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'getAccelX' or
+            function_name == 'getAccelY' or
+            function_name == 'getAccelZ' or
+            function_name == 'getAngleX' or
+            function_name == 'getAngleY' or
+            function_name == 'getAngleZ' or
+            function_name == 'getGyroRateX' or
+            function_name == 'getGyroRateY' or
+            function_name == 'getGyroRateZ' or
+            function_name == 'getYaw' or
+            function_name == 'resetYaw'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
     if class_name ==  'wpilib.PWMSparkMax':
@@ -618,6 +685,17 @@ class JsonGenerator:
           component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'getInverted' or
+            function_name == 'getThrottle' or
+            function_name == 'getVoltage' or
+            function_name == 'setInverted' or
+            function_name == 'setThrottle' or
+            function_name == 'setVoltage' or
+            function_name == 'stopMotor'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
   def _processClasses(self):
