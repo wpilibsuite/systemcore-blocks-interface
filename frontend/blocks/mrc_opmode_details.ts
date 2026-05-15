@@ -36,7 +36,7 @@ export const OPMODE_TYPE_TELEOP = 'Teleop';
 export const OPMODE_TYPE_UTILITY = 'Utility';
 export const OPMODE_TYPES = [OPMODE_TYPE_AUTO, OPMODE_TYPE_TELEOP, OPMODE_TYPE_UTILITY];
 
-const FIELD_TYPE = 'TYPE';
+export const FIELD_TYPE = 'TYPE';
 const FIELD_ENABLED = 'ENABLED';
 const FIELD_NAME = 'NAME';
 const FIELD_GROUP = 'GROUP';
