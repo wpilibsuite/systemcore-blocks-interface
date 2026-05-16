@@ -39,6 +39,8 @@ _LIST_CLASS_NAMES_INTERNAL = [
   'blocks_base_classes.BlockExecution',
 ]
 
+_COMMON_MARKER = '@Common'
+
 _KEY_MODULES = 'modules'
 _KEY_CLASSES = 'classes'
 _KEY_MODULE_NAME = 'moduleName'
@@ -68,6 +70,7 @@ _KEY_ALIASES = 'aliases'
 _KEY_SUBCLASSES = 'subclasses'
 _KEY_IS_COMPONENT = 'isComponent'
 _KEY_COMPONENT_ARGS = 'componentArgs'
+_KEY_IS_COMMON = 'isCommon'
 
 
 def ignoreModule(module_name: str) -> bool:
@@ -233,6 +236,8 @@ class JsonGenerator:
         function_data[_KEY_FUNCTION_ARGS] = args
         if comments[iSignature] is not None:
           function_data[_KEY_TOOLTIP] = comments[iSignature]
+          if _COMMON_MARKER in comments[iSignature]:
+            function_data[_KEY_IS_COMMON] = True
         else:
           function_data[_KEY_TOOLTIP] = ''
         functions.append(function_data)
@@ -334,6 +339,8 @@ class JsonGenerator:
       var_data[_KEY_VARIABLE_WRITABLE] = python_util.isInstanceVariableWritable(cls, key, value)
       if value.__doc__ is not None:
         var_data[_KEY_TOOLTIP] = value.__doc__
+        if _COMMON_MARKER in value.__doc__:
+          var_data[_KEY_IS_COMMON] = True
       else:
         var_data[_KEY_TOOLTIP] = ''
       instance_variables.append(var_data)
@@ -368,6 +375,8 @@ class JsonGenerator:
         constructor_data[_KEY_FUNCTION_NAME] = function_name
         if comments[iSignature] is not None:
           constructor_data[_KEY_TOOLTIP] = comments[iSignature]
+          if _COMMON_MARKER in comments[iSignature]:
+            constructor_data[_KEY_IS_COMMON] = True
         else:
           constructor_data[_KEY_TOOLTIP] = ''
         args = []
@@ -391,7 +400,6 @@ class JsonGenerator:
         constructor_data[_KEY_FUNCTION_ARGS] = args
         constructor_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = declaring_class_name
         constructor_data[_KEY_FUNCTION_RETURN_TYPE] = declaring_class_name
-        self._processComponent(class_data, constructor_data, declaring_class_name, arg_names, arg_types, arg_default_values)
         constructors.append(constructor_data)
     class_data[_KEY_CONSTRUCTORS] = constructors
 
@@ -451,6 +459,8 @@ class JsonGenerator:
         function_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = declaring_class_name
         if comments[iSignature] is not None:
           function_data[_KEY_TOOLTIP] = comments[iSignature]
+          if _COMMON_MARKER in comments[iSignature]:
+            function_data[_KEY_IS_COMMON] = True
         else:
           function_data[_KEY_TOOLTIP] = ''
         if found_self_arg:
@@ -484,112 +494,219 @@ class JsonGenerator:
         enum_data[_KEY_TOOLTIP] = ''
       enums.append(enum_data)
     class_data[_KEY_ENUMS] = sorted(enums, key=lambda enum_data: enum_data[_KEY_ENUM_CLASS_NAME])
+    self._processComponent(class_data)
     return class_data
 
 
-  def _processComponent(self, class_data, constructor_data, declaring_class_name, arg_names, arg_types, arg_default_values):
-    """Determine whether this is a component and, if so, update the class_data and
-    constructor_data."""
-
+  def _processComponent(self, class_data):
+    """Determine whether the given class_data represents a component and, if so,
+    set the isComponent field and add componentArgs to the constructor that
+    blocks will use."""
     # TODO(lizlooney): Replace the following temporary fake code with code that
     # looks at doc string and/or parameter type aliases to tell whether this is
     # a component and what the args are.
 
-    if declaring_class_name == 'wpilib.ExpansionHubMotor':
-      args = []
-      args.append(self._createArgData('expansionHubMotor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
-      constructor_data[_KEY_COMPONENT_ARGS] = args
-      constructor_data[_KEY_IS_COMPONENT] = True
+    class_name = class_data[_KEY_CLASS_NAME]
+
+    if class_name == 'wpilib.ExpansionHubMotor':
       class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 2 and
+            args[0][_KEY_ARGUMENT_NAME] == 'usbId' and
+            args[1][_KEY_ARGUMENT_NAME] == 'channel'):
+          component_args = []
+          component_args.append(self._createArgData('expansionHubMotor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        if (function_name == 'getEncoderPosition' or
+            function_name == 'getEncoderVelocity' or
+            function_name == 'isHubConnected' or
+            function_name == 'resetEncoder' or
+            function_name == 'setEnabled' or
+            function_name == 'setPositionSetpoint' or
+            function_name == 'setReversed' or
+            function_name == 'setThrottle' or
+            function_name == 'setVelocitySetpoint'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
-    if declaring_class_name == 'wpilib.ExpansionHubServo':
-      args = []
-      args.append(self._createArgData('expansionHubServo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
-      constructor_data[_KEY_COMPONENT_ARGS] = args
-      constructor_data[_KEY_IS_COMPONENT] = True
+    if class_name == 'wpilib.ExpansionHubServo':
       class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 2 and
+            args[0][_KEY_ARGUMENT_NAME] == 'usbId' and
+            args[1][_KEY_ARGUMENT_NAME] == 'channel'):
+          component_args = []
+          component_args.append(self._createArgData('expansionHubServo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'isHubConnected' or
+            function_name == 'setAngle' or
+            function_name == 'setAngleRange' or
+            function_name == 'setEnabled' or
+            function_name == 'setPosition' or
+            function_name == 'setReversed'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
-    if declaring_class_name == 'wpilib.AddressableLED':
-      args = []
-      args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-      constructor_data[_KEY_COMPONENT_ARGS] = args
-      constructor_data[_KEY_IS_COMPONENT] = True
+    if class_name == 'wpilib.AddressableLED':
       class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 1 and
+            args[0][_KEY_ARGUMENT_NAME] == 'channel'):
+          component_args = []
+          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'setColorOrder' or
+            function_name == 'setLength' or
+            function_name == 'setStart'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
-    if declaring_class_name == 'wpilib.AnalogEncoder':
-      if (len(arg_names) == 4 and
-          arg_names[0] == 'self' and
-          arg_names[1] == 'channel' and
-          arg_names[2] == 'fullRange' and
-          arg_names[3] == 'expectedZero'):
-        args = []
-        args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-        args.append(self._createArgData(arg_names[2], self._getClassName(arg_types[2]), '1.0'))
-        args.append(self._createArgData(arg_names[3], self._getClassName(arg_types[3]), '0.0'))
-        constructor_data[_KEY_COMPONENT_ARGS] = args
-        constructor_data[_KEY_COMPONENT_ARGS]
-        constructor_data[_KEY_IS_COMPONENT] = True
-        class_data[_KEY_IS_COMPONENT] = True
-      return
-
-    if declaring_class_name == 'wpilib.AnalogPotentiometer':
-      if (len(arg_names) == 4 and
-          arg_names[0] == 'self' and
-          arg_names[1] == 'channel' and
-          arg_names[2] == 'fullRange' and
-          arg_names[3] == 'offset'):
-        args = []
-        args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-        args.append(self._createArgData(arg_names[2], self._getClassName(arg_types[2]), arg_default_values[2]))
-        args.append(self._createArgData(arg_names[3], self._getClassName(arg_types[3]), arg_default_values[3]))
-        constructor_data[_KEY_COMPONENT_ARGS] = args
-        constructor_data[_KEY_IS_COMPONENT] = True
-        class_data[_KEY_IS_COMPONENT] = True
-      return
-
-    if declaring_class_name == 'wpilib.DigitalInput':
-      args = []
-      args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-      constructor_data[_KEY_COMPONENT_ARGS] = args
-      constructor_data[_KEY_IS_COMPONENT] = True
+    if class_name == 'wpilib.AnalogEncoder':
       class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 3 and
+            args[0][_KEY_ARGUMENT_NAME] == 'channel' and
+            args[1][_KEY_ARGUMENT_NAME] == 'fullRange' and
+            args[2][_KEY_ARGUMENT_NAME] == 'expectedZero'):
+          component_args = []
+          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), '1.0'))
+          component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0.0'))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'get' or
+            function_name == 'setInverted'):
+          function_data[_KEY_IS_COMMON] = True
       return
 
-    if declaring_class_name == 'wpilib.DutyCycleEncoder':
-      if (len(arg_names) == 4 and
-          arg_names[0] == 'self' and
-          arg_names[1] == 'channel' and
-          arg_names[2] == 'fullRange' and
-          arg_names[3] == 'expectedZero'):
-        args = []
-        args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-        args.append(self._createArgData(arg_names[2], self._getClassName(arg_types[2]), '1'))
-        args.append(self._createArgData(arg_names[3], self._getClassName(arg_types[3]), '0'))
-        constructor_data[_KEY_COMPONENT_ARGS] = args
-        constructor_data[_KEY_IS_COMPONENT] = True
-        class_data[_KEY_IS_COMPONENT] = True
-      return
-
-    if declaring_class_name == 'wpilib.OnboardIMU':
-      if (len(arg_names) == 2 and
-          arg_names[0] == 'self' and
-          arg_names[1] == 'mountOrientation'):
-        args = []
-        args.append(self._createArgData(arg_names[1], self._getClassName(arg_types[1]), arg_default_values[1]))
-        constructor_data[_KEY_COMPONENT_ARGS] = args
-        constructor_data[_KEY_IS_COMPONENT] = True
-        class_data[_KEY_IS_COMPONENT] = True
-      return
-
-    if declaring_class_name ==  'wpilib.PWMSparkMax':
-      args = []
-      args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-      constructor_data[_KEY_COMPONENT_ARGS] = args
-      constructor_data[_KEY_IS_COMPONENT] = True
+    if class_name == 'wpilib.AnalogPotentiometer':
       class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 3 and
+            args[0][_KEY_ARGUMENT_NAME] == 'channel' and
+            args[1][_KEY_ARGUMENT_NAME] == 'fullRange' and
+            args[2][_KEY_ARGUMENT_NAME] == 'offset'):
+          component_args = []
+          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), args[1][_KEY_ARGUMENT_DEFAULT_VALUE]))
+          component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), args[2][_KEY_ARGUMENT_DEFAULT_VALUE]))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'get'):
+          function_data[_KEY_IS_COMMON] = True
+      return
+
+    if class_name == 'wpilib.DigitalInput':
+      class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 1 and
+            args[0][_KEY_ARGUMENT_NAME] == 'channel'):
+          component_args = []
+          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'get'):
+          function_data[_KEY_IS_COMMON] = True
+      return
+
+    if class_name == 'wpilib.DutyCycleEncoder':
+      class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 3 and
+            args[0][_KEY_ARGUMENT_NAME] == 'channel' and
+            args[1][_KEY_ARGUMENT_NAME] == 'fullRange' and
+            args[2][_KEY_ARGUMENT_NAME] == 'expectedZero'):
+          component_args = []
+          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), '1'))
+          component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0'))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'get' or
+            function_name == 'isConnected' or
+            function_name == 'setInverted'):
+          function_data[_KEY_IS_COMMON] = True
+      return
+
+    if class_name == 'wpilib.OnboardIMU':
+      class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 1 and
+            args[0][_KEY_ARGUMENT_NAME] == 'mountOrientation'):
+          component_args = []
+          component_args.append(self._createArgData(args[0][_KEY_ARGUMENT_NAME], self._getClassName(args[0][_KEY_ARGUMENT_TYPE]), args[0][_KEY_ARGUMENT_DEFAULT_VALUE]))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'getAccelX' or
+            function_name == 'getAccelY' or
+            function_name == 'getAccelZ' or
+            function_name == 'getAngleX' or
+            function_name == 'getAngleY' or
+            function_name == 'getAngleZ' or
+            function_name == 'getGyroRateX' or
+            function_name == 'getGyroRateY' or
+            function_name == 'getGyroRateZ' or
+            function_name == 'getYaw' or
+            function_name == 'resetYaw'):
+          function_data[_KEY_IS_COMMON] = True
+      return
+
+    if class_name ==  'wpilib.PWMSparkMax':
+      class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 1 and
+            args[0][_KEY_ARGUMENT_NAME] == 'channel'):
+          component_args = []
+          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'getInverted' or
+            function_name == 'getThrottle' or
+            function_name == 'getVoltage' or
+            function_name == 'setInverted' or
+            function_name == 'setThrottle' or
+            function_name == 'setVoltage' or
+            function_name == 'stopMotor'):
+          function_data[_KEY_IS_COMMON] = True
+      return
 
   def _processClasses(self):
     class_data_list = []
