@@ -213,6 +213,7 @@
         "MORE_ROBOT_METHODS_LABEL": "More Robot Methods",
         "MORE_MECHANISM_METHODS_LABEL": "More Mechanism Methods",
         "MORE_OPMODE_METHODS_LABEL": "More OpMode Methods",
+        "MORE_BLOCKS_LABEL": "More...",
         "COMMENT_DEFAULT_TEXT": "Enter your comment here!",
         "CONFIG_GAMEPADS_BUTTON": "⚙️ Configure Gamepads",
         "GAMEPAD": {

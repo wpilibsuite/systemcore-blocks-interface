@@ -218,12 +218,20 @@ export const pythonFromBlock = function(
 
 export function addEnumBlocks(
     enums: EnumData[],
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   for (const enumData of enums) {
     for (const enumValue of enumData.enumValues) {
       const block = createEnumBlock(enumValue, enumData, showSimpleClassNames);
-      contents.push(block);
+      // TODO: perhaps later, we could look at each value to allow for common and 
+      // infrequent values within the same enum, but for now we'll just put the 
+      // entire enum in common or more based on the isCommon property of the EnumData.
+      if (enumData.isCommon) {
+        commonContents.push(block);
+      }else {
+        moreContents.push(block);
+      }
     }
   }
 }
