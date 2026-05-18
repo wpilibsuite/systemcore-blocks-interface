@@ -1437,7 +1437,8 @@ function createBlock(
 
 export function addModuleFunctionBlocks(
     moduleData: ModuleData,
-    contents: toolboxItems.ContentsType[]) {
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[]) {
   moduleData.functions.forEach(functionData => {
     const block = createModuleFunctionOrStaticMethodBlock(
         FunctionKind.MODULE,
@@ -1445,13 +1446,18 @@ export function addModuleFunctionBlocks(
         moduleData.moduleName,
         functionData,
         false);
-    contents.push(block);
+    if (functionData.isCommon) {
+      commonContents.push(block);
+    } else {
+      moreContents.push(block);
+    }
   });
 }
 
 export function addStaticMethodBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   classData.staticMethods.forEach(functionData => {
     if (functionData.declaringClassName) {
@@ -1460,8 +1466,12 @@ export function addStaticMethodBlocks(
           classData.moduleName,
           functionData.declaringClassName,
           functionData,
-          showSimpleClassNames);
-      contents.push(block);
+          showSimpleClassNames);      
+      if (functionData.isCommon) {
+        commonContents.push(block);
+      } else {
+        moreContents.push(block);
+      }
     }
   });
 }
@@ -1494,10 +1504,16 @@ function createModuleFunctionOrStaticMethodBlock(
 
 export function addConstructorBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   classData.constructors.forEach(functionData => {
-    contents.push(createConstructorBlock(classData.moduleName, functionData, showSimpleClassNames));
+    const block = createConstructorBlock(classData.moduleName, functionData, showSimpleClassNames);
+    if (functionData.isCommon) {
+      commonContents.push(block);
+    } else {
+      moreContents.push(block);
+    }
   });
 }
 
@@ -1525,10 +1541,16 @@ function createConstructorBlock(
 
 export function addInstanceMethodBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   classData.instanceMethods.forEach(functionData => {
-    contents.push(createInstanceMethodBlock(functionData, showSimpleClassNames));
+    const block = createInstanceMethodBlock(functionData, showSimpleClassNames);
+    if (functionData.isCommon) {
+      commonContents.push(block);
+    } else {
+      moreContents.push(block);
+    }
   });
 }
 

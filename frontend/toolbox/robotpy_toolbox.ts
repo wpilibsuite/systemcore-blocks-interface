@@ -32,6 +32,7 @@ import {
 import { robotPyData } from '../blocks/utils/python';
 import { ClassData, ModuleData } from '../blocks/utils/python_json_types';
 import * as toolboxItems from './items';
+import * as Blockly from 'blockly/core';
 
 
 export function getToolboxCategories(
@@ -49,14 +50,15 @@ export function getToolboxCategories(
     const lastDot = path.lastIndexOf('.');
     const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
 
-    const contents: toolboxItems.ContentsType[] = [];
-    addModuleBlocks(moduleData, contents, showSimpleClassNames);
+    const commonContents: toolboxItems.ContentsType[] = [];
+    const moreContents: toolboxItems.ContentsType[] = [];
+    addModuleBlocks(moduleData, commonContents, moreContents, showSimpleClassNames);
 
     const moduleCategory: toolboxItems.PythonModuleCategory = {
       kind: 'category',
       name: name,
       moduleName: moduleData.moduleName,
-      contents: contents,
+      contents: makeOneContents(commonContents, moreContents),
     };
     allCategories[path] = moduleCategory;
     moduleCategories[path] = moduleCategory;
@@ -68,13 +70,14 @@ export function getToolboxCategories(
     const lastDot = path.lastIndexOf('.');
     const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
 
-    const contents: toolboxItems.ContentsType[] = [];
-    addClassBlocks(classData, contents, showSimpleClassNames);
+    const commonContents: toolboxItems.ContentsType[] = [];
+    const moreContents: toolboxItems.ContentsType[] = [];
+    addClassBlocks(classData, commonContents, moreContents, showSimpleClassNames);
     const classCategory: toolboxItems.PythonClassCategory = {
       kind: 'category',
       name: name,
       className: classData.className,
-      contents: contents,
+      contents: makeOneContents(commonContents, moreContents),
     };
     allCategories[path] = classCategory;
     classCategories[path] = classCategory;
@@ -96,35 +99,37 @@ export function getToolboxCategories(
 
 function addModuleBlocks(
     moduleData: ModuleData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   // Module variable blocks.
-  addModuleVariableBlocks(moduleData, contents);
+  addModuleVariableBlocks(moduleData, commonContents, moreContents);
 
   // Module function blocks
-  addModuleFunctionBlocks(moduleData, contents);
+  addModuleFunctionBlocks(moduleData, commonContents, moreContents);
 
   // Enum blocks
-  addEnumBlocks(moduleData.enums, contents, showSimpleClassNames);
+  addEnumBlocks(moduleData.enums, commonContents, moreContents, showSimpleClassNames);
 }
 
 function addClassBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   // Function blocks (constructors, instance methods, static methods)
-  addConstructorBlocks(classData, contents, showSimpleClassNames);
-  addInstanceMethodBlocks(classData, contents, showSimpleClassNames);
-  addStaticMethodBlocks(classData, contents, showSimpleClassNames);
+  addConstructorBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+  addInstanceMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+  addStaticMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
 
   // Instance variable blocks
-  addInstanceVariableBlocks(classData, contents, showSimpleClassNames);
+  addInstanceVariableBlocks(classData, commonContents, moreContents, showSimpleClassNames);
 
   // Class variable blocks.
-  addClassVariableBlocks(classData, contents, showSimpleClassNames);
+  addClassVariableBlocks(classData, commonContents, moreContents, showSimpleClassNames);
 
   // Enum blocks
-  addEnumBlocks(classData.enums, contents, showSimpleClassNames);
+  addEnumBlocks(classData.enums, commonContents, moreContents, showSimpleClassNames);
 }
 
 function addCategoriesToParents(
@@ -175,7 +180,7 @@ function filterRobotPyCategories(
         const moduleName = (item as toolboxItems.PythonModuleCategory).moduleName;
         if (shownPythonToolboxCategories != null && !shownPythonToolboxCategories.has(moduleName)) {
           if (category.contents) {
-            removeBlocksAndSeparators(category.contents);
+            removeBlocksSeparatorsAndLabels(category.contents);
           }
         }
       }
@@ -183,7 +188,7 @@ function filterRobotPyCategories(
         const className = (item as toolboxItems.PythonClassCategory).className;
         if (shownPythonToolboxCategories != null && !shownPythonToolboxCategories.has(className)) {
           if (category.contents) {
-            removeBlocksAndSeparators(category.contents);
+            removeBlocksSeparatorsAndLabels(category.contents);
           }
         }
       }
@@ -192,10 +197,10 @@ function filterRobotPyCategories(
   removeEmptyCategories(contents, shownPythonToolboxCategories);
 }
 
-function removeBlocksAndSeparators(contents: toolboxItems.ContentsType[]) {
+function removeBlocksSeparatorsAndLabels(contents: toolboxItems.ContentsType[]) {
   let i = 0;
   while (i < contents.length) {
-    const remove = (contents[i].kind === 'block' || contents[i].kind === 'sep');
+    const remove = (contents[i].kind === 'block' || contents[i].kind === 'sep' || contents[i].kind === 'label');
     if (remove) {
       contents.splice(i, 1);
       continue;
@@ -230,3 +235,24 @@ function removeEmptyCategories(
     i++;
   }
 }
+
+function makeOneContents(
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[]): toolboxItems.ContentsType[] {
+  // If only one of commonContents and moreContents has items, return that one. If both have items, return a category with the commonContents and a "More" subcategory with the moreContents.
+  if (commonContents.length > 0 && moreContents.length > 0) {
+    return [
+      ...commonContents,
+      {
+        kind: 'label',
+        text: Blockly.Msg['MORE_BLOCKS_LABEL'],
+      },
+      ...moreContents
+    ];
+  }
+  if (commonContents.length > 0) {
+    return commonContents;
+  } else {
+    return moreContents;
+  }
+} 
