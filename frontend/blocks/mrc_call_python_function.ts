@@ -44,6 +44,7 @@ import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
+import { makeOneContents } from '../toolbox/robotpy_toolbox';
 
 
 // A block to call a python function.
@@ -1612,18 +1613,22 @@ function createInstanceWithinBlock(method: storageModuleContent.Method): toolbox
 
 export function getInstanceComponentBlocks(
     component: storageModuleContent.Component): toolboxItems.ContentsType[] {
-  const contents: toolboxItems.ContentsType[] = [];
+  const commonContents: toolboxItems.ContentsType[] = [];
+  const moreContents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
   if (classData) {
     const functions = classData.instanceMethods;
     for (const functionData of functions) {
       const block = createInstanceComponentBlock(component, functionData);
-      contents.push(block);
+      if (functionData.isCommon) {
+        commonContents.push(block);
+      } else {
+        moreContents.push(block);
+      }
     }
   }
-
-  return contents;
+  return makeOneContents(commonContents, moreContents);
 }
 
 export function getInstanceMechanismComponentBlocks(

@@ -236,7 +236,7 @@ function removeEmptyCategories(
   }
 }
 
-function makeOneContents(
+export function makeOneContents(
     commonContents: toolboxItems.ContentsType[],
     moreContents: toolboxItems.ContentsType[]): toolboxItems.ContentsType[] {
   // If only one of commonContents and moreContents has items, return that one. If both have items, return a category with the commonContents and a "More" subcategory with the moreContents.
