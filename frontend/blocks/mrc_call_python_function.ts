@@ -1633,18 +1633,23 @@ export function getInstanceComponentBlocks(
 
 export function getInstanceMechanismComponentBlocks(
     component: storageModuleContent.Component, mechanismInRobot: storageModuleContent.MechanismInRobot): toolboxItems.ContentsType[] {
-  const contents: toolboxItems.ContentsType[] = [];
+  const commonContents: toolboxItems.ContentsType[] = [];
+  const moreContents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
   if (classData) {
     const functions = classData.instanceMethods;
     for (const functionData of functions) {
       const block = createInstanceMechanismComponentBlock(component, functionData, mechanismInRobot);
-      contents.push(block);
+      if (functionData.isCommon) {
+        commonContents.push(block);
+      } else {
+        moreContents.push(block);
+      }
     }
   }
 
-  return contents;
+  return makeOneContents(commonContents, moreContents);
 }
 
 function createInstanceComponentBlock(
