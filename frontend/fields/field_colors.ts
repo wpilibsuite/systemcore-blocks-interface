@@ -21,12 +21,13 @@
 import * as Blockly from 'blockly/core';
 
 class FieldColorDropdown extends Blockly.FieldDropdown {
-  private static RECTANGLE_WIDTH = 40;
-  private static RECTANGLE_HEIGHT = 12;
+  static RECTANGLE_WIDTH = 40;
+  static RECTANGLE_HEIGHT = 12;
   private static RECTANGLE_BORDER = 1;
   private static RECTANGLE_MARGIN = 2;
 
   private coloredRect: SVGRectElement | null = null;
+  private selectedHtmlColor: string | null = null;
 
   constructor(
     wpiutilColorNames: string[],
@@ -56,15 +57,23 @@ class FieldColorDropdown extends Blockly.FieldDropdown {
   }
 
   private fillColoredRect() {
-    if (this.coloredRect && this.selectedOption) {
-      const htmlColor = getHtmlColor(this.selectedOption[1]);
-      this.coloredRect.style.setProperty('fill', htmlColor);
+    if (this.coloredRect && this.selectedHtmlColor) {
+      this.coloredRect.style.setProperty('fill', this.selectedHtmlColor);
       this.coloredRect.style.setProperty('fill-opacity', String(1.0));
     }
   }
 
+  protected override doValueUpdate_(newValue: string) {
+    super.doValueUpdate_(newValue);
+    this.selectedHtmlColor = getHtmlColor(newValue);
+  }
+
   protected override render_() {
     super.render_();
+
+    if (!this.coloredRect || !this.textElement_) {
+      return;
+    }
 
     const borderAndMargin = 2 * FieldColorDropdown.RECTANGLE_BORDER + 2 * FieldColorDropdown.RECTANGLE_MARGIN;
 
@@ -118,7 +127,6 @@ function createHTMLElement(wpiutilColorName: string): HTMLElement {
   containerSpan.appendChild(coloredRect);
   containerSpan.appendChild(textNode);
   containerSpan.title = wpiutilColorName;
-  containerSpan.areaLabel = wpiutilColorName;
 
   return containerSpan;
 }
