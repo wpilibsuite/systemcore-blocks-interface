@@ -41,6 +41,7 @@ import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
+import { createFieldColorDropdown } from '../fields/field_colors';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
@@ -258,7 +259,11 @@ const GET_PYTHON_VARIABLE = {
       const varNames = PythonVariableGetterNames[this.mrcKey];
       if (varNames) {
         // Create the drop-down with the variable names.
-        input.appendField(createFieldDropdown(varNames), FIELD_VARIABLE_NAME);
+        if (this.isColorVariable()) {
+          input.appendField(createFieldColorDropdown(varNames), FIELD_VARIABLE_NAME);
+        } else {
+          input.appendField(createFieldDropdown(varNames), FIELD_VARIABLE_NAME);
+        }
       } else {
         input.appendField(createFieldNonEditableText(''), FIELD_VARIABLE_NAME);
       }
@@ -390,6 +395,14 @@ const GET_PYTHON_VARIABLE = {
           classNameToShowOnBlocks(this.mrcModuleOrClassName, showSimpleClassNames),
           FIELD_MODULE_OR_CLASS_NAME);
     }
+  },
+
+  isColorVariable: function(this: GetPythonVariableBlock): boolean {
+    return (
+        this.mrcVarKind === VariableKind.CLASS &&
+        this.mrcModuleOrClassName === 'wpiutil.Color' &&
+        this.mrcVarType === 'wpiutil.Color'
+    );
   },
 };
 
