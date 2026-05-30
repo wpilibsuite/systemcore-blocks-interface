@@ -1,5 +1,6 @@
 /// <reference types="vitest" />
 /// <reference types="@vitest/browser/matchers" />
+
 import { defineConfig } from "vitest/config";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { playwright } from '@vitest/browser-playwright'
@@ -31,6 +32,7 @@ export default defineConfig({
   }),
   ],
   server: {
+    host: true,
     port: 3000,
   },
   define: {
