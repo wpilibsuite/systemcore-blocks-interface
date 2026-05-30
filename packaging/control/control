@@ -1,0 +1,12 @@
+Package: blocks
+Version: 0.0.15
+Description: Blocks Programming
+Section: development
+Priority: optional
+Maintainer: FIRST
+Architecture: all
+Source: local
+X-Port: 3000
+X-Has-UI: true
+X-Auto-Start: true
+X-Icon-Path: /usr/share/blocks.png
