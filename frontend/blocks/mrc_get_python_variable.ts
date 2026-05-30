@@ -485,7 +485,7 @@ function addModuleOrClassVariableBlocks(
       const getterBlock = createModuleOrClassVariableGetterBlock(
           varKind, importModule, moduleOrClassName, varType, varName, showSimpleClassNames);
 
-      //TODO: Perhaps later,we could allow for different getters to be common or unusual    
+      // TODO: Perhaps later,we could allow for different getters to be common or unusual    
       if (variableGettersAndSetters.isCommon) {
         commonContents.push(getterBlock);
       } else {
@@ -494,7 +494,7 @@ function addModuleOrClassVariableBlocks(
       if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
         const setterBlock = createModuleOrClassVariableSetterBlock(
             varKind, importModule, moduleOrClassName, varType, varName, showSimpleClassNames);
-        //TODO: Perhaps later,we could allow for different setters to be common or unusual                
+        // TODO: Perhaps later, we could allow for different setters to be common or unusual                
         if (variableGettersAndSetters.isCommon) {
           commonContents.push(setterBlock);
         } else {

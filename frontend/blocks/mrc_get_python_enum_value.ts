@@ -229,7 +229,7 @@ export function addEnumBlocks(
       // entire enum in common or more based on the isCommon property of the EnumData.
       if (enumData.isCommon) {
         commonContents.push(block);
-      }else {
+      } else {
         moreContents.push(block);
       }
     }
