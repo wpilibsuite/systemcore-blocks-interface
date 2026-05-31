@@ -44,6 +44,7 @@ import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
+import { makeOneContents } from '../toolbox/robotpy_toolbox';
 
 
 // A block to call a python function.
@@ -1437,7 +1438,8 @@ function createBlock(
 
 export function addModuleFunctionBlocks(
     moduleData: ModuleData,
-    contents: toolboxItems.ContentsType[]) {
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[]) {
   moduleData.functions.forEach(functionData => {
     const block = createModuleFunctionOrStaticMethodBlock(
         FunctionKind.MODULE,
@@ -1445,13 +1447,18 @@ export function addModuleFunctionBlocks(
         moduleData.moduleName,
         functionData,
         false);
-    contents.push(block);
+    if (functionData.isCommon) {
+      commonContents.push(block);
+    } else {
+      moreContents.push(block);
+    }
   });
 }
 
 export function addStaticMethodBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   classData.staticMethods.forEach(functionData => {
     if (functionData.declaringClassName) {
@@ -1460,8 +1467,12 @@ export function addStaticMethodBlocks(
           classData.moduleName,
           functionData.declaringClassName,
           functionData,
-          showSimpleClassNames);
-      contents.push(block);
+          showSimpleClassNames);      
+      if (functionData.isCommon) {
+        commonContents.push(block);
+      } else {
+        moreContents.push(block);
+      }
     }
   });
 }
@@ -1494,10 +1505,16 @@ function createModuleFunctionOrStaticMethodBlock(
 
 export function addConstructorBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   classData.constructors.forEach(functionData => {
-    contents.push(createConstructorBlock(classData.moduleName, functionData, showSimpleClassNames));
+    const block = createConstructorBlock(classData.moduleName, functionData, showSimpleClassNames);
+    if (functionData.isCommon) {
+      commonContents.push(block);
+    } else {
+      moreContents.push(block);
+    }
   });
 }
 
@@ -1525,10 +1542,16 @@ function createConstructorBlock(
 
 export function addInstanceMethodBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   classData.instanceMethods.forEach(functionData => {
-    contents.push(createInstanceMethodBlock(functionData, showSimpleClassNames));
+    const block = createInstanceMethodBlock(functionData, showSimpleClassNames);
+    if (functionData.isCommon) {
+      commonContents.push(block);
+    } else {
+      moreContents.push(block);
+    }
   });
 }
 
@@ -1590,34 +1613,43 @@ function createInstanceWithinBlock(method: storageModuleContent.Method): toolbox
 
 export function getInstanceComponentBlocks(
     component: storageModuleContent.Component): toolboxItems.ContentsType[] {
-  const contents: toolboxItems.ContentsType[] = [];
+  const commonContents: toolboxItems.ContentsType[] = [];
+  const moreContents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
   if (classData) {
     const functions = classData.instanceMethods;
     for (const functionData of functions) {
       const block = createInstanceComponentBlock(component, functionData);
-      contents.push(block);
+      if (functionData.isCommon) {
+        commonContents.push(block);
+      } else {
+        moreContents.push(block);
+      }
     }
   }
-
-  return contents;
+  return makeOneContents(commonContents, moreContents);
 }
 
 export function getInstanceMechanismComponentBlocks(
     component: storageModuleContent.Component, mechanismInRobot: storageModuleContent.MechanismInRobot): toolboxItems.ContentsType[] {
-  const contents: toolboxItems.ContentsType[] = [];
+  const commonContents: toolboxItems.ContentsType[] = [];
+  const moreContents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
   if (classData) {
     const functions = classData.instanceMethods;
     for (const functionData of functions) {
       const block = createInstanceMechanismComponentBlock(component, functionData, mechanismInRobot);
-      contents.push(block);
+      if (functionData.isCommon) {
+        commonContents.push(block);
+      } else {
+        moreContents.push(block);
+      }
     }
   }
 
-  return contents;
+  return makeOneContents(commonContents, moreContents);
 }
 
 function createInstanceComponentBlock(
