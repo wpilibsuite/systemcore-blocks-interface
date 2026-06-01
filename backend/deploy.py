@@ -9,7 +9,7 @@ from flask import request
 from flask_restful import Resource
 
 # Our imports
-from main import basedir
+from config import basedir
 
 class DeployResource(Resource):
     def post(self) -> Union[Dict[str, Union[str, int, List[str]]], Tuple[Dict[str, str], int]]:
