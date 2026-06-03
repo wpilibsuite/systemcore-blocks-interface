@@ -18,11 +18,9 @@ __pycache__/
 venv/
 *.egg-info
 
-# oss attribution text file
-# This is excluded because it is a duplicate of /oss-attribution/licenseInfos.json
-# The command npx generate-attribution generates both files and it was easier
-# to exclude it than to modify the script to delete the file
-/oss-attribution/attribution.txt
+# oss attribution 
+# this is now automatically done as part of the build, so it doesn't need to clutter the repo
+/oss-attribution/licenseInfos.json
 
 # misc
 .DS_Store
