@@ -13,9 +13,5 @@ authors = [
 ]
 dependencies = []
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["blocks_base_classes*"]
-
 [tool.setuptools.package-dir]
 "blocks_base_classes" = "."
