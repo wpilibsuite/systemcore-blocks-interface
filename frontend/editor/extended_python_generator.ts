@@ -246,6 +246,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           }
         }
         initStatements += this.INDENT + 'self.publishOpModes()\n';
+        //TODO: These next two lines should be removed once userControls are implemented in python.
+        this.fromModuleImportName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'DefaultUserControls');
+        initStatements += this.INDENT + 'self.userControls = DefaultUserControls()\n';
         break;
       case storageModule.ModuleType.MECHANISM:
         if (this.hasAnyComponents) {

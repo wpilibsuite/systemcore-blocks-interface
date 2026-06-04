@@ -784,8 +784,8 @@ export function createEventField(): Blockly.Field {
 }
 
 function getGamepad(gamepad: number): string {
-    // TODO: Update this when the actual driver station display class is implemented
-    return 'DriverStation.gamepads[' + gamepad + ']';
+    // TODO: When python gets the userControls, this will remove the robot. from it, but for now we need to keep it to access the gamepads from the robot.
+    return 'self.robot.userControls.getGamepad(' + gamepad + ')';
 }
 
 export function methodForButton(gamepad: number, button: string, action: string): string {
