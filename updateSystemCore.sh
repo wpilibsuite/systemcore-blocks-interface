@@ -8,3 +8,6 @@ npm run build
 
 # Now send the dist folder
 rsync -avz dist systemcore@robot.local:/opt/blocks
+
+# Now send the base class blocks folder
+rsync -avz --exclude '__pycache__' --exclude 'blocks_base_classes.egg-info' runtime_python/blocks_base_classes systemcore@robot.local:/opt/blocks/
