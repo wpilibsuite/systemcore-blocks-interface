@@ -245,6 +245,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
             initStatements += this.INDENT + '# ' + call + '\n';
           }
         }
+        initStatements += this.INDENT + 'self.publishOpModes()\n';
         break;
       case storageModule.ModuleType.MECHANISM:
         if (this.hasAnyComponents) {
@@ -488,6 +489,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       }
 
       code += this.prefixLines(classMethods.join('\n\n'), this.INDENT);
+
+      if (this.getModuleType() === storageModule.ModuleType.ROBOT) {
+        // Add code to run wpilib
+        code += '\n\nif __name__ == "__main__":\n' +
+            this.INDENT + 'wpilib.run(' + className + ')\n';
+      }
     }
 
     // Process the fromModuleImportNames to generate "from <module> import <name1>, <name2>, ..." statements.
