@@ -521,6 +521,7 @@ class JsonGenerator:
           constructor_data[_KEY_IS_COMPONENT] = True
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
         if (function_name == 'getEncoderPosition' or
             function_name == 'getEncoderVelocity' or
             function_name == 'isHubConnected' or
@@ -705,6 +706,35 @@ class JsonGenerator:
             function_name == 'setThrottle' or
             function_name == 'setVoltage' or
             function_name == 'stopMotor'):
+          function_data[_KEY_IS_COMMON] = True
+      return
+
+    if class_name == 'rev.A301':
+      class_data[_KEY_IS_COMPONENT] = True
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 2 and
+            args[0][_KEY_ARGUMENT_NAME] == 'busId' and
+            args[1][_KEY_ARGUMENT_NAME] == 'deviceId'):
+          component_args = []
+          # TODO: consider hardcoding a default value for busId.
+          component_args.append(self._createArgData(args[0][_KEY_ARGUMENT_NAME], self._getClassName(args[0][_KEY_ARGUMENT_TYPE]), args[0][_KEY_ARGUMENT_DEFAULT_VALUE]))
+          component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), args[1][_KEY_ARGUMENT_DEFAULT_VALUE]))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'getAbsoluteEncoderPosition' or
+            function_name == 'getEncoderVelocity' or
+            function_name == 'getRelativeEncoderPosition' or
+            function_name == 'getThrottle' or
+            function_name == 'setAbsolutePosition' or
+            function_name == 'setInverted' or
+            function_name == 'setPosition' or
+            function_name == 'setRelativeEncoderPosition' or
+            function_name == 'setThrottle' or
+            function_name == 'setVelocity'):
           function_data[_KEY_IS_COMMON] = True
       return
 
