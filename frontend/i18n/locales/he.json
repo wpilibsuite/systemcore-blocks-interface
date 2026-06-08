@@ -11,6 +11,7 @@
   "fail_list_projects": "נכשל בטעינת רשימת הפרויקטים.",
   "NO_PROJECT_SELECTED": "לא נבחר פרויקט.",
   "DEPLOY_FAILED": "פריסת הפרויקט נכשלה.",
+  "DEPLOY_SUCCESS": "הפריסה הצליחה!",
   "DOWNLOAD_FAILED": "הורדת הפרויקט נכשלה.",
   "DOWNLOAD_CURRENT_PROJECT": "הורד פרויקט נוכחי",
   "UPLOAD_FILE_NOT_BLOCKS": "{{filename}} אינו קובץ בלוקים.",

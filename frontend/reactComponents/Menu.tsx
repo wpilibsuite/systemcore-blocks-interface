@@ -338,8 +338,8 @@ export function Component(props: MenuProps): React.JSX.Element {
           throw new Error('Deploy to server failed');
         }
         
-        const result = await deployResponse.json();
-        console.log('Deployment successful:', result);
+        await deployResponse.json();
+        Antd.message.success(t('DEPLOY_SUCCESS'));
         
         // Clean up the blob URL
         URL.revokeObjectURL(blobUrl);
