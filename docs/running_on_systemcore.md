@@ -8,7 +8,7 @@ putting in the password every time you ssh (including running scripts that updat
 3. From the sample python project use `robotpy init` and `robotpy sync` to make it ready
 #. Deploy the sample python project (use `robotpy deploy`).  This will copy all of the
 things necesary.  Right now, if you deploy a java or c++ robot this will stop blocks from working.   
-4. Execute the following commands on systemcore (`ssh systemcore@robot.local`):
+4. Execute the following commands on systemcore (`ssh systemcore@robot.local` or using the terminal in the browser.):
 (You'll need to make sure systemcore can access the internet so that it can pip install what is needed for the backend
 of blocks.)
 
