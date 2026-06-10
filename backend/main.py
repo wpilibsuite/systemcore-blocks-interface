@@ -7,16 +7,16 @@ from typing import Tuple, Union
 # Third-party imports
 from flask import Flask, jsonify, request, send_from_directory, Response
 from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy
 
 # Our imports
+from config import basedir
+from extensions import db
 from deploy import DeployResource
 from storage import StorageEntryResource, StorageFileRenameResource, StorageRootResource, StorageResource
 
 app = Flask(__name__, static_folder='../dist', static_url_path='')
 app.url_map.merge_slashes = False  # Don't merge consecutive slashes
 api = Api(app)
-db = SQLAlchemy(app)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -40,8 +40,8 @@ def handle_preflight() -> Union[Response, None]:
         return response
 
 # Configure SQLite database
-basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "projects.db")}'
+db.init_app(app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Register API routes
@@ -147,4 +147,4 @@ if __name__ == '__main__':
         db.create_all()
     
     logger.info(f"Starting server on port {args.port}...")
-    app.run(debug=True, port=args.port)
+    app.run(debug=True, host="0.0.0.0", port=args.port)

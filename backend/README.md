@@ -30,10 +30,15 @@ A Flask-based REST API for providing storage capabilities (key-value pairs and f
     4. python3.12 -m pip install -r requirements.txt
     5. deactivate
 
-## Running the Application
+## Running the Application (for debugging)
     1. source ./venv/bin/activate
     2. python main.py
     3. The API will be available at `http://localhost:5001`
+
+## Running the Application (on systemcore)
+    1. source ./venv/bin/activate
+    2. gunicorn -b 0.0.0.0:8000 main:app
+    3. The API will be available on port 8000
 
 ## Example Usage
 

@@ -12,6 +12,7 @@
     "fail_list_projects": "Error al cargar la lista de proyectos.",
     "NO_PROJECT_SELECTED": "No hay ningún proyecto seleccionado.",
     "DEPLOY_FAILED": "Error al implementar el proyecto.",
+    "DEPLOY_SUCCESS": "¡Implementación exitosa!",
     "DOWNLOAD_FAILED": "Error al descargar el proyecto.",
     "DOWNLOAD_CURRENT_PROJECT": "Descargar Proyecto Actual",
     "UPLOAD_FILE_NOT_BLOCKS": "{{filename}} no es un archivo de bloques.",
