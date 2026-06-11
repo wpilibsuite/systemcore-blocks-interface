@@ -25,6 +25,7 @@ from absl import logging
 
 # robotpy
 import ntcore
+import rev
 import wpilib
 import wpilib.simulation
 import wpimath
@@ -57,6 +58,7 @@ def main(argv):
 
   robotpy_modules = [
     ntcore,
+    rev,
     wpilib,
     wpilib.simulation,
     python_util.getModule('wpilib.sysid'),

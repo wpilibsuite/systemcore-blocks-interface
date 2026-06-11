@@ -41,6 +41,7 @@ import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
+import { createFieldColorDropdown } from '../fields/field_colors';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_VARIABLES } from '../themes/styles';
 import * as toolboxItems from '../toolbox/items';
@@ -258,7 +259,11 @@ const GET_PYTHON_VARIABLE = {
       const varNames = PythonVariableGetterNames[this.mrcKey];
       if (varNames) {
         // Create the drop-down with the variable names.
-        input.appendField(createFieldDropdown(varNames), FIELD_VARIABLE_NAME);
+        if (this.isColorVariable()) {
+          input.appendField(createFieldColorDropdown(varNames), FIELD_VARIABLE_NAME);
+        } else {
+          input.appendField(createFieldDropdown(varNames), FIELD_VARIABLE_NAME);
+        }
       } else {
         input.appendField(createFieldNonEditableText(''), FIELD_VARIABLE_NAME);
       }
@@ -391,6 +396,14 @@ const GET_PYTHON_VARIABLE = {
           FIELD_MODULE_OR_CLASS_NAME);
     }
   },
+
+  isColorVariable: function(this: GetPythonVariableBlock): boolean {
+    return (
+        this.mrcVarKind === VariableKind.CLASS &&
+        this.mrcModuleOrClassName === 'wpiutil.Color' &&
+        this.mrcVarType === 'wpiutil.Color'
+    );
+  },
 };
 
 export const setup = function() {
@@ -435,7 +448,8 @@ export const pythonFromBlock = function(
 
 export function addModuleVariableBlocks(
     moduleData: ModuleData,
-    contents: toolboxItems.ContentsType[]) {
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[]) {
   if (moduleData.moduleVariables.length) {
     const varsByType: {[key: string]: VariableGettersAndSetters} =
         organizeVarDataByType(moduleData.moduleVariables);
@@ -444,14 +458,16 @@ export function addModuleVariableBlocks(
         moduleData.moduleName,
         moduleData.moduleName,
         varsByType,
-        contents,
+        commonContents,
+        moreContents,
         false);
   }
 }
 
 export function addClassVariableBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   if (classData.classVariables.length) {
     const varsByType: {[key: string]: VariableGettersAndSetters} =
@@ -461,7 +477,8 @@ export function addClassVariableBlocks(
         classData.moduleName,
         classData.className,
         varsByType,
-        contents,
+        commonContents,
+        moreContents,
         showSimpleClassNames);
   }
 }
@@ -471,7 +488,8 @@ function addModuleOrClassVariableBlocks(
     importModule: string,
     moduleOrClassName: string,
     varsByType: {[key: string]: VariableGettersAndSetters},
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   for (const varType in varsByType) {
     const variableGettersAndSetters = varsByType[varType];
@@ -479,11 +497,22 @@ function addModuleOrClassVariableBlocks(
       const varName = variableGettersAndSetters.varNamesForGetter[i];
       const getterBlock = createModuleOrClassVariableGetterBlock(
           varKind, importModule, moduleOrClassName, varType, varName, showSimpleClassNames);
-      contents.push(getterBlock);
+
+      // TODO: Perhaps later,we could allow for different getters to be common or unusual    
+      if (variableGettersAndSetters.isCommon) {
+        commonContents.push(getterBlock);
+      } else {
+        moreContents.push(getterBlock);
+      }
       if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
         const setterBlock = createModuleOrClassVariableSetterBlock(
             varKind, importModule, moduleOrClassName, varType, varName, showSimpleClassNames);
-        contents.push(setterBlock);
+        // TODO: Perhaps later, we could allow for different setters to be common or unusual                
+        if (variableGettersAndSetters.isCommon) {
+          commonContents.push(setterBlock);
+        } else {
+          moreContents.push(setterBlock);
+        }
       }
     }
   }
@@ -514,7 +543,8 @@ function createModuleOrClassVariableGetterBlock(
 
 export function addInstanceVariableBlocks(
     classData: ClassData,
-    contents: toolboxItems.ContentsType[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   if (classData.instanceVariables.length) {
     const varsByType: {[key: string]: VariableGettersAndSetters} =
@@ -524,10 +554,18 @@ export function addInstanceVariableBlocks(
       for (let i = 0; i < variableGettersAndSetters.varNamesForGetter.length; i++) {
         const varName = variableGettersAndSetters.varNamesForGetter[i];
         const getterBlock = createInstanceVariableGetterBlock(classData.className, varType, varName, showSimpleClassNames);
-        contents.push(getterBlock);
+        if (variableGettersAndSetters.isCommon) {
+          commonContents.push(getterBlock);
+        } else {
+          moreContents.push(getterBlock);
+        }
         if (variableGettersAndSetters.varNamesForSetter.includes(varName)) {
           const setterBlock = createInstanceVariableSetterBlock(classData.className, varType, varName, showSimpleClassNames);
-          contents.push(setterBlock);
+          if (variableGettersAndSetters.isCommon) {
+            commonContents.push(setterBlock);
+          } else {
+            moreContents.push(setterBlock);
+          }
         }
       }
     }

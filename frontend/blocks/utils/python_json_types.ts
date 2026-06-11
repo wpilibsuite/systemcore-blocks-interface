@@ -45,6 +45,7 @@ export class ClassData {
   staticMethods: FunctionData[] = [];
   enums: EnumData[] = [];
   isComponent: boolean = false;
+  isCommon?: boolean = false;
 }
 
 export class VarData {
@@ -72,11 +73,13 @@ export class ArgData {
   defaultValue: string = '';
 }
 
+
 export class EnumData {
   enumClassName: string = '';
   moduleName: string = '';
   enumValues: string[] = [];
   tooltip: string = '';
+  isCommon?: boolean = false;
 }
 
 export class VariableGettersAndSetters {
@@ -84,6 +87,7 @@ export class VariableGettersAndSetters {
   tooltipsForGetter: string[] = [];
   varNamesForSetter: string[] = [];
   tooltipsForSetter: string[] = [];
+  isCommon?: boolean = false;
 }
 
 export function organizeVarDataByType(vars: VarData[]): {[key: string]: VariableGettersAndSetters} {

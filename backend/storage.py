@@ -6,7 +6,7 @@ from flask import request
 from flask_restful import Resource
 
 # Our imports
-from main import db
+from extensions import db
 
 # Storage models for key-value pairs and files
 class StorageEntry(db.Model):

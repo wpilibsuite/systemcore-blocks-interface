@@ -48,27 +48,26 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
     interface LicenseInfo{
         name: string;
         version: string;
-        authors: string;
-        url: string;
-        license: string;
+        publisher: string;
+        repository: string;
+        licenses: string;
     }
 
     const loadAttributions = async () => {
         try {
             const response = await fetch('licenseInfos.json');
             if (response.ok) {
-                const licenses : LicenseInfo[] = await response.json();
+                const licenses : Record<string, LicenseInfo> = await response.json();
                 let text = ''
 
-                licenses.forEach((licenseData) => {
+                Object.values(licenses).forEach((licenseData) => {
                     text += `${t('ABOUT.NAME')}: ${licenseData.name}\n`;
                     text += `${t('ABOUT.VERSION')}: ${licenseData.version}\n`;
-                    text += `${t('ABOUT.AUTHORS')}: ${licenseData.authors}\n`;
-                    text += `${t('ABOUT.URL')}: ${licenseData.url}\n`;
-                    text += `${t('ABOUT.LICENSE')}: ${licenseData.license}\n`;
+                    text += `${t('ABOUT.AUTHORS')}: ${licenseData.publisher}\n`;
+                    text += `${t('ABOUT.URL')}: ${licenseData.repository}\n`;
+                    text += `${t('ABOUT.LICENSE')}: ${licenseData.licenses}\n`;
                     text += `\n`;
                 });
-
                 setAttributions(text);
             } else {
                 setAttributions(t('ABOUT.ATTRIBUTIONS_NOT_FOUND'));

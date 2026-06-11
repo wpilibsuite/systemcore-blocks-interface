@@ -1,16 +1,28 @@
 /// <reference types="vitest" />
 /// <reference types="@vitest/browser/matchers" />
-import { defineConfig } from "vitest/config";
+import { execSync } from "child_process";
+import { defineConfig, Plugin } from "vitest/config";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { playwright } from '@vitest/browser-playwright'
 import react from "@vitejs/plugin-react";
+
+function licenseCheckerPlugin(): Plugin {
+  return {
+    name: "license-checker",
+    buildStart() {
+      execSync(
+        "license-checker-rseidelsohn --json --customPath oss-attribution/customFormat.json > oss-attribution/licenseInfos.json",
+      );
+    },
+  };
+}
 
 export default defineConfig({
   base: '/blocks/',
   resolve: {
     tsconfigPaths: true,
   },
-  plugins: [react(), viteStaticCopy({
+  plugins: [react(), licenseCheckerPlugin(), viteStaticCopy({
     targets: [
       {
         src: 'oss-attribution/*',

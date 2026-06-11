@@ -11,6 +11,7 @@
     "fail_list_projects": "Failed to load the list of projects.",
     "NO_PROJECT_SELECTED": "No project selected.",
     "DEPLOY_FAILED": "Failed to deploy project.",
+    "DEPLOY_SUCCESS": "Deployment successful!",
     "DOWNLOAD_FAILED": "Failed to download project.",
     "DOWNLOAD_CURRENT_PROJECT": "Download Current Project",
     "UPLOAD_FILE_NOT_BLOCKS": "{{filename}} is not a blocks file.",
@@ -213,6 +214,7 @@
         "MORE_ROBOT_METHODS_LABEL": "More Robot Methods",
         "MORE_MECHANISM_METHODS_LABEL": "More Mechanism Methods",
         "MORE_OPMODE_METHODS_LABEL": "More OpMode Methods",
+        "MORE_BLOCKS_LABEL": "More...",
         "COMMENT_DEFAULT_TEXT": "Enter your comment here!",
         "CONFIG_GAMEPADS_BUTTON": "⚙️ Configure Gamepads",
         "GAMEPAD": {

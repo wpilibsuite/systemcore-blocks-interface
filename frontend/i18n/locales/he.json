@@ -11,6 +11,7 @@
   "fail_list_projects": "נכשל בטעינת רשימת הפרויקטים.",
   "NO_PROJECT_SELECTED": "לא נבחר פרויקט.",
   "DEPLOY_FAILED": "פריסת הפרויקט נכשלה.",
+  "DEPLOY_SUCCESS": "הפריסה הצליחה!",
   "DOWNLOAD_FAILED": "הורדת הפרויקט נכשלה.",
   "DOWNLOAD_CURRENT_PROJECT": "הורד פרויקט נוכחי",
   "UPLOAD_FILE_NOT_BLOCKS": "{{filename}} אינו קובץ בלוקים.",
@@ -212,6 +213,7 @@
     "MORE_ROBOT_METHODS_LABEL": "מתודות נוספות לרובוט",
     "MORE_MECHANISM_METHODS_LABEL": "מתודות נוספות למנגנון",
     "MORE_OPMODE_METHODS_LABEL": "מתודות נוספות לאופמוד",
+    "MORE_BLOCKS_LABEL": "עוד...",
     "COMMENT_DEFAULT_TEXT": "הזן את ההערה שלך כאן!",
     "CONFIG_GAMEPADS_BUTTON": "⚙️ הגדר בקרים",
     "GAMEPAD": {
