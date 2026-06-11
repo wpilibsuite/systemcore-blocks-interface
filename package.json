@@ -28,6 +28,11 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
+    "package": "npm run build && npm run package:backend && npm run package:dist && npm run package:runtime && npm run package:ipk",
+    "package:ipk": "cd packaging && if [ \"$(uname)\" = \"Darwin\" ]; then bash buildmac.sh; else bash build.sh; fi",
+    "package:backend": "rsync -a --exclude=venv backend/ packaging/overlay/opt/blocks/backend",
+    "package:dist": "rsync -a dist/ packaging/overlay/opt/blocks/dist",
+    "package:runtime": "rsync -a --exclude=__pycache__ --exclude='*.egg-info' runtime_python/blocks_base_classes/ packaging/overlay/opt/blocks/blocks_base_classes",
     "test": "vitest",
     "gen": "node src/Blockly/gen.js",
     "dev": "vite",
