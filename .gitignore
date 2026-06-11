@@ -22,6 +22,10 @@ venv/
 # this is now automatically done as part of the build, so it doesn't need to clutter the repo
 /oss-attribution/licenseInfos.json
 
+# the packaging should make these files so they shouldn't be in the repo
+packaging/overlay/opt/blocks/
+
+
 # misc
 .DS_Store
 .env.local
