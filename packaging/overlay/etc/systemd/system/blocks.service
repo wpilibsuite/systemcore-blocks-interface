@@ -7,7 +7,8 @@ Wants=network.target
 Type=simple
 User=root
 Group=root
-ExecStart=/opt/blocks/backend/main.py
+ExecStart=/opt/blocks/backend/start.sh
+WorkingDirectory=/opt/blocks/backend
 Restart=always
 RestartSec=5
 TimeoutStartSec=3
@@ -15,9 +16,9 @@ TimeoutStopSec=3
 
 NoNewPrivileges=true
 PrivateTmp=true
-ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/var/log
+# ProtectSystem=strict
+# ProtectHome=true
+ReadWritePaths=/var/log /opt/blocks
 
 [Install]
 WantedBy=multi-user.target
