@@ -10,4 +10,4 @@ Source: local
 X-Port: 9001
 X-Has-UI: true
 X-Auto-Start: true
-X-Icon-Path: /usr/share/blocks.png
+X-Icon-Path: /opt/blocks/blocks.png
