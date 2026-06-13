@@ -92,6 +92,9 @@ deactivate () {
     if [ -n "${_OLD_VIRTUAL_PS1:-}" ]; then
         PS1="${_OLD_VIRTUAL_PS1}"; export PS1; unset _OLD_VIRTUAL_PS1
     fi
+    if [ -n "${_OLD_VIRTUAL_PYTHONPATH+x}" ]; then
+        PYTHONPATH="${_OLD_VIRTUAL_PYTHONPATH}"; export PYTHONPATH; unset _OLD_VIRTUAL_PYTHONPATH
+    fi
     unset VIRTUAL_ENV VIRTUAL_ENV_PROMPT
     [ -n "${BASH:-}" ] || [ -n "${ZSH_VERSION:-}" ] && hash -r 2>/dev/null
     [ "${1:-}" != "nondestructive" ] && unset -f deactivate
@@ -105,6 +108,10 @@ export VIRTUAL_ENV
 _OLD_VIRTUAL_PATH="$PATH"
 PATH="$VIRTUAL_ENV/bin:$PATH"
 export PATH
+
+_OLD_VIRTUAL_PYTHONPATH="${PYTHONPATH:-}"
+PYTHONPATH="$VIRTUAL_ENV/lib/python3.13/site-packages${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH
 
 if [ -n "${PYTHONHOME:-}" ]; then
     _OLD_VIRTUAL_PYTHONHOME="$PYTHONHOME"; unset PYTHONHOME
@@ -120,5 +127,20 @@ fi
 ACTIVATE
 
 chmod +x "$VENV_BIN/activate"
+
+echo "Writing pip script..."
+cat > "$VENV_BIN/pip" <<'EOF'
+#!/opt/blocks/venv/bin/python3
+# -*- coding: utf-8 -*-
+import re
+import sys
+from pip._internal.cli.main import main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
+EOF
+chmod +x "$VENV_BIN/pip"
+ln -sf pip "$VENV_BIN/pip3"
+ln -sf pip "$VENV_BIN/pip${PYTHON_VER}"
 
 echo "Done. Venv at $VENV_DIR"
