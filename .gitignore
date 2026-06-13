@@ -25,6 +25,9 @@ venv/
 # the packaging should make these files so they shouldn't be in the repo
 packaging/overlay/opt/blocks/
 
+# temporary so don't put in the repo
+packaging/wheels/
+
 
 # misc
 .DS_Store

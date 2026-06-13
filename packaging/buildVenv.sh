@@ -64,6 +64,11 @@ if [ -d "$EXTRA_SITE_PACKAGES" ]; then
     done
 fi
 
+echo "Copying blocks_base_classes..."
+rsync -a --exclude='__pycache__' --exclude='*.egg-info' \
+  "$SCRIPT_DIR/../runtime_python/blocks_base_classes/" \
+  "$SITE_PACKAGES/blocks_base_classes/"
+
 echo "Writing pyvenv.cfg..."
 cat > "$VENV_DIR/pyvenv.cfg" <<EOF
 home = /bin

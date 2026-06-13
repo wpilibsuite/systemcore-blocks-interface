@@ -61,7 +61,7 @@ class DeployResource(Resource):
             # Make a robot command file
             robot_command_path = os.path.join(BASE_DIR, 'robotCommand')
             with open(robot_command_path, "w", encoding="utf-8") as robotCommandFile:
-                robotCommandFile.write(BASE_DIR + "/venv/bin/python3 -u -O -m robotpy --main " + BASE_DIR + "/pyFromBlocks/robot.py run")
+                robotCommandFile.write("/opt/blocks/venv/bin/python3 -u -O -m robotpy --main " + BASE_DIR + "/pyFromBlocks/robot.py run")
 
             os.chmod(robot_command_path, 0o755)
             # start the robot back
