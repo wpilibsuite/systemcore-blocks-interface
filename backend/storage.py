@@ -34,13 +34,16 @@ class StorageFile(db.Model):
 # Storage Resources for key-value and file operations
 class StorageEntryResource(MethodView):
     def get(self, entry_key: str) -> Response:
+        """Fetch entry value by key"""
         entry = StorageEntry.query.filter_by(entry_key=entry_key).first()
         if entry:
             return jsonify({'value': entry.entry_value})
+        # Return default value if provided in query params
         default_value = request.args.get('default', '')
         return jsonify({'value': default_value})
 
     def post(self, entry_key: str) -> Response:
+        """Save entry value"""
         data = request.get_json()
         if not data or 'value' not in data:
             return jsonify({'error': 'Entry value is required'}), 400
@@ -61,36 +64,49 @@ class StorageEntryResource(MethodView):
 
 class StorageResource(MethodView):
     def get(self, path: str) -> Response:
+        """Get file content or list directory based on path"""
+        # Handle empty path as root directory
         if not path:
             path = ""
 
         if path.endswith('/') or path == "":
+            # List directory
             if path == "":
+                # For root directory, find all files
                 files = StorageFile.query.all()
+                # Extract top-level files and directories
                 children = set()
                 for file in files:
                     if '/' in file.file_path:
+                        # It's in a subdirectory, add the directory name
                         children.add(file.file_path.split('/')[0] + '/')
                     else:
+                        # It's a top-level file
                         children.add(file.file_path)
             else:
+                # Find all files that start with this path
                 files = StorageFile.query.filter(StorageFile.file_path.like(f'{path}%')).all()
+                # Extract immediate children (not nested)
                 children = set()
                 for file in files:
                     relative_path = file.file_path[len(path):]
                     if '/' in relative_path:
+                        # It's in a subdirectory, add the directory name
                         children.add(relative_path.split('/')[0] + '/')
                     else:
+                        # It's a direct child file
                         children.add(relative_path)
 
             return jsonify({'files': sorted(list(children))})
         else:
+            # Get file content
             file_obj = StorageFile.query.filter_by(file_path=path).first()
             if file_obj:
                 return jsonify({'content': file_obj.file_content})
             return jsonify({'error': 'File not found'}), 404
 
     def post(self, path: str) -> Response:
+        """Save file content (only for files, not directories)"""
         if path.endswith('/'):
             return jsonify({'error': 'Cannot save content to a directory path'}), 400
 
@@ -113,11 +129,14 @@ class StorageResource(MethodView):
             return jsonify({'error': 'Failed to save file'}), 500
 
     def delete(self, path: str) -> Response:
+        """Delete file or directory"""
         if path.endswith('/'):
+            # Delete directory (all files starting with this path)
             files = StorageFile.query.filter(StorageFile.file_path.like(f'{path}%')).all()
             for file_obj in files:
                 db.session.delete(file_obj)
         else:
+            # Delete specific file
             file_obj = StorageFile.query.filter_by(file_path=path).first()
             if not file_obj:
                 return jsonify({'error': 'File not found'}), 404
@@ -132,6 +151,7 @@ class StorageResource(MethodView):
 
 class StorageFileRenameResource(MethodView):
     def post(self) -> Response:
+        """Rename file or directory"""
         data = request.get_json()
         if not data or 'old_path' not in data or 'new_path' not in data:
             return jsonify({'error': 'Both old_path and new_path are required'}), 400
@@ -140,10 +160,12 @@ class StorageFileRenameResource(MethodView):
         new_path = data['new_path']
 
         if old_path.endswith('/'):
+            # Rename directory (all files starting with old_path)
             files = StorageFile.query.filter(StorageFile.file_path.like(f'{old_path}%')).all()
             for file_obj in files:
                 file_obj.file_path = file_obj.file_path.replace(old_path, new_path, 1)
         else:
+            # Rename specific file
             file_obj = StorageFile.query.filter_by(file_path=old_path).first()
             if not file_obj:
                 return jsonify({'error': 'File not found'}), 404
@@ -158,11 +180,15 @@ class StorageFileRenameResource(MethodView):
 
 class StorageRootResource(MethodView):
     def get(self) -> Response:
+        """List all top-level files and directories"""
         files = StorageFile.query.all()
+        # Extract top-level files and directories
         children = set()
         for file in files:
             if '/' in file.file_path:
+                # It's in a subdirectory, add the directory name
                 children.add(file.file_path.split('/')[0] + '/')
             else:
+                # It's a top-level file
                 children.add(file.file_path)
         return jsonify({'files': sorted(list(children))})

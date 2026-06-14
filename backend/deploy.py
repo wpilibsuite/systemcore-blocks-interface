@@ -18,6 +18,7 @@ START_ROBOT_CMD = ["sudo", "systemctl", "start", "robot"]
 
 class DeployResource(MethodView):
     def post(self) -> Response:
+        """Upload and extract a zip file to the deploy directory"""
         if 'file' not in request.files:
             return jsonify({'error': 'No file provided'}), 400
 
@@ -32,38 +33,47 @@ class DeployResource(MethodView):
         try:
             deploy_dir = DEPLOY_DIR
 
+            # Stop the robot
             subprocess.run(STOP_ROBOT_CMD,
                 capture_output=True,
                 text=True,
                 check=True,
-                timeout=10
+                timeout=10  # Best practice: always set a timeout to prevent hanging
             )
 
+            # Clear existing deploy directory
             if os.path.exists(deploy_dir):
                 shutil.rmtree(deploy_dir)
+            # Create deploy directory if it doesn't exist
             os.makedirs(deploy_dir)
 
+            # Save the zip file temporarily
             temp_zip_path = os.path.join(BASE_DIR, 'temp_deploy.zip')
             file.save(temp_zip_path)
 
+            # Extract the zip file
             with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
                 zip_ref.extractall(deploy_dir)
 
+            # Remove the temporary zip file
             os.remove(temp_zip_path)
 
+            # Make a robot command file
             robot_command_path = os.path.join(BASE_DIR, 'robotCommand')
             with open(robot_command_path, "w", encoding="utf-8") as robotCommandFile:
                 robotCommandFile.write("/opt/blocks/venv/bin/python3 -u -O -m robotpy --main " + BASE_DIR + "/pyFromBlocks/robot.py run")
 
             os.chmod(robot_command_path, 0o755)
 
+            # Start the robot back
             subprocess.run(START_ROBOT_CMD,
                 capture_output=True,
                 text=True,
                 check=True,
-                timeout=10
+                timeout=10  # Best practice: always set a timeout to prevent hanging
             )
 
+            # List extracted files
             extracted_files: List[str] = []
             for root, dirs, files in os.walk(deploy_dir):
                 for filename in files:
@@ -74,7 +84,7 @@ class DeployResource(MethodView):
                 'message': 'Deployment successful',
                 'deploy_directory': deploy_dir,
                 'files_extracted': len(extracted_files),
-                'files': extracted_files[:20]
+                'files': extracted_files[:20]  # Show first 20 files
             })
         except zipfile.BadZipFile:
             return jsonify({'error': 'Invalid zip file'}), 400
