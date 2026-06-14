@@ -58,12 +58,25 @@ class DeployResource(MethodView):
             # Remove the temporary zip file
             os.remove(temp_zip_path)
 
-            # Make a robot command file
-            robot_command_path = os.path.join(BASE_DIR, 'robotCommand')
-            with open(robot_command_path, "w", encoding="utf-8") as robotCommandFile:
-                robotCommandFile.write("/opt/blocks/venv/bin/python3 -u -O -m robotpy --main " + BASE_DIR + "/pyFromBlocks/robot.py run")
+            # Write pyproject.toml
+            pyproject_path = os.path.join(deploy_dir, 'pyproject.toml')
+            with open(pyproject_path, "w", encoding="utf-8") as f:
+                f.write('[tool.robotpy]\n')
+                f.write('robotpy_version = "2027.0.0a6.post1"\n')
+                f.write('\n')
+                f.write('components = []\n')
+                f.write('\n')
+                f.write('requires = [ "blocks_base_classes @ file://../../opt/blocks/blocks_base_classes" ]\n')
 
-            os.chmod(robot_command_path, 0o755)
+            # Deploy robot code
+            subprocess.run(
+                ["robotpy", "installer", "local-deploy", "--no-verify"],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=60,
+                cwd=deploy_dir
+            )
 
             # Start the robot back
             subprocess.run(START_ROBOT_CMD,
