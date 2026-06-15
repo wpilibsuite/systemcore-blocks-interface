@@ -33,14 +33,6 @@ class DeployResource(MethodView):
         try:
             deploy_dir = DEPLOY_DIR
 
-            # Stop the robot
-            subprocess.run(STOP_ROBOT_CMD,
-                capture_output=True,
-                text=True,
-                check=True,
-                timeout=10  # Best practice: always set a timeout to prevent hanging
-            )
-
             # Clear existing deploy directory
             if os.path.exists(deploy_dir):
                 shutil.rmtree(deploy_dir)
@@ -78,26 +70,9 @@ class DeployResource(MethodView):
                 cwd=deploy_dir
             )
 
-            # Start the robot back
-            subprocess.run(START_ROBOT_CMD,
-                capture_output=True,
-                text=True,
-                check=True,
-                timeout=10  # Best practice: always set a timeout to prevent hanging
-            )
-
-            # List extracted files
-            extracted_files: List[str] = []
-            for root, dirs, files in os.walk(deploy_dir):
-                for filename in files:
-                    rel_path = os.path.relpath(os.path.join(root, filename), deploy_dir)
-                    extracted_files.append(rel_path)
-
             return jsonify({
                 'message': 'Deployment successful',
-                'deploy_directory': deploy_dir,
-                'files_extracted': len(extracted_files),
-                'files': extracted_files[:20]  # Show first 20 files
+                'deploy_directory': deploy_dir
             })
         except zipfile.BadZipFile:
             return jsonify({'error': 'Invalid zip file'}), 400
