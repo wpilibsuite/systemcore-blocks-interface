@@ -55,7 +55,7 @@ class DeployResource(MethodView):
                 f.write('\n')
                 f.write('components = []\n')
                 f.write('\n')
-                f.write('requires = [ "blocks_base_classes" ]\n')
+                f.write('requires = [ "blocks_base_classes", "robotpy-rev" ]\n')
 
             # Deploy robot code
             subprocess.run(

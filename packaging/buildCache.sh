@@ -26,4 +26,5 @@ fi
 source "$SCRIPT_DIR/venv/bin/activate"
 robotpy installer download-python --cache-root "$CACHE_DIR"
 robotpy installer download robotpy --cache-root "$CACHE_DIR"
+robotpy installer download robotpy-rev --cache-root "$CACHE_DIR"
 deactivate
