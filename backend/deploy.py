@@ -70,7 +70,7 @@ class DeployResource(MethodView):
 
             # Deploy robot code
             subprocess.run(
-                ["robotpy", "installer", "local-deploy", "--no-verify", "--force-install"],
+                ["robotpy", "installer", "local-deploy", "--force-install"],
                 capture_output=True,
                 text=True,
                 check=True,
