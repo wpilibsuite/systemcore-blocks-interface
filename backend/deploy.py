@@ -13,9 +13,6 @@ from flask.views import MethodView
 BASE_DIR = "/home/systemcore"
 DEPLOY_DIR = BASE_DIR + "/pyFromBlocks"
 
-STOP_ROBOT_CMD = ["sudo", "systemctl", "stop", "robot"]
-START_ROBOT_CMD = ["sudo", "systemctl", "start", "robot"]
-
 class DeployResource(MethodView):
     def post(self) -> Response:
         """Upload and extract a zip file to the deploy directory"""
