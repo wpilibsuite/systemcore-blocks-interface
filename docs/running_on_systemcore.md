@@ -1,21 +1,10 @@
-This is temporary and we are working on improving how to do this.
-
-But for now....
+This still has some temporary steps
 
 ## Initial setup
 
 1. Follow https://github.com/wpilibsuite/SystemcoreTesting/blob/main/FTC-Testing.md for setting up your system (including installing robotpy)
-2. You'll be happier if you `ssh-copy-id systemcore@robot.local` so you won't have to keep
-putting in the password every time you ssh (including running scripts that update systemcore)
-3. Install the Blocks ipk
+2. Install the Blocks ipk. (Need an ipk, go to the end for how to make it)
 Now you can access blocks by selecting the Blocks from the main page of systemcore (http://robot.local/)
-
-4. Deploy a blocks program (it will say it succeeds, but it doesn't )
-5. Execute the following commands on systemcore (`ssh systemcore@robot.local` or using the terminal in the browser.):
-```bash
-source ~/venv/bin/activate  # this activates the robotpy venv
-pip install robotpy-cli==2027.0.1b1
-```
 
 ## After updating source code: (shortcut, you can also make a new package and install)
 
@@ -23,9 +12,22 @@ pip install robotpy-cli==2027.0.1b1
 ```bash
 ./updateSystemCore.sh
 ```
-2. Refresh the browser at http://robot.local:9001
+2. Refresh the browser on the blocks page
 
 
 ## After updating blocks_base_classes:
 `npm run package` to make the new ipk
-Follow steps 3-5 from above
+
+## Making the ipk
+### Preparing to make it
+1. Go to packaging directory inside of your systemcore-blocks-interface development area on your local machine
+2. `python3 -m venv venv`
+3. `venv/bin/activate`
+4. Somehwere on your development machine, you need the code in this PR: https://github.com/robotpy/robotpy-installer/pull/165 
+5. In that directory, type `pip install .`
+6. `deactivate` 
+
+### Making it
+1. Go to your systemcore-blocks-interface development area
+2. `npm run package`
+3. There is no step 3. :-)
