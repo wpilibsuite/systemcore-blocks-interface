@@ -27,6 +27,9 @@ packaging/overlay/opt/blocks/
 
 # temporary so don't put in the repo
 packaging/wheels/
+wheels_venv
+runtime_python/blocks_base_classes/build/
+
 
 
 # misc

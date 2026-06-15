@@ -66,11 +66,11 @@ class DeployResource(MethodView):
                 f.write('\n')
                 f.write('components = []\n')
                 f.write('\n')
-                f.write('requires = [ "blocks_base_classes @ file://../../opt/blocks/blocks_base_classes" ]\n')
+                f.write('requires = [ "blocks_base_classes" ]\n')
 
             # Deploy robot code
             subprocess.run(
-                ["robotpy", "installer", "local-deploy", "--no-verify"],
+                ["robotpy", "installer", "local-deploy", "--no-verify", "--force-install"],
                 capture_output=True,
                 text=True,
                 check=True,
