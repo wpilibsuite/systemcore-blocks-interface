@@ -22,6 +22,7 @@ if systemctl start $PACKAGE_NAME.service; then
     fi
 else
     echo "Failed to start service automatically"
+    exit 1
 fi
 
 echo "Package installation complete"

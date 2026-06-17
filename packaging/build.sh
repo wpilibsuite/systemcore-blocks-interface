@@ -15,7 +15,7 @@ PACKAGE_VERSION=$(grep "^Version:" control/control | cut -d' ' -f2- | tr -d ' ')
 # Validate required fields
 if [ -z "$PACKAGE_NAME" ] || [ -z "$PACKAGE_VERSION" ]; then
     echo "Err: Package and Version must be set in control/control"
-    echo "Package: my-package"
+    echo "Package: Blocks"
     echo "Version: 1.0.0"
     exit 1
 fi

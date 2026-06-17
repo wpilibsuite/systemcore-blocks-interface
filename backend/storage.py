@@ -1,5 +1,5 @@
 # Standard library imports
-from typing import Dict, List
+from typing import Dict
 
 # Third-party imports
 from flask import Response, jsonify, request

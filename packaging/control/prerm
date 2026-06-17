@@ -20,6 +20,7 @@ if systemctl disable $PACKAGE_NAME.service 2>/dev/null; then
     echo "Service auto-start disabled"
 else
     echo "Service was not enabled or disable failed"
+    exit 1
 fi
 
 echo "Service stopped and disabled"

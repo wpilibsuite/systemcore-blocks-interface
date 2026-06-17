@@ -4,7 +4,6 @@ import shutil
 import zipfile
 import subprocess
 
-from typing import List
 
 # Third-party imports
 from flask import Response, jsonify, request
@@ -50,13 +49,17 @@ class DeployResource(MethodView):
             # Write pyproject.toml
             pyproject_path = os.path.join(deploy_dir, 'pyproject.toml')
             with open(pyproject_path, "w", encoding="utf-8") as f:
-                f.write('[tool.robotpy]\n')
-                f.write('robotpy_version = "2027.0.0a6.post1"\n')
-                f.write('\n')
-                f.write('components = []\n')
-                f.write('\n')
-                f.write('requires = [ "blocks_base_classes", "robotpy-rev" ]\n')
+                toml_content = (
+"""[tool.robotpy]
+robotpy_version = "2027.0.0.a6.post1"
 
+components = []
+
+requires = [ "blocks_base_classes", "robotpy-rev"]
+"""                    
+                )
+                f.write('[tool.robotpy]\n')
+                f.write(toml_content);
             # Deploy robot code
             subprocess.run(
                 ["robotpy", "installer", "local-deploy", "--force-install"],
