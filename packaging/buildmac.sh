@@ -10,13 +10,11 @@ if [ ! -f "control/control" ]; then
 fi
 
 PACKAGE_NAME=$(grep "^Package:" control/control | cut -d' ' -f2- | tr -d ' ')
-PACKAGE_VERSION=$(grep "^Version:" control/control | cut -d' ' -f2- | tr -d ' ')
+PACKAGE_VERSION=$(node -p "require('../package.json').version")
 
 # Validate required fields
 if [ -z "$PACKAGE_NAME" ] || [ -z "$PACKAGE_VERSION" ]; then
-    echo "Err: Package and Version must be set in control/control"
-    echo "Package: my-package"
-    echo "Version: 1.0.0"
+    echo "Err: Package must be set in control/control; version is read from package.json"
     exit 1
 fi
 
@@ -53,6 +51,7 @@ cp -R overlay/* "$BUILD_DIR/$PACKAGE_DIR/"
 echo "Copying CONTROL files..."
 mkdir -p "$BUILD_DIR/$PACKAGE_DIR/CONTROL"
 cp control/* "$BUILD_DIR/$PACKAGE_DIR/CONTROL/"
+awk '/^Package:/{print; print "Version: '"$PACKAGE_VERSION"'"; next}1' "$BUILD_DIR/$PACKAGE_DIR/CONTROL/control" > "$BUILD_DIR/$PACKAGE_DIR/CONTROL/control.tmp" && mv "$BUILD_DIR/$PACKAGE_DIR/CONTROL/control.tmp" "$BUILD_DIR/$PACKAGE_DIR/CONTROL/control"
 
 echo "Setting file permissions..."
 
