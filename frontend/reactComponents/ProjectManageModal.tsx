@@ -27,6 +27,7 @@ import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
 import ProjectNameComponent from './ProjectNameComponent';
 import ManageTable from './ManageTable';
+import UploadConflictDialog from './UploadConflictDialog';
 
 /** Props for the ProjectManageModal component. */
 interface ProjectManageModalProps {
@@ -74,6 +75,10 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
+  const [conflictOpen, setConflictOpen] = React.useState(false);
+  const [conflictExistingName, setConflictExistingName] = React.useState('');
+  const [conflictUploadedFiles, setConflictUploadedFiles] = React.useState<{[fileName: string]: string}>({});
+  const [conflictPreferredName, setConflictPreferredName] = React.useState('');
 
   /** Loads project names from storage and sorts them alphabetically. */
   const loadProjectNames = async (storage: commonStorage.Storage): Promise<void> => {
@@ -286,12 +291,35 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
           if (!event.target || !props.storage) return;
 
           const dataUrl = event.target.result as string;
-          const existingProjectNames = allProjectNames;
           const preferredName = file.name.substring(
             0, file.name.length - storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION.length);
 
-          // Smart name conflict resolution: extract base name and trailing number
-          // e.g., "PrSimplify2" -> base="PrSimplify", num=2
+          // Parse and validate the uploaded files upfront.
+          let uploadedFiles: {[fileName: string]: string};
+          try {
+            uploadedFiles = await storageProject.getUploadedFiles(dataUrl);
+          } catch (error) {
+            console.error('Error parsing uploaded file:', error);
+            props.setAlertErrorMessage(t('UPLOAD_FAILED'));
+            return;
+          }
+
+          // Check if the uploaded project's ID already exists locally.
+          const uploadedProjectId = await storageProject.peekUploadedProjectId(dataUrl);
+          if (uploadedProjectId) {
+            const matchingName = await storageProject.findProjectNameByProjectId(
+                props.storage, uploadedProjectId);
+            if (matchingName) {
+              setConflictUploadedFiles(uploadedFiles);
+              setConflictExistingName(matchingName);
+              setConflictPreferredName(preferredName);
+              setConflictOpen(true);
+              return;
+            }
+          }
+
+          // No projectId conflict — proceed with name-based conflict resolution.
+          const existingProjectNames = allProjectNames;
           const match = preferredName.match(/^(.+?)(\d+)$/);
           let uploadProjectName: string;
           if (match && existingProjectNames.includes(preferredName)) {
@@ -305,7 +333,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
 
           const doUpload = async (name: string) => {
             if (!props.storage) return;
-            await storageProject.uploadProject(props.storage, name, dataUrl);
+            await storageProject.uploadProjectFiles(props.storage, name, uploadedFiles);
             await loadProjectNames(props.storage);
             const project = await storageProject.fetchProject(props.storage, name);
             props.setCurrentProject(project);
@@ -359,6 +387,17 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     input.click();
   };
 
+  /** Handles completion of the upload conflict dialog. */
+  const handleConflictComplete = async (projectName: string): Promise<void> => {
+    if (!props.storage) return;
+    setConflictOpen(false);
+    await loadProjectNames(props.storage);
+    const project = await storageProject.fetchProject(props.storage, projectName);
+    props.setCurrentProject(project);
+    messageApi.success(t('UPLOAD_SUCCESS', { projectName }));
+    props.onCancel();
+  };
+
   // Load project names when storage becomes available or modal opens
   React.useEffect(() => {
     if (props.storage && props.isOpen) {
@@ -370,6 +409,19 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     <>
       {modalContextHolder}
       {messageContextHolder}
+      {conflictOpen && props.storage && (
+        <UploadConflictDialog
+          isOpen={conflictOpen}
+          existingProjectName={conflictExistingName}
+          uploadedFiles={conflictUploadedFiles}
+          preferredName={conflictPreferredName}
+          allProjectNames={allProjectNames}
+          storage={props.storage}
+          setAlertErrorMessage={props.setAlertErrorMessage}
+          onComplete={handleConflictComplete}
+          onCancel={() => setConflictOpen(false)}
+        />
+      )}
       <Antd.Modal
         title={getRenameModalTitle()}
         open={renameModalOpen}
