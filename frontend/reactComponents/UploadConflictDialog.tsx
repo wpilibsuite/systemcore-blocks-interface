@@ -25,7 +25,7 @@ import * as storageModule from '../storage/module';
 import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
 import * as commonStorage from '../storage/common_storage';
-import Blockly from 'blockly/core';
+import * as Blockly from 'blockly';
 
 interface UploadConflictDialogProps {
   isOpen: boolean;
@@ -249,9 +249,9 @@ export default function UploadConflictDialog(props: UploadConflictDialogProps): 
       key: 'status',
       render: (_: unknown, row: ModuleRow) => {
         const configs: Record<ModuleRow['status'], { color: string; label: string }> = {
-          same: { color: 'default', label: t('MODULE_UNCHANGED') },
-          different: { color: 'orange', label: t('MODULE_CHANGED') },
-          'new-only': { color: 'blue', label: t('MODULE_NEW') },
+          same: { color: 'default', label: t('MODULE_SAME') },
+          different: { color: 'orange', label: t('MODULE_DIFFERENT') },
+          'new-only': { color: 'blue', label: t('MODULE_UPLOADED') },
           'old-only': { color: 'purple', label: t('MODULE_EXISTING_ONLY') },
         };
         const { color, label } = configs[row.status];
@@ -266,8 +266,8 @@ export default function UploadConflictDialog(props: UploadConflictDialogProps): 
         type OptionPair = [MergeChoice, string, MergeChoice, string];
         const [leftValue, leftLabel, rightValue, rightLabel]: OptionPair =
           row.status === 'new-only' ? ['new', t('MERGE_UPLOADED'), 'none', t('MERGE_NONE')] :
-          row.status === 'old-only' ? ['none', t('MERGE_NONE'), 'old', t('MERGE_EXISTING')] :
-                                      ['new', t('MERGE_UPLOADED'), 'old', t('MERGE_EXISTING')];
+          row.status === 'old-only' ? ['none', t('MERGE_NONE'), 'old', t('MERGE_CURRENT')] :
+                                      ['new', t('MERGE_UPLOADED'), 'old', t('MERGE_CURRENT')];
         const current = choices[row.fileName];
         const pick = (v: MergeChoice) =>
           setChoices(prev => ({ ...prev, [row.fileName]: v }));
@@ -316,7 +316,20 @@ export default function UploadConflictDialog(props: UploadConflictDialogProps): 
       }
     >
       {isChoiceStep ? (
-        <p>{t('UPLOAD_ID_CONFLICT_DESCRIPTION', { existingName: props.existingProjectName })}</p>
+        <>
+          <p>{t('UPLOAD_ID_CONFLICT_DESCRIPTION', { existingName: props.existingProjectName })}</p>
+          <Antd.Descriptions column={1} bordered size="small" style={{ marginTop: 16 }}>
+            <Antd.Descriptions.Item label={t('UPLOAD_AS_NEW_PROJECT')}>
+              {t('UPLOAD_AS_NEW_PROJECT_HELP')}
+            </Antd.Descriptions.Item>
+            <Antd.Descriptions.Item label={t('UPLOAD_REPLACE')}>
+              {t('UPLOAD_REPLACE_HELP', { existingName: props.existingProjectName })}
+            </Antd.Descriptions.Item>
+            <Antd.Descriptions.Item label={t('UPLOAD_MERGE')}>
+              {t('UPLOAD_MERGE_HELP')}
+            </Antd.Descriptions.Item>
+          </Antd.Descriptions>
+        </>
       ) : (
         <>
           <p>{t('MERGE_MODULES_DESCRIPTION', { existingName: props.existingProjectName })}</p>

@@ -20,7 +20,7 @@
  */
 
 import JSZip from 'jszip';
-import Blockly from 'blockly/core';
+import * as Blockly from 'blockly';
 
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
