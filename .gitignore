@@ -22,6 +22,16 @@ venv/
 # this is now automatically done as part of the build, so it doesn't need to clutter the repo
 /oss-attribution/licenseInfos.json
 
+# the packaging should make these files so they shouldn't be in the repo
+packaging/overlay/opt/blocks/
+
+# temporary so don't put in the repo
+packaging/wheels/
+wheels_venv
+runtime_python/blocks_base_classes/build/
+
+
+
 # misc
 .DS_Store
 .env.local
@@ -36,3 +46,6 @@ yarn-debug.log*
 yarn-error.log*
 
 __screenshots__
+
+# So that we don't end up storing the package
+*.ipk 

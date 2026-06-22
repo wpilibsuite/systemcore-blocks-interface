@@ -27,10 +27,10 @@ export function getButtonConfig() {
     const buttonConfig = new Map(genericButtonConfig);
     
     // Change naming for face buttons to match PS4 layout
-    buttonConfig.set('SOUTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_CROSS'], method: 'getSouthFace', comment: 'X' });
-    buttonConfig.set('EAST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_CIRCLE'], method: 'getEastFace', comment: 'O' });
-    buttonConfig.set('WEST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_SQUARE'], method: 'getWestFace', comment: '□' });
-    buttonConfig.set('NORTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_TRIANGLE'], method: 'getNorthFace', comment: 'Δ' });
+    buttonConfig.set('SOUTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_CROSS'], method: 'getSouthFaceButton', comment: 'X' });
+    buttonConfig.set('EAST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_CIRCLE'], method: 'getEastFaceButton', comment: 'O' });
+    buttonConfig.set('WEST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_SQUARE'], method: 'getWestFaceButton', comment: '□' });
+    buttonConfig.set('NORTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_TRIANGLE'], method: 'getNorthFaceButton', comment: 'Δ' });
 
     buttonConfig.delete('MISC1'); // Remove Misc1 - PS4 does not have this button
     buttonConfig.delete('MISC2'); // Remove Misc2 - PS4 does not have this button
