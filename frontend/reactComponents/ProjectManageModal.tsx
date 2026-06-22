@@ -497,7 +497,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
               icon={<UploadOutlined />}
               onClick={handleUpload}
             >
-              {t('UPLOAD_EXISTING_PROJECT')}
+              {t('UPLOAD_PROJECT')}
             </Antd.Button>
           </div>
         )}
@@ -523,7 +523,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
               icon={<UploadOutlined />}
               onClick={handleUpload}
             >
-              {t('UPLOAD_EXISTING_PROJECT')}
+              {t('UPLOAD_PROJECT')}
             </Antd.Button>
             <Antd.Button
               icon={<DownloadOutlined />}

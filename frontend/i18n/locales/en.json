@@ -92,7 +92,7 @@
     "PROJECT_MANAGEMENT": "Project Management",
     "NO_PROJECTS_FOUND": "No projects found",
     "CREATE_PROJECT_TO_START": "Please create a new project or upload an existing one to get started.",
-    "UPLOAD_EXISTING_PROJECT": "Upload Existing Project",
+    "UPLOAD_PROJECT": "Upload Project",
     "OR": "or",
     "PAGINATION_ITEMS": "{{range0}}-{{range1}} of {{total}} items",
     "FAILED_TO_RENAME_MODULE": "Failed to rename module",
