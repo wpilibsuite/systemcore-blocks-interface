@@ -58,7 +58,6 @@ components = []
 requires = [ "blocks_base_classes", "robotpy-rev"]
 """                    
                 )
-                f.write('[tool.robotpy]\n')
                 f.write(toml_content);
             # Deploy robot code
             subprocess.run(
