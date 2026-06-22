@@ -26,7 +26,6 @@ import startingOpModeBlocks from '../modules/opmode_start.json';
 import startingMechanismBlocks from '../modules/mechanism_start.json';
 import startingRobotBlocks from '../modules/robot_start.json';
 import * as workspaces from '../blocks/utils/workspaces';
-import { upgradePortTypeString } from '../blocks/utils/python_json_types';
 import { OPMODE_TYPE_AUTO, OPMODE_TYPE_UTILITY, 
      BLOCK_NAME as MRC_OPMODE_BLOCK_NAME,
     FIELD_TYPE as MRC_OPMODE_FIELD_TYPE } from '../blocks/mrc_opmode_details';
@@ -287,91 +286,4 @@ export class ModuleContent {
       workspaces.destroyHeadlessWorkspace(workspace);
     }
   }
-}
-
-/**
- * Preupgrades the module content text by adding the privateComponents field.
- * This function should only be called when upgrading old projects.
- */
-export function preupgrade_001_to_002(moduleContentText: string): string {
-  const parsedContent = JSON.parse(moduleContentText);
-  if (!('privateComponents' in parsedContent)) {
-    parsedContent.privateComponents = [];
-  }
-  return JSON.stringify(parsedContent, null, 2);
-}
-
-/**
- * Preupgrades the module content text by upgrading the port types for all compoments.
- * This function should only be called when upgrading old projects.
- */
-export function preupgrade_008_to_009(moduleContentText: string): string {
-  const parsedContent = JSON.parse(moduleContentText);
-
-  const allComponents: any[] = [
-      ...parsedContent.components,
-      ...parsedContent.privateComponents
-  ];
-  allComponents.forEach((component) => {
-    for (const port in component.ports) {
-      component.ports[port] = upgradePortTypeString(component.ports[port]);
-    }
-    if (component.className === 'expansion_hub_motor.ExpansionHubMotor') {
-      component.className = 'wpilib_placeholders.ExpansionHubMotor';
-    } else if (component.className === 'expansion_hub_servo.ExpansionHubServo') {
-      component.className = 'wpilib_placeholders.ExpansionHubServo';
-    }
-  });
-
-  return JSON.stringify(parsedContent, null, 2);
-}
-
-/**
- * Preupgrades the module content text by changing Component.ports to Component.args.
- * This function should only be called when upgrading old projects.
- */
-export function preupgrade_009_to_0010(moduleContentText: string): string {
-  const parsedContent = JSON.parse(moduleContentText);
-
-  const allComponents: any[] = [
-      ...parsedContent.components,
-      ...parsedContent.privateComponents
-  ];
-  allComponents.forEach((component) => {
-    component.args = []
-    for (const port in component.ports) {
-      component.args.push({
-          name: port,
-          type: component.ports[port],
-          defaultValue: '',
-      });
-    }
-    delete component.ports;
-  });
-  return JSON.stringify(parsedContent, null, 2);
-}
-
-/**
- * Preupgrades the module content text by upgrading the port types for all compoments.
- * This function should only be called when upgrading old projects.
- */
-export function preupgrade_0011_to_0012(moduleContentText: string): string {
-  const parsedContent = JSON.parse(moduleContentText);
-
-  const allComponents: any[] = [
-      ...parsedContent.components,
-      ...parsedContent.privateComponents
-  ];
-  allComponents.forEach((component) => {
-    for (const port in component.ports) {
-      component.ports[port] = upgradePortTypeString(component.ports[port]);
-    }
-    if (component.className === 'wpilib_placeholders.ExpansionHubMotor') {
-      component.className = 'wpilib.ExpansionHubMotor';
-    } else if (component.className === 'wpilib_placeholders.ExpansionHubServo') {
-      component.className = 'wpilib.ExpansionHubServo';
-    }
-  });
-
-  return JSON.stringify(parsedContent, null, 2);
 }

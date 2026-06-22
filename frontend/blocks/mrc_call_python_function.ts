@@ -1118,36 +1118,6 @@ const CALL_PYTHON_FUNCTION = {
     }
     return '';
   },
-  upgrade_008_to_009: function(this: CallPythonFunctionBlock) {
-    if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
-      if (this.mrcComponentClassName === 'expansion_hub_motor.ExpansionHubMotor') {
-        this.mrcComponentClassName = 'wpilib_placeholders.ExpansionHubMotor';
-      } else if (this.mrcComponentClassName === 'expansion_hub_servo.ExpansionHubServo') {
-        this.mrcComponentClassName = 'wpilib_placeholders.ExpansionHubServo';
-      }
-    }
-  },
-  upgrade_0011_to_0012: function(this: CallPythonFunctionBlock) {
-    if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
-      if (this.mrcComponentClassName === 'wpilib_placeholders.ExpansionHubMotor') {
-        this.mrcComponentClassName = 'wpilib.ExpansionHubMotor';
-        this.mrcImportModule = 'wpilib';
-      } else if (this.mrcComponentClassName === 'wpilib_placeholders.ExpansionHubServo') {
-        this.mrcComponentClassName = 'wpilib.ExpansionHubServo';
-        this.mrcImportModule = 'wpilib';
-      }
-    }
-  },
-  upgrade_0012_to_0013: function(this: CallPythonFunctionBlock) {
-    if (this.mrcFunctionKind === FunctionKind.MODULE ||
-        this.mrcFunctionKind === FunctionKind.STATIC ||
-        this.mrcFunctionKind === FunctionKind.CONSTRUCTOR ||
-        this.mrcFunctionKind === FunctionKind.INSTANCE) {
-      if (this.mrcModuleOrClassName === '') {
-        this.mrcModuleOrClassName = this.getFieldValue(FIELD_MODULE_OR_CLASS_NAME);
-      }
-    }
-  },
 };
 
 export function setup(): void {
@@ -1809,32 +1779,3 @@ function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.B
   return createBlock(extraState, fields, inputs);
 }
 
-/**
- * Upgrades the CallPythonFunctionBlocks in the given workspace from version 008 to 009.
- * This function should only be called when upgrading old projects.
- */
-export function upgrade_008_to_009(workspace: Blockly.Workspace): void {
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as CallPythonFunctionBlock).upgrade_008_to_009();
-  });
-}
-
-/**
- * Upgrades the CallPythonFunctionBlocks in the given workspace from version 0011 to 0012.
- * This function should only be called when upgrading old projects.
- */
-export function upgrade_0011_to_0012(workspace: Blockly.Workspace): void {
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as CallPythonFunctionBlock).upgrade_0011_to_0012();
-  });
-}
-
-/**
- * Upgrades the CallPythonFunctionBlocks in the given workspace from version 0012 to 0013.
- * This function should only be called when upgrading old projects.
- */
-export function upgrade_0012_to_0013(workspace: Blockly.Workspace): void {
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as CallPythonFunctionBlock).upgrade_0012_to_0013();
-  });
-}

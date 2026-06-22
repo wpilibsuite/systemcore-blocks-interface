@@ -25,7 +25,7 @@ import * as commonStorage from './common_storage';
 import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
-import { upgradeProjectIfNecessary, CURRENT_VERSION, NO_VERSION } from './upgrade_project';
+import { upgradeProjectIfNecessary, CURRENT_VERSION } from './upgrade_project';
 import { GamepadTypeUtils } from '../types/GamepadType';
 import { mrcAddMechanismBlockToRobotContent } from '../blocks/mrc_mechanism_component_holder';
 
@@ -517,7 +517,7 @@ export async function fetchProjectInfo(
   } catch (error) {
     // The file doesn't exist.
     projectInfo = {
-      version: NO_VERSION,
+      version: CURRENT_VERSION,
       gamepadConfig: {},
     };
   }

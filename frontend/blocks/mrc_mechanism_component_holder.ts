@@ -37,7 +37,6 @@ import { ComponentBlock } from './mrc_component';
 import { BLOCK_NAME as MRC_EVENT_NAME } from './mrc_event';
 import { OUTPUT_NAME as EVENT_OUTPUT } from './mrc_event';
 import { EventBlock } from './mrc_event';
-import { getModuleTypeForWorkspace } from './utils/workspaces';
 
 export const BLOCK_NAME = 'mrc_mechanism_component_holder';
 
@@ -550,18 +549,3 @@ export function mrcAddMechanismBlockToRobotContent(robotContent: storageModuleCo
 
   robotContent.setBlocks(blocks);
 }
-
-/**
- * Upgrades the MechanismComponentHolderBlock in the given workspace from version 001 to 002 by
- * setting mrcHidePrivateComponents to true.
- * This function should only be called when upgrading old projects.
- */
-export function upgrade_001_to_002(workspace: Blockly.Workspace) {
-    // Make sure the module type is ROBOT.
-    if (getModuleTypeForWorkspace(workspace) !== storageModule.ModuleType.ROBOT) {
-      throw new Error('upgrade_001_to_002 should only be called for a robot module.');
-    }
-    workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-      (block as MechanismComponentHolderBlock).mrcHidePrivateComponents = true;
-    });
-  }
