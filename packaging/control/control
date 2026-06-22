@@ -1,0 +1,12 @@
+Package: Blocks
+Description: Blocks Programming
+Section: development
+Priority: optional
+Maintainer: FIRST
+Architecture: all
+Source: local
+# Note - this MUST match the port given in backend/start.sh
+X-Port: 9001
+X-Has-UI: true
+X-Auto-Start: true
+X-Icon-Path: /opt/blocks/blocks.png
