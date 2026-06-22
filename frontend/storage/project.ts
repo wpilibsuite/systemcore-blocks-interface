@@ -20,6 +20,7 @@
  */
 
 import JSZip from 'jszip';
+import Blockly from 'blockly/core';
 
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
@@ -148,7 +149,7 @@ export async function createProject(
   const opmodeContent = storageModuleContent.newOpModeContent(
       newProjectName, storageNames.CLASS_NAME_TELEOP);
   await storage.saveFile(opmodePath, opmodeContent);
-  await saveProjectInfo(storage, newProjectName, { version: CURRENT_VERSION, gamepadConfig: GamepadTypeUtils.getDefaultGamepadConfig(), projectId: crypto.randomUUID() });
+  await saveProjectInfo(storage, newProjectName, { version: CURRENT_VERSION, gamepadConfig: GamepadTypeUtils.getDefaultGamepadConfig(), projectId: Blockly.utils.idGenerator.genUid() });
   
 }
 
@@ -187,7 +188,7 @@ export async function copyProject(
 
   // Give the copy a fresh projectId so it's distinct from the original.
   const copiedProjectInfo = await fetchProjectInfo(storage, newProjectName);
-  copiedProjectInfo.projectId = crypto.randomUUID();
+  copiedProjectInfo.projectId = Blockly.utils.idGenerator.genUid();
   await saveProjectInfo(storage, newProjectName, copiedProjectInfo);
 }
 
@@ -564,7 +565,7 @@ export async function saveProjectInfo(
   info.gamepadConfig = GamepadTypeUtils.removeNoneEntries(info.gamepadConfig);
   // Ensure projectId is set
   if (!info.projectId) {
-    info.projectId = crypto.randomUUID();
+    info.projectId = Blockly.utils.idGenerator.genUid();
   }
 
   const projectInfoContentText = JSON.stringify(info, null, 2);

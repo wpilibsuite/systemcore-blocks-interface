@@ -25,6 +25,7 @@ import * as storageModule from '../storage/module';
 import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
 import * as commonStorage from '../storage/common_storage';
+import Blockly from 'blockly/core';
 
 interface UploadConflictDialogProps {
   isOpen: boolean;
@@ -84,6 +85,7 @@ export default function UploadConflictDialog(props: UploadConflictDialogProps): 
     }
   }, [props.isOpen]);
 
+  // Show the user the modules in their upload that conflict with the existing project, and let them choose which to keep.
   const moduleRows = React.useMemo((): ModuleRow[] => {
     if (step !== 'merge') return [];
     const allFileNames = new Set([
@@ -133,6 +135,7 @@ export default function UploadConflictDialog(props: UploadConflictDialogProps): 
     }
   };
 
+  // The user has chosen to upload as a new project, so we need to modify the uploaded files to have a new projectId and unique name, then save them as a new project.
   const handleNewProject = async () => {
     setLoading(true);
     try {
@@ -140,7 +143,7 @@ export default function UploadConflictDialog(props: UploadConflictDialogProps): 
       for (const fileName in modifiedFiles) {
         if (storageNames.isValidProjectInfoFileName(fileName)) {
           const info = JSON.parse(modifiedFiles[fileName]);
-          info.projectId = crypto.randomUUID();
+          info.projectId = Blockly.utils.idGenerator.genUid();
           modifiedFiles[fileName] = JSON.stringify(info, null, 2);
         }
       }
@@ -155,6 +158,7 @@ export default function UploadConflictDialog(props: UploadConflictDialogProps): 
     }
   };
 
+  // The user has chosen to replace the existing project, so we can just upload the new files with the existing project name, overwriting the old files.
   const handleReplace = async () => {
     setLoading(true);
     try {
@@ -169,6 +173,9 @@ export default function UploadConflictDialog(props: UploadConflictDialogProps): 
     }
   };
 
+  // The user has chosen to merge the existing and uploaded projects, so we need to load the existing 
+  // project files, show the user the differences, and let them choose which version of each file 
+  // to keep before saving the merged result.
   const handleOpenMerge = async () => {
     setLoading(true);
     try {
@@ -183,6 +190,10 @@ export default function UploadConflictDialog(props: UploadConflictDialogProps): 
     }
   };
 
+  // The user has chosen which version of each file to keep, so we need to construct the merged 
+  // project files based on their choices, then save them with the existing project name, 
+  // overwriting the old files.   We also download the old one as a backup before merging, in case 
+  // something goes wrong or they want to revert the merge.  
   const handleMerge = async () => {
     setLoading(true);
     try {

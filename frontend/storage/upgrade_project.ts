@@ -441,6 +441,6 @@ async function upgradeFrom_0015_to_0016(
     _projectName: string,
     projectInfo: storageProject.ProjectInfo): Promise<void> {
   // ProjectInfo now includes a projectId GUID that is stable across renames.
-  projectInfo.projectId = crypto.randomUUID();
+  projectInfo.projectId = Blockly.utils.idGenerator.genUid();
   projectInfo.version = '0.0.16';
 }
