@@ -9,6 +9,8 @@ SITE_PACKAGES="$VENV_DIR/lib/python${PYTHON_VER}/site-packages"
 VENV_BIN="$VENV_DIR/bin"
 INSTALLER_SRC="$HOME/Projects/mrc-work/robotpy-installer"
 
+"$SCRIPT_DIR/ensure_venv.sh"
+
 echo "Cleaning previous venv..."
 rm -rf "$VENV_DIR"
 mkdir -p "$SITE_PACKAGES"
