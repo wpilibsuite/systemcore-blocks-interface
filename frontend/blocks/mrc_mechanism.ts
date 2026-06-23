@@ -421,7 +421,7 @@ const MECHANISM = {
           }
           newBlock.initSvg();
           const argInput = this.getInput(INPUT_ARG_PREFIX + i);
-          if (argInput && argInput.connection) {
+          if (argInput && argInput.connection && newBlock.outputConnection) {
             argInput.connection.connect(newBlock.outputConnection);
           }
         }
