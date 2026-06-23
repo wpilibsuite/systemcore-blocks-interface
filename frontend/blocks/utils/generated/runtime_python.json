@@ -178,12 +178,6 @@
         {
             "enums": [],
             "functions": [],
-            "moduleName": "blocks_base_classes.decorators",
-            "moduleVariables": []
-        },
-        {
-            "enums": [],
-            "functions": [],
             "moduleName": "blocks_base_classes.mechanism",
             "moduleVariables": []
         },
