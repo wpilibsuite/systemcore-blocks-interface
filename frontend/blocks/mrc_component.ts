@@ -219,7 +219,7 @@ const COMPONENT = {
   },
   getMechanismInitArgName: function (this: ComponentBlock): string {
     // Return the name of the arg used to represent this component's arguments in a mechanism's
-    // constructor or a mechanism's defineHardware method.
+    // constructor or a mechanism's define_hardware method.
     return getMechanismInitArgName(this.getFieldValue(FIELD_NAME));
   },
   getComponentArgs: function (this: ComponentBlock, args: storageModuleContent.MethodArg[]): void {
@@ -354,7 +354,7 @@ export const pythonFromBlock = function (
     }
   } else {
     // In a mechanism, a component block does not have input sockets.
-    // Each argument of the mechanism's constructor (and the mechanism's defineHardware method) is
+    // Each argument of the mechanism's constructor (and the mechanism's define_hardware method) is
     // a tuple containing the constructor parameters of a component.
     // Use the * operator to unpack the elements of the tuple and pass each
     // element as a separate positional argument to the component constructor.

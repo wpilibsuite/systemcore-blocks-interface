@@ -217,7 +217,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       case storageModule.ModuleType.ROBOT:
         initStatements += this.INDENT + 'self.mechanisms = []\n';
         initStatements += this.INDENT + 'self.event_handlers = {}\n';
-        initStatements += this.INDENT + 'self.defineHardware()\n';
+        initStatements += this.INDENT + 'self.define_hardware()\n';
         for (const opModeDetails of this.allOpModeDetails) {
           this.fromModuleImportName('hal', 'RobotMode');
           const name = opModeDetails.getName();
@@ -252,7 +252,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         break;
       case storageModule.ModuleType.MECHANISM:
         if (this.hasAnyComponents) {
-          initStatements += this.INDENT + 'self.defineHardware(' +
+          initStatements += this.INDENT + 'self.define_hardware(' +
               this.mechanismInitArgNames.join(', ') + ')\n';
         }
         break;
@@ -469,9 +469,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         classMethods.push(this.classMethods['__init__'])
       }
 
-      // Generate the defineHardware method next.
-      if ('defineHardware' in this.classMethods) {
-        classMethods.push(this.classMethods['defineHardware'])
+      // Generate the define_hardware method next.
+      if ('define_hardware' in this.classMethods) {
+        classMethods.push(this.classMethods['define_hardware'])
       }
 
       // Generate the register_event_handlers method next.
@@ -485,7 +485,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
       // Generate the remaining methods.
       for (const name in this.classMethods) {
-        if (name === '__init__' || name === 'defineHardware') {
+        if (name === '__init__' || name === 'define_hardware') {
           continue;
         }
         classMethods.push(this.classMethods[name])
