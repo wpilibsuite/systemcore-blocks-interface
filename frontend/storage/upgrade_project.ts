@@ -60,7 +60,8 @@ export async function upgradeProjectIfNecessary(
   await storageProject.saveProjectInfo(storage, projectName, projectInfo);
 }
 
-export async function upgradeBlocksFiles(
+// @ts-expect-error: declared but not used
+async function upgradeBlocksFiles(
     storage: commonStorage.Storage,
     projectName: string,
     preupgradePredicate: (moduleType: storageModule.ModuleType) => boolean,
@@ -109,35 +110,42 @@ export async function upgradeBlocksFiles(
 }
 
 /** Predicate: all module types are affected. */
-export function anyModuleType(_moduleType: storageModule.ModuleType): boolean {
+// @ts-expect-error: declared but not used
+function anyModuleType(_moduleType: storageModule.ModuleType): boolean {
   return true;
 }
 
 /** Predicate: only OpMode modules are affected. */
-export function isOpMode(moduleType: storageModule.ModuleType): boolean {
+// @ts-expect-error: declared but not used
+function isOpMode(moduleType: storageModule.ModuleType): boolean {
   return moduleType === storageModule.ModuleType.OPMODE;
 }
 
 /** Predicate: only Mechanism modules are affected. */
-export function isMechanism(moduleType: storageModule.ModuleType): boolean {
+// @ts-expect-error: declared but not used
+function isMechanism(moduleType: storageModule.ModuleType): boolean {
   return moduleType === storageModule.ModuleType.MECHANISM;
 }
 
 /** Predicate: only Robot modules are affected. */
-export function isRobot(moduleType: storageModule.ModuleType): boolean {
+// @ts-expect-error: declared but not used
+function isRobot(moduleType: storageModule.ModuleType): boolean {
   return moduleType === storageModule.ModuleType.ROBOT;
 }
 
 /** Predicate: no modules are affected. */
-export function noModuleTypes(_moduleType: storageModule.ModuleType): boolean {
+// @ts-expect-error: declared but not used
+function noModuleTypes(_moduleType: storageModule.ModuleType): boolean {
   return false;
 }
 
 /** Pre-upgrade passthrough: makes no changes to moduleContentText. */
-export function noPreupgrade(moduleContentText: string): string {
+// @ts-expect-error: declared but not used
+function noPreupgrade(moduleContentText: string): string {
   return moduleContentText;
 }
 
 /** Upgrade passthrough: makes no changes to the workspace. */
-export function noUpgrade(_workspace: Blockly.Workspace): void {
+// @ts-expect-error: declared but not used
+function noUpgrade(_workspace: Blockly.Workspace): void {
 }
