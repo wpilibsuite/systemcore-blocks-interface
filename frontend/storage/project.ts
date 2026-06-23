@@ -20,6 +20,7 @@
  */
 
 import JSZip from 'jszip';
+import * as Blockly from 'blockly';
 
 import * as commonStorage from './common_storage';
 import * as storageModule from './module';
@@ -46,6 +47,7 @@ export type Project = {
 export type ProjectInfo = {
   version: string,
   gamepadConfig: GamepadConfig,
+  projectId: string,
 };
 
 /**
@@ -104,7 +106,7 @@ export async function fetchProject(
           robot: robot,
           mechanisms: [],
           opModes: [],
-          projectInfo: { version: '', gamepadConfig: {} }, // Will be populated below
+          projectInfo: { version: '', gamepadConfig: {}, projectId: '' }, // Will be populated below
         };
         break;
       case storageModule.ModuleType.MECHANISM:
@@ -147,7 +149,7 @@ export async function createProject(
   const opmodeContent = storageModuleContent.newOpModeContent(
       newProjectName, storageNames.CLASS_NAME_TELEOP);
   await storage.saveFile(opmodePath, opmodeContent);
-  await saveProjectInfo(storage, newProjectName, { version: CURRENT_VERSION, gamepadConfig: GamepadTypeUtils.getDefaultGamepadConfig()});
+  await saveProjectInfo(storage, newProjectName, { version: CURRENT_VERSION, gamepadConfig: GamepadTypeUtils.getDefaultGamepadConfig(), projectId: Blockly.utils.idGenerator.genUid() });
   
 }
 
@@ -182,6 +184,78 @@ export async function copyProject(
     const newFilePath = storageNames.makeFilePath(newProjectName, projectFileName);
     const fileContentText = await storage.fetchFileContentText(filePath);
     await storage.saveFile(newFilePath, fileContentText);
+  }
+
+  // Give the copy a fresh projectId so it's distinct from the original.
+  const copiedProjectInfo = await fetchProjectInfo(storage, newProjectName);
+  copiedProjectInfo.projectId = Blockly.utils.idGenerator.genUid();
+  await saveProjectInfo(storage, newProjectName, copiedProjectInfo);
+}
+
+/**
+ * Returns the projectId from an uploaded blob without saving anything.
+ * Returns '' if not found or if the blob is invalid.
+ */
+export async function peekUploadedProjectId(blobUrl: string): Promise<string> {
+  try {
+    const files = await processUploadedBlob(blobUrl);
+    for (const fileName in files) {
+      if (storageNames.isValidProjectInfoFileName(fileName)) {
+        const info = parseProjectInfoContentText(files[fileName]);
+        return info.projectId || '';
+      }
+    }
+  } catch {
+    // ignore errors — caller handles the missing-ID case
+  }
+  return '';
+}
+
+/**
+ * Returns the name of the project whose projectId matches the given id, or null.
+ */
+export async function findProjectNameByProjectId(
+    storage: commonStorage.Storage, projectId: string): Promise<string | null> {
+  if (!projectId) return null;
+  const names = await listProjectNames(storage);
+  for (const name of names) {
+    const info = await fetchProjectInfo(storage, name);
+    if (info.projectId === projectId) return name;
+  }
+  return null;
+}
+
+/**
+ * Parses and validates an uploaded blob, returning a map of fileName → content.
+ * Throws if the blob is invalid.
+ */
+export async function getUploadedFiles(blobUrl: string): Promise<{[fileName: string]: string}> {
+  return processUploadedBlob(blobUrl);
+}
+
+/**
+ * Fetches all files in a project directory as a map of fileName → content.
+ */
+export async function fetchProjectFiles(
+    storage: commonStorage.Storage, projectName: string): Promise<{[fileName: string]: string}> {
+  const fileNames = await storage.list(storageNames.makeProjectDirectoryPath(projectName));
+  const files: {[fileName: string]: string} = {};
+  for (const fileName of fileNames) {
+    const filePath = storageNames.makeFilePath(projectName, fileName);
+    files[fileName] = await storage.fetchFileContentText(filePath);
+  }
+  return files;
+}
+
+/**
+ * Saves a map of fileName → content into a project directory.
+ */
+export async function uploadProjectFiles(
+    storage: commonStorage.Storage, projectName: string,
+    files: {[fileName: string]: string}): Promise<void> {
+  for (const fileName in files) {
+    const filePath = storageNames.makeFilePath(projectName, fileName);
+    await storage.saveFile(filePath, files[fileName]);
   }
 }
 
@@ -489,7 +563,11 @@ export async function saveProjectInfo(
     info.gamepadConfig = {};
   }
   info.gamepadConfig = GamepadTypeUtils.removeNoneEntries(info.gamepadConfig);
-  
+  // Ensure projectId is set
+  if (!info.projectId) {
+    info.projectId = Blockly.utils.idGenerator.genUid();
+  }
+
   const projectInfoContentText = JSON.stringify(info, null, 2);
   const projectInfoPath = storageNames.makeProjectInfoPath(projectName);
   await storage.saveFile(projectInfoPath, projectInfoContentText);
@@ -503,6 +581,7 @@ function parseProjectInfoContentText(projectInfoContentText: string): ProjectInf
   const projectInfo: ProjectInfo = {
     version: parsedContent.version,
     gamepadConfig: parsedContent.gamepadConfig || {},
+    projectId: parsedContent.projectId || '',
   };
   return projectInfo;
 }
@@ -519,6 +598,7 @@ export async function fetchProjectInfo(
     projectInfo = {
       version: NO_VERSION,
       gamepadConfig: {},
+      projectId: '',
     };
   }
   return projectInfo;

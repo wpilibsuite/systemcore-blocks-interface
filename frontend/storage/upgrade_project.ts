@@ -52,7 +52,7 @@ import { GamepadTypeUtils } from '../types/GamepadType';
 import * as workspaces from '../blocks/utils/workspaces';
 
 export const NO_VERSION = '0.0.0';
-export const CURRENT_VERSION = '0.0.15';
+export const CURRENT_VERSION = '0.0.16';
 
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
@@ -136,6 +136,11 @@ export async function upgradeProjectIfNecessary(
       // @ts-ignore
       case '0.0.14':
         await upgradeFrom_0014_to_0015(storage, projectName, projectInfo);
+
+      // Intentional fallthrough after case '0.0.15'
+      // @ts-ignore
+      case '0.0.15':
+        await upgradeFrom_0015_to_0016(storage, projectName, projectInfo);
     }
     await storageProject.saveProjectInfo(storage, projectName, projectInfo);
   }
@@ -422,11 +427,20 @@ async function upgradeFrom_0014_to_0015(
     storage: commonStorage.Storage,
     projectName: string,
     projectInfo: storageProject.ProjectInfo): Promise<void> {
-  
+
   // OpModes now have Utility instead of Test as a category of class method definitions.
   await upgradeBlocksFiles(
       storage, projectName,
       noModuleTypes, noPreupgrade,
       isOpMode, upgrade_0014_to_0015);
   projectInfo.version = '0.0.15';
+}
+
+async function upgradeFrom_0015_to_0016(
+    _storage: commonStorage.Storage,
+    _projectName: string,
+    projectInfo: storageProject.ProjectInfo): Promise<void> {
+  // ProjectInfo now includes a projectId GUID that is stable across renames.
+  projectInfo.projectId = Blockly.utils.idGenerator.genUid();
+  projectInfo.version = '0.0.16';
 }
