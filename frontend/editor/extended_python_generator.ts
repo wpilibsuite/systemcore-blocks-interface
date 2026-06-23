@@ -246,9 +246,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           }
         }
         initStatements += this.INDENT + 'self.publishOpModes()\n';
-        //TODO: These next two lines should be removed once userControls are implemented in python.
+        // TODO: These next two lines should be removed once user_controls are implemented in RobotPy.
         this.fromModuleImportName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'DefaultUserControls');
-        initStatements += this.INDENT + 'self.userControls = DefaultUserControls()\n';
+        initStatements += this.INDENT + 'self.user_controls = DefaultUserControls()\n';
         break;
       case storageModule.ModuleType.MECHANISM:
         if (this.hasAnyComponents) {
