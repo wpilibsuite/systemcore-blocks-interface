@@ -485,7 +485,7 @@ export function createCustomMethodBlock(): toolboxItems.Block {
     params: [],
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_METHOD_NAME] = 'myMethod';
+  fields[FIELD_METHOD_NAME] = 'my_method';
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
 }
 
@@ -498,7 +498,7 @@ export function createCustomMethodBlockWithReturn(): toolboxItems.Block {
       params: [],
   };
   const fields: {[key: string]: any} = {};
-  fields[FIELD_METHOD_NAME] = 'myMethodWithReturn';
+  fields[FIELD_METHOD_NAME] = 'my_method_with_return';
   const inputs: {[key: string]: any} = {};
   inputs[INPUT_RETURN] = {
     type: 'input_value',

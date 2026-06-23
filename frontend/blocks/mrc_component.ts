@@ -371,7 +371,7 @@ export function getAllPossibleComponents(
   const contents: toolboxItems.ContentsType[] = [];
   // Iterate through all the component classes and add definition blocks.
   componentClasses.forEach(classData => {
-    const componentName = 'my' + simpleClassName(classData.className);
+    const componentName = 'my_' + storageNames.pascalCaseToSnakeCase(simpleClassName(classData.className));
     classData.constructors.forEach(constructorData => {
        if (constructorData.isComponent) {
          contents.push(createComponentBlock(componentName, classData, constructorData, moduleType, showSimpleClassNames));

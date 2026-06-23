@@ -20,7 +20,9 @@
  */
 
 import { getAlias, simpleClassName } from './python';
+import { pascalCaseToSnakeCase } from '../../storage/names';
 import * as toolboxItems from '../../toolbox/items';
+
 
 
 /** Returns a variable getter block that can be used as an input of another block. */
@@ -62,28 +64,28 @@ export function varNameForType(type: string): string {
     type = alias;
   }
 
-  // TODO(lizlooney): Should the prefix "my" in myTuple, myDict, myCallable, myArray, and my<type> be localized?
+  // TODO(lizlooney): Should the prefix "my" in my_tuple, my_dict, ... be localized?
 
   if (type.startsWith('tuple[') || type.startsWith('Tuple[')) {
-    return 'myTuple';
+    return 'my_tuple';
   }
   if (type.startsWith('dict[') || type.startsWith('Dict[')) {
-    return 'myDict';
+    return 'my_dict';
   }
   if (type.startsWith('list[') || type.startsWith('List[')) {
-    return 'myList';
+    return 'my_list';
   }
   if (type.startsWith('callable[') || type.startsWith('Callable[')) {
-    return 'myCallable';
+    return 'my_callable';
   }
   if (type.includes('[')) {
     // The type is an array.
-    return 'myArray';
+    return 'my_array';
   }
   // If the type has a dot, it is an object and we should provide a variable
   // block for this type.
   if (type.includes('.')) {
-    return 'my' + simpleClassName(type);
+    return 'my_' + pascalCaseToSnakeCase(simpleClassName(type));
   }
   // Otherwise, we don't provide a variable block for this type.
   return ''
