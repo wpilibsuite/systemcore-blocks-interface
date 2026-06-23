@@ -46,7 +46,7 @@ _DICT_MODULE_FUNCTION_NAMES_INTERNAL = {
     'Group',
     'Name',
     'Teleop',
-    'Test',
+    'Utility',
   ],
 }
 
