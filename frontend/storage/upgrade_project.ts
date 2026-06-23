@@ -36,9 +36,6 @@ export const CURRENT_VERSION: string = __APP_VERSION__;
 export async function upgradeProjectIfNecessary(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
   const projectInfo = await storageProject.fetchProjectInfo(storage, projectName);
-  if (semver.eq(projectInfo.version, CURRENT_VERSION)) {
-    return;
-  }
 
   // If only the patch version changed (same major.minor), no migration needed.
   const sameMajorMinor =
