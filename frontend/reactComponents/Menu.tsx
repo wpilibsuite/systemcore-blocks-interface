@@ -181,6 +181,11 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
+  const [deployModalOpen, setDeployModalOpen] = React.useState<boolean>(false);
+  const [deployElapsed, setDeployElapsed] = React.useState<number>(0);
+  const [deployStatus, setDeployStatus] = React.useState<'deploying' | 'success' | 'error'>('deploying');
+  const [deployError, setDeployError] = React.useState<string>('');
+  const deployIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleThemeChange = (newTheme: string) => {
     props.setTheme(newTheme);
@@ -311,53 +316,68 @@ export function Component(props: MenuProps): React.JSX.Element {
       return;
     }
 
+    setDeployElapsed(0);
+    setDeployStatus('deploying');
+    setDeployError('');
+    setDeployModalOpen(true);
+
+    deployIntervalRef.current = setInterval(() => {
+      setDeployElapsed((prev) => prev + 1);
+    }, 1000);
+
+    const stopTimer = () => {
+      if (deployIntervalRef.current !== null) {
+        clearInterval(deployIntervalRef.current);
+        deployIntervalRef.current = null;
+      }
+    };
+
     try {
-      // Save current tab before deploying
       await props.saveCurrentTab();
-      
+
       const blobUrl = await createPythonFiles.producePythonProjectBlob(props.currentProject, props.storage);
-      
-      // Check if the backend server is available
+
       const serverAvailable = await serverSideStorage.isServerAvailable();
-      console.log('Server available:', serverAvailable);
-      
+
       if (serverAvailable) {
-        // Send the file to the backend /deploy endpoint
         const response = await fetch(blobUrl);
         const blob = await response.blob();
-        
+
         const formData = new FormData();
         formData.append('file', blob, `${props.currentProject.projectName}.zip`);
-        
+
         const deployResponse = await fetch('/deploy', {
           method: 'POST',
           body: formData,
         });
-        
+
         if (!deployResponse.ok) {
           throw new Error('Deploy to server failed');
         }
-        
+
         await deployResponse.json();
-        Antd.message.success(t('DEPLOY_SUCCESS'));
-        
-        // Clean up the blob URL
         URL.revokeObjectURL(blobUrl);
+
+        stopTimer();
+        setDeployStatus('success');
+        setTimeout(() => setDeployModalOpen(false), 2000);
       } else {
-        // Download the file locally
         const link = document.createElement('a');
         link.href = blobUrl;
         link.download = `${props.currentProject.projectName}.zip`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
-        // Clean up the blob URL
         URL.revokeObjectURL(blobUrl);
+
+        stopTimer();
+        setDeployModalOpen(false);
       }
     } catch (error) {
       console.error('Failed to deploy project:', error);
-      props.setAlertErrorMessage(t('DEPLOY_FAILED') || 'Failed to deploy project');
+      stopTimer();
+      setDeployStatus('error');
+      setDeployError(t('DEPLOY_FAILED'));
     }
   };
 
@@ -433,6 +453,42 @@ export function Component(props: MenuProps): React.JSX.Element {
           currentTheme={props.theme}
           onThemeChange={handleThemeChange}
         />
+      <Antd.Modal
+        open={deployModalOpen}
+        closable={deployStatus === 'error'}
+        onCancel={() => setDeployModalOpen(false)}
+        footer={deployStatus === 'error' ? (
+          <Antd.Button onClick={() => setDeployModalOpen(false)}>
+            {t('OK')}
+          </Antd.Button>
+        ) : null}
+        title={t('DEPLOY')}
+        mask={{ closable: false }}
+      >
+        <div style={{textAlign: 'center', padding: '16px 0'}}>
+          {deployStatus === 'deploying' && (
+            <>
+              <Antd.Spin size="large" />
+              <div style={{marginTop: 16, fontSize: 16}}>
+                {t('DEPLOY_IN_PROGRESS')}
+              </div>
+              <div style={{marginTop: 8, color: '#888'}}>
+                {t('DEPLOY_ELAPSED', {seconds: deployElapsed})}
+              </div>
+            </>
+          )}
+          {deployStatus === 'success' && (
+            <div style={{fontSize: 16, color: '#52c41a'}}>
+              {t('DEPLOY_SUCCESS')}
+            </div>
+          )}
+          {deployStatus === 'error' && (
+            <div style={{fontSize: 16, color: '#ff4d4f'}}>
+              {deployError}
+            </div>
+          )}
+        </div>
+      </Antd.Modal>
     </>
   );
 }
