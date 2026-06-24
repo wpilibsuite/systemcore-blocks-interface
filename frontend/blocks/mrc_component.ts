@@ -323,36 +323,6 @@ const COMPONENT = {
   mrcGetFullLabel: function(this: ComponentBlock): string {
     return this.getFieldValue(FIELD_NAME) + ' ' + Blockly.Msg.OF_TYPE + ' ' + this.mrcClassName;
   },
-  upgrade_005_to_006: function(this: ComponentBlock) {
-    for (let i = 0; i < this.mrcArgs.length; i++) {
-      if (this.mrcArgs[i].type === 'Port') {
-        this.mrcArgs[i].type = this.mrcArgs[i].name;
-      }
-    }
-  },
-  upgrade_008_to_009: function(this: ComponentBlock) {
-    const fieldTypeValue = this.getFieldValue(FIELD_TYPE);
-    if (fieldTypeValue === 'expansion_hub_motor.ExpansionHubMotor') {
-      this.setFieldValue('wpilib_placeholders.ExpansionHubMotor', FIELD_TYPE);
-    } else if (fieldTypeValue === 'expansion_hub_servo.ExpansionHubServo') {
-      this.setFieldValue('wpilib_placeholders.ExpansionHubServo', FIELD_TYPE);
-    }
-  },
-  upgrade_0011_to_0012: function(this: ComponentBlock) {
-    const fieldTypeValue = this.getFieldValue(FIELD_TYPE);
-    if (fieldTypeValue === 'wpilib_placeholders.ExpansionHubMotor') {
-      this.setFieldValue('wpilib.ExpansionHubMotor', FIELD_TYPE);
-      this.mrcImportModule = 'wpilib';
-    } else if (fieldTypeValue === 'wpilib_placeholders.ExpansionHubServo') {
-      this.setFieldValue('wpilib.ExpansionHubServo', FIELD_TYPE);
-      this.mrcImportModule = 'wpilib';
-    }
-  },
-  upgrade_0012_to_0013: function(this: ComponentBlock) {
-    if (this.mrcClassName === '') {
-      this.mrcClassName = this.getFieldValue(FIELD_TYPE);
-    }
-  }
 };
 
 export const setup = function () {
@@ -455,42 +425,3 @@ function createComponentBlock(
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
 }
 
-/**
- * Upgrades the ComponentBlocks in the given workspace from version 005 to 006.
- * This function should only be called when upgrading old projects.
- */
-export function upgrade_005_to_006(workspace: Blockly.Workspace): void {
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as ComponentBlock).upgrade_005_to_006();
-  });
-}
-
-/**
- * Upgrades the ComponentBlocks in the given workspace from version 008 to 009.
- * This function should only be called when upgrading old projects.
- */
-export function upgrade_008_to_009(workspace: Blockly.Workspace): void {
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as ComponentBlock).upgrade_008_to_009();
-  });
-}
-
-/**
- * Upgrades the ComponentBlocks in the given workspace from version 0011 to 0012.
- * This function should only be called when upgrading old projects.
- */
-export function upgrade_0011_to_0012(workspace: Blockly.Workspace): void {
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as ComponentBlock).upgrade_0011_to_0012();
-  });
-}
-
-/**
- * Upgrades the ComponentBlocks in the given workspace from version 0012 to 0013.
- * This function should only be called when upgrading old projects.
- */
-export function upgrade_0012_to_0013(workspace: Blockly.Workspace): void {
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
-    (block as ComponentBlock).upgrade_0012_to_0013();
-  });
-}

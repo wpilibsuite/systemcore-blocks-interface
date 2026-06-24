@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "blocks_base_classes"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Base classes for SystemCore blocks interface"
 requires-python = ">=3.8"
 license = {text = "Apache-2.0"}
@@ -12,6 +12,9 @@ authors = [
     {name = "Alan Smith", email = "alan@porpoiseful.com"}
 ]
 dependencies = []
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION.txt"}
 
 [tool.setuptools.package-dir]
 "blocks_base_classes" = "."

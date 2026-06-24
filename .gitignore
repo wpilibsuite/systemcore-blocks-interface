@@ -25,6 +25,9 @@ venv/
 # the packaging should make these files so they shouldn't be in the repo
 packaging/overlay/opt/blocks/
 
+# generated from package.json version at build time
+runtime_python/blocks_base_classes/VERSION.txt
+
 # temporary so don't put in the repo
 packaging/wheels/
 wheels_venv

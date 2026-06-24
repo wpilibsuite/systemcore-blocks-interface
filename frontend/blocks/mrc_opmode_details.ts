@@ -102,11 +102,6 @@ const OPMODE_DETAILS = {
       }
     }
   },
-  upgrade_0014_to_0015: function(this: OpmodeDetailsBlock) {
-      if (this.getField(FIELD_TYPE) && this.getFieldValue(FIELD_TYPE) === 'Test') {
-        this.setFieldValue(OPMODE_TYPE_UTILITY, FIELD_TYPE);
-      }
-  }
 }
 
 export const setup = function () {
@@ -150,13 +145,3 @@ export function checkOpMode(workspace: Blockly.Workspace, editor: Editor) {
     (block as OpmodeDetailsBlock).checkOpMode(editor);
   });
 }
-
-/**  
- * Upgrades the OpmodeDetailsBlocks in the given workspace from version 0014 to 0015.  
- * This function should only be called when upgrading old projects.  
- */  
-export function upgrade_0014_to_0015(workspace: Blockly.Workspace): void {  
-  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {  
-    (block as OpmodeDetailsBlock).upgrade_0014_to_0015();  
-  });  
-}  
