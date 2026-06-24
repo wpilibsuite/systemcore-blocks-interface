@@ -23,6 +23,8 @@ if [ -d "$CACHE_DIR" ] && [ "$(ls "$PIP_CACHE_DIR"/*.whl 2>/dev/null | wc -l)" -
     exit 0
 fi
 
+"$SCRIPT_DIR/ensure_venv.sh"
+
 source "$SCRIPT_DIR/venv/bin/activate"
 robotpy installer download-python --cache-root "$CACHE_DIR"
 robotpy installer download robotpy --cache-root "$CACHE_DIR"
