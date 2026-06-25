@@ -43,6 +43,7 @@ import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
 import AboutDialog from './AboutModal';
 import ThemeModal from './ThemeModal';
+import LanguageModal from './LanguageModal';
 
 /** Type definition for menu items. */
 type MenuItem = Required<Antd.MenuProps>['items'][number];
@@ -97,7 +98,6 @@ function getItem(
 function getMenuItems(
     t: (key: string) => string,
     project: storageProject.Project,
-    currentLanguage: string,
     showSimpleClassNames: boolean): MenuItem[] {
   const mechanisms: MenuItem[] = [];
   const opmodes: MenuItem[] = [];
@@ -140,23 +140,7 @@ function getMenuItems(
           showSimpleClassNames ? <CheckOutlined /> : undefined
         ),
       getItem(t('THEME') + '...', 'theme', <BgColorsOutlined />),
-      getItem(t('LANGUAGE'), 'language', <GlobalOutlined />, [
-        getItem(
-          t('ENGLISH'),
-          'setlang:en',
-          currentLanguage === 'en' ? <CheckOutlined /> : undefined
-        ),
-        getItem(
-          t('SPANISH'),
-          'setlang:es',
-          currentLanguage === 'es' ? <CheckOutlined /> : undefined
-        ),
-        getItem(
-          t('HEBREW'),
-          'setlang:he',
-          currentLanguage === 'he' ? <CheckOutlined /> : undefined
-        ),
-      ]),
+      getItem(t('LANGUAGE') + '...', 'language', <GlobalOutlined />),
     ]),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
       getItem(t('TOUR.MENU_ITEM') + '...', 'tour', <QuestionCircleOutlined />),
@@ -181,6 +165,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
+  const [languageModalOpen, setLanguageModalOpen] = React.useState<boolean>(false);
   const [deployModalOpen, setDeployModalOpen] = React.useState<boolean>(false);
   const [deployElapsed, setDeployElapsed] = React.useState<number>(0);
   const [deployStatus, setDeployStatus] = React.useState<'deploying' | 'success' | 'error'>('deploying');
@@ -294,11 +279,10 @@ export function Component(props: MenuProps): React.JSX.Element {
       props.setShowSimpleClassNames(!props.showSimpleClassNames)
     } else if (key === 'theme') {
       setThemeModalOpen(true);
+    } else if (key === 'language') {
+      setLanguageModalOpen(true);
     } else if (key == 'deploy') {
       handleDeploy();
-    } else if (key.startsWith('setlang:')) {
-      const lang = key.split(':')[1];
-      i18n.changeLanguage(lang);
     } else {
       // TODO: Handle other menu actions
 
@@ -408,7 +392,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   React.useEffect(() => {
     if (props.currentProject) {
       setMostRecentProjectName();
-      setMenuItems(getMenuItems(t, props.currentProject, i18n.language, props.showSimpleClassNames));
+      setMenuItems(getMenuItems(t, props.currentProject, props.showSimpleClassNames));
       setNoProjects(false);
     }
   }, [props.currentProject, i18n.language, props.showSimpleClassNames]);
@@ -452,6 +436,10 @@ export function Component(props: MenuProps): React.JSX.Element {
           onClose={() => setThemeModalOpen(false)}
           currentTheme={props.theme}
           onThemeChange={handleThemeChange}
+        />
+      <LanguageModal
+          open={languageModalOpen}
+          onClose={() => setLanguageModalOpen(false)}
         />
       <Antd.Modal
         open={deployModalOpen}
