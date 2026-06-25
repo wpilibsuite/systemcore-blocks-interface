@@ -40,6 +40,7 @@ import * as commonStorage from './storage/common_storage';
 import * as storageModule from './storage/module';
 import * as storageProject from './storage/project';
 import * as clientSideStorage from './storage/client_side_storage';
+import * as serverSideStorage from './storage/server_side_storage';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 
@@ -81,11 +82,15 @@ const LAYOUT_BACKGROUND_COLOR = '#0F0';
 const App: React.FC = (): React.JSX.Element => {
   const [storage, setStorage] = React.useState<commonStorage.Storage | null>(null);
 
-  /** Opens client-side storage asynchronously. */
+  /** Opens storage asynchronously, preferring the backend when available. */
   const openStorage = async (): Promise<void> => {
     try {
-      const clientStorage = await clientSideStorage.openClientSideStorage();
-      setStorage(clientStorage);
+      if (await serverSideStorage.isServerAvailable()) {
+        setStorage(new serverSideStorage.ServerSideStorage());
+      } else {
+        const clientStorage = await clientSideStorage.openClientSideStorage();
+        setStorage(clientStorage);
+      }
     } catch (e) {
       console.error(STORAGE_ERROR_MESSAGE);
       console.error(e);
