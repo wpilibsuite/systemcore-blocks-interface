@@ -24,6 +24,11 @@ import * as commonStorage from './common_storage';
 
 const API_BASE_URL = '';
 
+function toStorageUrl(path: string): string {
+  const stripped = path.startsWith('/') ? path.slice(1) : path;
+  return `${API_BASE_URL}/storage/${stripped}`;
+}
+
 export async function isServerAvailable(): Promise<boolean> {
   try {
     // Create a timeout promise
@@ -80,65 +85,67 @@ export class ServerSideStorage implements commonStorage.Storage {
   }
 
   async list(path: string): Promise<string[]> {
-    // Ensure path ends with / for directory listing
-    const dirPath = path.endsWith('/') ? path : path + '/';
-    const response = await fetch(`${API_BASE_URL}/storage/${encodeURIComponent(dirPath)}`);
-    
+    if (!path.endsWith('/')) {
+      path += '/';
+    }
+    const response = await fetch(toStorageUrl(path));
+
     if (!response.ok) {
       throw new Error(`Failed to list files: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
     return data.files || [];
   }
 
   async rename(oldPath: string, newPath: string): Promise<void> {
+    const stripped = (p: string) => p.startsWith('/') ? p.slice(1) : p;
     const response = await fetch(`${API_BASE_URL}/storage/rename`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ old_path: oldPath, new_path: newPath }),
+      body: JSON.stringify({ old_path: stripped(oldPath), new_path: stripped(newPath) }),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to rename: ${response.statusText}`);
     }
   }
 
   async fetchFileContentText(filePath: string): Promise<string> {
-    const response = await fetch(`${API_BASE_URL}/storage/${encodeURIComponent(filePath)}`);
-    
+    const response = await fetch(toStorageUrl(filePath));
+
     if (!response.ok) {
       if (response.status === 404) {
         throw new Error(`File not found: ${filePath}`);
       }
       throw new Error(`Failed to fetch file: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
     return data.content || '';
   }
 
   async saveFile(filePath: string, fileContentText: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/storage/${encodeURIComponent(filePath)}`, {
+    const response = await fetch(toStorageUrl(filePath), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ content: fileContentText }),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to save file: ${response.statusText}`);
     }
   }
 
   async delete(path: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/storage/${encodeURIComponent(path)}`, {
+    const response = await fetch(toStorageUrl(path), {
       method: 'DELETE',
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to delete: ${response.statusText}`);
     }
