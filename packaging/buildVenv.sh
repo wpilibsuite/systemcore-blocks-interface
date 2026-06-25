@@ -7,8 +7,6 @@ WHEELS_DIR="$SCRIPT_DIR/wheels_venv"
 PYTHON_VER="3.13"
 SITE_PACKAGES="$VENV_DIR/lib/python${PYTHON_VER}/site-packages"
 VENV_BIN="$VENV_DIR/bin"
-INSTALLER_SRC="$HOME/Projects/mrc-work/robotpy-installer"
-
 "$SCRIPT_DIR/ensure_venv.sh"
 
 echo "Cleaning previous venv..."
@@ -20,11 +18,7 @@ echo "Downloading wheels..."
 rm -rf "$WHEELS_DIR"
 mkdir -p "$WHEELS_DIR"
 
-echo "  Building robotpy-installer wheel from local source..."
-pip3 wheel --no-deps "$INSTALLER_SRC" -w "$WHEELS_DIR"
-INSTALLER_WHL=$(ls "$WHEELS_DIR"/robotpy_installer*.whl | head -1)
-
-echo "  Downloading dependencies..."
+echo "  Downloading robotpy-installer and dependencies..."
 pip3 download \
   --extra-index-url https://wpilib.jfrog.io/artifactory/api/pypi/wpilib-python-release-2027/simple \
   --only-binary :all: \
@@ -38,7 +32,7 @@ pip3 download \
   --implementation cp \
   --abi cp313 \
   -d "$WHEELS_DIR" \
-  "$INSTALLER_WHL"
+  robotpy-installer==2027.0.0a7
 
 echo "Unpacking wheels..."
 for whl in "$WHEELS_DIR"/*.whl; do
