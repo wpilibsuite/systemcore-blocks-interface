@@ -99,13 +99,13 @@ export class ServerSideStorage implements commonStorage.Storage {
   }
 
   async rename(oldPath: string, newPath: string): Promise<void> {
-    const stripped = (p: string) => p.startsWith('/') ? p.slice(1) : p;
+    const stripLeadingSlash = (p: string) => p.startsWith('/') ? p.slice(1) : p;
     const response = await fetch(`${API_BASE_URL}/storage/rename`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ old_path: stripped(oldPath), new_path: stripped(newPath) }),
+      body: JSON.stringify({ old_path: stripLeadingSlash(oldPath), new_path: stripLeadingSlash(newPath) }),
     });
 
     if (!response.ok) {

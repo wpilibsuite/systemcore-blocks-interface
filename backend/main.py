@@ -133,8 +133,10 @@ def serve_static(path: str) -> Union[Response, Tuple[Response, int]]:
         except:
             return jsonify({'error': 'File not found'}), 404
 
+# This is only run for testing.   When we use gunicorn, this ends up not being
+# run.   So be careful of what code is placed here.
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run the Storage API backend server')
+    parser = argparse.ArgumentParser(description='Run the Blocks backend server')
     parser.add_argument('-p', '--port', type=int, default=5001,
                         help='Port to run the server on (default: 5001)')
     parser.add_argument('-l', '--log-level', type=str, default='INFO',
