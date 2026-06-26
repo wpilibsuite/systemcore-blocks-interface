@@ -376,6 +376,24 @@ const CLASS_METHOD_DEF = {
     });
     return parameterNames;
   },
+  upgrade_0_1_x_to_0_2_0: function(this: ClassMethodDefBlock) {
+    // Change opmodeStart to opmode_start
+    // Change opmodePeriodic to opmode_periodic
+    // Change opmodeEnd to opmode_end
+    if (!this.mrcCanChangeSignature &&
+        !this.mrcCanBeCalledWithinClass &&
+        !this.mrcCanBeCalledOutsideClass &&
+        this.mrcReturnType === 'None' &&
+        this.mrcParameters.length === 0) {
+      if (this.getFieldValue('NAME') === 'opmodeStart') {
+        this.setFieldValue('opmode_start', FIELD_METHOD_NAME);
+      } else if (this.getFieldValue('NAME') === 'opmodePeriodic') {
+        this.setFieldValue('opmode_periodic', FIELD_METHOD_NAME);
+      } else if (this.getFieldValue('NAME') === 'opmodeEnd') {
+        this.setFieldValue('opmode_end', FIELD_METHOD_NAME);
+      }
+    }
+  },
 };
 
 export const setup = function () {
@@ -596,3 +614,12 @@ export function registerToolboxButton(workspace: Blockly.WorkspaceSvg, messageAp
   });
 }
 
+/**
+ * Upgrades the ClassMethodDefBlocks in the given workspace from version 0.1.x to 0.2.0.
+ * This function should only be called when upgrading old projects.
+ */
+export function upgrade_0_1_x_to_0_2_0(workspace: Blockly.Workspace): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as ClassMethodDefBlock).upgrade_0_1_x_to_0_2_0();
+  });
+}
