@@ -1,4 +1,5 @@
 {
+  "__TODO__": "These translations were done by Claude Sonnet 4.6. They need to be verified by a native Hebrew speaker.",
   "mechanism_delete": "מחק מנגנון",
   "mechanism_rename": "שנה שם מנגנון",
   "mechanism_copy": "העתק מנגנון",
@@ -71,8 +72,10 @@
   "SHOW_SIMPLE_CLASS_NAMES": "קיצור שמות כיתות על בלוקים",
   "THEME": "ערכת נושא",
   "LANGUAGE": "שפה",
+  "SELECT_LANGUAGE": "בחר שפה",
   "ENGLISH": "אנגלית",
   "SPANISH": "ספרדית",
+  "FRENCH": "צרפתית",
   "HEBREW": "עברית",
   "HELP": "עזרה",
   "SELECT_HIDDEN": "בחר נסתר",
