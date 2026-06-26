@@ -238,6 +238,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           const opModeClassName = opModeDetails.getClassName();
           const opModeModuleName = pascalCaseToSnakeCase(opModeClassName);
           this.importModule(opModeModuleName);
+          // TODO(lizlooney): When RobotPy is changed to use snake case, update the following code.
+          // addOpMode will likely change to add_opmode (or add_op_mode?)
+          // publishOpModes will likely change to publish_opmodes (or publish_op_modes?)
           const call = `self.addOpMode(${opModeModuleName}.${opModeClassName}, ${robotMode}, '${name}', '${group}', '${description}')`;
           if (opModeDetails.getEnabled()) {
             initStatements += this.INDENT + call + '\n';
