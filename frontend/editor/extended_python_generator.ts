@@ -100,7 +100,7 @@ export class OpModeDetails {
       // because otherwise the Teleop decorator collides with the class name of
       // the OpMode module that is created automatically when a new project is
       // created. Similarly, it is likely that the user might make an opmode
-      // named Test or Auto.
+      // named Utility or Auto.
       const lastDot = typeDecoratorClass.lastIndexOf('.');
       if (lastDot === -1) {
         throw new Error(`The decorator class ${typeDecoratorClass} should contain a '.'`);
