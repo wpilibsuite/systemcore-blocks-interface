@@ -37,6 +37,7 @@ import {
 import { makeLegalName } from './utils/validator';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
+import * as storageNames from '../storage/names';
 import * as storageModuleContent from '../storage/module_content';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import {
@@ -383,7 +384,7 @@ export function getAllPossibleComponents(
 }
 
 export function getMechanismInitArgName(componentName: string): string {
-  return componentName + 'Args';
+  return componentName + '_args';
 }
 
 function createComponentBlock(
@@ -424,4 +425,3 @@ function createComponentBlock(
   });
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
 }
-

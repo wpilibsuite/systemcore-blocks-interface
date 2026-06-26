@@ -24,7 +24,6 @@ import { pascalCaseToSnakeCase } from '../../storage/names';
 import * as toolboxItems from '../../toolbox/items';
 
 
-
 /** Returns a variable getter block that can be used as an input of another block. */
 export function createVariableGetterBlockValue(varName: string): any {
   return {
