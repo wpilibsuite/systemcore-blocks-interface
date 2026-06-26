@@ -18,13 +18,12 @@ When responding to review comments, you must do so without relying on AI tools. 
 # Development
 ## versioning
 * We use Semantic Versioning on this project.  <Major>.<Minor>.<Patch>
-* Either major or minor means that the format of the blocks file has been changed such that older versions
-can no longer read the file.
+* When the major or minor value changes, it means that the format of the blocks file has been changed such that older versions can no longer read the files written by the later version.
    * This includes adding new blocks
 * Please work with a maintainer on your updateProject changes if your PR requires it.
 
 # For maintainers only
-When a PR was merged that means a new release is needed, run the script makeRelease 
+When a PR was merged that means a new release is needed, run the script `makeRelease.sh` 
 which will create a tag and push it to upstream.  You'll need upstream 
 configured as a remote like below. 
 ```

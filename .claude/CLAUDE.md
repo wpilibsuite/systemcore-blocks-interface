@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A Blockly-based visual programming interface for FTC robotics teams running on WPILib/SystemCore. Students drag-and-drop blocks to write Python robot code, which is then deployed to a robot running on SystemCore (a Raspberry Pi-class device at `robot.local`).
+A Blockly-based visual programming interface for FTC and FRC robotics teams running on WPILib/SystemCore. Students drag-and-drop blocks to write Python robot code, which is then deployed to a robot running on SystemCore (a Raspberry Pi-class device at `robot.local`).
 
 ## Development Commands
 
@@ -14,7 +14,6 @@ npm run start        # Dev server at localhost:3000 (also: npm run dev)
 npm run build        # Production build into dist/
 npm run test         # Run browser tests (Playwright/Vitest)
 npm run tscheck      # TypeScript type checking (no emit)
-npm run gen          # Regenerate block definitions from JSON
 ```
 
 ### Backend (Python/Flask) — needed for server-side storage and deploy
@@ -80,13 +79,14 @@ Flask + Flask-RESTful app. Key endpoints:
 - `GET/POST /storage/<path>` — file and directory operations backed by SQLite (`projects.db`)
 - `GET/POST /entries/<key>` — key-value settings storage
 - `POST /deploy` — receives a zip, stops the robot service, extracts to `/home/systemcore/pyFromBlocks/`, rewrites `robotCommand`, restarts the robot
+- During production, the backend is run with gunicorn so be careful not to put code in the
+`if __name__ == '__main__':` that needs to run both when being tested and in production
 
 ## Coding Standards
-
 - Google TypeScript style
+
+## Guardrails
 - Do not add new npm packages without explicit permission
-- All variables in Blockly workspaces become class instance variables in the generated Python
-- Each Blockly workspace maps to exactly one Python class/file
 
 ## Adding a New Custom Block
 

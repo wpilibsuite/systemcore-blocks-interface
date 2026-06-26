@@ -19,7 +19,6 @@ Now you can access blocks by selecting the Blocks from the main page of systemco
 `npm run package` to make the new Blocks ipk
 
 ## Making the Blocks ipk
-### Preparing to make it
 1. Go to your systemcore-blocks-interface development area
 2. `npm run package`
 3. There is no step 3. :-)
