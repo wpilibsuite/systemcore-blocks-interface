@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd "$(dirname "$0")/.."
+
 # Update the backend (but without the venv)
 rsync -avz --exclude 'venv' backend systemcore@robot.local:/opt/blocks
 
