@@ -33,11 +33,24 @@ _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
 
 _LIST_MODULE_NAMES_INTERNAL = [
   'blocks_base_classes.block_execution',
+  'blocks_base_classes.decorators',
+  'blocks_base_classes.user_controls',
 ]
 
 _LIST_CLASS_NAMES_INTERNAL = [
   'blocks_base_classes.BlockExecution',
+  'blocks_base_classes.DefaultUserControls',
 ]
+
+_DICT_MODULE_FUNCTION_NAMES_INTERNAL = {
+  'blocks_base_classes': [
+    'Auto',
+    'Group',
+    'Name',
+    'Teleop',
+    'Utility',
+  ],
+}
 
 _COMMON_MARKER = '@Common'
 
@@ -193,6 +206,10 @@ class JsonGenerator:
           if hasattr(module, '__all__') and not (key in module.__all__):
             # Ignore the imported function.
             continue
+
+      if (module_name in _DICT_MODULE_FUNCTION_NAMES_INTERNAL
+          and key in _DICT_MODULE_FUNCTION_NAMES_INTERNAL[module_name]):
+        continue
 
       # Look at each function signature. For overloaded functions, there will be more than one.
       (signatures, comments) = python_util.processFunction(value)
