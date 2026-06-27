@@ -1,6 +1,7 @@
 # This class provides functions used when executing blocks.
 
 import json
+from typing import Any
 
 class BlockExecution:
     current_class_name: str = ''
@@ -20,12 +21,12 @@ class BlockExecution:
         return True
 
     @classmethod
-    def endBlockExecution(cls, value):
+    def endBlockExecution(cls, value: Any):
         cls.current_block_execution_finished = True
         return value
 
     @classmethod
-    def handleFatalError(cls, e) -> None:
+    def handleFatalError(cls, e: Exception) -> None:
         if cls.current_block_label:
             subordinating_conjunction = (
                 'after' if cls.current_block_execution_finished else 'while')
