@@ -6,7 +6,7 @@ def Teleop(cls):
 def Auto(cls):
     return cls
 
-def Test(cls):
+def Utility(cls):
     return cls
 
 def Name(cls, str):
