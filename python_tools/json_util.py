@@ -510,15 +510,20 @@ class JsonGenerator:
 
     if class_name == 'wpilib.ExpansionHubMotor':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 2 and
             args[0][_KEY_ARGUMENT_NAME] == 'usbId' and
             args[1][_KEY_ARGUMENT_NAME] == 'channel'):
+          found_constructor = True
           component_args = []
           component_args.append(self._createArgData('expansionHubMotor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
@@ -536,15 +541,20 @@ class JsonGenerator:
 
     if class_name == 'wpilib.ExpansionHubServo':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 2 and
             args[0][_KEY_ARGUMENT_NAME] == 'usbId' and
             args[1][_KEY_ARGUMENT_NAME] == 'channel'):
+          found_constructor = True
           component_args = []
           component_args.append(self._createArgData('expansionHubServo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
@@ -559,14 +569,19 @@ class JsonGenerator:
 
     if class_name == 'wpilib.AddressableLED':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 1 and
             args[0][_KEY_ARGUMENT_NAME] == 'channel'):
+          found_constructor = True
           component_args = []
           component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
@@ -578,18 +593,23 @@ class JsonGenerator:
 
     if class_name == 'wpilib.AnalogEncoder':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 3 and
             args[0][_KEY_ARGUMENT_NAME] == 'channel' and
             args[1][_KEY_ARGUMENT_NAME] == 'fullRange' and
             args[2][_KEY_ARGUMENT_NAME] == 'expectedZero'):
+          found_constructor = True
           component_args = []
           component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
           component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), '1.0'))
           component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0.0'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
@@ -600,18 +620,23 @@ class JsonGenerator:
 
     if class_name == 'wpilib.AnalogPotentiometer':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 3 and
             args[0][_KEY_ARGUMENT_NAME] == 'channel' and
             args[1][_KEY_ARGUMENT_NAME] == 'fullRange' and
             args[2][_KEY_ARGUMENT_NAME] == 'offset'):
+          found_constructor = True
           component_args = []
           component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
           component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), args[1][_KEY_ARGUMENT_DEFAULT_VALUE]))
           component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), args[2][_KEY_ARGUMENT_DEFAULT_VALUE]))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
@@ -621,14 +646,19 @@ class JsonGenerator:
 
     if class_name == 'wpilib.DigitalInput':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 1 and
             args[0][_KEY_ARGUMENT_NAME] == 'channel'):
+          found_constructor = True
           component_args = []
           component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
@@ -638,18 +668,23 @@ class JsonGenerator:
 
     if class_name == 'wpilib.DutyCycleEncoder':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 3 and
             args[0][_KEY_ARGUMENT_NAME] == 'channel' and
             args[1][_KEY_ARGUMENT_NAME] == 'fullRange' and
             args[2][_KEY_ARGUMENT_NAME] == 'expectedZero'):
+          found_constructor = True
           component_args = []
           component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
           component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), '1'))
           component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
@@ -661,14 +696,19 @@ class JsonGenerator:
 
     if class_name == 'wpilib.OnboardIMU':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 1 and
             args[0][_KEY_ARGUMENT_NAME] == 'mountOrientation'):
+          found_constructor = True
           component_args = []
           component_args.append(self._createArgData(args[0][_KEY_ARGUMENT_NAME], self._getClassName(args[0][_KEY_ARGUMENT_TYPE]), args[0][_KEY_ARGUMENT_DEFAULT_VALUE]))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
@@ -688,14 +728,19 @@ class JsonGenerator:
 
     if class_name ==  'wpilib.PWMSparkMax':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 1 and
             args[0][_KEY_ARGUMENT_NAME] == 'channel'):
+          found_constructor = True
           component_args = []
           component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
@@ -711,17 +756,22 @@ class JsonGenerator:
 
     if class_name == 'rev.A301':
       class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 2 and
             args[0][_KEY_ARGUMENT_NAME] == 'busId' and
             args[1][_KEY_ARGUMENT_NAME] == 'deviceId'):
+          found_constructor = True
           component_args = []
           # TODO: consider hardcoding a default value for busId.
           component_args.append(self._createArgData(args[0][_KEY_ARGUMENT_NAME], self._getClassName(args[0][_KEY_ARGUMENT_TYPE]), args[0][_KEY_ARGUMENT_DEFAULT_VALUE]))
           component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), args[1][_KEY_ARGUMENT_DEFAULT_VALUE]))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         function_name = function_data[_KEY_FUNCTION_NAME]
         # TODO: decide which functions are common.
