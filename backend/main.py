@@ -42,6 +42,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "proj
 db.init_app(app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Initialize DB tables at startup regardless of how the server is launched (e.g. gunicorn)
+with app.app_context():
+    db.create_all()
+
 # Register API routes
 # Storage API routes (more specific routes first)
 app.add_url_rule('/entries/<path:entry_key>', view_func=StorageEntryResource.as_view('storage_entry'))
@@ -129,8 +133,10 @@ def serve_static(path: str) -> Union[Response, Tuple[Response, int]]:
         except:
             return jsonify({'error': 'File not found'}), 404
 
+# This is only run for testing.   When we use gunicorn, this ends up not being
+# run.   So be careful of what code is placed here.
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run the Storage API backend server')
+    parser = argparse.ArgumentParser(description='Run the Blocks backend server')
     parser.add_argument('-p', '--port', type=int, default=5001,
                         help='Port to run the server on (default: 5001)')
     parser.add_argument('-l', '--log-level', type=str, default='INFO',
@@ -139,9 +145,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     logging.getLogger().setLevel(getattr(logging, args.log_level))
-
-    with app.app_context():
-        db.create_all()
 
     logger.info(f"Starting server on port {args.port}...")
     app.run(debug=True, host="0.0.0.0", port=args.port)
