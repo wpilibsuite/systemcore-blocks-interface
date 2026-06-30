@@ -61,11 +61,11 @@ export function makeLegalName(proposedName: string, otherNames: string[], mustBe
 
   while (otherNamesLowerCase.includes(name.toLowerCase())) {
     // Collision with another name.
-    const r = name.match(/^(.*?)(\d+)$/);
+    const r = name.match(/^(.*?)_(\d+)$/);
     if (!r) {
-      name += '2';
+      name += '_1';
     } else {
-      name = r[1] + (parseInt(r[2]) + 1);
+      name = r[1] + '_' + (parseInt(r[2]) + 1);
     }
   }
   return name;
