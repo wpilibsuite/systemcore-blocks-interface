@@ -350,7 +350,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
                   <p>{t('PROJECT_NAME_EXISTS', { projectName: preferredName })}</p>
                   <Antd.Input
                     defaultValue={uploadProjectName}
-                    onChange={(e) => { inputValue = e.target.value; }}
+                    onChange={(e) => { inputValue = e.target.value.replace(/ /g, '_'); }}
                   />
                 </div>
               ),
