@@ -52,7 +52,7 @@ export async function upgradeProjectIfNecessary(
   // Major or minor version changes.
 
   if (semver.lt(projectInfo.version, '0.2.0')) {
-     await upgradeFrom_0_1_x_to_0_2_0(storage, projectName, projectInfo);
+     await upgradeFrom_0_1_x_to_0_2_0(storage, projectName);
   }
 
   // Add more migration functions here for future transitions.
@@ -154,8 +154,7 @@ function noUpgrade(_workspace: Blockly.Workspace): void {
 
 async function upgradeFrom_0_1_x_to_0_2_0(
     storage: commonStorage.Storage,
-    projectName: string,
-    projectInfo: storageProject.ProjectInfo): Promise<void> {
+    projectName: string): Promise<void> {
   // mrc_class_method_def blocks for mechanism 'opmodeStart' method need to be changed to 'opmode_start'.
   // mrc_class_method_def blocks for mechanism 'opmodePeriodic' method need to be changed to 'opmode_periodic'.
   // mrc_class_method_def blocks for mechanism 'opmodeEnd' method need to be changed to 'opmode_end'.
