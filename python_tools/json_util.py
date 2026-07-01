@@ -34,10 +34,12 @@ _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
 _LIST_MODULE_NAMES_INTERNAL = [
   'blocks_base_classes.block_execution',
   'blocks_base_classes.decorators',
+  'blocks_base_classes.user_controls',
 ]
 
 _LIST_CLASS_NAMES_INTERNAL = [
   'blocks_base_classes.BlockExecution',
+  'blocks_base_classes.DefaultUserControls',
 ]
 
 _DICT_MODULE_FUNCTION_NAMES_INTERNAL = {

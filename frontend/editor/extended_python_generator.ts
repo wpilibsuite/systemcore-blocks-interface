@@ -499,7 +499,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       if (this.getModuleType() === storageModule.ModuleType.ROBOT) {
         // Add code to run wpilib
         code += '\n\nif __name__ == "__main__":\n' +
-            this.INDENT + 'wpilib.run(' + className + ')\n';
+            this.INDENT + 'try:\n' +
+            this.INDENT.repeat(2) + 'wpilib.run(' + className + ')\n' +
+            this.INDENT + 'except Exception as e:\n' +
+            this.INDENT.repeat(2) + 'BlockExecution.handleFatalError(e)\n';
       }
     }
 

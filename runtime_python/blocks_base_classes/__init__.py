@@ -13,4 +13,5 @@ __all__ = [
     'Group',
     'Mechanism',
     'BlockExecution',
+    'DefaultUserControls',
 ]

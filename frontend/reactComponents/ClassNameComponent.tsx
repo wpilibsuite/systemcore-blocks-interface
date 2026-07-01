@@ -104,7 +104,7 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
 
   /** Handles input change with automatic capitalization. */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const value = e.target.value;
+    const value = e.target.value.replace(/ /g, '_');
     // Force first character to be uppercase
     const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
     props.setNewItemName(capitalizedValue);

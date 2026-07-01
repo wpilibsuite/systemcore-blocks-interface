@@ -128,44 +128,6 @@
             "isComponent": false,
             "moduleName": "blocks_base_classes",
             "staticMethods": []
-        },
-        {
-            "className": "blocks_base_classes.user_controls.DefaultUserControls",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [],
-                    "declaringClassName": "blocks_base_classes.user_controls.DefaultUserControls",
-                    "functionName": "__init__",
-                    "returnType": "blocks_base_classes.user_controls.DefaultUserControls",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "blocks_base_classes.user_controls.DefaultUserControls"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "port",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "blocks_base_classes.user_controls.DefaultUserControls",
-                    "functionName": "get_gamepad",
-                    "returnType": "wpilib.Gamepad",
-                    "tooltip": ""
-                }
-            ],
-            "instanceVariables": [],
-            "isComponent": false,
-            "moduleName": "blocks_base_classes.user_controls",
-            "staticMethods": []
         }
     ],
     "modules": [
@@ -180,19 +142,6 @@
             "functions": [],
             "moduleName": "blocks_base_classes.mechanism",
             "moduleVariables": []
-        },
-        {
-            "enums": [],
-            "functions": [],
-            "moduleName": "blocks_base_classes.user_controls",
-            "moduleVariables": [
-                {
-                    "name": "JOYSTICK_PORTS",
-                    "tooltip": "",
-                    "type": "int",
-                    "writable": false
-                }
-            ]
         }
     ],
     "subclasses": {}
