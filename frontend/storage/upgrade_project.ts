@@ -163,5 +163,4 @@ async function upgradeFrom_0_1_x_to_0_2_0(
       storage, projectName,
       noModuleTypes, noPreupgrade,
       isMechanism, upgrade_class_method_def_0_1_x_to_0_2_0);
-  projectInfo.version = '0.2.0';
 }
