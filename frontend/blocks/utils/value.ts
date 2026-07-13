@@ -32,43 +32,56 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
   if (valueVarName) {
     return variable.createVariableGetterBlockValue(valueVarName);
   }
-  if (!argDefaultValue) {
-    return null;
-  }
   const alias = getAlias(argType);
   if (alias) {
     argType = alias;
   }
   switch (argType) {
     case 'int':
-      const intNum = parseInt(argDefaultValue, 10);
-      if (!isNaN(intNum) && intNum.toString() === argDefaultValue) {
-        return createNumberShadowValue(intNum);
+      if (argDefaultValue) {
+        const intNum = parseInt(argDefaultValue, 10);
+        if (!isNaN(intNum) && intNum.toString() === argDefaultValue) {
+          return createNumberShadowValue(intNum);
+        }
+      } else {
+        return createNumberBlock(0);
       }
       break;
     case 'float':
-      const floatNum = Number(argDefaultValue);
-      if (!isNaN(floatNum)) {
-        return createNumberShadowValue(floatNum)
+      if (argDefaultValue) {
+        const floatNum = Number(argDefaultValue);
+        if (!isNaN(floatNum)) {
+          return createNumberShadowValue(floatNum)
+        }
+      } else {
+        return createNumberBlock(0);
       }
       break;
     case 'str':
-      if (argDefaultValue === 'None') {
-        return createNoneShadowValue();
-      }
-      // If argDefaultValue is surrounded by single or double quotes, it's a literal string.
-      if (argDefaultValue.startsWith("'") && argDefaultValue.endsWith("'") ||
-          argDefaultValue.startsWith('"') && argDefaultValue.endsWith('"')) {
-        const textValue = argDefaultValue.substring(1, argDefaultValue.length-1);
-        return createTextShadowValue(textValue);
+      if (argDefaultValue) {
+        if (argDefaultValue === 'None') {
+          return createNoneShadowValue();
+        }
+        // If argDefaultValue is surrounded by single or double quotes, it's a literal string.
+        if (argDefaultValue.startsWith("'") && argDefaultValue.endsWith("'") ||
+            argDefaultValue.startsWith('"') && argDefaultValue.endsWith('"')) {
+          const textValue = argDefaultValue.substring(1, argDefaultValue.length-1);
+          return createTextShadowValue(textValue);
+        }
+      } else {
+        return createTextBlock('');
       }
       break;
     case 'bool':
-      if (argDefaultValue === 'True') {
-        return createBooleanShadowValue(true);
-      }
-      if (argDefaultValue === 'False') {
-        return createBooleanShadowValue(false);
+      if (argDefaultValue) {
+        if (argDefaultValue === 'True') {
+          return createBooleanShadowValue(true);
+        }
+        if (argDefaultValue === 'False') {
+          return createBooleanShadowValue(false);
+        }
+      } else {
+        return createBooleanBlock(false);
       }
       break;
   }
