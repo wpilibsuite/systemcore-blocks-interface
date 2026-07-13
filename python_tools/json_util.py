@@ -819,6 +819,31 @@ class JsonGenerator:
           function_data[_KEY_IS_COMMON] = True
       return
 
+    if class_name == 'rev.ColorSensorV3':
+      class_data[_KEY_IS_COMPONENT] = True
+      found_constructor = False
+      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
+        args = constructor_data[_KEY_FUNCTION_ARGS]
+        if (len(args) == 1 and
+            args[0][_KEY_ARGUMENT_NAME] == 'port'):
+          found_constructor = True
+          component_args = []
+          component_args.append(self._createArgData('i2cPort', 'SYSTEMCORE_I2C_PORT'))
+          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_IS_COMPONENT] = True
+      if not found_constructor:
+        print(f'ERROR: failed to find expected constructor for {class_name}',
+              file=sys.stderr)
+      for function_data in class_data[_KEY_INSTANCE_METHODS]:
+        function_name = function_data[_KEY_FUNCTION_NAME]
+        # TODO: decide which functions are common.
+        if (function_name == 'getColor' or
+            function_name == 'getProximity' or
+            function_name == 'getRawColor' or
+            function_name == 'isConnected'):
+          function_data[_KEY_IS_COMMON] = True
+      return
+
   def _processClasses(self):
     class_data_list = []
     for cls in self._getPublicClasses():
