@@ -56,7 +56,7 @@ const GRID_LENGTH = 3;
 const GRID_COLOR = '#ccc';
 
 /** Default zoom start scale. */
-const DEFAULT_ZOOM_START_SCALE = 1.0;
+const DEFAULT_ZOOM_START_SCALE = 0.6;
 
 /** Maximum zoom scale. */
 const MAX_ZOOM_SCALE = 3;
@@ -136,6 +136,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
       wheel: true,
     },
     oneBasedIndex: false,
+    renderer: 'zelos',
     plugins: {
       ...HardwareConnectionsPluginInfo,
     },
