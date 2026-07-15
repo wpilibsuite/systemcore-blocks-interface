@@ -43,7 +43,10 @@ export interface BlocklyComponentProps {
   modulePath: string;
   onBlocklyComponentCreated: (modulePath: string, blocklyComponent: BlocklyComponentType) => void;
   theme: string;
+  renderer: string;
   onWorkspaceCreated: (modulePath: string, workspace: Blockly.WorkspaceSvg) => void;
+  /** When true, the workspace is display-only: no editing, scrolling, or zooming. */
+  readOnly?: boolean;
 }
 
 /** Grid spacing for the Blockly workspace. */
@@ -86,6 +89,7 @@ const WORKSPACE_STYLE: React.CSSProperties = {
 export default function BlocklyComponent(props: BlocklyComponentProps): React.JSX.Element {
   const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
   const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
+  const currentRenderer = React.useRef<string>(props.renderer);
   const parentDiv = React.useRef<HTMLDivElement | null>(null);
   const savedScrollX = React.useRef<number>(0);
   const savedScrollY = React.useRef<number>(0);
@@ -121,22 +125,23 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
       snap: true,
     },
     zoom: {
-      controls: true,
-      wheel: true,
+      controls: !props.readOnly,
+      wheel: !props.readOnly,
       startScale: DEFAULT_ZOOM_START_SCALE,
       maxScale: MAX_ZOOM_SCALE,
       minScale: MIN_ZOOM_SCALE,
       scaleSpeed: ZOOM_SCALE_SPEED,
     },
-    scrollbars: true,
+    scrollbars: !props.readOnly,
     trashcan: false,
     move: {
-      scrollbars: true,
-      drag: true,
-      wheel: true,
+      scrollbars: !props.readOnly,
+      drag: !props.readOnly,
+      wheel: !props.readOnly,
     },
     oneBasedIndex: false,
-    renderer: 'zelos',
+    renderer: props.renderer,
+    readOnly: props.readOnly,
     plugins: {
       ...HardwareConnectionsPluginInfo,
     },
@@ -213,6 +218,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     workspaceConfig.rtl = i18n.dir() === 'rtl';
     const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
     workspaceRef.current = workspace;
+    currentRenderer.current = props.renderer;
     parentDiv.current = blocklyDiv.current.parentNode as HTMLDivElement;
   };
 
@@ -311,6 +317,18 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
       workspaceRef.current.setTheme(newTheme);
     }
   }, [props.theme]);
+
+  // Blockly does not support switching renderers on an existing workspace, so the
+  // workspace must be recreated when the renderer changes.
+  React.useEffect(() => {
+    if (workspaceRef.current && currentRenderer.current !== props.renderer) {
+      cleanupWorkspace();
+      initializeWorkspace();
+      if (props.onWorkspaceCreated) {
+        props.onWorkspaceCreated(props.modulePath, workspaceRef.current!);
+      }
+    }
+  }, [props.renderer]);
 
   React.useEffect(() => {
     updateBlocklyLocale();
