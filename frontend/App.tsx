@@ -573,6 +573,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               project={project}
               storage={storage}
               setProject={setProject}
+              saveCurrentTab={saveCurrentTab}
             />
           <Antd.Layout
             style={{
