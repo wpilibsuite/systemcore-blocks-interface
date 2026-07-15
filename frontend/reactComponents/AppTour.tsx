@@ -115,6 +115,7 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       onClose={onClose}
       onFinish={onClose}
       steps={steps}
+      disabledInteraction
     />
   );
 };
