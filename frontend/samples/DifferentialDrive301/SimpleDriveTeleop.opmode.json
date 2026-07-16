@@ -1,0 +1,138 @@
+{
+  "moduleType": "opmode",
+  "moduleId": "Xry(yg7wJd3vPlZOB8#E",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_opmode_details",
+          "id": "]zfScgc%=P^hq5=#E5.?",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "fields": {
+            "TYPE": "Teleop",
+            "ENABLED": true,
+            "NAME": "",
+            "GROUP": "",
+            "DESCRIPTION": "Drive the robot using the left stick on the gamepad"
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "Yq/=$WGu!)B/{.a{u9dP",
+          "x": 30,
+          "y": 150,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "Yq/=$WGu!)B/{.a{u9dP",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "66@1%J?GYrAQd@*)S=|V",
+          "x": 30,
+          "y": 230,
+          "editable": false,
+          "extraState": {
+            "methodId": "66@1%J?GYrAQd@*)S=|V",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": []
+          },
+          "fields": {
+            "NAME": "periodic"
+          },
+          "inputs": {
+            "STACK": {
+              "block": {
+                "type": "mrc_call_python_function",
+                "id": "`GEO_QKLL(i`TX!?:`o8",
+                "extraState": {
+                  "functionKind": "instance_mechanism",
+                  "returnType": "None",
+                  "args": [
+                    {
+                      "name": "forward",
+                      "type": ""
+                    },
+                    {
+                      "name": "left",
+                      "type": ""
+                    }
+                  ],
+                  "actualFunctionName": "arcade_drive",
+                  "methodId": "CbKnw}bDV|Ky-fwW^qa]",
+                  "mechanismId": "WtZyrOmFRU]/(dV_t^$o",
+                  "mechanismClassName": "drive_train301.DriveTrain301"
+                },
+                "fields": {
+                  "MECHANISM_NAME": "drive",
+                  "FUNC": "arcade_drive"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "math_single",
+                      "id": "CF!b7d?ZY~|/%/(r8nU7",
+                      "fields": {
+                        "OP": "NEG"
+                      },
+                      "inputs": {
+                        "NUM": {
+                          "shadow": {
+                            "type": "math_number",
+                            "id": "Alp:Ir:IHl@:v}v]ByG.",
+                            "fields": {
+                              "NUM": 9
+                            }
+                          },
+                          "block": {
+                            "type": "mrc_gamepad_analog",
+                            "id": "#`8t3`URXJt@.{{Xi[cA",
+                            "fields": {
+                              "GAMEPAD_PORT": "0",
+                              "GAMEPAD_AXIS": "LEFT_STICK_Y"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "ARG1": {
+                    "block": {
+                      "type": "mrc_gamepad_analog",
+                      "id": "uVyR/(}X:z()O~et9nnT",
+                      "fields": {
+                        "GAMEPAD_PORT": "0",
+                        "GAMEPAD_AXIS": "LEFT_STICK_X"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [],
+  "components": [],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}

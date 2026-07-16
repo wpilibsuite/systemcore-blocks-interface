@@ -1,0 +1,426 @@
+{
+  "moduleType": "mechanism",
+  "moduleId": "@wRPRE;lME64/:YT1ohe",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_class_method_def",
+          "id": "W18vJ8M-D4b$cdajA^8F",
+          "x": 10,
+          "y": 170,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "W18vJ8M-D4b$cdajA^8F",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          }
+        },
+        {
+          "type": "mrc_mechanism_component_holder",
+          "id": "5bV0iJk6NJfn/8|`/q?9",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "hideMechanisms": true
+          },
+          "inputs": {
+            "COMPONENTS": {
+              "block": {
+                "type": "mrc_component",
+                "id": "WhvJZU6~HvvJd4D+/Ndy",
+                "extraState": {
+                  "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+                  "params": [
+                    {
+                      "name": "busId",
+                      "type": "int",
+                      "defaultValue": ""
+                    },
+                    {
+                      "name": "deviceId",
+                      "type": "int",
+                      "defaultValue": "3"
+                    }
+                  ],
+                  "importModule": "rev",
+                  "className": "rev.A301",
+                  "tooltip": "Create a new object to control a FIRST A301 motor\n\nThe default A301 device ID is set to 3 out of the factory.\n\n:param busId:    The CAN bus ID this device will be on.\n:param deviceId: The device ID."
+                },
+                "fields": {
+                  "NAME": "left_motor",
+                  "TYPE": "A301"
+                },
+                "next": {
+                  "block": {
+                    "type": "mrc_component",
+                    "id": "SYhz+hU`y},it/FInyrJ",
+                    "extraState": {
+                      "componentId": "SYhz+hU`y},it/FInyrJ",
+                      "params": [
+                        {
+                          "name": "busId",
+                          "type": "int",
+                          "defaultValue": ""
+                        },
+                        {
+                          "name": "deviceId",
+                          "type": "int",
+                          "defaultValue": "3"
+                        }
+                      ],
+                      "importModule": "rev",
+                      "className": "rev.A301",
+                      "tooltip": "Create a new object to control a FIRST A301 motor\n\nThe default A301 device ID is set to 3 out of the factory.\n\n:param busId:    The CAN bus ID this device will be on.\n:param deviceId: The device ID."
+                    },
+                    "fields": {
+                      "NAME": "right_motor",
+                      "TYPE": "A301"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "CbKnw}bDV|Ky-fwW^qa]",
+          "x": 10,
+          "y": 250,
+          "extraState": {
+            "methodId": "CbKnw}bDV|Ky-fwW^qa]",
+            "canChangeSignature": true,
+            "canBeCalledWithinClass": true,
+            "canBeCalledOutsideClass": true,
+            "returnType": "None",
+            "params": [
+              {
+                "name": "forward",
+                "type": ""
+              },
+              {
+                "name": "left",
+                "type": ""
+              }
+            ]
+          },
+          "fields": {
+            "NAME": "arcade_drive",
+            "PARAM_forward": "forward",
+            "PARAM_left": "left"
+          },
+          "inputs": {
+            "STACK": {
+              "block": {
+                "type": "mrc_call_python_function",
+                "id": "pxT*Cs6*G~]yiM/8_t}#",
+                "extraState": {
+                  "functionKind": "instance_component",
+                  "returnType": "None",
+                  "args": [
+                    {
+                      "name": "throttle",
+                      "type": "float"
+                    }
+                  ],
+                  "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1.0 indicates full reverse and 1.0\n                 indicates full forward.",
+                  "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+                  "componentClassName": "rev.A301"
+                },
+                "fields": {
+                  "COMPONENT_NAME": "left_motor",
+                  "FUNC": "setThrottle"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "math_arithmetic",
+                      "id": "c-jGE-$~yppyeN%6kB}n",
+                      "fields": {
+                        "OP": "ADD"
+                      },
+                      "inputs": {
+                        "A": {
+                          "shadow": {
+                            "type": "math_number",
+                            "id": "YMz8FZ5{N)M81N%t?IJV",
+                            "fields": {
+                              "NUM": 1
+                            }
+                          },
+                          "block": {
+                            "type": "mrc_get_parameter",
+                            "id": "gA%3Mv@IH!DKG5~1Kx2X",
+                            "fields": {
+                              "PARAMETER_NAME": "forward"
+                            }
+                          }
+                        },
+                        "B": {
+                          "shadow": {
+                            "type": "math_number",
+                            "id": "X`+|9PgvnAfl6h9b$j}1",
+                            "fields": {
+                              "NUM": 1
+                            }
+                          },
+                          "block": {
+                            "type": "mrc_get_parameter",
+                            "id": "|9#sdhG@w4wz{dGjeEpO",
+                            "fields": {
+                              "PARAMETER_NAME": "left"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "block": {
+                    "type": "mrc_call_python_function",
+                    "id": "tl*p$JB`o_H+llm[.Jwg",
+                    "extraState": {
+                      "functionKind": "instance_component",
+                      "returnType": "None",
+                      "args": [
+                        {
+                          "name": "throttle",
+                          "type": "float"
+                        }
+                      ],
+                      "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1.0 indicates full reverse and 1.0\n                 indicates full forward.",
+                      "componentId": "SYhz+hU`y},it/FInyrJ",
+                      "componentClassName": "rev.A301"
+                    },
+                    "fields": {
+                      "COMPONENT_NAME": "right_motor",
+                      "FUNC": "setThrottle"
+                    },
+                    "inputs": {
+                      "ARG0": {
+                        "block": {
+                          "type": "math_arithmetic",
+                          "id": "1GR(q,L,0D@U!mxLXW},",
+                          "fields": {
+                            "OP": "MINUS"
+                          },
+                          "inputs": {
+                            "A": {
+                              "shadow": {
+                                "type": "math_number",
+                                "id": "YMz8FZ5{N)M81N%t?IJV",
+                                "fields": {
+                                  "NUM": 1
+                                }
+                              },
+                              "block": {
+                                "type": "mrc_get_parameter",
+                                "id": "}e15v%bI]~B78i7=Td9{",
+                                "fields": {
+                                  "PARAMETER_NAME": "forward"
+                                }
+                              }
+                            },
+                            "B": {
+                              "shadow": {
+                                "type": "math_number",
+                                "id": "X`+|9PgvnAfl6h9b$j}1",
+                                "fields": {
+                                  "NUM": 1
+                                }
+                              },
+                              "block": {
+                                "type": "mrc_get_parameter",
+                                "id": "$oP6WhB,Kf*o$vxmB8%V",
+                                "fields": {
+                                  "PARAMETER_NAME": "left"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "XnGBCaYKK:XY6r;A)t|~",
+          "x": 10,
+          "y": 430,
+          "extraState": {
+            "methodId": "XnGBCaYKK:XY6r;A)t|~",
+            "canChangeSignature": true,
+            "canBeCalledWithinClass": true,
+            "canBeCalledOutsideClass": true,
+            "returnType": "None",
+            "params": []
+          },
+          "fields": {
+            "NAME": "stop"
+          },
+          "inputs": {
+            "STACK": {
+              "block": {
+                "type": "mrc_call_python_function",
+                "id": "kzdUUHCX:Ts78;q@!hu(",
+                "extraState": {
+                  "functionKind": "instance_component",
+                  "returnType": "None",
+                  "args": [
+                    {
+                      "name": "throttle",
+                      "type": "float"
+                    }
+                  ],
+                  "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1.0 indicates full reverse and 1.0\n                 indicates full forward.",
+                  "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+                  "componentClassName": "rev.A301"
+                },
+                "fields": {
+                  "COMPONENT_NAME": "left_motor",
+                  "FUNC": "setThrottle"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "math_number",
+                      "id": "Zw0]5w2nO[~RtLc_8CoM",
+                      "fields": {
+                        "NUM": 0
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "block": {
+                    "type": "mrc_call_python_function",
+                    "id": "fAn+]45yA:)prv3!]XBj",
+                    "extraState": {
+                      "functionKind": "instance_component",
+                      "returnType": "None",
+                      "args": [
+                        {
+                          "name": "throttle",
+                          "type": "float"
+                        }
+                      ],
+                      "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1.0 indicates full reverse and 1.0\n                 indicates full forward.",
+                      "componentId": "SYhz+hU`y},it/FInyrJ",
+                      "componentClassName": "rev.A301"
+                    },
+                    "fields": {
+                      "COMPONENT_NAME": "right_motor",
+                      "FUNC": "setThrottle"
+                    },
+                    "inputs": {
+                      "ARG0": {
+                        "block": {
+                          "type": "math_number",
+                          "id": "BG6-;[wT`mUz}ixaRFuF",
+                          "fields": {
+                            "NUM": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [],
+  "components": [
+    {
+      "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+      "name": "left_motor",
+      "className": "rev.A301",
+      "args": [
+        {
+          "name": "busId",
+          "type": "int",
+          "defaultValue": ""
+        },
+        {
+          "name": "deviceId",
+          "type": "int",
+          "defaultValue": "3"
+        }
+      ]
+    },
+    {
+      "componentId": "SYhz+hU`y},it/FInyrJ",
+      "name": "right_motor",
+      "className": "rev.A301",
+      "args": [
+        {
+          "name": "busId",
+          "type": "int",
+          "defaultValue": ""
+        },
+        {
+          "name": "deviceId",
+          "type": "int",
+          "defaultValue": "3"
+        }
+      ]
+    }
+  ],
+  "privateComponents": [],
+  "events": [],
+  "methods": [
+    {
+      "methodId": "CbKnw}bDV|Ky-fwW^qa]",
+      "visibleName": "arcade_drive",
+      "pythonName": "arcade_drive",
+      "returnType": "None",
+      "args": [
+        {
+          "name": "self",
+          "type": ""
+        },
+        {
+          "name": "forward",
+          "type": ""
+        },
+        {
+          "name": "left",
+          "type": ""
+        }
+      ]
+    },
+    {
+      "methodId": "XnGBCaYKK:XY6r;A)t|~",
+      "visibleName": "stop",
+      "pythonName": "stop",
+      "returnType": "None",
+      "args": [
+        {
+          "name": "self",
+          "type": ""
+        }
+      ]
+    }
+  ]
+}
