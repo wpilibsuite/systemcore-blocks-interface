@@ -194,7 +194,7 @@
         "SETTINGS_TITLE": "Configuración",
         "SETTINGS_DESC": "Elige tu idioma, tema de color y qué categorías de la caja de herramientas WPILib se muestran.",
         "HELP_TITLE": "Ayuda",
-        "HELP_DESC": "Encuentra más información sobre la interfaz de bloques, incluyendo este tour.",
+        "HELP_DESC": "Encuentra más información sobre la interfaz de bloques, incluyendo este tour y ejemplos de código que puedes explorar o copiar en un nuevo proyecto.",
         "MECHANISM_TABS_TITLE": "Pestañas de Mecanismos y Robot",
         "MECHANISM_TABS_DESC": "La fila superior muestra la pestaña del Robot y las pestañas de Mecanismos que hayas creado. Presiona + para agregar un nuevo mecanismo o mostrar uno oculto.",
         "OPMODE_TABS_TITLE": "Pestañas de OpMode",

@@ -194,7 +194,7 @@
         "SETTINGS_TITLE": "Paramètres",
         "SETTINGS_DESC": "Choisissez votre langue, thème de couleur et quelles catégories de la boîte à outils WPILib sont affichées.",
         "HELP_TITLE": "Aide",
-        "HELP_DESC": "Trouvez plus d'informations sur l'interface de blocs, y compris cette visite guidée.",
+        "HELP_DESC": "Trouvez plus d'informations sur l'interface de blocs, y compris cette visite guidée et des exemples de code que vous pouvez consulter ou copier dans un nouveau projet.",
         "MECHANISM_TABS_TITLE": "Onglets Mécanismes et Robot",
         "MECHANISM_TABS_DESC": "La rangée du haut affiche l'onglet Robot et les onglets Mécanismes que vous avez créés. Appuyez sur + pour ajouter un nouveau mécanisme ou afficher un mécanisme masqué.",
         "OPMODE_TABS_TITLE": "Onglets OpMode",

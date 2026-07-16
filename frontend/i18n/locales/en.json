@@ -193,7 +193,7 @@
         "SETTINGS_TITLE": "Settings",
         "SETTINGS_DESC": "Choose your language, color theme, and which WPILib toolbox categories are shown.",
         "HELP_TITLE": "Help",
-        "HELP_DESC": "Find more information about the blocks interface, including this tour.",
+        "HELP_DESC": "Find more information about the blocks interface, including this tour and sample code you can browse or copy into a new project.",
         "MECHANISM_TABS_TITLE": "Mechanisms & Robot Tabs",
         "MECHANISM_TABS_DESC": "The top row shows the Robot tab and any Mechanism tabs you have created. Press + to add a new mechanism or show a hidden one.",
         "OPMODE_TABS_TITLE": "OpMode Tabs",
