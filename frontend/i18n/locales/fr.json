@@ -124,6 +124,17 @@
     "COPY_ELLIPSIS": "Copier...",
     "MECHANISMS": "Mécanismes",
     "OPMODES": "OpModes",
+    "SAMPLES": {
+        "MENU_ITEM": "Exemples",
+        "NO_SAMPLES_FOUND": "Aucun exemple trouvé",
+        "SEARCH_PLACEHOLDER": "Rechercher par nom ou description...",
+        "CLEAR_FILTERS": "Effacer les filtres",
+        "BACK_TO_SAMPLES": "Retour aux exemples",
+        "CREATE_PROJECT_FROM_SAMPLE": "Créer un nouveau projet à partir de l'exemple",
+        "FAILED_TO_CREATE_FROM_SAMPLE": "Échec de la création d'un nouveau projet à partir de l'exemple.",
+        "COPY_BLOCK": "Copier le bloc",
+        "COPY_BLOCK_TOOLTIP": "Sélectionnez un bloc, puis cliquez ici ou appuyez sur Ctrl+C (Cmd+C sur Mac) pour le copier. Collez-le dans votre projet avec Ctrl+V (Cmd+V)."
+    },
     "ABOUT": {
         "TITLE": "À propos",
         "OK": "OK",

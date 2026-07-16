@@ -122,8 +122,19 @@
     "RENAME_ELLIPSIS": "שנה שם...",
     "DELETE_ELLIPSIS": "מחק...",
     "COPY_ELLIPSIS": "העתק...",
-  "MECHANISMS": "מנגנונים",    
+  "MECHANISMS": "מנגנונים",
   "OPMODES": "אופמודים",
+  "SAMPLES": {
+    "MENU_ITEM": "דוגמאות",
+    "NO_SAMPLES_FOUND": "לא נמצאו דוגמאות",
+    "SEARCH_PLACEHOLDER": "חפש לפי שם או תיאור...",
+    "CLEAR_FILTERS": "נקה מסננים",
+    "BACK_TO_SAMPLES": "חזרה לדוגמאות",
+    "CREATE_PROJECT_FROM_SAMPLE": "צור פרויקט חדש מהדוגמה",
+    "FAILED_TO_CREATE_FROM_SAMPLE": "יצירת פרויקט חדש מהדוגמה נכשלה.",
+    "COPY_BLOCK": "העתק בלוק",
+    "COPY_BLOCK_TOOLTIP": "בחר בלוק, ואז לחץ כאן או הקש Ctrl+C (Cmd+C ב-Mac) כדי להעתיק אותו. הדבק אותו בפרויקט שלך עם Ctrl+V (Cmd+V)."
+  },
   "ABOUT": {
     "TITLE": "אודות",
     "OK": "אישור",

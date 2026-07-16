@@ -121,8 +121,19 @@
     "RENAME_ELLIPSIS": "Rename...",
     "DELETE_ELLIPSIS": "Delete...",
     "COPY_ELLIPSIS": "Copy...",
-    "MECHANISMS": "Mechanisms",    
+    "MECHANISMS": "Mechanisms",
     "OPMODES": "OpModes",
+    "SAMPLES": {
+        "MENU_ITEM": "Samples",
+        "NO_SAMPLES_FOUND": "No samples found",
+        "SEARCH_PLACEHOLDER": "Search by name or description...",
+        "CLEAR_FILTERS": "Clear Filters",
+        "BACK_TO_SAMPLES": "Back to Samples",
+        "CREATE_PROJECT_FROM_SAMPLE": "Create New Project From Sample",
+        "FAILED_TO_CREATE_FROM_SAMPLE": "Failed to create a new project from the sample.",
+        "COPY_BLOCK": "Copy Block",
+        "COPY_BLOCK_TOOLTIP": "Select a block, then click here or press Ctrl+C (Cmd+C on Mac) to copy it. Paste it into your project with Ctrl+V (Cmd+V)."
+    },
     "ABOUT": {
         "TITLE": "About",
         "OK": "OK",

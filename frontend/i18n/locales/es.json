@@ -124,6 +124,17 @@
     "TOOLTIP_ADD_TAB_WITH_TYPE": "Agregar Pestaña de {{type}}",
     "MECHANISMS": "Mecanismos",
     "OPMODES": "OpModes",
+    "SAMPLES": {
+        "MENU_ITEM": "Ejemplos",
+        "NO_SAMPLES_FOUND": "No se encontraron ejemplos",
+        "SEARCH_PLACEHOLDER": "Buscar por nombre o descripción...",
+        "CLEAR_FILTERS": "Borrar Filtros",
+        "BACK_TO_SAMPLES": "Volver a Ejemplos",
+        "CREATE_PROJECT_FROM_SAMPLE": "Crear Nuevo Proyecto a Partir del Ejemplo",
+        "FAILED_TO_CREATE_FROM_SAMPLE": "Error al crear un nuevo proyecto a partir del ejemplo.",
+        "COPY_BLOCK": "Copiar Bloque",
+        "COPY_BLOCK_TOOLTIP": "Selecciona un bloque y luego haz clic aquí o presiona Ctrl+C (Cmd+C en Mac) para copiarlo. Pégalo en tu proyecto con Ctrl+V (Cmd+V)."
+    },
     "ABOUT": {
         "TITLE": "Acerca de",
         "OK": "Aceptar",
