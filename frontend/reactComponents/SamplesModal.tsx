@@ -55,6 +55,9 @@ const MODAL_TOP = '5vh';
 /** Height of the modal body, accounting for the title bar, footer, and padding. */
 const MODAL_BODY_HEIGHT = 'calc(90vh - 165px)';
 
+/** Whether a sample must have all selected tags (AND) or any of them (OR) to match. */
+type TagFilterMode = 'AND' | 'OR';
+
 /**
  * Modal component for browsing samples, previewing their modules read-only, and creating a new
  * project from a sample.
@@ -70,6 +73,7 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
   const [creating, setCreating] = React.useState(false);
   const [searchText, setSearchText] = React.useState('');
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+  const [tagFilterMode, setTagFilterMode] = React.useState<TagFilterMode>('OR');
 
   React.useEffect(() => {
     if (!props.isOpen) {
@@ -77,6 +81,7 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
       setSelectedFileName('');
       setSearchText('');
       setSelectedTags([]);
+      setTagFilterMode('OR');
       return;
     }
     if (props.storage) {
@@ -93,8 +98,13 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
   const filteredSamples = React.useMemo<samplesRegistry.Sample[]>(() => {
     const normalizedSearchText = searchText.trim().toLowerCase();
     return samples.filter((sample) => {
-      if (selectedTags.length > 0 && !selectedTags.some((tag) => sample.tags.includes(tag))) {
-        return false;
+      if (selectedTags.length > 0) {
+        const matchesTags = tagFilterMode === 'AND' ?
+            selectedTags.every((tag) => sample.tags.includes(tag)) :
+            selectedTags.some((tag) => sample.tags.includes(tag));
+        if (!matchesTags) {
+          return false;
+        }
       }
       if (normalizedSearchText &&
           !sample.sampleName.toLowerCase().includes(normalizedSearchText) &&
@@ -103,7 +113,7 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
       }
       return true;
     });
-  }, [samples, searchText, selectedTags]);
+  }, [samples, searchText, selectedTags, tagFilterMode]);
 
   const hasActiveFilters = searchText.length > 0 || selectedTags.length > 0;
 
@@ -115,6 +125,7 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
   const clearFilters = (): void => {
     setSearchText('');
     setSelectedTags([]);
+    setTagFilterMode('OR');
   };
 
   const handleSelectSample = (sample: samplesRegistry.Sample): void => {
@@ -173,7 +184,17 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
         )}
       </Antd.Space.Compact>
       {allTags.length > 0 && (
-        <Antd.Space size={[4, 4]} wrap>
+        <Antd.Space size={[4, 4]} wrap align="center">
+          <Antd.Tooltip title={t('SAMPLES.TAG_FILTER_MODE_TOOLTIP')}>
+            <Antd.Switch
+              size="small"
+              checked={tagFilterMode === 'AND'}
+              onChange={(checked) => setTagFilterMode(checked ? 'AND' : 'OR')}
+              checkedChildren={t('SAMPLES.TAG_FILTER_MODE_AND')}
+              unCheckedChildren={t('SAMPLES.TAG_FILTER_MODE_OR')}
+              style={{ marginRight: 8 }}
+            />
+          </Antd.Tooltip>
           {allTags.map((tag) => (
             <Antd.Tag.CheckableTag
               key={tag}

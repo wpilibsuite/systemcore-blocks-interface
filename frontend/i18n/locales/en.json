@@ -132,7 +132,10 @@
         "CREATE_PROJECT_FROM_SAMPLE": "Create New Project From Sample",
         "FAILED_TO_CREATE_FROM_SAMPLE": "Failed to create a new project from the sample.",
         "COPY_BLOCK": "Copy Block",
-        "COPY_BLOCK_TOOLTIP": "Select a block, then click here or press Ctrl+C (Cmd+C on Mac) to copy it. Paste it into your project with Ctrl+V (Cmd+V)."
+        "COPY_BLOCK_TOOLTIP": "Select a block, then click here or press Ctrl+C (Cmd+C on Mac) to copy it. Paste it into your project with Ctrl+V (Cmd+V).",
+        "TAG_FILTER_MODE_AND": "AND",
+        "TAG_FILTER_MODE_OR": "OR",
+        "TAG_FILTER_MODE_TOOLTIP": "AND: show samples with all selected tags. OR: show samples with any selected tag."
     },
     "ABOUT": {
         "TITLE": "About",

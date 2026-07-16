@@ -133,7 +133,10 @@
     "CREATE_PROJECT_FROM_SAMPLE": "צור פרויקט חדש מהדוגמה",
     "FAILED_TO_CREATE_FROM_SAMPLE": "יצירת פרויקט חדש מהדוגמה נכשלה.",
     "COPY_BLOCK": "העתק בלוק",
-    "COPY_BLOCK_TOOLTIP": "בחר בלוק, ואז לחץ כאן או הקש Ctrl+C (Cmd+C ב-Mac) כדי להעתיק אותו. הדבק אותו בפרויקט שלך עם Ctrl+V (Cmd+V)."
+    "COPY_BLOCK_TOOLTIP": "בחר בלוק, ואז לחץ כאן או הקש Ctrl+C (Cmd+C ב-Mac) כדי להעתיק אותו. הדבק אותו בפרויקט שלך עם Ctrl+V (Cmd+V).",
+    "TAG_FILTER_MODE_AND": "וגם",
+    "TAG_FILTER_MODE_OR": "או",
+    "TAG_FILTER_MODE_TOOLTIP": "וגם: הצג דוגמאות עם כל התגיות שנבחרו. או: הצג דוגמאות עם כל אחת מהתגיות שנבחרו."
   },
   "ABOUT": {
     "TITLE": "אודות",

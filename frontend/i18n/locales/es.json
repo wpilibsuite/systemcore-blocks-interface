@@ -133,7 +133,10 @@
         "CREATE_PROJECT_FROM_SAMPLE": "Crear Nuevo Proyecto a Partir del Ejemplo",
         "FAILED_TO_CREATE_FROM_SAMPLE": "Error al crear un nuevo proyecto a partir del ejemplo.",
         "COPY_BLOCK": "Copiar Bloque",
-        "COPY_BLOCK_TOOLTIP": "Selecciona un bloque y luego haz clic aquí o presiona Ctrl+C (Cmd+C en Mac) para copiarlo. Pégalo en tu proyecto con Ctrl+V (Cmd+V)."
+        "COPY_BLOCK_TOOLTIP": "Selecciona un bloque y luego haz clic aquí o presiona Ctrl+C (Cmd+C en Mac) para copiarlo. Pégalo en tu proyecto con Ctrl+V (Cmd+V).",
+        "TAG_FILTER_MODE_AND": "Y",
+        "TAG_FILTER_MODE_OR": "O",
+        "TAG_FILTER_MODE_TOOLTIP": "Y: muestra ejemplos con todas las etiquetas seleccionadas. O: muestra ejemplos con cualquiera de las etiquetas seleccionadas."
     },
     "ABOUT": {
         "TITLE": "Acerca de",
