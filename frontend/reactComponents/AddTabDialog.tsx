@@ -28,6 +28,7 @@ import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
 import { Editor } from '../editor/editor';
 import ClassNameComponent from './ClassNameComponent';
+import ImportMechanismDialog from './ImportMechanismDialog';
 
 /** Represents a module item in the dialog. */
 interface Module {
@@ -63,6 +64,7 @@ export default function AddTabDialog(props: AddTabDialogProps) {
   const tabType = props.initialType ?? TabType.OPMODE;
   const [availableItems, setAvailableItems] = React.useState<Module[]>([]);
   const [newItemName, setNewItemName] = React.useState('');
+  const [copyFromProjectDialogOpen, setCopyFromProjectDialogOpen] = React.useState(false);
   const inputRef = React.useRef<Antd.InputRef>(null);
 
   React.useEffect(() => {
@@ -134,11 +136,24 @@ export default function AddTabDialog(props: AddTabDialogProps) {
     }
   };
 
+  /** Handles a mechanism having been copied in from another project. */
+  const handleMechanismCopied = async (mechanism: storageModule.Mechanism): Promise<void> => {
+    await props.onProjectChanged();
+    setCopyFromProjectDialogOpen(false);
+    const newTab: TabItem = {
+      key: mechanism.modulePath,
+      title: mechanism.className,
+      type: TabType.MECHANISM,
+    };
+    props.onOk(newTab);
+  };
+
   const getListHeight = (): number => {
     return Math.max(EMPTY_HEIGHT, Math.min(LIST_HEIGHT, availableItems.length * ITEM_HEIGHT));
   }
 
   return (
+    <>
     <Antd.Modal
       title={t('addTabDialog.titleWithType', { type: tabType === TabType.MECHANISM ? t('MECHANISM') : t('OPMODE') })}
       open={props.isOpen}
@@ -203,6 +218,14 @@ export default function AddTabDialog(props: AddTabDialogProps) {
             </ul>
           )}
         </div>
+        {tabType === TabType.MECHANISM && (
+          <div style={{ marginBottom: 16 }}>
+            <Antd.Button onClick={() => setCopyFromProjectDialogOpen(true)}>
+              {t('IMPORT_FROM_ANOTHER_PROJECT')}
+            </Antd.Button>
+          </div>
+        )}
+
         <h4 style={{margin: '0 0 8px 0'}}>
           {t('CREATE_NEW', { type: TabTypeUtils.toString(tabType) })}
         </h4>
@@ -225,5 +248,14 @@ export default function AddTabDialog(props: AddTabDialogProps) {
         </div>
       </div>
     </Antd.Modal>
+
+    <ImportMechanismDialog
+      isOpen={copyFromProjectDialogOpen}
+      onCancel={() => setCopyFromProjectDialogOpen(false)}
+      storage={props.storage}
+      currentProject={props.project}
+      onCopied={handleMechanismCopied}
+    />
+    </>
   );
 }

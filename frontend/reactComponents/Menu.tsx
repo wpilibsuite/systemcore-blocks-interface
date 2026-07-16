@@ -56,6 +56,7 @@ export interface MenuProps {
   closeTab: (tabKey: string) => void;
   currentProject: storageProject.Project | null;
   setCurrentProject: (project: storageProject.Project | null) => void;
+  switchToProjectAndSelectTab: (project: storageProject.Project, tabKey: string) => void;
   onProjectChanged: () => Promise<void>;
   openWPIToolboxSettings: () => void;
   theme: string;
@@ -410,6 +411,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         setAlertErrorMessage={props.setAlertErrorMessage}
         gotoTab={props.gotoTab}
         closeTab={props.closeTab}
+        switchToProjectAndSelectTab={props.switchToProjectAndSelectTab}
       />
       <ProjectManageModal
         noProjects={noProjects}

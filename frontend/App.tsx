@@ -155,6 +155,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [gamepadConfig, setGamepadConfig] = React.useState<storageProject.GamepadConfig>(GamepadTypeUtils.getDefaultGamepadConfig());
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [isLoadingTabs, setIsLoadingTabs] = React.useState(false);
+  // The key of a tab that should be added (if necessary) and selected once the project it
+  // belongs to becomes the active project. Used when a mechanism is copied into another project,
+  // so that project becomes active with the copied mechanism's tab visible and selected.
+  const [pendingTabKey, setPendingTabKey] = React.useState<string | null>(null);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [leftCollapsed, setLeftCollapsed] = React.useState(true);
   const [theme, setTheme] = React.useState('dark');
@@ -450,6 +454,20 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
           });
         }
         
+        // If there's a pending tab to show (e.g. from a mechanism that was just copied into this
+        // project from another project) and it isn't already in the tab list, add it so it's
+        // visible once this project becomes active.
+        if (pendingTabKey && !tabsToSet.some(tab => tab.key === pendingTabKey)) {
+          const pendingModule = storageProject.findModuleByModulePath(project, pendingTabKey);
+          if (pendingModule && pendingModule.moduleType === storageModule.ModuleType.MECHANISM) {
+            tabsToSet.push({
+              key: pendingTabKey,
+              title: pendingModule.className,
+              type: TabType.MECHANISM,
+            });
+          }
+        }
+
         // Set the tabs
         setTabItems(tabsToSet);
         
@@ -469,6 +487,15 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     
     loadSavedTabs();
   }, [project?.projectName, isLoading, getOpenTabs]);
+
+  // Once a pending tab (see pendingTabKey above) shows up in tabItems, select it and clear the
+  // pending state. This runs after loadSavedTabs (above) has had a chance to add the tab.
+  React.useEffect(() => {
+    if (pendingTabKey && tabItems.some(tab => tab.key === pendingTabKey)) {
+      tabsRef.current?.gotoTab(pendingTabKey);
+      setPendingTabKey(null);
+    }
+  }, [tabItems, pendingTabKey]);
 
   // Update tab items when modules in project change (for title updates, etc)
   React.useEffect(() => {
@@ -539,6 +566,15 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     tabsRef.current?.gotoTab(tabKey);
   };
 
+  /**
+   * Makes newProject the active project and, once it has loaded, adds (if necessary) and selects
+   * the tab for tabKey. Used when a mechanism is copied into another project.
+   */
+  const switchToProjectAndSelectTab = (newProject: storageProject.Project, tabKey: string): void => {
+    setPendingTabKey(tabKey);
+    setProject(newProject);
+  };
+
   const closeTab = (tabKey: string): void => {
     tabsRef.current?.closeTab(tabKey);
   };
@@ -595,6 +631,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 closeTab={closeTab}
                 currentProject={project}
                 setCurrentProject={setProject}
+                switchToProjectAndSelectTab={switchToProjectAndSelectTab}
                 onProjectChanged={onProjectChanged}
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 theme={theme}
@@ -625,6 +662,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 shownPythonToolboxCategories={shownPythonToolboxCategories}
                 messageApi={messageApi}
                 openGamepadConfigDialog={openGamepadConfigDialog}
+                switchToProjectAndSelectTab={switchToProjectAndSelectTab}
               />
             </Antd.Layout>
           </Antd.Layout>
