@@ -133,7 +133,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
       scaleSpeed: ZOOM_SCALE_SPEED,
     },
     scrollbars: !props.readOnly,
-    trashcan: false,
+    trashcan: true,
     move: {
       scrollbars: !props.readOnly,
       drag: !props.readOnly,
