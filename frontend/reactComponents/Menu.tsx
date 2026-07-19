@@ -34,6 +34,7 @@ import {
   QuestionCircleOutlined,
   InfoCircleOutlined,
   BgColorsOutlined,
+  BuildOutlined,
   GlobalOutlined,
   CheckOutlined,
   ControlOutlined,
@@ -46,6 +47,7 @@ import AboutDialog from './AboutModal';
 import ThemeModal from './ThemeModal';
 import LanguageModal from './LanguageModal';
 import SamplesModal from './SamplesModal';
+import RendererModal from './RendererModal';
 
 /** Type definition for menu items. */
 type MenuItem = Required<Antd.MenuProps>['items'][number];
@@ -62,6 +64,8 @@ export interface MenuProps {
   openWPIToolboxSettings: () => void;
   theme: string;
   setTheme: (theme: string) => void;
+  renderer: string;
+  setRenderer: (renderer: string) => void;
   showSimpleClassNames: boolean;
   setShowSimpleClassNames: (show: boolean) => void;
   saveCurrentTab: () => Promise<void>;
@@ -142,6 +146,7 @@ function getMenuItems(
           showSimpleClassNames ? <CheckOutlined /> : undefined
         ),
       getItem(t('THEME') + '...', 'theme', <BgColorsOutlined />),
+      getItem(t('STYLE') + '...', 'renderer', <BuildOutlined />),
       getItem(t('LANGUAGE') + '...', 'language', <GlobalOutlined />),
     ]),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
@@ -169,6 +174,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [samplesModalOpen, setSamplesModalOpen] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
+  const [rendererModalOpen, setRendererModalOpen] = React.useState<boolean>(false);
   const [languageModalOpen, setLanguageModalOpen] = React.useState<boolean>(false);
   const [deployModalOpen, setDeployModalOpen] = React.useState<boolean>(false);
   const [deployElapsed, setDeployElapsed] = React.useState<number>(0);
@@ -178,6 +184,10 @@ export function Component(props: MenuProps): React.JSX.Element {
 
   const handleThemeChange = (newTheme: string) => {
     props.setTheme(newTheme);
+  };
+
+  const handleRendererChange = (newRenderer: string) => {
+    props.setRenderer(newRenderer);
   };
 
   /** Fetches the list of project names from storage. */
@@ -285,6 +295,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       props.setShowSimpleClassNames(!props.showSimpleClassNames)
     } else if (key === 'theme') {
       setThemeModalOpen(true);
+    } else if (key === 'renderer') {
+      setRendererModalOpen(true);
     } else if (key === 'language') {
       setLanguageModalOpen(true);
     } else if (key == 'deploy') {
@@ -450,6 +462,13 @@ export function Component(props: MenuProps): React.JSX.Element {
           onClose={() => setThemeModalOpen(false)}
           currentTheme={props.theme}
           onThemeChange={handleThemeChange}
+        />
+      <RendererModal
+          open={rendererModalOpen}
+          onClose={() => setRendererModalOpen(false)}
+          currentRenderer={props.renderer}
+          currentTheme={props.theme}
+          onRendererChange={handleRendererChange}
         />
       <LanguageModal
           open={languageModalOpen}
