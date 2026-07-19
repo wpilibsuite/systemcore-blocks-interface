@@ -65,6 +65,7 @@
     "WPI_TOOLBOX": "Caja de Herramientas WPI",
     "SHOW_SIMPLE_CLASS_NAMES": "Acortar los nombres de clase en los bloques",
     "THEME": "Tema",
+    "STYLE": "Estilo de Bloques",
     "LANGUAGE": "Idioma",
     "SELECT_LANGUAGE": "Seleccionar idioma",
     "ENGLISH": "Inglés",
@@ -164,6 +165,17 @@
         "PRIMARY_BUTTON": "Primario",
         "PREVIEW": "Vista Previa del Tema",
         "PREVIEW_DESCRIPTION": "El tema seleccionado se aplicará a toda la interfaz de la aplicación."
+    },
+    "RENDERER_MODAL": {
+        "ZELOS": "Zelos (estilo Scratch)",
+        "ZELOS_DESCRIPTION": "Bloques redondeados y coloridos con entradas basadas en iconos, similar a Scratch.",
+        "GERAS": "Geras (Clásico)",
+        "GERAS_DESCRIPTION": "El aspecto original de Blockly, con bloques cuadrados y entradas en línea.",
+        "THRASOS": "Thrasos",
+        "THRASOS_DESCRIPTION": "Una versión moderna del aspecto clásico de Blockly.",
+        "SELECTION": "Selección de Estilo de Bloques",
+        "APPLY": "Aplicar Estilo",
+        "CHOOSE_DESCRIPTION": "Elija cómo se dibujan los bloques en el área de trabajo. La vista previa se actualiza a medida que elige."
     },
     "TOUR": {
         "MENU_ITEM": "Tour",

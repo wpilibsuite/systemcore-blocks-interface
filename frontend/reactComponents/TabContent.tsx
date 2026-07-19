@@ -52,6 +52,7 @@ export interface TabContentProps {
   project: storageProject.Project;
   storage: commonStorage.Storage;
   theme: string;
+  renderer: string;
   showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
@@ -70,6 +71,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   project,
   storage,
   theme,
+  renderer,
   showSimpleClassNames,
   shownPythonToolboxCategories,
   messageApi,
@@ -257,6 +259,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
           modulePath={modulePath}
           onBlocklyComponentCreated={setupBlocklyComponent}
           theme={theme}
+          renderer={renderer}
           onWorkspaceCreated={setupWorkspace}
         />
       </Content>

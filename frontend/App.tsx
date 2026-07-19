@@ -146,7 +146,7 @@ interface AppContentProps {
 
 const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.JSX.Element => {
   const { t, i18n } = useTranslation();
-  const { settings, updateLanguage, updateTheme, updateShowSimpleClassNames, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
+  const { settings, updateLanguage, updateTheme, updateShowSimpleClassNames, updateRenderer, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
 
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [messageApi, contextHolder] = Antd.message.useMessage();
@@ -162,6 +162,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [themeInitialized, setThemeInitialized] = React.useState(false);
   const [showSimpleClassNames, setShowSimpleClassNames] = React.useState(true);
   const [showSimpleClassNamesInitialized, setShowSimpleClassNamesInitialized] = React.useState(false);
+  const [renderer, setRenderer] = React.useState('zelos');
+  const [rendererInitialized, setRendererInitialized] = React.useState(false);
   const [tourOpen, setTourOpen] = React.useState(false);
 
   const hasCheckedTour = React.useRef(false);
@@ -192,6 +194,19 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       }
     }
   }, [settings.theme, theme, themeInitialized, isLoading]);
+
+  /** Initialize renderer from UserSettings when app first starts. */
+  React.useEffect(() => {
+    // Only proceed if settings are loaded
+    if (!isLoading) {
+      if (!rendererInitialized && settings.renderer && settings.renderer !== renderer) {
+        setRenderer(settings.renderer);
+        setRendererInitialized(true);
+      } else if (!rendererInitialized) {
+        setRendererInitialized(true);
+      }
+    }
+  }, [settings.renderer, renderer, rendererInitialized, isLoading]);
 
   /** Initialize showSimpleClassNames from UserSettings when app first starts. */
   React.useEffect(() => {
@@ -241,6 +256,22 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
     saveThemeChange();
   }, [theme, settings.theme, updateTheme, themeInitialized, isLoading]);
+
+  /** Save renderer changes to UserSettings when renderer changes. */
+  React.useEffect(() => {
+    const saveRendererChange = async () => {
+      // Only save if this is not the initial load and renderer is different from settings
+      if (rendererInitialized && renderer !== settings.renderer && !isLoading) {
+        try {
+          await updateRenderer(renderer);
+        } catch (error) {
+          console.error('Failed to save renderer setting:', error);
+        }
+      }
+    };
+
+    saveRendererChange();
+  }, [renderer, settings.renderer, updateRenderer, rendererInitialized, isLoading]);
 
   /** Save showSimpleClassNames changes to UserSettings when showSimpleClassNames changes. */
   React.useEffect(() => {
@@ -599,6 +630,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 theme={theme}
                 setTheme={setTheme}
+                renderer={renderer}
+                setRenderer={setRenderer}
                 showSimpleClassNames={showSimpleClassNames}
                 setShowSimpleClassNames={setShowSimpleClassNames}
                 saveCurrentTab={saveCurrentTab}
@@ -621,6 +654,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 onProjectChanged={onProjectChanged}
                 storage={storage}
                 theme={theme}
+                renderer={renderer}
                 showSimpleClassNames={showSimpleClassNames}
                 shownPythonToolboxCategories={shownPythonToolboxCategories}
                 messageApi={messageApi}
