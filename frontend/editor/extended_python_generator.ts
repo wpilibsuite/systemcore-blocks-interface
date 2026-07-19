@@ -139,6 +139,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   private classMethods: {[key: string]: string} = Object.create(null);
   private registerEventHandlerStatements: string[] = [];
+  private whenMethodNames: string[] = [];
 
   private importedNames: {[name: string]: string} = Object.create(null); // value is an import statement
   private fromModuleImportNames: {[module: string]: string[]} = Object.create(null); // value is an array of names being imported from the module.
@@ -299,6 +300,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.hasAnyEventHandlers = false;
     this.classMethods = Object.create(null);
     this.registerEventHandlerStatements = [];
+    this.whenMethodNames = [];
     this.importedNames = Object.create(null);
     this.fromModuleImportNames = Object.create(null);
     this.opModeDetails = null;
@@ -389,6 +391,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.registerEventHandlerStatements.push(registerEventHandlerStatement);
   }
 
+  addWhenMethodName(whenMethodName: string): void {
+    this.whenMethodNames.push(whenMethodName);
+  }
+
   getMechanismInitArgNames(): string[] {
     return this.mechanismInitArgNames;
   }
@@ -436,6 +442,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         );
         this.classMethods['opmodePeriodic'] = (
             'def opmodePeriodic(self) -> None:\n' +
+            // Generate code to call each when_ method. This goes at the top, so that the when
+            // conditions are checked before anything else happens on this tick.
+            this.getWhenCalls() +
             this.INDENT + 'for mechanism in self.mechanisms:\n' +
             this.INDENT.repeat(2) + 'mechanism.opmodePeriodic()\n'
         );
@@ -446,12 +455,24 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         );
       }
 
+      if (this.getModuleType() === storageModule.ModuleType.MECHANISM) {
+        // Generate code to call each when_ method, at the top of opmodePeriodic, so that the
+        // when conditions are checked before anything else happens on this tick.
+        const whenCalls = this.getWhenCalls();
+        if (whenCalls) {
+          this.classMethods['opmodePeriodic'] =
+              this.insertCodeIntoMethod('opmodePeriodic', whenCalls);
+        }
+      }
+
       if (this.getModuleType() === storageModule.ModuleType.OPMODE) {
         // Add code to the Start method to call robot.opmodeStart.
-        this.classMethods[START_METHOD_NAME] = this.insertCodeToCallRobot(START_METHOD_NAME, 'opmodeStart');
+        this.classMethods[START_METHOD_NAME] = this.insertCodeIntoMethod(START_METHOD_NAME, '', 'opmodeStart');
 
-        // Add code to the periodic method to call robot.opmodePeriodic.
-        let periodicCode = this.insertCodeToCallRobot(PERIODIC_METHOD_NAME, 'opmodePeriodic');
+        // Add code to the periodic method to call robot.opmodePeriodic. The when_ method calls
+        // go at the top, before that, so that the when conditions are checked before anything
+        // else happens on this tick.
+        let periodicCode = this.insertCodeIntoMethod(PERIODIC_METHOD_NAME, this.getWhenCalls(), 'opmodePeriodic');
         if (STEPS_METHOD_NAME in this.classMethods) {
           // Generate code to call the steps method after the user's code.
           periodicCode += this.INDENT + `self.${STEPS_METHOD_NAME}()\n`;
@@ -459,7 +480,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
 
         // Add code to the End method to call robot.opmodeEnd.
-        this.classMethods[END_METHOD_NAME] = this.insertCodeToCallRobot(END_METHOD_NAME, 'opmodeEnd');
+        this.classMethods[END_METHOD_NAME] = this.insertCodeIntoMethod(END_METHOD_NAME, '', 'opmodeEnd');
       }
 
       const classMethods = [];
@@ -514,7 +535,25 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     return super.finish(code);
   }
 
-  private insertCodeToCallRobot(methodName: string, robotMethodName: string): string {
+  /**
+   * Returns code to call each registered when_ method, one call per line, each indented one
+   * level. Returns '' if there are no when_ methods.
+   */
+  private getWhenCalls(): string {
+    let whenCalls = '';
+    for (const whenMethodName of this.whenMethodNames) {
+      whenCalls += this.INDENT + `self.${whenMethodName}()\n`;
+    }
+    return whenCalls;
+  }
+
+  /**
+   * Builds (or rebuilds) the given method's code, inserting prefixCode immediately after the
+   * def line and the call to super().<methodName>() (if any is needed), and, if robotMethodName
+   * is given, a call to self.robot.<robotMethodName>() immediately after prefixCode. Any code
+   * already registered for this method (e.g., from the user's blocks) is preserved after that.
+   */
+  private insertCodeIntoMethod(methodName: string, prefixCode: string, robotMethodName?: string): string {
     let defAndSuper = `def ${methodName}(self):\n`;
     if (this.shouldGenerateSuperCall(methodName)) {
       defAndSuper += this.INDENT + `super().${methodName}()\n`;
@@ -531,8 +570,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       // The user has not defined the method. We will define it now.
       code = '';
     }
-    // Generate code to call the robot method immediately after calling the superclass method.
-    return defAndSuper + this.INDENT + `self.robot.${robotMethodName}()\n` + code;
+    const robotCall = robotMethodName ? this.INDENT + `self.robot.${robotMethodName}()\n` : '';
+    return defAndSuper + prefixCode + robotCall + code;
   }
 
   setOpModeDetails(opModeDetails: OpModeDetails) {
