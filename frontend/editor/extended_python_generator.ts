@@ -134,7 +134,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   private hasAnyComponents = false;
   private mechanismInitArgNames: string[] = [];
 
-  // Has event handlers (ie, needs to call self.registerEventHandlers in __init__)
+  // Has event handlers (ie, needs to call self.register_event_handlers in __init__)
   private hasAnyEventHandlers = false;
 
   private classMethods: {[key: string]: string} = Object.create(null);
@@ -217,8 +217,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     switch (this.getModuleType()) {
       case storageModule.ModuleType.ROBOT:
         initStatements += this.INDENT + 'self.mechanisms = []\n';
-        initStatements += this.INDENT + 'self.eventHandlers = {}\n';
-        initStatements += this.INDENT + 'self.defineHardware()\n';
+        initStatements += this.INDENT + 'self.event_handlers = {}\n';
+        initStatements += this.INDENT + 'self.define_hardware()\n';
         for (const opModeDetails of this.allOpModeDetails) {
           this.fromModuleImportName('hal', 'RobotMode');
           const name = opModeDetails.getName();
@@ -239,6 +239,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           const opModeClassName = opModeDetails.getClassName();
           const opModeModuleName = pascalCaseToSnakeCase(opModeClassName);
           this.importModule(opModeModuleName);
+          // TODO(lizlooney): When RobotPy is changed to use snake case, update the following code.
+          // addOpMode will likely change to add_opmode (or add_op_mode?)
+          // publishOpModes will likely change to publish_opmodes (or publish_op_modes?)
           const call = `self.addOpMode(${opModeModuleName}.${opModeClassName}, ${robotMode}, '${name}', '${group}', '${description}')`;
           if (opModeDetails.getEnabled()) {
             initStatements += this.INDENT + call + '\n';
@@ -247,13 +250,13 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           }
         }
         initStatements += this.INDENT + 'self.publishOpModes()\n';
-        //TODO: These next two lines should be removed once userControls are implemented in python.
+        // TODO: These next two lines should be removed once user_controls are implemented in RobotPy.
         this.fromModuleImportName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'DefaultUserControls');
-        initStatements += this.INDENT + 'self.userControls = DefaultUserControls()\n';
+        initStatements += this.INDENT + 'self.user_controls = DefaultUserControls()\n';
         break;
       case storageModule.ModuleType.MECHANISM:
         if (this.hasAnyComponents) {
-          initStatements += this.INDENT + 'self.defineHardware(' +
+          initStatements += this.INDENT + 'self.define_hardware(' +
               this.mechanismInitArgNames.join(', ') + ')\n';
         }
         break;
@@ -263,7 +266,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     }
 
     if (this.hasAnyEventHandlers) {
-      initStatements += this.INDENT + "self.registerEventHandlers()\n";
+      initStatements += this.INDENT + "self.register_event_handlers()\n";
     }
 
     return initStatements;
@@ -414,44 +417,44 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       if (this.getModuleType() === storageModule.ModuleType.ROBOT) {
         // Define methods that we use for blocks, but are not in wpilib.OpModeRobot.
         this.fromModuleImportName('typing', 'Callable');
-        this.classMethods['registerEventHandler'] = (
-            'def registerEventHandler(self, eventName: str, eventHandler: Callable) -> None:\n' +
-            this.INDENT + 'if eventName in self.eventHandlers:\n' +
-            this.INDENT.repeat(2) + 'self.eventHandlers[eventName].append(eventHandler)\n' +
+        this.classMethods['register_event_handler'] = (
+            'def register_event_handler(self, event_name: str, event_handler: Callable) -> None:\n' +
+            this.INDENT + 'if event_name in self.event_handlers:\n' +
+            this.INDENT.repeat(2) + 'self.event_handlers[event_name].append(event_handler)\n' +
             this.INDENT + 'else:\n' +
-            this.INDENT.repeat(2) + 'self.eventHandlers[eventName] = [eventHandler]\n'
+            this.INDENT.repeat(2) + 'self.event_handlers[event_name] = [event_handler]\n'
         );
-        this.classMethods['unregisterEventHandler'] = (
-            'def unregisterEventHandler(self, eventName: str, eventHandler: Callable) -> None:\n' +
-            this.INDENT + 'if eventName in self.eventHandlers:\n' +
-            this.INDENT.repeat(2) + 'if eventHandler in self.eventHandlers[eventName]:\n' +
-            this.INDENT.repeat(3) + 'self.eventHandlers[eventName].remove(eventHandler)\n' +
-            this.INDENT.repeat(3) + 'if not self.eventHandlers[eventName]:\n' +
-            this.INDENT.repeat(4) + 'del self.eventHandlers[eventName]\n'
+        this.classMethods['unregister_event_handler'] = (
+            'def unregister_event_handler(self, event_name: str, event_handler: Callable) -> None:\n' +
+            this.INDENT + 'if event_name in self.event_handlers:\n' +
+            this.INDENT.repeat(2) + 'if event_handler in self.event_handlers[event_name]:\n' +
+            this.INDENT.repeat(3) + 'self.event_handlers[event_name].remove(event_handler)\n' +
+            this.INDENT.repeat(3) + 'if not self.event_handlers[event_name]:\n' +
+            this.INDENT.repeat(4) + 'del self.event_handlers[event_name]\n'
         )
-        this.classMethods['fireEvent'] = (
-            'def fireEvent(self, eventName: str, *args) -> None:\n' +
-            this.INDENT + 'if eventName in self.eventHandlers:\n' +
-            this.INDENT.repeat(2) + 'for eventHandler in self.eventHandlers[eventName]:\n' +
-            this.INDENT.repeat(3) + 'eventHandler(*args)\n'
+        this.classMethods['fire_event'] = (
+            'def fire_event(self, event_name: str, *args) -> None:\n' +
+            this.INDENT + 'if event_name in self.event_handlers:\n' +
+            this.INDENT.repeat(2) + 'for event_handler in self.event_handlers[event_name]:\n' +
+            this.INDENT.repeat(3) + 'event_handler(*args)\n'
         )
-        this.classMethods['opmodeStart'] = (
-            'def opmodeStart(self) -> None:\n' +
+        this.classMethods['opmode_start'] = (
+            'def opmode_start(self) -> None:\n' +
             this.INDENT + 'for mechanism in self.mechanisms:\n' +
-            this.INDENT.repeat(2) + 'mechanism.opmodeStart()\n'
+            this.INDENT.repeat(2) + 'mechanism.opmode_start()\n'
         );
-        this.classMethods['opmodePeriodic'] = (
-            'def opmodePeriodic(self) -> None:\n' +
+        this.classMethods['opmode_periodic'] = (
+            'def opmode_periodic(self) -> None:\n' +
             // Generate code to call each when_ method. This goes at the top, so that the when
             // conditions are checked before anything else happens on this tick.
             this.getWhenCalls() +
             this.INDENT + 'for mechanism in self.mechanisms:\n' +
-            this.INDENT.repeat(2) + 'mechanism.opmodePeriodic()\n'
+            this.INDENT.repeat(2) + 'mechanism.opmode_periodic()\n'
         );
-        this.classMethods['opmodeEnd'] = (
-            'def opmodeEnd(self) -> None:\n' +
+        this.classMethods['opmode_end'] = (
+            'def opmode_end(self) -> None:\n' +
             this.INDENT + 'for mechanism in self.mechanisms:\n' +
-            this.INDENT.repeat(2) + 'mechanism.opmodeEnd()\n'
+            this.INDENT.repeat(2) + 'mechanism.opmode_end()\n'
         );
       }
 
@@ -466,21 +469,21 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       }
 
       if (this.getModuleType() === storageModule.ModuleType.OPMODE) {
-        // Add code to the Start method to call robot.opmodeStart.
-        this.classMethods[START_METHOD_NAME] = this.insertCodeIntoMethod(START_METHOD_NAME, '', 'opmodeStart');
+        // Add code to the Start method to call robot.opmode_start.
+        this.classMethods[START_METHOD_NAME] = this.insertCodeIntoMethod(START_METHOD_NAME, '', 'opmode_start');
 
-        // Add code to the periodic method to call robot.opmodePeriodic. The when_ method calls
+        // Add code to the periodic method to call robot.opmode_periodic. The when_ method calls
         // go at the top, before that, so that the when conditions are checked before anything
         // else happens on this tick.
-        let periodicCode = this.insertCodeIntoMethod(PERIODIC_METHOD_NAME, this.getWhenCalls(), 'opmodePeriodic');
+        let periodicCode = this.insertCodeIntoMethod(PERIODIC_METHOD_NAME, this.getWhenCalls(), 'opmode_periodic');
         if (STEPS_METHOD_NAME in this.classMethods) {
           // Generate code to call the steps method after the user's code.
           periodicCode += this.INDENT + `self.${STEPS_METHOD_NAME}()\n`;
         }
         this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
 
-        // Add code to the End method to call robot.opmodeEnd.
-        this.classMethods[END_METHOD_NAME] = this.insertCodeIntoMethod(END_METHOD_NAME, '', 'opmodeEnd');
+        // Add code to the End method to call robot.opmode_end.
+        this.classMethods[END_METHOD_NAME] = this.insertCodeIntoMethod(END_METHOD_NAME, '', 'opmode_end');
       }
 
       const classMethods = [];
@@ -490,14 +493,14 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         classMethods.push(this.classMethods['__init__'])
       }
 
-      // Generate the defineHardware method next.
-      if ('defineHardware' in this.classMethods) {
-        classMethods.push(this.classMethods['defineHardware'])
+      // Generate the define_hardware method next.
+      if ('define_hardware' in this.classMethods) {
+        classMethods.push(this.classMethods['define_hardware'])
       }
 
-      // Generate the registerEventHandlers method next.
+      // Generate the register_event_handlers method next.
       if (this.registerEventHandlerStatements && this.registerEventHandlerStatements.length > 0) {
-        let registerEventHandlers = 'def registerEventHandlers(self):\n';
+        let registerEventHandlers = 'def register_event_handlers(self):\n';
         for (const registerEventHandlerStatement of this.registerEventHandlerStatements) {
           registerEventHandlers += this.INDENT + registerEventHandlerStatement;
         }
@@ -506,7 +509,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
       // Generate the remaining methods.
       for (const name in this.classMethods) {
-        if (name === '__init__' || name === 'defineHardware') {
+        if (name === '__init__' || name === 'define_hardware') {
           continue;
         }
         classMethods.push(this.classMethods[name])

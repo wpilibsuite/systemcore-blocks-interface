@@ -24,7 +24,7 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "eventName",
+                            "name": "event_name",
                             "type": "str"
                         },
                         {
@@ -34,7 +34,7 @@
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "fireEvent",
+                    "functionName": "fire_event",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -47,7 +47,7 @@
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "opmodeEnd",
+                    "functionName": "opmode_end",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -60,7 +60,7 @@
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "opmodePeriodic",
+                    "functionName": "opmode_periodic",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -73,7 +73,7 @@
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "opmodeStart",
+                    "functionName": "opmode_start",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -86,17 +86,17 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "eventName",
+                            "name": "event_name",
                             "type": "str"
                         },
                         {
                             "defaultValue": "",
-                            "name": "eventHandler",
+                            "name": "event_handler",
                             "type": "typing.Callable"
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "registerEventHandler",
+                    "functionName": "register_event_handler",
                     "returnType": "None",
                     "tooltip": ""
                 },
@@ -109,17 +109,17 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "eventName",
+                            "name": "event_name",
                             "type": "str"
                         },
                         {
                             "defaultValue": "",
-                            "name": "eventHandler",
+                            "name": "event_handler",
                             "type": "typing.Callable"
                         }
                     ],
                     "declaringClassName": "blocks_base_classes.Mechanism",
-                    "functionName": "unregisterEventHandler",
+                    "functionName": "unregister_event_handler",
                     "returnType": "None",
                     "tooltip": ""
                 }

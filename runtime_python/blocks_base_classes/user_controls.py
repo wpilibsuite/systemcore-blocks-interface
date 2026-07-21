@@ -7,5 +7,5 @@ JOYSTICK_PORTS = 6
 class DefaultUserControls:
     def __init__(self):
         self.m_gamepads = [wpilib.Gamepad(i) for i in range(JOYSTICK_PORTS)]
-    def getGamepad(self, port: int) -> wpilib.Gamepad:
+    def get_gamepad(self, port: int) -> wpilib.Gamepad:
         return self.m_gamepads[port]

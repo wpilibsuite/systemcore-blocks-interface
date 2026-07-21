@@ -27,6 +27,9 @@ import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
+import {
+    upgrade_0_1_x_to_0_2_0 as upgrade_class_method_def_0_1_x_to_0_2_0
+    } from '../blocks/mrc_class_method_def';
 import * as workspaces from '../blocks/utils/workspaces';
 
 declare const __APP_VERSION__: string;
@@ -46,11 +49,14 @@ export async function upgradeProjectIfNecessary(
     return;
   }
 
-  // Major or minor version changed — add migration functions here for future transitions.
+  // Major or minor version changes.
+
+  if (semver.lt(projectInfo.version, '0.2.0')) {
+     await upgradeFrom_0_1_x_to_0_2_0(storage, projectName);
+  }
+
+  // Add more migration functions here for future transitions.
   // Example:
-  //   if (semver.lt(projectInfo.version, '0.2.0')) {
-  //     await upgradeFrom_0_1_0_to_0_2_0(storage, projectName, projectInfo);
-  //   }
   //   if (semver.lt(projectInfo.version, '0.3.0')) {
   //     await upgradeFrom_0_2_0_to_0_3_0(storage, projectName, projectInfo);
   //   }
@@ -60,7 +66,6 @@ export async function upgradeProjectIfNecessary(
   await storageProject.saveProjectInfo(storage, projectName, projectInfo);
 }
 
-// @ts-expect-error: declared but not used
 async function upgradeBlocksFiles(
     storage: commonStorage.Storage,
     projectName: string,
@@ -122,7 +127,6 @@ function isOpMode(moduleType: storageModule.ModuleType): boolean {
 }
 
 /** Predicate: only Mechanism modules are affected. */
-// @ts-expect-error: declared but not used
 function isMechanism(moduleType: storageModule.ModuleType): boolean {
   return moduleType === storageModule.ModuleType.MECHANISM;
 }
@@ -134,13 +138,11 @@ function isRobot(moduleType: storageModule.ModuleType): boolean {
 }
 
 /** Predicate: no modules are affected. */
-// @ts-expect-error: declared but not used
 function noModuleTypes(_moduleType: storageModule.ModuleType): boolean {
   return false;
 }
 
 /** Pre-upgrade passthrough: makes no changes to moduleContentText. */
-// @ts-expect-error: declared but not used
 function noPreupgrade(moduleContentText: string): string {
   return moduleContentText;
 }
@@ -148,4 +150,16 @@ function noPreupgrade(moduleContentText: string): string {
 /** Upgrade passthrough: makes no changes to the workspace. */
 // @ts-expect-error: declared but not used
 function noUpgrade(_workspace: Blockly.Workspace): void {
+}
+
+async function upgradeFrom_0_1_x_to_0_2_0(
+    storage: commonStorage.Storage,
+    projectName: string): Promise<void> {
+  // mrc_class_method_def blocks for mechanism 'opmodeStart' method need to be changed to 'opmode_start'.
+  // mrc_class_method_def blocks for mechanism 'opmodePeriodic' method need to be changed to 'opmode_periodic'.
+  // mrc_class_method_def blocks for mechanism 'opmodeEnd' method need to be changed to 'opmode_end'.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      isMechanism, upgrade_class_method_def_0_1_x_to_0_2_0);
 }

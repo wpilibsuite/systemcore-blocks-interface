@@ -50,9 +50,9 @@ export const ROBOT_METHOD_NAMES_OVERRIDEABLE: string[] = [
 
 export const CLASS_NAME_MECHANISM = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Mechanism';
 export const MECHANISM_METHOD_NAMES_OVERRIDEABLE: string[] = [
-  'opmodeEnd',
-  'opmodePeriodic',
-  'opmodeStart',
+  'opmode_end',
+  'opmode_periodic',
+  'opmode_start',
 ];
 
 export const CLASS_NAME_OPMODE = 'wpilib.PeriodicOpMode';

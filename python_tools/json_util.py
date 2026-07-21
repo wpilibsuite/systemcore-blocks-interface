@@ -523,6 +523,9 @@ class JsonGenerator:
     # looks at doc string and/or parameter type aliases to tell whether this is
     # a component and what the args are.
 
+    # TODO(lizlooney): When RobotPy is changed to use snake case, update the following code.
+    # Argument and function names might have changed.
+
     class_name = class_data[_KEY_CLASS_NAME]
 
     if class_name == 'wpilib.ExpansionHubMotor':
@@ -535,7 +538,7 @@ class JsonGenerator:
             args[1][_KEY_ARGUMENT_NAME] == 'channel'):
           found_constructor = True
           component_args = []
-          component_args.append(self._createArgData('expansionHubMotor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
+          component_args.append(self._createArgData('expansion_hub_motor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
       if not found_constructor:
@@ -566,7 +569,7 @@ class JsonGenerator:
             args[1][_KEY_ARGUMENT_NAME] == 'channel'):
           found_constructor = True
           component_args = []
-          component_args.append(self._createArgData('expansionHubServo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
+          component_args.append(self._createArgData('expansion_hub_servo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
       if not found_constructor:
@@ -593,7 +596,7 @@ class JsonGenerator:
             args[0][_KEY_ARGUMENT_NAME] == 'channel'):
           found_constructor = True
           component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          component_args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
       if not found_constructor:
@@ -619,7 +622,7 @@ class JsonGenerator:
             args[2][_KEY_ARGUMENT_NAME] == 'expectedZero'):
           found_constructor = True
           component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          component_args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
           component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), '1.0'))
           component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0.0'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
@@ -646,7 +649,7 @@ class JsonGenerator:
             args[2][_KEY_ARGUMENT_NAME] == 'offset'):
           found_constructor = True
           component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          component_args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
           component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), args[1][_KEY_ARGUMENT_DEFAULT_VALUE]))
           component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), args[2][_KEY_ARGUMENT_DEFAULT_VALUE]))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
@@ -670,7 +673,7 @@ class JsonGenerator:
             args[0][_KEY_ARGUMENT_NAME] == 'channel'):
           found_constructor = True
           component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          component_args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
       if not found_constructor:
@@ -694,7 +697,7 @@ class JsonGenerator:
             args[2][_KEY_ARGUMENT_NAME] == 'expectedZero'):
           found_constructor = True
           component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          component_args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
           component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), '1'))
           component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
@@ -752,7 +755,7 @@ class JsonGenerator:
             args[0][_KEY_ARGUMENT_NAME] == 'channel'):
           found_constructor = True
           component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
+          component_args.append(self._createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'))
           constructor_data[_KEY_COMPONENT_ARGS] = component_args
           constructor_data[_KEY_IS_COMPONENT] = True
       if not found_constructor:
