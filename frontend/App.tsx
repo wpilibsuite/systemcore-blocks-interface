@@ -156,7 +156,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
   const [isLoadingTabs, setIsLoadingTabs] = React.useState(false);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
-  const [leftCollapsed, setLeftCollapsed] = React.useState(true);
+  const [leftCollapsed, setLeftCollapsed] = React.useState(false);
   const [theme, setTheme] = React.useState('dark');
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
@@ -604,6 +604,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               project={project}
               storage={storage}
               setProject={setProject}
+              saveCurrentTab={saveCurrentTab}
             />
           <Antd.Layout
             style={{
