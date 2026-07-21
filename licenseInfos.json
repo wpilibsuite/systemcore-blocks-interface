@@ -197,30 +197,6 @@
         "version": "4.0.0",
         "publisher": ""
     },
-    "@emnapi/core@1.11.1": {
-        "licenses": "MIT",
-        "repository": "https://github.com/toyobayashi/emnapi",
-        "publisher": "toyobayashi",
-        "licenseText": "MIT License\n\nCopyright (c) 2021-present Toyobayashi\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
-        "name": "@emnapi/core",
-        "version": "1.11.1"
-    },
-    "@emnapi/runtime@1.11.1": {
-        "licenses": "MIT",
-        "repository": "https://github.com/toyobayashi/emnapi",
-        "publisher": "toyobayashi",
-        "licenseText": "MIT License\n\nCopyright (c) 2021-present Toyobayashi\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
-        "name": "@emnapi/runtime",
-        "version": "1.11.1"
-    },
-    "@emnapi/wasi-threads@1.2.2": {
-        "licenses": "MIT",
-        "repository": "https://github.com/toyobayashi/emnapi",
-        "publisher": "toyobayashi",
-        "licenseText": "MIT License\n\nCopyright (c) 2021-present Toyobayashi\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
-        "name": "@emnapi/wasi-threads",
-        "version": "1.2.2"
-    },
     "@emotion/hash@0.8.0": {
         "licenses": "MIT",
         "repository": "https://github.com/emotion-js/emotion.git#master",
@@ -314,13 +290,6 @@
         "licenseText": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
         "name": "@jridgewell/trace-mapping",
         "version": "0.3.31"
-    },
-    "@napi-rs/wasm-runtime@1.1.6": {
-        "licenses": "MIT",
-        "repository": "https://github.com/napi-rs/napi-rs",
-        "publisher": "LongYinan",
-        "name": "@napi-rs/wasm-runtime",
-        "version": "1.1.6"
     },
     "@npmcli/agent@4.0.2": {
         "licenses": "ISC",
@@ -907,14 +876,6 @@
         "name": "@tufjs/models",
         "version": "4.1.0"
     },
-    "@tybys/wasm-util@0.10.3": {
-        "licenses": "MIT",
-        "repository": "https://github.com/toyobayashi/wasm-util",
-        "publisher": "toyobayashi",
-        "licenseText": "# @tybys/wasm-util\n\nWebAssembly related utils for browser environment\n\n**The output code is ES2019**\n\n## Features\n\nAll example code below need to be bundled by ES module bundlers like `webpack` / `rollup`, or specify import map in browser native ES module runtime.\n\n### WASI polyfill for browser\n\nThe API is similar to the `require('wasi').WASI` in Node.js.\n\nYou can use `memfs-browser` to provide filesystem capability.\n\n- Example: [https://github.com/toyobayashi/wasi-wabt](https://github.com/toyobayashi/wasi-wabt)\n- Demo: [https://toyobayashi.github.io/wasi-wabt/](https://toyobayashi.github.io/wasi-wabt/)\n\n```js\nimport { load, WASI } from '@tybys/wasm-util'\nimport { Volume, createFsFromVolume } from 'memfs-browser'\n\nconst fs = createFsFromVolume(Volume.fromJSON({\n  '/home/wasi': null\n}))\n\nconst wasi = new WASI({\n  args: ['chrome', 'file.wasm'],\n  env: {\n    NODE_ENV: 'development',\n    WASI_SDK_PATH: '/opt/wasi-sdk'\n  },\n  preopens: {\n    '/': '/'\n  },\n  fs,\n\n  // redirect stdout / stderr\n\n  // print (text) { console.log(text) },\n  // printErr (text) { console.error(text) }\n})\n\nconst imports = {\n  wasi_snapshot_preview1: wasi.wasiImport\n}\n\nconst { module, instance } = await load('/path/to/file.wasm', imports)\nwasi.start(instance)\n// wasi.initialize(instance)\n```\n\nImplemented syscalls: [wasi_snapshot_preview1](#wasi_snapshot_preview1)\n\n### `load` / `loadSync`\n\n`loadSync` has 4KB wasm size limit in browser.\n\n```js\n// bundler\nimport { load, loadSync } from '@tybys/wasm-util'\n\nconst imports = { /* ... */ }\n\n// using path\nconst { module, instance } = await load('/path/to/file.wasm', imports)\nconst { module, instance } = loadSync('/path/to/file.wasm', imports)\n\n// using URL\nconst { module, instance } = await load(new URL('./file.wasm', import.meta.url), imports)\nconst { module, instance } = loadSync(new URL('./file.wasm', import.meta.url), imports)\n\n// using Uint8Array\nconst buffer = new Uint8Array([\n  0x00, 0x61, 0x73, 0x6d,\n  0x01, 0x00, 0x00, 0x00\n])\nconst { module, instance } = await load(buffer, imports)\nconst { module, instance } = loadSync(buffer, imports)\n\n// auto asyncify\nconst {\n  module,\n  instance: asyncifiedInstance\n} = await load(buffer, imports, { /* asyncify options */})\nasyncifiedInstance.exports.fn() // => return Promise\n```\n\n### Extend Memory instance\n\n```js\nimport { Memory, extendMemory } from '@tybys/wasm-util'\n\nconst memory = new WebAssembly.Memory({ initial: 256 })\n// const memory = instance.exports.memory\n\nextendMemory(memory)\nconsole.log(memory instanceof Memory)\nconsole.log(memory instanceof WebAssembly.Memory)\n// expose memory view getters like Emscripten\nconst { HEAPU8, HEAPU32, view } = memory\n```\n\n### Asyncify wrap\n\nBuild the C code using `clang`, `wasm-ld` and `wasm-opt`\n\n```c\nvoid async_sleep(int ms);\n\nint main() {\n  async_sleep(200);\n  return 0;\n}\n```\n\n```js\nimport { Asyncify } from '@tybys/wasm-util'\n\nconst asyncify = new Asyncify()\n\nconst imports = {\n  env: {\n    async_sleep: asyncify.wrapImportFunction(function (ms) {\n      return new Promise((resolve) => {\n        setTimeout(resolve, ms)\n      })\n    })\n  }\n}\n\n// async_sleep(200)\nconst bytes = await (await fetch('/asyncfied_by_wasm-opt.wasm')).arrayBuffer()\nconst { instance } = await WebAssembly.instantiate(bytes, imports)\nconst asyncifiedInstance = asyncify.init(instance.exports.memory, instance, {\n  wrapExports: ['_start']\n})\n\nconst p = asyncifedInstance._start()\nconsole.log(typeof p.then === 'function')\nconst now = Date.now()\nawait p\nconsole.log(Date.now() - now >= 200)\n```\n\n### wasi_snapshot_preview1\n\n- [x] args_get\n- [x] args_sizes_get\n- [x] environ_get\n- [x] environ_sizes_get\n- [x] clock_res_get\n- [x] clock_time_get\n- [ ] ~~fd_advise~~\n- [x] fd_allocate\n- [x] fd_close\n- [x] fd_datasync\n- [x] fd_fdstat_get\n- [ ] ~~fd_fdstat_set_flags~~\n- [x] fd_fdstat_set_rights\n- [x] fd_filestat_get\n- [x] fd_filestat_set_size\n- [x] fd_filestat_set_times\n- [x] fd_pread\n- [x] fd_prestat_get\n- [x] fd_prestat_dir_name\n- [x] fd_pwrite\n- [x] fd_read\n- [x] fd_readdir\n- [x] fd_renumber\n- [x] fd_seek\n- [x] fd_sync\n- [x] fd_tell\n- [x] fd_write\n- [x] path_create_directory\n- [x] path_filestat_get\n- [x] path_filestat_set_times\n- [x] path_link\n- [x] path_open\n- [x] path_readlink\n- [x] path_remove_directory\n- [x] path_rename\n- [x] path_symlink\n- [x] path_unlink_file\n- [x] poll_oneoff (timer only)\n- [x] proc_exit\n- [ ] ~~proc_raise~~\n- [x] sched_yield\n- [x] random_get\n- [ ] ~~sock_recv~~\n- [ ] ~~sock_send~~\n- [ ] ~~sock_shutdown~~",
-        "name": "@tybys/wasm-util",
-        "version": "0.10.3"
-    },
     "@types/chai@5.2.3": {
         "licenses": "MIT",
         "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
@@ -1244,13 +1205,13 @@
         "version": "4.1.0",
         "publisher": ""
     },
-    "blockly@13.1.0": {
+    "blockly@13.1.1": {
         "licenses": "Apache-2.0",
         "repository": "https://github.com/RaspberryPiFoundation/blockly",
         "publisher": "Neil Fraser",
         "licenseText": "# Blockly\n\nBlockly is a web-based visual programming editor maintained by the\n[Raspberry Pi Foundation](https://www.raspberrypi.org). The Blockly editor uses\ninterlocking graphical blocks to represent code concepts like variables,\nlogical expressions, loops, and more. It allows users to apply programming\nprinciples without having to worry about syntax or the intimidation of a\nblinking cursor on the command line, and can automatically translate block-based\nprograms into a variety of text-based programming languages like Python,\nJavascript and Lua. All code is free and open source.\n\n[Try a live demo](https://raspberrypifoundation.github.io/blockly/packages/blockly/demos/code/index.html),\nor browse the source code in the [Blockly repo](http://github.com/RaspberryPiFoundation/blockly).\n\n## Example Usage\n\n```js\nimport * as Blockly from 'blockly/core';\nBlockly.inject('blocklyDiv', {\n    ...\n})\n```\n\n## Plugins\n\nA [wide variety of plugins](https://raspberrypifoundation.github.io/blockly-samples/)\nthat add additional features and functionality to Blockly are available. All\nplugins are distributed via NPM; source code can be found in the\n[Blockly Samples repo](http://github.com/RaspberryPiFoundation/blockly-samples).\n\n## Installation\n\nYou can install Blockly either via `npm` or `unpkg`. Or, if you're starting an\nentirely new project that uses Blockly, you can bootstrap it using our\n`create-package` tool:\n\n### npm\n\n```bash\nnpm install blockly\n```\n\n### unpkg\n\n```html\n<script src=\"https://unpkg.com/blockly/blockly.min.js\"></script>\n```\n\nWhen importing from unpkg, you can access imports from the global namespace.\n\n```js\n// Access Blockly.\nBlockly.thing;\n// Access the default blocks.\nBlockly.Blocks['block_type'];\n// Access the javascript generator.\njavascript.javascriptGenerator;\n```\n\n### create-package\n\n```bash\nnpx @blockly/create-package app my-cool-blockly-app --typescript\n```\n\n## Imports\n\nNote: Using import of our package targets requires you to use a bundler\n(like webpack), since Blockly is packaged as a UMD, rather than an ESM.\n\n```js\n// Import Blockly core.\nimport * as Blockly from 'blockly/core';\n// Import the default blocks.\nimport * as libraryBlocks from 'blockly/blocks';\n// Import a generator.\nimport {javascriptGenerator} from 'blockly/javascript';\n// Import a message file.\nimport * as En from 'blockly/msg/en';\n```\n\n## Requires\n\n```js\n// Require Blockly core.\nconst Blockly = require('blockly/core');\n// Require the default blocks.\nconst libraryBlocks = require('blockly/blocks');\n// Require a generator.\nconst {javascriptGenerator} = require('blockly/javascript');\n// Require a message file.\nconst En = require('blockly/msg/en');\n```\n\n## Loading messages\n\nBlockly is translated into [more than 100 different languages](https://github.com/RaspberryPiFoundation/blockly/tree/main/packages/blockly/msg/json).\nOnce you've imported or required the message file for the language you want to\nuse as shown above, it needs to be applied:\n\n```js\nBlockly.setLocale(En);\n```\n\n## Docs\n\nFor more information about how to use Blockly, check out our\n[developer documentation](https://docs.blockly.com).\n\n## Accessibility\n\nAlthough Blockly is built around drag-and-drop, it is fully usable with the\nkeyboard alone. Blockly is also accessible to screenreader users by default. We\nprovide [Accessibility Conformance Reports](https://docs.blockly.com/guides/app-integration/accessibility/compliance/)\nin the VPAT format that outline Blockly's conformance to WCAG 2.2 Level AA.\n\n## License\n\nApache 2.0",
         "name": "blockly",
-        "version": "13.1.0"
+        "version": "13.1.1"
     },
     "brace-expansion@2.1.1": {
         "licenses": "MIT",
@@ -3262,12 +3223,12 @@
         "name": "symbol-tree",
         "version": "3.2.4"
     },
-    "system_core_blocks@0.1.1": {
+    "system_core_blocks@0.2.0": {
         "licenses": "UNLICENSED",
         "private": true,
         "licenseText": "Copyright (c) 2025 FIRST and other WPILib contributors\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are met:\n   * Redistributions of source code must retain the above copyright\n     notice, this list of conditions and the following disclaimer.\n   * Redistributions in binary form must reproduce the above copyright\n     notice, this list of conditions and the following disclaimer in the\n     documentation and/or other materials provided with the distribution.\n   * Neither the name of FIRST, WPILib, nor the names of other WPILib\n     contributors may be used to endorse or promote products derived from\n     this software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY FIRST AND OTHER WPILIB CONTRIBUTORS \"AS IS\" AND\nANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\nWARRANTIES OF MERCHANTABILITY NONINFRINGEMENT AND FITNESS FOR A PARTICULAR\nPURPOSE ARE DISCLAIMED. IN NO EVENT SHALL FIRST OR CONTRIBUTORS BE LIABLE FOR\nANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\nLOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\nON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\nSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.",
         "name": "system_core_blocks",
-        "version": "0.1.1",
+        "version": "0.2.0",
         "repository": "",
         "publisher": ""
     },
@@ -3403,14 +3364,6 @@
         "licenseText": "The ISC License\n\nCopyright (c) npm, Inc. and Contributors\n\nPermission to use, copy, modify, and/or distribute this software for any\npurpose with or without fee is hereby granted, provided that the above\ncopyright notice and this permission notice appear in all copies.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\nWITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\nMERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\nANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\nWHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\nACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR\nIN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.",
         "name": "treeverse",
         "version": "3.0.0"
-    },
-    "tslib@2.8.1": {
-        "licenses": "0BSD",
-        "repository": "https://github.com/Microsoft/tslib",
-        "publisher": "Microsoft Corp.",
-        "licenseText": "Copyright (c) Microsoft Corporation.\r\n\r\nPermission to use, copy, modify, and/or distribute this software for any\r\npurpose with or without fee is hereby granted.\r\n\r\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH\r\nREGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY\r\nAND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,\r\nINDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM\r\nLOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR\r\nOTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR\r\nPERFORMANCE OF THIS SOFTWARE.",
-        "name": "tslib",
-        "version": "2.8.1"
     },
     "tuf-js@4.1.0": {
         "licenses": "MIT",

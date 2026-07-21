@@ -71,6 +71,7 @@
   "WPI_TOOLBOX": "ערכת כלים WPI",
   "SHOW_SIMPLE_CLASS_NAMES": "קיצור שמות כיתות על בלוקים",
   "THEME": "ערכת נושא",
+  "STYLE": "סגנון בלוקים",
   "LANGUAGE": "שפה",
   "SELECT_LANGUAGE": "בחר שפה",
   "ENGLISH": "אנגלית",
@@ -122,8 +123,22 @@
     "RENAME_ELLIPSIS": "שנה שם...",
     "DELETE_ELLIPSIS": "מחק...",
     "COPY_ELLIPSIS": "העתק...",
-  "MECHANISMS": "מנגנונים",    
+  "MECHANISMS": "מנגנונים",
   "OPMODES": "אופמודים",
+  "SAMPLES": {
+    "MENU_ITEM": "דוגמאות",
+    "NO_SAMPLES_FOUND": "לא נמצאו דוגמאות",
+    "SEARCH_PLACEHOLDER": "חפש לפי שם או תיאור...",
+    "CLEAR_FILTERS": "נקה מסננים",
+    "BACK_TO_SAMPLES": "חזרה לדוגמאות",
+    "CREATE_PROJECT_FROM_SAMPLE": "צור פרויקט חדש מהדוגמה",
+    "FAILED_TO_CREATE_FROM_SAMPLE": "יצירת פרויקט חדש מהדוגמה נכשלה.",
+    "COPY_BLOCK": "העתק בלוק",
+    "COPY_BLOCK_TOOLTIP": "בחר בלוק, ואז לחץ כאן או הקש Ctrl+C (Cmd+C ב-Mac) כדי להעתיק אותו. הדבק אותו בפרויקט שלך עם Ctrl+V (Cmd+V).",
+    "TAG_FILTER_MODE_AND": "וגם",
+    "TAG_FILTER_MODE_OR": "או",
+    "TAG_FILTER_MODE_TOOLTIP": "וגם: הצג דוגמאות עם כל התגיות שנבחרו. או: הצג דוגמאות עם כל אחת מהתגיות שנבחרו."
+  },
   "ABOUT": {
     "TITLE": "אודות",
     "OK": "אישור",
@@ -165,6 +180,17 @@
     "PREVIEW": "תצוגה מקדימה של ערכת נושא",
     "PREVIEW_DESCRIPTION": "ערכת הנושא הנבחרת תוחל על כל ממשק האפליקציה."
   },
+  "RENDERER_MODAL": {
+    "ZELOS": "Zelos (בסגנון Scratch)",
+    "ZELOS_DESCRIPTION": "בלוקים מעוגלים וצבעוניים עם קלטים מבוססי סמלים, בדומה ל-Scratch.",
+    "GERAS": "Geras (קלאסי)",
+    "GERAS_DESCRIPTION": "המראה המקורי של Blockly, עם בלוקים מרובעים וקלטים בשורה.",
+    "THRASOS": "Thrasos",
+    "THRASOS_DESCRIPTION": "גרסה מודרנית של המראה הקלאסי של Blockly.",
+    "SELECTION": "בחירת סגנון בלוקים",
+    "APPLY": "החל סגנון",
+    "CHOOSE_DESCRIPTION": "בחר כיצד הבלוקים מצוירים באזור העבודה. התצוגה המקדימה למטה מתעדכנת בהתאם לבחירתך."
+  },
   "TOUR": {
     "MENU_ITEM": "סיור",
     "WELCOME_TITLE": "ברוך הבא לממשק הבלוקים",
@@ -180,7 +206,7 @@
     "SETTINGS_TITLE": "הגדרות",
     "SETTINGS_DESC": "בחר את השפה, ערכת הצבעים ואילו קטגוריות של ארגז הכלים WPILib יוצגו.",
     "HELP_TITLE": "עזרה",
-    "HELP_DESC": "מצא מידע נוסף על ממשק הבלוקים, כולל סיור זה.",
+    "HELP_DESC": "מצא מידע נוסף על ממשק הבלוקים, כולל סיור זה ודוגמאות קוד שבהן ניתן לעיין או להעתיק לפרויקט חדש.",
     "MECHANISM_TABS_TITLE": "לשוניות מנגנונים ורובוט",
     "MECHANISM_TABS_DESC": "השורה העליונה מציגה את לשונית הרובוט ואת לשוניות המנגנונים שיצרת. לחץ + כדי להוסיף מנגנון חדש או להציג מנגנון מוסתר.",
     "OPMODE_TABS_TITLE": "לשוניות OpMode",

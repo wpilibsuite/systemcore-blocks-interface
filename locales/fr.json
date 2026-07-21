@@ -71,6 +71,7 @@
     "WPI_TOOLBOX": "Boîte à outils WPI",
     "SHOW_SIMPLE_CLASS_NAMES": "Abréger les noms de classe sur les blocs",
     "THEME": "Thème",
+    "STYLE": "Style des Blocs",
     "LANGUAGE": "Langue",
     "SELECT_LANGUAGE": "Sélectionner la langue",
     "ENGLISH": "Anglais",
@@ -124,6 +125,20 @@
     "COPY_ELLIPSIS": "Copier...",
     "MECHANISMS": "Mécanismes",
     "OPMODES": "OpModes",
+    "SAMPLES": {
+        "MENU_ITEM": "Exemples",
+        "NO_SAMPLES_FOUND": "Aucun exemple trouvé",
+        "SEARCH_PLACEHOLDER": "Rechercher par nom ou description...",
+        "CLEAR_FILTERS": "Effacer les filtres",
+        "BACK_TO_SAMPLES": "Retour aux exemples",
+        "CREATE_PROJECT_FROM_SAMPLE": "Créer un nouveau projet à partir de l'exemple",
+        "FAILED_TO_CREATE_FROM_SAMPLE": "Échec de la création d'un nouveau projet à partir de l'exemple.",
+        "COPY_BLOCK": "Copier le bloc",
+        "COPY_BLOCK_TOOLTIP": "Sélectionnez un bloc, puis cliquez ici ou appuyez sur Ctrl+C (Cmd+C sur Mac) pour le copier. Collez-le dans votre projet avec Ctrl+V (Cmd+V).",
+        "TAG_FILTER_MODE_AND": "ET",
+        "TAG_FILTER_MODE_OR": "OU",
+        "TAG_FILTER_MODE_TOOLTIP": "ET : affiche les exemples ayant toutes les étiquettes sélectionnées. OU : affiche les exemples ayant au moins une étiquette sélectionnée."
+    },
     "ABOUT": {
         "TITLE": "À propos",
         "OK": "OK",
@@ -165,6 +180,17 @@
         "PREVIEW": "Aperçu du thème",
         "PREVIEW_DESCRIPTION": "Le thème sélectionné sera appliqué à toute l'interface de l'application."
     },
+    "RENDERER_MODAL": {
+        "ZELOS": "Zelos (style Scratch)",
+        "ZELOS_DESCRIPTION": "Blocs arrondis et colorés avec des entrées basées sur des icônes, similaire à Scratch.",
+        "GERAS": "Geras (Classique)",
+        "GERAS_DESCRIPTION": "L'apparence originale de Blockly, avec des blocs carrés et des entrées en ligne.",
+        "THRASOS": "Thrasos",
+        "THRASOS_DESCRIPTION": "Une version moderne de l'apparence classique de Blockly.",
+        "SELECTION": "Sélection du style des blocs",
+        "APPLY": "Appliquer le style",
+        "CHOOSE_DESCRIPTION": "Choisissez comment les blocs sont dessinés dans l'espace de travail. L'aperçu ci-dessous se met à jour selon votre choix."
+    },
     "TOUR": {
         "MENU_ITEM": "Visite guidée",
         "WELCOME_TITLE": "Bienvenue dans l'interface de blocs",
@@ -180,7 +206,7 @@
         "SETTINGS_TITLE": "Paramètres",
         "SETTINGS_DESC": "Choisissez votre langue, thème de couleur et quelles catégories de la boîte à outils WPILib sont affichées.",
         "HELP_TITLE": "Aide",
-        "HELP_DESC": "Trouvez plus d'informations sur l'interface de blocs, y compris cette visite guidée.",
+        "HELP_DESC": "Trouvez plus d'informations sur l'interface de blocs, y compris cette visite guidée et des exemples de code que vous pouvez consulter ou copier dans un nouveau projet.",
         "MECHANISM_TABS_TITLE": "Onglets Mécanismes et Robot",
         "MECHANISM_TABS_DESC": "La rangée du haut affiche l'onglet Robot et les onglets Mécanismes que vous avez créés. Appuyez sur + pour ajouter un nouveau mécanisme ou afficher un mécanisme masqué.",
         "OPMODE_TABS_TITLE": "Onglets OpMode",

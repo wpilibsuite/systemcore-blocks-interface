@@ -65,6 +65,7 @@
     "WPI_TOOLBOX": "Caja de Herramientas WPI",
     "SHOW_SIMPLE_CLASS_NAMES": "Acortar los nombres de clase en los bloques",
     "THEME": "Tema",
+    "STYLE": "Estilo de Bloques",
     "LANGUAGE": "Idioma",
     "SELECT_LANGUAGE": "Seleccionar idioma",
     "ENGLISH": "Inglés",
@@ -124,6 +125,20 @@
     "TOOLTIP_ADD_TAB_WITH_TYPE": "Agregar Pestaña de {{type}}",
     "MECHANISMS": "Mecanismos",
     "OPMODES": "OpModes",
+    "SAMPLES": {
+        "MENU_ITEM": "Ejemplos",
+        "NO_SAMPLES_FOUND": "No se encontraron ejemplos",
+        "SEARCH_PLACEHOLDER": "Buscar por nombre o descripción...",
+        "CLEAR_FILTERS": "Borrar Filtros",
+        "BACK_TO_SAMPLES": "Volver a Ejemplos",
+        "CREATE_PROJECT_FROM_SAMPLE": "Crear Nuevo Proyecto a Partir del Ejemplo",
+        "FAILED_TO_CREATE_FROM_SAMPLE": "Error al crear un nuevo proyecto a partir del ejemplo.",
+        "COPY_BLOCK": "Copiar Bloque",
+        "COPY_BLOCK_TOOLTIP": "Selecciona un bloque y luego haz clic aquí o presiona Ctrl+C (Cmd+C en Mac) para copiarlo. Pégalo en tu proyecto con Ctrl+V (Cmd+V).",
+        "TAG_FILTER_MODE_AND": "Y",
+        "TAG_FILTER_MODE_OR": "O",
+        "TAG_FILTER_MODE_TOOLTIP": "Y: muestra ejemplos con todas las etiquetas seleccionadas. O: muestra ejemplos con cualquiera de las etiquetas seleccionadas."
+    },
     "ABOUT": {
         "TITLE": "Acerca de",
         "OK": "Aceptar",
@@ -165,6 +180,17 @@
         "PREVIEW": "Vista Previa del Tema",
         "PREVIEW_DESCRIPTION": "El tema seleccionado se aplicará a toda la interfaz de la aplicación."
     },
+    "RENDERER_MODAL": {
+        "ZELOS": "Zelos (estilo Scratch)",
+        "ZELOS_DESCRIPTION": "Bloques redondeados y coloridos con entradas basadas en iconos, similar a Scratch.",
+        "GERAS": "Geras (Clásico)",
+        "GERAS_DESCRIPTION": "El aspecto original de Blockly, con bloques cuadrados y entradas en línea.",
+        "THRASOS": "Thrasos",
+        "THRASOS_DESCRIPTION": "Una versión moderna del aspecto clásico de Blockly.",
+        "SELECTION": "Selección de Estilo de Bloques",
+        "APPLY": "Aplicar Estilo",
+        "CHOOSE_DESCRIPTION": "Elija cómo se dibujan los bloques en el área de trabajo. La vista previa se actualiza a medida que elige."
+    },
     "TOUR": {
         "MENU_ITEM": "Tour",
         "WELCOME_TITLE": "Bienvenido a la Interfaz de Bloques",
@@ -180,7 +206,7 @@
         "SETTINGS_TITLE": "Configuración",
         "SETTINGS_DESC": "Elige tu idioma, tema de color y qué categorías de la caja de herramientas WPILib se muestran.",
         "HELP_TITLE": "Ayuda",
-        "HELP_DESC": "Encuentra más información sobre la interfaz de bloques, incluyendo este tour.",
+        "HELP_DESC": "Encuentra más información sobre la interfaz de bloques, incluyendo este tour y ejemplos de código que puedes explorar o copiar en un nuevo proyecto.",
         "MECHANISM_TABS_TITLE": "Pestañas de Mecanismos y Robot",
         "MECHANISM_TABS_DESC": "La fila superior muestra la pestaña del Robot y las pestañas de Mecanismos que hayas creado. Presiona + para agregar un nuevo mecanismo o mostrar uno oculto.",
         "OPMODE_TABS_TITLE": "Pestañas de OpMode",
