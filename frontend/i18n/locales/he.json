@@ -155,7 +155,7 @@
     "ERROR_LOADING_ATTRIBUTIONS": "שגיאה בטעינת ייחוסים.",
     "DEPENDENCIES_NOT_AVAILABLE": "מידע על תלויות אינו זמין.",
     "ERROR_LOADING_DEPENDENCIES": "שגיאה בטעינת תלויות.",
-    "COPYRIGHT": "© 2025 FIRST. כל הזכויות שמורות."
+    "COPYRIGHT": "© 2025-2026 FIRST. כל הזכויות שמורות."
   },
   "INVALID_CLASS_NAME": "{{name}} אינו שם תקין. אנא הזן שם אחר.",
   "CLASS_NAME_ALREADY_EXISTS": "מנגנון או אופמוד אחר כבר נקרא {{name}}. אנא הזן שם אחר.",

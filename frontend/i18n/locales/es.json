@@ -155,7 +155,7 @@
         "ERROR_LOADING_ATTRIBUTIONS": "Error al cargar atribuciones.",
         "DEPENDENCIES_NOT_AVAILABLE": "Información de dependencias no disponible.",
         "ERROR_LOADING_DEPENDENCIES": "Error al cargar dependencias.",
-        "COPYRIGHT": "© 2025 FIRST. Todos los derechos reservados."
+        "COPYRIGHT": "© 2025-2026 FIRST. Todos los derechos reservados."
     },
     "INVALID_CLASS_NAME": "{{name}} no es un nombre válido. Por favor ingrese un nombre diferente.",
     "CLASS_NAME_ALREADY_EXISTS": "Otro Mecanismo u OpMode ya se llama {{name}}. Por favor ingrese un nombre diferente.",

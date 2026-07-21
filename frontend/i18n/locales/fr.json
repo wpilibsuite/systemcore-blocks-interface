@@ -155,7 +155,7 @@
         "ERROR_LOADING_ATTRIBUTIONS": "Erreur lors du chargement des attributions.",
         "DEPENDENCIES_NOT_AVAILABLE": "Informations sur les dépendances non disponibles.",
         "ERROR_LOADING_DEPENDENCIES": "Erreur lors du chargement des dépendances.",
-        "COPYRIGHT": "© 2025 FIRST. Tous droits réservés."
+        "COPYRIGHT": "© 2025-2026 FIRST. Tous droits réservés."
     },
     "INVALID_CLASS_NAME": "{{className}} n'est pas un nom valide. Veuillez saisir un nom différent.",
     "CLASS_NAME_ALREADY_EXISTS": "Un autre mécanisme ou OpMode est déjà nommé {{name}}. Veuillez saisir un nom différent.",
