@@ -35,6 +35,7 @@ export const MRC_STYLE_COMPONENTS = 'mrc_style_components';
 export const MRC_STYLE_EVENTS = 'mrc_style_events';
 export const MRC_STYLE_PORTS = 'mrc_style_ports';
 export const MRC_STYLE_EVENT_HANDLER = 'mrc_style_event_handler';
+export const MRC_STYLE_WHEN = 'mrc_style_when';
 export const MRC_STYLE_DRIVER_STATION = 'mrc_style_driver_station';
 export const MRC_CATEGORY_STYLE_COMPONENTS = 'mrc_category_style_components';
 
@@ -58,6 +59,10 @@ export const add_mrc_styles = function (theme: Blockly.Theme): Blockly.Theme {
     });
     theme.setBlockStyle(MRC_STYLE_STEPS, {
         ...procedureStyle,
+    });
+    theme.setBlockStyle(MRC_STYLE_WHEN, {
+        ...procedureStyle,
+        hat: "cap"
     });
     theme.setBlockStyle(MRC_STYLE_ENUM, {
         ...variableStyle

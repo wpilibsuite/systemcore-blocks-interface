@@ -21,12 +21,15 @@
 import * as Antd from 'antd';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
+import * as createPythonFiles from '../storage/create_python_files';
+import * as serverSideStorage from '../storage/server_side_storage';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAutosave } from './AutosaveManager';
 import lightFIRSTLogo from '../assets/FIRST_HorzRGB.png';
 import darkFIRSTLogo from '../assets/FIRST_HorzRGB_reverse.png';
 import ProjectNameComponent from './ProjectNameComponent';
+import { PlaySquareOutlined } from '@ant-design/icons';
 
 /** Function type for setting string values. */
 type StringFunction = (input: string) => void;
@@ -38,6 +41,7 @@ interface HeaderProps {
   project: storageProject.Project | null;
   storage: commonStorage.Storage | null;
   setProject: (project: storageProject.Project | null) => void;
+  saveCurrentTab: () => Promise<void>;
 }
 
 /** Height of the logo image in pixels. */
@@ -66,6 +70,11 @@ export default function Header(props: HeaderProps): React.JSX.Element {
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [newName, setNewName] = React.useState('');
   const [allProjectNames, setAllProjectNames] = React.useState<string[]>([]);
+  const [deployModalOpen, setDeployModalOpen] = React.useState<boolean>(false);
+  const [deployElapsed, setDeployElapsed] = React.useState<number>(0);
+  const [deployStatus, setDeployStatus] = React.useState<'deploying' | 'success' | 'error'>('deploying');
+  const [deployError, setDeployError] = React.useState<string>('');
+  const deployIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
   /** Opens the rename modal and loads existing project names. */
   const openRenameModal = async (): Promise<void> => {
@@ -98,6 +107,81 @@ export default function Header(props: HeaderProps): React.JSX.Element {
       props.setAlertErrorMessage(t('FAILED_TO_RENAME_PROJECT'));
     }
     setRenameModalOpen(false);
+  };
+
+  /** Handles the deploy action to generate and send Python files to the robot. */
+  const handleDeploy = async (): Promise<void> => {
+    if (!props.project) {
+      props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
+      return;
+    }
+    if (!props.storage) {
+      return;
+    }
+
+    setDeployElapsed(0);
+    setDeployStatus('deploying');
+    setDeployError('');
+    setDeployModalOpen(true);
+
+    deployIntervalRef.current = setInterval(() => {
+      setDeployElapsed((prev) => prev + 1);
+    }, 1000);
+
+    const stopTimer = () => {
+      if (deployIntervalRef.current !== null) {
+        clearInterval(deployIntervalRef.current);
+        deployIntervalRef.current = null;
+      }
+    };
+
+    try {
+      await props.saveCurrentTab();
+
+      const blobUrl = await createPythonFiles.producePythonProjectBlob(props.project, props.storage);
+
+      const serverAvailable = await serverSideStorage.isServerAvailable();
+
+      if (serverAvailable) {
+        const response = await fetch(blobUrl);
+        const blob = await response.blob();
+
+        const formData = new FormData();
+        formData.append('file', blob, `${props.project.projectName}.zip`);
+
+        const deployResponse = await fetch('/deploy', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!deployResponse.ok) {
+          throw new Error('Deploy to server failed');
+        }
+
+        await deployResponse.json();
+        URL.revokeObjectURL(blobUrl);
+
+        stopTimer();
+        setDeployStatus('success');
+        setTimeout(() => setDeployModalOpen(false), 2000);
+      } else {
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `${props.project.projectName}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+
+        stopTimer();
+        setDeployModalOpen(false);
+      }
+    } catch (error) {
+      console.error('Failed to deploy project:', error);
+      stopTimer();
+      setDeployStatus('error');
+      setDeployError(t('DEPLOY_FAILED'));
+    }
   };
 
   /** Handles clearing the error message. */
@@ -196,7 +280,53 @@ export default function Header(props: HeaderProps): React.JSX.Element {
           {renderUnsavedIndicator()}
         </Antd.Typography>
         {renderErrorAlert()}
+        <Antd.Button
+          data-tour="deploy-button"
+          type="primary"
+          size="large"
+          icon={<PlaySquareOutlined />}
+          onClick={handleDeploy}
+          style={{ marginLeft: 'auto' }}
+        >
+          {t('DEPLOY')}
+        </Antd.Button>
       </Antd.Flex>
+      <Antd.Modal
+        open={deployModalOpen}
+        closable={deployStatus === 'error'}
+        onCancel={() => setDeployModalOpen(false)}
+        footer={deployStatus === 'error' ? (
+          <Antd.Button onClick={() => setDeployModalOpen(false)}>
+            {t('OK')}
+          </Antd.Button>
+        ) : null}
+        title={t('DEPLOY')}
+        mask={{ closable: false }}
+      >
+        <div style={{textAlign: 'center', padding: '16px 0'}}>
+          {deployStatus === 'deploying' && (
+            <>
+              <Antd.Spin size="large" />
+              <div style={{marginTop: 16, fontSize: 16}}>
+                {t('DEPLOY_IN_PROGRESS')}
+              </div>
+              <div style={{marginTop: 8, color: '#888'}}>
+                {t('DEPLOY_ELAPSED', {seconds: deployElapsed})}
+              </div>
+            </>
+          )}
+          {deployStatus === 'success' && (
+            <div style={{fontSize: 16, color: '#52c41a'}}>
+              {t('DEPLOY_SUCCESS')}
+            </div>
+          )}
+          {deployStatus === 'error' && (
+            <div style={{fontSize: 16, color: '#ff4d4f'}}>
+              {deployError}
+            </div>
+          )}
+        </div>
+      </Antd.Modal>
     </Antd.Flex>
   );
 }

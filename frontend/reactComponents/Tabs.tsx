@@ -65,6 +65,7 @@ export interface TabsProps {
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
   theme: string;
+  renderer: string;
   showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
@@ -643,6 +644,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
                     project={props.project}
                     storage={props.storage}
                     theme={props.theme}
+                    renderer={props.renderer}
                     showSimpleClassNames={props.showSimpleClassNames}
                     shownPythonToolboxCategories={props.shownPythonToolboxCategories}
                     messageApi={props.messageApi}

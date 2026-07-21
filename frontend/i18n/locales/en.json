@@ -70,6 +70,7 @@
     "WPI_TOOLBOX": "WPI Toolbox",
     "SHOW_SIMPLE_CLASS_NAMES": "Shorten Class Names on Blocks",
     "THEME": "Theme",
+    "STYLE": "Block Style",
     "LANGUAGE": "Language",
     "SELECT_LANGUAGE": "Select Language",
     "ENGLISH": "English",
@@ -163,6 +164,17 @@
         "PRIMARY_BUTTON": "Primary",
         "PREVIEW": "Theme Preview",
         "PREVIEW_DESCRIPTION": "The selected theme will be applied to the entire application interface."
+    },
+    "RENDERER_MODAL": {
+        "ZELOS": "Zelos (Scratch-like)",
+        "ZELOS_DESCRIPTION": "Rounded, colorful blocks with icon-based inputs, similar to Scratch.",
+        "GERAS": "Geras (Classic)",
+        "GERAS_DESCRIPTION": "The original Blockly look, with square blocks and inline inputs.",
+        "THRASOS": "Thrasos",
+        "THRASOS_DESCRIPTION": "A modern take on the classic Blockly look.",
+        "SELECTION": "Block Style Selection",
+        "APPLY": "Apply Style",
+        "CHOOSE_DESCRIPTION": "Choose how blocks are drawn in the workspace. The preview below updates as you choose."
     },
     "TOUR": {
         "MENU_ITEM": "Tour",

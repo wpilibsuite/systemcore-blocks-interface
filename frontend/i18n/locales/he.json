@@ -71,6 +71,7 @@
   "WPI_TOOLBOX": "ערכת כלים WPI",
   "SHOW_SIMPLE_CLASS_NAMES": "קיצור שמות כיתות על בלוקים",
   "THEME": "ערכת נושא",
+  "STYLE": "סגנון בלוקים",
   "LANGUAGE": "שפה",
   "SELECT_LANGUAGE": "בחר שפה",
   "ENGLISH": "אנגלית",
@@ -164,6 +165,17 @@
     "PRIMARY_BUTTON": "ראשי",
     "PREVIEW": "תצוגה מקדימה של ערכת נושא",
     "PREVIEW_DESCRIPTION": "ערכת הנושא הנבחרת תוחל על כל ממשק האפליקציה."
+  },
+  "RENDERER_MODAL": {
+    "ZELOS": "Zelos (בסגנון Scratch)",
+    "ZELOS_DESCRIPTION": "בלוקים מעוגלים וצבעוניים עם קלטים מבוססי סמלים, בדומה ל-Scratch.",
+    "GERAS": "Geras (קלאסי)",
+    "GERAS_DESCRIPTION": "המראה המקורי של Blockly, עם בלוקים מרובעים וקלטים בשורה.",
+    "THRASOS": "Thrasos",
+    "THRASOS_DESCRIPTION": "גרסה מודרנית של המראה הקלאסי של Blockly.",
+    "SELECTION": "בחירת סגנון בלוקים",
+    "APPLY": "החל סגנון",
+    "CHOOSE_DESCRIPTION": "בחר כיצד הבלוקים מצוירים באזור העבודה. התצוגה המקדימה למטה מתעדכנת בהתאם לבחירתך."
   },
   "TOUR": {
     "MENU_ITEM": "סיור",
