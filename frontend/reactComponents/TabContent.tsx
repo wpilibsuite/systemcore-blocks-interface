@@ -52,6 +52,7 @@ export interface TabContentProps {
   project: storageProject.Project;
   storage: commonStorage.Storage;
   theme: string;
+  renderer: string;
   showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
@@ -70,6 +71,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   project,
   storage,
   theme,
+  renderer,
   showSimpleClassNames,
   shownPythonToolboxCategories,
   messageApi,
@@ -81,8 +83,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   const [editorInstance, setEditorInstance] = React.useState<editor.Editor | null>(null);
   const [generatedCode, setGeneratedCode] = React.useState<string>('');
   const [triggerPythonRegeneration, setTriggerPythonRegeneration] = React.useState(0);
-  const [codePanelSize, setCodePanelSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
-  const [codePanelCollapsed, setCodePanelCollapsed] = React.useState(false);
+  const [codePanelSize, setCodePanelSize] = React.useState<string | number>(CODE_PANEL_MIN_SIZE);
+  const [codePanelCollapsed, setCodePanelCollapsed] = React.useState(true);
   const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
   const [codePanelAnimating, setCodePanelAnimating] = React.useState(false);
   const autosave = useAutosave();
@@ -257,6 +259,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
           modulePath={modulePath}
           onBlocklyComponentCreated={setupBlocklyComponent}
           theme={theme}
+          renderer={renderer}
           onWorkspaceCreated={setupWorkspace}
         />
       </Content>

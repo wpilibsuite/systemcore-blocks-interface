@@ -5,7 +5,7 @@
             {
                 "type": "mrc_class_method_def",
                 "x": 10,
-                "y": 150,
+                "y": 310,
                 "deletable": false,
                 "editable": false,
                 "extraState": {
@@ -23,7 +23,7 @@
             {
                 "type": "mrc_class_method_def",
                 "x": 10,
-                "y": 230,
+                "y": 510,
                 "editable": false,
                 "extraState": {
                     "canChangeSignature": false,

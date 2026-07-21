@@ -55,7 +55,7 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
     {
       title: t('TOUR.DEPLOY_TITLE'),
       description: t('TOUR.DEPLOY_DESC'),
-      target: tourTarget('[data-menu-id$="-deploy"]'),
+      target: tourTarget('[data-tour="deploy-button"]'),
     },
     {
       title: t('TOUR.MANAGE_TITLE'),
@@ -115,6 +115,7 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       onClose={onClose}
       onFinish={onClose}
       steps={steps}
+      disabledInteraction
     />
   );
 };

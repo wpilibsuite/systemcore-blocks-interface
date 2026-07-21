@@ -37,6 +37,7 @@ import {
     createCustomMethodBlockWithReturn,
     getBaseClassBlocks } from '../blocks/mrc_class_method_def';
 import { createStepsBlock } from '../blocks/mrc_steps';
+import { createWhenBlock } from '../blocks/mrc_when';
 import { Editor } from '../editor/editor';
 
 
@@ -73,6 +74,10 @@ class MethodsCategory {
 
     // Collect the method names that are already overridden in the blockly workspace.
     const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
+
+    // The when block is allowed in the Robot, Mechanism, and OpMode modules. In a Robot or
+    // Mechanism, its when_ methods are called from opmodePeriodic; in an OpMode, from periodic.
+    contents.push(createWhenBlock());
 
     switch (editor.getModuleType()) {
       case storageModule.ModuleType.ROBOT:

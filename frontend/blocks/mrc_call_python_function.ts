@@ -1363,7 +1363,7 @@ function processArgs(
       name: argName,
       type: args[i].type,
     });
-    // Check if we should plug a variable getter block into the argument input socket.
+    // Plug a block (or shadow block) into the argument input socket, if appropriate.
     const input = value.valueForFunctionArgInput(args[i].type, args[i].defaultValue);
     if (input) {
       inputs['ARG' + i] = input;
