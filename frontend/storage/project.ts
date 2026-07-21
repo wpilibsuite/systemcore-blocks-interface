@@ -193,6 +193,25 @@ export async function copyProject(
 }
 
 /**
+ * Creates a new project from a sample's files.
+ * @param storage The storage interface to use for creating the project.
+ * @param sampleFiles The sample's files, keyed by file name (e.g. 'Robot.robot.json'), in the
+ *     same format used for project files.
+ * @param newProjectName The name for the new project. For example, WackyWheelerRobot
+ */
+export async function createProjectFromSample(
+    storage: commonStorage.Storage,
+    sampleFiles: { [fileName: string]: string },
+    newProjectName: string): Promise<void> {
+  await uploadProjectFiles(storage, newProjectName, sampleFiles);
+
+  // Give the new project its own projectId so it's distinct from the sample.
+  const projectInfo = await fetchProjectInfo(storage, newProjectName);
+  projectInfo.projectId = Blockly.utils.idGenerator.genUid();
+  await saveProjectInfo(storage, newProjectName, projectInfo);
+}
+
+/**
  * Returns the projectId from an uploaded blob without saving anything.
  * Returns '' if not found or if the blob is invalid.
  */

@@ -36,12 +36,14 @@ import {
   GlobalOutlined,
   CheckOutlined,
   ControlOutlined,
+  AppstoreOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
 import AboutDialog from './AboutModal';
 import ThemeModal from './ThemeModal';
 import LanguageModal from './LanguageModal';
+import SamplesModal from './SamplesModal';
 import RendererModal from './RendererModal';
 
 /** Type definition for menu items. */
@@ -144,6 +146,7 @@ function getMenuItems(
       getItem(t('LANGUAGE') + '...', 'language', <GlobalOutlined />),
     ]),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
+      getItem(t('SAMPLES.MENU_ITEM') + '...', 'samples', <AppstoreOutlined />),
       getItem(t('TOUR.MENU_ITEM') + '...', 'tour', <QuestionCircleOutlined />),
       getItem(t('ABOUT.TITLE') + '...', 'about', <InfoCircleOutlined />),
     ]),
@@ -165,6 +168,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [tabType, setTabType] = React.useState<TabType>(TabType.MECHANISM);
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
+  const [samplesModalOpen, setSamplesModalOpen] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
   const [rendererModalOpen, setRendererModalOpen] = React.useState<boolean>(false);
   const [languageModalOpen, setLanguageModalOpen] = React.useState<boolean>(false);
@@ -272,6 +276,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       setProjectModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
+    } else if (key === 'samples') {
+      setSamplesModalOpen(true);
     } else if (key === 'tour') {
       props.startTour?.();
     } else if (key === 'wpi_toolbox'){
@@ -356,6 +362,14 @@ export function Component(props: MenuProps): React.JSX.Element {
       <AboutDialog
         open={aboutDialogVisible}
         onClose={() => setAboutDialogVisible(false)}
+      />
+      <SamplesModal
+        isOpen={samplesModalOpen}
+        onClose={() => setSamplesModalOpen(false)}
+        storage={props.storage}
+        setCurrentProject={props.setCurrentProject}
+        setAlertErrorMessage={props.setAlertErrorMessage}
+        theme={props.theme}
       />
       <ThemeModal
           open={themeModalOpen}

@@ -1,0 +1,338 @@
+{
+  "moduleType": "opmode",
+  "moduleId": "cNGeUKWBBD)MKo4qPn7N",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_opmode_details",
+          "id": "Ioa.IRi(MMj.I:vh4=6h",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "fields": {
+            "TYPE": "Teleop",
+            "ENABLED": true,
+            "NAME": "",
+            "GROUP": "",
+            "DESCRIPTION": ""
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "neL`#?Ftb,q$(I~0^r{[",
+          "x": 10,
+          "y": 130,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "neL`#?Ftb,q$(I~0^r{[",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "2NBgBQsdKcQ[#/_[/{xM",
+          "x": 10,
+          "y": 210,
+          "editable": false,
+          "extraState": {
+            "methodId": "2NBgBQsdKcQ[#/_[/{xM",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": []
+          },
+          "fields": {
+            "NAME": "periodic"
+          },
+          "inputs": {
+            "STACK": {
+              "block": {
+                "type": "controls_if",
+                "id": "A!42Q@kXy}_JXZJA_KPO",
+                "extraState": {
+                  "hasElse": true
+                },
+                "inputs": {
+                  "IF0": {
+                    "block": {
+                      "type": "logic_compare",
+                      "id": "QkS(ipP9Ti6HSvbG)O:2",
+                      "fields": {
+                        "OP": "GT"
+                      },
+                      "inputs": {
+                        "A": {
+                          "block": {
+                            "type": "mrc_gamepad_analog",
+                            "id": "8Q31%AL3*1q:TwAtBo]h",
+                            "fields": {
+                              "GAMEPAD_PORT": "0",
+                              "GAMEPAD_AXIS": "LEFT_TRIGGER"
+                            }
+                          }
+                        },
+                        "B": {
+                          "block": {
+                            "type": "math_number",
+                            "id": "oD4]g61JRDo;k#q872r[",
+                            "fields": {
+                              "NUM": 0.5
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "DO0": {
+                    "block": {
+                      "type": "mrc_call_python_function",
+                      "id": "xmDT(CNSVnAG.t_${QS|",
+                      "extraState": {
+                        "functionKind": "instance_mechanism",
+                        "returnType": "None",
+                        "args": [
+                          {
+                            "name": "forward",
+                            "type": ""
+                          },
+                          {
+                            "name": "strafe",
+                            "type": ""
+                          },
+                          {
+                            "name": "rotate",
+                            "type": ""
+                          }
+                        ],
+                        "actualFunctionName": "drive",
+                        "methodId": "wGZY|$V5at+F4i#~SLjG",
+                        "mechanismId": "l+x,DSm~vop!Msns`Q~h",
+                        "mechanismClassName": "mecanum_drive.MecanumDrive"
+                      },
+                      "fields": {
+                        "MECHANISM_NAME": "myMecanumDrive",
+                        "FUNC": "drive"
+                      },
+                      "inputs": {
+                        "ARG0": {
+                          "block": {
+                            "type": "math_single",
+                            "id": "-7L-0=LiF4}gQJj,1TfV",
+                            "fields": {
+                              "OP": "NEG"
+                            },
+                            "inputs": {
+                              "NUM": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "Gjj$.:KsY{tkO*%;.biA",
+                                  "fields": {
+                                    "NUM": 9
+                                  }
+                                },
+                                "block": {
+                                  "type": "mrc_gamepad_analog",
+                                  "id": "Q*m@!2]n67GaoUOG+R$t",
+                                  "fields": {
+                                    "GAMEPAD_PORT": "0",
+                                    "GAMEPAD_AXIS": "LEFT_STICK_Y"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "ARG1": {
+                          "block": {
+                            "type": "mrc_gamepad_analog",
+                            "id": "HHUMu)$U:N`^87]s6h0g",
+                            "fields": {
+                              "GAMEPAD_PORT": "0",
+                              "GAMEPAD_AXIS": "LEFT_STICK_X"
+                            }
+                          }
+                        },
+                        "ARG2": {
+                          "block": {
+                            "type": "mrc_gamepad_analog",
+                            "id": "dDKFR(hzEXEsWu2*wxe[",
+                            "fields": {
+                              "GAMEPAD_PORT": "0",
+                              "GAMEPAD_AXIS": "RIGHT_STICK_X"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "ELSE": {
+                    "block": {
+                      "type": "mrc_call_python_function",
+                      "id": "NEfP4d/6U{~K:VJ`=:F3",
+                      "extraState": {
+                        "functionKind": "instance_mechanism",
+                        "returnType": "None",
+                        "args": [
+                          {
+                            "name": "forward",
+                            "type": ""
+                          },
+                          {
+                            "name": "strafe",
+                            "type": ""
+                          },
+                          {
+                            "name": "rotate",
+                            "type": ""
+                          }
+                        ],
+                        "actualFunctionName": "drive",
+                        "methodId": "wGZY|$V5at+F4i#~SLjG",
+                        "mechanismId": "l+x,DSm~vop!Msns`Q~h",
+                        "mechanismClassName": "mecanum_drive.MecanumDrive"
+                      },
+                      "fields": {
+                        "MECHANISM_NAME": "myMecanumDrive",
+                        "FUNC": "drive"
+                      },
+                      "inputs": {
+                        "ARG0": {
+                          "block": {
+                            "type": "math_arithmetic",
+                            "id": "KJlKx,v9(!n^z~*4M%UC",
+                            "fields": {
+                              "OP": "MULTIPLY"
+                            },
+                            "inputs": {
+                              "A": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "URoqKs1u?$amD-*S%%ag",
+                                  "fields": {
+                                    "NUM": 0.5
+                                  }
+                                }
+                              },
+                              "B": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "i=Q`X?)Jxo{|rtunqjbZ",
+                                  "fields": {
+                                    "NUM": 1
+                                  }
+                                },
+                                "block": {
+                                  "type": "mrc_gamepad_analog",
+                                  "id": "jxZr[~m]],{DD)A]v1m[",
+                                  "fields": {
+                                    "GAMEPAD_PORT": "0",
+                                    "GAMEPAD_AXIS": "LEFT_STICK_Y"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "ARG1": {
+                          "block": {
+                            "type": "math_arithmetic",
+                            "id": "36Y~5nXK4|namEUY#0sw",
+                            "fields": {
+                              "OP": "MULTIPLY"
+                            },
+                            "inputs": {
+                              "A": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "=rcpH5~I_K~21o:?tt=3",
+                                  "fields": {
+                                    "NUM": 0.5
+                                  }
+                                }
+                              },
+                              "B": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "i=Q`X?)Jxo{|rtunqjbZ",
+                                  "fields": {
+                                    "NUM": 1
+                                  }
+                                },
+                                "block": {
+                                  "type": "mrc_gamepad_analog",
+                                  "id": "FA8TryFD.hy{*~jXxRU/",
+                                  "fields": {
+                                    "GAMEPAD_PORT": "0",
+                                    "GAMEPAD_AXIS": "LEFT_STICK_X"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "ARG2": {
+                          "block": {
+                            "type": "math_arithmetic",
+                            "id": "BJ/[@eP^.eY@1.|JyHx(",
+                            "fields": {
+                              "OP": "MULTIPLY"
+                            },
+                            "inputs": {
+                              "A": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "pxx?SgcY/^ACxMK7)?6x",
+                                  "fields": {
+                                    "NUM": 0.5
+                                  }
+                                }
+                              },
+                              "B": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "i=Q`X?)Jxo{|rtunqjbZ",
+                                  "fields": {
+                                    "NUM": 1
+                                  }
+                                },
+                                "block": {
+                                  "type": "mrc_gamepad_analog",
+                                  "id": ";-r*m5DH$#R;16;}ul{F",
+                                  "fields": {
+                                    "GAMEPAD_PORT": "0",
+                                    "GAMEPAD_AXIS": "RIGHT_STICK_X"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [],
+  "components": [],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}
