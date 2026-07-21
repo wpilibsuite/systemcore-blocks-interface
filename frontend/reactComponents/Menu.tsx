@@ -22,8 +22,6 @@ import * as Antd from 'antd';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
-import * as createPythonFiles from '../storage/create_python_files';
-import * as serverSideStorage from '../storage/server_side_storage';
 import * as I18Next from 'react-i18next';
 import {TabType, TabTypeUtils } from '../types/TabType';
 
@@ -38,7 +36,6 @@ import {
   GlobalOutlined,
   CheckOutlined,
   ControlOutlined,
-  PlaySquareOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
@@ -125,7 +122,6 @@ function getMenuItems(
   });
 
   return [
-    getItem(t('DEPLOY'), 'deploy', <PlaySquareOutlined />),
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
       getItem(t('MECHANISMS') + '...', 'manageMechanisms', TabTypeUtils.getIcon(TabType.MECHANISM)),
@@ -172,11 +168,6 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
   const [rendererModalOpen, setRendererModalOpen] = React.useState<boolean>(false);
   const [languageModalOpen, setLanguageModalOpen] = React.useState<boolean>(false);
-  const [deployModalOpen, setDeployModalOpen] = React.useState<boolean>(false);
-  const [deployElapsed, setDeployElapsed] = React.useState<number>(0);
-  const [deployStatus, setDeployStatus] = React.useState<'deploying' | 'success' | 'error'>('deploying');
-  const [deployError, setDeployError] = React.useState<string>('');
-  const deployIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleThemeChange = (newTheme: string) => {
     props.setTheme(newTheme);
@@ -293,87 +284,10 @@ export function Component(props: MenuProps): React.JSX.Element {
       setRendererModalOpen(true);
     } else if (key === 'language') {
       setLanguageModalOpen(true);
-    } else if (key == 'deploy') {
-      handleDeploy();
     } else {
       // TODO: Handle other menu actions
 
       console.log(`Selected key that wasn't module: ${key}`);
-    }
-  };
-
-  /** Handles the deploy action to generate and download Python files. */
-  const handleDeploy = async (): Promise<void> => {
-    if (!props.currentProject) {
-      props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
-      return;
-    }
-    if (!props.storage) {
-      return;
-    }
-
-    setDeployElapsed(0);
-    setDeployStatus('deploying');
-    setDeployError('');
-    setDeployModalOpen(true);
-
-    deployIntervalRef.current = setInterval(() => {
-      setDeployElapsed((prev) => prev + 1);
-    }, 1000);
-
-    const stopTimer = () => {
-      if (deployIntervalRef.current !== null) {
-        clearInterval(deployIntervalRef.current);
-        deployIntervalRef.current = null;
-      }
-    };
-
-    try {
-      await props.saveCurrentTab();
-
-      const blobUrl = await createPythonFiles.producePythonProjectBlob(props.currentProject, props.storage);
-
-      const serverAvailable = await serverSideStorage.isServerAvailable();
-
-      if (serverAvailable) {
-        const response = await fetch(blobUrl);
-        const blob = await response.blob();
-
-        const formData = new FormData();
-        formData.append('file', blob, `${props.currentProject.projectName}.zip`);
-
-        const deployResponse = await fetch('/deploy', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!deployResponse.ok) {
-          throw new Error('Deploy to server failed');
-        }
-
-        await deployResponse.json();
-        URL.revokeObjectURL(blobUrl);
-
-        stopTimer();
-        setDeployStatus('success');
-        setTimeout(() => setDeployModalOpen(false), 2000);
-      } else {
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = `${props.currentProject.projectName}.zip`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(blobUrl);
-
-        stopTimer();
-        setDeployModalOpen(false);
-      }
-    } catch (error) {
-      console.error('Failed to deploy project:', error);
-      stopTimer();
-      setDeployStatus('error');
-      setDeployError(t('DEPLOY_FAILED'));
     }
   };
 
@@ -460,42 +374,6 @@ export function Component(props: MenuProps): React.JSX.Element {
           open={languageModalOpen}
           onClose={() => setLanguageModalOpen(false)}
         />
-      <Antd.Modal
-        open={deployModalOpen}
-        closable={deployStatus === 'error'}
-        onCancel={() => setDeployModalOpen(false)}
-        footer={deployStatus === 'error' ? (
-          <Antd.Button onClick={() => setDeployModalOpen(false)}>
-            {t('OK')}
-          </Antd.Button>
-        ) : null}
-        title={t('DEPLOY')}
-        mask={{ closable: false }}
-      >
-        <div style={{textAlign: 'center', padding: '16px 0'}}>
-          {deployStatus === 'deploying' && (
-            <>
-              <Antd.Spin size="large" />
-              <div style={{marginTop: 16, fontSize: 16}}>
-                {t('DEPLOY_IN_PROGRESS')}
-              </div>
-              <div style={{marginTop: 8, color: '#888'}}>
-                {t('DEPLOY_ELAPSED', {seconds: deployElapsed})}
-              </div>
-            </>
-          )}
-          {deployStatus === 'success' && (
-            <div style={{fontSize: 16, color: '#52c41a'}}>
-              {t('DEPLOY_SUCCESS')}
-            </div>
-          )}
-          {deployStatus === 'error' && (
-            <div style={{fontSize: 16, color: '#ff4d4f'}}>
-              {deployError}
-            </div>
-          )}
-        </div>
-      </Antd.Modal>
     </>
   );
 }
