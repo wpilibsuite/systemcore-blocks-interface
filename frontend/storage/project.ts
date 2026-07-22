@@ -395,7 +395,7 @@ export async function renameModuleInProject(
  * moduleId, so the copy is never aliased with the original), and saves the result to
  * newModulePath.
  */
-async function rekeyAndSaveModuleCopy(
+async function copyModuleAndChangeIds(
     storage: commonStorage.Storage, oldModulePath: string,
     newModulePath: string): Promise<storageModuleContent.ModuleContent> {
   const moduleContentText = await storage.fetchFileContentText(oldModulePath);
@@ -426,7 +426,7 @@ export async function copyModuleInProject(
   }
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, oldModule.moduleType);
 
-  const moduleContent = await rekeyAndSaveModuleCopy(storage, oldModule.modulePath, newModulePath);
+  const moduleContent = await copyModuleAndChangeIds(storage, oldModule.modulePath, newModulePath);
 
   switch (oldModule.moduleType) {
     case storageModule.ModuleType.MECHANISM: {
@@ -499,7 +499,7 @@ export async function copyMechanismToProject(
   const newModulePath = storageNames.makeModulePath(
       destProject.projectName, newClassName, storageModule.ModuleType.MECHANISM);
 
-  const moduleContent = await rekeyAndSaveModuleCopy(storage, sourceModulePath, newModulePath);
+  const moduleContent = await copyModuleAndChangeIds(storage, sourceModulePath, newModulePath);
 
   const newMechanism: storageModule.Mechanism = {
     modulePath: newModulePath,
