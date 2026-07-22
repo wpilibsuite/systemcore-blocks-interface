@@ -286,39 +286,28 @@ export async function addModuleToProject(
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, moduleType);
 
   switch (moduleType) {
-    case storageModule.ModuleType.MECHANISM:
+    case storageModule.ModuleType.MECHANISM: {
       const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
       await storage.saveFile(newModulePath, mechanismContent);
       const parsedMechanismContent = storageModuleContent.parseModuleContentText(mechanismContent);
-      const mechanismModuleId = parsedMechanismContent.getModuleId();
-      const newMechanism: storageModule.Mechanism = {
-        modulePath: newModulePath,
-        moduleType: storageModule.ModuleType.MECHANISM,
-        moduleId: mechanismModuleId,
-        projectName: project.projectName,
-        className: newClassName
-      }        
+      const newMechanism = makeMechanismRecord(
+          newModulePath, parsedMechanismContent.getModuleId(), project.projectName, newClassName);
       project.mechanisms.push(newMechanism);
       // Add a mechanism block to the robot's stored workspace so it appears when the robot tab
       // is opened (or re-opened).
-      const robotPath = project.robot.modulePath;
-      const robotContentText = await storage.fetchFileContentText(robotPath);
-      const robotContent = storageModuleContent.parseModuleContentText(robotContentText);
-      mrcAddMechanismBlockToRobotContent(robotContent, newMechanism);
-      await storage.saveFile(robotPath, robotContent.getModuleContentText());
+      await addMechanismBlockToRobot(storage, project, newMechanism);
       // If the robot workspace is currently open, add the mechanism block to it as well so it appears immediately without needing to reopen the tab.
       onMechanismAdded?.(newMechanism);
       break;
-    case storageModule.ModuleType.OPMODE:
+    }
+    case storageModule.ModuleType.OPMODE: {
       const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);
       await storage.saveFile(newModulePath, opModeContent);
-      project.opModes.push({
-        modulePath: newModulePath,
-        moduleType: storageModule.ModuleType.OPMODE,
-        projectName: project.projectName,
-        className: newClassName
-      } as storageModule.OpMode);
+      const parsedOpModeContent = storageModuleContent.parseModuleContentText(opModeContent);
+      project.opModes.push(makeOpModeRecord(
+          newModulePath, parsedOpModeContent.getModuleId(), project.projectName, newClassName));
       break;
+    }
   }
   await saveProjectInfo(storage, project.projectName, project.projectInfo);
 }
@@ -406,6 +395,60 @@ async function copyModuleAndChangeIds(
   return moduleContent;
 }
 
+function makeMechanismRecord(
+    modulePath: string, moduleId: string, projectName: string,
+    className: string): storageModule.Mechanism {
+  return {
+    modulePath: modulePath,
+    moduleType: storageModule.ModuleType.MECHANISM,
+    moduleId: moduleId,
+    projectName: projectName,
+    className: className,
+  };
+}
+
+function makeOpModeRecord(
+    modulePath: string, moduleId: string, projectName: string,
+    className: string): storageModule.OpMode {
+  return {
+    modulePath: modulePath,
+    moduleType: storageModule.ModuleType.OPMODE,
+    moduleId: moduleId,
+    projectName: projectName,
+    className: className,
+  };
+}
+
+/**
+ * Adds an mrc_mechanism block for the given mechanism to project's Robot module and saves it,
+ * so the mechanism appears when the robot tab is opened (or re-opened).
+ */
+async function addMechanismBlockToRobot(
+    storage: commonStorage.Storage, project: Project,
+    mechanism: storageModule.Mechanism): Promise<void> {
+  const robotPath = project.robot.modulePath;
+  const robotContentText = await storage.fetchFileContentText(robotPath);
+  const robotContent = storageModuleContent.parseModuleContentText(robotContentText);
+  mrcAddMechanismBlockToRobotContent(robotContent, mechanism);
+  await storage.saveFile(robotPath, robotContent.getModuleContentText());
+}
+
+/**
+ * Finishes registering a copied mechanism (whose content has already been saved to
+ * newModulePath by copyModuleAndChangeIds): builds its Mechanism record, adds it to
+ * destProject.mechanisms, and adds a mechanism block to destProject's Robot.
+ */
+async function finishMechanismCopy(
+    storage: commonStorage.Storage, destProject: Project, newModulePath: string,
+    moduleContent: storageModuleContent.ModuleContent,
+    newClassName: string): Promise<storageModule.Mechanism> {
+  const newMechanism = makeMechanismRecord(
+      newModulePath, moduleContent.getModuleId(), destProject.projectName, newClassName);
+  destProject.mechanisms.push(newMechanism);
+  await addMechanismBlockToRobot(storage, destProject, newMechanism);
+  return newMechanism;
+}
+
 /**
  * Copies a module in the project.
  * @param storage The storage interface to use for copying the module.
@@ -430,22 +473,7 @@ export async function copyModuleInProject(
 
   switch (oldModule.moduleType) {
     case storageModule.ModuleType.MECHANISM: {
-      const newMechanism: storageModule.Mechanism = {
-        modulePath: newModulePath,
-        moduleType: storageModule.ModuleType.MECHANISM,
-        moduleId: moduleContent.getModuleId(),
-        projectName: project.projectName,
-        className: newClassName,
-      };
-      project.mechanisms.push(newMechanism);
-
-      // Add a mechanism block to the robot's stored workspace so the copy appears when the
-      // robot tab is opened (or re-opened).
-      const robotPath = project.robot.modulePath;
-      const robotContentText = await storage.fetchFileContentText(robotPath);
-      const robotContent = storageModuleContent.parseModuleContentText(robotContentText);
-      mrcAddMechanismBlockToRobotContent(robotContent, newMechanism);
-      await storage.saveFile(robotPath, robotContent.getModuleContentText());
+      const newMechanism = await finishMechanismCopy(storage, project, newModulePath, moduleContent, newClassName);
 
       // If the robot workspace is currently open, add the mechanism block to it as well so it
       // appears immediately without needing to reopen the tab.
@@ -453,13 +481,8 @@ export async function copyModuleInProject(
       break;
     }
     case storageModule.ModuleType.OPMODE:
-      project.opModes.push({
-        modulePath: newModulePath,
-        moduleType: storageModule.ModuleType.OPMODE,
-        moduleId: moduleContent.getModuleId(),
-        projectName: project.projectName,
-        className: newClassName,
-      });
+      project.opModes.push(makeOpModeRecord(
+          newModulePath, moduleContent.getModuleId(), project.projectName, newClassName));
       break;
   }
 
@@ -501,21 +524,7 @@ export async function copyMechanismToProject(
 
   const moduleContent = await copyModuleAndChangeIds(storage, sourceModulePath, newModulePath);
 
-  const newMechanism: storageModule.Mechanism = {
-    modulePath: newModulePath,
-    moduleType: storageModule.ModuleType.MECHANISM,
-    moduleId: moduleContent.getModuleId(),
-    projectName: destProject.projectName,
-    className: newClassName,
-  };
-  destProject.mechanisms.push(newMechanism);
-
-  // Add a mechanism block to the destination robot's stored workspace.
-  const robotPath = destProject.robot.modulePath;
-  const robotContentText = await storage.fetchFileContentText(robotPath);
-  const robotContent = storageModuleContent.parseModuleContentText(robotContentText);
-  mrcAddMechanismBlockToRobotContent(robotContent, newMechanism);
-  await storage.saveFile(robotPath, robotContent.getModuleContentText());
+  const newMechanism = await finishMechanismCopy(storage, destProject, newModulePath, moduleContent, newClassName);
 
   await saveProjectInfo(storage, destProject.projectName, destProject.projectInfo);
 
