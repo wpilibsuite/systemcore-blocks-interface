@@ -290,12 +290,7 @@ export async function addModuleToProject(
       const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
       await storage.saveFile(newModulePath, mechanismContent);
       const parsedMechanismContent = storageModuleContent.parseModuleContentText(mechanismContent);
-      const newMechanism = makeMechanismRecord(
-          newModulePath, parsedMechanismContent.getModuleId(), project.projectName, newClassName);
-      project.mechanisms.push(newMechanism);
-      // Add a mechanism block to the robot's stored workspace so it appears when the robot tab
-      // is opened (or re-opened).
-      await addMechanismBlockToRobot(storage, project, newMechanism);
+      const newMechanism = await finishMechanismCopy(storage, project, newModulePath, parsedMechanismContent, newClassName);  
       // If the robot workspace is currently open, add the mechanism block to it as well so it appears immediately without needing to reopen the tab.
       onMechanismAdded?.(newMechanism);
       break;
