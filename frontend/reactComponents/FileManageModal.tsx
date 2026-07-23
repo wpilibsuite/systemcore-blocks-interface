@@ -28,6 +28,7 @@ import * as storageProject from '../storage/project';
 import { Editor } from '../editor/editor';
 import ClassNameComponent from './ClassNameComponent';
 import ManageTable from './ManageTable';
+import CopyModuleDialog from './CopyModuleDialog';
 
 /** Represents a module in the file management system. */
 interface Module {
@@ -44,6 +45,7 @@ interface FileManageModalProps {
   onProjectChanged: () => Promise<void>;
   gotoTab: (path: string) => void;
   closeTab: (path: string) => void;
+  switchToProjectAndSelectTab: (project: storageProject.Project, tabKey: string) => void;
   setAlertErrorMessage: (message: string) => void;
   storage: commonStorage.Storage | null;
   tabType: TabType;
@@ -65,6 +67,7 @@ export default function FileManageModal(props: FileManageModalProps) {
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
+  const [messageApi, messageContextHolder] = Antd.message.useMessage();
 
   React.useEffect(() => {
     if (!props.project || props.tabType === null || !props.isOpen) {
@@ -122,56 +125,40 @@ export default function FileManageModal(props: FileManageModalProps) {
     }
   };
 
-  /** Handles copying a module. */
-  const handleCopy = async (origModule: Module, newClassName: string): Promise<void> => {
-    if (!props.storage || !props.project) {
+  /** Handles a module having been copied within this project. */
+  const handleCopiedWithinProject = async (newModulePath: string, newClassName: string): Promise<void> => {
+    await props.onProjectChanged();
+
+    if (!currentRecord) {
+      console.error('No current record for copying');
+      props.setAlertErrorMessage(t('MODULE_NOT_FOUND_FOR_COPYING'));
+      setCopyModalOpen(false);
       return;
     }
 
-    try {
-      const newModulePath = await storageProject.copyModuleInProject(
-          props.storage,
-          props.project,
-          newClassName,
-          origModule.path,
-          props.tabType === TabType.MECHANISM
-            ? (mech) => {
-                Editor.getEditorForModulePath(props.project!.robot.modulePath)
-                  ?.incorporateNewMechanism(mech);
-              }
-            : undefined
-      );
-      await props.onProjectChanged();
+    const newModule = {
+      path: newModulePath,
+      name: newClassName,
+      type: currentRecord.type,
+    };
+    setModules([...modules, newModule]);
 
-      const originalModule = modules.find((module) => module.path === origModule.path);
-      if (!originalModule) {
-        console.error('Original module not found for copying:', origModule.path);
-        props.setAlertErrorMessage(t('MODULE_NOT_FOUND_FOR_COPYING'));
-        return;
-      }
+    setCopyModalOpen(false);
 
-      const newModule = {
-        path: newModulePath,
-        name: newClassName,
-        type: originalModule.type,
-      };
+    // Automatically select and open the newly created module
+    props.gotoTab(newModulePath);
+    props.onClose();
+  };
 
-      const newModules = [...modules];
-      newModules.push(newModule);
-
-      setModules(newModules);
-      
-      // Close the copy modal first
-      setCopyModalOpen(false);
-      
-      // Automatically select and open the newly created module
-      props.gotoTab(newModulePath);
-      props.onClose();
-    } catch (error) {
-      console.error('Error copying module:', error);
-      props.setAlertErrorMessage(t('FAILED_TO_COPY_MODULE'));
-      setCopyModalOpen(false);
-    }
+  /** Handles a mechanism having been copied into another project. */
+  const handleCopiedToOtherProject = (mechanism: storageModule.Mechanism, destProject: storageProject.Project): void => {
+    setCopyModalOpen(false);
+    messageApi.success(t('MECHANISM_COPIED_TO_PROJECT', {
+      name: mechanism.className,
+      projectName: destProject.projectName,
+    }));
+    props.switchToProjectAndSelectTab(destProject, mechanism.modulePath);
+    props.onClose();
   };
 
   /** Handles adding a new module. */
@@ -251,7 +238,6 @@ export default function FileManageModal(props: FileManageModalProps) {
   /** Opens the copy modal for a specific module. */
   const openCopyModal = (record: Module): void => {
     setCurrentRecord(record);
-    setName(t('COPY_SUFFIX', { name: record.name }));
     setCopyModalOpen(true);
   };
 
@@ -266,17 +252,6 @@ export default function FileManageModal(props: FileManageModalProps) {
       return t('RENAME');
     }
     return t('RENAME_TYPE_TITLE', { 
-      type: TabTypeUtils.toString(currentRecord.type), 
-      title: currentRecord.name 
-    });
-  };
-
-  /** Gets the copy modal title. */
-  const getCopyModalTitle = (): string => {
-    if (!currentRecord) {
-      return t('COPY');
-    }
-    return t('COPY_TYPE_TITLE', { 
       type: TabTypeUtils.toString(currentRecord.type), 
       title: currentRecord.name 
     });
@@ -298,6 +273,7 @@ export default function FileManageModal(props: FileManageModalProps) {
 
   return (
     <>
+      {messageContextHolder}
       <Antd.Modal
         title={getRenameModalTitle()}
         open={renameModalOpen}
@@ -327,34 +303,15 @@ export default function FileManageModal(props: FileManageModalProps) {
         )}
       </Antd.Modal>
 
-      <Antd.Modal
-        title={getCopyModalTitle()}
-        open={copyModalOpen}
+      <CopyModuleDialog
+        isOpen={copyModalOpen}
         onCancel={() => setCopyModalOpen(false)}
-        onOk={() => {
-          if (currentRecord) {
-            handleCopy(currentRecord, name);
-          }
-        }}
-        okText={t('Copy')}
-        cancelText={t('Cancel')}
-      >
-        {currentRecord && (
-          <ClassNameComponent
-            tabType={currentRecord.type}
-            newItemName={name}
-            setNewItemName={setName}
-            onAddNewItem={() => {
-              if (currentRecord) {
-                handleCopy(currentRecord, name);
-              }
-            }}
-            project={props.project}
-            storage={props.storage}
-            buttonLabel=""
-          />
-        )}
-      </Antd.Modal>
+        storage={props.storage}
+        project={props.project}
+        module={currentRecord ? { path: currentRecord.path, title: currentRecord.name, type: currentRecord.type } : null}
+        onCopiedWithinProject={handleCopiedWithinProject}
+        onCopiedToOtherProject={handleCopiedToOtherProject}
+      />
 
       <Antd.Modal
         title={getModalTitle()}

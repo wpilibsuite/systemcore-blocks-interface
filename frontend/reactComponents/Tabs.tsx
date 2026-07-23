@@ -24,7 +24,6 @@ import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
 import * as I18Next from 'react-i18next';
-import { Editor } from '../editor/editor';
 import { MessageInstance } from 'antd/es/message/interface';
 import {
   CloseOutlined,
@@ -38,6 +37,7 @@ import {
 } from '@ant-design/icons';
 import AddTabDialog from './AddTabDialog';
 import ClassNameComponent from './ClassNameComponent';
+import CopyModuleDialog from './CopyModuleDialog';
 import { TabType, TabTypeUtils } from '../types/TabType';
 import { TabContent, TabContentRef } from './TabContent';
 
@@ -70,10 +70,8 @@ export interface TabsProps {
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
   openGamepadConfigDialog?: () => void;
+  switchToProjectAndSelectTab: (project: storageProject.Project, tabKey: string) => void;
 }
-
-/** Default copy suffix for tab names. */
-const COPY_SUFFIX = 'Copy';
 
 /**
  * Tab component that manages project module tabs with add, edit, delete, and rename functionality.
@@ -288,47 +286,32 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     setRenameModalOpen(false);
   };
 
-  /** Handles copying a module tab. */
-  const handleCopy = async (key: string, newClassName: string): Promise<void> => {
-    if (!props.storage || !props.project) {
+  /** Handles a module tab having been copied within this project. */
+  const handleCopiedWithinProject = async (newModulePath: string, newClassName: string): Promise<void> => {
+    await props.onProjectChanged();
+
+    if (!currentTab) {
+      console.error('No current tab for copying');
+      props.setAlertErrorMessage(t('MODULE_NOT_FOUND_FOR_COPYING'));
+      setCopyModalOpen(false);
       return;
     }
 
-    const oldModulePath = key;
-    const originalTab = props.tabList.find((tab) => tab.key === key);
-
-    try {
-      const newModulePath = await storageProject.copyModuleInProject(
-        props.storage,
-        props.project,
-        newClassName,
-        oldModulePath,
-        originalTab?.type === TabType.MECHANISM
-          ? (mech) => {
-              Editor.getEditorForModulePath(props.project!.robot.modulePath)
-                ?.incorporateNewMechanism(mech);
-            }
-          : undefined,
-      );
-      await props.onProjectChanged();
-
-      const newTabs = [...props.tabList];
-
-      if (!originalTab) {
-        console.error('Original tab not found for copying:', key);
-        props.setAlertErrorMessage(t('MODULE_NOT_FOUND_FOR_COPYING'));
-        return;
-      }
-
-      newTabs.push({ key: newModulePath, title: newClassName, type: originalTab.type });
-      props.setTabList(newTabs);
-      setActiveKey(newModulePath);
-    } catch (error) {
-      console.error('Error copying module:', error);
-      props.setAlertErrorMessage(t('FAILED_TO_COPY_MODULE'));
-    }
-
+    const newTabs = [...props.tabList, { key: newModulePath, title: newClassName, type: currentTab.type }];
+    props.setTabList(newTabs);
+    setActiveKey(newModulePath);
     setCopyModalOpen(false);
+  };
+
+  /** Handles a mechanism tab having been copied into another project. */
+  const handleCopiedToOtherProject = (
+      mechanism: storageModule.Mechanism, destProject: storageProject.Project): void => {
+    setCopyModalOpen(false);
+    props.messageApi.success(t('MECHANISM_COPIED_TO_PROJECT', {
+      name: mechanism.className,
+      projectName: destProject.projectName,
+    }));
+    props.switchToProjectAndSelectTab(destProject, mechanism.modulePath);
   };
 
   /** Handles closing other tabs except the current one, scoped to the same row. */
@@ -370,9 +353,8 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
   /** Handles opening the copy modal. */
   const handleOpenCopyModal = (tab: TabItem): void => {
-    const currentTab = props.tabList.find((t) => t.key === tab.key);
-    setName((currentTab ? currentTab.title : tab.title) + COPY_SUFFIX);
-    setCurrentTab(currentTab || tab);
+    const resolvedTab = props.tabList.find((t) => t.key === tab.key) || tab;
+    setCurrentTab(resolvedTab);
     setCopyModalOpen(true);
   };
 
@@ -562,34 +544,15 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
         )}
       </Antd.Modal>
 
-      <Antd.Modal
-        title={t('COPY_TYPE_TITLE', { type: currentTab ? TabTypeUtils.toString(currentTab.type) : '', title: currentTab ? currentTab.title : '' })}
-        open={copyModalOpen}
+      <CopyModuleDialog
+        isOpen={copyModalOpen}
         onCancel={() => setCopyModalOpen(false)}
-        onOk={() => {
-          if (currentTab) {
-            handleCopy(currentTab.key, name);
-          }
-        }}
-        okText={t('COPY')}
-        cancelText={t('CANCEL')}
-      >
-        {currentTab && (
-          <ClassNameComponent
-            tabType={currentTab.type}
-            newItemName={name}
-            setNewItemName={setName}
-            onAddNewItem={() => {
-              if (currentTab) {
-                handleCopy(currentTab.key, name);
-              }
-            }}
-            project={props.project}
-            storage={props.storage}
-            buttonLabel=""
-          />
-        )}
-      </Antd.Modal>
+        storage={props.storage}
+        project={props.project}
+        module={currentTab ? { path: currentTab.key, title: currentTab.title, type: currentTab.type } : null}
+        onCopiedWithinProject={handleCopiedWithinProject}
+        onCopiedToOtherProject={handleCopiedToOtherProject}
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div data-tour="tab-row-mechanisms">
