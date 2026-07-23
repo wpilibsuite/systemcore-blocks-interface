@@ -156,7 +156,7 @@
         "ERROR_LOADING_DEPENDENCIES": "Error loading dependencies.",
         "COPYRIGHT": "© 2025-2026 FIRST. All rights reserved."
     },
-    "INVALID_CLASS_NAME": "{{className}} is not a valid name. Please enter a different name.",
+    "INVALID_CLASS_NAME": "{{name}} is not a valid name. Please enter a different name.",
     "CLASS_NAME_ALREADY_EXISTS": "Another Mechanism or OpMode is already named {{name}}. Please enter a different name.",
     "PYTHON_MODULE_NAME_ALREADY_EXISTS": "{{name}} is not a valid name because there is a python module named {{moduleName}}.",
     "THEME_MODAL": {
