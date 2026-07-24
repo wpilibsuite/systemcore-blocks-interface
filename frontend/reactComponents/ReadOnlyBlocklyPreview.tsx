@@ -27,12 +27,18 @@ import 'blockly/blocks';
 import * as storageModuleContent from '../storage/module_content';
 import * as workspaces from '../blocks/utils/workspaces';
 import { themes } from '../themes/mrc_themes';
-import { getGridConfig, getZoomConfig } from './blockly_workspace_config';
+import { getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
 
 /** Props for the ReadOnlyBlocklyPreview component. */
 interface ReadOnlyBlocklyPreviewProps {
   moduleContentText: string;
   theme: string;
+  renderer?: string;
+  /**
+   * Whether to show scrollbars and zoom controls, allow wheel-zoom, and allow selecting and
+   * copying a block. Defaults to true.
+   */
+  interactive?: boolean;
 }
 
 const FULL_SIZE_STYLE: React.CSSProperties = {
@@ -49,9 +55,10 @@ const COPY_BUTTON_STYLE: React.CSSProperties = {
 
 /**
  * Renders a Blockly workspace in read-only mode, showing the blocks from the given module
- * content. Used to preview a sample's modules without allowing edits, while still letting the
- * user select a block and copy it (via Ctrl/Cmd+C or the copy button) to paste into their own
- * workspace.
+ * content. Used to preview a sample's modules without allowing edits. By default (interactive),
+ * the user can scroll/zoom the workspace and select a block to copy it (via Ctrl/Cmd+C or the
+ * copy button) into their own workspace. Pass interactive={false} for a pure visual preview
+ * (e.g. theme selection cards) with no scrollbars, zoom controls, or selection UI.
  *
  * Blockly's own selection is now implemented via its keyboard-navigation focus manager, which
  * refuses to focus anything inside a read-only workspace - so Blockly.common.getSelected()/
@@ -60,6 +67,7 @@ const COPY_BUTTON_STYLE: React.CSSProperties = {
  * or firing an event) for the visual effect.
  */
 export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProps): React.JSX.Element {
+  const interactive = props.interactive ?? true;
   const {t} = I18Next.useTranslation();
   const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
   const selectedBlockRef = React.useRef<Blockly.BlockSvg | null>(null);
@@ -106,14 +114,28 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
         contents: [],
       },
       grid: getGridConfig(getBlocklyTheme(), /* snap= */ false),
-      zoom: getZoomConfig(/* interactive= */ true),
-      scrollbars: true,
+      zoom: getZoomConfig(interactive),
+      scrollbars: interactive,
       trashcan: false,
+      renderer: props.renderer,
     });
 
     workspaces.addWorkspace(workspace, moduleContent.getModuleType());
     Blockly.serialization.workspaces.load(moduleContent.getBlocks(), workspace);
     workspace.scrollCenter();
+
+    const resizeObserver = new ResizeObserver(() => {
+      Blockly.svgResize(workspace);
+    });
+    resizeObserver.observe(container);
+
+    if (!interactive) {
+      return () => {
+        resizeObserver.disconnect();
+        workspaces.removeWorkspace(workspace);
+        workspace.dispose();
+      };
+    }
 
     selectBlock(null);
 
@@ -158,11 +180,6 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
     };
     container.addEventListener('keydown', handleKeyDown);
 
-    const resizeObserver = new ResizeObserver(() => {
-      Blockly.svgResize(workspace);
-    });
-    resizeObserver.observe(container);
-
     return () => {
       resizeObserver.disconnect();
       container.removeEventListener('keydown', handleKeyDown);
@@ -171,21 +188,23 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
       workspaces.removeWorkspace(workspace);
       workspace.dispose();
     };
-  }, [props.moduleContentText, props.theme]);
+  }, [props.moduleContentText, props.theme, props.renderer, interactive]);
 
   return (
     <div style={{ position: 'relative', ...FULL_SIZE_STYLE }}>
-      <Antd.Tooltip title={t('SAMPLES.COPY_BLOCK_TOOLTIP')}>
-        <Antd.Button
-          style={COPY_BUTTON_STYLE}
-          size="small"
-          icon={<CopyOutlined />}
-          disabled={!hasSelectedBlock}
-          onClick={copySelectedBlock}
-        >
-          {t('SAMPLES.COPY_BLOCK')}
-        </Antd.Button>
-      </Antd.Tooltip>
+      {interactive && (
+        <Antd.Tooltip title={t('SAMPLES.COPY_BLOCK_TOOLTIP')}>
+          <Antd.Button
+            style={COPY_BUTTON_STYLE}
+            size="small"
+            icon={<CopyOutlined />}
+            disabled={!hasSelectedBlock}
+            onClick={copySelectedBlock}
+          >
+            {t('SAMPLES.COPY_BLOCK')}
+          </Antd.Button>
+        </Antd.Tooltip>
+      )}
       <div ref={blocklyDiv} style={FULL_SIZE_STYLE} />
     </div>
   );

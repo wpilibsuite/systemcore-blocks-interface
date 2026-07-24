@@ -13,6 +13,9 @@ import {
     SunOutlined,
 } from '@ant-design/icons';
 
+import ReadOnlyBlocklyPreview from './ReadOnlyBlocklyPreview';
+import { SAMPLE_PREVIEW_MODULE_CONTENT_TEXT } from './PreviewSampleContent';
+
 export interface ThemeOption {
     key: string;
     name: string;
@@ -176,12 +179,19 @@ const ThemeModal: React.FC<ThemeModalProps> = ({
                                     </Antd.Typography.Text>
 
                                     {/* Theme preview */}
-                                    <div style={{ marginTop: 12 }}>
-                                        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                                            <Antd.Button size="small" type="primary">
-                                                {t('THEME_MODAL.PRIMARY_BUTTON')}
-                                            </Antd.Button>
-                                        </div>
+                                    <div
+                                        style={{
+                                            marginTop: 12,
+                                            height: 140,
+                                            border: '1px solid #d9d9d9',
+                                            borderRadius: 4,
+                                        }}
+                                    >
+                                        <ReadOnlyBlocklyPreview
+                                            moduleContentText={SAMPLE_PREVIEW_MODULE_CONTENT_TEXT}
+                                            theme={theme.key}
+                                            interactive={false}
+                                        />
                                     </div>
                                 </Antd.Card>
                             </Antd.ConfigProvider>

@@ -21,11 +21,11 @@
 
 import * as React from 'react';
 import * as Antd from 'antd';
-import * as Blockly from 'blockly/core';
 import * as I18Next from 'react-i18next';
 import { BuildOutlined } from '@ant-design/icons';
 
-import BlocklyComponent from './BlocklyComponent';
+import ReadOnlyBlocklyPreview from './ReadOnlyBlocklyPreview';
+import { SAMPLE_PREVIEW_MODULE_CONTENT_TEXT } from './PreviewSampleContent';
 
 interface RendererOption {
     key: string;
@@ -40,59 +40,6 @@ export interface RendererModalProps {
     currentTheme: string;
     onRendererChange: (renderer: string) => void;
 }
-
-/** Module path used for the isolated preview workspace. It isn't a real module. */
-const PREVIEW_MODULE_PATH = '__renderer_preview__';
-
-/** A small sample block layout used to preview each renderer's visual style. */
-const PREVIEW_WORKSPACE_STATE = {
-    blocks: {
-        languageVersion: 0,
-        blocks: [
-            {
-                type: 'controls_if',
-                x: 20,
-                y: 20,
-                inputs: {
-                    IF0: {
-                        block: {
-                            type: 'logic_compare',
-                            fields: { OP: 'EQ' },
-                            inputs: {
-                                A: { block: { type: 'math_number', fields: { NUM: 1 } } },
-                                B: { block: { type: 'math_number', fields: { NUM: 1 } } },
-                            },
-                        },
-                    },
-                    DO0: {
-                        block: {
-                            type: 'text_print',
-                            inputs: {
-                                TEXT: { block: { type: 'text', fields: { TEXT: 'Hello' } } },
-                            },
-                        },
-                    },
-                },
-                next: {
-                    block: {
-                        type: 'controls_repeat_ext',
-                        inputs: {
-                            TIMES: { block: { type: 'math_number', fields: { NUM: 10 } } },
-                            DO: {
-                                block: {
-                                    type: 'text_print',
-                                    inputs: {
-                                        TEXT: { block: { type: 'text', fields: { TEXT: 'Hi' } } },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        ],
-    },
-};
 
 const RendererModal: React.FC<RendererModalProps> = ({
     open,
@@ -125,11 +72,6 @@ const RendererModal: React.FC<RendererModalProps> = ({
     React.useEffect(() => {
         setSelectedRenderer(currentRenderer);
     }, [currentRenderer, open]);
-
-    /** Loads the sample blocks into the preview workspace once it (re)initializes. */
-    const handlePreviewWorkspaceCreated = (_modulePath: string, workspace: Blockly.WorkspaceSvg): void => {
-        Blockly.serialization.workspaces.load(PREVIEW_WORKSPACE_STATE, workspace);
-    };
 
     const handleApply = () => {
         onRendererChange(selectedRenderer);
@@ -195,13 +137,11 @@ const RendererModal: React.FC<RendererModalProps> = ({
                     }}
                 >
                     {open && (
-                        <BlocklyComponent
-                            modulePath={PREVIEW_MODULE_PATH}
+                        <ReadOnlyBlocklyPreview
+                            moduleContentText={SAMPLE_PREVIEW_MODULE_CONTENT_TEXT}
                             theme={currentTheme}
                             renderer={selectedRenderer}
-                            readOnly
-                            onBlocklyComponentCreated={() => {}}
-                            onWorkspaceCreated={handlePreviewWorkspaceCreated}
+                            interactive={false}
                         />
                     )}
                 </div>

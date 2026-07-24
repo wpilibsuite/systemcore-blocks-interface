@@ -184,7 +184,6 @@
         "SELECTION": "Theme Selection",
         "APPLY": "Apply Theme",
         "CHOOSE_DESCRIPTION": "Choose a theme that best suits your preference and working environment.",
-        "PRIMARY_BUTTON": "Primary",
         "PREVIEW": "Theme Preview",
         "PREVIEW_DESCRIPTION": "The selected theme will be applied to the entire application interface."
     },

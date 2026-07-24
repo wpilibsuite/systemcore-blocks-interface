@@ -27,7 +27,7 @@ import { customTokens } from '../blocks/tokens';
 
 import { themes } from '../themes/mrc_themes';
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
-import { getGridColour, getGridConfig, getZoomConfig } from './blockly_workspace_config';
+import { getGridColour, getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
 import { useTranslation } from 'react-i18next';
@@ -46,8 +46,6 @@ export interface BlocklyComponentProps {
   theme: string;
   renderer: string;
   onWorkspaceCreated: (modulePath: string, workspace: Blockly.WorkspaceSvg) => void;
-  /** When true, the workspace is display-only: no editing, scrolling, or zooming. */
-  readOnly?: boolean;
 }
 
 /** Container and workspace styling. */
@@ -100,17 +98,16 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
       contents: [],
     },
     grid: getGridConfig(getBlocklyTheme(), /* snap= */ true),
-    zoom: getZoomConfig(!props.readOnly),
-    scrollbars: !props.readOnly,
+    zoom: getZoomConfig(/* interactive= */ true),
+    scrollbars: true,
     trashcan: true,
     move: {
-      scrollbars: !props.readOnly,
-      drag: !props.readOnly,
-      wheel: !props.readOnly,
+      scrollbars: true,
+      drag: true,
+      wheel: true,
     },
     oneBasedIndex: false,
     renderer: props.renderer,
-    readOnly: props.readOnly,
     plugins: {
       ...HardwareConnectionsPluginInfo,
     },
