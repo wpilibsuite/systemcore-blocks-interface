@@ -55,8 +55,8 @@ const GRID_SPACING = 20;
 /** Grid line length for the Blockly workspace. */
 const GRID_LENGTH = 3;
 
-/** Grid color for the Blockly workspace. */
-const GRID_COLOR = '#ccc';
+/** Fallback grid color, used only if the theme does not define one. */
+const DEFAULT_GRID_COLOR = '#ccc';
 
 /** Default zoom start scale. */
 const DEFAULT_ZOOM_START_SCALE = 0.6;
@@ -90,6 +90,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
   const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
   const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
   const currentRenderer = React.useRef<string>(props.renderer);
+  const currentGridColour = React.useRef<string>('');
   const parentDiv = React.useRef<HTMLDivElement | null>(null);
   const savedScrollX = React.useRef<number>(0);
   const savedScrollY = React.useRef<number>(0);
@@ -109,6 +110,11 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     return themeObj;
   };
 
+  /** Gets the grid color defined by the given theme. */
+  const getGridColour = (theme: Blockly.Theme): string => {
+    return theme.getComponentStyle('gridColour') ?? DEFAULT_GRID_COLOR;
+  };
+
   /** Creates the Blockly workspace configuration object. */
   const createWorkspaceConfig = (): Blockly.BlocklyOptions => ({
     theme: getBlocklyTheme(),
@@ -121,7 +127,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     grid: {
       spacing: GRID_SPACING,
       length: GRID_LENGTH,
-      colour: GRID_COLOR,
+      colour: getGridColour(getBlocklyTheme()),
       snap: true,
     },
     zoom: {
@@ -219,6 +225,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
     workspaceRef.current = workspace;
     currentRenderer.current = props.renderer;
+    currentGridColour.current = getGridColour(getBlocklyTheme());
     parentDiv.current = blocklyDiv.current.parentNode as HTMLDivElement;
   };
 
@@ -310,11 +317,22 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     return cleanupWorkspace;
   }, []);
 
-  // Update theme when theme prop changes
+  // Update theme when theme prop changes.
+  // Blockly's grid colour is baked into the SVG when the workspace is injected, so
+  // setTheme() alone does not update it. If the new theme's grid colour differs, the
+  // workspace must be recreated (the same approach used for renderer/RTL changes below).
   React.useEffect(() => {
     if (workspaceRef.current) {
       const newTheme = getBlocklyTheme();
-      workspaceRef.current.setTheme(newTheme);
+      if (getGridColour(newTheme) !== currentGridColour.current) {
+        cleanupWorkspace();
+        initializeWorkspace();
+        if (props.onWorkspaceCreated) {
+          props.onWorkspaceCreated(props.modulePath, workspaceRef.current!);
+        }
+      } else {
+        workspaceRef.current.setTheme(newTheme);
+      }
     }
   }, [props.theme]);
 

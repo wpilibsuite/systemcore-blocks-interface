@@ -15,13 +15,19 @@ export const DEUTERANOPIA_DARK_THEME_NAME = 'mrc_theme_deuteranopia_dark';
 export const TRITANOPIA_DARK_THEME_NAME = 'mrc_theme_tritanopia_dark';
 export const HIGHCONTRAST_DARK_THEME_NAME = 'mrc_theme_highcontrast_dark';
 
+/** Grid colour used by themes with a light workspace background. */
+const LIGHT_GRID_COLOUR = '#ccc';
+
+/** Grid colour used by themes with a dark workspace background. */
+const DARK_GRID_COLOUR = '#5c5c5c';
+
 const create_theme = function (name: string, base: Blockly.Theme, dark: boolean = false): Blockly.Theme {
     let newTheme = Blockly.Theme.defineTheme(name, {
         name: name,
         base: base,
     });
     if (dark) {
-        // These all come from the Blockly Dark theme plugin at 
+        // These all come from the Blockly Dark theme plugin at
         // https://github.com/google/blockly-samples/blob/master/plugins/theme-dark/src/index.ts
         newTheme.setComponentStyle('workspaceBackgroundColour', '#1e1e1e');
         newTheme.setComponentStyle('toolboxBackgroundColour', '#333');
@@ -34,6 +40,9 @@ const create_theme = function (name: string, base: Blockly.Theme, dark: boolean 
         newTheme.setComponentStyle('insertionMarkerOpacity', 0.3);
         newTheme.setComponentStyle('scrollbarOpacity', 0.4);
         newTheme.setComponentStyle('cursorColour', '#d0d0d0');
+        newTheme.setComponentStyle('gridColour', DARK_GRID_COLOUR);
+    } else {
+        newTheme.setComponentStyle('gridColour', LIGHT_GRID_COLOUR);
     }
     return add_mrc_styles(newTheme);
 };
