@@ -27,6 +27,7 @@ import { customTokens } from '../blocks/tokens';
 
 import { themes } from '../themes/mrc_themes';
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
+import { getGridColour, getGridConfig, getZoomConfig } from './blockly_workspace_config';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
 import { useTranslation } from 'react-i18next';
@@ -48,27 +49,6 @@ export interface BlocklyComponentProps {
   /** When true, the workspace is display-only: no editing, scrolling, or zooming. */
   readOnly?: boolean;
 }
-
-/** Grid spacing for the Blockly workspace. */
-const GRID_SPACING = 20;
-
-/** Grid line length for the Blockly workspace. */
-const GRID_LENGTH = 3;
-
-/** Fallback grid color, used only if the theme does not define one. */
-const DEFAULT_GRID_COLOR = '#ccc';
-
-/** Default zoom start scale. */
-const DEFAULT_ZOOM_START_SCALE = 0.6;
-
-/** Maximum zoom scale. */
-const MAX_ZOOM_SCALE = 3;
-
-/** Minimum zoom scale. */
-const MIN_ZOOM_SCALE = 0.3;
-
-/** Zoom scale speed multiplier. */
-const ZOOM_SCALE_SPEED = 1.2;
 
 /** Container and workspace styling. */
 const FULL_SIZE_STYLE: React.CSSProperties = {
@@ -110,11 +90,6 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     return themeObj;
   };
 
-  /** Gets the grid color defined by the given theme. */
-  const getGridColour = (theme: Blockly.Theme): string => {
-    return theme.getComponentStyle('gridColour') ?? DEFAULT_GRID_COLOR;
-  };
-
   /** Creates the Blockly workspace configuration object. */
   const createWorkspaceConfig = (): Blockly.BlocklyOptions => ({
     theme: getBlocklyTheme(),
@@ -124,20 +99,8 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
       kind: 'categoryToolbox',
       contents: [],
     },
-    grid: {
-      spacing: GRID_SPACING,
-      length: GRID_LENGTH,
-      colour: getGridColour(getBlocklyTheme()),
-      snap: true,
-    },
-    zoom: {
-      controls: !props.readOnly,
-      wheel: !props.readOnly,
-      startScale: DEFAULT_ZOOM_START_SCALE,
-      maxScale: MAX_ZOOM_SCALE,
-      minScale: MIN_ZOOM_SCALE,
-      scaleSpeed: ZOOM_SCALE_SPEED,
-    },
+    grid: getGridConfig(getBlocklyTheme(), /* snap= */ true),
+    zoom: getZoomConfig(!props.readOnly),
     scrollbars: !props.readOnly,
     trashcan: true,
     move: {

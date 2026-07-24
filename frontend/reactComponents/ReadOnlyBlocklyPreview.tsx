@@ -27,21 +27,13 @@ import 'blockly/blocks';
 import * as storageModuleContent from '../storage/module_content';
 import * as workspaces from '../blocks/utils/workspaces';
 import { themes } from '../themes/mrc_themes';
+import { getGridConfig, getZoomConfig } from './blockly_workspace_config';
 
 /** Props for the ReadOnlyBlocklyPreview component. */
 interface ReadOnlyBlocklyPreviewProps {
   moduleContentText: string;
   theme: string;
 }
-
-/** Grid spacing for the Blockly workspace. */
-const GRID_SPACING = 20;
-
-/** Grid line length for the Blockly workspace. */
-const GRID_LENGTH = 3;
-
-/** Grid color for the Blockly workspace. */
-const GRID_COLOR = '#ccc';
 
 const FULL_SIZE_STYLE: React.CSSProperties = {
   width: '100%',
@@ -113,16 +105,8 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
         kind: 'categoryToolbox',
         contents: [],
       },
-      grid: {
-        spacing: GRID_SPACING,
-        length: GRID_LENGTH,
-        colour: GRID_COLOR,
-        snap: false,
-      },
-      zoom: {
-        controls: true,
-        wheel: true,
-      },
+      grid: getGridConfig(getBlocklyTheme(), /* snap= */ false),
+      zoom: getZoomConfig(/* interactive= */ true),
       scrollbars: true,
       trashcan: false,
     });
