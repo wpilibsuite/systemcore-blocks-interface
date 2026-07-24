@@ -28,12 +28,14 @@ const USER_LANGUAGE_KEY = 'userLanguage';
 const USER_THEME_KEY = 'userTheme';
 const USER_SHOW_SIMPLE_CLASS_NAMES_KEY = 'userShowSimpleClassNames';
 const USER_RENDERER_KEY = 'userRenderer';
+const USER_ZOOM_KEY = 'userZoom';
 
 /** Default values for user settings. */
-const DEFAULT_LANGUAGE = 'en';
-const DEFAULT_THEME = 'dark';
-const DEFAULT_SHOW_SIMPLE_CLASS_NAMES = true;
-const DEFAULT_RENDERER = 'zelos';
+export const DEFAULT_LANGUAGE = 'en';
+export const DEFAULT_THEME = 'dark';
+export const DEFAULT_SHOW_SIMPLE_CLASS_NAMES = true;
+export const DEFAULT_RENDERER = 'zelos';
+export const DEFAULT_ZOOM = 1.0;
 
 /** Helper function to generate project-specific storage key for open tabs. */
 const getUserOptionsKey = (projectName: string): string => `user_options_${projectName}`;
@@ -44,6 +46,8 @@ export interface UserSettings {
   theme: string;
   showSimpleClassNames: boolean;
   renderer: string;
+  /** The Blockly workspace zoom scale (e.g. 1.0 = 100%), used as the starting zoom for new workspaces. */
+  zoom: number;
 }
 
 /** User settings context interface. */
@@ -53,6 +57,7 @@ export interface UserSettingsContextType {
   updateTheme: (theme: string) => Promise<void>;
   updateShowSimpleClassNames: (showSimpleClassNames: boolean) => Promise<void>;
   updateRenderer: (renderer: string) => Promise<void>;
+  updateZoom: (zoom: number) => Promise<void>;
   updateOpenTabs: (projectName: string, tabPaths: string[]) => Promise<void>;
   getOpenTabs: (projectName: string) => Promise<string[]>;
   isLoading: boolean;
@@ -81,6 +86,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     theme: DEFAULT_THEME,
     showSimpleClassNames: DEFAULT_SHOW_SIMPLE_CLASS_NAMES,
     renderer: DEFAULT_RENDERER,
+    zoom: DEFAULT_ZOOM,
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -92,11 +98,12 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
         setIsLoading(true);
         setError(null);
 
-        const [language, theme, showSimpleClassNames, renderer] = await Promise.all([
+        const [language, theme, showSimpleClassNames, renderer, zoom] = await Promise.all([
           validStorage.fetchEntry(USER_LANGUAGE_KEY, DEFAULT_LANGUAGE),
           validStorage.fetchEntry(USER_THEME_KEY, DEFAULT_THEME),
           validStorage.fetchEntry(USER_SHOW_SIMPLE_CLASS_NAMES_KEY, DEFAULT_SHOW_SIMPLE_CLASS_NAMES.toString()),
           validStorage.fetchEntry(USER_RENDERER_KEY, DEFAULT_RENDERER),
+          validStorage.fetchEntry(USER_ZOOM_KEY, DEFAULT_ZOOM.toString()),
         ]);
 
         setSettings({
@@ -104,6 +111,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
           theme,
           showSimpleClassNames: showSimpleClassNames.toLowerCase() === "true",
           renderer,
+          zoom: parseFloat(zoom),
         });
       } catch (err) {
         setError(`Failed to load user settings: ${err}`);
@@ -164,6 +172,21 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     } catch (err) {
       setError(`Failed to save renderer setting: ${err}`);
       console.error('Error saving renderer setting:', err);
+      throw err;
+    }
+  };
+
+  /** Update zoom setting. */
+  const updateZoom = async (zoom: number): Promise<void> => {
+    try {
+      setError(null);
+      if (storage) {
+        await storage.saveEntry(USER_ZOOM_KEY, zoom.toString());
+        setSettings(prev => ({ ...prev, zoom }));
+      }
+    } catch (err) {
+      setError(`Failed to save zoom setting: ${err}`);
+      console.error('Error saving zoom setting:', err);
       throw err;
     }
   };
@@ -229,6 +252,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     updateTheme,
     updateShowSimpleClassNames,
     updateRenderer,
+    updateZoom,
     updateOpenTabs,
     getOpenTabs,
     isLoading,

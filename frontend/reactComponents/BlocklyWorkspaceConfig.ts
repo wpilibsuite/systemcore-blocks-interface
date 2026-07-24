@@ -31,9 +31,6 @@ export const GRID_LENGTH = 3;
 /** Fallback grid color, used only if the theme does not define one. */
 export const DEFAULT_GRID_COLOR = '#ccc';
 
-/** Default zoom start scale. */
-export const DEFAULT_ZOOM_START_SCALE = 0.6;
-
 /** Maximum zoom scale. */
 export const MAX_ZOOM_SCALE = 3;
 
@@ -60,11 +57,11 @@ export function getGridConfig(
 }
 
 /** Builds the zoom config shared by all Blockly workspaces in this app. */
-export function getZoomConfig(interactive: boolean): Blockly.BlocklyOptions['zoom'] {
+export function getZoomConfig(interactive: boolean, startScale: number): Blockly.BlocklyOptions['zoom'] {
   return {
     controls: interactive,
     wheel: interactive,
-    startScale: DEFAULT_ZOOM_START_SCALE,
+    startScale,
     maxScale: MAX_ZOOM_SCALE,
     minScale: MIN_ZOOM_SCALE,
     scaleSpeed: ZOOM_SCALE_SPEED,

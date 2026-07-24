@@ -47,7 +47,13 @@ import * as CustomBlocks from './blocks/setup_custom_blocks';
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
 import { antdThemeFromString } from './reactComponents/ThemeModal';
 import { useTranslation } from 'react-i18next';
-import { UserSettingsProvider } from './reactComponents/UserSettingsProvider';
+import {
+  UserSettingsProvider,
+  DEFAULT_THEME,
+  DEFAULT_SHOW_SIMPLE_CLASS_NAMES,
+  DEFAULT_RENDERER,
+  DEFAULT_ZOOM,
+} from './reactComponents/UserSettingsProvider';
 import { useUserSettings } from './reactComponents/useUserSettings';
 import AppTour from './reactComponents/AppTour';
 
@@ -146,7 +152,7 @@ interface AppContentProps {
 
 const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.JSX.Element => {
   const { t, i18n } = useTranslation();
-  const { settings, updateLanguage, updateTheme, updateShowSimpleClassNames, updateRenderer, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
+  const { settings, updateLanguage, updateTheme, updateShowSimpleClassNames, updateRenderer, updateZoom, updateOpenTabs, getOpenTabs, storage, isLoading } = useUserSettings();
 
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [messageApi, contextHolder] = Antd.message.useMessage();
@@ -161,13 +167,15 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [pendingTabKey, setPendingTabKey] = React.useState<string | null>(null);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
-  const [theme, setTheme] = React.useState('dark');
+  const [theme, setTheme] = React.useState(DEFAULT_THEME);
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
-  const [showSimpleClassNames, setShowSimpleClassNames] = React.useState(true);
+  const [showSimpleClassNames, setShowSimpleClassNames] = React.useState(DEFAULT_SHOW_SIMPLE_CLASS_NAMES);
   const [showSimpleClassNamesInitialized, setShowSimpleClassNamesInitialized] = React.useState(false);
-  const [renderer, setRenderer] = React.useState('zelos');
+  const [renderer, setRenderer] = React.useState(DEFAULT_RENDERER);
   const [rendererInitialized, setRendererInitialized] = React.useState(false);
+  const [zoom, setZoom] = React.useState(DEFAULT_ZOOM);
+  const [zoomInitialized, setZoomInitialized] = React.useState(false);
   const [tourOpen, setTourOpen] = React.useState(false);
 
   const hasCheckedTour = React.useRef(false);
@@ -211,6 +219,19 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       }
     }
   }, [settings.renderer, renderer, rendererInitialized, isLoading]);
+
+  /** Initialize zoom from UserSettings when app first starts. */
+  React.useEffect(() => {
+    // Only proceed if settings are loaded
+    if (!isLoading) {
+      if (!zoomInitialized && settings.zoom && settings.zoom !== zoom) {
+        setZoom(settings.zoom);
+        setZoomInitialized(true);
+      } else if (!zoomInitialized) {
+        setZoomInitialized(true);
+      }
+    }
+  }, [settings.zoom, zoom, zoomInitialized, isLoading]);
 
   /** Initialize showSimpleClassNames from UserSettings when app first starts. */
   React.useEffect(() => {
@@ -276,6 +297,22 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
     saveRendererChange();
   }, [renderer, settings.renderer, updateRenderer, rendererInitialized, isLoading]);
+
+  /** Save zoom changes to UserSettings when zoom changes. */
+  React.useEffect(() => {
+    const saveZoomChange = async () => {
+      // Only save if this is not the initial load and zoom is different from settings
+      if (zoomInitialized && zoom !== settings.zoom && !isLoading) {
+        try {
+          await updateZoom(zoom);
+        } catch (error) {
+          console.error('Failed to save zoom setting:', error);
+        }
+      }
+    };
+
+    saveZoomChange();
+  }, [zoom, settings.zoom, updateZoom, zoomInitialized, isLoading]);
 
   /** Save showSimpleClassNames changes to UserSettings when showSimpleClassNames changes. */
   React.useEffect(() => {
@@ -693,6 +730,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 storage={storage}
                 theme={theme}
                 renderer={renderer}
+                zoom={zoom}
+                onZoomChange={setZoom}
                 showSimpleClassNames={showSimpleClassNames}
                 shownPythonToolboxCategories={shownPythonToolboxCategories}
                 messageApi={messageApi}

@@ -66,6 +66,8 @@ export interface TabsProps {
   storage: commonStorage.Storage | null;
   theme: string;
   renderer: string;
+  zoom: number;
+  onZoomChange: (zoom: number) => void;
   showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
@@ -608,6 +610,8 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
                     storage={props.storage}
                     theme={props.theme}
                     renderer={props.renderer}
+                    zoom={props.zoom}
+                    onZoomChange={props.onZoomChange}
                     showSimpleClassNames={props.showSimpleClassNames}
                     shownPythonToolboxCategories={props.shownPythonToolboxCategories}
                     messageApi={props.messageApi}

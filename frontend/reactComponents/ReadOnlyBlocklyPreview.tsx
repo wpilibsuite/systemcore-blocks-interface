@@ -28,6 +28,7 @@ import * as storageModuleContent from '../storage/module_content';
 import * as workspaces from '../blocks/utils/workspaces';
 import { themes } from '../themes/mrc_themes';
 import { getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
+import { DEFAULT_ZOOM } from './UserSettingsProvider';
 
 /** Props for the ReadOnlyBlocklyPreview component. */
 interface ReadOnlyBlocklyPreviewProps {
@@ -114,7 +115,7 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
         contents: [],
       },
       grid: getGridConfig(getBlocklyTheme(), /* snap= */ false),
-      zoom: getZoomConfig(interactive),
+      zoom: getZoomConfig(interactive, DEFAULT_ZOOM),
       scrollbars: interactive,
       trashcan: false,
       renderer: props.renderer,

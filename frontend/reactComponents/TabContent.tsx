@@ -53,6 +53,8 @@ export interface TabContentProps {
   storage: commonStorage.Storage;
   theme: string;
   renderer: string;
+  zoom: number;
+  onZoomChange: (zoom: number) => void;
   showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
@@ -72,6 +74,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   storage,
   theme,
   renderer,
+  zoom,
+  onZoomChange,
   showSimpleClassNames,
   shownPythonToolboxCategories,
   messageApi,
@@ -260,6 +264,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
           onBlocklyComponentCreated={setupBlocklyComponent}
           theme={theme}
           renderer={renderer}
+          zoom={zoom}
+          onZoomChange={onZoomChange}
           onWorkspaceCreated={setupWorkspace}
         />
       </Content>
