@@ -34,6 +34,7 @@ import * as classMethodDef from '../blocks/mrc_class_method_def'
 import * as eventHandler from '../blocks/mrc_event_handler'
 import { Content } from 'antd/es/layout/layout';
 import { useAutosave } from './AutosaveManager';
+import { useUserSettings } from './useUserSettings';
 
 /** Default size for code panel. */
 const CODE_PANEL_DEFAULT_SIZE = '25%';
@@ -53,8 +54,6 @@ export interface TabContentProps {
   storage: commonStorage.Storage;
   theme: string;
   renderer: string;
-  zoom: number;
-  onZoomChange: (zoom: number) => void;
   showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
   messageApi: MessageInstance;
@@ -74,8 +73,6 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   storage,
   theme,
   renderer,
-  zoom,
-  onZoomChange,
   showSimpleClassNames,
   shownPythonToolboxCategories,
   messageApi,
@@ -92,6 +89,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   const [codePanelExpandedSize, setCodePanelExpandedSize] = React.useState<string | number>(CODE_PANEL_DEFAULT_SIZE);
   const [codePanelAnimating, setCodePanelAnimating] = React.useState(false);
   const autosave = useAutosave();
+  const { getModuleZoom, updateModuleZoom, getModuleScroll, updateModuleScroll } = useUserSettings();
   const isInitialActivation = React.useRef(true);
 
   /** Expose saveModule method via ref. */
@@ -152,8 +150,21 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
       newWorkspace.registerButtonCallback('CONFIG_GAMEPADS_BUTTON', openGamepadConfigDialog);
     }
 
-    // Fetch the module content from storage
-    const moduleContentText = await storage.fetchFileContentText(modulePath);
+    // Fetch the module content and this module's saved zoom/scroll from storage.
+    const [moduleContentText, moduleZoom, moduleScroll] = await Promise.all([
+      storage.fetchFileContentText(modulePath),
+      getModuleZoom(modulePath),
+      getModuleScroll(modulePath),
+    ]);
+    // The workspace may have been disposed (e.g. by React StrictMode's dev-only double-mount,
+    // or a theme/renderer change forcing a recreate) while the fetches above were in flight.
+    // Bail out rather than touching a disposed workspace, whose behavior is undefined - e.g. it
+    // silently ignored a scroll()/setScale() call in testing, racing with the *new* workspace's
+    // own setupWorkspace() call and leaving things in a inconsistent, hard-to-predict state.
+    if (!newWorkspace.rendered) {
+      return;
+    }
+    newWorkspace.setScale(moduleZoom);
 
     const newEditor = new editor.Editor(
       newWorkspace,
@@ -162,15 +173,77 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
       storage,
       moduleContentText
     );
-    
+
     // Parse modules after editor is created
     await newEditor.makeCurrent(project);
-    
+    if (!newWorkspace.rendered) {
+      return;
+    }
+
     setEditorInstance(newEditor);
     newEditor.updateShowSimpleClassNames(showSimpleClassNames);
     newEditor.loadModuleBlocks();
     newEditor.updateToolbox(shownPythonToolboxCategories);
-  }, [module, project, storage, modulePath, showSimpleClassNames, shownPythonToolboxCategories, messageApi, handleBlocksChanged, openGamepadConfigDialog]);
+
+    const restoreViewport = (): void => {
+      if (!newWorkspace.rendered) {
+        return;
+      }
+      // Calling setScale()/scroll() with values that already match is a cheap no-op (Blockly
+      // skips firing a change event when nothing actually changed), so it's fine to always
+      // restore both together rather than tracking which one drifted.
+      newWorkspace.setScale(moduleZoom);
+      newWorkspace.scroll(moduleScroll.x, moduleScroll.y);
+    };
+
+    // For a while after load, something (e.g. editor.ts's updateToolboxAfterDelay(), triggered
+    // by mrc_mechanism_component_holder.ts/mrc_component.ts the first time a mechanism's blocks
+    // connect under their component-holder block, which happens on every fresh load) can rebuild
+    // the toolbox and reset the workspace's zoom/scroll as a side effect - possibly more than
+    // once, at an unpredictable delay (observed up to ~2s after load for a larger mechanism).
+    // Rather than guessing a delay to reassert the restore after, actively defend the restored
+    // viewport against any such drift for a grace period: whenever a viewport change lands away
+    // from the target scale/scroll during the grace period, snap it back. This also prevents our
+    // own zoom/scroll-change listener in BlocklyComponent.tsx from picking up the drifted
+    // position and persisting it, permanently overwriting the correct saved one.
+    const VIEWPORT_RESTORE_GRACE_PERIOD_MS = 3000;
+    const gracePeriodEnd = Date.now() + VIEWPORT_RESTORE_GRACE_PERIOD_MS;
+    const defendRestoredViewport = (event: Blockly.Events.Abstract): void => {
+      if (event.type !== Blockly.Events.VIEWPORT_CHANGE || !newWorkspace.rendered) {
+        return;
+      }
+      if (Date.now() >= gracePeriodEnd) {
+        newWorkspace.removeChangeListener(defendRestoredViewport);
+        return;
+      }
+      const scaleDrifted = Math.abs(newWorkspace.scale - moduleZoom) > 0.001;
+      const scrollDrifted = Math.abs(newWorkspace.scrollX - moduleScroll.x) > 0.5 ||
+          Math.abs(newWorkspace.scrollY - moduleScroll.y) > 0.5;
+      if (scaleDrifted || scrollDrifted) {
+        restoreViewport();
+      }
+    };
+    newWorkspace.addChangeListener(defendRestoredViewport);
+    setTimeout(() => newWorkspace.removeChangeListener(defendRestoredViewport), VIEWPORT_RESTORE_GRACE_PERIOD_MS);
+
+    // Deferred to let the workspace settle after loading blocks - calling scroll() immediately
+    // has no effect (see the same pattern/comment in BlocklyComponent.tsx's setActive()).
+    setTimeout(restoreViewport);
+  }, [module, project, storage, modulePath, showSimpleClassNames, shownPythonToolboxCategories, messageApi, handleBlocksChanged, openGamepadConfigDialog, getModuleZoom, getModuleScroll]);
+
+  /** Called (debounced) when the user changes the workspace's zoom level. */
+  const handleZoomChange = React.useCallback((zoom: number) => {
+    updateModuleZoom(modulePath, zoom).catch((error) => {
+      console.error('Failed to save zoom level for module:', error);
+    });
+  }, [modulePath, updateModuleZoom]);
+
+  /** Called (debounced) when the user scrolls/pans the workspace. */
+  const handleScrollChange = React.useCallback((x: number, y: number) => {
+    updateModuleScroll(modulePath, x, y).catch((error) => {
+      console.error('Failed to save scroll position for module:', error);
+    });
+  }, [modulePath, updateModuleScroll]);
 
   /** Update editor when showSimpleClassNames changes. */
   React.useEffect(() => {
@@ -186,11 +259,23 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     }
   }, [shownPythonToolboxCategories, editorInstance]);
 
-  /** Update active state when isActive changes. */
+  /**
+   * Update BlocklyComponent's active state, but only when isActive itself actually changes -
+   * not merely because editorInstance/project changed while isActive stayed the same.
+   * BlocklyComponentType.setActive(true) re-applies BlocklyComponent's own saved scroll
+   * position (via a deferred setTimeout); if this ran again every time editorInstance became
+   * available (e.g. right after setupWorkspace() restores the module's saved scroll position,
+   * also via a deferred setTimeout), it would race with and often clobber that restore back to
+   * (0, 0), since BlocklyComponent's saved scroll starts at (0, 0) until a tab is deactivated.
+   */
   React.useEffect(() => {
     if (blocklyComponent.current) {
       blocklyComponent.current.setActive(isActive);
     }
+  }, [isActive, blocklyComponent]);
+
+  /** Make the module current whenever it becomes active, including once its editor loads. */
+  React.useEffect(() => {
     if (editorInstance && isActive) {
       // Set flag to ignore changes during activation
       isInitialActivation.current = true;
@@ -206,7 +291,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
         }, 100);
       });
     }
-  }, [isActive, blocklyComponent, editorInstance, project]);
+  }, [isActive, editorInstance, project]);
 
   /** Generate code when regeneration is triggered. */
   React.useEffect(() => {
@@ -264,8 +349,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
           onBlocklyComponentCreated={setupBlocklyComponent}
           theme={theme}
           renderer={renderer}
-          zoom={zoom}
-          onZoomChange={onZoomChange}
+          onZoomChange={handleZoomChange}
+          onScrollChange={handleScrollChange}
           onWorkspaceCreated={setupWorkspace}
         />
       </Content>
