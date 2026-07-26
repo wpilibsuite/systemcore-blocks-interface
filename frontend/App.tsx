@@ -47,7 +47,12 @@ import * as CustomBlocks from './blocks/setup_custom_blocks';
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
 import { antdThemeFromString } from './reactComponents/ThemeModal';
 import { useTranslation } from 'react-i18next';
-import { UserSettingsProvider } from './reactComponents/UserSettingsProvider';
+import {
+  UserSettingsProvider,
+  DEFAULT_THEME,
+  DEFAULT_SHOW_SIMPLE_CLASS_NAMES,
+  DEFAULT_RENDERER,
+} from './reactComponents/UserSettingsProvider';
 import { useUserSettings } from './reactComponents/useUserSettings';
 import AppTour from './reactComponents/AppTour';
 
@@ -161,12 +166,12 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [pendingTabKey, setPendingTabKey] = React.useState<string | null>(null);
   const [shownPythonToolboxCategories, setShownPythonToolboxCategories] = React.useState<Set<string>>(new Set());
   const [leftCollapsed, setLeftCollapsed] = React.useState(false);
-  const [theme, setTheme] = React.useState('dark');
+  const [theme, setTheme] = React.useState(DEFAULT_THEME);
   const [languageInitialized, setLanguageInitialized] = React.useState(false);
   const [themeInitialized, setThemeInitialized] = React.useState(false);
-  const [showSimpleClassNames, setShowSimpleClassNames] = React.useState(true);
+  const [showSimpleClassNames, setShowSimpleClassNames] = React.useState(DEFAULT_SHOW_SIMPLE_CLASS_NAMES);
   const [showSimpleClassNamesInitialized, setShowSimpleClassNamesInitialized] = React.useState(false);
-  const [renderer, setRenderer] = React.useState('zelos');
+  const [renderer, setRenderer] = React.useState(DEFAULT_RENDERER);
   const [rendererInitialized, setRendererInitialized] = React.useState(false);
   const [tourOpen, setTourOpen] = React.useState(false);
 
