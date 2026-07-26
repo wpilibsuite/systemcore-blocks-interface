@@ -27,7 +27,6 @@ import {TabType, TabTypeUtils } from '../types/TabType';
 
 import {
   SettingOutlined,
-  FileOutlined,
   FolderOutlined,
   QuestionCircleOutlined,
   InfoCircleOutlined,
@@ -101,39 +100,12 @@ function getItem(
  */
 function getMenuItems(
     t: (key: string) => string,
-    project: storageProject.Project,
     showSimpleClassNames: boolean): MenuItem[] {
-  const mechanisms: MenuItem[] = [];
-  const opmodes: MenuItem[] = [];
-
-  // Build mechanisms menu items
-  project.mechanisms.forEach((mechanism) => {
-    mechanisms.push(getItem(
-        mechanism.className,
-        mechanism.modulePath,
-        TabTypeUtils.getIcon(TabType.MECHANISM) // Use mechanism icon for mechanisms
-    ));
-  });
-
-  // Build opmodes menu items
-  project.opModes.forEach((opmode) => {
-    opmodes.push(getItem(
-        opmode.className,
-        opmode.modulePath,
-        TabTypeUtils.getIcon(TabType.OPMODE) // Use opmode icon for opmodes
-    ));
-  });
-
   return [
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
       getItem(t('MECHANISMS') + '...', 'manageMechanisms', TabTypeUtils.getIcon(TabType.MECHANISM)),
       getItem(t('OPMODES') + '...', 'manageOpmodes', TabTypeUtils.getIcon(TabType.OPMODE)),
-    ]),
-    getItem(t('EXPLORER'), 'explorer', <FileOutlined />, [
-      getItem(t('ROBOT'), project.robot.modulePath, TabTypeUtils.getIcon(TabType.ROBOT)),
-      ...(mechanisms.length > 0 ? [getItem(t('MECHANISMS'), 'mechanisms', TabTypeUtils.getIcon(TabType.MECHANISM), mechanisms)] : []),
-      ...(opmodes.length > 0 ? [getItem(t('OPMODES'), 'opmodes', TabTypeUtils.getIcon(TabType.OPMODE), opmodes)] : []),
     ]),
     getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
       getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
@@ -325,7 +297,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   React.useEffect(() => {
     if (props.currentProject) {
       setMostRecentProjectName();
-      setMenuItems(getMenuItems(t, props.currentProject, props.showSimpleClassNames));
+      setMenuItems(getMenuItems(t, props.showSimpleClassNames));
       setNoProjects(false);
     }
   }, [props.currentProject, i18n.language, props.showSimpleClassNames]);

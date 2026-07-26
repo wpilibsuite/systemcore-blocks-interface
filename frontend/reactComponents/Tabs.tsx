@@ -31,15 +31,50 @@ import {
   CopyOutlined,
   EditOutlined,
   CloseCircleOutlined,
-  RobotOutlined,
-  CodeOutlined,
   PlusOutlined,
+  SortAscendingOutlined,
 } from '@ant-design/icons';
+import type { DragEndEvent } from '@dnd-kit/core';
+import { DndContext, PointerSensor, useSensor } from '@dnd-kit/core';
+import {
+  arrayMove,
+  horizontalListSortingStrategy,
+  SortableContext,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import AddTabDialog from './AddTabDialog';
+import HiddenTabsDialog, { getHiddenModules } from './HiddenTabsDialog';
 import ClassNameComponent from './ClassNameComponent';
 import CopyModuleDialog from './CopyModuleDialog';
 import { TabType, TabTypeUtils } from '../types/TabType';
 import { TabContent, TabContentRef } from './TabContent';
+
+/** Props passed by Antd.Tabs's default tab bar to each rendered tab node. */
+interface DraggableTabPaneProps extends React.HTMLAttributes<HTMLDivElement> {
+  'data-node-key': string;
+}
+
+/** Wraps a single tab bar node so it can be dragged to reorder tabs. */
+const DraggableTabNode: React.FC<DraggableTabPaneProps> = ({ children, ...props }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: props['data-node-key'],
+  });
+
+  const style: React.CSSProperties = {
+    ...props.style,
+    transform: CSS.Translate.toString(transform),
+    transition,
+    cursor: 'move',
+  };
+
+  return React.cloneElement(children as React.ReactElement<any>, {
+    ref: setNodeRef,
+    style,
+    ...attributes,
+    ...listeners,
+  });
+};
 
 /** Represents a tab item in the tab bar. */
 export interface TabItem {
@@ -83,14 +118,35 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
   const [activeKey, setActiveKey] = React.useState(props.tabList.length > 0 ? props.tabList[0].key : '');
   const [addTabDialogOpen, setAddTabDialogOpen] = React.useState(false);
-  const [addTabDialogInitialType, setAddTabDialogInitialType] = React.useState<TabType>(TabType.MECHANISM);
+  const [hiddenTabsDialogOpen, setHiddenTabsDialogOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [renameModalOpen, setRenameModalOpen] = React.useState(false);
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
-  
+  const [contextMenuTabKey, setContextMenuTabKey] = React.useState<string | null>(null);
+
   // Store refs to TabContent components for each tab
   const tabContentRefs = React.useRef<Map<string, TabContentRef>>(new Map());
+
+  // Force the tab context menu closed on any outside click. Listens for 'pointerdown' rather
+  // than 'mousedown': Blockly calls preventDefault() on its own pointerdown handling within the
+  // workspace, which makes the browser suppress the compatibility 'mousedown' event entirely,
+  // so a 'mousedown' listener never sees clicks that land on the Blockly canvas. 'pointerdown'
+  // itself is never suppressed. Listening on window during the capture phase also ensures this
+  // fires before any descendant's own handler, regardless of that handler's propagation calls.
+  React.useEffect(() => {
+    if (!contextMenuTabKey) {
+      return;
+    }
+    const handleWindowPointerDown = (event: PointerEvent): void => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.ant-dropdown')) {
+        setContextMenuTabKey(null);
+      }
+    };
+    window.addEventListener('pointerdown', handleWindowPointerDown, true);
+    return () => window.removeEventListener('pointerdown', handleWindowPointerDown, true);
+  }, [contextMenuTabKey]);
 
   /** Handles tab change and updates current module. */
   const handleTabChange = async (key: string): Promise<void> => {
@@ -224,24 +280,17 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     }
   };
 
-  const handleRowOneEdit = (
-    targetKey: React.MouseEvent | React.KeyboardEvent | string,
-    action: 'add' | 'remove'
-  ): void => {
-    if (action === 'add') {
-      setAddTabDialogInitialType(TabType.MECHANISM);
-    }
-    handleTabEdit(targetKey, action);
-  };
+  const dragSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } });
 
-  const handleRowTwoEdit = (
-    targetKey: React.MouseEvent | React.KeyboardEvent | string,
-    action: 'add' | 'remove'
-  ): void => {
-    if (action === 'add') {
-      setAddTabDialogInitialType(TabType.OPMODE);
+  /** Handles reordering tabs after a drag-and-drop. */
+  const handleTabDragEnd = ({ active, over }: DragEndEvent): void => {
+    if (over && active.id !== over.id) {
+      const oldIndex = props.tabList.findIndex((tab) => tab.key === active.id);
+      const newIndex = props.tabList.findIndex((tab) => tab.key === over.id);
+      if (oldIndex !== -1 && newIndex !== -1) {
+        props.setTabList(arrayMove(props.tabList, oldIndex, newIndex));
+      }
     }
-    handleTabEdit(targetKey, action);
   };
 
   /** Handles successful addition of new tabs. */
@@ -250,6 +299,19 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
     handleTabChange(newTab.key);
     setAddTabDialogOpen(false);
+  };
+
+  /** Handles reopening one or more hidden tabs. */
+  const handleHiddenTabOk = (newTabs: TabItem[]): void => {
+    if (newTabs.length === 0) {
+      setHiddenTabsDialogOpen(false);
+      return;
+    }
+
+    props.setTabList([...props.tabList, ...newTabs]);
+
+    handleTabChange(newTabs[newTabs.length - 1].key);
+    setHiddenTabsDialogOpen(false);
   };
 
   /** Handles renaming a module tab. */
@@ -314,33 +376,39 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     props.switchToProjectAndSelectTab(destProject, mechanism.modulePath);
   };
 
-  /** Handles closing other tabs except the current one, scoped to the same row. */
+  /** Handles closing other tabs except the current one. */
   const handleCloseOtherTabs = (currentTabKey: string): void => {
-    const currentTab = props.tabList.find((tab) => tab.key === currentTabKey);
-    if (!currentTab) return;
-    const isRow2 = currentTab.type === TabType.OPMODE;
-    const newTabs = props.tabList.filter((tab) => {
-      if (tab.key === currentTabKey) return true;
-      if (tab.type === TabType.ROBOT) return true; // Always keep ROBOT tabs
-      if (isRow2) {
-        // Keep all MECHANISM tabs (row 1)
-        return tab.type === TabType.MECHANISM;
-      } else {
-        // Keep all row 2 (OPMODE) tabs
-        return tab.type === TabType.OPMODE;
-      }
-    });
+    const newTabs = props.tabList.filter((tab) => tab.key === currentTabKey);
     props.setTabList(newTabs);
     setActiveKey(currentTabKey);
   };
 
-  /** Gets the count of other closeable tabs in the same row as the given tab. */
-  const getOtherCloseableTabsInRowCount = (tab: TabItem): number => {
-    if (tab.type === TabType.OPMODE) {
-      return props.tabList.filter((t) => t.type === TabType.OPMODE && t.key !== tab.key).length;
-    }
-    // Row 1: only MECHANISM tabs are closeable
-    return props.tabList.filter((t) => t.type === TabType.MECHANISM && t.key !== tab.key).length;
+  /** Gets the count of other closeable tabs. */
+  const getOtherCloseableTabsCount = (tab: TabItem): number => {
+    return props.tabList.filter((t) => t.key !== tab.key).length;
+  };
+
+  /** Computes tab order: Robot first, then Mechanisms alphabetically, then OpModes alphabetically. */
+  const getSortedTabs = (): TabItem[] => {
+    const robotTabs = props.tabList.filter((tab) => tab.type === TabType.ROBOT);
+    const mechanismTabs = props.tabList
+      .filter((tab) => tab.type === TabType.MECHANISM)
+      .sort((a, b) => a.title.localeCompare(b.title));
+    const opModeTabs = props.tabList
+      .filter((tab) => tab.type === TabType.OPMODE)
+      .sort((a, b) => a.title.localeCompare(b.title));
+    return [...robotTabs, ...mechanismTabs, ...opModeTabs];
+  };
+
+  /** Whether sorting the tabs would actually change their order. */
+  const isTabOrderSorted = (): boolean => {
+    const sortedTabs = getSortedTabs();
+    return sortedTabs.every((tab, index) => tab.key === props.tabList[index].key);
+  };
+
+  /** Reorders all tabs: Robot first, then Mechanisms alphabetically, then OpModes alphabetically. */
+  const handleSortTabs = (): void => {
+    props.setTabList(getSortedTabs());
   };
 
   /** Handles opening the rename modal. */
@@ -391,15 +459,21 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
       key: 'close',
       label: t('CLOSE_TAB'),
       onClick: () => handleTabEdit(tab.key, 'remove'),
-      disabled: tab.type === TabType.ROBOT,
       icon: <CloseOutlined />,
     },
     {
       key: 'close-others',
       label: t('CLOSE_OTHER_TABS'),
       onClick: () => handleCloseOtherTabs(tab.key),
-      disabled: getOtherCloseableTabsInRowCount(tab) === 0,
+      disabled: getOtherCloseableTabsCount(tab) === 0,
       icon: <CloseCircleOutlined />,
+    },
+    {
+      key: 'sort',
+      label: t('SORT_TABS'),
+      icon: <SortAscendingOutlined />,
+      disabled: isTabOrderSorted(),
+      onClick: handleSortTabs,
     },
     {
       key: 'rename',
@@ -424,52 +498,31 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     },
   ];
 
-  /** Creates tab items for one tab row (no content children — content is rendered separately). */
-  const createRowTabItems = (types: TabType[]): any[] => {
-    return props.tabList
-      .filter((tab) => types.includes(tab.type))
-      .map((tab) => ({
-        key: tab.key,
-        label: (
-          <Antd.Dropdown
-            menu={{ items: createTabContextMenuItems(tab) }}
-            trigger={['contextMenu']}
-          >
-            <span>{tab.title}</span>
-          </Antd.Dropdown>
-        ),
-        closable: tab.type !== TabType.ROBOT,
-        children: null,
-      }));
+  /** Creates tab items for the Antd.Tabs component (no content children — content is rendered separately). */
+  const createTabItems = (): any[] => {
+    return props.tabList.map((tab) => ({
+      key: tab.key,
+      label: (
+        <Antd.Dropdown
+          menu={{ items: createTabContextMenuItems(tab) }}
+          trigger={['contextMenu']}
+          open={contextMenuTabKey === tab.key}
+          onOpenChange={(open) => setContextMenuTabKey(open ? tab.key : null)}
+        >
+          <span>{tab.title}</span>
+        </Antd.Dropdown>
+      ),
+      icon: TabTypeUtils.getIcon(tab.type),
+      closable: true,
+      children: null,
+    }));
   };
 
-  const addIcon = (type: TabType): React.JSX.Element => {
-    return (
-      <Antd.Tooltip title={t('TOOLTIP_ADD_TAB_WITH_TYPE', { type: type === TabType.MECHANISM ? t('MECHANISM') : t('OPMODE') })}>
-        <PlusOutlined />
-      </Antd.Tooltip>
-    );
-  };
-
-  const tabRowIcon = (type: TabType): React.JSX.Element => {
-    switch (type) {
-      case TabType.MECHANISM:
-        return (
-      <Antd.Tooltip title={t('MECHANISMS')}>
-        <RobotOutlined style={{ marginRight: 8 }} />
-      </Antd.Tooltip>
-        );       
-      case TabType.OPMODE:
-        return (
-      <Antd.Tooltip title={t('OPMODES')}>
-        <CodeOutlined style={{ marginRight: 8 }} />
-      </Antd.Tooltip>
-        );       
-      default:
-        return (<></>);
-    }
-  }
-    
+  const addIcon = (
+    <Antd.Tooltip title={t('TOOLTIP_ADD_TAB')}>
+      <PlusOutlined />
+    </Antd.Tooltip>
+  );
 
   // Effect to ensure activeKey is valid when tab list changes
   React.useEffect(() => {
@@ -510,9 +563,15 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
         onOk={handleAddTabOk}
         project={props.project}
         onProjectChanged={props.onProjectChanged}
-        currentTabs={props.tabList}
         storage={props.storage}
-        initialType={addTabDialogInitialType}
+      />
+
+      <HiddenTabsDialog
+        isOpen={hiddenTabsDialogOpen}
+        onCancel={() => setHiddenTabsDialogOpen(false)}
+        onOk={handleHiddenTabOk}
+        project={props.project}
+        currentTabs={props.tabList}
       />
 
       <Antd.Modal
@@ -555,32 +614,56 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
       />
 
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <div data-tour="tab-row-mechanisms">
+        <div data-tour="tab-row">
           <Antd.Tabs
-            addIcon={addIcon(TabType.MECHANISM)}
+            addIcon={addIcon}
             className="tabs-row"
             type="editable-card"
             onChange={handleTabChange}
-            onEdit={handleRowOneEdit}
+            onEdit={handleTabEdit}
             activeKey={activeKey}
             tabBarStyle={{ padding: 0, margin: 0 }}
             hideAdd={false}
-            items={createRowTabItems([TabType.ROBOT, TabType.MECHANISM])}
-            tabBarExtraContent={{ left: tabRowIcon(TabType.MECHANISM) }}
-          />
-        </div>
-        <div data-tour="tab-row-opmodes">
-          <Antd.Tabs
-            addIcon={addIcon(TabType.OPMODE)}
-            className="tabs-row"
-            type="editable-card"
-            onChange={handleTabChange}
-            onEdit={handleRowTwoEdit}
-            activeKey={activeKey}
-            tabBarStyle={{ padding: 0, margin: 0 }}
-            hideAdd={false}
-            items={createRowTabItems([TabType.OPMODE])}
-            tabBarExtraContent={{ left: tabRowIcon(TabType.OPMODE) }}
+            items={createTabItems()}
+            tabBarExtraContent={{
+              left: (() => {
+                const hiddenTabsDisabled = getHiddenModules(props.project, props.tabList).length === 0;
+                return (
+                  <Antd.Tooltip
+                    title={hiddenTabsDisabled ? t('TOOLTIP_HIDDEN_DISABLED') : t('TOOLTIP_HIDDEN_ENABLED')}
+                    mouseEnterDelay={0}
+                  >
+                    <span style={{ marginRight: '1em', display: 'inline-block' }}>
+                      <Antd.Button
+                        disabled={hiddenTabsDisabled}
+                        onClick={() => setHiddenTabsDialogOpen(true)}
+                      >
+                        {t('HIDDEN')}
+                      </Antd.Button>
+                    </span>
+                  </Antd.Tooltip>
+                );
+              })(),
+            }}
+            renderTabBar={(tabBarProps, DefaultTabBar) => (
+              <DndContext sensors={[dragSensor]} onDragEnd={handleTabDragEnd}>
+                <SortableContext
+                  items={props.tabList.map((tab) => tab.key)}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  <DefaultTabBar {...tabBarProps}>
+                    {(node) => (
+                      <DraggableTabNode
+                        {...(node as React.ReactElement<DraggableTabPaneProps>).props}
+                        key={node.key}
+                      >
+                        {node}
+                      </DraggableTabNode>
+                    )}
+                  </DefaultTabBar>
+                </SortableContext>
+              </DndContext>
+            )}
           />
         </div>
         <div style={{ flex: '1 1 auto', overflow: 'hidden', position: 'relative' }}>
