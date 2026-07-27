@@ -68,6 +68,11 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       target: tourTarget('[data-menu-id$="-settings"]'),
     },
     {
+      title: t('TOUR.SAMPLES_TITLE'),
+      description: t('TOUR.SAMPLES_DESC'),
+      target: tourTarget('[data-menu-id$="-samples"]'),
+    },
+    {
       title: t('TOUR.HELP_TITLE'),
       description: t('TOUR.HELP_DESC'),
       target: tourTarget('[data-menu-id$="-help"]'),
