@@ -97,11 +97,6 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       description: t('TOUR.CODE_PANEL_RESIZE_DESC'),
       target: tourTarget('[data-tour="code-panel-resize"]'),
     },
-    {
-      title: t('TOUR.CODE_PANEL_COLLAPSE_TITLE'),
-      description: t('TOUR.CODE_PANEL_COLLAPSE_DESC'),
-      target: tourTarget('[data-tour="code-panel-collapse"]'),
-    },
   ];
 
   return (

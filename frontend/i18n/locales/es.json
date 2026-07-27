@@ -226,9 +226,7 @@
         "CODE_PANEL_TITLE": "Código Python Generado",
         "CODE_PANEL_DESC": "El código Python generado a partir de tus bloques aparece aquí. Puedes copiarlo para usarlo en otro lugar.",
         "CODE_PANEL_RESIZE_TITLE": "Redimensionar el Panel de Código",
-        "CODE_PANEL_RESIZE_DESC": "Arrastra este borde hacia la izquierda o derecha para cambiar el tamaño del panel de código.",
-        "CODE_PANEL_COLLAPSE_TITLE": "Colapsar el Panel de Código",
-        "CODE_PANEL_COLLAPSE_DESC": "Haz clic en esta flecha para colapsar el panel de código y tener más espacio para el área de bloques."
+        "CODE_PANEL_RESIZE_DESC": "Arrastra este borde hacia la izquierda o derecha para cambiar el tamaño del panel de código."
     },
     "BLOCKLY": {
         "OF_TYPE": "de tipo",

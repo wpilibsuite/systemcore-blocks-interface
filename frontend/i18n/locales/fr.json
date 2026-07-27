@@ -226,9 +226,7 @@
         "CODE_PANEL_TITLE": "Code Python généré",
         "CODE_PANEL_DESC": "Le code Python généré à partir de vos blocs apparaît ici. Vous pouvez le copier pour l'utiliser ailleurs.",
         "CODE_PANEL_RESIZE_TITLE": "Redimensionner le panneau de code",
-        "CODE_PANEL_RESIZE_DESC": "Faites glisser ce bord vers la gauche ou la droite pour redimensionner le panneau de code.",
-        "CODE_PANEL_COLLAPSE_TITLE": "Réduire le panneau de code",
-        "CODE_PANEL_COLLAPSE_DESC": "Cliquez sur cette flèche pour réduire le panneau de code et vous donner plus d'espace pour l'espace de travail des blocs."
+        "CODE_PANEL_RESIZE_DESC": "Faites glisser ce bord vers la gauche ou la droite pour redimensionner le panneau de code."
     },
     "BLOCKLY": {
         "OF_TYPE": "de type",

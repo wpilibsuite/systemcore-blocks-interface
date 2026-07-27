@@ -226,9 +226,7 @@
     "CODE_PANEL_TITLE": "קוד Python שנוצר",
     "CODE_PANEL_DESC": "קוד ה-Python שנוצר מהבלוקים שלך מופיע כאן. תוכל להעתיק אותו לשימוש במקומות אחרים.",
     "CODE_PANEL_RESIZE_TITLE": "שינוי גודל לוח הקוד",
-    "CODE_PANEL_RESIZE_DESC": "גרור את הקצה הזה שמאלה או ימינה כדי לשנות את גודל לוח הקוד.",
-    "CODE_PANEL_COLLAPSE_TITLE": "כיווץ לוח הקוד",
-    "CODE_PANEL_COLLAPSE_DESC": "לחץ על החץ הזה כדי לכווץ את לוח הקוד ולפנות לך יותר מקום לאזור הבלוקים."
+    "CODE_PANEL_RESIZE_DESC": "גרור את הקצה הזה שמאלה או ימינה כדי לשנות את גודל לוח הקוד."
   },
   "BLOCKLY": {
     "OF_TYPE": "מטיפוס",
