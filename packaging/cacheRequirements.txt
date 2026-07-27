@@ -1,0 +1,2 @@
+robotpy == 2027.0.0a6.post1
+robotpy-rev == 2027.0.0a3
