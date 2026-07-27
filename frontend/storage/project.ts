@@ -305,39 +305,23 @@ export async function addModuleToProject(
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, moduleType);
 
   switch (moduleType) {
-    case storageModule.ModuleType.MECHANISM:
+    case storageModule.ModuleType.MECHANISM: {
       const mechanismContent = storageModuleContent.newMechanismContent(project.projectName, newClassName);
       await storage.saveFile(newModulePath, mechanismContent);
       const parsedMechanismContent = storageModuleContent.parseModuleContentText(mechanismContent);
-      const mechanismModuleId = parsedMechanismContent.getModuleId();
-      const newMechanism: storageModule.Mechanism = {
-        modulePath: newModulePath,
-        moduleType: storageModule.ModuleType.MECHANISM,
-        moduleId: mechanismModuleId,
-        projectName: project.projectName,
-        className: newClassName
-      }        
-      project.mechanisms.push(newMechanism);
-      // Add a mechanism block to the robot's stored workspace so it appears when the robot tab
-      // is opened (or re-opened).
-      const robotPath = project.robot.modulePath;
-      const robotContentText = await storage.fetchFileContentText(robotPath);
-      const robotContent = storageModuleContent.parseModuleContentText(robotContentText);
-      mrcAddMechanismBlockToRobotContent(robotContent, newMechanism);
-      await storage.saveFile(robotPath, robotContent.getModuleContentText());
+      const newMechanism = await finishMechanismCopy(storage, project, newModulePath, parsedMechanismContent, newClassName);  
       // If the robot workspace is currently open, add the mechanism block to it as well so it appears immediately without needing to reopen the tab.
       onMechanismAdded?.(newMechanism);
       break;
-    case storageModule.ModuleType.OPMODE:
+    }
+    case storageModule.ModuleType.OPMODE: {
       const opModeContent = storageModuleContent.newOpModeContent(project.projectName, newClassName);
       await storage.saveFile(newModulePath, opModeContent);
-      project.opModes.push({
-        modulePath: newModulePath,
-        moduleType: storageModule.ModuleType.OPMODE,
-        projectName: project.projectName,
-        className: newClassName
-      } as storageModule.OpMode);
+      const parsedOpModeContent = storageModuleContent.parseModuleContentText(opModeContent);
+      project.opModes.push(makeOpModeRecord(
+          newModulePath, parsedOpModeContent.getModuleId(), project.projectName, newClassName));
       break;
+    }
   }
   await saveProjectInfo(storage, project.projectName, project.projectInfo);
 }
@@ -410,6 +394,76 @@ export async function renameModuleInProject(
 }
 
 /**
+ * Fetches the module at oldModulePath, regenerates all of its internal ids (including its own
+ * moduleId, so the copy is never aliased with the original), and saves the result to
+ * newModulePath.
+ */
+async function copyModuleAndChangeIds(
+    storage: commonStorage.Storage, oldModulePath: string,
+    newModulePath: string): Promise<storageModuleContent.ModuleContent> {
+  const moduleContentText = await storage.fetchFileContentText(oldModulePath);
+  const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
+  moduleContent.changeIds();
+  moduleContent.setModuleId(Blockly.utils.idGenerator.genUid());
+  await storage.saveFile(newModulePath, moduleContent.getModuleContentText());
+  return moduleContent;
+}
+
+function makeMechanismRecord(
+    modulePath: string, moduleId: string, projectName: string,
+    className: string): storageModule.Mechanism {
+  return {
+    modulePath: modulePath,
+    moduleType: storageModule.ModuleType.MECHANISM,
+    moduleId: moduleId,
+    projectName: projectName,
+    className: className,
+  };
+}
+
+function makeOpModeRecord(
+    modulePath: string, moduleId: string, projectName: string,
+    className: string): storageModule.OpMode {
+  return {
+    modulePath: modulePath,
+    moduleType: storageModule.ModuleType.OPMODE,
+    moduleId: moduleId,
+    projectName: projectName,
+    className: className,
+  };
+}
+
+/**
+ * Adds an mrc_mechanism block for the given mechanism to project's Robot module and saves it,
+ * so the mechanism appears when the robot tab is opened (or re-opened).
+ */
+async function addMechanismBlockToRobot(
+    storage: commonStorage.Storage, project: Project,
+    mechanism: storageModule.Mechanism): Promise<void> {
+  const robotPath = project.robot.modulePath;
+  const robotContentText = await storage.fetchFileContentText(robotPath);
+  const robotContent = storageModuleContent.parseModuleContentText(robotContentText);
+  mrcAddMechanismBlockToRobotContent(robotContent, mechanism);
+  await storage.saveFile(robotPath, robotContent.getModuleContentText());
+}
+
+/**
+ * Finishes registering a copied mechanism (whose content has already been saved to
+ * newModulePath by copyModuleAndChangeIds): builds its Mechanism record, adds it to
+ * destProject.mechanisms, and adds a mechanism block to destProject's Robot.
+ */
+async function finishMechanismCopy(
+    storage: commonStorage.Storage, destProject: Project, newModulePath: string,
+    moduleContent: storageModuleContent.ModuleContent,
+    newClassName: string): Promise<storageModule.Mechanism> {
+  const newMechanism = makeMechanismRecord(
+      newModulePath, moduleContent.getModuleId(), destProject.projectName, newClassName);
+  destProject.mechanisms.push(newMechanism);
+  await addMechanismBlockToRobot(storage, destProject, newMechanism);
+  return newMechanism;
+}
+
+/**
  * Copies a module in the project.
  * @param storage The storage interface to use for copying the module.
  * @param project The project containing the module to copy.
@@ -429,15 +483,68 @@ export async function copyModuleInProject(
   }
   const newModulePath = storageNames.makeModulePath(project.projectName, newClassName, oldModule.moduleType);
 
-  // Change the ids in the module.
-  let moduleContentText = await storage.fetchFileContentText(oldModule.modulePath);
-  const moduleContent = storageModuleContent.parseModuleContentText(moduleContentText);
-  moduleContent.changeIds();
-  moduleContentText = moduleContent.getModuleContentText();
+  const moduleContent = await copyModuleAndChangeIds(storage, oldModule.modulePath, newModulePath);
 
-  await addModuleToProject(storage, project, oldModule.moduleType, newClassName, onMechanismAdded);
+  switch (oldModule.moduleType) {
+    case storageModule.ModuleType.MECHANISM: {
+      const newMechanism = await finishMechanismCopy(storage, project, newModulePath, moduleContent, newClassName);
+
+      // If the robot workspace is currently open, add the mechanism block to it as well so it
+      // appears immediately without needing to reopen the tab.
+      onMechanismAdded?.(newMechanism);
+      break;
+    }
+    case storageModule.ModuleType.OPMODE:
+      project.opModes.push(makeOpModeRecord(
+          newModulePath, moduleContent.getModuleId(), project.projectName, newClassName));
+      break;
+  }
+
+  await saveProjectInfo(storage, project.projectName, project.projectInfo);
 
   return newModulePath;
+}
+
+/**
+ * Copies a mechanism from another project (or the same project) into destProject.
+ * The copy gets a unique class name within destProject and fresh internal ids (including
+ * its own moduleId), and a mechanism block is added to destProject's Robot.
+ * @param storage The storage interface to use.
+ * @param sourceModulePath The module path of the mechanism to copy.
+ * @param destProject The project to copy the mechanism into.
+ * @param onMechanismAdded Optional callback, invoked with the new mechanism. Only meaningful
+ *     when destProject is the currently-open project, so its live Robot editor (if any) can be
+ *     updated immediately.
+ * @returns The newly created mechanism.
+ */
+export async function copyMechanismToProject(
+    storage: commonStorage.Storage,
+    sourceModulePath: string,
+    destProject: Project,
+    onMechanismAdded?: (mechanism: storageModule.Mechanism) => void): Promise<storageModule.Mechanism> {
+  if (storageNames.getModuleType(sourceModulePath) !== storageModule.ModuleType.MECHANISM) {
+    throw new Error('The module being copied is not a mechanism.');
+  }
+
+  const sourceClassName = storageNames.getClassName(sourceModulePath);
+  const existingClassNames = [
+    destProject.robot.className,
+    ...destProject.mechanisms.map(m => m.className),
+    ...destProject.opModes.map(o => o.className),
+  ];
+  const newClassName = storageNames.makeUniqueName(sourceClassName, existingClassNames);
+  const newModulePath = storageNames.makeModulePath(
+      destProject.projectName, newClassName, storageModule.ModuleType.MECHANISM);
+
+  const moduleContent = await copyModuleAndChangeIds(storage, sourceModulePath, newModulePath);
+
+  const newMechanism = await finishMechanismCopy(storage, destProject, newModulePath, moduleContent, newClassName);
+
+  await saveProjectInfo(storage, destProject.projectName, destProject.projectInfo);
+
+  onMechanismAdded?.(newMechanism);
+
+  return newMechanism;
 }
 
 /**

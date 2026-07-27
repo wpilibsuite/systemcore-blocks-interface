@@ -215,6 +215,10 @@ export class ModuleContent {
     return this.moduleId;
   }
 
+  setModuleId(moduleId: string): void {
+    this.moduleId = moduleId;
+  }
+
   getBlocks(): {[key: string]: any} {
     return this.blocks;
   }

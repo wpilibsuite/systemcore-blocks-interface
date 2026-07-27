@@ -21,7 +21,8 @@
 import * as React from 'react';
 import {
   RobotOutlined,
-  CodeOutlined,
+  ToolOutlined,
+  AimOutlined,
 } from '@ant-design/icons';
 
 /** Enumeration of tab types. */
@@ -57,9 +58,9 @@ export const TabTypeUtils = {
       case TabType.ROBOT:
         return <RobotOutlined />;
       case TabType.MECHANISM:
-        return <RobotOutlined />;
+        return <ToolOutlined />;
       case TabType.OPMODE:
-        return <CodeOutlined />;
+        return <AimOutlined />;
       default:
         return <></>;
     }
