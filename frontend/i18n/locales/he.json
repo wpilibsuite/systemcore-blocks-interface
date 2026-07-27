@@ -260,6 +260,7 @@
     "DISPLAY_DESCRIPTION": "תיאור לתצוגה",
     "PRINT": "הדפס",
     "NO_MECHANISM_CONTENTS": "אין תוכן במנגנון",
+    "NO_ROBOT_CONTENTS": "אין תוכן ברובוט",
     "CALL": "קרא",
     "ROBOT_LOWER_CASE": "רובוט",
     "CREATE": "צור",
