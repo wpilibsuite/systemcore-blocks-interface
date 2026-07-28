@@ -60,6 +60,8 @@ export function getHardwareCategory(
       if (methodsCategory.contents && methodsCategory.contents.length > 0) {
         robotCategoryContents.push(methodsCategory);
       }
+      // Event handler categories are dynamic, so we can't create the category and 
+      // then check the contents like we do above for the Components and Methods categories.
       if (editor.getEventsFromRobot().length > 0) {
         robotCategoryContents.push(getRobotEventHandlersCategory(editor));
       }
