@@ -2,7 +2,9 @@ import * as Blockly from 'blockly/core';
 
 import * as toolboxItems from './items';
 import { Editor } from '../editor/editor';
-import { BLOCK_NAME as MRC_CALL_PYTHON_FUNCTION } from '../blocks/mrc_call_python_function';
+import { BLOCK_NAME as MRC_DRIVER_STATION_DISPLAY } from '../blocks/mrc_driver_station_display';
+import { BLOCK_NAME as MRC_DRIVER_STATION_DISPLAY_LINE } from '../blocks/mrc_driver_station_display_line';
+import { BLOCK_NAME as MRC_GET_PYTHON_VARIABLE } from '../blocks/mrc_get_python_variable';
 import { BLOCK_NAME as MRC_GAMEPAD_BOOLEAN  } from '../blocks/mrc_gamepad_boolean';
 import { BLOCK_NAME as MRC_GAMEPAD_ANALOG  } from '../blocks/mrc_gamepad_analog';
 import { BLOCK_NAME as MRC_GAMEPAD_RUMBLE  } from '../blocks/mrc_gamepad_rumble';
@@ -25,28 +27,71 @@ function getDriverStationDisplayCategory(_editor: Editor): toolboxItems.Category
     return new toolboxItems.Category(
         Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY'],
         [
-          //TODO: This is hacky.   When the display part of the driver station
-          // is done for real, we'll use that JSON to generate this block instead of hardcoding it like this.
             new toolboxItems.Block(
-                MRC_CALL_PYTHON_FUNCTION,
+                MRC_DRIVER_STATION_DISPLAY,
+                null,
+                null,
                 {
-                    functionKind: 'built-in',
-                    returnType: 'None',
-                    actualFunctionName: 'self.display.addData',
-                    args: [
-                        {name: 'key', type: 'str'},
-                        {name: 'value', type: 'str'}
-                    ],
-                    tooltip: 'Add data to display'
-                },
+                    'CAPTION': {
+                        shadow: {
+                            type: 'text',
+                            fields: {
+                                'TEXT': '',
+                            },
+                        },
+                    },
+                    'COLOR': createDefaultColorBlock(),
+                    'LINE': {
+                        shadow: {
+                            type: 'text',
+                            fields: {
+                                'TEXT': '',
+                            },
+                        },
+                    },
+                }
+            ),
+            new toolboxItems.Block(
+                MRC_DRIVER_STATION_DISPLAY_LINE,
+                null,
+                null,
                 {
-                    'FUNC': 'display.addData'
-                },
-                null
-            )
+                    'COLOR': createDefaultColorBlock(),
+                    'LINE': {
+                        shadow: {
+                            type: 'text',
+                            fields: {
+                                'TEXT': '',
+                            },
+                        },
+                    },
+                }
+            ),
         ],
         toolboxItems.ExpandedState.EXPANDED
     );
+}
+
+// Creates a real (non-shadow) block for the color input, plugged in as a
+// wpiutil.Color.WHITE class variable getter, so users can just change the
+// color using the dropdown rather than needing to find and attach the block
+// themselves.
+function createDefaultColorBlock(): {[key: string]: any} {
+    return {
+        block: {
+            type: MRC_GET_PYTHON_VARIABLE,
+            extraState: {
+                varKind: 'class',
+                moduleOrClassName: 'wpiutil.Color',
+                varType: 'wpiutil.Color',
+                importModule: 'wpiutil',
+            },
+            fields: {
+                'MODULE_OR_CLASS': 'wpiutil.Color',
+                'VAR': 'WHITE',
+            },
+        },
+    };
 }
 
 function getDriverStationGamepadsCategory(_editor: Editor): toolboxItems.Category {
