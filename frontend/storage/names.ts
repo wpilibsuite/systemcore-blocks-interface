@@ -64,11 +64,11 @@ export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 // The file name of the project info file.
 const PROJECT_INFO_FILE_NAME = 'project.info.json';
 
-// A project name starts with an uppercase letter, followed by alphanumeric characters.
-const REGEX_PROJECT_NAME_PART = '[A-Z][A-Za-z0-9]*';
+// A project name starts with an uppercase letter, followed by alphanumeric characters or an underscore.
+const REGEX_PROJECT_NAME_PART = '[A-Z][A-Za-z0-9_]*';
 
-// A module's class name starts with an uppercase letter, followed by alphanumeric characters.
-const REGEX_CLASS_NAME_PART = '[A-Z][A-Za-z0-9]*';
+// A module's class name starts with an uppercase letter, followed by alphanumeric characters or an underscore.
+const REGEX_CLASS_NAME_PART = '[A-Z][A-Za-z0-9_]*';
 
 // This regex is used to validate a class name
 const REGEX_CLASS_NAME = '^' + REGEX_CLASS_NAME_PART + '$'

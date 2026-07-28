@@ -1,0 +1,179 @@
+{
+  "moduleType": "robot",
+  "moduleId": "[Ns_(CUq(rM4H0CjZx24",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_class_method_def",
+          "id": "Sw}VeT;Msw9dmKQ9%N$,",
+          "x": 10,
+          "y": 150,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "Sw}VeT;Msw9dmKQ9%N$,",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          }
+        },
+        {
+          "type": "mrc_mechanism_component_holder",
+          "id": "aUcPsyoX(i!]y3qp+#Zs",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "hidePrivateComponents": true
+          },
+          "inputs": {
+            "MECHANISMS": {
+              "block": {
+                "type": "mrc_mechanism",
+                "id": "l+x,DSm~vop!Msns`Q~h",
+                "extraState": {
+                  "mechanismModuleId": "Q:KNII-UbYdCU)TKTjHv",
+                  "mechanismId": "l+x,DSm~vop!Msns`Q~h",
+                  "parameters": [
+                    {
+                      "name": "expansionHubMotor",
+                      "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
+                      "defaultValue": "",
+                      "componentId": "L=[.Zwa0m-wsjV3_V$H-",
+                      "componentName": "frontLeftMotor",
+                      "componentArgsIndex": 0
+                    },
+                    {
+                      "name": "expansionHubMotor",
+                      "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
+                      "defaultValue": "",
+                      "componentId": "vWgSIOFxo!Yr0)~cYNL]",
+                      "componentName": "frontRightMotor",
+                      "componentArgsIndex": 0
+                    },
+                    {
+                      "name": "expansionHubMotor",
+                      "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
+                      "defaultValue": "",
+                      "componentId": "8QYP);O=X8hi1P*thE@-",
+                      "componentName": "rearLeftMotor",
+                      "componentArgsIndex": 0
+                    },
+                    {
+                      "name": "expansionHubMotor",
+                      "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
+                      "defaultValue": "",
+                      "componentId": "X:x-zpSPSgeZv28MQ96e",
+                      "componentName": "rearRightMotor",
+                      "componentArgsIndex": 0
+                    }
+                  ],
+                  "importModule": "mecanum_drive"
+                },
+                "fields": {
+                  "NAME": "myMecanumDrive",
+                  "TYPE": "MecanumDrive"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "mrc_port",
+                      "id": "u/Bj9d2Xqo{^dB-56Vq%",
+                      "extraState": {
+                        "portTypes": [
+                          "SYSTEMCORE_USB_PORT",
+                          "EXPANSION_HUB_MOTOR_PORT"
+                        ]
+                      },
+                      "fields": {
+                        "TYPE_0": "usb",
+                        "PORT_NUM_0": "0",
+                        "TYPE_1": "motor",
+                        "PORT_NUM_1": "0"
+                      }
+                    }
+                  },
+                  "ARG1": {
+                    "block": {
+                      "type": "mrc_port",
+                      "id": "a*p]Lu`Yt?iS4Fy[Ly;8",
+                      "extraState": {
+                        "portTypes": [
+                          "SYSTEMCORE_USB_PORT",
+                          "EXPANSION_HUB_MOTOR_PORT"
+                        ]
+                      },
+                      "fields": {
+                        "TYPE_0": "usb",
+                        "PORT_NUM_0": "0",
+                        "TYPE_1": "motor",
+                        "PORT_NUM_1": "1"
+                      }
+                    }
+                  },
+                  "ARG2": {
+                    "block": {
+                      "type": "mrc_port",
+                      "id": "uF%$Z]6|gvJcZGy5YdTm",
+                      "extraState": {
+                        "portTypes": [
+                          "SYSTEMCORE_USB_PORT",
+                          "EXPANSION_HUB_MOTOR_PORT"
+                        ]
+                      },
+                      "fields": {
+                        "TYPE_0": "usb",
+                        "PORT_NUM_0": "0",
+                        "TYPE_1": "motor",
+                        "PORT_NUM_1": "2"
+                      }
+                    }
+                  },
+                  "ARG3": {
+                    "block": {
+                      "type": "mrc_port",
+                      "id": "8PWW3)mq=yA7K]=VkAXM",
+                      "extraState": {
+                        "portTypes": [
+                          "SYSTEMCORE_USB_PORT",
+                          "EXPANSION_HUB_MOTOR_PORT"
+                        ]
+                      },
+                      "fields": {
+                        "TYPE_0": "usb",
+                        "PORT_NUM_0": "0",
+                        "TYPE_1": "motor",
+                        "PORT_NUM_1": "3"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [
+    {
+      "moduleId": "Q:KNII-UbYdCU)TKTjHv",
+      "mechanismId": "l+x,DSm~vop!Msns`Q~h",
+      "name": "myMecanumDrive",
+      "className": "mecanum_drive.MecanumDrive"
+    }
+  ],
+  "components": [],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}

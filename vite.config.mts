@@ -1,10 +1,12 @@
 /// <reference types="vitest" />
 /// <reference types="@vitest/browser/matchers" />
 import { execSync } from "child_process";
+import { writeFileSync } from "fs";
 import { defineConfig, Plugin } from "vitest/config";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { playwright } from '@vitest/browser-playwright'
 import react from "@vitejs/plugin-react";
+import packageJson from "./package.json";
 
 function licenseCheckerPlugin(): Plugin {
   return {
@@ -17,12 +19,24 @@ function licenseCheckerPlugin(): Plugin {
   };
 }
 
+function dependenciesJsonPlugin(): Plugin {
+  return {
+    name: "dependencies-json",
+    buildStart() {
+      writeFileSync(
+        "oss-attribution/dependencies.json",
+        JSON.stringify(packageJson.dependencies, null, 2),
+      );
+    },
+  };
+}
+
 export default defineConfig({
   base: '/blocks/',
   resolve: {
     tsconfigPaths: true,
   },
-  plugins: [react(), licenseCheckerPlugin(), viteStaticCopy({
+  plugins: [react(), licenseCheckerPlugin(), dependenciesJsonPlugin(), viteStaticCopy({
     targets: [
       {
         src: 'oss-attribution/*',

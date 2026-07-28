@@ -80,11 +80,9 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
 
     const loadDependencies = async () => {
         try {
-            // Try to load package.json to get dependency versions
-            const response = await fetch('/blocks/package.json');
+            const response = await fetch('dependencies.json');
             if (response.ok) {
-                const packageData = await response.json();
-                const deps = packageData.dependencies || {};
+                const deps : Record<string, string> = await response.json();
 
                 let depText = '';
 

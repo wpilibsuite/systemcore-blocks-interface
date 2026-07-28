@@ -27,6 +27,8 @@ import { customTokens } from '../blocks/tokens';
 
 import { themes } from '../themes/mrc_themes';
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
+import { getGridColour, getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
+import { DEFAULT_ZOOM } from './UserSettingsProvider';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
 import { useTranslation } from 'react-i18next';
@@ -44,31 +46,23 @@ export interface BlocklyComponentProps {
   onBlocklyComponentCreated: (modulePath: string, blocklyComponent: BlocklyComponentType) => void;
   theme: string;
   renderer: string;
+  /**
+   * Called (debounced) after the user changes the workspace's zoom level, so it can be saved
+   * (e.g. per-module) and restored later. The workspace is injected at DEFAULT_ZOOM; if a
+   * different zoom should be restored, call getBlocklyWorkspace().setScale() once it's known
+   * (e.g. from onWorkspaceCreated).
+   */
+  onZoomChange: (zoom: number) => void;
+  /**
+   * Called (debounced) after the user scrolls/pans the workspace, so the position of its
+   * upper-left corner can be saved (e.g. per-module) and restored later, the same way as zoom.
+   */
+  onScrollChange: (x: number, y: number) => void;
   onWorkspaceCreated: (modulePath: string, workspace: Blockly.WorkspaceSvg) => void;
-  /** When true, the workspace is display-only: no editing, scrolling, or zooming. */
-  readOnly?: boolean;
 }
 
-/** Grid spacing for the Blockly workspace. */
-const GRID_SPACING = 20;
-
-/** Grid line length for the Blockly workspace. */
-const GRID_LENGTH = 3;
-
-/** Grid color for the Blockly workspace. */
-const GRID_COLOR = '#ccc';
-
-/** Default zoom start scale. */
-const DEFAULT_ZOOM_START_SCALE = 0.6;
-
-/** Maximum zoom scale. */
-const MAX_ZOOM_SCALE = 3;
-
-/** Minimum zoom scale. */
-const MIN_ZOOM_SCALE = 0.3;
-
-/** Zoom scale speed multiplier. */
-const ZOOM_SCALE_SPEED = 1.2;
+/** Delay after the last viewport (zoom/scroll) change before it's reported. */
+const VIEWPORT_CHANGE_REPORT_DELAY_MS = 500;
 
 /** Container and workspace styling. */
 const FULL_SIZE_STYLE: React.CSSProperties = {
@@ -90,12 +84,20 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
   const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
   const workspaceRef = React.useRef<Blockly.WorkspaceSvg | null>(null);
   const currentRenderer = React.useRef<string>(props.renderer);
+  const currentGridColour = React.useRef<string>('');
   const parentDiv = React.useRef<HTMLDivElement | null>(null);
   const savedScrollX = React.useRef<number>(0);
   const savedScrollY = React.useRef<number>(0);
+  const viewportChangeTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Kept fresh on every render so the debounced viewport-change listener (registered once per
+  // workspace, not per render) always calls the latest callbacks, not stale ones.
+  const onZoomChangeRef = React.useRef(props.onZoomChange);
+  onZoomChangeRef.current = props.onZoomChange;
+  const onScrollChangeRef = React.useRef(props.onScrollChange);
+  onScrollChangeRef.current = props.onScrollChange;
 
   const { t, i18n } = useTranslation();
-  
+
 
   const getBlocklyTheme = (): Blockly.Theme => {
     const blocklyTheme = 'mrc_theme_' + props.theme.replace(/-/g, '_');
@@ -118,30 +120,17 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
       kind: 'categoryToolbox',
       contents: [],
     },
-    grid: {
-      spacing: GRID_SPACING,
-      length: GRID_LENGTH,
-      colour: GRID_COLOR,
-      snap: true,
-    },
-    zoom: {
-      controls: !props.readOnly,
-      wheel: !props.readOnly,
-      startScale: DEFAULT_ZOOM_START_SCALE,
-      maxScale: MAX_ZOOM_SCALE,
-      minScale: MIN_ZOOM_SCALE,
-      scaleSpeed: ZOOM_SCALE_SPEED,
-    },
-    scrollbars: !props.readOnly,
+    grid: getGridConfig(getBlocklyTheme(), /* snap= */ true),
+    zoom: getZoomConfig(/* interactive= */ true, DEFAULT_ZOOM),
+    scrollbars: true,
     trashcan: true,
     move: {
-      scrollbars: !props.readOnly,
-      drag: !props.readOnly,
-      wheel: !props.readOnly,
+      scrollbars: true,
+      drag: true,
+      wheel: true,
     },
     oneBasedIndex: false,
     renderer: props.renderer,
-    readOnly: props.readOnly,
     plugins: {
       ...HardwareConnectionsPluginInfo,
     },
@@ -190,6 +179,37 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     }
   };
 
+  /**
+   * Reports user-driven zoom/scroll changes, debounced so rapid wheel-zooming or panning
+   * doesn't trigger a save on every tick. Ignores the initial viewport event fired on
+   * injection (it has no oldScale). Reads the workspace's current scale/scroll when the
+   * debounce fires, rather than trusting the triggering event's values, since several
+   * viewport changes may have collapsed into this one report.
+   */
+  const handleWorkspaceViewportChange = (event: Blockly.Events.Abstract): void => {
+    if (event.type !== Blockly.Events.VIEWPORT_CHANGE) {
+      return;
+    }
+    const { oldScale, scale } = event as Blockly.Events.ViewportChange;
+    if (oldScale === undefined) {
+      return;
+    }
+    const scaleChanged = scale !== undefined && scale !== oldScale;
+    if (viewportChangeTimer.current) {
+      clearTimeout(viewportChangeTimer.current);
+    }
+    viewportChangeTimer.current = setTimeout(() => {
+      const workspace = workspaceRef.current;
+      if (!workspace) {
+        return;
+      }
+      if (scaleChanged) {
+        onZoomChangeRef.current(workspace.scale);
+      }
+      onScrollChangeRef.current(workspace.scrollX, workspace.scrollY);
+    }, VIEWPORT_CHANGE_REPORT_DELAY_MS);
+  };
+
   /** Initializes the Blockly workspace. */
   const initializeWorkspace = (): void => {
     if (!blocklyDiv.current) {
@@ -217,13 +237,19 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     const workspaceConfig = createWorkspaceConfig();
     workspaceConfig.rtl = i18n.dir() === 'rtl';
     const workspace = Blockly.inject(blocklyDiv.current, workspaceConfig);
+    workspace.addChangeListener(handleWorkspaceViewportChange);
     workspaceRef.current = workspace;
     currentRenderer.current = props.renderer;
+    currentGridColour.current = getGridColour(getBlocklyTheme());
     parentDiv.current = blocklyDiv.current.parentNode as HTMLDivElement;
   };
 
   /** Cleans up the Blockly workspace on unmount. */
   const cleanupWorkspace = (): void => {
+    if (viewportChangeTimer.current) {
+      clearTimeout(viewportChangeTimer.current);
+      viewportChangeTimer.current = null;
+    }
     if (workspaceRef.current) {
       workspaceRef.current.dispose();
       workspaceRef.current = null;
@@ -310,11 +336,22 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     return cleanupWorkspace;
   }, []);
 
-  // Update theme when theme prop changes
+  // Update theme when theme prop changes.
+  // Blockly's grid colour is baked into the SVG when the workspace is injected, so
+  // setTheme() alone does not update it. If the new theme's grid colour differs, the
+  // workspace must be recreated (the same approach used for renderer/RTL changes below).
   React.useEffect(() => {
     if (workspaceRef.current) {
       const newTheme = getBlocklyTheme();
-      workspaceRef.current.setTheme(newTheme);
+      if (getGridColour(newTheme) !== currentGridColour.current) {
+        cleanupWorkspace();
+        initializeWorkspace();
+        if (props.onWorkspaceCreated) {
+          props.onWorkspaceCreated(props.modulePath, workspaceRef.current!);
+        }
+      } else {
+        workspaceRef.current.setTheme(newTheme);
+      }
     }
   }, [props.theme]);
 

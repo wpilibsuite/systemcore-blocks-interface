@@ -1,0 +1,143 @@
+{
+  "moduleType": "robot",
+  "moduleId": "hEXHQ^=#y;S!]%3|P{E]",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_class_method_def",
+          "id": "F)~9bVQSlmQLq{55JU]v",
+          "x": 10,
+          "y": 150,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "F)~9bVQSlmQLq{55JU]v",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          }
+        },
+        {
+          "type": "mrc_mechanism_component_holder",
+          "id": "L,5.Yo9)1acwf(.PQ}rq",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "hidePrivateComponents": true
+          },
+          "inputs": {
+            "MECHANISMS": {
+              "block": {
+                "type": "mrc_mechanism",
+                "id": "WtZyrOmFRU]/(dV_t^$o",
+                "extraState": {
+                  "mechanismModuleId": "@wRPRE;lME64/:YT1ohe",
+                  "mechanismId": "WtZyrOmFRU]/(dV_t^$o",
+                  "parameters": [
+                    {
+                      "name": "busId",
+                      "type": "int",
+                      "defaultValue": "",
+                      "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+                      "componentName": "left_motor",
+                      "componentArgsIndex": 0
+                    },
+                    {
+                      "name": "deviceId",
+                      "type": "int",
+                      "defaultValue": "3",
+                      "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+                      "componentName": "left_motor",
+                      "componentArgsIndex": 1
+                    },
+                    {
+                      "name": "busId",
+                      "type": "int",
+                      "defaultValue": "",
+                      "componentId": "SYhz+hU`y},it/FInyrJ",
+                      "componentName": "right_motor",
+                      "componentArgsIndex": 0
+                    },
+                    {
+                      "name": "deviceId",
+                      "type": "int",
+                      "defaultValue": "3",
+                      "componentId": "SYhz+hU`y},it/FInyrJ",
+                      "componentName": "right_motor",
+                      "componentArgsIndex": 1
+                    }
+                  ],
+                  "importModule": "drive_train301"
+                },
+                "fields": {
+                  "NAME": "drive",
+                  "TYPE": "DriveTrain301"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "math_number",
+                      "id": "r|hgs:_52`3Py0_$b9(D",
+                      "fields": {
+                        "NUM": 5
+                      }
+                    }
+                  },
+                  "ARG1": {
+                    "block": {
+                      "type": "math_number",
+                      "id": "F8U`^e.6Ltq-T{+*iR~#",
+                      "fields": {
+                        "NUM": 3
+                      }
+                    }
+                  },
+                  "ARG2": {
+                    "block": {
+                      "type": "math_number",
+                      "id": "IT_(fH/EJZDa3JhHaQ.!",
+                      "fields": {
+                        "NUM": 6
+                      }
+                    }
+                  },
+                  "ARG3": {
+                    "block": {
+                      "type": "math_number",
+                      "id": "8oE6/Wx@[NtUnVj/uV!r",
+                      "fields": {
+                        "NUM": 3
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [
+    {
+      "moduleId": "@wRPRE;lME64/:YT1ohe",
+      "mechanismId": "WtZyrOmFRU]/(dV_t^$o",
+      "name": "drive",
+      "className": "drive_train301.DriveTrain301"
+    }
+  ],
+  "components": [],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}

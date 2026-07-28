@@ -2,8 +2,8 @@ For each PR, make sure each of these works
 
 # New items
 * [ ] Make a new project 
-* [ ] Add an opmode "Auto" from the + next to Tabs on the Opmode line
-* [ ] Add a mechanism "Arm" from the + next to Tabs on the Robot and Mechanism arm
+* [ ] Add an opmode "Auto" from the + next to Tabs 
+* [ ] Add a mechanism "Arm" from the + next to Tabs
 # Using robot
 * [ ] Add a component to the Robot
 * [ ] Make sure that the Arm shows up as myArm in the robot

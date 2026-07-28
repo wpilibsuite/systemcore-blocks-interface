@@ -27,7 +27,6 @@ import {TabType, TabTypeUtils } from '../types/TabType';
 
 import {
   SettingOutlined,
-  FileOutlined,
   FolderOutlined,
   QuestionCircleOutlined,
   InfoCircleOutlined,
@@ -36,12 +35,14 @@ import {
   GlobalOutlined,
   CheckOutlined,
   ControlOutlined,
+  AppstoreOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
 import AboutDialog from './AboutModal';
 import ThemeModal from './ThemeModal';
 import LanguageModal from './LanguageModal';
+import SamplesModal from './SamplesModal';
 import RendererModal from './RendererModal';
 
 /** Type definition for menu items. */
@@ -55,6 +56,7 @@ export interface MenuProps {
   closeTab: (tabKey: string) => void;
   currentProject: storageProject.Project | null;
   setCurrentProject: (project: storageProject.Project | null) => void;
+  switchToProjectAndSelectTab: (project: storageProject.Project, tabKey: string) => void;
   onProjectChanged: () => Promise<void>;
   openWPIToolboxSettings: () => void;
   theme: string;
@@ -98,39 +100,12 @@ function getItem(
  */
 function getMenuItems(
     t: (key: string) => string,
-    project: storageProject.Project,
     showSimpleClassNames: boolean): MenuItem[] {
-  const mechanisms: MenuItem[] = [];
-  const opmodes: MenuItem[] = [];
-
-  // Build mechanisms menu items
-  project.mechanisms.forEach((mechanism) => {
-    mechanisms.push(getItem(
-        mechanism.className,
-        mechanism.modulePath,
-        TabTypeUtils.getIcon(TabType.MECHANISM) // Use mechanism icon for mechanisms
-    ));
-  });
-
-  // Build opmodes menu items
-  project.opModes.forEach((opmode) => {
-    opmodes.push(getItem(
-        opmode.className,
-        opmode.modulePath,
-        TabTypeUtils.getIcon(TabType.OPMODE) // Use opmode icon for opmodes
-    ));
-  });
-
   return [
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
       getItem(t('MECHANISMS') + '...', 'manageMechanisms', TabTypeUtils.getIcon(TabType.MECHANISM)),
       getItem(t('OPMODES') + '...', 'manageOpmodes', TabTypeUtils.getIcon(TabType.OPMODE)),
-    ]),
-    getItem(t('EXPLORER'), 'explorer', <FileOutlined />, [
-      getItem(t('ROBOT'), project.robot.modulePath, TabTypeUtils.getIcon(TabType.ROBOT)),
-      ...(mechanisms.length > 0 ? [getItem(t('MECHANISMS'), 'mechanisms', TabTypeUtils.getIcon(TabType.MECHANISM), mechanisms)] : []),
-      ...(opmodes.length > 0 ? [getItem(t('OPMODES'), 'opmodes', TabTypeUtils.getIcon(TabType.OPMODE), opmodes)] : []),
     ]),
     getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
       getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
@@ -143,6 +118,7 @@ function getMenuItems(
       getItem(t('STYLE') + '...', 'renderer', <BuildOutlined />),
       getItem(t('LANGUAGE') + '...', 'language', <GlobalOutlined />),
     ]),
+    getItem(t('SAMPLES.MENU_ITEM') + '...', 'samples', <AppstoreOutlined />),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
       getItem(t('TOUR.MENU_ITEM') + '...', 'tour', <QuestionCircleOutlined />),
       getItem(t('ABOUT.TITLE') + '...', 'about', <InfoCircleOutlined />),
@@ -165,6 +141,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [tabType, setTabType] = React.useState<TabType>(TabType.MECHANISM);
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
+  const [samplesModalOpen, setSamplesModalOpen] = React.useState<boolean>(false);
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
   const [rendererModalOpen, setRendererModalOpen] = React.useState<boolean>(false);
   const [languageModalOpen, setLanguageModalOpen] = React.useState<boolean>(false);
@@ -272,6 +249,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       setProjectModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
+    } else if (key === 'samples') {
+      setSamplesModalOpen(true);
     } else if (key === 'tour') {
       props.startTour?.();
     } else if (key === 'wpi_toolbox'){
@@ -318,7 +297,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   React.useEffect(() => {
     if (props.currentProject) {
       setMostRecentProjectName();
-      setMenuItems(getMenuItems(t, props.currentProject, props.showSimpleClassNames));
+      setMenuItems(getMenuItems(t, props.showSimpleClassNames));
       setNoProjects(false);
     }
   }, [props.currentProject, i18n.language, props.showSimpleClassNames]);
@@ -336,6 +315,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         setAlertErrorMessage={props.setAlertErrorMessage}
         gotoTab={props.gotoTab}
         closeTab={props.closeTab}
+        switchToProjectAndSelectTab={props.switchToProjectAndSelectTab}
       />
       <ProjectManageModal
         noProjects={noProjects}
@@ -356,6 +336,14 @@ export function Component(props: MenuProps): React.JSX.Element {
       <AboutDialog
         open={aboutDialogVisible}
         onClose={() => setAboutDialogVisible(false)}
+      />
+      <SamplesModal
+        isOpen={samplesModalOpen}
+        onClose={() => setSamplesModalOpen(false)}
+        storage={props.storage}
+        setCurrentProject={props.setCurrentProject}
+        setAlertErrorMessage={props.setAlertErrorMessage}
+        theme={props.theme}
       />
       <ThemeModal
           open={themeModalOpen}
