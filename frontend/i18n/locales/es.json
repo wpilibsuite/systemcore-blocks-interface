@@ -215,8 +215,10 @@
         "MANAGE_DESC": "Crea, renombra, copia o elimina proyectos, mecanismos y OpModes.",
         "SETTINGS_TITLE": "Configuración",
         "SETTINGS_DESC": "Elige tu idioma, tema de color y qué categorías de la caja de herramientas WPILib se muestran.",
+        "SAMPLES_TITLE": "Ejemplos",
+        "SAMPLES_DESC": "Explora ejemplos de código que puedes copiar en tu proyecto o usar para crear un nuevo proyecto.",
         "HELP_TITLE": "Ayuda",
-        "HELP_DESC": "Encuentra más información sobre la interfaz de bloques, incluyendo este tour y ejemplos de código que puedes explorar o copiar en un nuevo proyecto.",
+        "HELP_DESC": "Encuentra más información sobre la interfaz de bloques, incluyendo este tour.",
         "TABS_TITLE": "Pestañas",
         "TABS_DESC": "Esta fila muestra la pestaña del Robot y las pestañas de Mecanismos y OpModes que hayas creado. Presiona + para agregar una nueva pestaña, u Ocultos para mostrar las pestañas que has ocultado.",
         "WORKSPACE_TITLE": "Área de Trabajo de Bloques",
@@ -224,9 +226,7 @@
         "CODE_PANEL_TITLE": "Código Python Generado",
         "CODE_PANEL_DESC": "El código Python generado a partir de tus bloques aparece aquí. Puedes copiarlo para usarlo en otro lugar.",
         "CODE_PANEL_RESIZE_TITLE": "Redimensionar el Panel de Código",
-        "CODE_PANEL_RESIZE_DESC": "Arrastra este borde hacia la izquierda o derecha para cambiar el tamaño del panel de código.",
-        "CODE_PANEL_COLLAPSE_TITLE": "Colapsar el Panel de Código",
-        "CODE_PANEL_COLLAPSE_DESC": "Haz clic en esta flecha para colapsar el panel de código y tener más espacio para el área de bloques."
+        "CODE_PANEL_RESIZE_DESC": "Arrastra este borde hacia la izquierda o derecha para cambiar el tamaño del panel de código."
     },
     "BLOCKLY": {
         "OF_TYPE": "de tipo",

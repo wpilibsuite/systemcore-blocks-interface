@@ -118,13 +118,11 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
     if (!props.onToggleCollapse) return null;
     
     return (
-      <div data-tour="code-panel-collapse">
-        <SiderCollapseTrigger
-          collapsed={props.isCollapsed || false}
-          onToggle={props.onToggleCollapse}
-          isRightPanel={true}
-        />
-      </div>
+      <SiderCollapseTrigger
+        collapsed={props.isCollapsed || false}
+        onToggle={props.onToggleCollapse}
+        isRightPanel={true}
+      />
     );
   };
 
