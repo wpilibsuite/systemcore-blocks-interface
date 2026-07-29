@@ -260,6 +260,7 @@
         "DISPLAY_DESCRIPTION": "Description d'affichage",
         "PRINT": "imprimer",
         "NO_MECHANISM_CONTENTS": "Aucun contenu de mécanisme",
+        "NO_ROBOT_CONTENTS": "Aucun contenu de robot",
         "CALL": "appeler",
         "ROBOT_LOWER_CASE": "robot",
         "CREATE": "créer",

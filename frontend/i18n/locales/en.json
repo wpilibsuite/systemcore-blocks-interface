@@ -259,6 +259,7 @@
         "DISPLAY_DESCRIPTION": "Display Description",
         "PRINT": "print",
         "NO_MECHANISM_CONTENTS": "No Mechanism Contents",
+        "NO_ROBOT_CONTENTS": "No Robot Content",
         "CALL": "call",
         "ROBOT_LOWER_CASE": "robot",
         "CREATE": "create",
