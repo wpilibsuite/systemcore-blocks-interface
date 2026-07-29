@@ -214,8 +214,10 @@
         "MANAGE_DESC": "Create, rename, copy, or delete projects, mechanisms, and OpModes.",
         "SETTINGS_TITLE": "Settings",
         "SETTINGS_DESC": "Choose your language, color theme, and which WPILib toolbox categories are shown.",
+        "SAMPLES_TITLE": "Samples",
+        "SAMPLES_DESC": "Browse sample code you can copy into your project or use to create a new project.",
         "HELP_TITLE": "Help",
-        "HELP_DESC": "Find more information about the blocks interface, including this tour and sample code you can browse or copy into a new project.",
+        "HELP_DESC": "Find more information about the blocks interface, including this tour.",
         "TABS_TITLE": "Tabs",
         "TABS_DESC": "This row shows the Robot tab and any Mechanism and OpMode tabs you have created. Press + to add a new tab, or Hidden to show tabs you've hidden.",
         "WORKSPACE_TITLE": "Block Workspace",
@@ -223,9 +225,7 @@
         "CODE_PANEL_TITLE": "Generated Python Code",
         "CODE_PANEL_DESC": "The Python code generated from your blocks appears here. You can copy it to use elsewhere.",
         "CODE_PANEL_RESIZE_TITLE": "Resize the Code Panel",
-        "CODE_PANEL_RESIZE_DESC": "Drag this edge left or right to resize the code panel.",
-        "CODE_PANEL_COLLAPSE_TITLE": "Collapse the Code Panel",
-        "CODE_PANEL_COLLAPSE_DESC": "Click this arrow to collapse the code panel and give yourself more room for the block workspace."
+        "CODE_PANEL_RESIZE_DESC": "Drag this edge left or right to resize the code panel."
     },
     "BLOCKLY":{
         "OF_TYPE": "of type",
@@ -259,6 +259,7 @@
         "DISPLAY_DESCRIPTION": "Display Description",
         "PRINT": "print",
         "NO_MECHANISM_CONTENTS": "No Mechanism Contents",
+        "NO_ROBOT_CONTENTS": "No Robot Content",
         "CALL": "call",
         "ROBOT_LOWER_CASE": "robot",
         "CREATE": "create",

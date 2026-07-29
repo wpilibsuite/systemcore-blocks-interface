@@ -215,8 +215,10 @@
         "MANAGE_DESC": "Créez, renommez, copiez ou supprimez des projets, mécanismes et OpModes.",
         "SETTINGS_TITLE": "Paramètres",
         "SETTINGS_DESC": "Choisissez votre langue, thème de couleur et quelles catégories de la boîte à outils WPILib sont affichées.",
+        "SAMPLES_TITLE": "Exemples",
+        "SAMPLES_DESC": "Parcourez des exemples de code que vous pouvez copier dans votre projet ou utiliser pour créer un nouveau projet.",
         "HELP_TITLE": "Aide",
-        "HELP_DESC": "Trouvez plus d'informations sur l'interface de blocs, y compris cette visite guidée et des exemples de code que vous pouvez consulter ou copier dans un nouveau projet.",
+        "HELP_DESC": "Trouvez plus d'informations sur l'interface de blocs, y compris cette visite guidée.",
         "TABS_TITLE": "Onglets",
         "TABS_DESC": "Cette rangée affiche l'onglet Robot ainsi que les onglets Mécanismes et OpMode que vous avez créés. Appuyez sur + pour ajouter un nouvel onglet, ou sur Cachés pour afficher les onglets que vous avez masqués.",
         "WORKSPACE_TITLE": "Espace de travail des blocs",
@@ -224,9 +226,7 @@
         "CODE_PANEL_TITLE": "Code Python généré",
         "CODE_PANEL_DESC": "Le code Python généré à partir de vos blocs apparaît ici. Vous pouvez le copier pour l'utiliser ailleurs.",
         "CODE_PANEL_RESIZE_TITLE": "Redimensionner le panneau de code",
-        "CODE_PANEL_RESIZE_DESC": "Faites glisser ce bord vers la gauche ou la droite pour redimensionner le panneau de code.",
-        "CODE_PANEL_COLLAPSE_TITLE": "Réduire le panneau de code",
-        "CODE_PANEL_COLLAPSE_DESC": "Cliquez sur cette flèche pour réduire le panneau de code et vous donner plus d'espace pour l'espace de travail des blocs."
+        "CODE_PANEL_RESIZE_DESC": "Faites glisser ce bord vers la gauche ou la droite pour redimensionner le panneau de code."
     },
     "BLOCKLY": {
         "OF_TYPE": "de type",
@@ -260,6 +260,7 @@
         "DISPLAY_DESCRIPTION": "Description d'affichage",
         "PRINT": "imprimer",
         "NO_MECHANISM_CONTENTS": "Aucun contenu de mécanisme",
+        "NO_ROBOT_CONTENTS": "Aucun contenu de robot",
         "CALL": "appeler",
         "ROBOT_LOWER_CASE": "robot",
         "CREATE": "créer",
