@@ -4,7 +4,7 @@ import shutil
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = os.path.expanduser('~/systemcore/blocks')
+DATA_DIR = os.path.expanduser('~systemcore/blocks')
 DB_PATH = os.path.join(DATA_DIR, 'projects.db')
 
 os.makedirs(DATA_DIR, exist_ok=True)
