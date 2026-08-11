@@ -1,14 +1,13 @@
 # Standard library imports
 import argparse
 import logging
-import os
 from typing import Tuple, Union
 
 # Third-party imports
 from flask import Flask, jsonify, request, send_from_directory, Response
 
 # Our imports
-from config import basedir
+from config import DB_PATH
 from extensions import db
 from deploy import DeployResource
 from storage import StorageEntryResource, StorageFileRenameResource, StorageRootResource, StorageResource
@@ -38,7 +37,7 @@ def handle_preflight() -> Union[Response, None]:
         return response
 
 # Configure SQLite database
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "projects.db")}'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
 db.init_app(app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
