@@ -90,7 +90,7 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
 
 export function valueForComponentArgInput(argType: string, argDefaultValue: string, showSimpleClassNames: boolean): any {
   if (isPortType(argType)) {
-    return createPort(argType);
+    return createPort(argType, argDefaultValue);
   }
 
   const alias = getAlias(argType);
