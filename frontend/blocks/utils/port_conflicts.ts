@@ -29,6 +29,7 @@ import * as portBlock from '../mrc_port';
 import * as storageModuleContent from '../../storage/module_content';
 import * as storageProject from '../../storage/project';
 import { Editor } from '../../editor/editor';
+import { PortBlock } from '../mrc_port';
 
 const WARNING_ID_DUPLICATE_PORT = 'duplicate port';
 
@@ -132,7 +133,7 @@ function getOwnerFromWorkspace(block: Blockly.Block): string {
     if (argIndex >= 0 && parameters && argIndex < parameters.length) {
       return mechanismName + '.' + parameters[argIndex].componentName;
     }
-    return mechanismName;
+    return mechanismName;  // This should not happen, but if it does, at least return the mechanism's name.
   }
   return '';
 }
@@ -143,25 +144,24 @@ function getOwnerFromWorkspace(block: Blockly.Block): string {
 export function collectPortUsagesFromWorkspace(workspace: Blockly.Workspace): PortUsage[] {
   const usages: PortUsage[] = [];
   workspace.getBlocksByType(portBlock.BLOCK_NAME, false).forEach(block => {
-    const port = block as portBlock.PortBlock;
     // Ignore a port block that isn't plugged in, or that is part of a component that has
     // been dragged out of the mechanism and component holder. Those ports aren't used.
-    if (!port.outputConnection || !port.outputConnection.isConnected()) {
+    if (!block.outputConnection || !block.outputConnection.isConnected()) {
       return;
     }
-    const rootBlock = port.getRootBlock();
+    const rootBlock = block.getRootBlock();
     if (!rootBlock || rootBlock.type !== mechanismComponentHolder.BLOCK_NAME) {
       return;
     }
-    const owner = getOwnerFromWorkspace(port);
+    const owner = getOwnerFromWorkspace(block);
     if (!owner) {
       return;
     }
 
     usages.push({
-      ...portBlock.describePortBlock(port),
+      ...portBlock.describePortBlock(block as PortBlock),
       owner: owner,
-      blockId: port.id,
+      blockId: block.id,
     });
   });
   return usages;
