@@ -10,7 +10,7 @@
    blocks from http://robot.local 
    * This is only necessary if the version of Blocks on Systemcore and the one you 
    just built are the same number
-3. Go to http://robot.local and select install ipk.  It will be located in the `packaging/` 
+3. Go to http://robot.local and select Add Package.  The ipk will be located in the `packaging/` 
 directory of your systemcore-blocks-interface
 4. Now you can access blocks by selecting the Blocks from the main page of systemcore (http://robot.local/)
 
