@@ -78,7 +78,7 @@ Extends Blockly's built-in `PythonGenerator`. The generator runs when saving or 
 Flask + Flask-RESTful app. Key endpoints:
 - `GET/POST /storage/<path>` — file and directory operations backed by SQLite (`projects.db`)
 - `GET/POST /entries/<key>` — key-value settings storage
-- `POST /deploy` — receives a zip, stops the robot service, extracts to `/home/systemcore/pyFromBlocks/`, rewrites `robotCommand`, restarts the robot
+- `POST /deploy` — receives a zip, extracts to `/home/systemcore/blocks/deployedPython/`, then uses `robotpy installer` to stop/restart the robot
 - During production, the backend is run with gunicorn so be careful not to put code in the
 `if __name__ == '__main__':` that needs to run both when being tested and in production
 
