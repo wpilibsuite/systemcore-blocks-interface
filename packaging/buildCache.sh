@@ -3,17 +3,17 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CACHE_DIR="$SCRIPT_DIR/overlay/opt/blocks/cache"
-BBC_SRC="$SCRIPT_DIR/../runtime_python/wpilib_blocks"
+WPILIB_BLOCKS_SRC="$SCRIPT_DIR/../runtime_python/wpilib_blocks"
 
 PIP_CACHE_DIR="$CACHE_DIR/pip_cache"
 mkdir -p "$PIP_CACHE_DIR"
 
 # Rebuild the wheel if any source file is newer than the existing wheel
 EXISTING_WHL=$(ls "$PIP_CACHE_DIR"/wpilib_blocks*.whl 2>/dev/null | head -1)
-if [ -z "$EXISTING_WHL" ] || [ -n "$(find "$BBC_SRC" -newer "$EXISTING_WHL" \( -name "*.py" -o -name "pyproject.toml" \))" ]; then
+if [ -z "$EXISTING_WHL" ] || [ -n "$(find "$WPILIB_BLOCKS_SRC" -newer "$EXISTING_WHL" \( -name "*.py" -o -name "pyproject.toml" \))" ]; then
     echo "Building wpilib_blocks wheel..."
     rm -f "$PIP_CACHE_DIR"/wpilib_blocks*.whl
-    pip3 wheel --no-deps "$BBC_SRC" -w "$PIP_CACHE_DIR"
+    pip3 wheel --no-deps "$WPILIB_BLOCKS_SRC" -w "$PIP_CACHE_DIR"
 else
     echo "wpilib_blocks wheel is up to date, skipping."
 fi
