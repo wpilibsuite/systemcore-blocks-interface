@@ -12,4 +12,4 @@ npm run build
 rsync -avz dist systemcore@robot.local:/opt/blocks
 
 # Now send the base class blocks folder
-rsync -avz --exclude '__pycache__' --exclude 'blocks_base_classes.egg-info' runtime_python/blocks_base_classes systemcore@robot.local:/opt/blocks/
+rsync -avz --exclude '__pycache__' --exclude 'wpilib_blocks.egg-info' runtime_python/wpilib_blocks systemcore@robot.local:/opt/blocks/

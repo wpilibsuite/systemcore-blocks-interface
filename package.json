@@ -31,7 +31,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "sync-version": "node -e \"const fs=require('fs');fs.writeFileSync('runtime_python/blocks_base_classes/VERSION.txt',JSON.parse(fs.readFileSync('package.json')).version);\"",
+    "sync-version": "node -e \"const fs=require('fs');fs.writeFileSync('runtime_python/wpilib_blocks/VERSION.txt',JSON.parse(fs.readFileSync('package.json')).version);\"",
     "version": "npm run sync-version",
     "package": "npm run sync-version && npm run build && npm run package:mkdirs && npm run package:backend && npm run package:dist && npm run package:icon && npm run package:cache && npm run package:venv && npm run package:ipk",
     "package:mkdirs": "mkdir -p packaging/overlay/opt/blocks/backend packaging/overlay/opt/blocks/dist",

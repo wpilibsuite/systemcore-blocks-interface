@@ -15,7 +15,7 @@ Now you can access blocks by selecting the Blocks from the main page of systemco
 2. Refresh the browser on the Blocks page
 
 
-## After updating blocks_base_classes:
+## After updating runtime_python/wpilib_blocks:
 `npm run package` to make the new Blocks ipk
 
 ## Making the Blocks ipk

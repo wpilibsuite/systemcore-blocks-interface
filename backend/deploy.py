@@ -55,7 +55,7 @@ robotpy_version = "2027.0.0.a6.post1"
 
 components = []
 
-requires = [ "blocks_base_classes", "robotpy-rev"]
+requires = [ "wpilib_blocks", "robotpy-rev"]
 """                    
                 )
                 f.write(toml_content);

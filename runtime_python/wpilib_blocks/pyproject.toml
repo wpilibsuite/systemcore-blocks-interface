@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "blocks_base_classes"
+name = "wpilib_blocks"
 dynamic = ["version"]
 description = "Base classes for SystemCore blocks interface"
 requires-python = ">=3.8"
@@ -17,4 +17,4 @@ dependencies = []
 version = {file = "VERSION.txt"}
 
 [tool.setuptools.package-dir]
-"blocks_base_classes" = "."
+"wpilib_blocks" = "."
