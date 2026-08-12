@@ -3,7 +3,7 @@ We are honored that you want to dedicate your time, talent, and efforts to impro
 
 # Guidelines
 ## Getting Oriented
-We recommend reading [docs/design.md] to understand the goals of the project
+We recommend reading [docs/design.md](docs/design.md) to understand the goals of the project
 
 ## AI Guidance
 (borrowed heavily from Kubernetes policy)
