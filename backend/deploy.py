@@ -61,7 +61,9 @@ requires = [ "blocks_base_classes", "robotpy-rev"]
                 f.write(toml_content);
             # Deploy robot code
             subprocess.run(
-                ["robotpy", "installer", "local-deploy", "--force-install"],
+                # --yes means answer yes to all questions asked without prompting user
+                # this makes for a silent deploy
+                ["robotpy", "installer", "local-deploy", "--yes"],
                 capture_output=True,
                 text=True,
                 check=True,
