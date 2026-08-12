@@ -10,7 +10,7 @@ from flask import Response, jsonify, request
 from flask.views import MethodView
 
 BASE_DIR = "/home/systemcore"
-DEPLOY_DIR = BASE_DIR + "/pyFromBlocks"
+DEPLOY_DIR = BASE_DIR + "/blocks/deployedPython"
 
 class DeployResource(MethodView):
     def post(self) -> Response:
