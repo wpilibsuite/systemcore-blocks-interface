@@ -35,7 +35,7 @@ import wpiutil
 
 # Runtime python
 sys.path.append("../runtime_python")
-import blocks_base_classes
+import wpilib_blocks
 
 # Local modules
 import json_util
@@ -72,7 +72,7 @@ def main(argv):
   json_generator_robotpy.writeJsonFile(file_path)
 
   runtime_python = [
-    blocks_base_classes,
+    wpilib_blocks,
   ]
   json_generator_runtime_python = json_util.JsonGenerator(
       runtime_python, [json_generator_robotpy])

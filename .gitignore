@@ -27,12 +27,12 @@ venv/
 packaging/overlay/opt/blocks/
 
 # generated from package.json version at build time
-runtime_python/blocks_base_classes/VERSION.txt
+runtime_python/wpilib_blocks/VERSION.txt
 
 # temporary so don't put in the repo
 packaging/wheels/
 wheels_venv
-runtime_python/blocks_base_classes/build/
+runtime_python/wpilib_blocks/build/
 
 
 

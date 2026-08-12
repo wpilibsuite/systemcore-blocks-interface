@@ -38,7 +38,7 @@ import * as SetPythonVariable from "../mrc_set_python_variable";
 // Utilities related to blocks for python modules and classes, including those from RobotPy.
 
 // The module for classes used by blocks that don't exist in wpilib.
-export const MODULE_NAME_BLOCKS_BASE_CLASSES = 'blocks_base_classes';
+export const MODULE_NAME_WPILIB_BLOCKS = 'wpilib_blocks';
 
 // TODO(lizlooney): Update these constants if necessary when we update wpilib.
 
@@ -48,7 +48,7 @@ export const ROBOT_METHOD_NAMES_OVERRIDEABLE: string[] = [
   'nonePeriodic',
 ];
 
-export const CLASS_NAME_MECHANISM = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Mechanism';
+export const CLASS_NAME_MECHANISM = MODULE_NAME_WPILIB_BLOCKS + '.Mechanism';
 export const MECHANISM_METHOD_NAMES_OVERRIDEABLE: string[] = [
   'opmodeEnd',
   'opmodePeriodic',
@@ -66,11 +66,11 @@ export const START_METHOD_NAME = 'start';
 export const PERIODIC_METHOD_NAME = 'periodic';
 export const END_METHOD_NAME = 'end';
 
-export const TELEOP_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Teleop';
-export const AUTO_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Auto';
-export const UTILITY_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Utility';
-export const NAME_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Name';
-export const GROUP_DECORATOR_CLASS = MODULE_NAME_BLOCKS_BASE_CLASSES + '.Group';
+export const TELEOP_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Teleop';
+export const AUTO_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Auto';
+export const UTILITY_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Utility';
+export const NAME_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Name';
+export const GROUP_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Group';
 
 export const robotPyData = generatedRobotPyData as PythonData;
 const runtimePython = generatedRuntimePython as PythonData;
