@@ -374,7 +374,10 @@ export function getAllPossibleComponents(
     const componentName = 'my' + simpleClassName(classData.className);
     // Only a component in the robot has inputs for its args, so outside the robot two
     // constructors that take the same kinds of args produce blocks that look exactly alike.
-    // Show only the first of those, since there would be no way to tell them apart.
+    // Show only the first of those, since there would be no way to tell them apart.  This is for
+    // inside the mechanism, where the component blocks don't have inputs for their args.  In the 
+    // robot, show all the constructors, since they have different inputs for their args and can be 
+    // told apart.
     const argTypesAlreadyAdded: string[] = [];
     classData.constructors.forEach(constructorData => {
        if (constructorData.isComponent) {

@@ -63,17 +63,17 @@ export type PortConflict = {
  */
 export function findConflicts(usages: PortUsage[]): PortConflict[] {
   const keyToUsages: {[key: string]: PortUsage[]} = {};
-  const keysInOrder: string[] = [];
+  const listKeys: string[] = [];
   usages.forEach(usage => {
     if (!(usage.key in keyToUsages)) {
       keyToUsages[usage.key] = [];
-      keysInOrder.push(usage.key);
+      listKeys.push(usage.key);
     }
     keyToUsages[usage.key].push(usage);
   });
 
   const conflicts: PortConflict[] = [];
-  keysInOrder.forEach(key => {
+  listKeys.forEach(key => {
     const usagesForKey = keyToUsages[key];
     if (usagesForKey.length > 1) {
       conflicts.push({
@@ -137,7 +137,11 @@ function getArgIndex(block: Blockly.Block): number {
 
 /**
  * Returns the name of the component that uses the port that the given port block provides,
- * or '' if the port block isn't plugged into a component or mechanism.
+ * or '' if the port block isn't plugged into a component or mechanism.  If the 
+ * component is inside a mechanism, the name of the mechanism is prepended to the 
+ * component's name with a period in between.  For example, if the component is 
+ * named 'left_motor' and the mechanism is named 'drive', the returned name is 
+ * 'drive.left_motor'.
  */
 function getOwnerFromWorkspace(block: Blockly.Block): string {
   const parent = block.getParent();

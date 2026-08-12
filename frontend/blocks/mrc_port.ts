@@ -50,7 +50,7 @@ const SYSTEMCORE_CAN_BUS_COUNT = 5;
 
 /**
  * The number of CAN buses provided by a MotionCore. They are labeled MC00 through MC19 and
- * their values follow the Systemcore's own CAN buses.
+ * their values follow the Systemcore's own CAN buses.  (So they start with 5...)
  */
 const MOTIONCORE_CAN_BUS_COUNT = 20;
 
@@ -287,7 +287,7 @@ function createCanBusOptions(): Blockly.MenuOption[] {
 }
 
 /**
- * Parses the given string into an array of PortType.
+ * Parses the given string into an array of mrc_port blocks
  *
  * @param portTypeString A single string consisting of one or more port types.
  * Multiple port types are separated by __ (two underscores). Each port type
