@@ -29,7 +29,6 @@ import * as portBlock from '../mrc_port';
 import * as storageModuleContent from '../../storage/module_content';
 import * as storageProject from '../../storage/project';
 import { Editor } from '../../editor/editor';
-import { PortType, portTypeToString, stringToPortType } from './python_json_types';
 
 const WARNING_ID_DUPLICATE_PORT = 'duplicate port';
 
@@ -86,35 +85,6 @@ export function findConflicts(usages: PortUsage[]): PortConflict[] {
     }
   });
   return conflicts;
-}
-
-/**
- * Makes the key that identifies a physical port from the port types and the port numbers.
- * Port numbers that aren't shown to the user are left out, because they don't say anything
- * about which physical port this is. For example, a device on a MotionCore CAN bus doesn't
- * have a device id of its own, so two devices on the same MotionCore bus are on the same
- * port no matter what device ids are hiding on their blocks.
- */
-function makeKey(portTypes: PortType[], portNumbers: string[]): string {
-  return portTypes
-      .map((portType, i) => portBlock.isPortNumberShown(portTypes, portNumbers, i)
-          ? portTypeToString(portType) + ':' + portNumbers[i] : '')
-      .filter(s => s !== '')
-      .join(' ');
-}
-
-/**
- * Makes the label shown to the user, using the text displayed in each port number field
- * rather than the value, so that a CAN bus reads 'MC00' instead of '5'. Port numbers that
- * aren't shown on the block are left out here too.
- */
-function makePortLabel(
-    portTypes: PortType[], portNumbers: string[], displayedPortNumbers: string[]): string {
-  return portTypes
-      .map((portType, i) => portBlock.isPortNumberShown(portTypes, portNumbers, i)
-          ? portBlock.getLabelForPort(portType) + ' ' + displayedPortNumbers[i] : '')
-      .filter(s => s !== '')
-      .join(', ');
 }
 
 /**
@@ -188,17 +158,8 @@ export function collectPortUsagesFromWorkspace(workspace: Blockly.Workspace): Po
       return;
     }
 
-    const portNumbers: string[] = [];
-    const displayedPortNumbers: string[] = [];
-    port.mrcPortTypes.forEach((_portType, i) => {
-      const field = port.getField(portBlock.FIELD_PREFIX_PORT_NUM + i);
-      portNumbers.push(field ? String(field.getValue()) : '');
-      displayedPortNumbers.push(field ? field.getText() : '');
-    });
-
     usages.push({
-      key: makeKey(port.mrcPortTypes, portNumbers),
-      portLabel: makePortLabel(port.mrcPortTypes, portNumbers, displayedPortNumbers),
+      ...portBlock.describePortBlock(port),
       owner: owner,
       blockId: port.id,
     });
@@ -214,26 +175,15 @@ export function collectPortUsagesFromBlocksJson(blocks: {[key: string]: any}): P
   const usages: PortUsage[] = [];
 
   const collectFromPortBlock = (blockJson: any, owner: string): void => {
-    const portTypeStrings: string[] = blockJson.extraState
-        ? blockJson.extraState.portTypes : null;
-    if (!portTypeStrings || !owner) {
+    if (!owner) {
       return;
     }
-    const portTypes: PortType[] = [];
-    portTypeStrings.forEach(s => {
-      const portType = stringToPortType(s);
-      // Note that stringToPortType can return 0, which is a valid PortType.
-      if (portType !== null) {
-        portTypes.push(portType);
-      }
-    });
-    const fields = blockJson.fields ? blockJson.fields : {};
-    const portNumbers = portTypes.map(
-        (_portType, i) => String(fields[portBlock.FIELD_PREFIX_PORT_NUM + i] ?? ''));
+    const description = portBlock.describePortBlockJson(blockJson);
+    if (!description) {
+      return;
+    }
     usages.push({
-      key: makeKey(portTypes, portNumbers),
-      portLabel: makePortLabel(portTypes, portNumbers, portTypes.map(
-          (portType, i) => portBlock.getDisplayedPortNumber(portType, portNumbers[i]))),
+      ...description,
       owner: owner,
     });
   };

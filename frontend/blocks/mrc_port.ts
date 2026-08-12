@@ -39,7 +39,7 @@ export const BLOCK_NAME = 'mrc_port';
 export const OUTPUT_NAME = 'mrc_port';
 
 const FIELD_PREFIX_TYPE = 'TYPE_';
-export const FIELD_PREFIX_PORT_NUM = 'PORT_NUM_';
+const FIELD_PREFIX_PORT_NUM = 'PORT_NUM_';
 const INPUT_PREFIX_PORT = 'PORT_';
 
 /**
@@ -191,7 +191,7 @@ const PORT = {
  * Returns whether the given CAN bus is one provided by a MotionCore, rather than one of the
  * Systemcore's own CAN buses.
  */
-export function isMotionCoreCanBus(portNumber: string): boolean {
+function isMotionCoreCanBus(portNumber: string): boolean {
   const busId = Number(portNumber);
   return Number.isInteger(busId) && busId >= SYSTEMCORE_CAN_BUS_COUNT;
 }
@@ -201,13 +201,98 @@ export function isMotionCoreCanBus(portNumber: string): boolean {
  * user. A CAN device id is not shown when the CAN bus is provided by a MotionCore, because
  * a MotionCore detects the device id itself.
  */
-export function isPortNumberShown(
+function isPortNumberShown(
     portTypes: PortType[], portNumbers: string[], i: number): boolean {
   if (portTypes[i] !== PortType.CAN_DEVICE_ID) {
     return true;
   }
   const iCanBus = portTypes.indexOf(PortType.SYSTEMCORE_CAN_PORT);
   return iCanBus < 0 || !isMotionCoreCanBus(portNumbers[iCanBus]);
+}
+
+/** Identifies a physical port and describes it as shown to the user. */
+export type PortDescription = {
+  /**
+   * Identifies the physical port. Two ports are the same physical port if and only if their
+   * keys are equal.
+   */
+  key: string,
+  /** The port as shown to the user, for example 'can MC00, device 3'. */
+  portLabel: string,
+};
+
+/**
+ * Makes the key that identifies a physical port from the port types and the port numbers.
+ * Port numbers that aren't shown to the user are left out, because they don't say anything
+ * about which physical port this is. For example, a device on a MotionCore CAN bus doesn't
+ * have a device id of its own, so two devices on the same MotionCore bus are on the same
+ * port no matter what device ids are hiding on their blocks.
+ */
+function makeKey(portTypes: PortType[], portNumbers: string[]): string {
+  return portTypes
+      .map((portType, i) => isPortNumberShown(portTypes, portNumbers, i)
+          ? portTypeToString(portType) + ':' + portNumbers[i] : '')
+      .filter(s => s !== '')
+      .join(' ');
+}
+
+/**
+ * Makes the label shown to the user, using the displayed port number rather than the stored
+ * value, so that a CAN bus reads 'MC00' instead of '5'. Port numbers that aren't shown on the
+ * block are left out here too.
+ */
+function makePortLabel(
+    portTypes: PortType[], portNumbers: string[], displayedPortNumbers: string[]): string {
+  return portTypes
+      .map((portType, i) => isPortNumberShown(portTypes, portNumbers, i)
+          ? getLabelForPort(portType) + ' ' + displayedPortNumbers[i] : '')
+      .filter(s => s !== '')
+      .join(', ');
+}
+
+/** Describes the port that the given live port block represents. */
+export function describePortBlock(block: PortBlock): PortDescription {
+  const portNumbers: string[] = [];
+  const displayedPortNumbers: string[] = [];
+  block.mrcPortTypes.forEach((_portType, i) => {
+    const field = block.getField(FIELD_PREFIX_PORT_NUM + i);
+    portNumbers.push(field ? String(field.getValue()) : '');
+    displayedPortNumbers.push(field ? field.getText() : '');
+  });
+  return {
+    key: makeKey(block.mrcPortTypes, portNumbers),
+    portLabel: makePortLabel(block.mrcPortTypes, portNumbers, displayedPortNumbers),
+  };
+}
+
+/**
+ * Describes the port that the given serialized mrc_port block represents, or returns null if
+ * the given block json isn't an mrc_port block with port types. This is used when the module
+ * isn't open in an editor.
+ */
+export function describePortBlockJson(blockJson: any): PortDescription | null {
+  const portTypeStrings: string[] = blockJson.extraState
+      ? blockJson.extraState.portTypes : null;
+  if (!portTypeStrings) {
+    return null;
+  }
+  const portTypes: PortType[] = [];
+  portTypeStrings.forEach(s => {
+    const portType = stringToPortType(s);
+    // Note that stringToPortType can return 0, which is a valid PortType.
+    if (portType !== null) {
+      portTypes.push(portType);
+    }
+  });
+  const fields = blockJson.fields ? blockJson.fields : {};
+  const portNumbers = portTypes.map(
+      (_portType, i) => String(fields[FIELD_PREFIX_PORT_NUM + i] ?? ''));
+  const displayedPortNumbers = portTypes.map(
+      (portType, i) => getDisplayedPortNumber(portType, portNumbers[i]));
+  return {
+    key: makeKey(portTypes, portNumbers),
+    portLabel: makePortLabel(portTypes, portNumbers, displayedPortNumbers),
+  };
 }
 
 export const setup = function () {
@@ -259,7 +344,7 @@ function createFieldDropdownForPortNumber(portType: PortType): Blockly.Field {
  * the port number itself, but a CAN bus provided by a MotionCore is shown as MC00 - MC19.
  * This is for code that has the port numbers but doesn't have a block to ask.
  */
-export function getDisplayedPortNumber(portType: PortType, portNumber: string): string {
+function getDisplayedPortNumber(portType: PortType, portNumber: string): string {
   if (portType === PortType.SYSTEMCORE_CAN_PORT) {
     const option = createCanBusOptions().find(option => option[1] === portNumber);
     if (option) {
@@ -322,7 +407,7 @@ export function createPort(portTypeString: string, defaultPortNumbers?: string):
   };
 }
 
-export function getLabelForPort(portType: PortType): string {
+function getLabelForPort(portType: PortType): string {
   switch (portType) {
     case PortType.SYSTEMCORE_CAN_PORT:
       return VISIBLE_PORT_LABEL_CAN;
