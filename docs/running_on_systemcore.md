@@ -17,4 +17,3 @@ directory of your systemcore-blocks-interface
 ## If you get weird problems where deploying doesn't work
 * It is possible to have stale files in your development area.   If you run `npm run clean` before
  Step 1 above, then it will clean out all of the cached results
-

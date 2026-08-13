@@ -322,6 +322,20 @@
                     ],
                     "componentArgs": [
                         {
+                            "defaultValue": "5__3",
+                            "name": "a301",
+                            "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID"
+                        }
+                    ],
+                    "declaringClassName": "rev.A301",
+                    "functionName": "__init__",
+                    "isComponent": true,
+                    "returnType": "rev.A301",
+                    "tooltip": "Create a new object to control a FIRST A301 motor\n\nThe default A301 device ID is set to 3 out of the factory.\n\n:param busId:    The CAN bus ID this device will be on.\n:param deviceId: The device ID."
+                },
+                {
+                    "args": [
+                        {
                             "defaultValue": "",
                             "name": "busId",
                             "type": "int"
@@ -330,6 +344,13 @@
                             "defaultValue": "3",
                             "name": "deviceId",
                             "type": "int"
+                        }
+                    ],
+                    "componentArgs": [
+                        {
+                            "defaultValue": "0__3",
+                            "name": "a301",
+                            "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID"
                         }
                     ],
                     "declaringClassName": "rev.A301",
