@@ -168,6 +168,16 @@ export function makeModuleContentText(
   return moduleContent.getModuleContentText();
 }
 
+/**
+ * Returns the top level blocks in the given blocks. Note that the blocks are what Blockly's
+ * workspace save produces, which is {blocks: {languageVersion, blocks: [...]}}, so the top
+ * level blocks are one level further down than you might expect.
+ */
+export function getTopLevelBlocksJson(blocks: {[key: string]: any}): any[] {
+  const topLevelBlocks = blocks && blocks.blocks ? blocks.blocks.blocks : null;
+  return Array.isArray(topLevelBlocks) ? topLevelBlocks : [];
+}
+
 export function parseModuleContentText(moduleContentText: string): ModuleContent {
   const parsedContent = JSON.parse(moduleContentText);
   if (!('moduleType' in parsedContent) ||
