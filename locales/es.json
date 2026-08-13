@@ -15,6 +15,9 @@
     "DEPLOY_SUCCESS": "¡Implementación exitosa!",
     "DEPLOY_IN_PROGRESS": "Desplegando al robot...",
     "DEPLOY_ELAPSED": "{{seconds}}s transcurridos",
+    "DEPLOY_ANYWAY": "Implementar de todos modos",
+    "PORT_CONFLICT_TITLE": "Puertos usados más de una vez",
+    "PORT_CONFLICT_MESSAGE": "Estos puertos de hardware son usados por más de un componente:",
     "OK": "Aceptar",
     "DOWNLOAD_FAILED": "Error al descargar el proyecto.",
     "DOWNLOAD_CURRENT_PROJECT": "Descargar Proyecto Actual",
@@ -428,7 +431,8 @@
             "MECHANISM_NOT_IN_HOLDER": "Este bloque solo puede ir en la sección de mecanismos del robot.",
             "COMPONENT_MISSING_COMPONENT_CLASS": "Este bloque representa un componente cuya clase ya no existe.",
             "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "Un PeriodicOpMode debe tener pasos, el método periódico o ambos.",
-            "MECHANISM_NOT_FOUND": "Este bloque se refiere a un mecanismo que ya no existe."
+            "MECHANISM_NOT_FOUND": "Este bloque se refiere a un mecanismo que ya no existe.",
+            "DUPLICATE_PORT": "Este puerto (%1) también es usado por: %2"
         },
         "ERROR":{
             "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind debe ser \"module\", \"class\" o \"instance\"."
