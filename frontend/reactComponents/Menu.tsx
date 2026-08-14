@@ -118,8 +118,8 @@ function getMenuItems(
       getItem(t('STYLE') + '...', 'renderer', <BuildOutlined />),
       getItem(t('LANGUAGE') + '...', 'language', <GlobalOutlined />),
     ]),
+    getItem(t('SAMPLES.MENU_ITEM') + '...', 'samples', <AppstoreOutlined />),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
-      getItem(t('SAMPLES.MENU_ITEM') + '...', 'samples', <AppstoreOutlined />),
       getItem(t('TOUR.MENU_ITEM') + '...', 'tour', <QuestionCircleOutlined />),
       getItem(t('ABOUT.TITLE') + '...', 'about', <InfoCircleOutlined />),
     ]),

@@ -32,6 +32,7 @@ import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as opmodeDetails from '../blocks/mrc_opmode_details';
 import * as blockSteps from '../blocks/mrc_steps';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
+import * as portConflicts from '../blocks/utils/port_conflicts';
 import * as workspaces from '../blocks/utils/workspaces';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { applyExpandedCategories, getToolboxJSON } from '../toolbox/toolbox';
@@ -73,6 +74,7 @@ export class Editor {
   private showSimpleClassNames: boolean = false;
   private toolbox: Blockly.utils.toolbox.ToolboxInfo = EMPTY_TOOLBOX;
   private toolboxUpdateTimeout: NodeJS.Timeout | null = null;
+  private portConflictTimeout: NodeJS.Timeout | null = null;
 
   constructor(
       blocklyWorkspace: Blockly.WorkspaceSvg,
@@ -135,6 +137,7 @@ export class Editor {
     if (this.module.moduleType === storageModule.ModuleType.OPMODE) {
       opmodeDetails.checkOpMode(this.blocklyWorkspace, this);
     }
+    this.checkPortConflictsAfterDelay();
   }
 
   private onChangeAfterLoading(event: Blockly.Events.Abstract) {
@@ -144,6 +147,13 @@ export class Editor {
     }
     if (this.blocklyWorkspace.isDragging()) {
       return;
+    }
+
+    // Check for duplicate ports here, before the code below that can return early, so that
+    // we don't miss any changes. The check itself is delayed, which means it happens after
+    // the blocks below have handled the event.
+    if (!event.isUiEvent) {
+      this.checkPortConflictsAfterDelay();
     }
 
     if (event.type === Blockly.Events.VIEWPORT_CHANGE) {
@@ -312,6 +322,28 @@ export class Editor {
     this.toolboxUpdateTimeout = setTimeout(() => {
       this.updateToolboxImpl();
       this.toolboxUpdateTimeout = null;
+    }, 100);
+  }
+
+  /**
+   * Checks, after a short delay, whether any components or mechanisms in this module are
+   * using the same hardware port. Only the robot module specifies ports, so this does
+   * nothing for the other module types.
+   */
+  public checkPortConflictsAfterDelay(): void {
+    if (this.module.moduleType !== storageModule.ModuleType.ROBOT) {
+      return;
+    }
+    if (this.portConflictTimeout) {
+      clearTimeout(this.portConflictTimeout);
+    }
+    this.portConflictTimeout = setTimeout(() => {
+      this.portConflictTimeout = null;
+      if (!this.blocklyWorkspace.rendered) {
+        // This editor has been abandoned.
+        return;
+      }
+      portConflicts.checkPortConflicts(this.blocklyWorkspace);
     }, 100);
   }
 

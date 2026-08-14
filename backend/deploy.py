@@ -10,7 +10,7 @@ from flask import Response, jsonify, request
 from flask.views import MethodView
 
 BASE_DIR = "/home/systemcore"
-DEPLOY_DIR = BASE_DIR + "/pyFromBlocks"
+DEPLOY_DIR = BASE_DIR + "/blocks/deployedPython"
 
 class DeployResource(MethodView):
     def post(self) -> Response:
@@ -55,13 +55,15 @@ robotpy_version = "2027.0.0.a6.post1"
 
 components = []
 
-requires = [ "blocks_base_classes", "robotpy-rev"]
+requires = [ "wpilib_blocks", "robotpy-rev"]
 """                    
                 )
                 f.write(toml_content);
             # Deploy robot code
             subprocess.run(
-                ["robotpy", "installer", "local-deploy", "--force-install"],
+                # --yes means answer yes to all questions asked without prompting user
+                # this makes for a silent deploy
+                ["robotpy", "installer", "local-deploy", "--yes"],
                 capture_output=True,
                 text=True,
                 check=True,

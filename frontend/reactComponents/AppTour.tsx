@@ -68,6 +68,11 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       target: tourTarget('[data-menu-id$="-settings"]'),
     },
     {
+      title: t('TOUR.SAMPLES_TITLE'),
+      description: t('TOUR.SAMPLES_DESC'),
+      target: tourTarget('[data-menu-id$="-samples"]'),
+    },
+    {
       title: t('TOUR.HELP_TITLE'),
       description: t('TOUR.HELP_DESC'),
       target: tourTarget('[data-menu-id$="-help"]'),
@@ -91,11 +96,6 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       title: t('TOUR.CODE_PANEL_RESIZE_TITLE'),
       description: t('TOUR.CODE_PANEL_RESIZE_DESC'),
       target: tourTarget('[data-tour="code-panel-resize"]'),
-    },
-    {
-      title: t('TOUR.CODE_PANEL_COLLAPSE_TITLE'),
-      description: t('TOUR.CODE_PANEL_COLLAPSE_DESC'),
-      target: tourTarget('[data-tour="code-panel-collapse"]'),
     },
   ];
 

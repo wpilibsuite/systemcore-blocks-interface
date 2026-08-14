@@ -132,14 +132,9 @@
                   "componentId": "{{`w$7oY596YUEB-M89I",
                   "params": [
                     {
-                      "name": "busId",
-                      "type": "int",
-                      "defaultValue": ""
-                    },
-                    {
-                      "name": "deviceId",
-                      "type": "int",
-                      "defaultValue": "3"
+                      "name": "a301",
+                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+                      "defaultValue": "5__3"
                     }
                   ],
                   "importModule": "rev",
@@ -158,14 +153,9 @@
                       "componentId": ",Cq$re$$zJ%m;lyiSwg+",
                       "params": [
                         {
-                          "name": "busId",
-                          "type": "int",
-                          "defaultValue": ""
-                        },
-                        {
-                          "name": "deviceId",
-                          "type": "int",
-                          "defaultValue": "3"
+                          "name": "a301",
+                          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+                          "defaultValue": "5__3"
                         }
                       ],
                       "importModule": "rev",
@@ -184,14 +174,9 @@
                           "componentId": "`2QvHlkPo?DykBZ1A-3K",
                           "params": [
                             {
-                              "name": "busId",
-                              "type": "int",
-                              "defaultValue": ""
-                            },
-                            {
-                              "name": "deviceId",
-                              "type": "int",
-                              "defaultValue": "3"
+                              "name": "a301",
+                              "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+                              "defaultValue": "5__3"
                             }
                           ],
                           "importModule": "rev",
@@ -210,14 +195,9 @@
                               "componentId": "{y[Om`ULa?;[/DNtmy?!",
                               "params": [
                                 {
-                                  "name": "busId",
-                                  "type": "int",
-                                  "defaultValue": ""
-                                },
-                                {
-                                  "name": "deviceId",
-                                  "type": "int",
-                                  "defaultValue": "3"
+                                  "name": "a301",
+                                  "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+                                  "defaultValue": "5__3"
                                 }
                               ],
                               "importModule": "rev",
@@ -1926,14 +1906,9 @@
       "className": "rev.A301",
       "args": [
         {
-          "name": "busId",
-          "type": "int",
-          "defaultValue": ""
-        },
-        {
-          "name": "deviceId",
-          "type": "int",
-          "defaultValue": "3"
+          "name": "a301",
+          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+          "defaultValue": "5__3"
         }
       ]
     },
@@ -1943,14 +1918,9 @@
       "className": "rev.A301",
       "args": [
         {
-          "name": "busId",
-          "type": "int",
-          "defaultValue": ""
-        },
-        {
-          "name": "deviceId",
-          "type": "int",
-          "defaultValue": "3"
+          "name": "a301",
+          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+          "defaultValue": "5__3"
         }
       ]
     },
@@ -1960,14 +1930,9 @@
       "className": "rev.A301",
       "args": [
         {
-          "name": "busId",
-          "type": "int",
-          "defaultValue": ""
-        },
-        {
-          "name": "deviceId",
-          "type": "int",
-          "defaultValue": "3"
+          "name": "a301",
+          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+          "defaultValue": "5__3"
         }
       ]
     },
@@ -1977,14 +1942,9 @@
       "className": "rev.A301",
       "args": [
         {
-          "name": "busId",
-          "type": "int",
-          "defaultValue": ""
-        },
-        {
-          "name": "deviceId",
-          "type": "int",
-          "defaultValue": "3"
+          "name": "a301",
+          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+          "defaultValue": "5__3"
         }
       ]
     }

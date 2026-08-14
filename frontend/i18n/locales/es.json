@@ -15,6 +15,9 @@
     "DEPLOY_SUCCESS": "¡Implementación exitosa!",
     "DEPLOY_IN_PROGRESS": "Desplegando al robot...",
     "DEPLOY_ELAPSED": "{{seconds}}s transcurridos",
+    "DEPLOY_ANYWAY": "Implementar de todos modos",
+    "PORT_CONFLICT_TITLE": "Puertos usados más de una vez",
+    "PORT_CONFLICT_MESSAGE": "Estos puertos de hardware son usados por más de un componente:",
     "OK": "Aceptar",
     "DOWNLOAD_FAILED": "Error al descargar el proyecto.",
     "DOWNLOAD_CURRENT_PROJECT": "Descargar Proyecto Actual",
@@ -215,8 +218,10 @@
         "MANAGE_DESC": "Crea, renombra, copia o elimina proyectos, mecanismos y OpModes.",
         "SETTINGS_TITLE": "Configuración",
         "SETTINGS_DESC": "Elige tu idioma, tema de color y qué categorías de la caja de herramientas WPILib se muestran.",
+        "SAMPLES_TITLE": "Ejemplos",
+        "SAMPLES_DESC": "Explora ejemplos de código que puedes copiar en tu proyecto o usar para crear un nuevo proyecto.",
         "HELP_TITLE": "Ayuda",
-        "HELP_DESC": "Encuentra más información sobre la interfaz de bloques, incluyendo este tour y ejemplos de código que puedes explorar o copiar en un nuevo proyecto.",
+        "HELP_DESC": "Encuentra más información sobre la interfaz de bloques, incluyendo este tour.",
         "TABS_TITLE": "Pestañas",
         "TABS_DESC": "Esta fila muestra la pestaña del Robot y las pestañas de Mecanismos y OpModes que hayas creado. Presiona + para agregar una nueva pestaña, u Ocultos para mostrar las pestañas que has ocultado.",
         "WORKSPACE_TITLE": "Área de Trabajo de Bloques",
@@ -224,9 +229,7 @@
         "CODE_PANEL_TITLE": "Código Python Generado",
         "CODE_PANEL_DESC": "El código Python generado a partir de tus bloques aparece aquí. Puedes copiarlo para usarlo en otro lugar.",
         "CODE_PANEL_RESIZE_TITLE": "Redimensionar el Panel de Código",
-        "CODE_PANEL_RESIZE_DESC": "Arrastra este borde hacia la izquierda o derecha para cambiar el tamaño del panel de código.",
-        "CODE_PANEL_COLLAPSE_TITLE": "Colapsar el Panel de Código",
-        "CODE_PANEL_COLLAPSE_DESC": "Haz clic en esta flecha para colapsar el panel de código y tener más espacio para el área de bloques."
+        "CODE_PANEL_RESIZE_DESC": "Arrastra este borde hacia la izquierda o derecha para cambiar el tamaño del panel de código."
     },
     "BLOCKLY": {
         "OF_TYPE": "de tipo",
@@ -260,6 +263,7 @@
         "DISPLAY_DESCRIPTION": "Descripción a Mostrar",
         "PRINT": "imprimir",
         "NO_MECHANISM_CONTENTS": "Sin Contenido de Mecanismo",
+        "NO_ROBOT_CONTENTS": "Sin Contenido de Robot",
         "CALL": "llamar",
         "ROBOT_LOWER_CASE": "robot",
         "CREATE": "crear",
@@ -432,7 +436,8 @@
             "MECHANISM_NOT_IN_HOLDER": "Este bloque solo puede ir en la sección de mecanismos del robot.",
             "COMPONENT_MISSING_COMPONENT_CLASS": "Este bloque representa un componente cuya clase ya no existe.",
             "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "Un PeriodicOpMode debe tener pasos, el método periódico o ambos.",
-            "MECHANISM_NOT_FOUND": "Este bloque se refiere a un mecanismo que ya no existe."
+            "MECHANISM_NOT_FOUND": "Este bloque se refiere a un mecanismo que ya no existe.",
+            "DUPLICATE_PORT": "Este puerto (%1) también es usado por: %2"
         },
         "ERROR":{
             "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind debe ser \"module\", \"class\" o \"instance\"."

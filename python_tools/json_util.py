@@ -15,6 +15,7 @@
 __author__ = "lizlooney@google.com (Liz Looney)"
 
 # Python Standard Library
+import copy
 import inspect
 import json
 import sys
@@ -32,18 +33,18 @@ _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
 ]
 
 _LIST_MODULE_NAMES_INTERNAL = [
-  'blocks_base_classes.block_execution',
-  'blocks_base_classes.decorators',
-  'blocks_base_classes.user_controls',
+  'wpilib_blocks.block_execution',
+  'wpilib_blocks.decorators',
+  'wpilib_blocks.user_controls',
 ]
 
 _LIST_CLASS_NAMES_INTERNAL = [
-  'blocks_base_classes.BlockExecution',
-  'blocks_base_classes.DefaultUserControls',
+  'wpilib_blocks.BlockExecution',
+  'wpilib_blocks.DefaultUserControls',
 ]
 
 _DICT_MODULE_FUNCTION_NAMES_INTERNAL = {
-  'blocks_base_classes': [
+  'wpilib_blocks': [
     'Auto',
     'Group',
     'Name',
@@ -774,18 +775,31 @@ class JsonGenerator:
     if class_name == 'rev.A301':
       class_data[_KEY_IS_COMPONENT] = True
       found_constructor = False
+      # An A301 can be on a CAN bus provided by a MotionCore or on one of the Systemcore's
+      # own CAN buses, so it gets two blocks. They are the same kind of port, which is what
+      # lets a mechanism's A301 be given either one by the robot. The only difference is
+      # where the port starts out: the first MotionCore bus (5, shown as MC00), or the
+      # Systemcore's first CAN bus (0). The device id is only used for the latter, since a
+      # MotionCore detects the device id itself, and it defaults to whatever the constructor
+      # says, which is the device id the A301 has out of the factory.
+      new_constructors = []
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
         if (len(args) == 2 and
             args[0][_KEY_ARGUMENT_NAME] == 'busId' and
             args[1][_KEY_ARGUMENT_NAME] == 'deviceId'):
           found_constructor = True
-          component_args = []
-          # TODO: consider hardcoding a default value for busId.
-          component_args.append(self._createArgData(args[0][_KEY_ARGUMENT_NAME], self._getClassName(args[0][_KEY_ARGUMENT_TYPE]), args[0][_KEY_ARGUMENT_DEFAULT_VALUE]))
-          component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), args[1][_KEY_ARGUMENT_DEFAULT_VALUE]))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
+          default_device_id = args[1][_KEY_ARGUMENT_DEFAULT_VALUE] or '0'
+          for default_bus_id in ('5', '0'):
+            variant_data = copy.deepcopy(constructor_data)
+            variant_data[_KEY_COMPONENT_ARGS] = [self._createArgData(
+                'a301', 'SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID',
+                f'{default_bus_id}__{default_device_id}')]
+            variant_data[_KEY_IS_COMPONENT] = True
+            new_constructors.append(variant_data)
+        else:
+          new_constructors.append(constructor_data)
+      class_data[_KEY_CONSTRUCTORS] = new_constructors
       if not found_constructor:
         print(f'ERROR: failed to find expected constructor for {class_name}',
               file=sys.stderr)

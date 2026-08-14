@@ -15,6 +15,9 @@
   "DEPLOY_SUCCESS": "הפריסה הצליחה!",
   "DEPLOY_IN_PROGRESS": "פורס לרובוט...",
   "DEPLOY_ELAPSED": "{{seconds}} שניות חלפו",
+  "DEPLOY_ANYWAY": "פרוס בכל זאת",
+  "PORT_CONFLICT_TITLE": "פורטים בשימוש יותר מפעם אחת",
+  "PORT_CONFLICT_MESSAGE": "פורטי החומרה האלה נמצאים בשימוש של יותר מרכיב אחד:",
   "OK": "אישור",
   "DOWNLOAD_FAILED": "הורדת הפרויקט נכשלה.",
   "DOWNLOAD_CURRENT_PROJECT": "הורד פרויקט נוכחי",
@@ -215,8 +218,10 @@
     "MANAGE_DESC": "צור, שנה שם, העתק או מחק פרויקטים, מנגנונים ו-OpModes.",
     "SETTINGS_TITLE": "הגדרות",
     "SETTINGS_DESC": "בחר את השפה, ערכת הצבעים ואילו קטגוריות של ארגז הכלים WPILib יוצגו.",
+    "SAMPLES_TITLE": "דוגמאות",
+    "SAMPLES_DESC": "עיין בדוגמאות קוד שאותן ניתן להעתיק לפרויקט שלך או להשתמש בהן ליצירת פרויקט חדש.",
     "HELP_TITLE": "עזרה",
-    "HELP_DESC": "מצא מידע נוסף על ממשק הבלוקים, כולל סיור זה ודוגמאות קוד שבהן ניתן לעיין או להעתיק לפרויקט חדש.",
+    "HELP_DESC": "מצא מידע נוסף על ממשק הבלוקים, כולל סיור זה.",
     "TABS_TITLE": "לשוניות",
     "TABS_DESC": "שורה זו מציגה את לשונית הרובוט ואת לשוניות המנגנונים וה-OpMode שיצרת. לחץ + כדי להוסיף לשונית חדשה, או נסתרים כדי להציג לשוניות שהסתרת.",
     "WORKSPACE_TITLE": "אזור עבודה של בלוקים",
@@ -224,9 +229,7 @@
     "CODE_PANEL_TITLE": "קוד Python שנוצר",
     "CODE_PANEL_DESC": "קוד ה-Python שנוצר מהבלוקים שלך מופיע כאן. תוכל להעתיק אותו לשימוש במקומות אחרים.",
     "CODE_PANEL_RESIZE_TITLE": "שינוי גודל לוח הקוד",
-    "CODE_PANEL_RESIZE_DESC": "גרור את הקצה הזה שמאלה או ימינה כדי לשנות את גודל לוח הקוד.",
-    "CODE_PANEL_COLLAPSE_TITLE": "כיווץ לוח הקוד",
-    "CODE_PANEL_COLLAPSE_DESC": "לחץ על החץ הזה כדי לכווץ את לוח הקוד ולפנות לך יותר מקום לאזור הבלוקים."
+    "CODE_PANEL_RESIZE_DESC": "גרור את הקצה הזה שמאלה או ימינה כדי לשנות את גודל לוח הקוד."
   },
   "BLOCKLY": {
     "OF_TYPE": "מטיפוס",
@@ -260,6 +263,7 @@
     "DISPLAY_DESCRIPTION": "תיאור לתצוגה",
     "PRINT": "הדפס",
     "NO_MECHANISM_CONTENTS": "אין תוכן במנגנון",
+    "NO_ROBOT_CONTENTS": "אין תוכן ברובוט",
     "CALL": "קרא",
     "ROBOT_LOWER_CASE": "רובוט",
     "CREATE": "צור",
@@ -431,7 +435,8 @@
       "MECHANISM_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לחלק המנגנונים של הרובוט.",
       "COMPONENT_MISSING_COMPONENT_CLASS": "בלוק זה מייצג רכיב שהמחלקה שלו כבר לא קיימת.",
       "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "ל-PeriodicOpMode צריך להיות שלבים, את השיטה המחזורית, או את שניהם.",
-      "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים."
+      "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים.",
+      "DUPLICATE_PORT": "פורט זה (%1) נמצא בשימוש גם על ידי: %2"
     },
     "ERROR": {
       "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind חייב להיות \"module\", \"class\" או \"instance\"."

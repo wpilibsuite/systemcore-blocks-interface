@@ -46,16 +46,33 @@ export function getHardwareCategory(
           toolboxItems.ExpandedState.EXPANDED);
     case storageModule.ModuleType.MECHANISM:
       return getComponentsCategory(editor, moduleType);
-    case storageModule.ModuleType.OPMODE:
+    case storageModule.ModuleType.OPMODE: {
+      const robotCategoryContents: toolboxItems.ContentsType[] = [];
+      const mechanismsCategory = getRobotMechanismsCategory(editor);
+      if (mechanismsCategory.contents && mechanismsCategory.contents.length > 0) {
+        robotCategoryContents.push(mechanismsCategory);
+      }
+      const componentsCategory = getRobotComponentsCategory(editor);
+      if (componentsCategory.contents && componentsCategory.contents.length > 0) {
+        robotCategoryContents.push(componentsCategory);
+      }
+      const methodsCategory = getRobotMethodsCategory(editor);
+      if (methodsCategory.contents && methodsCategory.contents.length > 0) {
+        robotCategoryContents.push(methodsCategory);
+      }
+      // Event handler categories are dynamic, so we can't create the category and 
+      // then check the contents like we do above for the Components and Methods categories.
+      if (editor.getEventsFromRobot().length > 0) {
+        robotCategoryContents.push(getRobotEventHandlersCategory(editor));
+      }
+      if (robotCategoryContents.length === 0) {
+        robotCategoryContents.push(new toolboxItems.Label(Blockly.Msg['NO_ROBOT_CONTENTS']));
+      }
       return new toolboxItems.Category(
           Blockly.Msg['MRC_CATEGORY_ROBOT'],
-          [
-            getRobotMechanismsCategory(editor),
-            getRobotComponentsCategory(editor),
-            getRobotMethodsCategory(editor),
-            getRobotEventHandlersCategory(editor),
-          ],
+          robotCategoryContents,
           toolboxItems.ExpandedState.EXPANDED);
+    }
   }
   throw new Error('moduleType has unexpected value: ' + moduleType);
 }
@@ -93,21 +110,19 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
     // Add the blocks for this mechanism's methods and events.
     const mechanism = editor.getMechanism(mechanismInRobot);
     if (mechanism) {
-      const mechanismCategories: toolboxItems.Category[] = [];
+      const mechanismCategories: toolboxItems.ContentsType[] = [];
 
       // Get the list of methods from the mechanism and add the blocks for calling the methods.
       const mechanismMethodBlocks: toolboxItems.Item[] = [];
       const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
       addInstanceMechanismBlocks(mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks);
-      if (mechanismMethodBlocks.length === 0) {
-        const label : toolboxItems.Label = new toolboxItems.Label(Blockly.Msg['NO_MECHANISM_CONTENTS']);
-        mechanismMethodBlocks.push(label);
+      if (mechanismMethodBlocks.length > 0) {
+        mechanismCategories.push({
+          kind: 'category',
+          name: Blockly.Msg['MRC_CATEGORY_METHODS'],
+          contents: mechanismMethodBlocks,
+        });
       }
-      mechanismCategories.push({
-        kind: 'category',
-        name: Blockly.Msg['MRC_CATEGORY_METHODS'],
-        contents: mechanismMethodBlocks,
-      });
 
       // Get the public components from the mechanism and add the blocks for calling the
       // component functions.
@@ -129,7 +144,13 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
         });
       }
 
-      mechanismCategories.push(getMechanismEventHandlersCategory(editor, mechanismInRobot));
+      if (editor.getEventsFromMechanism(mechanism).length > 0) {
+        mechanismCategories.push(getMechanismEventHandlersCategory(editor, mechanismInRobot));
+      }
+
+      if (mechanismCategories.length === 0) {
+        mechanismCategories.push(new toolboxItems.Label(Blockly.Msg['NO_MECHANISM_CONTENTS']));
+      }
 
       contents.push({
         kind: 'category',

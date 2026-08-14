@@ -22,6 +22,7 @@
 
 import * as Blockly from 'blockly/core';
 import { createFieldDropdown } from './FieldDropdown';
+import { createFieldNonEditableText } from './FieldNonEditableText';
 
 export function createFieldNumberDropdown(min: number, max: number): Blockly.Field {
   const items: string[] = [];
@@ -29,4 +30,16 @@ export function createFieldNumberDropdown(min: number, max: number): Blockly.Fie
     items.push(i.toString());
   }
   return createFieldDropdown(items);
+}
+
+/**
+ * Creates a field with a dropdown whose displayed labels differ from the values that are
+ * stored on the block. Each option is a [label, value] pair.
+ */
+export function createFieldLabeledDropdown(options: Blockly.MenuOption[]): Blockly.Field {
+  // If there is only one option, don't create a dropdown.
+  if (options.length === 1) {
+    return createFieldNonEditableText(options[0][1] as string);
+  }
+  return new Blockly.FieldDropdown(options);
 }
