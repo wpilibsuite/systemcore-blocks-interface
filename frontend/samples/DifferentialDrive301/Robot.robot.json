@@ -45,36 +45,20 @@
                   "mechanismId": "WtZyrOmFRU]/(dV_t^$o",
                   "parameters": [
                     {
-                      "name": "busId",
-                      "type": "int",
-                      "defaultValue": "",
+                      "name": "a301",
+                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+                      "defaultValue": "5__3",
                       "componentId": "WhvJZU6~HvvJd4D+/Ndy",
                       "componentName": "left_motor",
                       "componentArgsIndex": 0
                     },
                     {
-                      "name": "deviceId",
-                      "type": "int",
-                      "defaultValue": "3",
-                      "componentId": "WhvJZU6~HvvJd4D+/Ndy",
-                      "componentName": "left_motor",
-                      "componentArgsIndex": 1
-                    },
-                    {
-                      "name": "busId",
-                      "type": "int",
-                      "defaultValue": "",
+                      "name": "a301",
+                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+                      "defaultValue": "5__3",
                       "componentId": "SYhz+hU`y},it/FInyrJ",
                       "componentName": "right_motor",
                       "componentArgsIndex": 0
-                    },
-                    {
-                      "name": "deviceId",
-                      "type": "int",
-                      "defaultValue": "3",
-                      "componentId": "SYhz+hU`y},it/FInyrJ",
-                      "componentName": "right_motor",
-                      "componentArgsIndex": 1
                     }
                   ],
                   "importModule": "drive_train301"
@@ -86,37 +70,35 @@
                 "inputs": {
                   "ARG0": {
                     "block": {
-                      "type": "math_number",
-                      "id": "r|hgs:_52`3Py0_$b9(D",
+                      "type": "mrc_port",
+                      "extraState": {
+                        "portTypes": [
+                          "SYSTEMCORE_CAN_PORT",
+                          "CAN_DEVICE_ID"
+                        ]
+                      },
                       "fields": {
-                        "NUM": 5
+                        "TYPE_0": "can",
+                        "PORT_NUM_0": "5",
+                        "TYPE_1": "device",
+                        "PORT_NUM_1": "3"
                       }
                     }
                   },
                   "ARG1": {
                     "block": {
-                      "type": "math_number",
-                      "id": "F8U`^e.6Ltq-T{+*iR~#",
+                      "type": "mrc_port",
+                      "extraState": {
+                        "portTypes": [
+                          "SYSTEMCORE_CAN_PORT",
+                          "CAN_DEVICE_ID"
+                        ]
+                      },
                       "fields": {
-                        "NUM": 3
-                      }
-                    }
-                  },
-                  "ARG2": {
-                    "block": {
-                      "type": "math_number",
-                      "id": "IT_(fH/EJZDa3JhHaQ.!",
-                      "fields": {
-                        "NUM": 6
-                      }
-                    }
-                  },
-                  "ARG3": {
-                    "block": {
-                      "type": "math_number",
-                      "id": "8oE6/Wx@[NtUnVj/uV!r",
-                      "fields": {
-                        "NUM": 3
+                        "TYPE_0": "can",
+                        "PORT_NUM_0": "6",
+                        "TYPE_1": "device",
+                        "PORT_NUM_1": "3"
                       }
                     }
                   }

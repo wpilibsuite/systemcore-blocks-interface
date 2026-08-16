@@ -22,6 +22,7 @@ import * as Antd from 'antd';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
 import * as createPythonFiles from '../storage/create_python_files';
+import * as portConflicts from '../blocks/utils/port_conflicts';
 import * as serverSideStorage from '../storage/server_side_storage';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -75,6 +76,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
   const [deployStatus, setDeployStatus] = React.useState<'deploying' | 'success' | 'error'>('deploying');
   const [deployError, setDeployError] = React.useState<string>('');
   const deployIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+  const [modal, modalContextHolder] = Antd.Modal.useModal();
 
   /** Opens the rename modal and loads existing project names. */
   const openRenameModal = async (): Promise<void> => {
@@ -109,6 +111,34 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     setRenameModalOpen(false);
   };
 
+  /**
+   * Asks the user whether to deploy anyway when more than one component or mechanism is
+   * using the same hardware port. Returns true if the deploy should continue.
+   */
+  const confirmPortConflicts = (conflicts: portConflicts.PortConflict[]): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      modal.confirm({
+        title: t('PORT_CONFLICT_TITLE'),
+        content: (
+          <div>
+            <div>{t('PORT_CONFLICT_MESSAGE')}</div>
+            <ul>
+              {conflicts.map((conflict) => (
+                <li key={conflict.portLabel}>
+                  <b>{conflict.portLabel}</b>: {conflict.owners.join(', ')}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ),
+        okText: t('DEPLOY_ANYWAY'),
+        cancelText: t('CANCEL'),
+        onOk: () => resolve(true),
+        onCancel: () => resolve(false),
+      });
+    });
+  };
+
   /** Handles the deploy action to generate and send Python files to the robot. */
   const handleDeploy = async (): Promise<void> => {
     if (!props.project) {
@@ -117,6 +147,29 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     }
     if (!props.storage) {
       return;
+    }
+
+    // Save and check for duplicate ports before showing the deploy progress modal, so that
+    // the user can cancel the deploy without ever seeing it.
+    try {
+      await props.saveCurrentTab();
+    } catch (error) {
+      console.error('Failed to save before deploy:', error);
+      props.setAlertErrorMessage(t('DEPLOY_FAILED'));
+      return;
+    }
+
+    try {
+      const conflicts = await portConflicts.findRobotPortConflicts(props.project, props.storage);
+      if (conflicts.length > 0) {
+        const proceed = await confirmPortConflicts(conflicts);
+        if (!proceed) {
+          return;
+        }
+      }
+    } catch (error) {
+      // Not being able to check the ports shouldn't stop the user from deploying.
+      console.error('Failed to check for duplicate ports:', error);
     }
 
     setDeployElapsed(0);
@@ -136,8 +189,6 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     };
 
     try {
-      await props.saveCurrentTab();
-
       const blobUrl = await createPythonFiles.producePythonProjectBlob(props.project, props.storage);
 
       const serverAvailable = await serverSideStorage.isServerAvailable();
@@ -327,6 +378,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
           )}
         </div>
       </Antd.Modal>
+      {modalContextHolder}
     </Antd.Flex>
   );
 }

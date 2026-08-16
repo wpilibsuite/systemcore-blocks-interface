@@ -373,14 +373,39 @@ export function getAllPossibleComponents(
   // Iterate through all the component classes and add definition blocks.
   componentClasses.forEach(classData => {
     const componentName = 'my_' + storageNames.pascalCaseToSnakeCase(simpleClassName(classData.className));
+
+    // Only a component in the robot has inputs for its args, so outside the robot two
+    // constructors that take the same kinds of args produce blocks that look exactly alike.
+    // Show only the first of those, since there would be no way to tell them apart.  This is for
+    // inside the mechanism, where the component blocks don't have inputs for their args.  In the 
+    // robot, show all the constructors, since they have different inputs for their args and can be 
+    // told apart.
+    const argTypesAlreadyAdded: string[] = [];
     classData.constructors.forEach(constructorData => {
        if (constructorData.isComponent) {
+         if (moduleType !== storageModule.ModuleType.ROBOT) {
+           const argTypes = getComponentArgTypes(constructorData);
+           if (argTypesAlreadyAdded.includes(argTypes)) {
+             return;
+           }
+           argTypesAlreadyAdded.push(argTypes);
+         }
          contents.push(createComponentBlock(componentName, classData, constructorData, moduleType, showSimpleClassNames));
        }
     });
   });
 
   return contents;
+}
+
+/**
+ * Returns the kinds of args the given constructor takes, as a single string, so that two
+ * constructors that differ only in the default values of their args can be recognized.
+ */
+function getComponentArgTypes(constructorData: FunctionData): string {
+  return (constructorData.componentArgs ?? [])
+      .map(argData => argData.type)
+      .join(', ');
 }
 
 export function getMechanismInitArgName(componentName: string): string {

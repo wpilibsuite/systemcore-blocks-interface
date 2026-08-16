@@ -2,14 +2,14 @@
     "aliases": {},
     "classes": [
         {
-            "className": "blocks_base_classes.Mechanism",
+            "className": "wpilib_blocks.Mechanism",
             "classVariables": [],
             "constructors": [
                 {
                     "args": [],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "declaringClassName": "wpilib_blocks.Mechanism",
                     "functionName": "__init__",
-                    "returnType": "blocks_base_classes.Mechanism",
+                    "returnType": "wpilib_blocks.Mechanism",
                     "tooltip": ""
                 }
             ],
@@ -20,7 +20,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
+                            "type": "wpilib_blocks.Mechanism"
                         },
                         {
                             "defaultValue": "",
@@ -33,7 +33,7 @@
                             "type": "tuple"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "declaringClassName": "wpilib_blocks.Mechanism",
                     "functionName": "fire_event",
                     "returnType": "None",
                     "tooltip": ""
@@ -43,10 +43,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
+                            "type": "wpilib_blocks.Mechanism"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "declaringClassName": "wpilib_blocks.Mechanism",
                     "functionName": "opmode_end",
                     "returnType": "None",
                     "tooltip": ""
@@ -56,10 +56,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
+                            "type": "wpilib_blocks.Mechanism"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "declaringClassName": "wpilib_blocks.Mechanism",
                     "functionName": "opmode_periodic",
                     "returnType": "None",
                     "tooltip": ""
@@ -69,10 +69,10 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
+                            "type": "wpilib_blocks.Mechanism"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "declaringClassName": "wpilib_blocks.Mechanism",
                     "functionName": "opmode_start",
                     "returnType": "None",
                     "tooltip": ""
@@ -82,7 +82,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
+                            "type": "wpilib_blocks.Mechanism"
                         },
                         {
                             "defaultValue": "",
@@ -95,7 +95,7 @@
                             "type": "typing.Callable"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "declaringClassName": "wpilib_blocks.Mechanism",
                     "functionName": "register_event_handler",
                     "returnType": "None",
                     "tooltip": ""
@@ -105,7 +105,7 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "blocks_base_classes.Mechanism"
+                            "type": "wpilib_blocks.Mechanism"
                         },
                         {
                             "defaultValue": "",
@@ -118,7 +118,7 @@
                             "type": "typing.Callable"
                         }
                     ],
-                    "declaringClassName": "blocks_base_classes.Mechanism",
+                    "declaringClassName": "wpilib_blocks.Mechanism",
                     "functionName": "unregister_event_handler",
                     "returnType": "None",
                     "tooltip": ""
@@ -126,7 +126,7 @@
             ],
             "instanceVariables": [],
             "isComponent": false,
-            "moduleName": "blocks_base_classes",
+            "moduleName": "wpilib_blocks",
             "staticMethods": []
         }
     ],
@@ -134,13 +134,13 @@
         {
             "enums": [],
             "functions": [],
-            "moduleName": "blocks_base_classes",
+            "moduleName": "wpilib_blocks",
             "moduleVariables": []
         },
         {
             "enums": [],
             "functions": [],
-            "moduleName": "blocks_base_classes.mechanism",
+            "moduleName": "wpilib_blocks.mechanism",
             "moduleVariables": []
         }
     ],

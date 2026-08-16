@@ -2,6 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/versions.sh"
 VENV_DIR="$SCRIPT_DIR/overlay/opt/blocks/venv"
 WHEELS_DIR="$SCRIPT_DIR/wheels_venv"
 PYTHON_VER="3.13"
@@ -32,7 +33,7 @@ pip3 download \
   --implementation cp \
   --abi cp313 \
   -d "$WHEELS_DIR" \
-  robotpy-installer==2027.0.0a7
+  robotpy-installer==$ROBOTPY_INSTALLER_VERSION
 
 echo "Unpacking wheels..."
 for whl in "$WHEELS_DIR"/*.whl; do

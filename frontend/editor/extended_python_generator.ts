@@ -29,7 +29,7 @@ import { OPMODE_TYPE_AUTO, OPMODE_TYPE_TELEOP, OPMODE_TYPE_UTILITY } from '../bl
 import { pascalCaseToSnakeCase } from '../storage/names';
 
 import {
-    MODULE_NAME_BLOCKS_BASE_CLASSES,
+    MODULE_NAME_WPILIB_BLOCKS,
     TELEOP_DECORATOR_CLASS,
     AUTO_DECORATOR_CLASS,
     UTILITY_DECORATOR_CLASS,
@@ -251,7 +251,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         }
         initStatements += this.INDENT + 'self.publishOpModes()\n';
         // TODO: These next two lines should be removed once user_controls are implemented in RobotPy.
-        this.fromModuleImportName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'DefaultUserControls');
+        this.fromModuleImportName(MODULE_NAME_WPILIB_BLOCKS, 'DefaultUserControls');
         initStatements += this.INDENT + 'self.user_controls = DefaultUserControls()\n';
         break;
       case storageModule.ModuleType.MECHANISM:
@@ -283,7 +283,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     this.context.setModule(module);
     if (opt_generateErrorHandling) {
       this.generateErrorHandling = true;
-      this.fromModuleImportName(MODULE_NAME_BLOCKS_BASE_CLASSES, 'BlockExecution');
+      this.fromModuleImportName(MODULE_NAME_WPILIB_BLOCKS, 'BlockExecution');
     }
     this.init(workspace);
 

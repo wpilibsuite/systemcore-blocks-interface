@@ -11,6 +11,8 @@
 - [ ] Breaking change (fix or feature that causes existing functionality to change)
 - [ ] Documentation update
 - [ ] Code style/formatting updates
+- [ ] Refactoring / Renaming
+- [ ] Other <!-- Make sure that it isn't one of the above -->
 
 ## How Has This Been Tested?
 <!-- Describe the tests you ran to verify your changes. Include steps to reproduce. -->

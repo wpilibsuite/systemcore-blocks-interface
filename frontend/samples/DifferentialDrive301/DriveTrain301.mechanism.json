@@ -44,14 +44,9 @@
                   "componentId": "WhvJZU6~HvvJd4D+/Ndy",
                   "params": [
                     {
-                      "name": "busId",
-                      "type": "int",
-                      "defaultValue": ""
-                    },
-                    {
-                      "name": "deviceId",
-                      "type": "int",
-                      "defaultValue": "3"
+                      "name": "a301",
+                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+                      "defaultValue": "5__3"
                     }
                   ],
                   "importModule": "rev",
@@ -70,14 +65,9 @@
                       "componentId": "SYhz+hU`y},it/FInyrJ",
                       "params": [
                         {
-                          "name": "busId",
-                          "type": "int",
-                          "defaultValue": ""
-                        },
-                        {
-                          "name": "deviceId",
-                          "type": "int",
-                          "defaultValue": "3"
+                          "name": "a301",
+                          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+                          "defaultValue": "5__3"
                         }
                       ],
                       "importModule": "rev",
@@ -358,14 +348,9 @@
       "className": "rev.A301",
       "args": [
         {
-          "name": "busId",
-          "type": "int",
-          "defaultValue": ""
-        },
-        {
-          "name": "deviceId",
-          "type": "int",
-          "defaultValue": "3"
+          "name": "a301",
+          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+          "defaultValue": "5__3"
         }
       ]
     },
@@ -375,14 +360,9 @@
       "className": "rev.A301",
       "args": [
         {
-          "name": "busId",
-          "type": "int",
-          "defaultValue": ""
-        },
-        {
-          "name": "deviceId",
-          "type": "int",
-          "defaultValue": "3"
+          "name": "a301",
+          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
+          "defaultValue": "5__3"
         }
       ]
     }
