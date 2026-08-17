@@ -128,142 +128,6 @@
             "isComponent": false,
             "moduleName": "wpilib_blocks",
             "staticMethods": []
-        },
-        {
-            "className": "wpilib_blocks.OpMode",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [],
-                    "declaringClassName": "wpilib_blocks.OpMode",
-                    "functionName": "__init__",
-                    "returnType": "wpilib_blocks.OpMode",
-                    "tooltip": ""
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PeriodicOpMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "period",
-                            "type": "wpimath.units.seconds"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PeriodicOpMode",
-                    "functionName": "addPeriodic",
-                    "returnType": "None",
-                    "tooltip": "Add a callback to run at a specific period.\n\nThis is scheduled on the same Notifier as Periodic(), so Periodic() and\nthe callback run synchronously. Interactions between them are thread-safe.\n\n:param callback: The callback to run.\n:param period:   The period at which to run the callback."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PeriodicOpMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "period",
-                            "type": "wpimath.units.seconds"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "offset",
-                            "type": "wpimath.units.seconds"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PeriodicOpMode",
-                    "functionName": "addPeriodic",
-                    "returnType": "None",
-                    "tooltip": "Add a callback to run at a specific period with a starting time offset.\n\nThis is scheduled on the same Notifier as Periodic(), so Periodic() and\nthe callback run synchronously. Interactions between them are thread-safe.\n\n:param callback: The callback to run.\n:param period:   The period at which to run the callback.\n:param offset:   The offset from the common starting time. This is useful\n                 for scheduling a callback in a different timeslot relative\n                 to TimedRobot."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PeriodicOpMode"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PeriodicOpMode",
-                    "functionName": "disabledPeriodic",
-                    "returnType": "None",
-                    "tooltip": "Called periodically while the opmode is selected on the DS (robot is\ndisabled)."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PeriodicOpMode"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PeriodicOpMode",
-                    "functionName": "end",
-                    "returnType": "None",
-                    "tooltip": "Called a single time when the robot transitions from enabled to disabled,\nor just before Close() is called if a different opmode is selected while\nthe robot is enabled."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PeriodicOpMode"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PeriodicOpMode",
-                    "functionName": "getCallbacks",
-                    "returnType": "list[wpilib.PeriodicPriorityQueue.Callback]",
-                    "tooltip": "Returns the set of additional periodic callbacks registered via\nAddPeriodic(). These are executed by the robot framework while the opmode\nis enabled, in addition to the primary Periodic() callback.\n\n:returns: The vector of additional periodic callbacks."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PeriodicOpMode"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PeriodicOpMode",
-                    "functionName": "periodic",
-                    "returnType": "None",
-                    "tooltip": "Called periodically while the robot is enabled. The framework calls this\nat OpModeRobot's configured loop period."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PeriodicOpMode"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PeriodicOpMode",
-                    "functionName": "start",
-                    "returnType": "None",
-                    "tooltip": "Called a single time when the robot transitions from disabled to enabled.\nThis is called prior to Periodic() being called."
-                }
-            ],
-            "instanceVariables": [],
-            "isComponent": false,
-            "moduleName": "wpilib_blocks",
-            "staticMethods": []
         }
     ],
     "modules": [
@@ -276,19 +140,15 @@
         {
             "enums": [],
             "functions": [],
-            "moduleName": "wpilib_blocks.mechanism",
+            "moduleName": "wpilib_blocks.driver_station_display",
             "moduleVariables": []
         },
         {
             "enums": [],
             "functions": [],
-            "moduleName": "wpilib_blocks.opmode",
+            "moduleName": "wpilib_blocks.mechanism",
             "moduleVariables": []
         }
     ],
-    "subclasses": {
-        "wpilib.PeriodicOpMode": [
-            "wpilib_blocks.OpMode"
-        ]
-    }
+    "subclasses": {}
 }

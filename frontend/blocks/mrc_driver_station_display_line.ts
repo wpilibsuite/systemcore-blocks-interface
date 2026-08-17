@@ -22,9 +22,11 @@
  */
 
 import * as Blockly from 'blockly/core';
-import { Order, PythonGenerator } from 'blockly/python';
+import { Order } from 'blockly/python';
 import { MRC_STYLE_DRIVER_STATION } from '../themes/styles';
 import { buildColorPrefixedLineArg } from './mrc_driver_station_display';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { CLASS_NAME_DRIVER_STATION_DISPLAY } from './utils/python';
 
 export const BLOCK_NAME = 'mrc_driver_station_display_line';
 
@@ -48,12 +50,13 @@ export const setup = function() {
 
 export const pythonFromBlock = function(
     block: Blockly.Block,
-    generator: PythonGenerator,
+    generator: ExtendedPythonGenerator,
 ) {
+  const displayClassName = generator.importModuleDotClass(CLASS_NAME_DRIVER_STATION_DISPLAY);
   const color = generator.valueToCode(block, 'COLOR', Order.MEMBER) || null;
   const line = generator.valueToCode(block, 'LINE', Order.NONE) || '\'\'';
   const lineArg = buildColorPrefixedLineArg(generator, color, line);
-  const code = 'self.display.addLine(\n' +
+  const code = displayClassName + '.addLine(\n' +
       generator.INDENT + lineArg + ')\n';
   return code;
 };
