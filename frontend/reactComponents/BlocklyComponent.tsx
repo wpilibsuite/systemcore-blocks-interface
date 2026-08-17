@@ -26,6 +26,7 @@ import * as He from 'blockly/msg/he';
 import { customTokens } from '../blocks/tokens';
 
 import { themes } from '../themes/mrc_themes';
+import '../themes/compact_zelos'; // Registers the compact_zelos renderer.
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
 import { getGridColour, getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
 import { DEFAULT_ZOOM } from './UserSettingsProvider';

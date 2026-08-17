@@ -202,6 +202,8 @@
     "GERAS_DESCRIPTION": "המראה המקורי של Blockly, עם בלוקים מרובעים וקלטים בשורה.",
     "THRASOS": "Thrasos",
     "THRASOS_DESCRIPTION": "גרסה מודרנית של המראה הקלאסי של Blockly.",
+    "COMPACT_ZELOS": "Zelos קומפקטי",
+    "COMPACT_ZELOS_DESCRIPTION": "הבלוקים המעוגלים והצבעוניים של Zelos, בגודל קומפקטי כמו המראה הקלאסי של Blockly.",
     "SELECTION": "בחירת סגנון בלוקים",
     "APPLY": "החל סגנון",
     "CHOOSE_DESCRIPTION": "בחר כיצד הבלוקים מצוירים באזור העבודה. התצוגה המקדימה למטה מתעדכנת בהתאם לבחירתך."
