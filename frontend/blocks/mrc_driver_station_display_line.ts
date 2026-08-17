@@ -24,7 +24,7 @@
 import * as Blockly from 'blockly/core';
 import { Order, PythonGenerator } from 'blockly/python';
 import { MRC_STYLE_DRIVER_STATION } from '../themes/styles';
-import { buildColorPrefixedLineArg, commentOutCode } from './mrc_driver_station_display';
+import { buildColorPrefixedLineArg } from './mrc_driver_station_display';
 
 export const BLOCK_NAME = 'mrc_driver_station_display_line';
 
@@ -55,5 +55,5 @@ export const pythonFromBlock = function(
   const lineArg = buildColorPrefixedLineArg(generator, color, line);
   const code = 'self.display.addLine(\n' +
       generator.INDENT + lineArg + ')\n';
-  return commentOutCode(code);
+  return code;
 };

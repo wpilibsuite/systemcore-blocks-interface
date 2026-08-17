@@ -55,7 +55,7 @@ export const MECHANISM_METHOD_NAMES_OVERRIDEABLE: string[] = [
   'opmodeStart',
 ];
 
-export const CLASS_NAME_OPMODE = 'wpilib.PeriodicOpMode';
+export const CLASS_NAME_OPMODE = MODULE_NAME_WPILIB_BLOCKS + '.OpMode';
 export const OPMODE_METHOD_NAMES_OVERRIDEABLE: string[] = [
   'disabledPeriodic',
   'end',

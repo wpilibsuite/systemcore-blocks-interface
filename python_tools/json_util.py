@@ -41,6 +41,7 @@ _LIST_MODULE_NAMES_INTERNAL = [
 _LIST_CLASS_NAMES_INTERNAL = [
   'wpilib_blocks.BlockExecution',
   'wpilib_blocks.DefaultUserControls',
+  'wpilib_blocks.Display',
 ]
 
 _DICT_MODULE_FUNCTION_NAMES_INTERNAL = {

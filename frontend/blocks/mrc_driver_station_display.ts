@@ -64,33 +64,6 @@ export function buildColorPrefixedLineArg(
       : line;
 }
 
-/**
- * Comments out every line of the given code, because self.display doesn't
- * exist on the backend yet.
- */
-export function commentOutCode(code: string): string {
-  return code
-      .split('\n')
-      .map(line => line.length ? '# ' + line : line)
-      .join('\n');
-}
-
-/**
- * Generates the python code that calls self.display.addData. self.display.addData
- * resets the ANSI color code on its own, so we don't need to.
- */
-export function generateAddDataCode(
-    generator: PythonGenerator,
-    caption: string,
-    color: string | null,
-    line: string): string {
-  const lineArg = buildColorPrefixedLineArg(generator, color, line);
-  const code = 'self.display.addData(\n' +
-      generator.INDENT + caption + ',\n' +
-      generator.INDENT + lineArg + ')\n';
-  return commentOutCode(code);
-}
-
 export const pythonFromBlock = function(
     block: Blockly.Block,
     generator: PythonGenerator,
@@ -98,5 +71,9 @@ export const pythonFromBlock = function(
   const caption = generator.valueToCode(block, 'CAPTION', Order.NONE) || '\'\'';
   const color = generator.valueToCode(block, 'COLOR', Order.MEMBER) || null;
   const line = generator.valueToCode(block, 'LINE', Order.NONE) || '\'\'';
-  return generateAddDataCode(generator, caption, color, line);
+  const lineArg = buildColorPrefixedLineArg(generator, color, line);
+  const code = 'self.display.addData(\n' +
+      generator.INDENT + caption + ',\n' +
+      generator.INDENT + lineArg + ')\n';
+  return code;
 };
