@@ -23,7 +23,7 @@ export function getDriverStationCategory(editor: Editor): toolboxItems.Category 
               toolboxItems.ExpandedState.EXPANDED);
 }
 
-function getDriverStationDisplayCategory(_editor: Editor): toolboxItems.Category {
+export function getDriverStationDisplayCategory(_editor: Editor): toolboxItems.Category {
     return new toolboxItems.Category(
         Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY'],
         [
