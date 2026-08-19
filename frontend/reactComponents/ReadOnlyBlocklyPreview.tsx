@@ -27,7 +27,6 @@ import 'blockly/blocks';
 import * as storageModuleContent from '../storage/module_content';
 import * as workspaces from '../blocks/utils/workspaces';
 import { themes } from '../themes/mrc_themes';
-import '../themes/compact_zelos'; // Registers the compact_zelos renderer.
 import { getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
 import { DEFAULT_ZOOM } from './UserSettingsProvider';
 
