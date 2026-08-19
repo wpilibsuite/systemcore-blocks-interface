@@ -26,7 +26,7 @@ import { BuildOutlined } from '@ant-design/icons';
 
 import ReadOnlyBlocklyPreview from './ReadOnlyBlocklyPreview';
 import { SAMPLE_PREVIEW_MODULE_CONTENT_TEXT } from './PreviewSampleContent';
-import { COMPACT_ZELOS_RENDERER_NAME } from '../themes/compact_zelos';
+import { FIRST_BLOCKS_STYLE_RENDERER_NAME } from '../themes/first_blocks_style';
 
 interface RendererOption {
     key: string;
@@ -69,9 +69,9 @@ const RendererModal: React.FC<RendererModalProps> = ({
             description: t('RENDERER_MODAL.THRASOS_DESCRIPTION'),
         },
         {
-            key: COMPACT_ZELOS_RENDERER_NAME,
-            name: t('RENDERER_MODAL.COMPACT_ZELOS'),
-            description: t('RENDERER_MODAL.COMPACT_ZELOS_DESCRIPTION'),
+            key: FIRST_BLOCKS_STYLE_RENDERER_NAME,
+            name: t('RENDERER_MODAL.FIRST_BLOCKS_STYLE'),
+            description: t('RENDERER_MODAL.FIRST_BLOCKS_STYLE_DESCRIPTION'),
         },
     ];
 

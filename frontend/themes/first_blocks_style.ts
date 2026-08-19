@@ -46,13 +46,14 @@
  * always return true there, squaring off the right side, but Zelos
  * overrides both to return false for ordinary blocks so that all four
  * corners are rounded (part of its "pill" look). Left unchanged, that
- * makes the right side of a compact_zelos block curve too, which is what
- * looked wrong compared to Thrasos. Subclassing Zelos's TopRow/BottomRow
- * to force hasRightSquareCorner() back to true - and wiring them in via a
- * RenderInfo subclass, since Zelos's RenderInfo constructs its rows
- * directly rather than through an overridable factory method - restores
- * Thrasos's "round left, square right" shape while keeping every other
- * Zelos-specific shape (hex booleans, pill fields, notches, tabs) intact.
+ * makes the right side of a first_blocks_style block curve too, which is
+ * what looked wrong compared to Thrasos. Subclassing Zelos's
+ * TopRow/BottomRow to force hasRightSquareCorner() back to true - and
+ * wiring them in via a RenderInfo subclass, since Zelos's RenderInfo
+ * constructs its rows directly rather than through an overridable factory
+ * method - restores Thrasos's "round left, square right" shape while
+ * keeping every other Zelos-specific shape (hex booleans, pill fields,
+ * notches, tabs) intact.
  *
  * Field colouring is also Zelos-specific in a way that reads poorly once
  * fields are small and compact: Zelos always renders field text as solid
@@ -88,12 +89,12 @@
 
 import * as Blockly from 'blockly/core';
 
-export const COMPACT_ZELOS_RENDERER_NAME = 'compact_zelos';
+export const FIRST_BLOCKS_STYLE_RENDERER_NAME = 'first_blocks_style';
 
 /** Grid unit (in px) used to size Zelos blocks. Zelos's default is 4. */
 const COMPACT_GRID_UNIT = 2;
 
-class CompactZelosConstantProvider extends Blockly.zelos.ConstantProvider {
+class FirstBlocksStyleConstantProvider extends Blockly.zelos.ConstantProvider {
   constructor() {
     super(COMPACT_GRID_UNIT);
     this.FIELD_TEXT_FONTSIZE = 11;
@@ -197,34 +198,34 @@ class CompactZelosConstantProvider extends Blockly.zelos.ConstantProvider {
   }
 }
 
-class CompactZelosTopRow extends Blockly.zelos.TopRow {
+class FirstBlocksStyleTopRow extends Blockly.zelos.TopRow {
   override hasRightSquareCorner(_block: Blockly.BlockSvg): boolean {
     return true;
   }
 }
 
-class CompactZelosBottomRow extends Blockly.zelos.BottomRow {
+class FirstBlocksStyleBottomRow extends Blockly.zelos.BottomRow {
   override hasRightSquareCorner(_block: Blockly.BlockSvg): boolean {
     return true;
   }
 }
 
-class CompactZelosRenderInfo extends Blockly.zelos.RenderInfo {
+class FirstBlocksStyleRenderInfo extends Blockly.zelos.RenderInfo {
   constructor(renderer: Blockly.zelos.Renderer, block: Blockly.BlockSvg) {
     super(renderer, block);
-    this.topRow = new CompactZelosTopRow(this.constants_);
-    this.bottomRow = new CompactZelosBottomRow(this.constants_);
+    this.topRow = new FirstBlocksStyleTopRow(this.constants_);
+    this.bottomRow = new FirstBlocksStyleBottomRow(this.constants_);
   }
 }
 
-class CompactZelosRenderer extends Blockly.zelos.Renderer {
-  protected makeConstants_(): CompactZelosConstantProvider {
-    return new CompactZelosConstantProvider();
+class FirstBlocksStyleRenderer extends Blockly.zelos.Renderer {
+  protected makeConstants_(): FirstBlocksStyleConstantProvider {
+    return new FirstBlocksStyleConstantProvider();
   }
 
-  protected makeRenderInfo_(block: Blockly.BlockSvg): CompactZelosRenderInfo {
-    return new CompactZelosRenderInfo(this, block);
+  protected makeRenderInfo_(block: Blockly.BlockSvg): FirstBlocksStyleRenderInfo {
+    return new FirstBlocksStyleRenderInfo(this, block);
   }
 }
 
-Blockly.blockRendering.register(COMPACT_ZELOS_RENDERER_NAME, CompactZelosRenderer);
+Blockly.blockRendering.register(FIRST_BLOCKS_STYLE_RENDERER_NAME, FirstBlocksStyleRenderer);

@@ -202,8 +202,8 @@
         "GERAS_DESCRIPTION": "L'apparence originale de Blockly, avec des blocs carrés et des entrées en ligne.",
         "THRASOS": "Thrasos",
         "THRASOS_DESCRIPTION": "Une version moderne de l'apparence classique de Blockly.",
-        "COMPACT_ZELOS": "Zelos Compact",
-        "COMPACT_ZELOS_DESCRIPTION": "Les blocs arrondis et colorés de Zelos, avec une taille aussi compacte que l'apparence classique de Blockly.",
+        "FIRST_BLOCKS_STYLE": "Style FIRST",
+        "FIRST_BLOCKS_STYLE_DESCRIPTION": "C'est un mélange du style Scratch (Zelos) et du style Blockly (Thrasos)",
         "SELECTION": "Sélection du style des blocs",
         "APPLY": "Appliquer le style",
         "CHOOSE_DESCRIPTION": "Choisissez comment les blocs sont dessinés dans l'espace de travail. L'aperçu ci-dessous se met à jour selon votre choix."

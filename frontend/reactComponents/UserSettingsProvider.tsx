@@ -22,7 +22,7 @@
 
 import * as React from 'react';
 import { Storage } from '../storage/common_storage';
-import { COMPACT_ZELOS_RENDERER_NAME } from '../themes/compact_zelos';
+import { FIRST_BLOCKS_STYLE_RENDERER_NAME } from '../themes/first_blocks_style';
 
 /** Storage keys for user settings. */
 const USER_LANGUAGE_KEY = 'userLanguage';
@@ -36,7 +36,7 @@ const USER_LAST_ZOOM_KEY = 'userLastZoom';
 export const DEFAULT_LANGUAGE = 'en';
 export const DEFAULT_THEME = 'dark';
 export const DEFAULT_SHOW_SIMPLE_CLASS_NAMES = true;
-export const DEFAULT_RENDERER = COMPACT_ZELOS_RENDERER_NAME;
+export const DEFAULT_RENDERER = FIRST_BLOCKS_STYLE_RENDERER_NAME;
 /** The zoom level (e.g. 1.0 = 100%) used when the user has never set a zoom level. */
 export const DEFAULT_ZOOM = 1.0;
 
