@@ -32,6 +32,27 @@
  * Thrasos's field text (11pt normal sans-serif) is sized for exactly the
  * field height this renderer ends up with, so its font settings are used
  * here instead.
+ *
+ * Likewise, Zelos's block corner radius (CORNER_RADIUS = 1 * GRID_UNIT)
+ * shrinks along with GRID_UNIT, giving compact blocks nearly-square
+ * corners. Thrasos uses the common ConstantProvider's fixed CORNER_RADIUS
+ * of 8, which is exactly proportioned for the block height this renderer
+ * ends up with (MIN_BLOCK_HEIGHT = 24 at GRID_UNIT = 2), so that value is
+ * used here instead to keep Thrasos's more rounded corners.
+ *
+ * That CORNER_RADIUS only controls how round each corner *is*; whether a
+ * given corner is rounded at all is decided separately, by
+ * TopRow/BottomRow.hasRightSquareCorner(). The common (Thrasos/Geras) rows
+ * always return true there, squaring off the right side, but Zelos
+ * overrides both to return false for ordinary blocks so that all four
+ * corners are rounded (part of its "pill" look). Left unchanged, that
+ * makes the right side of a compact_zelos block curve too, which is what
+ * looked wrong compared to Thrasos. Subclassing Zelos's TopRow/BottomRow
+ * to force hasRightSquareCorner() back to true - and wiring them in via a
+ * RenderInfo subclass, since Zelos's RenderInfo constructs its rows
+ * directly rather than through an overridable factory method - restores
+ * Thrasos's "round left, square right" shape while keeping every other
+ * Zelos-specific shape (hex booleans, pill fields, notches, tabs) intact.
  */
 
 import * as Blockly from 'blockly/core';
@@ -47,12 +68,37 @@ class CompactZelosConstantProvider extends Blockly.zelos.ConstantProvider {
     this.FIELD_TEXT_FONTSIZE = 11;
     this.FIELD_TEXT_FONTWEIGHT = 'normal';
     this.FIELD_TEXT_FONTFAMILY = 'sans-serif';
+    this.CORNER_RADIUS = 8;
+  }
+}
+
+class CompactZelosTopRow extends Blockly.zelos.TopRow {
+  override hasRightSquareCorner(_block: Blockly.BlockSvg): boolean {
+    return true;
+  }
+}
+
+class CompactZelosBottomRow extends Blockly.zelos.BottomRow {
+  override hasRightSquareCorner(_block: Blockly.BlockSvg): boolean {
+    return true;
+  }
+}
+
+class CompactZelosRenderInfo extends Blockly.zelos.RenderInfo {
+  constructor(renderer: Blockly.zelos.Renderer, block: Blockly.BlockSvg) {
+    super(renderer, block);
+    this.topRow = new CompactZelosTopRow(this.constants_);
+    this.bottomRow = new CompactZelosBottomRow(this.constants_);
   }
 }
 
 class CompactZelosRenderer extends Blockly.zelos.Renderer {
   protected makeConstants_(): CompactZelosConstantProvider {
     return new CompactZelosConstantProvider();
+  }
+
+  protected makeRenderInfo_(block: Blockly.BlockSvg): CompactZelosRenderInfo {
+    return new CompactZelosRenderInfo(this, block);
   }
 }
 
