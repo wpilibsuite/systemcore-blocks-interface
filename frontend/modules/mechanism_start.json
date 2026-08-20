@@ -33,7 +33,7 @@
                     "params": []
                 },
                 "fields": {
-                    "NAME": "opmodePeriodic"
+                    "NAME": "opmode_periodic"
                 }
             },
             {

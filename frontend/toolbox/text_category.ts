@@ -63,7 +63,7 @@ export const getCategory = () => ({
                   type: 'variables_get',
                   fields: {
                     VAR: {
-                      name: 'myText',
+                      name: 'my_text',
                     },
                   },
                 },
@@ -87,7 +87,7 @@ export const getCategory = () => ({
                   type: 'variables_get',
                   fields: {
                     VAR: {
-                      name: 'myText',
+                      name: 'my_text',
                     },
                   },
                 },
@@ -103,7 +103,7 @@ export const getCategory = () => ({
                   type: 'variables_get',
                   fields: {
                     VAR: {
-                      name: 'myText',
+                      name: 'my_text',
                     },
                   },
                 },

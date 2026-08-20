@@ -37,6 +37,7 @@ import {
 import { makeLegalName } from './utils/validator';
 import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
+import * as storageNames from '../storage/names';
 import * as storageModuleContent from '../storage/module_content';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import {
@@ -219,7 +220,7 @@ const COMPONENT = {
   },
   getMechanismInitArgName: function (this: ComponentBlock): string {
     // Return the name of the arg used to represent this component's arguments in a mechanism's
-    // constructor or a mechanism's defineHardware method.
+    // constructor or a mechanism's define_hardware method.
     return getMechanismInitArgName(this.getFieldValue(FIELD_NAME));
   },
   getComponentArgs: function (this: ComponentBlock, args: storageModuleContent.MethodArg[]): void {
@@ -354,7 +355,7 @@ export const pythonFromBlock = function (
     }
   } else {
     // In a mechanism, a component block does not have input sockets.
-    // Each argument of the mechanism's constructor (and the mechanism's defineHardware method) is
+    // Each argument of the mechanism's constructor (and the mechanism's define_hardware method) is
     // a tuple containing the constructor parameters of a component.
     // Use the * operator to unpack the elements of the tuple and pass each
     // element as a separate positional argument to the component constructor.
@@ -371,7 +372,8 @@ export function getAllPossibleComponents(
   const contents: toolboxItems.ContentsType[] = [];
   // Iterate through all the component classes and add definition blocks.
   componentClasses.forEach(classData => {
-    const componentName = 'my' + simpleClassName(classData.className);
+    const componentName = 'my_' + storageNames.pascalCaseToSnakeCase(simpleClassName(classData.className));
+
     // Only a component in the robot has inputs for its args, so outside the robot two
     // constructors that take the same kinds of args produce blocks that look exactly alike.
     // Show only the first of those, since there would be no way to tell them apart.  This is for
@@ -407,7 +409,7 @@ function getComponentArgTypes(constructorData: FunctionData): string {
 }
 
 export function getMechanismInitArgName(componentName: string): string {
-  return componentName + 'Args';
+  return componentName + '_args';
 }
 
 function createComponentBlock(
@@ -448,4 +450,3 @@ function createComponentBlock(
   });
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, Object.keys(inputs).length ? inputs : null);
 }
-

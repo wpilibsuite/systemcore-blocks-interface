@@ -30,6 +30,9 @@ import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
+import {
+    upgradeTo_0_3_1 as classMethodDefUpgradeTo_0_3_1
+    } from '../blocks/mrc_class_method_def';
 import * as workspaces from '../blocks/utils/workspaces';
 
 declare const __APP_VERSION__: string;
@@ -55,6 +58,9 @@ export async function upgradeProjectIfNecessary(
         storage, projectName,
         anyModuleType, upgradeA301ToCanPort,
         noModuleTypes, noUpgrade);
+  }
+  if (semver.lt(projectInfo.version, '0.3.1')) {
+     await upgradeTo_0_3_1(storage, projectName);
   }
 
   projectInfo.version = CURRENT_VERSION;
@@ -121,7 +127,6 @@ function isOpMode(moduleType: storageModule.ModuleType): boolean {
 }
 
 /** Predicate: only Mechanism modules are affected. */
-// @ts-expect-error: declared but not used
 function isMechanism(moduleType: storageModule.ModuleType): boolean {
   return moduleType === storageModule.ModuleType.MECHANISM;
 }
@@ -138,7 +143,6 @@ function noModuleTypes(_moduleType: storageModule.ModuleType): boolean {
 }
 
 /** Pre-upgrade passthrough: makes no changes to moduleContentText. */
-// @ts-expect-error: declared but not used
 function noPreupgrade(moduleContentText: string): string {
   return moduleContentText;
 }
@@ -392,4 +396,18 @@ function upgradeA301InMechanismBlockJson(blockJson: any): boolean {
     delete blockJson.inputs;
   }
   return true;
+}
+
+// Upgrade from before 0.3.1: snake_case!
+
+async function upgradeTo_0_3_1(
+    storage: commonStorage.Storage,
+    projectName: string): Promise<void> {
+  // mrc_class_method_def blocks for mechanism 'opmodeStart' method need to be changed to 'opmode_start'.
+  // mrc_class_method_def blocks for mechanism 'opmodePeriodic' method need to be changed to 'opmode_periodic'.
+  // mrc_class_method_def blocks for mechanism 'opmodeEnd' method need to be changed to 'opmode_end'.
+  await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      isMechanism, classMethodDefUpgradeTo_0_3_1);
 }
