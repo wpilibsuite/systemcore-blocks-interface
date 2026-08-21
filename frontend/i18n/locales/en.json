@@ -274,8 +274,6 @@
         "VALUE": "value",
         "COLOR": "color",
         "LINE": "line",
-        "DISPLAY_ADD_DATA_TITLE": "display.AddData",
-        "DISPLAY_ADD_LINE_TITLE": "display.AddLine",
         "STEPS": "steps",
         "REPEAT_UNTIL": "repeat until",
         "JUMP_TO": "jump to",
@@ -344,8 +342,6 @@
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
             "NONE": "Returns None.",
-            "DISPLAY_ADD_DATA": "Add a line with a caption and color to the driver station display.",
-            "DISPLAY_ADD_LINE": "Add a line with a color, but no caption, to the driver station display.",
             "OPMODE_TYPE": "What sort of OpMode this is",
             "OPMODE_ENABLED": "Whether the OpMode is shown on Driver Station",
             "OPMODE_NAME": "The name shown on the Driver Station.  If blank will use the class name.",

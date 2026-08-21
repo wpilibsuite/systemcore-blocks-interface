@@ -26,8 +26,6 @@ import * as GamepadBoolean from './mrc_gamepad_boolean';
 import * as GamepadAnalog from './mrc_gamepad_analog';
 import * as GamepadBooleanEvent from './mrc_gamepad_boolean_event';
 import * as GamepadRumble from './mrc_gamepad_rumble';
-import * as DriverStationDisplay from './mrc_driver_station_display';
-import * as DriverStationDisplayLine from './mrc_driver_station_display_line';
 
 const customBlocks = [
   CallPythonFunction,
@@ -57,8 +55,6 @@ const customBlocks = [
   GamepadAnalog,
   GamepadBooleanEvent,
   GamepadRumble,
-  DriverStationDisplay,
-  DriverStationDisplayLine
 ];
 
 export const setup = function(forBlock: any) {

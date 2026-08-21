@@ -274,8 +274,6 @@
     "VALUE": "ערך",
     "COLOR": "צבע",
     "LINE": "שורה",
-    "DISPLAY_ADD_DATA_TITLE": "display.AddData",
-    "DISPLAY_ADD_LINE_TITLE": "display.AddLine",
     "STEPS": "צעדים",
     "REPEAT_UNTIL": "לחזור על כך עד",
     "JUMP_TO": "לקפוץ אל",
@@ -344,8 +342,6 @@
     "TOOLTIP": {
       "EVALUATE_BUT_IGNORE_RESULT": "מבצע את הבלוק המחובר ומתעלם מהתוצאה. מאפשר לקרוא לפונקציה מבלי להשתמש בערך שהיא מחזירה.",
       "NONE": "מחזיר כלום.",
-      "DISPLAY_ADD_DATA": "הוסף שורה עם כיתוב וצבע לתצוגת תחנת הנהג.",
-      "DISPLAY_ADD_LINE": "הוסף שורה עם צבע, ללא כיתוב, לתצוגת תחנת הנהג.",
       "OPMODE_TYPE": "איזה סוג אופמוד זה",
       "OPMODE_ENABLED": "האם האופמוד מוצג באפליקציית ה־Driver Station",
       "OPMODE_NAME": "השם שמוצג באפליקציית ה־Driver Station. אם ריק, ישתמש בשם הכיתה.",
