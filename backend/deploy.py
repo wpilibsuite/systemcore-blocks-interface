@@ -1,5 +1,7 @@
 # Standard library imports
+import glob
 import os
+import re
 import shutil
 import zipfile
 import subprocess
@@ -11,6 +13,24 @@ from flask.views import MethodView
 
 BASE_DIR = "/home/systemcore"
 DEPLOY_DIR = BASE_DIR + "/blocks/deployedPython"
+PIP_CACHE_DIR = "/opt/blocks/cache/pip_cache"
+
+
+def getWpilibBlocksRequirement() -> str:
+    """Returns the wpilib_blocks requirement, pinned to whatever version's wheel is
+    present in the local pip cache. Pinning to the exact version already on disk
+    (rather than leaving it unpinned) is what makes the installer notice and
+    reinstall wpilib_blocks when a new version has been packaged; an unpinned
+    requirement is treated as satisfied by any installed version and never
+    triggers a reinstall."""
+    matches = glob.glob(os.path.join(PIP_CACHE_DIR, 'wpilib_blocks-*.whl'))
+    if not matches:
+        return "wpilib_blocks"
+    m = re.match(r'wpilib_blocks-([^-]+)-', os.path.basename(matches[0]))
+    if not m:
+        return "wpilib_blocks"
+    return f"wpilib_blocks=={m.group(1)}"
+
 
 class DeployResource(MethodView):
     def post(self) -> Response:
@@ -50,13 +70,13 @@ class DeployResource(MethodView):
             pyproject_path = os.path.join(deploy_dir, 'pyproject.toml')
             with open(pyproject_path, "w", encoding="utf-8") as f:
                 toml_content = (
-"""[tool.robotpy]
+f"""[tool.robotpy]
 robotpy_version = "2027.0.0.a6.post1"
 
 components = []
 
-requires = [ "wpilib_blocks", "robotpy-rev"]
-"""                    
+requires = [ "{getWpilibBlocksRequirement()}", "robotpy-rev"]
+"""
                 )
                 f.write(toml_content);
             # Deploy robot code

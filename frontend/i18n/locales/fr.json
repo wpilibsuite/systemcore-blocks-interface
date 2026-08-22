@@ -273,6 +273,8 @@
         "TO": "à",
         "CAPTION": "légende",
         "VALUE": "valeur",
+        "COLOR": "couleur",
+        "LINE": "ligne",
         "STEPS": "étapes",
         "REPEAT_UNTIL": "répéter jusqu'à",
         "JUMP_TO": "sauter à",
@@ -341,7 +343,6 @@
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Exécute le bloc connecté et ignore le résultat. Permet d'appeler une fonction en ignorant la valeur de retour.",
             "NONE": "Renvoie None.",
-            "DISPLAY_ADD_DATA": "Ajouter des données avec une légende à l'affichage de la station de pilotage.",
             "OPMODE_TYPE": "Quel type d'OpMode c'est",
             "OPMODE_ENABLED": "Si l'OpMode est affiché sur la station de pilotage",
             "OPMODE_NAME": "Le nom affiché sur la station de pilotage. Si vide, utilisera le nom de la classe.",
