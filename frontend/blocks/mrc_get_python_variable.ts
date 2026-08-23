@@ -518,7 +518,15 @@ function addModuleOrClassVariableBlocks(
   }
 }
 
-export function createModuleOrClassVariableGetterBlock(
+export function createClassVariableGetterBlock(
+    classData: ClassData,
+    varData: VarData,
+    showSimpleClassNames: boolean) {
+  return createModuleOrClassVariableGetterBlock(
+      VariableKind.CLASS, classData.moduleName, classData.className, varData.type, varData.name, showSimpleClassNames);
+}
+
+function createModuleOrClassVariableGetterBlock(
     varKind: VariableKind,
     importModule: string,
     moduleOrClassName: string,
