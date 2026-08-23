@@ -3,7 +3,7 @@ import * as Blockly from 'blockly/core';
 import * as toolboxItems from './items';
 import { Editor } from '../editor/editor';
 import { addStaticMethodBlocks } from '../blocks/mrc_call_python_function';
-import { createModuleOrClassVariableGetterBlock, VariableKind } from '../blocks/mrc_get_python_variable';
+import { createClassVariableGetterBlock } from '../blocks/mrc_get_python_variable';
 import { makeOneContents } from './robotpy_toolbox';
 import { CLASS_NAME_DRIVER_STATION_DISPLAY, getClassData } from '../blocks/utils/python';
 import { BLOCK_NAME as MRC_GAMEPAD_BOOLEAN  } from '../blocks/mrc_gamepad_boolean';
@@ -33,7 +33,7 @@ export function getDriverStationDisplayCategory(editor: Editor): toolboxItems.Ca
     const classData = getClassData(CLASS_NAME_DRIVER_STATION_DISPLAY);
     if (classData) {
         addStaticMethodBlocks(classData, commonContents, moreContents, editor.getShowSimpleClassNames());
-        plugDefaultColorBlocks([...commonContents, ...moreContents]);
+        plugDefaultColorBlocks([...commonContents, ...moreContents], editor.getShowSimpleClassNames());
     }
     return new toolboxItems.Category(
         Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY'],
@@ -46,7 +46,7 @@ export function getDriverStationDisplayCategory(editor: Editor): toolboxItems.Ca
 // into object-typed arguments by default. For the color argument of the display
 // methods, plug in a concrete wpiutil.Color.WHITE getter instead, so the block is
 // immediately usable without the user having to declare a "myColor" variable.
-function plugDefaultColorBlocks(blocks: toolboxItems.ContentsType[]) {
+function plugDefaultColorBlocks(blocks: toolboxItems.ContentsType[], showSimpleClassNames: boolean) {
     blocks.forEach(item => {
         const block = item as toolboxItems.Block;
         const args = block.extraState?.args as {name: string, type: string}[] | undefined;
@@ -58,10 +58,15 @@ function plugDefaultColorBlocks(blocks: toolboxItems.ContentsType[]) {
             // Plug in a real (non-shadow) wpiutil.Color.WHITE class variable getter, so
             // users can just change the color using the dropdown rather than needing to
             // find and attach the block themselves.
-            block.inputs['ARG' + colorArgIndex] = {
-                block: createModuleOrClassVariableGetterBlock(
-                    VariableKind.CLASS, 'wpiutil', 'wpiutil.Color', 'wpiutil.Color', 'WHITE', false),
-            };
+            const classData = getClassData('wpiutil.Color');
+            if (classData) {
+                const varData = classData.classVariables.find((v) => v.name === 'WHITE');
+                if (varData) {
+                    block.inputs['ARG' + colorArgIndex] = {
+                    block: createClassVariableGetterBlock(classData, varData, showSimpleClassNames),
+                    };
+                }
+            }
         }
     });
 }
