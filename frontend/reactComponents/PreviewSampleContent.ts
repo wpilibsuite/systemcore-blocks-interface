@@ -29,39 +29,56 @@ const SAMPLE_PREVIEW_BLOCKS: {[key: string]: any} = {
     languageVersion: 0,
     blocks: [
       {
-        type: 'controls_if',
+        type: 'mrc_class_method_def',
+        id: 'sample_preview_method',
         x: 20,
         y: 20,
-        inputs: {
-          IF0: {
-            block: {
-              type: 'logic_compare',
-              fields: { OP: 'EQ' },
-              inputs: {
-                A: { block: { type: 'math_number', fields: { NUM: 1 } } },
-                B: { block: { type: 'math_number', fields: { NUM: 1 } } },
-              },
-            },
-          },
-          DO0: {
-            block: {
-              type: 'text_print',
-              inputs: {
-                TEXT: { block: { type: 'text', fields: { TEXT: 'Hello' } } },
-              },
-            },
-          },
+        extraState: {
+          methodId: 'sample_preview_method',
+          canChangeSignature: true,
+          canBeCalledWithinClass: true,
+          canBeCalledOutsideClass: true,
+          returnType: 'None',
+          params: [],
         },
-        next: {
-          block: {
-            type: 'controls_repeat_ext',
-            inputs: {
-              TIMES: { block: { type: 'math_number', fields: { NUM: 10 } } },
-              DO: {
+        fields: { NAME: 'sample' },
+        inputs: {
+          STACK: {
+            block: {
+              type: 'controls_if',
+              inputs: {
+                IF0: {
+                  block: {
+                    type: 'logic_compare',
+                    fields: { OP: 'EQ' },
+                    inputs: {
+                      A: { block: { type: 'math_number', fields: { NUM: 1 } } },
+                      B: { block: { type: 'math_number', fields: { NUM: 1 } } },
+                    },
+                  },
+                },
+                DO0: {
+                  block: {
+                    type: 'text_print',
+                    inputs: {
+                      TEXT: { block: { type: 'text', fields: { TEXT: 'Hello' } } },
+                    },
+                  },
+                },
+              },
+              next: {
                 block: {
-                  type: 'text_print',
+                  type: 'controls_repeat_ext',
                   inputs: {
-                    TEXT: { block: { type: 'text', fields: { TEXT: 'Hi' } } },
+                    TIMES: { block: { type: 'math_number', fields: { NUM: 10 } } },
+                    DO: {
+                      block: {
+                        type: 'text_print',
+                        inputs: {
+                          TEXT: { block: { type: 'text', fields: { TEXT: 'Hi' } } },
+                        },
+                      },
+                    },
                   },
                 },
               },
