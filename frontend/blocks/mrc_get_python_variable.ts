@@ -35,6 +35,7 @@ import {
 import {
     ClassData,
     ModuleData,
+    VarData,
     organizeVarDataByType,
     VariableGettersAndSetters } from './utils/python_json_types';
 import * as variable from './utils/variable';
