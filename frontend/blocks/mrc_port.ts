@@ -301,11 +301,16 @@ export const setup = function () {
 
 export const pythonFromBlock = function (
     block: PortBlock,
-    _: ExtendedPythonGenerator) {
+    generator: ExtendedPythonGenerator) {
   let code = '';
   for (let i = 0; i < block.mrcPortTypes.length; i++) {
     const portNum = block.getFieldValue(FIELD_PREFIX_PORT_NUM + i);
     const portLabel = getLabelForPort(block.mrcPortTypes[i]);
+    if (block.mrcPortTypes[i] == PortType.SYSTEMCORE_I2C_PORT) {
+      // Special case for I2C, which needs to be a wpilib.I2C.Port enum value (PORT_0 or PORT_1).
+      generator.importModule('wpilib');
+      code += 'wpilib.I2C.Port.PORT_';
+    }
     code += portNum + ', # ' + portLabel + '\n';
   }
   return [code, Order.NONE];
