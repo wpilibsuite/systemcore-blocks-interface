@@ -73,11 +73,11 @@ export const NAME_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Name';
 export const GROUP_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Group';
 
 export const robotPyData = generatedRobotPyData as PythonData;
-const runtimePython = generatedRuntimePython as PythonData;
+export const runtimePyData = generatedRuntimePython as PythonData;
 
 const allPythonData: PythonData[] = [];
 allPythonData.push(robotPyData);
-allPythonData.push(runtimePython);
+allPythonData.push(runtimePyData);
 
 export const componentClasses: ClassData[] = []
 
