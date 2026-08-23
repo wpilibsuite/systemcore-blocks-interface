@@ -1,0 +1,259 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @author lizlooney@google.com (Liz Looney)
+ */
+
+import { addEnumBlocks } from '../blocks/mrc_get_python_enum_value';
+import {
+    addClassVariableBlocks,
+    addInstanceVariableBlocks,
+    addModuleVariableBlocks } from '../blocks/mrc_get_python_variable';
+import {
+    addConstructorBlocks,
+    addInstanceMethodBlocks,
+    addModuleFunctionBlocks,
+    addStaticMethodBlocks } from '../blocks/mrc_call_python_function';
+import { ClassData, ModuleData, PythonData } from '../blocks/utils/python_json_types';
+import * as toolboxItems from './items';
+import * as Blockly from 'blockly/core';
+
+
+export function getToolboxCategories(
+    pythonData: PythonData,
+    shownCategories: Set<string> | null,
+    showSimpleClassNames: boolean): toolboxItems.Category[] {
+  const contents: toolboxItems.Category[] = [];
+
+  const allCategories: {[key: string]: toolboxItems.Category} = {};
+  const moduleCategories: {[key: string]: toolboxItems.Category} = {};
+  const classCategories: {[key: string]: toolboxItems.Category} = {};
+
+  // Process modules.
+  for (const moduleData of pythonData.modules) {
+    const path = moduleData.moduleName;
+    const lastDot = path.lastIndexOf('.');
+    const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
+
+    const commonContents: toolboxItems.ContentsType[] = [];
+    const moreContents: toolboxItems.ContentsType[] = [];
+    addModuleBlocks(moduleData, commonContents, moreContents, showSimpleClassNames);
+
+    const moduleCategory: toolboxItems.PythonModuleCategory = {
+      kind: 'category',
+      name: name,
+      moduleName: moduleData.moduleName,
+      contents: makeOneContents(commonContents, moreContents),
+    };
+    allCategories[path] = moduleCategory;
+    moduleCategories[path] = moduleCategory;
+  }
+
+  // Process classes.
+  for (const classData of pythonData.classes) {
+    const path = classData.className;
+    const lastDot = path.lastIndexOf('.');
+    const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
+
+    const commonContents: toolboxItems.ContentsType[] = [];
+    const moreContents: toolboxItems.ContentsType[] = [];
+    addClassBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+    const classCategory: toolboxItems.PythonClassCategory = {
+      kind: 'category',
+      name: name,
+      className: classData.className,
+      contents: makeOneContents(commonContents, moreContents),
+    };
+    allCategories[path] = classCategory;
+    classCategories[path] = classCategory;
+  }
+
+  // Build the tree.
+  // First add each class category to its parent.
+  addCategoriesToParents(classCategories, allCategories, contents);
+  // Then add module categories.
+  addCategoriesToParents(moduleCategories, allCategories, contents);
+
+  recursivelyRemoveEmptyCategories(contents);
+
+  // TODO: Maybe later there is a better way to do this...
+  filterCategories(contents, shownCategories);
+
+  return contents;
+}
+
+function addModuleBlocks(
+    moduleData: ModuleData,
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
+  // Module variable blocks.
+  addModuleVariableBlocks(moduleData, commonContents, moreContents);
+
+  // Module function blocks
+  addModuleFunctionBlocks(moduleData, commonContents, moreContents);
+
+  // Enum blocks
+  addEnumBlocks(moduleData.enums, commonContents, moreContents, showSimpleClassNames);
+}
+
+function addClassBlocks(
+    classData: ClassData,
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
+  // Function blocks (constructors, instance methods, static methods)
+  addConstructorBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+  addInstanceMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+  addStaticMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+
+  // Instance variable blocks
+  addInstanceVariableBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+
+  // Class variable blocks.
+  addClassVariableBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+
+  // Enum blocks
+  addEnumBlocks(classData.enums, commonContents, moreContents, showSimpleClassNames);
+}
+
+function addCategoriesToParents(
+    categoriesToProcess: {[key: string]: toolboxItems.Category},
+    allCategories: {[key: string]: toolboxItems.Category},
+    contents: toolboxItems.Category[]) {
+  for (const path in categoriesToProcess) {
+    const category = categoriesToProcess[path];
+    const lastDot = path.lastIndexOf('.');
+    const parentPath = (lastDot != -1) ? path.substring(0, lastDot) : '';
+    if (parentPath) {
+      const parentCategory = allCategories[parentPath];
+      if (parentCategory.contents) {
+        parentCategory.contents.push(category);
+      }
+    } else {
+      contents.push(category);
+    }
+  }
+}
+
+function recursivelyRemoveEmptyCategories(contents: toolboxItems.ContentsType[]) {
+  for (let i = contents.length - 1; i >= 0; i--) {
+    if (contents[i].kind === 'category') {
+      const category = contents[i] as toolboxItems.Category;
+      if (category.contents) {
+        if (category.contents.length) {
+          recursivelyRemoveEmptyCategories(category.contents);
+        }
+        if (category.contents.length == 0) {
+          contents.splice(i, 1);
+        }
+      }
+    }
+  }
+}
+
+function filterCategories(
+    contents: toolboxItems.ContentsType[], shownCategories: Set<string> | null) {
+  contents.forEach((item) => {
+    if (item.kind === 'category') {
+      const category = item as toolboxItems.Category;
+      // Traverse the tree depth-first so we can easily identify and remove empty categories.
+      if (category.contents) {
+        filterCategories(category.contents, shownCategories);
+      }
+      if ((category as toolboxItems.PythonModuleCategory).moduleName) {
+        const moduleName = (item as toolboxItems.PythonModuleCategory).moduleName;
+        if (shownCategories != null && !shownCategories.has(moduleName)) {
+          if (category.contents) {
+            removeBlocksSeparatorsAndLabels(category.contents);
+          }
+        }
+      }
+      if ((category as toolboxItems.PythonClassCategory).className) {
+        const className = (item as toolboxItems.PythonClassCategory).className;
+        if (shownCategories != null && !shownCategories.has(className)) {
+          if (category.contents) {
+            removeBlocksSeparatorsAndLabels(category.contents);
+          }
+        }
+      }
+    }
+  });
+  removeEmptyCategories(contents, shownCategories);
+}
+
+function removeBlocksSeparatorsAndLabels(contents: toolboxItems.ContentsType[]) {
+  let i = 0;
+  while (i < contents.length) {
+    const remove = (contents[i].kind === 'block' || contents[i].kind === 'sep' || contents[i].kind === 'label');
+    if (remove) {
+      contents.splice(i, 1);
+      continue;
+    }
+    i++;
+  }
+}
+
+function removeEmptyCategories(
+    contents: toolboxItems.ContentsType[], shownCategories: Set<string> | null) {
+  let i = 0;
+  while (i < contents.length) {
+    let remove = false;
+    if (contents[i].kind === 'category') {
+      const category = contents[i] as toolboxItems.Category;
+      let fullCategoryName = '';
+      if ((category as toolboxItems.PythonModuleCategory).moduleName) {
+        fullCategoryName = (category as toolboxItems.PythonModuleCategory).moduleName
+      } else if ((category as toolboxItems.PythonClassCategory).className) {
+        fullCategoryName = (category as toolboxItems.PythonClassCategory).className;
+      }
+      if (category.contents &&
+          category.contents.length == 0 &&
+          shownCategories != null && !shownCategories.has(fullCategoryName)) {
+        remove = true;
+      }
+    }
+    if (remove) {
+      contents.splice(i, 1);
+      continue;
+    }
+    i++;
+  }
+}
+
+export function makeOneContents(
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[]): toolboxItems.ContentsType[] {
+  // If only one of commonContents and moreContents has items, return that one.
+  // If both have items, return a category with the commonContents and a "More" subcategory with the moreContents.
+  if (commonContents.length > 0 && moreContents.length > 0) {
+    return [
+      ...commonContents,
+      {
+        kind: 'label',
+        text: Blockly.Msg['MORE_BLOCKS_LABEL'],
+      },
+      ...moreContents
+    ];
+  }
+  if (commonContents.length > 0) {
+    return commonContents;
+  } else {
+    return moreContents;
+  }
+} 
