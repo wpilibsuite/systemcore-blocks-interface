@@ -139,6 +139,121 @@
         },
         {
             "enums": [],
+            "functions": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "functionName": "get_hue",
+                    "returnType": "int",
+                    "tooltip": "Returns the hue [0-180] of the given color. "
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "functionName": "get_saturation",
+                    "returnType": "int",
+                    "tooltip": "Returns the saturation [0-180] of the given color. "
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "functionName": "get_value",
+                    "returnType": "int",
+                    "tooltip": "Returns the value [0-255] of the given color. "
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "functionName": "is_blue",
+                    "returnType": "bool",
+                    "tooltip": "Returns True if the given color is close to blue."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "functionName": "is_cyan",
+                    "returnType": "bool",
+                    "tooltip": "Returns True if the given color is close to cyan."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "functionName": "is_green",
+                    "returnType": "bool",
+                    "tooltip": "Returns True if the given color is close to green."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "functionName": "is_magenta",
+                    "returnType": "bool",
+                    "tooltip": "Returns True if the given color is close to magenta."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "functionName": "is_red",
+                    "returnType": "bool",
+                    "tooltip": "Returns True if the given color is close to red."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "functionName": "is_yellow",
+                    "returnType": "bool",
+                    "tooltip": "Returns True if the given color is close to yellow."
+                }
+            ],
+            "moduleName": "wpilib_blocks.color",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
             "functions": [],
             "moduleName": "wpilib_blocks.mechanism",
             "moduleVariables": []
