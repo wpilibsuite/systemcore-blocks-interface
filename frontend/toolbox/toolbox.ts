@@ -5,7 +5,7 @@ import * as common from './toolbox_common'
 import { Editor } from '../editor/editor';
 import { getHardwareCategory } from './hardware_category';
 import { getCategory as getEventCategory } from './event_category';
-import { getDriverStationCategory } from './driver_station_category';
+import { getDriverStationCategory, getDriverStationDisplayCategory } from './driver_station_category';
 
 export function getToolboxJSON(
     editor: Editor): Blockly.utils.toolbox.ToolboxInfo {
@@ -17,6 +17,7 @@ export function getToolboxJSON(
   switch (editor.getModuleType()) {
     case storageModule.ModuleType.ROBOT:
     case storageModule.ModuleType.MECHANISM:
+      toolbox.contents.push(getDriverStationDisplayCategory(editor));
       toolbox.contents.push(getHardwareCategory(editor));
       toolbox.contents.push(new toolboxItems.Sep());
       toolbox.contents.push(...common.getToolboxItems(editor));

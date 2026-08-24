@@ -202,6 +202,8 @@
         "GERAS_DESCRIPTION": "L'apparence originale de Blockly, avec des blocs carrés et des entrées en ligne.",
         "THRASOS": "Thrasos",
         "THRASOS_DESCRIPTION": "Une version moderne de l'apparence classique de Blockly.",
+        "FIRST_BLOCKS_STYLE": "Style FIRST",
+        "FIRST_BLOCKS_STYLE_DESCRIPTION": "C'est un mélange du style Scratch (Zelos) et du style Blockly (Thrasos)",
         "SELECTION": "Sélection du style des blocs",
         "APPLY": "Appliquer le style",
         "CHOOSE_DESCRIPTION": "Choisissez comment les blocs sont dessinés dans l'espace de travail. L'aperçu ci-dessous se met à jour selon votre choix."
@@ -273,6 +275,8 @@
         "TO": "à",
         "CAPTION": "légende",
         "VALUE": "valeur",
+        "COLOR": "couleur",
+        "LINE": "ligne",
         "STEPS": "étapes",
         "REPEAT_UNTIL": "répéter jusqu'à",
         "JUMP_TO": "sauter à",
@@ -341,7 +345,6 @@
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Exécute le bloc connecté et ignore le résultat. Permet d'appeler une fonction en ignorant la valeur de retour.",
             "NONE": "Renvoie None.",
-            "DISPLAY_ADD_DATA": "Ajouter des données avec une légende à l'affichage de la station de pilotage.",
             "OPMODE_TYPE": "Quel type d'OpMode c'est",
             "OPMODE_ENABLED": "Si l'OpMode est affiché sur la station de pilotage",
             "OPMODE_NAME": "Le nom affiché sur la station de pilotage. Si vide, utilisera le nom de la classe.",

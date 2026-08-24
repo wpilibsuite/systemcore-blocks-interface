@@ -30,6 +30,7 @@ import { pascalCaseToSnakeCase } from '../storage/names';
 
 import {
     MODULE_NAME_WPILIB_BLOCKS,
+    CLASS_NAME_OPMODE,
     TELEOP_DECORATOR_CLASS,
     AUTO_DECORATOR_CLASS,
     UTILITY_DECORATOR_CLASS,
@@ -601,8 +602,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   shouldGenerateSuperCall(methodName: string): boolean {
     const baseClassName = this.context?.getBaseClassName();
 
-    // Special case for PeriodicOpMode.periodic(), which is an abstract method.
-    if (baseClassName == 'wpilib.PeriodicOpMode' && methodName == 'periodic') {
+    // Special case for OpMode.periodic(), which is PeriodicOpMode's abstract method.
+    if (baseClassName == CLASS_NAME_OPMODE && methodName == PERIODIC_METHOD_NAME) {
       return false;
     }
 

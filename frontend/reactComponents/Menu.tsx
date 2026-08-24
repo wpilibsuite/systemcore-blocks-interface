@@ -349,6 +349,7 @@ export function Component(props: MenuProps): React.JSX.Element {
           open={themeModalOpen}
           onClose={() => setThemeModalOpen(false)}
           currentTheme={props.theme}
+          currentRenderer={props.renderer}
           onThemeChange={handleThemeChange}
         />
       <RendererModal

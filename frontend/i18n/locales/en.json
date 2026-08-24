@@ -201,6 +201,8 @@
         "GERAS_DESCRIPTION": "The original Blockly look, with square blocks and inline inputs.",
         "THRASOS": "Thrasos",
         "THRASOS_DESCRIPTION": "A modern take on the classic Blockly look.",
+        "FIRST_BLOCKS_STYLE": "FIRST Style",
+        "FIRST_BLOCKS_STYLE_DESCRIPTION": "This is mix of Scratch style (Zelos) and Blockly style (Thrasos)",
         "SELECTION": "Block Style Selection",
         "APPLY": "Apply Style",
         "CHOOSE_DESCRIPTION": "Choose how blocks are drawn in the workspace. The preview below updates as you choose."
@@ -272,6 +274,8 @@
         "TO": "to",
         "CAPTION": "caption",
         "VALUE": "value",
+        "COLOR": "color",
+        "LINE": "line",
         "STEPS": "steps",
         "REPEAT_UNTIL": "repeat until",
         "JUMP_TO": "jump to",
@@ -340,7 +344,6 @@
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
             "NONE": "Returns None.",
-            "DISPLAY_ADD_DATA": "Add data with a caption to the driver station display.",
             "OPMODE_TYPE": "What sort of OpMode this is",
             "OPMODE_ENABLED": "Whether the OpMode is shown on Driver Station",
             "OPMODE_NAME": "The name shown on the Driver Station.  If blank will use the class name.",

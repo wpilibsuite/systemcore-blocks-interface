@@ -2,6 +2,78 @@
     "aliases": {},
     "classes": [
         {
+            "className": "wpilib_blocks.DriverStationDisplay",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "args",
+                            "type": "tuple"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "kwargs",
+                            "type": "dict"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_blocks.DriverStationDisplay",
+                    "functionName": "__init__",
+                    "returnType": "wpilib_blocks.DriverStationDisplay",
+                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "wpilib_blocks",
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "caption",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "line",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_blocks.DriverStationDisplay",
+                    "functionName": "addData",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "line",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "wpilib_blocks.DriverStationDisplay",
+                    "functionName": "addLine",
+                    "returnType": "None",
+                    "tooltip": ""
+                }
+            ]
+        },
+        {
             "className": "wpilib_blocks.Mechanism",
             "classVariables": [],
             "constructors": [
@@ -135,6 +207,12 @@
             "enums": [],
             "functions": [],
             "moduleName": "wpilib_blocks",
+            "moduleVariables": []
+        },
+        {
+            "enums": [],
+            "functions": [],
+            "moduleName": "wpilib_blocks.driver_station_display",
             "moduleVariables": []
         },
         {
