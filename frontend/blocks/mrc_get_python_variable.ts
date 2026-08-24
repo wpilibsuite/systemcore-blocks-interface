@@ -35,6 +35,7 @@ import {
 import {
     ClassData,
     ModuleData,
+    VarData,
     organizeVarDataByType,
     VariableGettersAndSetters } from './utils/python_json_types';
 import * as variable from './utils/variable';
@@ -516,6 +517,14 @@ function addModuleOrClassVariableBlocks(
       }
     }
   }
+}
+
+export function createClassVariableGetterBlock(
+    classData: ClassData,
+    varData: VarData,
+    showSimpleClassNames: boolean) {
+  return createModuleOrClassVariableGetterBlock(
+      VariableKind.CLASS, classData.moduleName, classData.className, varData.type, varData.name, showSimpleClassNames);
 }
 
 function createModuleOrClassVariableGetterBlock(
