@@ -24160,7 +24160,7 @@
                     "componentArgs": [
                         {
                             "defaultValue": "",
-                            "name": "smartIoPort",
+                            "name": "smart_io_port",
                             "type": "SYSTEMCORE_SMART_IO_PORT"
                         }
                     ],
@@ -24782,7 +24782,7 @@
                     "componentArgs": [
                         {
                             "defaultValue": "",
-                            "name": "smartIoPort",
+                            "name": "smart_io_port",
                             "type": "SYSTEMCORE_SMART_IO_PORT"
                         },
                         {
@@ -25047,7 +25047,7 @@
                     "componentArgs": [
                         {
                             "defaultValue": "",
-                            "name": "smartIoPort",
+                            "name": "smart_io_port",
                             "type": "SYSTEMCORE_SMART_IO_PORT"
                         },
                         {
@@ -26659,7 +26659,7 @@
                     "componentArgs": [
                         {
                             "defaultValue": "",
-                            "name": "smartIoPort",
+                            "name": "smart_io_port",
                             "type": "SYSTEMCORE_SMART_IO_PORT"
                         }
                     ],
@@ -28133,7 +28133,7 @@
                     "componentArgs": [
                         {
                             "defaultValue": "",
-                            "name": "smartIoPort",
+                            "name": "smart_io_port",
                             "type": "SYSTEMCORE_SMART_IO_PORT"
                         },
                         {
@@ -28867,7 +28867,7 @@
                     "componentArgs": [
                         {
                             "defaultValue": "",
-                            "name": "expansionHubMotor",
+                            "name": "expansion_hub_motor",
                             "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT"
                         }
                     ],
@@ -29281,7 +29281,7 @@
                     "componentArgs": [
                         {
                             "defaultValue": "",
-                            "name": "expansionHubServo",
+                            "name": "expansion_hub_servo",
                             "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT"
                         }
                     ],
@@ -45980,7 +45980,7 @@
                     "componentArgs": [
                         {
                             "defaultValue": "",
-                            "name": "smartIoPort",
+                            "name": "smart_io_port",
                             "type": "SYSTEMCORE_SMART_IO_PORT"
                         }
                     ],
