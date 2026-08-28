@@ -1,4 +1,12 @@
 {
+    "moveComponentDialog": {
+        "title": "Mover {{componentName}} a"
+    },
+    "MOVE": "Mover",
+    "MOVE_TO_EXISTING_MECHANISM": "Un mecanismo existente",
+    "MOVE_TO_NEW_MECHANISM": "Un mecanismo nuevo",
+    "MOVE_COMPONENT_SUCCESS": "Se movió {{componentName}} a {{mechanismName}}.",
+    "MOVE_COMPONENT_FAILED": "No se pudo mover {{componentName}} a un mecanismo.",
     "__TODO__": "These translations were done by Copilot. (Claude Sonnet 4).  They need to be verified by a native Spansih speaker.",
     "mechanism_delete": "Eliminar Mecanismo",
     "mechanism_rename": "Renombrar Mecanismo",
@@ -235,6 +243,7 @@
     },
     "BLOCKLY": {
         "OF_TYPE": "de tipo",
+        "MOVE_COMPONENT_TO_MECHANISM": "Mover este componente a un mecanismo",
         "WITH": "con",
         "WHEN": "cuando",
         "PARAMETER": "parámetro",

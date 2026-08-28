@@ -32,6 +32,8 @@ import * as storageProject from '../storage/project';
 import * as commonStorage from '../storage/common_storage';
 import * as classMethodDef from '../blocks/mrc_class_method_def'
 import * as eventHandler from '../blocks/mrc_event_handler'
+import * as mrcComponent from '../blocks/mrc_component'
+import * as moveComponentRequest from '../blocks/utils/move_component_request'
 import { Content } from 'antd/es/layout/layout';
 import { useAutosave } from './AutosaveManager';
 import { useUserSettings } from './useUserSettings';
@@ -60,6 +62,7 @@ export interface TabContentProps {
   setAlertErrorMessage: (message: string) => void;
   isActive: boolean;
   openGamepadConfigDialog?: () => void;
+  onMoveComponentRequested?: (componentBlockId: string, componentName: string) => void;
 }
 
 /**
@@ -79,6 +82,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   setAlertErrorMessage,
   isActive,
   openGamepadConfigDialog,
+  onMoveComponentRequested,
 }, ref) => {
   const blocklyComponent = React.useRef<BlocklyComponentType | null>(null);
   const [editorInstance, setEditorInstance] = React.useState<editor.Editor | null>(null);
@@ -148,6 +152,14 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     // Register gamepad config button callback if the function is provided
     if (openGamepadConfigDialog) {
       newWorkspace.registerButtonCallback('CONFIG_GAMEPADS_BUTTON', openGamepadConfigDialog);
+    }
+
+    // Let the component blocks in the robot ask to be moved into a mechanism.
+    if (onMoveComponentRequested && module.moduleType === storageModule.ModuleType.ROBOT) {
+      moveComponentRequest.registerMoveComponentHandler(newWorkspace.id, (componentBlock) => {
+        onMoveComponentRequested(
+            componentBlock.id, componentBlock.getFieldValue(mrcComponent.FIELD_NAME));
+      });
     }
 
     // Fetch the module content and this module's saved zoom/scroll from storage.
@@ -229,7 +241,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     // Deferred to let the workspace settle after loading blocks - calling scroll() immediately
     // has no effect (see the same pattern/comment in BlocklyComponent.tsx's setActive()).
     setTimeout(restoreViewport);
-  }, [module, project, storage, modulePath, showSimpleClassNames, shownPythonToolboxCategories, messageApi, handleBlocksChanged, openGamepadConfigDialog, getModuleZoom, getModuleScroll]);
+  }, [module, project, storage, modulePath, showSimpleClassNames, shownPythonToolboxCategories, messageApi, handleBlocksChanged, openGamepadConfigDialog, onMoveComponentRequested, getModuleZoom, getModuleScroll]);
 
   /** Called (debounced) when the user changes the workspace's zoom level. */
   const handleZoomChange = React.useCallback((zoom: number) => {
@@ -311,6 +323,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   React.useEffect(() => {
     return () => {
       if (editorInstance) {
+        moveComponentRequest.unregisterMoveComponentHandler(
+            editorInstance.getBlocklyWorkspace().id);
         editorInstance.abandon();
       }
     };

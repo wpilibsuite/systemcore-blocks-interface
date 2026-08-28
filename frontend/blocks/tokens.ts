@@ -30,6 +30,7 @@ import * as Blockly from 'blockly/core';
 export function customTokens(t: (key: string) => string): typeof Blockly.Msg {
   return {
     OF_TYPE: t('BLOCKLY.OF_TYPE'),
+    MOVE_COMPONENT_TO_MECHANISM: t('BLOCKLY.MOVE_COMPONENT_TO_MECHANISM'),
     WITH: t('BLOCKLY.WITH'),
     WHEN: t('BLOCKLY.WHEN'),
     PARAMETER: t('BLOCKLY.PARAMETER'),

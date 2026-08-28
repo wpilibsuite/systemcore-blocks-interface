@@ -44,6 +44,8 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import AddTabDialog from './AddTabDialog';
+import MoveComponentToMechanismDialog from './MoveComponentToMechanismDialog';
+import { MoveComponentResult } from '../editor/move_component_to_mechanism';
 import HiddenTabsDialog, { getHiddenModules } from './HiddenTabsDialog';
 import ClassNameComponent from './ClassNameComponent';
 import CopyModuleDialog from './CopyModuleDialog';
@@ -124,6 +126,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
   const [copyModalOpen, setCopyModalOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<TabItem | null>(null);
   const [contextMenuTabKey, setContextMenuTabKey] = React.useState<string | null>(null);
+  const [moveComponent, setMoveComponent] = React.useState<{blockId: string, name: string} | null>(null);
 
   // Store refs to TabContent components for each tab
   const tabContentRefs = React.useRef<Map<string, TabContentRef>>(new Map());
@@ -299,6 +302,32 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
     handleTabChange(newTab.key);
     setAddTabDialogOpen(false);
+  };
+
+  /** Handles a component block in the robot asking to be moved into a mechanism. */
+  const handleMoveComponentRequested = React.useCallback(
+      (componentBlockId: string, componentName: string): void => {
+        setMoveComponent({blockId: componentBlockId, name: componentName});
+      }, []);
+
+  /** Handles a component having been moved into a mechanism. */
+  const handleComponentMoved = (result: MoveComponentResult): void => {
+    setMoveComponent(null);
+    // If the move created the mechanism, open a tab for it at the end of the tab list and switch
+    // to it, the same way creating a mechanism from the add tab dialog does.
+    if (result.createdMechanism) {
+      const newTab: TabItem = {
+        key: result.mechanism.modulePath,
+        title: result.mechanism.className,
+        type: TabType.MECHANISM,
+      };
+      props.setTabList([...props.tabList, newTab]);
+      handleTabChange(newTab.key);
+    }
+    props.messageApi.success(t('MOVE_COMPONENT_SUCCESS', {
+      componentName: result.componentName,
+      mechanismName: result.mechanismName,
+    }));
   };
 
   /** Handles reopening one or more hidden tabs. */
@@ -566,6 +595,17 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
         storage={props.storage}
       />
 
+      <MoveComponentToMechanismDialog
+        isOpen={moveComponent !== null}
+        componentName={moveComponent ? moveComponent.name : ''}
+        componentBlockId={moveComponent ? moveComponent.blockId : ''}
+        project={props.project}
+        storage={props.storage}
+        onCancel={() => setMoveComponent(null)}
+        onMoved={handleComponentMoved}
+        onProjectChanged={props.onProjectChanged}
+      />
+
       <HiddenTabsDialog
         isOpen={hiddenTabsDialogOpen}
         onCancel={() => setHiddenTabsDialogOpen(false)}
@@ -697,6 +737,7 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
                     setAlertErrorMessage={props.setAlertErrorMessage}
                     isActive={activeKey === tab.key}
                     openGamepadConfigDialog={props.openGamepadConfigDialog}
+                    onMoveComponentRequested={handleMoveComponentRequested}
                   />
                 ) : null}
               </div>

@@ -245,6 +245,10 @@ export class ModuleContent {
     return this.components;
   }
 
+  setComponents(components: Component[]): void {
+    this.components = components;
+  }
+
   getPrivateComponents(): Component[] {
     return this.privateComponents;
   }

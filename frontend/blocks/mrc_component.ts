@@ -21,6 +21,8 @@
  */
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
+import ExportOutlinedSvg from '@ant-design/icons-svg/es/asn/ExportOutlined';
+import { renderIconDefinitionToSVGElement } from '@ant-design/icons-svg/es/helpers';
 
 import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
@@ -28,6 +30,7 @@ import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { valueForComponentArgInput } from './utils/value';
 import { getModuleTypeForWorkspace } from './utils/workspaces';
+import { getMoveComponentHandler } from './utils/move_component_request';
 import {
     classNameToShowOnBlocks,
     componentClasses,
@@ -52,8 +55,28 @@ export const OUTPUT_NAME = 'mrc_component';
 
 export const FIELD_NAME = 'NAME';
 export const FIELD_TYPE = 'TYPE';
+const FIELD_MOVE_TO_MECHANISM = 'MOVE_TO_MECHANISM';
 
-const INPUT_ARG_PREFIX = 'ARG';
+const INPUT_TITLE = 'TITLE';
+export const INPUT_ARG_PREFIX = 'ARG';
+
+/**
+ * The icon for the field that lets the user move this component into a mechanism. It is ant
+ * design's ExportOutlined icon, a box with an arrow leading out of it. Blockly's FieldImage needs
+ * an image url rather than a react component, so we render the icon to an svg data url here. It
+ * is drawn in white because component blocks have a dark background. Note that ant design's icons
+ * don't include the xmlns attribute, which an svg data url needs.
+ */
+const MOVE_TO_MECHANISM_ICON =
+    'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+        renderIconDefinitionToSVGElement(ExportOutlinedSvg, {
+          extraSVGAttrs: {
+            xmlns: 'http://www.w3.org/2000/svg',
+            width: '16',
+            height: '16',
+            fill: 'white',
+          },
+        }));
 
 const WARNING_ID_NOT_IN_HOLDER = 'not in holder';
 const WARNING_ID_COMPONENT_MISSING_COMPONENT_CLASS = 'missing component class';
@@ -108,7 +131,7 @@ const COMPONENT = {
     });
     const nameField = new Blockly.FieldTextInput('')
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
-    this.appendDummyInput()
+    this.appendDummyInput(INPUT_TITLE)
       .appendField(nameField, FIELD_NAME)
       .appendField(Blockly.Msg.OF_TYPE)
       .appendField(createFieldNonEditableText(''), FIELD_TYPE);
@@ -260,6 +283,7 @@ const COMPONENT = {
     mrcDescendantsMayHaveChanged(this.workspace, editor);
   },
   checkBlockIsInHolder: function(this: ComponentBlock): void {
+    this.updateMoveToMechanismButton();
     const rootBlock: Blockly.Block | null = this.getRootBlock();
     if (rootBlock && rootBlock.type === MRC_MECHANISM_COMPONENT_HOLDER) {
       // If the root block is the mechanism_component_holder, the component block is allowed to stay.
@@ -276,6 +300,52 @@ const COMPONENT = {
         }
         this.mrcHasNotInHolderWarning = true;
       }
+    }
+  },
+  /**
+   * Returns whether this component block can be moved into a mechanism. Only a component that
+   * belongs to the robot can be moved into a mechanism.
+   */
+  canMoveToMechanism: function(this: ComponentBlock): boolean {
+    if (this.isInFlyout || this.isInMutator || this.workspace.isReadOnly()) {
+      return false;
+    }
+    if (getModuleTypeForWorkspace(this.workspace) !== storageModule.ModuleType.ROBOT) {
+      return false;
+    }
+    const rootBlock: Blockly.Block | null = this.getRootBlock();
+    if (!rootBlock || rootBlock.type !== MRC_MECHANISM_COMPONENT_HOLDER) {
+      return false;
+    }
+    // There is no handler when this workspace isn't showing in a tab, for example when it is a
+    // headless workspace or a read-only preview of a sample.
+    return getMoveComponentHandler(this.workspace) !== null;
+  },
+  /**
+   * Adds or removes the field that the user clicks to move this component into a mechanism.
+   */
+  updateMoveToMechanismButton: function(this: ComponentBlock): void {
+    const hasButton = this.getField(FIELD_MOVE_TO_MECHANISM) !== null;
+    const shouldHaveButton = this.canMoveToMechanism();
+    if (hasButton === shouldHaveButton) {
+      return;
+    }
+    const titleInput = this.getInput(INPUT_TITLE);
+    if (!titleInput) {
+      return;
+    }
+    if (shouldHaveButton) {
+      const field = new Blockly.FieldImage(
+          MOVE_TO_MECHANISM_ICON, 16, 16, Blockly.Msg.MOVE_COMPONENT_TO_MECHANISM,
+          () => {
+            const handler = getMoveComponentHandler(this.workspace);
+            if (handler) {
+              handler(this);
+            }
+          });
+      titleInput.appendField(field, FIELD_MOVE_TO_MECHANISM);
+    } else {
+      titleInput.removeField(FIELD_MOVE_TO_MECHANISM);
     }
   },
   /**
