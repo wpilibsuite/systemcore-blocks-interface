@@ -220,6 +220,18 @@
                             "type": "wpiutil.Color"
                         }
                     ],
+                    "functionName": "get_ANSI",
+                    "returnType": "str",
+                    "tooltip": "Returns the ANSI prefix to use for the given color."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
                     "functionName": "get_hue",
                     "returnType": "int",
                     "tooltip": "Returns the hue [0-180] of the given color. "

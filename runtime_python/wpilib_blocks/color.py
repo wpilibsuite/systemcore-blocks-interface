@@ -93,3 +93,7 @@ def is_magenta(color: wpiutil.Color) -> bool:
         return abs(hue - 150) < _HUE_THRESHOLD
     return False
 
+
+def get_ANSI(color: wpiutil.Color) -> str:
+    """Returns the ANSI prefix to use for the given color."""
+    return f'\x1b[38;2;{int(color.red*255)};{int(color.green*255)};{int(color.blue*255)}m'
