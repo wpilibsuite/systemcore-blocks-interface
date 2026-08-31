@@ -1787,7 +1787,12 @@ function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.B
  * This works on the JSON produced by Blockly.serialization.workspaces.save, rather than on a live
  * workspace, so that it can also be applied to modules that aren't currently open.
  *
- * Returns true if any block was changed.
+ * @param blocks The JSON produced by Blockly.serialization.workspaces.save that we are looking through
+ * @param componentId The componentId of the component that is being moved into a mechanism.
+ * @param mechanismId The mechanismId of the mechanism that the component is being moved into.
+ * @param mechanismName The name of the mechanism that the component is being moved into.
+ * 
+ * @returns true if any block was changed.
  */
 export function repointComponentCallsIntoMechanism(
     blocks: {[key: string]: any},
@@ -1797,6 +1802,8 @@ export function repointComponentCallsIntoMechanism(
   let changed = false;
 
   const visitBlock = (blockJson: {[key: string]: any}): void => {
+    // If this is a mrc_call_python_function block, and it is calling a method on the given component,
+    // then update it to call the method on the component within the given mechanism.
     if (blockJson.type === BLOCK_NAME) {
       const extraState = blockJson.extraState;
       if (extraState &&
