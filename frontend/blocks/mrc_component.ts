@@ -343,6 +343,9 @@ const COMPONENT = {
               handler(this);
             }
           });
+      // Look up the message when the tooltip is shown, rather than now, so that the tooltip is in
+      // the current language even if the user changes languages after this field is created.
+      field.setTooltip(() => Blockly.Msg.MOVE_COMPONENT_TO_MECHANISM);
       titleInput.appendField(field, FIELD_MOVE_TO_MECHANISM);
     } else {
       titleInput.removeField(FIELD_MOVE_TO_MECHANISM);
