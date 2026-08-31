@@ -1,4 +1,12 @@
 {
+  "moveComponentDialog": {
+    "title": "העברת {{componentName}} אל"
+  },
+  "MOVE": "העבר",
+  "MOVE_TO_EXISTING_MECHANISM": "מנגנון קיים",
+  "MOVE_TO_NEW_MECHANISM": "מנגנון חדש",
+  "MOVE_COMPONENT_SUCCESS": "{{componentName}} הועבר אל {{mechanismName}}.",
+  "MOVE_COMPONENT_FAILED": "העברת {{componentName}} למנגנון נכשלה.",
   "__TODO__": "These translations were done by Claude Sonnet 4.6. They need to be verified by a native Hebrew speaker.",
   "mechanism_delete": "מחק מנגנון",
   "mechanism_rename": "שנה שם מנגנון",
@@ -235,6 +243,7 @@
   },
   "BLOCKLY": {
     "OF_TYPE": "מטיפוס",
+    "MOVE_COMPONENT_TO_MECHANISM": "העבר רכיב זה למנגנון",
     "WITH": "עם",
     "WHEN": "כאשר",
     "PARAMETER": "פרמטר",

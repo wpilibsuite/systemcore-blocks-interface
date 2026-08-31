@@ -93,7 +93,6 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcEventId: string,
   mrcMechanismId: string,
   mrcComponentClassName: string,
-  mrcOriginalComponentName: string,
   mrcMechanismClassName: string,
   mrcModuleOrClassName: string,
   mrcMapComponentNameToId: {[componentName: string]: string},
@@ -1779,3 +1778,62 @@ function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.B
   return createBlock(extraState, fields, inputs);
 }
 
+/**
+ * Repoints the mrc_call_python_function blocks that call a method on the given component so that
+ * they call it on the component within the given mechanism. This is used when a component is
+ * moved out of the robot and into a mechanism: a call that used to be self.myMotor.set(...)
+ * becomes self.myMechanism.myMotor.set(...).
+ *
+ * This works on the JSON produced by Blockly.serialization.workspaces.save, rather than on a live
+ * workspace, so that it can also be applied to modules that aren't currently open.
+ *
+ * @param blocks The JSON produced by Blockly.serialization.workspaces.save that we are looking through
+ * @param componentId The componentId of the component that is being moved into a mechanism.
+ * @param mechanismId The mechanismId of the mechanism that the component is being moved into.
+ * @param mechanismName The name of the mechanism that the component is being moved into.
+ * 
+ * @returns true if any block was changed.
+ */
+export function repointComponentCallsIntoMechanism(
+    blocks: {[key: string]: any},
+    componentId: string,
+    mechanismId: string,
+    mechanismName: string): boolean {
+  let changed = false;
+
+  const visitBlock = (blockJson: {[key: string]: any}): void => {
+    // If this is a mrc_call_python_function block, and it is calling a method on the given component,
+    // then update it to call the method on the component within the given mechanism.
+    if (blockJson.type === BLOCK_NAME) {
+      const extraState = blockJson.extraState;
+      if (extraState &&
+          extraState.functionKind === FunctionKind.INSTANCE_COMPONENT &&
+          extraState.componentId === componentId &&
+          !extraState.mechanismId) {
+        extraState.mechanismId = mechanismId;
+        if (!blockJson.fields) {
+          blockJson.fields = {};
+        }
+        blockJson.fields[FIELD_MECHANISM_NAME] = mechanismName;
+        changed = true;
+      }
+    }
+    if (blockJson.inputs) {
+      for (const inputName in blockJson.inputs) {
+        const input = blockJson.inputs[inputName];
+        if (input.block) {
+          visitBlock(input.block);
+        }
+        if (input.shadow) {
+          visitBlock(input.shadow);
+        }
+      }
+    }
+    if (blockJson.next && blockJson.next.block) {
+      visitBlock(blockJson.next.block);
+    }
+  };
+
+  storageModuleContent.getTopLevelBlocksJson(blocks).forEach(visitBlock);
+  return changed;
+}

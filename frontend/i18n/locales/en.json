@@ -1,4 +1,12 @@
 {
+    "moveComponentDialog": {
+        "title": "Move {{componentName}} into"
+    },
+    "MOVE": "Move",
+    "MOVE_TO_EXISTING_MECHANISM": "An Existing Mechanism",
+    "MOVE_TO_NEW_MECHANISM": "A New Mechanism",
+    "MOVE_COMPONENT_SUCCESS": "Moved {{componentName}} into {{mechanismName}}.",
+    "MOVE_COMPONENT_FAILED": "Failed to move {{componentName}} into a mechanism.",
     "mechanism_delete": "Delete Mechanism",
     "mechanism_rename": "Rename Mechanism",
     "mechanism_copy": "Copy Mechanism",
@@ -234,6 +242,7 @@
     },
     "BLOCKLY":{
         "OF_TYPE": "of type",
+        "MOVE_COMPONENT_TO_MECHANISM": "Move this component into a mechanism",
         "WITH": "with",
         "WHEN": "when",
         "PARAMETER": "parameter",

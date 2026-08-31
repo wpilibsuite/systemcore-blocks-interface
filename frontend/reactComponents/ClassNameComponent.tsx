@@ -28,6 +28,12 @@ import * as storageProject from '../storage/project';
 import * as storageNames from '../storage/names';
 import { isExistingPythonModule } from '../blocks/utils/python';
 
+/** Methods exposed by ClassNameComponent via ref. */
+export interface ClassNameComponentRef {
+  /** Validates the name that has been entered and, if it is valid, calls onAddNewItem. */
+  submitNewItem: () => void;
+}
+
 /** Props for the ClassNameComponent. */
 interface ClassNameComponentProps {
   tabType: TabType;
@@ -53,7 +59,8 @@ const ERROR_ALERT_MARGIN_TOP = 8;
  * Component for entering and validating class names.
  * Provides input validation, error display, and automatic capitalization.
  */
-export default function ClassNameComponent(props: ClassNameComponentProps): React.JSX.Element {
+const ClassNameComponent = React.forwardRef<ClassNameComponentRef, ClassNameComponentProps>((
+    props, ref): React.JSX.Element => {
   const {t} = I18Next.useTranslation();
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [alertErrorVisible, setAlertErrorVisible] = React.useState(false);
@@ -89,6 +96,11 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
       showError(error);
     }
   };
+
+  /** Expose the validated submit so that a parent's own button can trigger it. */
+  React.useImperativeHandle(ref, () => ({
+    submitNewItem: handleAddNewItem,
+  }));
 
   /** Clears the error state. */
   const clearError = (): void => {
@@ -190,4 +202,8 @@ export default function ClassNameComponent(props: ClassNameComponentProps): Reac
       {renderErrorAlert()}
     </>
   );
-}
+});
+
+ClassNameComponent.displayName = 'ClassNameComponent';
+
+export default ClassNameComponent;

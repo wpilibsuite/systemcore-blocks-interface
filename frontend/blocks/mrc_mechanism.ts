@@ -48,7 +48,7 @@ export const OUTPUT_NAME = 'mrc_mechansim';
 
 export const FIELD_NAME = 'NAME';
 export const FIELD_TYPE = 'TYPE';
-const INPUT_ARG_PREFIX = 'ARG';
+export const INPUT_ARG_PREFIX = 'ARG';
 const FIELD_COMPONENT_NAME_PREFIX = 'COMPONENT'
 const FIELD_ARG_NAME_PREFIX = 'ARGNAME';
 

@@ -1,4 +1,12 @@
 {
+    "moveComponentDialog": {
+        "title": "Déplacer {{componentName}} dans"
+    },
+    "MOVE": "Déplacer",
+    "MOVE_TO_EXISTING_MECHANISM": "Un mécanisme existant",
+    "MOVE_TO_NEW_MECHANISM": "Un nouveau mécanisme",
+    "MOVE_COMPONENT_SUCCESS": "{{componentName}} a été déplacé dans {{mechanismName}}.",
+    "MOVE_COMPONENT_FAILED": "Impossible de déplacer {{componentName}} dans un mécanisme.",
     "__TODO__": "These translations were done by Claude Sonnet 4.6. They need to be verified by a native French speaker.",
     "mechanism_delete": "Supprimer le mécanisme",
     "mechanism_rename": "Renommer le mécanisme",
@@ -235,6 +243,7 @@
     },
     "BLOCKLY": {
         "OF_TYPE": "de type",
+        "MOVE_COMPONENT_TO_MECHANISM": "Déplacer ce composant dans un mécanisme",
         "WITH": "avec",
         "WHEN": "quand",
         "PARAMETER": "paramètre",

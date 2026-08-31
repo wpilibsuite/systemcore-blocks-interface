@@ -144,15 +144,18 @@ export function newOpModeContent(projectName: string, opModeClassName: string): 
 /**
  * Make the module content from the given python code and blocks content.
  * If the given module has an empty moduleId field, it will be set to a valid id.
+ * 
+ * The last five parameters have a default value of an empty array, so they can be 
+ * omitted if there are no mechanisms, components, privateComponents, events, or methods.
  */
 export function makeModuleContentText(
     module: storageModule.Module,
     blocks: {[key: string]: any},
-    mechanisms: MechanismInRobot[],
-    components: Component[],
-    privateComponents: Component[],
-    events: Event[],
-    methods: Method[]): string {
+    mechanisms: MechanismInRobot[] = [],
+    components: Component[] = [],
+    privateComponents: Component[] = [],
+    events: Event[] = [],
+    methods: Method[] =[]): string {
   if (!module.moduleId) {
     module.moduleId = Blockly.utils.idGenerator.genUid();
   }
@@ -243,6 +246,10 @@ export class ModuleContent {
 
   getComponents(): Component[] {
     return this.components;
+  }
+
+  setComponents(components: Component[]): void {
+    this.components = components;
   }
 
   getPrivateComponents(): Component[] {

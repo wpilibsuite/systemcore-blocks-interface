@@ -23,6 +23,7 @@ import * as Blockly from 'blockly';
 
 import { MRC_STYLE_MECHANISMS } from '../themes/styles';
 import { makeLegalName } from './utils/validator';
+import * as workspaces from './utils/workspaces';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
@@ -32,6 +33,7 @@ import { createMechanismBlock, BLOCK_NAME as MRC_MECHANISM_NAME } from './mrc_me
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { MechanismBlock } from './mrc_mechanism';
 import { BLOCK_NAME as MRC_COMPONENT_NAME } from './mrc_component';
+import { FIELD_NAME as MRC_COMPONENT_FIELD_NAME, FIELD_TYPE as MRC_COMPONENT_FIELD_TYPE } from './mrc_component';
 import { OUTPUT_NAME as COMPONENT_OUTPUT } from './mrc_component';
 import { ComponentBlock } from './mrc_component';
 import { BLOCK_NAME as MRC_EVENT_NAME } from './mrc_event';
@@ -510,6 +512,15 @@ export function mrcDescendantsMayHaveChanged(workspace: Blockly.Workspace, edito
 // since we aren't guaranteed that the robot has a live workspace at this time, we have to work in JSON.
 export function mrcAddMechanismBlockToRobotContent(robotContent: storageModuleContent.ModuleContent,
   mechanism: storageModule.Mechanism): void {
+  const blocks = robotContent.getBlocks();
+  mrcAddMechanismBlockToRobotBlocks(blocks, mechanism);
+  robotContent.setBlocks(blocks);
+}
+
+// Same as mrcAddMechanismBlockToRobotContent, but works directly on the JSON produced by
+// Blockly.serialization.workspaces.save, which is what a live workspace can provide.
+export function mrcAddMechanismBlockToRobotBlocks(blocks: {[key: string]: any},
+  mechanism: storageModule.Mechanism): void {
   const mechanismBlock = createMechanismBlock(mechanism, [], false);
 
   // Build the plain JSON object for the new mechanism block (Blockly serialization format).
@@ -525,7 +536,6 @@ export function mrcAddMechanismBlockToRobotContent(robotContent: storageModuleCo
   }
 
   // Mutate the JSON blocks directly (no live workspace needed).
-  const blocks = robotContent.getBlocks();
   const topBlocks: {[key: string]: any}[] = blocks?.blocks?.blocks ?? [];
 
   for (const block of topBlocks) {
@@ -546,6 +556,98 @@ export function mrcAddMechanismBlockToRobotContent(robotContent: storageModuleCo
       lastBlock.next = { block: mechanismBlockJson };
     }
   }
+}
 
-  robotContent.setBlocks(blocks);
+/**
+ * Adds an mrc_component block for the given component to the given mechanism's module content.
+ * Since we aren't guaranteed that the mechanism has a live workspace at this time, the block is
+ * added to a headless workspace. The headless workspace must be a mechanism workspace because an
+ * mrc_component block only has input sockets for its constructor args when it is in the robot.
+ *
+ * Returns the component as it was actually added, since its name may have been changed to avoid
+ * colliding with a name that is already used in the mechanism.
+ */
+export function mrcAddComponentBlockToMechanismContent(
+  mechanismContent: storageModuleContent.ModuleContent,
+  component: storageModuleContent.Component,
+  importModule: string,
+  tooltip: string): storageModuleContent.Component {
+  const workspace = workspaces.createHeadlessWorkspace(storageModule.ModuleType.MECHANISM);
+  try {
+    Blockly.serialization.workspaces.load(mechanismContent.getBlocks(), workspace);
+
+    const holderBlocks = workspace.getBlocksByType(BLOCK_NAME);
+    if (!holderBlocks.length) {
+      throw new Error('mrcAddComponentBlockToMechanismContent: the mechanism has no ' + BLOCK_NAME + ' block.');
+    }
+    const holder = holderBlocks[0] as MechanismComponentHolderBlock;
+    const componentsInput = holder.getInput(INPUT_COMPONENTS);
+    if (!componentsInput || !componentsInput.connection) {
+      throw new Error('mrcAddComponentBlockToMechanismContent: the ' + BLOCK_NAME + ' block has no ' +
+          INPUT_COMPONENTS + ' input.');
+    }
+
+    // Make sure the component's name doesn't collide with a name that the mechanism already uses.
+    const otherNames: string[] = [];
+    holder.getDescendants(true)
+      .filter(descendant =>
+        descendant.type === MRC_MECHANISM_NAME ||
+        descendant.type === MRC_COMPONENT_NAME ||
+        descendant.type === MRC_EVENT_NAME)
+      .forEach(descendant => {
+        otherNames.push(descendant.getFieldValue('NAME'));
+      });
+    const name = makeLegalName(component.name, otherNames, /* mustBeValidPythonIdentifier */ true);
+
+    const newBlock = Blockly.serialization.blocks.append(
+      {
+        type: MRC_COMPONENT_NAME,
+        extraState: {
+          componentId: component.componentId,
+          importModule: importModule,
+          className: component.className,
+          tooltip: tooltip,
+          params: component.args.map(arg => ({
+            name: arg.name,
+            type: arg.type,
+            defaultValue: arg.defaultValue ? arg.defaultValue : '',
+          })),
+        },
+        fields: {
+          [MRC_COMPONENT_FIELD_NAME]: name,
+          [MRC_COMPONENT_FIELD_TYPE]: component.className,
+        },
+      },
+      workspace);
+
+    // Connect the new block at the end of the stack of component blocks.
+    let lastConnection: Blockly.Connection = componentsInput.connection;
+    let blockInStack = lastConnection.targetBlock();
+    while (blockInStack) {
+      if (!blockInStack.nextConnection) {
+        throw new Error('mrcAddComponentBlockToMechanismContent: a block in the ' + INPUT_COMPONENTS +
+            ' stack has no next connection.');
+      }
+      lastConnection = blockInStack.nextConnection;
+      blockInStack = blockInStack.getNextBlock();
+    }
+    if (!newBlock.previousConnection) {
+      throw new Error('mrcAddComponentBlockToMechanismContent: the new block has no previous connection.');
+    }
+    lastConnection.connect(newBlock.previousConnection);
+
+    mechanismContent.setBlocks(Blockly.serialization.workspaces.save(workspace));
+    const components: storageModuleContent.Component[] = [];
+    getComponents(workspace, components);
+    mechanismContent.setComponents(components);
+
+    return {
+      componentId: component.componentId,
+      name: name,
+      className: component.className,
+      args: component.args,
+    };
+  } finally {
+    workspaces.destroyHeadlessWorkspace(workspace);
+  }
 }

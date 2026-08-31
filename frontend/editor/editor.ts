@@ -36,7 +36,7 @@ import * as portConflicts from '../blocks/utils/port_conflicts';
 import * as workspaces from '../blocks/utils/workspaces';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { applyExpandedCategories, getToolboxJSON } from '../toolbox/toolbox';
-import { mrcAddMechanismBlockToRobotContent } from '../blocks/mrc_mechanism_component_holder';
+import { mrcAddMechanismBlockToRobotBlocks } from '../blocks/mrc_mechanism_component_holder';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
   kind: 'categoryToolbox',
@@ -754,6 +754,55 @@ export class Editor {
   }
 
   /**
+   * Captures this editor's live workspace state, lets the caller mutate it, and reloads the
+   * workspace from the mutated state. This is how code outside of the workspace can change
+   * blocks that a live editor is showing.
+   * Returns false if this editor has been abandoned.
+   */
+  public reloadWithMutatedBlocks(mutate: (blocks: {[key: string]: any}) => void): boolean {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      return false;
+    }
+    const currentBlocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
+    mutate(currentBlocks);
+    return this.reloadWithBlocks(currentBlocks);
+  }
+
+  /**
+   * Replaces the blocks in this editor's live workspace with the given blocks and reloads the
+   * workspace. Returns false if this editor has been abandoned.
+   */
+  public reloadWithBlocks(currentBlocks: {[key: string]: any}): boolean {
+    if (!this.blocklyWorkspace.rendered) {
+      // This editor has been abandoned.
+      return false;
+    }
+    const tempContentText = storageModuleContent.makeModuleContentText(
+        this.module, currentBlocks);
+    const tempContent = storageModuleContent.parseModuleContentText(tempContentText);
+
+    // Remove the existing change listener before reloading to avoid double-registration.
+    if (this.bindedOnChange) {
+      this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
+      this.bindedOnChange = null;
+    }
+    this.modulePathToModuleContent[this.modulePath] = tempContent;
+    this.loadModuleBlocks();
+    return true;
+  }
+
+  /**
+   * Replaces the cached content for the given mechanism. Call this after changing a mechanism
+   * module so that the blocks in this editor's workspace see the change. In particular,
+   * mrc_mechanism blocks rebuild their argument sockets from getAllComponentsFromMechanism.
+   */
+  public setMechanismModuleContent(
+      mechanismClassName: string, moduleContent: storageModuleContent.ModuleContent): void {
+    this.mechanismClassNameToModuleContent[mechanismClassName] = moduleContent;
+  }
+
+  /**
    * Adds a newly-created mechanism to this robot editor's live workspace by serializing
    * the current workspace state, injecting the mechanism block JSON, and reloading.
    * Should only be called on the robot editor.
@@ -774,21 +823,9 @@ export class Editor {
         storageModuleContent.newMechanismContent(this.projectName, mechanism.className));
     this.mechanismClassNameToModuleContent[mechanism.className] = emptyContent;
 
-    // Capture the live workspace state, append the mechanism block, then reload.
-    const currentBlocks = Blockly.serialization.workspaces.save(this.blocklyWorkspace);
-    const tempContentText = storageModuleContent.makeModuleContentText(
-        this.module, currentBlocks, [], [], [], [], []);
-    const tempContent = storageModuleContent.parseModuleContentText(tempContentText);
-    
-    mrcAddMechanismBlockToRobotContent(tempContent, mechanism);
-
-    // Remove the existing change listener before reloading to avoid double-registration.
-    if (this.bindedOnChange) {
-      this.blocklyWorkspace.removeChangeListener(this.bindedOnChange);
-      this.bindedOnChange = null;
-    }
-    this.modulePathToModuleContent[this.modulePath] = tempContent;
-    this.loadModuleBlocks();
+    this.reloadWithMutatedBlocks((blocks) => {
+      mrcAddMechanismBlockToRobotBlocks(blocks, mechanism);
+    });
   }
 
   private setPasteLocation(): void {
