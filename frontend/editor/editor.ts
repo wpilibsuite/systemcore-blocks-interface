@@ -779,7 +779,7 @@ export class Editor {
       return false;
     }
     const tempContentText = storageModuleContent.makeModuleContentText(
-        this.module, currentBlocks, [], [], [], [], []);
+        this.module, currentBlocks);
     const tempContent = storageModuleContent.parseModuleContentText(tempContentText);
 
     // Remove the existing change listener before reloading to avoid double-registration.
