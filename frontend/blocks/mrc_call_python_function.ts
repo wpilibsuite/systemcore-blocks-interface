@@ -93,7 +93,6 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcEventId: string,
   mrcMechanismId: string,
   mrcComponentClassName: string,
-  mrcOriginalComponentName: string,
   mrcMechanismClassName: string,
   mrcModuleOrClassName: string,
   mrcMapComponentNameToId: {[componentName: string]: string},
