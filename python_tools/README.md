@@ -16,3 +16,9 @@ The following instructions work on macOS Sonoma 14.6.1.
     1. source venv/bin/activate
     1. python3.12 generate_json.py --output_directory=../frontend/blocks/utils
     1. deactivate
+
+### To run tests
+    1. cd <your repo>/python_tools
+    1. source venv/bin/activate
+    1. pytest ../runtime_python/
+    1. deactivate
