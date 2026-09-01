@@ -5,6 +5,7 @@ from .mechanism import Mechanism
 from .block_execution import BlockExecution
 from .user_controls import DefaultUserControls
 from .driver_station_display import DriverStationDisplay
+from . import color
 
 __all__ = [
     'Teleop',
@@ -16,4 +17,5 @@ __all__ = [
     'BlockExecution',
     'DefaultUserControls',
     'DriverStationDisplay',
+    'color',
 ]

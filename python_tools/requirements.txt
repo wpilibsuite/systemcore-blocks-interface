@@ -3,3 +3,6 @@
 
 # Additional packages needed for generating the json
 absl-py==2.4.0
+
+# For running tests
+pytest
