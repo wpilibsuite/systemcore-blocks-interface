@@ -184,6 +184,11 @@ const MECHANISM = {
       renameMethodCallers(this.workspace, this.mrcMechanismId, legalName);
       // Rename any event handlers
       renameMechanismNameInEventHandlers(this.workspace, this.mrcMechanismId, legalName);
+      // Rebuild the toolbox so the mechanism's category reflects the new name.
+      const editor = Editor.getEditorForBlocklyWorkspace(this.workspace);
+      if (editor) {
+        editor.updateToolboxAfterDelay();
+      }
     }
     return legalName;
   },
@@ -287,9 +292,12 @@ const MECHANISM = {
       // to create parameters for all the components.
       const components = editor.getAllComponentsFromMechanism(foundMechanism);
 
-      // If the mechanism class name has changed, update this blcok.
+      // If the mechanism class name has changed (for example, the mechanism module was
+      // renamed), update this block and rebuild the toolbox so the Robot module's
+      // mechanism category reflects the new name.
       if (this.getFieldValue(FIELD_TYPE) !== foundMechanism.className) {
         this.setFieldValue(foundMechanism.className, FIELD_TYPE);
+        editor.updateToolboxAfterDelay();
       }
       const importModule = storageNames.pascalCaseToSnakeCase(foundMechanism.className);
       if (this.mrcImportModule !== importModule) {

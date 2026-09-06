@@ -91,50 +91,55 @@ def processSignature(signature_line: str) -> tuple[str, list[str], list[str], li
   arg_default_values = []
   i = 0
   while i < len(args):
+    star_star_kwargs_ = "**kwargs"
+    star_args = "*args"
+    if args[i:] == "*args, **kwargs":
+      arg_names.append("args")
+      arg_types.append("tuple")
+      arg_default_values.append(None)
+      arg_names.append("kwargs")
+      arg_types.append("dict")
+      arg_default_values.append(None)
+      break
+    elif args[i:] == "*args":
+      arg_names.append("args")
+      arg_types.append("tuple")
+      arg_default_values.append(None)
+      break
+    elif args[i:] == "**kwargs":
+      arg_names.append("kwargs")
+      arg_types.append("dict")
+      arg_default_values.append(None)
+      break
+
     # Get the argument name.
     iStartOfArgName = i
-    # Look for ": ", which is right after the argument name.
-    i = args.find(": ", iStartOfArgName)
-    if i == -1:
-      star_star_kwargs_ = "**kwargs"
-      star_args = "*args"
-      if args[iStartOfArgName:] == "*args, **kwargs":
-        arg_names.append("args")
-        arg_types.append("tuple")
-        arg_default_values.append(None)
-        arg_names.append("kwargs")
-        arg_types.append("dict")
-        arg_default_values.append(None)
-        break
-      elif args[iStartOfArgName:] == "*args":
-        arg_names.append("args")
-        arg_types.append("tuple")
-        arg_default_values.append(None)
-        break
-      elif args[iStartOfArgName:] == "**kwargs":
-        arg_names.append("kwargs")
-        arg_types.append("dict")
-        arg_default_values.append(None)
-        break
-      else:
-        raise Exception(f"Failed to parse signature line {signature_line}")
+    i = _findEndOfToken(args, iStartOfArgName, [":", ",", " "])
     arg_name = args[iStartOfArgName:i]
     arg_names.append(arg_name)
-    # Get the argument type.
-    iStartOfArgType = i + 2 # Skip over ": "
-    i = _findEndOfToken(args, iStartOfArgType, [",", " "])
-    while i + 2 < len(args) and args[i:i + 3] == " | ":
-      i = _findEndOfToken(args, i + 3, [",", " "])
-    arg_type = args[iStartOfArgType:i]
-    arg_types.append(arg_type)
+
+    if i + 1 < len(args) and args[i:i+2] == ": ":
+      # Get the argument type.
+      iStartOfArgType = i + 2 # Skip over ": "
+      iEndOfArgType = _findEndOfToken(args, iStartOfArgType, [",", " "])
+      while iEndOfArgType + 2 < len(args) and args[iEndOfArgType:iEndOfArgType + 3] == " | ":
+        iEndOfArgType = _findEndOfToken(args, iEndOfArgType + 3, [",", " "])
+      arg_type = args[iStartOfArgType:iEndOfArgType]
+      arg_types.append(arg_type)
+      i = iEndOfArgType
+    else:
+      arg_types.append(None)
+
     if i + 2 < len(args) and args[i:i + 3] == " = ":
       # Get the default value.
-      iStartOfDefaultValue = i + 3 # Skip over the space
-      i = _findEndOfToken(args, iStartOfDefaultValue, [","])
-      arg_default_value = args[iStartOfDefaultValue:i]
+      iStartOfDefaultValue = i + 3 # Skip over " = "
+      iEndOfDefaultValue = _findEndOfToken(args, iStartOfDefaultValue, [","])
+      arg_default_value = args[iStartOfDefaultValue:iEndOfDefaultValue]
       arg_default_values.append(arg_default_value)
+      i = iEndOfDefaultValue
     else:
       arg_default_values.append(None)
+
     if i + 1 < len(args) and args[i:i + 2] == ", ":
       i += 2 # Skip over ", "
   return (function_name, arg_names, arg_types, arg_default_values, return_type)
@@ -456,14 +461,15 @@ def isBuiltInClass(cls: type):
 
 
 def _collectModulesAndClasses(
-    object, modules: list[types.ModuleType], classes: list[type], ids: list[int]):
+    object, modules: list[types.ModuleType], classes: list[type], ids: list[int], root_modules: list[types.ModuleType]):
   if id(object) in ids:
     return
   ids.append(id(object))
 
   if inspect.ismodule(object):
     if isBuiltInModule(object):
-      return
+      if object not in root_modules:
+        return
     # Add the module to the modules list.
     if object not in modules:
       modules.append(object)
@@ -480,25 +486,25 @@ def _collectModulesAndClasses(
       continue
 
     if inspect.ismodule(member):
-      _collectModulesAndClasses(member, modules, classes, ids)
+      _collectModulesAndClasses(member, modules, classes, ids, root_modules)
     if inspect.isclass(member):
       # Collect the classes in the base classes (including this class).
       for cls in inspect.getmro(member):
         if isBuiltInClass(cls):
           break
-        _collectModulesAndClasses(cls, modules, classes, ids)
+        _collectModulesAndClasses(cls, modules, classes, ids, root_modules)
     if inspect.isroutine(member) and member.__doc__:
       # Collect the classes for the function arguments and return types.
       signature_line = member.__doc__.split("\n")[0]
       for cls in getClassesFromSignatureLine(signature_line):
         if isBuiltInClass(cls):
           continue
-        _collectModulesAndClasses(cls, modules, classes, ids)
+        _collectModulesAndClasses(cls, modules, classes, ids, root_modules)
     if isNothing(member):
       # Collect the class of this class variable.
       cls = type(member)
       if not isBuiltInClass(cls):
-        _collectModulesAndClasses(cls, modules, classes, ids)
+        _collectModulesAndClasses(cls, modules, classes, ids, root_modules)
     if inspect.isdatadescriptor(member):
       if hasattr(member, "fget"):
         # Collect the class of this instance variable.
@@ -509,7 +515,7 @@ def _collectModulesAndClasses(
           except:
             cls = None
           if cls and not isBuiltInClass(cls):
-            _collectModulesAndClasses(cls, modules, classes, ids)
+            _collectModulesAndClasses(cls, modules, classes, ids, root_modules)
 
 
 def collectModulesAndClasses(root_modules: list[types.ModuleType]) -> tuple[list[types.ModuleType], list[type]]:
@@ -517,7 +523,7 @@ def collectModulesAndClasses(root_modules: list[types.ModuleType]) -> tuple[list
   classes = []
   ids = []
   for module in root_modules:
-    _collectModulesAndClasses(module, modules, classes, ids)
+    _collectModulesAndClasses(module, modules, classes, ids, root_modules)
   modules.sort(key=lambda m: getFullModuleName(m))
   classes.sort(key=lambda c: getFullClassName(c))
   return (modules, classes)

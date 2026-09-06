@@ -1,14 +1,13 @@
 # This is the class used for displaying data on the driver station.
 
 import wpiutil
+from . import color as color_utils
 
 
 def _colorPrefixedLine(color: wpiutil.Color, line: str) -> str:
     if color is None:
         return line
-    return (
-        f'\x1b[38;2;{int(color.red*255)};{int(color.green*255)};{int(color.blue*255)}m'
-        + line)
+    return color_utils.get_ANSI(color) + line
 
 
 class DriverStationDisplay:

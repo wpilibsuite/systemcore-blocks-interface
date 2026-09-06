@@ -20,6 +20,7 @@
  */
 
 import * as robotPyToolbox from './robotpy_toolbox';
+import * as runtimePyToolbox from './runtimepy_toolbox';
 import * as toolboxItems from './items';
 import * as Blockly from 'blockly/core';
 import { getCategory as getLogicCategory } from './logic_category';
@@ -39,7 +40,6 @@ export function getToolboxItems(
 
   const robotPyCategories: toolboxItems.ContentsType[] = robotPyToolbox.getToolboxCategories(
       editor.getShownPythonToolboxCategories(), editor.getShowSimpleClassNames());
-
   if (robotPyCategories.length) {
     contents.push.apply(contents, robotPyCategories);
     contents.push.apply(contents, [
@@ -48,6 +48,17 @@ export function getToolboxItems(
       },
     ]);
   }
+
+  const runtimePyCategories: toolboxItems.ContentsType[] = runtimePyToolbox.getToolboxCategories();
+  if (runtimePyCategories.length) {
+    contents.push.apply(contents, runtimePyCategories);
+    contents.push.apply(contents, [
+      {
+        kind: 'sep',
+      },
+    ]);
+  }
+
   const testCategory = getTestCategory();
   if (testCategory.contents && testCategory.contents.length > 0) {
     contents.push.apply(contents, [testCategory]);

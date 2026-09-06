@@ -3107,8 +3107,16 @@
                             "type": "wpilib.I2C.Port"
                         }
                     ],
+                    "componentArgs": [
+                        {
+                            "defaultValue": "",
+                            "name": "i2cPort",
+                            "type": "SYSTEMCORE_I2C_PORT"
+                        }
+                    ],
                     "declaringClassName": "rev.ColorSensorV3",
                     "functionName": "__init__",
+                    "isComponent": true,
                     "returnType": "rev.ColorSensorV3",
                     "tooltip": "Constructs a ColorSensorV3.\n\nNote that the REV Color Sensor is really two devices in one package:\na color sensor providing red, green, blue and IR values, and a proximity\nsensor.\n\n:param port: The I2C port the color sensor is attached to"
                 }
@@ -3304,6 +3312,7 @@
                     ],
                     "declaringClassName": "rev.ColorSensorV3",
                     "functionName": "getColor",
+                    "isCommon": true,
                     "returnType": "wpiutil.Color",
                     "tooltip": "Get the normalized RGB color from the sensor (normalized based on\ntotal R + G + B)\n\n:returns: wpi::Color class with normalized sRGB values"
                 },
@@ -3330,6 +3339,7 @@
                     ],
                     "declaringClassName": "rev.ColorSensorV3",
                     "functionName": "getProximity",
+                    "isCommon": true,
                     "returnType": "int",
                     "tooltip": "Get the raw proximity value from the sensor ADC. This value is largest\nwhen an object is close to the sensor and smallest when\nfar away.\n\n:returns: Proximity measurement value, ranging from 0 to 2047 in\n          default configuration"
                 },
@@ -3343,6 +3353,7 @@
                     ],
                     "declaringClassName": "rev.ColorSensorV3",
                     "functionName": "getRawColor",
+                    "isCommon": true,
                     "returnType": "rev.ColorSensorV3.RawColor",
                     "tooltip": "Get the raw color value from the sensor.\n\n:returns: Raw color values from sensopr"
                 },
@@ -3369,6 +3380,7 @@
                     ],
                     "declaringClassName": "rev.ColorSensorV3",
                     "functionName": "isConnected",
+                    "isCommon": true,
                     "returnType": "bool",
                     "tooltip": "Indicates if the device can currently be communicated with.\n\n:returns: true if the device is currently connected and responsive"
                 },
@@ -3392,7 +3404,7 @@
                 }
             ],
             "instanceVariables": [],
-            "isComponent": false,
+            "isComponent": true,
             "moduleName": "rev",
             "staticMethods": []
         },
