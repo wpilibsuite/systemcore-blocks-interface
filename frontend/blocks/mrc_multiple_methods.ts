@@ -17,10 +17,10 @@
 
 /**
  * @fileoverview A block that calls one of the many methods of a single python
- * object. The methods are described by JSON, grouped into categories. The user picks a category from
- * the first dropdown and a method in that category from the second dropdown.
- * The selected method determines the block's fields, inputs, and whether the
- * block has an output.
+ * object. The methods are described by JSON, organized into groups. The user
+ * picks a group from the first dropdown and a method in that group from the
+ * second dropdown. The selected method determines the block's fields, inputs,
+ * and whether the block has an output.
  * @author alan@porpoiseful.com (Alan Smith)
  */
 
@@ -35,7 +35,7 @@ import * as toolboxItems from '../toolbox/items';
 export const BLOCK_NAME = 'mrc_multiple_methods';
 
 const INPUT_TITLE = 'TITLE';
-const FIELD_CATEGORY = 'CATEGORY';
+const FIELD_GROUP = 'GROUP';
 const FIELD_METHOD = 'METHOD';
 const INPUT_PARAM_PREFIX = 'PARAM_';
 const FIELD_PARAM_PREFIX = 'PARAM_';
@@ -69,9 +69,9 @@ export type ParameterDefinition = {
   options?: (string | [string, string])[],
 };
 
-/** A method in a category. */
+/** A method in a group. */
 export type MethodDefinition = {
-  /** The python name of the method. Must be unique within the category. */
+  /** The python name of the method. Must be unique within the group. */
   name: string,
   /** The text shown in the dropdown. Defaults to name. */
   label?: string,
@@ -81,14 +81,14 @@ export type MethodDefinition = {
   returnType?: string,
 };
 
-/** A category of methods. */
-export type CategoryDefinition = {
+/** A group of methods. */
+export type GroupDefinition = {
   /** The name shown in the dropdown. Must be unique within the object. */
   name: string,
   methods: MethodDefinition[],
 };
 
-/** A python object and its methods, grouped into categories. */
+/** A python object and its methods, organized into groups. */
 export type ObjectDefinition = {
   /**
    * The python expression that all of the methods are called on, for example
@@ -97,13 +97,13 @@ export type ObjectDefinition = {
   pythonObject: string,
   /** Specified if an import statement is needed for the generated python code. */
   importModule?: string,
-  categories: CategoryDefinition[],
+  groups: GroupDefinition[],
 };
 
 type MultipleMethodsExtraState = ObjectDefinition & {
-  /** The name of the selected category. Defaults to the first category. */
-  category?: string,
-  /** The name of the selected method. Defaults to the first method in the category. */
+  /** The name of the selected group. Defaults to the first group. */
+  group?: string,
+  /** The name of the selected method. Defaults to the first method in the group. */
   method?: string,
 };
 
@@ -111,8 +111,8 @@ export type MultipleMethodsBlock = Blockly.Block & MultipleMethodsMixin;
 interface MultipleMethodsMixin extends MultipleMethodsMixinType {
   mrcPythonObject: string,
   mrcImportModule: string,
-  mrcCategories: CategoryDefinition[],
-  mrcCategoryName: string,
+  mrcGroups: GroupDefinition[],
+  mrcGroupName: string,
   mrcMethodName: string,
   /** Maps parameter name to the signature of the input that was created for it. */
   mrcParamSignatures: {[paramName: string]: string},
@@ -126,8 +126,8 @@ const MULTIPLE_METHODS = {
   init: function(this: MultipleMethodsBlock): void {
     this.mrcPythonObject = '';
     this.mrcImportModule = '';
-    this.mrcCategories = [];
-    this.mrcCategoryName = '';
+    this.mrcGroups = [];
+    this.mrcGroupName = '';
     this.mrcMethodName = '';
     this.mrcParamSignatures = {};
     this.setStyle(MRC_STYLE_FUNCTIONS);
@@ -141,8 +141,8 @@ const MULTIPLE_METHODS = {
   saveExtraState: function(this: MultipleMethodsBlock): MultipleMethodsExtraState {
     const extraState: MultipleMethodsExtraState = {
       pythonObject: this.mrcPythonObject,
-      categories: this.mrcCategories,
-      category: this.mrcCategoryName,
+      groups: this.mrcGroups,
+      group: this.mrcGroupName,
       method: this.mrcMethodName,
     };
     if (this.mrcImportModule) {
@@ -159,61 +159,61 @@ const MULTIPLE_METHODS = {
   ): void {
     this.mrcPythonObject = extraState.pythonObject;
     this.mrcImportModule = extraState.importModule ?? '';
-    this.mrcCategories = extraState.categories ?? [];
-    this.mrcCategoryName = extraState.category ?? '';
-    if (!this.getCategory_()) {
-      this.mrcCategoryName = this.mrcCategories[0]?.name ?? '';
+    this.mrcGroups = extraState.groups ?? [];
+    this.mrcGroupName = extraState.group ?? '';
+    if (!this.getGroup_()) {
+      this.mrcGroupName = this.mrcGroups[0]?.name ?? '';
     }
     this.mrcMethodName = extraState.method ?? '';
     if (!this.getMethod_()) {
-      this.mrcMethodName = this.getCategory_()?.methods[0]?.name ?? '';
+      this.mrcMethodName = this.getGroup_()?.methods[0]?.name ?? '';
     }
     this.createTitle_();
     this.syncDropdowns_();
     this.updateShape_();
   },
-  getCategory_: function(this: MultipleMethodsBlock): CategoryDefinition | undefined {
-    return this.mrcCategories.find(c => c.name === this.mrcCategoryName);
+  getGroup_: function(this: MultipleMethodsBlock): GroupDefinition | undefined {
+    return this.mrcGroups.find(g => g.name === this.mrcGroupName);
   },
   getMethod_: function(this: MultipleMethodsBlock): MethodDefinition | undefined {
-    return this.getCategory_()?.methods.find(m => m.name === this.mrcMethodName);
+    return this.getGroup_()?.methods.find(m => m.name === this.mrcMethodName);
   },
   createTitle_: function(this: MultipleMethodsBlock): void {
     if (this.getInput(INPUT_TITLE)) {
       return;
     }
-    const categoryField = new Blockly.FieldDropdown(
-        () => menuOptions(this.mrcCategories.map(c => [c.name, c.name])));
-    categoryField.setValidator((newValue: string) => {
-      this.onCategoryChanged_(newValue);
+    const groupField = new Blockly.FieldDropdown(
+        () => menuOptions(this.mrcGroups.map(g => [g.name, g.name])));
+    groupField.setValidator((newValue: string) => {
+      this.onGroupChanged_(newValue);
       return undefined;
     });
     const methodField = new Blockly.FieldDropdown(
-        () => menuOptions((this.getCategory_()?.methods ?? []).map(m => [m.label ?? m.name, m.name])));
+        () => menuOptions((this.getGroup_()?.methods ?? []).map(m => [m.label ?? m.name, m.name])));
     methodField.setValidator((newValue: string) => {
       this.onMethodChanged_(newValue);
       return undefined;
     });
     this.appendDummyInput(INPUT_TITLE)
         .appendField(Blockly.Msg.CALL)
-        .appendField(categoryField, FIELD_CATEGORY)
+        .appendField(groupField, FIELD_GROUP)
         .appendField(methodField, FIELD_METHOD);
   },
   /**
-   * Sets the dropdown values to match mrcCategoryName and mrcMethodName without
+   * Sets the dropdown values to match mrcGroupName and mrcMethodName without
    * firing events or running the shape update in the validators.
    */
   syncDropdowns_: function(this: MultipleMethodsBlock): void {
-    const categoryField = this.getField(FIELD_CATEGORY) as Blockly.FieldDropdown;
+    const groupField = this.getField(FIELD_GROUP) as Blockly.FieldDropdown;
     const methodField = this.getField(FIELD_METHOD) as Blockly.FieldDropdown;
-    // The method options depend on the category. Regenerate them so the cached
+    // The method options depend on the group. Regenerate them so the cached
     // options don't cause the new value to be rejected.
-    categoryField.getOptions(false);
+    groupField.getOptions(false);
     methodField.getOptions(false);
     Blockly.Events.disable();
     try {
-      if (this.mrcCategoryName) {
-        categoryField.setValue(this.mrcCategoryName);
+      if (this.mrcGroupName) {
+        groupField.setValue(this.mrcGroupName);
       }
       if (this.mrcMethodName) {
         methodField.setValue(this.mrcMethodName);
@@ -222,13 +222,13 @@ const MULTIPLE_METHODS = {
       Blockly.Events.enable();
     }
   },
-  onCategoryChanged_: function(this: MultipleMethodsBlock, newCategoryName: string): void {
-    if (newCategoryName === this.mrcCategoryName) {
+  onGroupChanged_: function(this: MultipleMethodsBlock, newGroupName: string): void {
+    if (newGroupName === this.mrcGroupName) {
       return;
     }
     const oldExtraState = JSON.stringify(this.saveExtraState());
-    this.mrcCategoryName = newCategoryName;
-    this.mrcMethodName = this.getCategory_()?.methods[0]?.name ?? '';
+    this.mrcGroupName = newGroupName;
+    this.mrcMethodName = this.getGroup_()?.methods[0]?.name ?? '';
     this.syncDropdowns_();
     this.updateShape_();
     this.fireMutationEvent_(oldExtraState);
@@ -245,7 +245,7 @@ const MULTIPLE_METHODS = {
   /**
    * Fires a mutation event so that undo restores both dropdowns and the shape
    * together. Undoing only the field change events isn't enough because the
-   * method dropdown's options depend on the category.
+   * method dropdown's options depend on the group.
    */
   fireMutationEvent_: function(this: MultipleMethodsBlock, oldExtraState: string): void {
     const newExtraState = JSON.stringify(this.saveExtraState());
@@ -424,9 +424,9 @@ export const pythonFromBlock = function(
     block: MultipleMethodsBlock,
     generator: ExtendedPythonGenerator,
 ) {
-  const category = block.getCategory_();
+  const group = block.getGroup_();
   const method = block.getMethod_();
-  if (!category || !method) {
+  if (!group || !method) {
     return block.outputConnection ? ['None', Order.ATOMIC] : '';
   }
   if (block.mrcImportModule) {
@@ -442,7 +442,7 @@ export const pythonFromBlock = function(
   const result: string | [string, number] = block.outputConnection
       ? [code, Order.FUNCTION_CALL]
       : code + '\n';
-  const blockLabel = Blockly.Msg.CALL + ' ' + category.name + ' ' + (method.label ?? method.name);
+  const blockLabel = Blockly.Msg.CALL + ' ' + group.name + ' ' + (method.label ?? method.name);
   return generator.addErrorHandlingCode(block, blockLabel, result);
 };
 
@@ -470,20 +470,20 @@ function codeForParam(
 }
 
 /**
- * Returns a toolbox block for the given object. If category and method are not
- * specified, the first method of the first category is selected.
+ * Returns a toolbox block for the given object. If group and method are not
+ * specified, the first method of the first group is selected.
  */
 export function createMultipleMethodsBlock(
     objectDefinition: ObjectDefinition,
-    categoryName?: string,
+    groupName?: string,
     methodName?: string
 ): toolboxItems.Block {
-  const categories = objectDefinition.categories;
-  const category = categories.find(c => c.name === categoryName) ?? categories[0];
-  const method = category?.methods.find(m => m.name === methodName) ?? category?.methods[0];
+  const groups = objectDefinition.groups;
+  const group = groups.find(g => g.name === groupName) ?? groups[0];
+  const method = group?.methods.find(m => m.name === methodName) ?? group?.methods[0];
   const extraState: MultipleMethodsExtraState = {
     ...objectDefinition,
-    category: category?.name,
+    group: group?.name,
     method: method?.name,
   };
   return new toolboxItems.Block(BLOCK_NAME, extraState, null, null);

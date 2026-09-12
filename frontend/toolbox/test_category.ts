@@ -24,7 +24,7 @@ export function getCategory(): toolboxItems.Category {
   const randomObject: ObjectDefinition = {
     pythonObject: 'random',
     importModule: 'random',
-    categories: [
+    groups: [
       {
         name: 'Numbers',
         methods: [
