@@ -287,6 +287,7 @@
         "COLOR": "color",
         "LINE": "línea",
         "STEPS": "pasos",
+        "SHOW_OUTPUT": "mostrar salida",
         "REPEAT_UNTIL": "repetir hasta",
         "JUMP_TO": "saltar a",
         "CUSTOM_EVENTS_LABEL": "Eventos Personalizados",
@@ -353,6 +354,7 @@
         },
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Ejecuta el bloque conectado e ignora el resultado. Te permite llamar una función e ignorar el valor de retorno.",
+            "SHOW_OUTPUT": "Desmarca esto para ocultar la salida de este bloque y poder usarlo como una instrucción. Se ignorará el valor devuelto por la función.",
             "NONE": "No devuelve ninguno.",
             "OPMODE_TYPE": "Qué tipo de OpMode es este",
             "OPMODE_ENABLED": "Si el OpMode se muestra en la Estación del Conductor",

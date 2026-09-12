@@ -34,6 +34,7 @@ import {
     ClassData,
     FunctionData,
     ModuleData } from './utils/python_json_types';
+import * as outputContainer from './mrc_output_container';
 import * as value from './utils/value';
 import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
@@ -96,6 +97,7 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcMechanismClassName: string,
   mrcModuleOrClassName: string,
   mrcMapComponentNameToId: {[componentName: string]: string},
+  mrcHideOutput: boolean,
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
 
@@ -168,6 +170,11 @@ type CallPythonFunctionExtraState = {
    * or INSTANCE.
    */
   moduleOrClassName?: string,
+  /**
+   * Whether the user has chosen to hide the output of a function that returns a value.
+   * Specified only if the output is hidden.
+   */
+  hideOutput?: boolean,
 }
 
 const CALL_PYTHON_FUNCTION = {
@@ -331,6 +338,9 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcModuleOrClassName) {
       extraState.moduleOrClassName = this.mrcModuleOrClassName;
     }
+    if (this.mrcHideOutput) {
+      extraState.hideOutput = true;
+    }
     return extraState;
   },
   /**
@@ -359,6 +369,7 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcComponentClassName = extraState.componentClassName ? extraState.componentClassName : '';
     this.mrcMechanismClassName = extraState.mechanismClassName ? extraState.mechanismClassName : '';
     this.mrcModuleOrClassName = extraState.moduleOrClassName ? extraState.moduleOrClassName : '';
+    this.mrcHideOutput = extraState.hideOutput === true;
     // Initialize mrcMapComponentNameToId here. It will be filled during checkFunction.
     this.mrcMapComponentNameToId = {};
     this.updateBlock_();
@@ -367,7 +378,15 @@ const CALL_PYTHON_FUNCTION = {
    * Update the block to reflect the newly loaded extra state.
    */
   updateBlock_: function(this: CallPythonFunctionBlock): void {
-    if (this.mrcReturnType !== RETURN_TYPE_NONE) {
+    // A function that doesn't return a value never has an output plug. A function that does
+    // return a value has an output plug unless the user has hidden it with the mutator.
+    const showOutput = this.mrcReturnType !== RETURN_TYPE_NONE && !this.mrcHideOutput;
+    if (showOutput !== !!this.outputConnection) {
+      // The shape of the block is changing. Disconnect it from any block it is attached to
+      // because the connections it is using are about to be removed.
+      this.unplug(true);
+    }
+    if (showOutput) {
       // Set the output plug.
       this.setPreviousStatement(false, null);
       this.setNextStatement(false, null);
@@ -383,6 +402,7 @@ const CALL_PYTHON_FUNCTION = {
       this.setNextStatement(true, null);
       this.setOutput(false);
     }
+    this.updateMutator_();
 
     if (!this.getInput(INPUT_TITLE)) {
       // Add the dummy input.
@@ -500,6 +520,52 @@ const CALL_PYTHON_FUNCTION = {
     for (let i = this.mrcArgs.length; this.getInput('ARG' + i); i++) {
       this.removeInput('ARG' + i);
     }
+  },
+  /**
+   * Adds or removes the mutator that lets the user show or hide the output. Only a function
+   * that returns a value has the mutator.
+   */
+  updateMutator_: function(this: CallPythonFunctionBlock): void {
+    if (!this.rendered || this.isInFlyout) {
+      // Blocks in a headless workspace don't have icons and blocks in a flyout don't need the
+      // mutator. The block gets the mutator when it is dragged out of the flyout.
+      return;
+    }
+    // Block.setMutator is defined as setMutator(_mutator: MutatorIcon) and BlockSvg.setMutator
+    // is defined as setMutator(mutator: MutatorIcon | null).
+    // Therefore, to call setMutator(null), this must be casted to BlockSvg.
+    const blockSvg = this as unknown as Blockly.BlockSvg;
+    const hasMutator = this.getIcon(Blockly.icons.IconType.MUTATOR) !== undefined;
+    if (this.mrcReturnType !== RETURN_TYPE_NONE) {
+      // Don't replace an existing mutator. That would dispose of the mutator's bubble while the
+      // user has it open.
+      if (!hasMutator) {
+        blockSvg.setMutator(outputContainer.getMutatorIcon(blockSvg));
+      }
+    } else if (hasMutator) {
+      blockSvg.setMutator(null);
+    }
+  },
+  /**
+   * Populates the mutator's dialog with this block's components.
+   */
+  decompose: function(
+      this: CallPythonFunctionBlock,
+      workspace: Blockly.Workspace
+  ): outputContainer.OutputContainerBlock {
+    return outputContainer.createMutatorBlocks(workspace, !this.mrcHideOutput);
+  },
+  /**
+   * Reconfigures this block based on the mutator dialog's components.
+   */
+  compose: function(this: CallPythonFunctionBlock, containerBlock: Blockly.Block): void {
+    if (containerBlock.type !== outputContainer.OUTPUT_CONTAINER_BLOCK_NAME) {
+      throw new Error('compose: containerBlock.type should be ' +
+          outputContainer.OUTPUT_CONTAINER_BLOCK_NAME);
+    }
+    const outputContainerBlock = containerBlock as outputContainer.OutputContainerBlock;
+    this.mrcHideOutput = !outputContainerBlock.getShowOutput();
+    this.updateBlock_();
   },
   renameMethodCaller: function(this: CallPythonFunctionBlock, id: string, newName: string): void {
     // renameMethodCaller is called when a component, mechanism, event, or

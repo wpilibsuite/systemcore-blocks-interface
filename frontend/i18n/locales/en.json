@@ -286,6 +286,7 @@
         "COLOR": "color",
         "LINE": "line",
         "STEPS": "steps",
+        "SHOW_OUTPUT": "show output",
         "REPEAT_UNTIL": "repeat until",
         "JUMP_TO": "jump to",
         "CUSTOM_EVENTS_LABEL": "Custom Events",
@@ -352,6 +353,7 @@
         },
         "TOOLTIP":{
             "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
+            "SHOW_OUTPUT": "Uncheck this to hide the output of this block so that it can be used as a statement. The value returned by the function will be ignored.",
             "NONE": "Returns None.",
             "OPMODE_TYPE": "What sort of OpMode this is",
             "OPMODE_ENABLED": "Whether the OpMode is shown on Driver Station",

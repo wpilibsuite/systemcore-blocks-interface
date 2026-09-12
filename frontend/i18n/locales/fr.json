@@ -287,6 +287,7 @@
         "COLOR": "couleur",
         "LINE": "ligne",
         "STEPS": "étapes",
+        "SHOW_OUTPUT": "afficher la sortie",
         "REPEAT_UNTIL": "répéter jusqu'à",
         "JUMP_TO": "sauter à",
         "CUSTOM_EVENTS_LABEL": "Événements personnalisés",
@@ -353,6 +354,7 @@
         },
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Exécute le bloc connecté et ignore le résultat. Permet d'appeler une fonction en ignorant la valeur de retour.",
+            "SHOW_OUTPUT": "Décochez cette case pour masquer la sortie de ce bloc afin de pouvoir l'utiliser comme instruction. La valeur renvoyée par la fonction sera ignorée.",
             "NONE": "Renvoie None.",
             "OPMODE_TYPE": "Quel type d'OpMode c'est",
             "OPMODE_ENABLED": "Si l'OpMode est affiché sur la station de pilotage",
