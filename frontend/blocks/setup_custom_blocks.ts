@@ -13,6 +13,7 @@ import * as Mechanism from './mrc_mechanism';
 import * as MechanismComponentHolder from './mrc_mechanism_component_holder';
 import * as MiscComment from './mrc_misc_comment';
 import * as MiscEvaluateButIgnoreResult from './mrc_misc_evaluate_but_ignore_result';
+import * as MultipleMethods from './mrc_multiple_methods';
 import * as None from './mrc_none';
 import * as OpModeDetails from './mrc_opmode_details';
 import * as ParamContainer from './mrc_param_container'
@@ -42,6 +43,7 @@ const customBlocks = [
   MechanismComponentHolder,
   MiscComment,
   MiscEvaluateButIgnoreResult,
+  MultipleMethods,
   None,
   OpModeDetails,
   ParamContainer,
