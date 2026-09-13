@@ -28,7 +28,7 @@ def _get_hsv(color: wpiutil.Color) -> (int, int, int):
     The value is [0-255]. """
 
     # Extract and normalize RGB values to 0.0-1.0
-    color_code = color.hexString().lstrip("#")
+    color_code = color.hex_string().lstrip("#")
     red = int(color_code[0:2], 16) / 255.0
     green = int(color_code[2:4], 16) / 255.0
     blue = int(color_code[4:6], 16) / 255.0
