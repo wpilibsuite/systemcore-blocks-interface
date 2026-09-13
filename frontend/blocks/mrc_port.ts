@@ -315,7 +315,7 @@ export const pythonFromBlock = function (
       generator.importModule('wpilib');
       if (isMotionCoreCanBus(portNum)) {
         // Motioncore
-        code += 'wpilib.CANPort.CAN_D' + (SYSTEMCORE_CAN_BUS_COUNT - portNum) + ', # ' + portLabel + '\n';
+        code += 'wpilib.CANPort.CAN_D' + (portNum - SYSTEMCORE_CAN_BUS_COUNT) + ', # ' + portLabel + '\n';
       } else {
         // Systemcore
         code += 'wpilib.CANPort.CAN_S' + portNum + ', # ' + portLabel + '\n';
