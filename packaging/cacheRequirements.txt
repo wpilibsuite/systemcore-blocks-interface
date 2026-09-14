@@ -1,2 +1,2 @@
 robotpy == 2027.0.0a7
-robotpy-rev == 2027.0.0a7
+robotpy-rev == 2027.0.0a7.post1
