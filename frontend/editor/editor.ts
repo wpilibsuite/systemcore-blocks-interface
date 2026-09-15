@@ -36,6 +36,8 @@ import * as portConflicts from '../blocks/utils/port_conflicts';
 import * as workspaces from '../blocks/utils/workspaces';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { applyExpandedCategories, getToolboxJSON } from '../toolbox/toolbox';
+import * as toolboxItems from '../toolbox/items';
+import { EMPTY_LIBRARY_TOOLBOX, LibraryComponents, LibraryToolbox } from '../toolbox/library_toolbox';
 import { mrcAddMechanismBlockToRobotBlocks } from '../blocks/mrc_mechanism_component_holder';
 
 const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
@@ -71,6 +73,7 @@ export class Editor {
   private opModes: storageModule.OpMode[] = [];
   private bindedOnChange: any = null;
   private shownPythonToolboxCategories: Set<string> | null = null;
+  private libraryToolbox: LibraryToolbox = EMPTY_LIBRARY_TOOLBOX;
   private showSimpleClassNames: boolean = false;
   private toolbox: Blockly.utils.toolbox.ToolboxInfo = EMPTY_TOOLBOX;
   private toolboxUpdateTimeout: NodeJS.Timeout | null = null;
@@ -367,8 +370,19 @@ export class Editor {
     return this.shownPythonToolboxCategories;
   }
 
-  public updateToolbox(shownPythonToolboxCategories: Set<string>): void {
+  public getLibraryToolboxCategories(): toolboxItems.Category[] {
+    return this.libraryToolbox.categories;
+  }
+
+  public getLibraryComponents(): LibraryComponents[] {
+    return this.libraryToolbox.components;
+  }
+
+  public updateToolbox(
+      shownPythonToolboxCategories: Set<string>,
+      libraryToolbox: LibraryToolbox): void {
     this.shownPythonToolboxCategories = shownPythonToolboxCategories;
+    this.libraryToolbox = libraryToolbox;
     this.updateToolboxImpl();
   }
 

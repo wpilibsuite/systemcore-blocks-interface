@@ -1,0 +1,47 @@
+{
+  "className": "blocks_demo.components.LimitSwitch",
+  "moduleName": "blocks_demo.components",
+  "constructors": [
+    {
+      "functionName": "__init__",
+      "tooltip": "%{COMPONENTS.LIMIT_SWITCH}",
+      "args": [
+        {
+          "name": "channel",
+          "type": "int"
+        },
+        {
+          "name": "pressed_is_high",
+          "type": "bool",
+          "defaultValue": "True"
+        }
+      ],
+      "isComponent": true,
+      "componentArgs": [
+        {
+          "name": "smart_io_port",
+          "type": "SYSTEMCORE_SMART_IO_PORT"
+        },
+        {
+          "name": "pressed_is_high",
+          "type": "bool",
+          "defaultValue": "True"
+        }
+      ]
+    }
+  ],
+  "instanceMethods": [
+    {
+      "functionName": "is_pressed",
+      "tooltip": "%{COMPONENTS.LIMIT_SWITCH_IS_PRESSED}",
+      "args": [
+        {
+          "name": "self",
+          "type": "blocks_demo.components.LimitSwitch"
+        }
+      ],
+      "returnType": "bool",
+      "isCommon": true
+    }
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "kind": "flyoutToolbox",
+  "contents": [
+    {
+      "kind": "label",
+      "text": "Alliance"
+    },
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "int",
+        "args": [
+          {
+            "name": "is_red_alliance",
+            "type": "bool"
+          }
+        ],
+        "tooltip": "Returns the hue for the alliance color.",
+        "importModule": "led_effects.effects",
+        "moduleOrClassName": "led_effects.effects"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "led_effects.effects",
+        "FUNC": "team_hue"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "logic_boolean",
+            "fields": {
+              "BOOL": "TRUE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "label",
+      "text": "Rainbow"
+    },
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "int",
+        "args": [
+          {
+            "name": "seconds",
+            "type": "float"
+          },
+          {
+            "name": "cycles_per_second",
+            "type": "float"
+          }
+        ],
+        "tooltip": "Returns a hue that moves through the rainbow over time.",
+        "importModule": "led_effects.effects",
+        "moduleOrClassName": "led_effects.effects"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "led_effects.effects",
+        "FUNC": "rainbow_hue"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 0
+            }
+          }
+        },
+        "ARG1": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 0.5
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "label",
+      "text": "Pulse and Blink"
+    },
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "float",
+        "args": [
+          {
+            "name": "seconds",
+            "type": "float"
+          },
+          {
+            "name": "period",
+            "type": "float"
+          }
+        ],
+        "tooltip": "Returns a brightness between 0 and 1 that smoothly pulses once every period seconds.",
+        "importModule": "led_effects.effects",
+        "moduleOrClassName": "led_effects.effects"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "led_effects.effects",
+        "FUNC": "pulse_brightness"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 0
+            }
+          }
+        },
+        "ARG1": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 2
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "bool",
+        "args": [
+          {
+            "name": "seconds",
+            "type": "float"
+          },
+          {
+            "name": "period",
+            "type": "float"
+          }
+        ],
+        "tooltip": "Returns True for the first half of every period and False for the second half.",
+        "importModule": "led_effects.effects",
+        "moduleOrClassName": "led_effects.effects"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "led_effects.effects",
+        "FUNC": "blink"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 0
+            }
+          }
+        },
+        "ARG1": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

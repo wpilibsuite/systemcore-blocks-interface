@@ -1,0 +1,11 @@
+{
+  "formatVersion": 1,
+  "name": "field_sensors",
+  "displayName": "Field Sensors",
+  "color": "#00897B",
+  "version": "0.9.0",
+  "author": "Sensor Squad",
+  "summary": "Components for common game piece and obstacle sensors.",
+  "details": "Adds beam break, bumper, and ultrasonic distance sensor components. Each one plugs into a Smart IO port.",
+  "blocksVersion": ">=0.4.0"
+}

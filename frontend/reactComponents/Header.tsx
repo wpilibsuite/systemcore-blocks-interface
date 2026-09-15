@@ -22,6 +22,7 @@ import * as Antd from 'antd';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
 import * as createPythonFiles from '../storage/create_python_files';
+import * as missingComponentClasses from '../blocks/utils/missing_component_classes';
 import * as portConflicts from '../blocks/utils/port_conflicts';
 import * as serverSideStorage from '../storage/server_side_storage';
 import * as React from 'react';
@@ -139,6 +140,30 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     });
   };
 
+  /**
+   * Tells the user that the project can't be deployed because it uses component classes that
+   * don't exist, for example because the library they come from isn't installed.
+   */
+  const showMissingComponentClasses = (
+      missing: missingComponentClasses.MissingComponentClass[]): void => {
+    modal.error({
+      title: t('MISSING_COMPONENT_CLASSES_TITLE'),
+      content: (
+        <div>
+          <div>{t('MISSING_COMPONENT_CLASSES_MESSAGE')}</div>
+          <ul>
+            {missing.map((missingClass) => (
+              <li key={missingClass.className}>
+                <b>{missingClass.className}</b>: {missingClass.moduleNames.join(', ')}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ),
+      okText: t('OK'),
+    });
+  };
+
   /** Handles the deploy action to generate and send Python files to the robot. */
   const handleDeploy = async (): Promise<void> => {
     if (!props.project) {
@@ -155,6 +180,20 @@ export default function Header(props: HeaderProps): React.JSX.Element {
       await props.saveCurrentTab();
     } catch (error) {
       console.error('Failed to save before deploy:', error);
+      props.setAlertErrorMessage(t('DEPLOY_FAILED'));
+      return;
+    }
+
+    // The generated code can't run if it uses component classes that don't exist.
+    try {
+      const missing = await missingComponentClasses.findProjectMissingComponentClasses(
+          props.project, props.storage);
+      if (missing.length > 0) {
+        showMissingComponentClasses(missing);
+        return;
+      }
+    } catch (error) {
+      console.error('Failed to check for missing component classes:', error);
       props.setAlertErrorMessage(t('DEPLOY_FAILED'));
       return;
     }

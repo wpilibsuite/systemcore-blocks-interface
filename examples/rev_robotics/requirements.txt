@@ -1,0 +1,5 @@
+# robotpy-rev is used twice:
+#   - build.sh downloads its wheel for the robot into the library's wheels/ directory.
+#   - generate_python_data.py imports it to generate components/ and python_data/, so install it
+#     in the python_tools venv with pip install -r requirements.txt.
+robotpy-rev==2027.0.0a7.post1

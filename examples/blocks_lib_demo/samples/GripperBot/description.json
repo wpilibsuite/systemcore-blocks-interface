@@ -1,0 +1,8 @@
+{
+  "description": "%{SAMPLES.GRIPPER_BOT}",
+  "tags": [
+    "%{TAGS.GRIPPER}",
+    "%{TAGS.LIMIT_SWITCH}",
+    "%{TAGS.SERVO}"
+  ]
+}

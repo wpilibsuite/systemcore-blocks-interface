@@ -1,0 +1,8 @@
+{
+  "description": "An arm on an Expansion Hub motor that is moved to a position by a PID controller. Uses the PID Tools library.",
+  "tags": [
+    "arm",
+    "PID",
+    "expansion hub"
+  ]
+}

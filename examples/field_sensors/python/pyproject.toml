@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "field_sensors"
+version = "0.9.0"
+description = "Example field sensor components for the SystemCore blocks interface"
+requires-python = ">=3.8"
+license = {text = "Apache-2.0"}
+dependencies = []
+
+[tool.setuptools]
+packages = ["field_sensors"]

@@ -59,6 +59,16 @@ export function getToolboxItems(
     ]);
   }
 
+  const libraryCategories: toolboxItems.ContentsType[] = editor.getLibraryToolboxCategories();
+  if (libraryCategories.length) {
+    contents.push.apply(contents, libraryCategories);
+    contents.push.apply(contents, [
+      {
+        kind: 'sep',
+      },
+    ]);
+  }
+
   const testCategory = getTestCategory();
   if (testCategory.contents && testCategory.contents.length > 0) {
     contents.push.apply(contents, [testCategory]);

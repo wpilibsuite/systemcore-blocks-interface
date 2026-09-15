@@ -18,6 +18,8 @@ __author__ = "lizlooney@google.com (Liz Looney)"
 import copy
 import inspect
 import json
+import os
+import re
 import sys
 import types
 import typing
@@ -87,6 +89,12 @@ _KEY_IS_COMPONENT = 'isComponent'
 _KEY_COMPONENT_ARGS = 'componentArgs'
 _KEY_IS_COMMON = 'isCommon'
 
+# The file in a library directory that lists the python modules and classes that get toolbox
+# categories (shownCategories) and the ones that the library doesn't use (ignore).
+_PYTHON_TOOLBOX_FILE = 'python_toolbox.json'
+_KEY_SHOWN_CATEGORIES = 'shownCategories'
+_KEY_IGNORE = 'ignore'
+
 
 def ignoreModule(module_name: str) -> bool:
   for prefix in _LIST_MODULE_NAME_PREFIXES_TO_IGNORE:
@@ -106,46 +114,9 @@ def createArgData(arg_name: str, arg_type: str, default_value: str = ''):
   arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = default_value if default_value else ''
   return arg_data
 
+# The built in components. Libraries that are generated from other modules, like the REV Robotics
+# example in examples/rev_robotics, give JsonGenerator their own components.
 _DICT_COMPONENTS = {
-  'rev.A301': component.Component('rev.A301',
-    # As of September 2026, we only use the constructor that has just the can_port argument.
-    # If A301 becomes legal for FRC (in the future), we'll need to support the constructor
-    # that has both the can port and the device id.
-    expected_constructor_arg_names=[
-      'can_port',
-    ],
-    component_args=[
-      createArgData('can_port', 'SYSTEMCORE_CAN_PORT')
-    ],
-     # TODO: decide which methods are common.
-    common_method_names=[
-      'get_absolute_encoder_position',
-      'get_encoder_velocity',
-      'get_relative_encoder_position',
-      'get_throttle',
-      'set_absolute_position',
-      'set_inverted',
-      'set_relative_encoder_position',
-      'set_relative_position',
-      'set_throttle',
-      'set_velocity',
-    ],
-  ),
-  'rev.ColorSensorV3': component.Component('rev.ColorSensorV3',
-    expected_constructor_arg_names=[
-      'port',
-    ],
-    component_args=[
-      createArgData('i2c_port', 'SYSTEMCORE_I2C_PORT')
-    ],
-     # TODO: decide which methods are common.
-    common_method_names=[
-      'get_color',
-      'get_proximity',
-      'get_raw_color',
-      'is_connected',
-    ],
-  ),
   'wpilib.AddressableLED': component.Component('wpilib.AddressableLED',
     expected_constructor_arg_names=[
       'channel',
@@ -300,8 +271,12 @@ _DICT_COMPONENTS = {
 
 
 class JsonGenerator:
-  def __init__(self, root_modules: list[types.ModuleType], libs: list = []):
+  def __init__(self, root_modules: list[types.ModuleType], libs: list = [],
+               components: dict[str, component.Component] = {}):
+    """components maps class names to the components that are generated in addition to the
+    built in ones."""
     self._root_modules = root_modules
+    self._components = {**_DICT_COMPONENTS, **components}
     (self._modules, self._classes) = python_util.collectModulesAndClasses(self._root_modules)
     module_exports = python_util.collectModuleExports(self._modules)
     self._type_aliases = python_util.collectTypeAliases(self._modules, self._classes)
@@ -822,8 +797,8 @@ class JsonGenerator:
 
     class_name = class_data[_KEY_CLASS_NAME]
 
-    if class_name in _DICT_COMPONENTS:
-      component = _DICT_COMPONENTS[class_name]
+    if class_name in self._components:
+      component = self._components[class_name]
       class_data[_KEY_IS_COMPONENT] = True
       found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
@@ -885,8 +860,169 @@ class JsonGenerator:
     return json_data
 
   def writeJsonFile(self, file_path: str):
+    _writeJson(self._getJsonData(), file_path)
+
+  def writeBlocksLibFiles(self, library_directory: str, add_unused_to_ignore: bool = False):
+    """Writes the modules and classes of the root modules as the files of a third party
+    .blocks_lib library (see docs/blocks_lib_format.md).
+
+    Only what the library uses is written: the component classes, the modules and classes listed
+    in shownCategories in the library's python_toolbox.json, and the classes and enums that those
+    refer to in their arguments, return types, and variables. A warning lists the other classes
+    and enums, except the ones listed in ignore in python_toolbox.json. If add_unused_to_ignore is
+    True, they are added to ignore in python_toolbox.json instead.
+
+    Each component class is written to components/<class_name>.json. The rest of the modules and
+    classes, and the type aliases and subclasses, are written to python_data/<module_name>.json.
+    Existing json files in those directories are removed first, since they are all generated.
+    """
+    root_module_names = [module.__name__ for module in self._root_modules]
+    def isInRootModules(name: str) -> bool:
+      return any(name == root or name.startswith(root + '.') for root in root_module_names)
+
+    python_toolbox = _readPythonToolbox(library_directory)
+    shown_names = set(python_toolbox.get(_KEY_SHOWN_CATEGORIES, []))
+    ignored_names = set(python_toolbox.get(_KEY_IGNORE, []))
+
     json_data = self._getJsonData()
-    json_file = open(file_path, 'w', encoding='utf-8')
-    json.dump(json_data, json_file, sort_keys=True, indent=4)
+    # Base classes from other modules are included in json_data, but they are already built in.
+    all_classes = {class_data[_KEY_CLASS_NAME]: class_data for class_data in json_data[_KEY_CLASSES]
+                   if isInRootModules(class_data[_KEY_CLASS_NAME])}
+    all_modules = {module_data[_KEY_MODULE_NAME]: module_data for module_data in json_data[_KEY_MODULES]
+                   if isInRootModules(module_data[_KEY_MODULE_NAME])}
+    # Maps each enum to the class it is in, or to None for an enum that is directly in a module.
+    enum_owners = {}
+    for module_data in all_modules.values():
+      for enum_data in module_data[_KEY_ENUMS]:
+        enum_owners[enum_data[_KEY_ENUM_CLASS_NAME]] = None
+    for class_name, class_data in all_classes.items():
+      for enum_data in class_data[_KEY_ENUMS]:
+        enum_owners[enum_data[_KEY_ENUM_CLASS_NAME]] = class_name
+
+    for name in sorted((shown_names | ignored_names) - set(all_classes) - set(all_modules) - set(enum_owners)):
+      print(f'WARNING: {name} in {_PYTHON_TOOLBOX_FILE} is not a module, class, or enum in '
+            f'{", ".join(root_module_names)}',
+            file=sys.stderr)
+
+    # The classes that blocks can be made for: the components and the shown classes.
+    used_class_names = {class_name for class_name, class_data in all_classes.items()
+                        if class_data[_KEY_IS_COMPONENT] or class_name in shown_names}
+    for class_name in sorted(used_class_names & ignored_names):
+      print(f'ERROR: {class_name} is in ignore in {_PYTHON_TOOLBOX_FILE}, but it is a component or '
+            'is in shownCategories, so it is generated anyway',
+            file=sys.stderr)
+    used_module_names = set(all_modules) & shown_names
+
+    # Add the classes and enums that the used classes and modules refer to.
+    referenced_names = set()
+    for class_name in used_class_names:
+      referenced_names.update(_getReferencedTypeNames(all_classes[class_name]))
+    for module_name in used_module_names:
+      referenced_names.update(_getReferencedTypeNames(all_modules[module_name]))
+    class_names = set(used_class_names)
+    module_enum_names = set()
+    for name in referenced_names - ignored_names:
+      if name in all_classes:
+        class_names.add(name)
+      elif name in enum_owners:
+        owner = enum_owners[name]
+        if owner is None:
+          module_enum_names.add(name)
+        elif owner not in ignored_names:
+          class_names.add(owner)
+
+    modules = []
+    for module_name, module_data in all_modules.items():
+      if module_name in used_module_names:
+        modules.append(module_data)
+      else:
+        module_data = copy.deepcopy(module_data)
+        module_data[_KEY_ENUMS] = [enum_data for enum_data in module_data[_KEY_ENUMS]
+                                   if enum_data[_KEY_ENUM_CLASS_NAME] in module_enum_names]
+        module_data[_KEY_FUNCTIONS] = []
+        module_data[_KEY_MODULE_VARIABLES] = []
+        modules.append(module_data)
+    generated_enum_names = {enum_data[_KEY_ENUM_CLASS_NAME]
+                            for module_data in modules for enum_data in module_data[_KEY_ENUMS]}
+
+    not_generated_names = sorted(
+        ({name for name in all_classes if name not in class_names} |
+         {name for name, owner in enum_owners.items()
+          if owner is None and name not in generated_enum_names}) - ignored_names)
+    if not_generated_names and add_unused_to_ignore:
+      python_toolbox[_KEY_IGNORE] = sorted(ignored_names | set(not_generated_names))
+      _writeJson(python_toolbox, os.path.join(library_directory, _PYTHON_TOOLBOX_FILE), indent=2,
+                 sort_keys=False)
+      print(f'Added {len(not_generated_names)} classes and enums that were not generated to '
+            f'ignore in {_PYTHON_TOOLBOX_FILE}')
+    elif not_generated_names:
+      print(f'WARNING: these classes and enums were not generated, because nothing in the library '
+            f'uses them. Add them to shownCategories or ignore in {_PYTHON_TOOLBOX_FILE}, or generate '
+            f'with add_unused_to_ignore:\n' + json.dumps(not_generated_names, indent=2),
+            file=sys.stderr)
+
+    classes = [all_classes[name] for name in sorted(class_names)]
+    component_classes = [class_data for class_data in classes if class_data[_KEY_IS_COMPONENT]]
+    python_data = {
+      _KEY_MODULES: modules,
+      _KEY_CLASSES: [class_data for class_data in classes if not class_data[_KEY_IS_COMPONENT]],
+      _KEY_ALIASES: {name: alias for name, alias in json_data[_KEY_ALIASES].items()
+                     if isInRootModules(name)},
+      _KEY_SUBCLASSES: {},
+    }
+    for class_name, subclass_names in json_data[_KEY_SUBCLASSES].items():
+      if isInRootModules(class_name) and class_name not in class_names:
+        continue
+      subclass_names = [name for name in subclass_names if name in class_names]
+      if subclass_names:
+        python_data[_KEY_SUBCLASSES][class_name] = subclass_names
+
+    components_directory = os.path.join(library_directory, 'components')
+    python_data_directory = os.path.join(library_directory, 'python_data')
+    for directory in [components_directory, python_data_directory]:
+      os.makedirs(directory, exist_ok=True)
+      for filename in os.listdir(directory):
+        if filename.endswith('.json'):
+          os.remove(os.path.join(directory, filename))
+    for class_data in component_classes:
+      simple_class_name = class_data[_KEY_CLASS_NAME].rsplit('.', 1)[-1]
+      _writeJson(class_data, os.path.join(components_directory, f'{_toSnakeCase(simple_class_name)}.json'))
+    _writeJson(python_data, os.path.join(python_data_directory, f'{"_".join(root_module_names)}.json'))
+
+
+def _readPythonToolbox(library_directory: str):
+  """Returns the contents of the library's python_toolbox.json, or an empty dict if it doesn't have
+  one."""
+  file_path = os.path.join(library_directory, _PYTHON_TOOLBOX_FILE)
+  if not os.path.exists(file_path):
+    return {}
+  with open(file_path, 'r', encoding='utf-8') as json_file:
+    return json.load(json_file)
+
+
+def _getReferencedTypeNames(data) -> set[str]:
+  """Returns the names in the argument types, return types, and variable types of the given class
+  or module data. A type like list[rev.CIEColor] has more than one name."""
+  types = []
+  for key in [_KEY_CONSTRUCTORS, _KEY_INSTANCE_METHODS, _KEY_STATIC_METHODS, _KEY_FUNCTIONS]:
+    for function_data in data.get(key, []):
+      types.append(function_data[_KEY_FUNCTION_RETURN_TYPE])
+      types.extend(arg_data[_KEY_ARGUMENT_TYPE] for arg_data in function_data[_KEY_FUNCTION_ARGS])
+  for key in [_KEY_INSTANCE_VARIABLES, _KEY_CLASS_VARIABLES, _KEY_MODULE_VARIABLES]:
+    types.extend(var_data[_KEY_VARIABLE_TYPE] for var_data in data.get(key, []))
+  names = set()
+  for type_string in types:
+    names.update(re.findall(r'[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*', type_string or ''))
+  return names
+
+
+def _toSnakeCase(name: str) -> str:
+  """Converts UpperCamelCase to lower_snake_case. For example, ColorSensorV3 becomes
+  color_sensor_v3."""
+  return re.sub(r'(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])', '_', name).lower()
+
+
+def _writeJson(json_data, file_path: str, indent: int = 4, sort_keys: bool = True):
+  with open(file_path, 'w', encoding='utf-8') as json_file:
+    json.dump(json_data, json_file, sort_keys=sort_keys, indent=indent)
     json_file.write('\n')
-    json_file.close()

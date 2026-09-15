@@ -20,6 +20,7 @@
  */
 import * as Antd from 'antd';
 import * as React from 'react';
+import * as blocksLib from '../libraries/blocks_lib';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
 import * as I18Next from 'react-i18next';
@@ -35,7 +36,8 @@ import {
   GlobalOutlined,
   CheckOutlined,
   ControlOutlined,
-  AppstoreOutlined
+  AppstoreOutlined,
+  BookOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
@@ -59,6 +61,8 @@ export interface MenuProps {
   switchToProjectAndSelectTab: (project: storageProject.Project, tabKey: string) => void;
   onProjectChanged: () => Promise<void>;
   openWPIToolboxSettings: () => void;
+  openLibraries: () => void;
+  libraries: blocksLib.Library[];
   theme: string;
   setTheme: (theme: string) => void;
   renderer: string;
@@ -106,6 +110,7 @@ function getMenuItems(
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
       getItem(t('MECHANISMS') + '...', 'manageMechanisms', TabTypeUtils.getIcon(TabType.MECHANISM)),
       getItem(t('OPMODES') + '...', 'manageOpmodes', TabTypeUtils.getIcon(TabType.OPMODE)),
+      getItem(t('LIBRARIES.MENU_ITEM') + '...', 'manageLibraries', <BookOutlined />),
     ]),
     getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
       getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
@@ -253,6 +258,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       setSamplesModalOpen(true);
     } else if (key === 'tour') {
       props.startTour?.();
+    } else if (key === 'manageLibraries') {
+      props.openLibraries();
     } else if (key === 'wpi_toolbox'){
       props.openWPIToolboxSettings();
     } else if (key === 'toggle_show_simple_classNames'){
@@ -344,6 +351,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         setCurrentProject={props.setCurrentProject}
         setAlertErrorMessage={props.setAlertErrorMessage}
         theme={props.theme}
+        libraries={props.libraries}
       />
       <ThemeModal
           open={themeModalOpen}

@@ -1,0 +1,37 @@
+{
+  "className": "field_sensors.sensors.Bumper",
+  "moduleName": "field_sensors.sensors",
+  "constructors": [
+    {
+      "functionName": "__init__",
+      "tooltip": "A bumper switch plugged into a Smart IO port.",
+      "args": [
+        {
+          "name": "channel",
+          "type": "int"
+        }
+      ],
+      "isComponent": true,
+      "componentArgs": [
+        {
+          "name": "smart_io_port",
+          "type": "SYSTEMCORE_SMART_IO_PORT"
+        }
+      ]
+    }
+  ],
+  "instanceMethods": [
+    {
+      "functionName": "is_pressed",
+      "tooltip": "Returns True if the bumper is pressed.",
+      "args": [
+        {
+          "name": "self",
+          "type": "field_sensors.sensors.Bumper"
+        }
+      ],
+      "returnType": "bool",
+      "isCommon": true
+    }
+  ]
+}

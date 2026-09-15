@@ -1,0 +1,313 @@
+{
+    "className": "rev.ColorSensorV3",
+    "classVariables": [],
+    "constructors": [
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "port",
+                    "type": "wpilib.I2C.Port"
+                }
+            ],
+            "componentArgs": [
+                {
+                    "defaultValue": "",
+                    "name": "i2c_port",
+                    "type": "SYSTEMCORE_I2C_PORT"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "__init__",
+            "isComponent": true,
+            "returnType": "rev.ColorSensorV3",
+            "tooltip": "Constructs a ColorSensorV3.\n\nNote that the REV Color Sensor is really two devices in one package:\na color sensor providing red, green, blue and IR values, and a proximity\nsensor.\n\n:param port: The I2C port the color sensor is attached to"
+        }
+    ],
+    "enums": [
+        {
+            "enumClassName": "rev.ColorSensorV3.ColorMeasurementRate",
+            "enumValues": [
+                "K1000MS",
+                "K100MS",
+                "K2000MS",
+                "K200MS",
+                "K25MS",
+                "K500MS",
+                "K50MS"
+            ],
+            "moduleName": "rev",
+            "tooltip": "Members:\n\n  K25MS\n\n  K50MS\n\n  K100MS\n\n  K200MS\n\n  K500MS\n\n  K1000MS\n\n  K2000MS"
+        },
+        {
+            "enumClassName": "rev.ColorSensorV3.ColorResolution",
+            "enumValues": [
+                "K13BIT",
+                "K16BIT",
+                "K17BIT",
+                "K18BIT",
+                "K19BIT",
+                "K20BIT"
+            ],
+            "moduleName": "rev",
+            "tooltip": "Members:\n\n  K20BIT\n\n  K19BIT\n\n  K18BIT\n\n  K17BIT\n\n  K16BIT\n\n  K13BIT"
+        },
+        {
+            "enumClassName": "rev.ColorSensorV3.GainFactor",
+            "enumValues": [
+                "K18X",
+                "K1X",
+                "K3X",
+                "K6X",
+                "K9X"
+            ],
+            "moduleName": "rev",
+            "tooltip": "Members:\n\n  K1X\n\n  K3X\n\n  K6X\n\n  K9X\n\n  K18X"
+        },
+        {
+            "enumClassName": "rev.ColorSensorV3.LEDCurrent",
+            "enumValues": [
+                "PULSE100M_A",
+                "PULSE10M_A",
+                "PULSE125M_A",
+                "PULSE25M_A",
+                "PULSE2M_A",
+                "PULSE50M_A",
+                "PULSE5M_A",
+                "PULSE75M_A"
+            ],
+            "moduleName": "rev",
+            "tooltip": "Members:\n\n  PULSE2M_A\n\n  PULSE5M_A\n\n  PULSE10M_A\n\n  PULSE25M_A\n\n  PULSE50M_A\n\n  PULSE75M_A\n\n  PULSE100M_A\n\n  PULSE125M_A"
+        },
+        {
+            "enumClassName": "rev.ColorSensorV3.LEDPulseFrequency",
+            "enumValues": [
+                "K100K_HZ",
+                "K60K_HZ",
+                "K70K_HZ",
+                "K80K_HZ",
+                "K90K_HZ"
+            ],
+            "moduleName": "rev",
+            "tooltip": "Members:\n\n  K60K_HZ\n\n  K70K_HZ\n\n  K80K_HZ\n\n  K90K_HZ\n\n  K100K_HZ"
+        },
+        {
+            "enumClassName": "rev.ColorSensorV3.ProximityMeasurementRate",
+            "enumValues": [
+                "K100MS",
+                "K12MS",
+                "K200MS",
+                "K25MS",
+                "K400MS",
+                "K50MS",
+                "K6MS"
+            ],
+            "moduleName": "rev",
+            "tooltip": "Members:\n\n  K6MS\n\n  K12MS\n\n  K25MS\n\n  K50MS\n\n  K100MS\n\n  K200MS\n\n  K400MS"
+        },
+        {
+            "enumClassName": "rev.ColorSensorV3.ProximityResolution",
+            "enumValues": [
+                "K10BIT",
+                "K11BIT",
+                "K8BIT",
+                "K9BIT"
+            ],
+            "moduleName": "rev",
+            "tooltip": "Members:\n\n  K8BIT\n\n  K9BIT\n\n  K10BIT\n\n  K11BIT"
+        }
+    ],
+    "instanceMethods": [
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "res",
+                    "type": "rev.ColorSensorV3.ColorResolution"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "rate",
+                    "type": "rev.ColorSensorV3.ColorMeasurementRate"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "configure_color_sensor",
+            "returnType": "None",
+            "tooltip": "Configure the color sensor.\n\nThese settings are only needed for advanced users, the defaults\nwill work fine for most teams. Consult the APDS-9151 for more\ninformation on these configuration settings and how they will affect\ncolor sensor measurements.\n\n:param res:  Bit resolution output by the respective light sensor ADCs\n:param rate: Measurement rate of the light sensor"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "res",
+                    "type": "rev.ColorSensorV3.ProximityResolution"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "rate",
+                    "type": "rev.ColorSensorV3.ProximityMeasurementRate"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "configure_proximity_sensor",
+            "returnType": "None",
+            "tooltip": "Configure the proximity sensor.\n\nThese settings are only needed for advanced users, the defaults\nwill work fine for most teams. Consult the APDS-9151 for more\ninformation on these configuration settings and how they will affect\nproximity sensor measurements.\n\n:param res:  Bit resolution output by the proximity sensor ADC.\n:param rate: Measurement rate of the proximity sensor"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "freq",
+                    "type": "rev.ColorSensorV3.LEDPulseFrequency"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "current",
+                    "type": "rev.ColorSensorV3.LEDCurrent"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "pulses",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "configure_proximity_sensor_led",
+            "returnType": "None",
+            "tooltip": "Configure the the IR LED used by the proximity sensor.\n\nThese settings are only needed for advanced users, the defaults\nwill work fine for most teams. Consult the APDS-9151 for more\ninformation on these configuration settings and how they will affect\nproximity sensor measurements.\n\n:param freq:    The pulse modulation frequency for the proximity\n                sensor LED\n:param current: The pulse current for the proximity sensor LED\n:param pulses:  The number of pulses per measurement of the\n                proximity sensor LED"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "get_cie_color",
+            "returnType": "rev.CIEColor",
+            "tooltip": "Get the color converted to CIE XYZ color space using factory\ncalibrated constants.\n\nhttps://en.wikipedia.org/wiki/CIE_1931_color_space\n\n:returns: CIEColor value from sensor"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "get_color",
+            "isCommon": true,
+            "returnType": "wpiutil.Color",
+            "tooltip": "Get the normalized RGB color from the sensor (normalized based on\ntotal R + G + B)\n\n:returns: wpi::Color class with normalized sRGB values"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "get_ir",
+            "returnType": "float",
+            "tooltip": "Get the normalzied IR value from the sensor. Works best when within 2\ninches and perpendicular to surface of interest.\n\n:returns: Color class with normalized values"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "get_proximity",
+            "isCommon": true,
+            "returnType": "int",
+            "tooltip": "Get the raw proximity value from the sensor ADC. This value is largest\nwhen an object is close to the sensor and smallest when\nfar away.\n\n:returns: Proximity measurement value, ranging from 0 to 2047 in\n          default configuration"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "get_raw_color",
+            "isCommon": true,
+            "returnType": "rev.ColorSensorV3.RawColor",
+            "tooltip": "Get the raw color value from the sensor.\n\n:returns: Raw color values from sensopr"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "has_reset",
+            "returnType": "bool",
+            "tooltip": "Indicates if the device reset. Based on the power on status flag in the\nstatus register. Per the datasheet:\n\nPart went through a power-up event, either because the part was turned\non or because there was power supply voltage disturbance (default at\nfirst register read).\n\nThis flag is self clearing\n\n:returns: true if the device was reset"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "is_connected",
+            "isCommon": true,
+            "returnType": "bool",
+            "tooltip": "Indicates if the device can currently be communicated with.\n\n:returns: true if the device is currently connected and responsive"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.ColorSensorV3"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "gain",
+                    "type": "rev.ColorSensorV3.GainFactor"
+                }
+            ],
+            "declaringClassName": "rev.ColorSensorV3",
+            "functionName": "set_gain",
+            "returnType": "None",
+            "tooltip": "Set the gain factor applied to color ADC measurements.\n\nBy default, the gain is set to 3x.\n\n:param gain: Gain factor applied to color ADC measurements\n             measurements"
+        }
+    ],
+    "instanceVariables": [],
+    "isComponent": true,
+    "moduleName": "rev",
+    "staticMethods": []
+}

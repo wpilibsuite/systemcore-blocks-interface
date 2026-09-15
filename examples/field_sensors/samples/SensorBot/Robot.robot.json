@@ -1,0 +1,225 @@
+{
+  "moduleType": "robot",
+  "moduleId": "Ea@yeJ`}$FkkSPU++~+I",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_class_method_def",
+          "id": "3AVf$?mGHMlMN;_l:pWQ",
+          "x": 10,
+          "y": 310,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "3AVf$?mGHMlMN;_l:pWQ",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          }
+        },
+        {
+          "type": "mrc_mechanism_component_holder",
+          "id": ",}n)p~to1eZ`[o]!,}UH",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "hidePrivateComponents": true
+          },
+          "inputs": {
+            "COMPONENTS": {
+              "block": {
+                "type": "mrc_component",
+                "id": "U/;,z6gTJe.4ihE9|-w(",
+                "extraState": {
+                  "componentId": "U/;,z6gTJe.4ihE9|-w(",
+                  "params": [
+                    {
+                      "name": "smart_io_port",
+                      "type": "SYSTEMCORE_SMART_IO_PORT",
+                      "defaultValue": ""
+                    }
+                  ],
+                  "importModule": "field_sensors.sensors",
+                  "className": "field_sensors.sensors.Bumper",
+                  "tooltip": "A bumper switch plugged into a Smart IO port."
+                },
+                "fields": {
+                  "NAME": "bumper",
+                  "TYPE": "field_sensors.sensors.Bumper"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "mrc_port",
+                      "id": "qc3{G6;C)4j5-bsdg@6?",
+                      "extraState": {
+                        "portTypes": [
+                          "SYSTEMCORE_SMART_IO_PORT"
+                        ]
+                      },
+                      "fields": {
+                        "TYPE_0": "smart i/o",
+                        "PORT_NUM_0": "0"
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "block": {
+                    "type": "mrc_component",
+                    "id": "s?`qN,n$):/NMu1$~)Te",
+                    "extraState": {
+                      "componentId": "s?`qN,n$):/NMu1$~)Te",
+                      "params": [
+                        {
+                          "name": "smart_io_port",
+                          "type": "SYSTEMCORE_SMART_IO_PORT",
+                          "defaultValue": ""
+                        }
+                      ],
+                      "importModule": "field_sensors.sensors",
+                      "className": "field_sensors.sensors.BeamBreak",
+                      "tooltip": "A beam break sensor plugged into a Smart IO port."
+                    },
+                    "fields": {
+                      "NAME": "beam_break",
+                      "TYPE": "field_sensors.sensors.BeamBreak"
+                    },
+                    "inputs": {
+                      "ARG0": {
+                        "block": {
+                          "type": "mrc_port",
+                          "id": "2BM1H#O7#@])q.,{3;Zf",
+                          "extraState": {
+                            "portTypes": [
+                              "SYSTEMCORE_SMART_IO_PORT"
+                            ]
+                          },
+                          "fields": {
+                            "TYPE_0": "smart i/o",
+                            "PORT_NUM_0": "1"
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "block": {
+                        "type": "mrc_component",
+                        "id": "NlyxIS$kbL8z~3t|G)Wa",
+                        "extraState": {
+                          "componentId": "NlyxIS$kbL8z~3t|G)Wa",
+                          "params": [
+                            {
+                              "name": "smart_io_port",
+                              "type": "SYSTEMCORE_SMART_IO_PORT",
+                              "defaultValue": ""
+                            },
+                            {
+                              "name": "inches_per_volt",
+                              "type": "float",
+                              "defaultValue": "40.0"
+                            }
+                          ],
+                          "importModule": "field_sensors.sensors",
+                          "className": "field_sensors.sensors.UltrasonicSensor",
+                          "tooltip": "An analog ultrasonic distance sensor plugged into a Smart IO port."
+                        },
+                        "fields": {
+                          "NAME": "distance_sensor",
+                          "TYPE": "field_sensors.sensors.UltrasonicSensor"
+                        },
+                        "inputs": {
+                          "ARG0": {
+                            "block": {
+                              "type": "mrc_port",
+                              "id": "8(2geV[c/@`v-@`]X$~?",
+                              "extraState": {
+                                "portTypes": [
+                                  "SYSTEMCORE_SMART_IO_PORT"
+                                ]
+                              },
+                              "fields": {
+                                "TYPE_0": "smart i/o",
+                                "PORT_NUM_0": "2"
+                              }
+                            }
+                          },
+                          "ARG1": {
+                            "block": {
+                              "type": "math_number",
+                              "id": "F7aNC2@z(-7oC3cEUW-z",
+                              "fields": {
+                                "NUM": 40
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [],
+  "components": [
+    {
+      "componentId": "U/;,z6gTJe.4ihE9|-w(",
+      "name": "bumper",
+      "className": "field_sensors.sensors.Bumper",
+      "args": [
+        {
+          "name": "smart_io_port",
+          "type": "SYSTEMCORE_SMART_IO_PORT",
+          "defaultValue": ""
+        }
+      ]
+    },
+    {
+      "componentId": "s?`qN,n$):/NMu1$~)Te",
+      "name": "beam_break",
+      "className": "field_sensors.sensors.BeamBreak",
+      "args": [
+        {
+          "name": "smart_io_port",
+          "type": "SYSTEMCORE_SMART_IO_PORT",
+          "defaultValue": ""
+        }
+      ]
+    },
+    {
+      "componentId": "NlyxIS$kbL8z~3t|G)Wa",
+      "name": "distance_sensor",
+      "className": "field_sensors.sensors.UltrasonicSensor",
+      "args": [
+        {
+          "name": "smart_io_port",
+          "type": "SYSTEMCORE_SMART_IO_PORT",
+          "defaultValue": ""
+        },
+        {
+          "name": "inches_per_volt",
+          "type": "float",
+          "defaultValue": "40.0"
+        }
+      ]
+    }
+  ],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}

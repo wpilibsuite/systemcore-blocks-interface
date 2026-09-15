@@ -1,0 +1,11 @@
+{
+  "formatVersion": 1,
+  "name": "rev_robotics",
+  "displayName": "REV Robotics",
+  "color": "#EF6C00",
+  "version": "2027.0.0a7.post1",
+  "author": "REV Robotics",
+  "summary": "Components for REV Robotics hardware, from robotpy-rev.",
+  "details": "Adds A301 motor and Color Sensor V3 components, and toolbox categories for the A301, the Color Sensor V3, and the classes for colors.\n\nThe components and python data are generated from robotpy-rev by generate_python_data.py.",
+  "blocksVersion": ">=0.4.0"
+}

@@ -48,6 +48,7 @@ import {
     MechanismComponentHolderBlock,
     mrcDescendantsMayHaveChanged } from './mrc_mechanism_component_holder';
 import { ClassData, FunctionData, isPortType, upgradePortTypeString } from './utils/python_json_types';
+import { localizeInstalledLibraryText } from '../libraries/library_i18n';
 import { renameMethodCallers } from './mrc_call_python_function'
 
 
@@ -128,7 +129,7 @@ const COMPONENT = {
     this.mrcHasNotInHolderWarning = false;
     this.setStyle(MRC_STYLE_COMPONENTS);
     this.setTooltip(() => {
-      return this.mrcTooltip;
+      return localizeInstalledLibraryText(this.mrcTooltip);
     });
     const nameField = new Blockly.FieldTextInput('')
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));
@@ -262,6 +263,13 @@ const COMPONENT = {
    */
   mrcOnLoad: function(this: ComponentBlock, _editor: Editor): void {
     this.checkBlockIsInHolder();
+    this.checkComponentClass();
+  },
+  /**
+   * mrcOnModuleCurrent is called for each ComponentBlock when the module becomes the current module.
+   * The component class may have been added or removed by installing or removing a library.
+   */
+  mrcOnModuleCurrent: function(this: ComponentBlock, _editor: Editor): void {
     this.checkComponentClass();
   },
   /**
@@ -441,10 +449,12 @@ export const pythonFromBlock = function (
 
 export function getAllPossibleComponents(
     moduleType: storageModule.ModuleType,
-    showSimpleClassNames: boolean): toolboxItems.ContentsType[] {
+    showSimpleClassNames: boolean,
+    classes: ClassData[] = componentClasses): toolboxItems.ContentsType[] {
   const contents: toolboxItems.ContentsType[] = [];
-  // Iterate through all the component classes and add definition blocks.
-  componentClasses.forEach(classData => {
+  // Iterate through the component classes, which are the built-in ones unless classes from a third
+  // party library are given, and add definition blocks.
+  classes.forEach(classData => {
     const componentName = 'my_' + storageNames.pascalCaseToSnakeCase(simpleClassName(classData.className));
 
     // Only a component in the robot has inputs for its args, so outside the robot two
