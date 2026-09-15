@@ -1,5 +1,6 @@
 {
-  "@ant-design/icons": "^6.3.2",
+  "@ant-design/icons": "^6.3.4",
+  "@ant-design/icons-svg": "^4.5.0",
   "@blockly/theme-dark": "^13.2.0",
   "@blockly/theme-deuteranopia": "^13.2.0",
   "@blockly/theme-highcontrast": "^13.2.0",
@@ -9,17 +10,17 @@
   "@dnd-kit/utilities": "^3.2.2",
   "@tailwindcss/postcss": "^4.3.3",
   "@types/react": "^19.2.18",
-  "@types/react-dom": "^19.2.4",
-  "antd": "^6.6.0",
+  "@types/react-dom": "^19.2.5",
+  "antd": "^6.6.2",
   "blockly": "^13.2.1",
-  "i18next": "^26.3.6",
+  "i18next": "^26.4.1",
   "i18next-http-backend": "^4.0.1",
   "jszip": "^3.10.1",
   "react": "^19.2.8",
   "react-dom": "^19.2.8",
-  "react-i18next": "^17.0.11",
+  "react-i18next": "^17.0.13",
   "react-syntax-highlighter": "^16.1.1",
   "semver": "^7.8.5",
   "typescript": "^7.0.2",
-  "web-vitals": "^6.1.0"
+  "web-vitals": "^6.2.1"
 }

@@ -1,4 +1,12 @@
 {
+    "moveComponentDialog": {
+        "title": "Déplacer {{componentName}} dans"
+    },
+    "MOVE": "Déplacer",
+    "MOVE_TO_EXISTING_MECHANISM": "Un mécanisme existant",
+    "MOVE_TO_NEW_MECHANISM": "Un nouveau mécanisme",
+    "MOVE_COMPONENT_SUCCESS": "{{componentName}} a été déplacé dans {{mechanismName}}.",
+    "MOVE_COMPONENT_FAILED": "Impossible de déplacer {{componentName}} dans un mécanisme.",
     "__TODO__": "These translations were done by Claude Sonnet 4.6. They need to be verified by a native French speaker.",
     "mechanism_delete": "Supprimer le mécanisme",
     "mechanism_rename": "Renommer le mécanisme",
@@ -202,6 +210,8 @@
         "GERAS_DESCRIPTION": "L'apparence originale de Blockly, avec des blocs carrés et des entrées en ligne.",
         "THRASOS": "Thrasos",
         "THRASOS_DESCRIPTION": "Une version moderne de l'apparence classique de Blockly.",
+        "FIRST_BLOCKS_STYLE": "Style FIRST",
+        "FIRST_BLOCKS_STYLE_DESCRIPTION": "C'est un mélange du style Scratch (Zelos) et du style Blockly (Thrasos)",
         "SELECTION": "Sélection du style des blocs",
         "APPLY": "Appliquer le style",
         "CHOOSE_DESCRIPTION": "Choisissez comment les blocs sont dessinés dans l'espace de travail. L'aperçu ci-dessous se met à jour selon votre choix."
@@ -233,6 +243,7 @@
     },
     "BLOCKLY": {
         "OF_TYPE": "de type",
+        "MOVE_COMPONENT_TO_MECHANISM": "Déplacer ce composant dans un mécanisme",
         "WITH": "avec",
         "WHEN": "quand",
         "PARAMETER": "paramètre",
@@ -273,7 +284,10 @@
         "TO": "à",
         "CAPTION": "légende",
         "VALUE": "valeur",
+        "COLOR": "couleur",
+        "LINE": "ligne",
         "STEPS": "étapes",
+        "SHOW_OUTPUT": "afficher la sortie",
         "REPEAT_UNTIL": "répéter jusqu'à",
         "JUMP_TO": "sauter à",
         "CUSTOM_EVENTS_LABEL": "Événements personnalisés",
@@ -340,8 +354,8 @@
         },
         "TOOLTIP": {
             "EVALUATE_BUT_IGNORE_RESULT": "Exécute le bloc connecté et ignore le résultat. Permet d'appeler une fonction en ignorant la valeur de retour.",
+            "SHOW_OUTPUT": "Décochez cette case pour masquer la sortie de ce bloc afin de pouvoir l'utiliser comme instruction. La valeur renvoyée par la fonction sera ignorée.",
             "NONE": "Renvoie None.",
-            "DISPLAY_ADD_DATA": "Ajouter des données avec une légende à l'affichage de la station de pilotage.",
             "OPMODE_TYPE": "Quel type d'OpMode c'est",
             "OPMODE_ENABLED": "Si l'OpMode est affiché sur la station de pilotage",
             "OPMODE_NAME": "Le nom affiché sur la station de pilotage. Si vide, utilisera le nom de la classe.",
