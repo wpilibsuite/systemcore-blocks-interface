@@ -1,0 +1,265 @@
+{
+  "moduleType": "opmode",
+  "moduleId": "LPj`9.mkY~ci$_FhoTTl",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_opmode_details",
+          "id": "u93ZUu56gDYT7oPoFL-V",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "fields": {
+            "TYPE": "Teleop",
+            "ENABLED": true,
+            "NAME": "",
+            "GROUP": "",
+            "DESCRIPTION": "Press A to print the distance, B to print whether the beam is broken, and X to print whether the bumper is pressed."
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "G*swaQJ[C2n+8-Ww}H1E",
+          "x": 10,
+          "y": 310,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "G*swaQJ[C2n+8-Ww}H1E",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "+?c!qnOa{a7yu.BOk`9C",
+          "x": 10,
+          "y": 510,
+          "editable": false,
+          "extraState": {
+            "methodId": "+?c!qnOa{a7yu.BOk`9C",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": []
+          },
+          "fields": {
+            "NAME": "periodic"
+          },
+          "inputs": {
+            "STACK": {
+              "block": {
+                "type": "controls_if",
+                "id": "Pig_Nih2^hiroV:{Ur{#",
+                "inputs": {
+                  "IF0": {
+                    "block": {
+                      "type": "mrc_gamepad_boolean",
+                      "id": "dPPjxS$My::@6Ll3/ekq",
+                      "fields": {
+                        "GAMEPAD_PORT": "0",
+                        "GAMEPAD_BUTTON": "SOUTH_FACE",
+                        "GAMEPAD_ACTION": "WAS_PRESSED"
+                      }
+                    }
+                  },
+                  "DO0": {
+                    "block": {
+                      "type": "text_print",
+                      "id": "|D)%VzF:cr~fz)h[EXKL",
+                      "inputs": {
+                        "TEXT": {
+                          "block": {
+                            "type": "text_join",
+                            "id": "vwnZqjbaR}CpIx@O/R91",
+                            "extraState": {
+                              "itemCount": 2
+                            },
+                            "inputs": {
+                              "ADD0": {
+                                "block": {
+                                  "type": "text",
+                                  "id": "8B{%lYCTQk4Tgwndg^j7",
+                                  "fields": {
+                                    "TEXT": "Distance (inches): "
+                                  }
+                                }
+                              },
+                              "ADD1": {
+                                "block": {
+                                  "type": "mrc_call_python_function",
+                                  "id": "_YL$=R[+%fl_PSB,r=0J",
+                                  "extraState": {
+                                    "functionKind": "instance_component",
+                                    "returnType": "float",
+                                    "args": [],
+                                    "tooltip": "Returns the distance to the nearest object, in inches.",
+                                    "componentId": "NlyxIS$kbL8z~3t|G)Wa",
+                                    "componentClassName": "field_sensors.sensors.UltrasonicSensor"
+                                  },
+                                  "fields": {
+                                    "COMPONENT_NAME": "distance_sensor",
+                                    "FUNC": "get_distance_inches"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "block": {
+                    "type": "controls_if",
+                    "id": "2JvJ%mp0!Rj,J{yG1eIH",
+                    "inputs": {
+                      "IF0": {
+                        "block": {
+                          "type": "mrc_gamepad_boolean",
+                          "id": "rhk8+$f2+uCJE|@kcudu",
+                          "fields": {
+                            "GAMEPAD_PORT": "0",
+                            "GAMEPAD_BUTTON": "EAST_FACE",
+                            "GAMEPAD_ACTION": "WAS_PRESSED"
+                          }
+                        }
+                      },
+                      "DO0": {
+                        "block": {
+                          "type": "text_print",
+                          "id": "O0_Jp)-Ns,J(QX}pH!en",
+                          "inputs": {
+                            "TEXT": {
+                              "block": {
+                                "type": "text_join",
+                                "id": ")5QOi1[N[0k_!SQkGnuM",
+                                "extraState": {
+                                  "itemCount": 2
+                                },
+                                "inputs": {
+                                  "ADD0": {
+                                    "block": {
+                                      "type": "text",
+                                      "id": "wOP7dT`VCfYx^G%^HQD-",
+                                      "fields": {
+                                        "TEXT": "Beam broken: "
+                                      }
+                                    }
+                                  },
+                                  "ADD1": {
+                                    "block": {
+                                      "type": "mrc_call_python_function",
+                                      "id": ";3?l=m)+EO?mWvYh!eM-",
+                                      "extraState": {
+                                        "functionKind": "instance_component",
+                                        "returnType": "bool",
+                                        "args": [],
+                                        "tooltip": "Returns True if something is blocking the beam.",
+                                        "componentId": "s?`qN,n$):/NMu1$~)Te",
+                                        "componentClassName": "field_sensors.sensors.BeamBreak"
+                                      },
+                                      "fields": {
+                                        "COMPONENT_NAME": "beam_break",
+                                        "FUNC": "is_broken"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "block": {
+                        "type": "controls_if",
+                        "id": "6oaIH7M(A/AVp??PRa1S",
+                        "inputs": {
+                          "IF0": {
+                            "block": {
+                              "type": "mrc_gamepad_boolean",
+                              "id": "ohPKO3E]sc$18zcqBq[{",
+                              "fields": {
+                                "GAMEPAD_PORT": "0",
+                                "GAMEPAD_BUTTON": "WEST_FACE",
+                                "GAMEPAD_ACTION": "WAS_PRESSED"
+                              }
+                            }
+                          },
+                          "DO0": {
+                            "block": {
+                              "type": "text_print",
+                              "id": "/57~bHKvE_/{TBq!o?wr",
+                              "inputs": {
+                                "TEXT": {
+                                  "block": {
+                                    "type": "text_join",
+                                    "id": "G=+vd-@82kG!*Q`;G$mu",
+                                    "extraState": {
+                                      "itemCount": 2
+                                    },
+                                    "inputs": {
+                                      "ADD0": {
+                                        "block": {
+                                          "type": "text",
+                                          "id": "T=%Wr$m~~Vs)O9~#MRMu",
+                                          "fields": {
+                                            "TEXT": "Bumper pressed: "
+                                          }
+                                        }
+                                      },
+                                      "ADD1": {
+                                        "block": {
+                                          "type": "mrc_call_python_function",
+                                          "id": "`m(;;.c96wrua3-,).se",
+                                          "extraState": {
+                                            "functionKind": "instance_component",
+                                            "returnType": "bool",
+                                            "args": [],
+                                            "tooltip": "Returns True if the bumper is pressed.",
+                                            "componentId": "U/;,z6gTJe.4ihE9|-w(",
+                                            "componentClassName": "field_sensors.sensors.Bumper"
+                                          },
+                                          "fields": {
+                                            "COMPONENT_NAME": "bumper",
+                                            "FUNC": "is_pressed"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [],
+  "components": [],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}

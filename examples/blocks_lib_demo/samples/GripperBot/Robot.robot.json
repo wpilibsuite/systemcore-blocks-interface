@@ -1,0 +1,214 @@
+{
+  "moduleType": "robot",
+  "moduleId": "/K|]S!u;m5I$_.Nv~B!W",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_class_method_def",
+          "id": "3R.bhn3KxFS01wvG@IR0",
+          "x": 10,
+          "y": 310,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "3R.bhn3KxFS01wvG@IR0",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          }
+        },
+        {
+          "type": "mrc_mechanism_component_holder",
+          "id": "cQ/rN4,trx56?V,8tGjQ",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "hidePrivateComponents": true
+          },
+          "inputs": {
+            "COMPONENTS": {
+              "block": {
+                "type": "mrc_component",
+                "id": "}OoH|Xq%wvb.;qf#S)Up",
+                "extraState": {
+                  "componentId": "}OoH|Xq%wvb.;qf#S)Up",
+                  "params": [
+                    {
+                      "name": "expansion_hub_servo",
+                      "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT",
+                      "defaultValue": ""
+                    },
+                    {
+                      "name": "open_position",
+                      "type": "float",
+                      "defaultValue": "0.0"
+                    },
+                    {
+                      "name": "closed_position",
+                      "type": "float",
+                      "defaultValue": "1.0"
+                    }
+                  ],
+                  "importModule": "blocks_demo.components",
+                  "className": "blocks_demo.components.Gripper",
+                  "tooltip": "A gripper that is opened and closed by a servo plugged into an Expansion Hub."
+                },
+                "fields": {
+                  "NAME": "gripper",
+                  "TYPE": "blocks_demo.components.Gripper"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "mrc_port",
+                      "id": "^g7j.x}=Vnb|=tm(K{JZ",
+                      "extraState": {
+                        "portTypes": [
+                          "SYSTEMCORE_USB_PORT",
+                          "EXPANSION_HUB_SERVO_PORT"
+                        ]
+                      },
+                      "fields": {
+                        "TYPE_0": "usb",
+                        "PORT_NUM_0": "0",
+                        "TYPE_1": "servo",
+                        "PORT_NUM_1": "0"
+                      }
+                    }
+                  },
+                  "ARG1": {
+                    "block": {
+                      "type": "math_number",
+                      "id": "/a0[33XM~C5]%u2$(kOu",
+                      "fields": {
+                        "NUM": 0
+                      }
+                    }
+                  },
+                  "ARG2": {
+                    "block": {
+                      "type": "math_number",
+                      "id": "H/7r$neRh]`Tge+H`AFe",
+                      "fields": {
+                        "NUM": 1
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "block": {
+                    "type": "mrc_component",
+                    "id": "Kk)EK9@WTP*L%^rw5}VP",
+                    "extraState": {
+                      "componentId": "Kk)EK9@WTP*L%^rw5}VP",
+                      "params": [
+                        {
+                          "name": "smart_io_port",
+                          "type": "SYSTEMCORE_SMART_IO_PORT",
+                          "defaultValue": ""
+                        },
+                        {
+                          "name": "pressed_is_high",
+                          "type": "bool",
+                          "defaultValue": "True"
+                        }
+                      ],
+                      "importModule": "blocks_demo.components",
+                      "className": "blocks_demo.components.LimitSwitch",
+                      "tooltip": "A limit switch plugged into a Smart IO port."
+                    },
+                    "fields": {
+                      "NAME": "limit_switch",
+                      "TYPE": "blocks_demo.components.LimitSwitch"
+                    },
+                    "inputs": {
+                      "ARG0": {
+                        "block": {
+                          "type": "mrc_port",
+                          "id": "FdM-b,zCIn0ag0phmCcu",
+                          "extraState": {
+                            "portTypes": [
+                              "SYSTEMCORE_SMART_IO_PORT"
+                            ]
+                          },
+                          "fields": {
+                            "TYPE_0": "smart i/o",
+                            "PORT_NUM_0": "0"
+                          }
+                        }
+                      },
+                      "ARG1": {
+                        "block": {
+                          "type": "logic_boolean",
+                          "id": "]dRVA)w}oZJ)xT$^I6*Z",
+                          "fields": {
+                            "BOOL": "TRUE"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [],
+  "components": [
+    {
+      "componentId": "}OoH|Xq%wvb.;qf#S)Up",
+      "name": "gripper",
+      "className": "blocks_demo.components.Gripper",
+      "args": [
+        {
+          "name": "expansion_hub_servo",
+          "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT",
+          "defaultValue": ""
+        },
+        {
+          "name": "open_position",
+          "type": "float",
+          "defaultValue": "0.0"
+        },
+        {
+          "name": "closed_position",
+          "type": "float",
+          "defaultValue": "1.0"
+        }
+      ]
+    },
+    {
+      "componentId": "Kk)EK9@WTP*L%^rw5}VP",
+      "name": "limit_switch",
+      "className": "blocks_demo.components.LimitSwitch",
+      "args": [
+        {
+          "name": "smart_io_port",
+          "type": "SYSTEMCORE_SMART_IO_PORT",
+          "defaultValue": ""
+        },
+        {
+          "name": "pressed_is_high",
+          "type": "bool",
+          "defaultValue": "True"
+        }
+      ]
+    }
+  ],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}

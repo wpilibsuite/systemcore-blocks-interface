@@ -10,6 +10,8 @@ An example third party library. See `docs/blocks_lib_format.md` for the file for
 - `toolboxes/text_helpers.json` is the **Demo Text** category, also under **Blocks Demo Library**.
 - `components/limit_switch.json` and `components/gripper.json` add the `LimitSwitch` and `Gripper`
   components from `blocks_demo.components` to **Components > + Component > Blocks Demo Library**.
+- `samples/GripperBot/` is a sample project, listed in **Samples...**, with a Gripper and a
+  LimitSwitch in the Robot and a Teleop OpMode that uses them and the Demo Text blocks.
 
 ## Building
 

@@ -4,8 +4,8 @@
 # Usage: ./build.sh [example_dir ...]
 # With no arguments, every directory here that has a metadata.json is built.
 #
-# Each example directory has metadata.json, a python package in python/, and optional toolboxes/
-# and components/ directories. The output is <example_dir>/build/<name>.blocks_lib.
+# Each example directory has metadata.json, a python package in python/, and optional toolboxes/,
+# components/, and samples/ directories. The output is <example_dir>/build/<name>.blocks_lib.
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -39,6 +39,10 @@ for EXAMPLE in "$@"; do
             ENTRIES+=("$DIR")
         fi
     done
+    if [ -d "$EXAMPLE_DIR/samples" ]; then
+        cp -R "$EXAMPLE_DIR/samples" "$STAGING_DIR/"
+        ENTRIES+=(samples)
+    fi
 
     (cd "$STAGING_DIR" && python3 -m zipfile -c "$OUTPUT" "${ENTRIES[@]}")
     rm -rf "$STAGING_DIR"

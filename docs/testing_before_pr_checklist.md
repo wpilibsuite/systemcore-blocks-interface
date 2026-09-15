@@ -30,6 +30,6 @@ For each PR, make sure each of these works
 * [ ] In the Robot, make sure LimitSwitch and Gripper show up in Components -> + Component -> Blocks Demo Library, add a Gripper, and make sure its methods show up in the toolbox
 * [ ] Uncheck Components -> Gripper in the Libraries dialog and make sure Gripper disappears from + Component -> Blocks Demo Library but the Gripper already in the Robot has no warning
 * [ ] Remove the library and make sure the block in the OpMode shows a warning
-* [ ] With all four libraries installed, make sure GripperBot, LedEffectValues, PidArm, and SensorBot show up in Samples after the built in samples, each tagged with its library
+* [ ] With all four libraries installed, make sure GripperBot, PidArm, and SensorBot show up in Samples after the built in samples, each tagged with its library, and that there is no sample for LED Effects
 * [ ] Preview PidArm and make sure the Robot, HoldArm, and PrintTuning tabs show their blocks, then create a project from it and make sure it opens with no warnings
 * [ ] Remove PID Tools and make sure PidArm is no longer in Samples

@@ -1,0 +1,189 @@
+{
+  "moduleType": "robot",
+  "moduleId": "{2$5)eEyfcv9[h$Q)cSr",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_class_method_def",
+          "id": "NMJ8Jk21I:r_4;R!UB]L",
+          "x": 10,
+          "y": 310,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "NMJ8Jk21I:r_4;R!UB]L",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          }
+        },
+        {
+          "type": "mrc_mechanism_component_holder",
+          "id": "ou{,VYi=,pM#KJ|6~AF3",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "hidePrivateComponents": true
+          },
+          "inputs": {
+            "COMPONENTS": {
+              "block": {
+                "type": "mrc_component",
+                "id": "z]?QLbxGA*%M!~;BBFGi",
+                "extraState": {
+                  "componentId": "z]?QLbxGA*%M!~;BBFGi",
+                  "params": [
+                    {
+                      "name": "expansion_hub_motor",
+                      "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
+                      "defaultValue": ""
+                    }
+                  ],
+                  "importModule": "wpilib",
+                  "className": "wpilib.ExpansionHubMotor",
+                  "tooltip": "Constructs a motor at the requested channel on a specific USB port.\n\n:param usb_id:  The USB port ID the hub is connected to\n:param channel: The motor channel"
+                },
+                "fields": {
+                  "NAME": "arm_motor",
+                  "TYPE": "wpilib.ExpansionHubMotor"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "mrc_port",
+                      "id": "f7b6z0yfF}Rt9)L=`wee",
+                      "extraState": {
+                        "portTypes": [
+                          "SYSTEMCORE_USB_PORT",
+                          "EXPANSION_HUB_MOTOR_PORT"
+                        ]
+                      },
+                      "fields": {
+                        "TYPE_0": "usb",
+                        "PORT_NUM_0": "0",
+                        "TYPE_1": "motor",
+                        "PORT_NUM_1": "0"
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "block": {
+                    "type": "mrc_component",
+                    "id": "2+#V]7cN_!o?Pei:3,i2",
+                    "extraState": {
+                      "componentId": "2+#V]7cN_!o?Pei:3,i2",
+                      "params": [
+                        {
+                          "name": "kp",
+                          "type": "float",
+                          "defaultValue": "1.0"
+                        },
+                        {
+                          "name": "ki",
+                          "type": "float",
+                          "defaultValue": "0.0"
+                        },
+                        {
+                          "name": "kd",
+                          "type": "float",
+                          "defaultValue": "0.0"
+                        }
+                      ],
+                      "importModule": "pid_tools.controllers",
+                      "className": "pid_tools.controllers.SimplePID",
+                      "tooltip": "A PID controller that isn't connected to any hardware."
+                    },
+                    "fields": {
+                      "NAME": "arm_pid",
+                      "TYPE": "pid_tools.controllers.SimplePID"
+                    },
+                    "inputs": {
+                      "ARG0": {
+                        "block": {
+                          "type": "math_number",
+                          "id": "i/`^OD=fWBDEq$9S%.3o",
+                          "fields": {
+                            "NUM": 0.005
+                          }
+                        }
+                      },
+                      "ARG1": {
+                        "block": {
+                          "type": "math_number",
+                          "id": "X^76V?Hl!Me;?33%SNT-",
+                          "fields": {
+                            "NUM": 0
+                          }
+                        }
+                      },
+                      "ARG2": {
+                        "block": {
+                          "type": "math_number",
+                          "id": "o^IyUO:j*D2vmzIc;KmA",
+                          "fields": {
+                            "NUM": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [],
+  "components": [
+    {
+      "componentId": "z]?QLbxGA*%M!~;BBFGi",
+      "name": "arm_motor",
+      "className": "wpilib.ExpansionHubMotor",
+      "args": [
+        {
+          "name": "expansion_hub_motor",
+          "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
+          "defaultValue": ""
+        }
+      ]
+    },
+    {
+      "componentId": "2+#V]7cN_!o?Pei:3,i2",
+      "name": "arm_pid",
+      "className": "pid_tools.controllers.SimplePID",
+      "args": [
+        {
+          "name": "kp",
+          "type": "float",
+          "defaultValue": "1.0"
+        },
+        {
+          "name": "ki",
+          "type": "float",
+          "defaultValue": "0.0"
+        },
+        {
+          "name": "kd",
+          "type": "float",
+          "defaultValue": "0.0"
+        }
+      ]
+    }
+  ],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}
