@@ -1,0 +1,169 @@
+# Third party libraries (`.blocks_lib`)
+
+A third party can add blocks and components to the toolbox, backed by their own Python code, by
+publishing a `.blocks_lib` file. Users install it from **Manage > Libraries...**, where they can also
+remove libraries and choose which libraries, categories, and components are shown in the toolbox.
+
+See `examples/` for complete, buildable examples (`examples/build.sh` builds them).
+
+## File layout
+
+A `.blocks_lib` file is a zip file:
+
+```
+metadata.json
+wheels/
+    my_library-1.0.0-py3-none-any.whl
+toolboxes/
+    my_category.json
+    another_category.json
+components/
+    my_sensor.json
+```
+
+A library needs at least one file in `toolboxes/` or `components/`.
+
+It's fine for everything to be inside a single top level folder (which is what you get when you
+zip a folder with Finder or Explorer). Other files are ignored.
+
+## `metadata.json`
+
+| Field           | Type    | Required | Description |
+|-----------------|---------|----------|-------------|
+| `formatVersion` | integer | yes      | Version of the `.blocks_lib` format. Currently `1`. |
+| `name`          | string  | yes      | Unique name. Letters, digits, `_`, `.` and `-`. Installing a library with the same name replaces the installed one. |
+| `displayName`   | string  | no       | Name shown to users. Defaults to `name`. |
+| `color`         | string  | no       | Brand color for the library, as `#RRGGBB` (for example `"#1E88E5"`). The library's category in the toolbox and its category under **+ Component** use this color. |
+| `version`       | string  | yes      | Version of the library. |
+| `author`        | string  | yes      | |
+| `summary`       | string  | yes      | One line description. |
+| `details`       | string  | yes      | Longer description. Newlines are preserved. |
+| `blocksVersion` | string  | yes      | [semver range](https://github.com/npm/node-semver#ranges) of Blocks versions the library works with, for example `">=0.4.0 <1.0.0"`. |
+
+A library whose `blocksVersion` doesn't match can't be installed. If Blocks is later upgraded to a
+version that doesn't match, the library is marked incompatible and its blocks are left out of the
+toolbox.
+
+## `wheels/`
+
+Python wheels that are installed on the robot. Because the robot installs packages without internet
+access, include every dependency that isn't already on the robot. Wheels must be built for the
+robot (pure Python `py3-none-any` wheels always work).
+
+When a project is deployed, the backend looks at the `import` statements in the generated code. For
+each library that provides an imported top level package, every wheel in the library is copied into
+the robot's pip cache and added to `requires` in `pyproject.toml`, pinned to the wheel's version
+(for example `"my_library==1.0.0"`).
+
+## `toolboxes/`
+
+Each `*.json` file contains one [Blockly toolbox category](https://developers.google.com/blockly/guides/configure/web/toolboxes/category)
+(`"kind": "category"` with a `name`). Categories can contain blocks and nested categories. In the
+toolbox, a library's categories are put under a category named after the library (its
+`displayName`). Each category shows up in the Libraries dialog so users can hide it.
+
+Any block type that Blocks knows about can be used. To call a function in your wheel, use
+`mrc_call_python_function` with `functionKind` `module`:
+
+```json
+{
+  "kind": "block",
+  "type": "mrc_call_python_function",
+  "extraState": {
+    "functionKind": "module",
+    "returnType": "float",
+    "args": [
+      {"name": "value", "type": "float"},
+      {"name": "low", "type": "float"},
+      {"name": "high", "type": "float"}
+    ],
+    "tooltip": "Limits value so that it is between low and high.",
+    "importModule": "my_library.math_helpers",
+    "moduleOrClassName": "my_library.math_helpers"
+  },
+  "fields": {
+    "MODULE_OR_CLASS": "my_library.math_helpers",
+    "FUNC": "clamp"
+  },
+  "inputs": {
+    "ARG0": {"shadow": {"type": "math_number", "fields": {"NUM": 0}}},
+    "ARG1": {"shadow": {"type": "math_number", "fields": {"NUM": -1}}},
+    "ARG2": {"shadow": {"type": "math_number", "fields": {"NUM": 1}}}
+  }
+}
+```
+
+This generates `import my_library.math_helpers` and `my_library.math_helpers.clamp(0, -1, 1)`.
+
+- `returnType` is a Python type (`int`, `float`, `str`, `bool`, ...) or `None` for a function that
+  doesn't return a value, which makes a statement block instead of a value block.
+- `args` must list every argument in order. `inputs` provides the default blocks plugged into
+  them, as `ARG0`, `ARG1`, and so on.
+- `importModule` and `moduleOrClassName` must be the same full module name.
+
+## `components/`
+
+Each `*.json` file describes one component class. Library components show up in the robot and in
+mechanisms under **Components > + Component**, in a subcategory named after the library (its
+`displayName`), and their methods show up under each component that the user adds. Users can hide all of a library's
+components, or individual ones, in the Libraries dialog. Hiding a component only removes it from
+**+ Component**; components that were already added keep working.
+
+The format is the same as the classes in `frontend/blocks/utils/generated/robotpy_data.json`:
+
+```json
+{
+  "className": "my_library.components.LimitSwitch",
+  "moduleName": "my_library.components",
+  "constructors": [
+    {
+      "functionName": "__init__",
+      "tooltip": "A limit switch plugged into a Smart IO port.",
+      "args": [
+        {"name": "channel", "type": "int"},
+        {"name": "pressed_is_high", "type": "bool", "defaultValue": "True"}
+      ],
+      "isComponent": true,
+      "componentArgs": [
+        {"name": "smart_io_port", "type": "SYSTEMCORE_SMART_IO_PORT"},
+        {"name": "pressed_is_high", "type": "bool", "defaultValue": "True"}
+      ]
+    }
+  ],
+  "instanceMethods": [
+    {
+      "functionName": "is_pressed",
+      "tooltip": "Returns True if the limit switch is pressed.",
+      "args": [{"name": "self", "type": "my_library.components.LimitSwitch"}],
+      "returnType": "bool",
+      "isCommon": true
+    }
+  ]
+}
+```
+
+This generates `import my_library.components` and, in the robot:
+
+```python
+self.my_limit_switch = my_library.components.LimitSwitch(
+  0, # smart i/o
+  True, # pressed_is_high
+)
+```
+
+- `className` must be the full name of the class, starting with `moduleName`.
+- At least one constructor needs `"isComponent": true` and `componentArgs`. `componentArgs` are
+  what the user fills in on the component block, in the order they are passed to the constructor.
+  Their `type` is either a Python type (`int`, `float`, `str`, `bool`, ...) or a port type from
+  `PortType` in `frontend/blocks/utils/python_json_types.ts`. Port types can be combined with `__`;
+  each port type in the combination is passed as a separate argument. For example
+  `SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT` passes the USB port and then the servo channel.
+- The first arg of each instance method is `self`. `returnType` defaults to `None`.
+- `isCommon` methods are listed first in the toolbox.
+- `staticMethods`, `instanceVariables`, `classVariables`, and `enums` are optional and use the same
+  format as the generated data.
+
+## Testing
+
+Blocks can't check that the functions and classes in your wheel match the blocks and components
+in your library, so test the generated code on a robot.

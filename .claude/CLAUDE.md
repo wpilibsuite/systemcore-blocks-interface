@@ -73,6 +73,10 @@ The toolbox is rebuilt dynamically on every relevant workspace change. `toolbox.
 
 Extends Blockly's built-in `PythonGenerator`. The generator runs when saving or deploying. Each module type produces a single Python class file. The "Deploy" action zips all generated `.py` files and POSTs to `POST /deploy` on the backend.
 
+### Third party libraries (`frontend/libraries/`, `backend/blocks_lib.py`)
+
+Third parties publish `.blocks_lib` files (zip of `metadata.json`, `wheels/`, `toolboxes/`, `components/`); the format is documented in `docs/blocks_lib_format.md` and `examples/` has buildable examples (`examples/build.sh`). The frontend and backend each have a parser — keep `frontend/libraries/blocks_lib.ts` and `backend/blocks_lib.py` in sync. Libraries are installed on the backend (`<data dir>/libraries/`) or, without a backend, kept in a storage entry. `LibrariesModal.tsx` manages them; the visible categories and component classes are added to the toolbox by `toolbox/library_toolbox.ts`. All installed component classes are registered with `blocks/utils/python.ts` (`setLibraryClasses`) so existing component blocks keep working even when hidden. On deploy, the backend pins the wheels of libraries whose packages are imported by the generated code.
+
 ### Backend (`backend/`)
 
 Flask + Flask-RESTful app. Key endpoints:

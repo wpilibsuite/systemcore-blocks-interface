@@ -30,6 +30,8 @@ import { extendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
 import * as commonStorage from '../storage/common_storage';
+import { LibraryToolbox } from '../toolbox/library_toolbox';
+import { Library } from '../libraries/blocks_lib';
 import * as classMethodDef from '../blocks/mrc_class_method_def'
 import * as eventHandler from '../blocks/mrc_event_handler'
 import * as mrcComponent from '../blocks/mrc_component'
@@ -58,6 +60,8 @@ export interface TabContentProps {
   renderer: string;
   showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
+  libraries: Library[];
+  libraryToolbox: LibraryToolbox;
   messageApi: MessageInstance;
   setAlertErrorMessage: (message: string) => void;
   isActive: boolean;
@@ -78,6 +82,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   renderer,
   showSimpleClassNames,
   shownPythonToolboxCategories,
+  libraries,
+  libraryToolbox,
   messageApi,
   setAlertErrorMessage,
   isActive,
@@ -195,7 +201,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     setEditorInstance(newEditor);
     newEditor.updateShowSimpleClassNames(showSimpleClassNames);
     newEditor.loadModuleBlocks();
-    newEditor.updateToolbox(shownPythonToolboxCategories);
+    newEditor.updateToolbox(shownPythonToolboxCategories, libraryToolbox);
 
     const restoreViewport = (): void => {
       if (!newWorkspace.rendered) {
@@ -241,7 +247,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     // Deferred to let the workspace settle after loading blocks - calling scroll() immediately
     // has no effect (see the same pattern/comment in BlocklyComponent.tsx's setActive()).
     setTimeout(restoreViewport);
-  }, [module, project, storage, modulePath, showSimpleClassNames, shownPythonToolboxCategories, messageApi, handleBlocksChanged, openGamepadConfigDialog, onMoveComponentRequested, getModuleZoom, getModuleScroll]);
+  }, [module, project, storage, modulePath, showSimpleClassNames, shownPythonToolboxCategories, libraryToolbox, messageApi, handleBlocksChanged, openGamepadConfigDialog, onMoveComponentRequested, getModuleZoom, getModuleScroll]);
 
   /** Called (debounced) when the user changes the workspace's zoom level. */
   const handleZoomChange = React.useCallback((zoom: number) => {
@@ -267,9 +273,9 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   /** Update editor toolbox when categories change. */
   React.useEffect(() => {
     if (editorInstance) {
-      editorInstance.updateToolbox(shownPythonToolboxCategories);
+      editorInstance.updateToolbox(shownPythonToolboxCategories, libraryToolbox);
     }
-  }, [shownPythonToolboxCategories, editorInstance]);
+  }, [shownPythonToolboxCategories, libraryToolbox, editorInstance]);
 
   /**
    * Update BlocklyComponent's active state, but only when isActive itself actually changes -
@@ -286,7 +292,11 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     }
   }, [isActive, blocklyComponent]);
 
-  /** Make the module current whenever it becomes active, including once its editor loads. */
+  /**
+   * Make the module current whenever it becomes active, including once its editor loads. This is
+   * also done when libraries are installed or removed, so blocks that call library functions are
+   * checked again.
+   */
   React.useEffect(() => {
     if (editorInstance && isActive) {
       // Set flag to ignore changes during activation
@@ -303,7 +313,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
         }, 100);
       });
     }
-  }, [isActive, editorInstance, project]);
+  }, [isActive, editorInstance, project, libraries]);
 
   /** Generate code when regeneration is triggered. */
   React.useEffect(() => {

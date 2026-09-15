@@ -1,0 +1,206 @@
+#!/usr/bin/env python3
+"""
+Unit tests for blocks_lib.py. These don't need the server to be running:
+    python3 -m unittest test_blocks_lib
+"""
+
+import io
+import json
+import os
+import tempfile
+import unittest
+import zipfile
+
+import blocks_lib
+
+
+def make_wheel(files):
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w') as wheel:
+        for name in files:
+            wheel.writestr(name, '')
+    return buffer.getvalue()
+
+
+VALID_METADATA = {
+    'formatVersion': 1,
+    'name': 'demo',
+    'version': '1.0.0',
+    'author': 'Someone',
+    'summary': 'A summary',
+    'details': 'Some details',
+    'blocksVersion': '>=0.4.0',
+    'color': '#1E88E5',
+}
+
+VALID_TOOLBOX = {'kind': 'category', 'name': 'Demo', 'contents': []}
+
+VALID_COMPONENT = {
+    'className': 'demo_pkg.Sensor',
+    'moduleName': 'demo_pkg',
+    'constructors': [{
+        'args': [{'name': 'channel', 'type': 'int'}],
+        'componentArgs': [{'name': 'smart_io_port', 'type': 'SYSTEMCORE_SMART_IO_PORT'}],
+        'isComponent': True,
+    }],
+    'instanceMethods': [],
+}
+
+VALID_WHEEL = make_wheel([
+    'demo_pkg/__init__.py',
+    'demo_pkg/helpers.py',
+    'demo_module.py',
+    'demo_pkg-1.0.0.dist-info/METADATA',
+])
+
+
+class BlocksLibTest(unittest.TestCase):
+
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.libraries_dir = os.path.join(self.temp_dir.name, 'libraries')
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
+
+    def make_lib(self, entries, filename='demo.blocks_lib'):
+        path = os.path.join(self.temp_dir.name, filename)
+        with zipfile.ZipFile(path, 'w') as zf:
+            for name, content in entries.items():
+                if isinstance(content, (dict, list)):
+                    content = json.dumps(content)
+                zf.writestr(name, content)
+        return path
+
+    def valid_entries(self, prefix='', **metadata_overrides):
+        metadata = dict(VALID_METADATA, **metadata_overrides)
+        return {
+            prefix + 'metadata.json': metadata,
+            prefix + 'toolboxes/demo.json': VALID_TOOLBOX,
+            prefix + 'components/sensor.json': VALID_COMPONENT,
+            prefix + 'wheels/demo_pkg-1.0.0-py3-none-any.whl': VALID_WHEEL,
+        }
+
+    def test_install_and_list(self):
+        library = blocks_lib.install_blocks_lib(
+            self.make_lib(self.valid_entries()), self.libraries_dir)
+        self.assertEqual(library['metadata']['name'], 'demo')
+        self.assertEqual(library['toolboxes'], {'demo.json': VALID_TOOLBOX})
+        self.assertEqual(library['components'], {'sensor.json': VALID_COMPONENT})
+        self.assertEqual(library['wheels'], ['demo_pkg-1.0.0-py3-none-any.whl'])
+        self.assertEqual(library['pythonModules'], ['demo_module', 'demo_pkg'])
+        self.assertEqual(blocks_lib.list_libraries(self.libraries_dir), [library])
+
+    def test_install_from_zipped_folder(self):
+        library = blocks_lib.install_blocks_lib(
+            self.make_lib(self.valid_entries(prefix='demo_folder/')), self.libraries_dir)
+        self.assertEqual(library['metadata']['name'], 'demo')
+        self.assertEqual(list(library['toolboxes']), ['demo.json'])
+
+    def test_install_components_only(self):
+        entries = self.valid_entries()
+        del entries['toolboxes/demo.json']
+        library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
+        self.assertEqual(library['toolboxes'], {})
+        self.assertEqual(list(library['components']), ['sensor.json'])
+
+    def test_install_replaces_existing(self):
+        blocks_lib.install_blocks_lib(self.make_lib(self.valid_entries()), self.libraries_dir)
+        blocks_lib.install_blocks_lib(
+            self.make_lib(self.valid_entries(version='2.0.0')), self.libraries_dir)
+        libraries = blocks_lib.list_libraries(self.libraries_dir)
+        self.assertEqual(len(libraries), 1)
+        self.assertEqual(libraries[0]['metadata']['version'], '2.0.0')
+
+    def test_invalid_libraries_are_rejected(self):
+        without_json_files = self.valid_entries()
+        del without_json_files['toolboxes/demo.json']
+        del without_json_files['components/sensor.json']
+        without_metadata = self.valid_entries()
+        del without_metadata['metadata.json']
+        missing_author = self.valid_entries()
+        del missing_author['metadata.json']['author']
+        cases = {
+            'missing metadata': without_metadata,
+            'missing author': missing_author,
+            'bad format version': self.valid_entries(formatVersion=99),
+            'format version not int': self.valid_entries(formatVersion='1'),
+            'bad name': self.valid_entries(name='../evil'),
+            'color not hex': self.valid_entries(color='blue'),
+            'color too short': self.valid_entries(color='#FFF'),
+            'no toolboxes or components': without_json_files,
+            'component class not in module': dict(self.valid_entries(), **{
+                'components/sensor.json': dict(VALID_COMPONENT, className='other.Sensor')}),
+            'component without component constructor': dict(self.valid_entries(), **{
+                'components/sensor.json': dict(VALID_COMPONENT, constructors=[{'args': []}])}),
+            'component methods not a list': dict(self.valid_entries(), **{
+                'components/sensor.json': dict(VALID_COMPONENT, instanceMethods={})}),
+            'toolbox not category': dict(self.valid_entries(), **{
+                'toolboxes/demo.json': {'kind': 'flyoutToolbox'}}),
+            'toolbox not json': dict(self.valid_entries(), **{'toolboxes/demo.json': '{'}),
+            'bad wheel name': dict(self.valid_entries(), **{'wheels/not-a-wheel.whl': b''}),
+        }
+        for description, entries in cases.items():
+            with self.subTest(description):
+                with self.assertRaises(blocks_lib.BlocksLibError):
+                    blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
+                self.assertEqual(blocks_lib.list_libraries(self.libraries_dir), [])
+
+    def test_not_a_zip_is_rejected(self):
+        path = os.path.join(self.temp_dir.name, 'bad.blocks_lib')
+        with open(path, 'w') as f:
+            f.write('not a zip')
+        with self.assertRaises(blocks_lib.BlocksLibError):
+            blocks_lib.install_blocks_lib(path, self.libraries_dir)
+
+    def test_unexpected_entries_are_not_extracted(self):
+        entries = dict(self.valid_entries(), **{
+            '../evil.json': VALID_TOOLBOX,
+            'toolboxes/../../evil.json': VALID_TOOLBOX,
+            'toolboxes/nested/deeper.json': VALID_TOOLBOX,
+            'README.md': 'readme',
+        })
+        blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
+        extracted = []
+        for root, _, files in os.walk(self.temp_dir.name):
+            extracted.extend(os.path.relpath(os.path.join(root, f), self.temp_dir.name)
+                             for f in files)
+        self.assertEqual(sorted(extracted), [
+            'demo.blocks_lib',
+            os.path.join('libraries', 'demo', 'components', 'sensor.json'),
+            os.path.join('libraries', 'demo', 'metadata.json'),
+            os.path.join('libraries', 'demo', 'toolboxes', 'demo.json'),
+            os.path.join('libraries', 'demo', 'wheels', 'demo_pkg-1.0.0-py3-none-any.whl'),
+        ])
+
+    def test_remove(self):
+        blocks_lib.install_blocks_lib(self.make_lib(self.valid_entries()), self.libraries_dir)
+        self.assertFalse(blocks_lib.remove_library('missing', self.libraries_dir))
+        self.assertFalse(blocks_lib.remove_library('..', self.libraries_dir))
+        self.assertTrue(blocks_lib.remove_library('demo', self.libraries_dir))
+        self.assertEqual(blocks_lib.list_libraries(self.libraries_dir), [])
+
+    def test_requirements_for_deploy(self):
+        blocks_lib.install_blocks_lib(self.make_lib(self.valid_entries()), self.libraries_dir)
+        python_dir = os.path.join(self.temp_dir.name, 'deploy')
+        pip_cache_dir = os.path.join(self.temp_dir.name, 'pip_cache')
+        os.makedirs(python_dir)
+
+        with open(os.path.join(python_dir, 'robot.py'), 'w') as f:
+            f.write('import wpilib\n')
+        self.assertEqual(
+            blocks_lib.get_requirements_for_deploy(python_dir, self.libraries_dir, pip_cache_dir),
+            [])
+        self.assertFalse(os.path.exists(pip_cache_dir))
+
+        with open(os.path.join(python_dir, 'teleop.py'), 'w') as f:
+            f.write('import wpilib\nimport demo_pkg.helpers\n')
+        self.assertEqual(
+            blocks_lib.get_requirements_for_deploy(python_dir, self.libraries_dir, pip_cache_dir),
+            ['demo_pkg==1.0.0'])
+        self.assertTrue(os.path.exists(
+            os.path.join(pip_cache_dir, 'demo_pkg-1.0.0-py3-none-any.whl')))
+
+
+if __name__ == '__main__':
+    unittest.main()

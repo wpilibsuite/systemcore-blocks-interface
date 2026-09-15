@@ -20,3 +20,12 @@ For each PR, make sure each of these works
 # Code Generation
 * [ ] Generate code (right now "Deploy") and make sure there are no errors in the console
 * [ ] Check that the deploy zip file contains robot.py, teleop.py, auto.py, and arm.py.
+# Libraries
+* [ ] Build the example libraries with `examples/build.sh` and upload all four from Manage -> Libraries
+* [ ] Make sure all four libraries show up in the Libraries dialog and each one's details show when it is selected
+* [ ] Make sure the Demo Math and Demo Text categories show up in the toolbox under Blocks Demo Library, and that the Blocks Demo Library category is indigo (its `color`)
+* [ ] Uncheck Joystick Helpers in the Libraries dialog and make sure only that subcategory disappears from the toolbox
+* [ ] Use a Demo Math block in an OpMode, deploy, and check that pyproject.toml requires blocks_demo==1.0.0
+* [ ] In the Robot, make sure LimitSwitch and Gripper show up in Components -> + Component -> Blocks Demo Library, add a Gripper, and make sure its methods show up in the toolbox
+* [ ] Uncheck Components -> Gripper in the Libraries dialog and make sure Gripper disappears from + Component -> Blocks Demo Library but the Gripper already in the Robot has no warning
+* [ ] Remove the library and make sure the block in the OpMode shows a warning

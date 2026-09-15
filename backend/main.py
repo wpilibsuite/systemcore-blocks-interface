@@ -10,6 +10,7 @@ from flask import Flask, jsonify, request, send_from_directory, Response
 from config import DB_PATH
 from extensions import db
 from deploy import DeployResource
+from libraries import LibrariesResource, LibraryResource
 from storage import StorageEntryResource, StorageFileRenameResource, StorageRootResource, StorageResource
 
 app = Flask(__name__, static_folder='../dist', static_url_path='')
@@ -52,6 +53,8 @@ app.add_url_rule('/storage/rename', view_func=StorageFileRenameResource.as_view(
 app.add_url_rule('/storage/', view_func=StorageRootResource.as_view('storage_root'))
 app.add_url_rule('/storage/<path:path>', view_func=StorageResource.as_view('storage'))
 app.add_url_rule('/deploy', view_func=DeployResource.as_view('deploy'))
+app.add_url_rule('/libraries', view_func=LibrariesResource.as_view('libraries'))
+app.add_url_rule('/libraries/<name>', view_func=LibraryResource.as_view('library'))
 
 # API health check endpoint to distinguish from static file serving
 @app.route('/statusz')
@@ -117,7 +120,8 @@ def serve_static(path: str) -> Union[Response, Tuple[Response, int]]:
                     'endpoints': {
                         'entries': '/entries/<entry_key>',
                         'storage': '/storage/<path>',
-                        'storage_rename': '/storage/rename'
+                        'storage_rename': '/storage/rename',
+                        'libraries': '/libraries'
                     }
                 }
             }), 404

@@ -103,6 +103,8 @@ export class Category extends Item  {
   name: string;
   expanded?: boolean;
   categorystyle?: string;
+  /** The color of the category, for example '#1e88e5'. Blockly ignores this if categorystyle is set. */
+  colour?: string;
   custom?: string;
 
   /** The blocks for this category. */

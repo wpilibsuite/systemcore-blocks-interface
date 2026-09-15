@@ -27,6 +27,7 @@ import Header from './reactComponents/Header';
 import * as Menu from './reactComponents/Menu';
 import SiderCollapseTrigger from './reactComponents/SiderCollapseTrigger';
 import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
+import LibrariesModal from './reactComponents/LibrariesModal';
 import ConfigGamepadsDialog from './reactComponents/ConfigGamepadsDialog';
 import { GamepadTypeUtils } from './types/GamepadType';
 import * as fieldGamepads from './fields/field_gamepads';
@@ -44,6 +45,11 @@ import * as serverSideStorage from './storage/server_side_storage';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 
+import * as blocksLib from './libraries/blocks_lib';
+import * as libraryRegistry from './libraries/library_registry';
+import * as libraryStorage from './libraries/library_storage';
+import { getLibraryToolbox } from './toolbox/library_toolbox';
+
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
 import { antdThemeFromString } from './reactComponents/ThemeModal';
 import { useTranslation } from 'react-i18next';
@@ -58,6 +64,9 @@ import AppTour from './reactComponents/AppTour';
 
 /** Storage key for shown toolbox categories. */
 const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';
+
+/** Storage key for the library toolbox categories that the user has hidden. */
+const HIDDEN_LIBRARY_TOOLBOX_KEYS_KEY = 'hiddenLibraryToolboxKeys';
 
 /** Storage key that tracks whether the user has completed the tour. */
 const TOUR_COMPLETED_KEY = 'tourCompleted';
@@ -156,6 +165,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [messageApi, contextHolder] = Antd.message.useMessage();
   const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+  const [librariesModalIsOpen, setLibrariesModalIsOpen] = React.useState(false);
+  const [libraries, setLibraries] = React.useState<blocksLib.Library[]>([]);
+  const [librariesLoaded, setLibrariesLoaded] = React.useState(false);
+  const [hiddenLibraryToolboxKeys, setHiddenLibraryToolboxKeys] = React.useState<Set<string>>(new Set());
   const [configGamepadsDialogIsOpen, setConfigGamepadsDialogIsOpen] = React.useState(false);
   const [gamepadConfig, setGamepadConfig] = React.useState<storageProject.GamepadConfig>(GamepadTypeUtils.getDefaultGamepadConfig());
   const [tabItems, setTabItems] = React.useState<Tabs.TabItem[]>([]);
@@ -346,6 +359,72 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     handleToolboxSettingsOk(updatedShownCategories);
   };
 
+  const librariesStorage = React.useMemo(
+      () => storage ? libraryStorage.createLibraryStorage(storage) : null, [storage]);
+
+  const libraryToolbox = React.useMemo(
+      () => getLibraryToolbox(libraries, hiddenLibraryToolboxKeys),
+      [libraries, hiddenLibraryToolboxKeys]);
+
+  /** Updates the installed libraries. */
+  const applyLibraries = (newLibraries: blocksLib.Library[]): void => {
+    // Update the registry before the editors are updated, so blocks see the new libraries.
+    libraryRegistry.setInstalledLibraries(newLibraries);
+    setLibraries(newLibraries);
+  };
+
+  /** Loads the installed libraries and which of their toolbox categories are hidden. */
+  const initializeLibraries = async (): Promise<void> => {
+    if (!storage || !librariesStorage) {
+      return;
+    }
+    try {
+      const [installed, hiddenKeysJson] = await Promise.all([
+        librariesStorage.list(),
+        storage.fetchEntry(HIDDEN_LIBRARY_TOOLBOX_KEYS_KEY, '[]'),
+      ]);
+      setHiddenLibraryToolboxKeys(new Set(JSON.parse(hiddenKeysJson)));
+      applyLibraries(installed);
+    } catch (e) {
+      console.error('Failed to load libraries:', e);
+      setAlertErrorMessage(t('LIBRARIES.LOAD_FAILED'));
+    } finally {
+      setLibrariesLoaded(true);
+    }
+  };
+
+  const saveHiddenLibraryToolboxKeys = async (hiddenKeys: Set<string>): Promise<void> => {
+    if (!storage) {
+      return;
+    }
+    setHiddenLibraryToolboxKeys(hiddenKeys);
+    const array = Array.from(hiddenKeys);
+    array.sort();
+    await storage.saveEntry(HIDDEN_LIBRARY_TOOLBOX_KEYS_KEY, JSON.stringify(array));
+  };
+
+  const handleInstallLibrary = async (filename: string, data: ArrayBuffer): Promise<void> => {
+    if (!librariesStorage) {
+      return;
+    }
+    await librariesStorage.install(filename, data);
+    applyLibraries(await librariesStorage.list());
+  };
+
+  const handleRemoveLibrary = async (libraryName: string): Promise<void> => {
+    if (!librariesStorage) {
+      return;
+    }
+    await librariesStorage.remove(libraryName);
+    applyLibraries(await librariesStorage.list());
+    // Forget which of the removed library's categories were hidden.
+    const hiddenKeys = new Set(
+        [...hiddenLibraryToolboxKeys].filter(key => JSON.parse(key)[0] !== libraryName));
+    if (hiddenKeys.size !== hiddenLibraryToolboxKeys.size) {
+      await saveHiddenLibraryToolboxKeys(hiddenKeys);
+    }
+  };
+
   /** Initializes gamepad configuration from current project. */
   const initializeGamepadConfig = (): void => {
     if (!project) {
@@ -392,6 +471,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
   React.useEffect(() => {
     initializeShownPythonToolboxCategories();
+    initializeLibraries();
   }, [storage]);
 
   // Initialize gamepad config when project changes
@@ -671,6 +751,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 switchToProjectAndSelectTab={switchToProjectAndSelectTab}
                 onProjectChanged={onProjectChanged}
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
+                openLibraries={() => setLibrariesModalIsOpen(true)}
                 theme={theme}
                 setTheme={setTheme}
                 renderer={renderer}
@@ -688,7 +769,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
               </div>
             </Sider>
             <Antd.Layout>
-              <Tabs.Component
+              {/* Wait for the libraries so that blocks using them don't show warnings while loading. */}
+              {librariesLoaded && <Tabs.Component
                 ref={tabsRef}
                 tabList={tabItems}
                 setTabList={setTabItems}
@@ -700,10 +782,12 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 renderer={renderer}
                 showSimpleClassNames={showSimpleClassNames}
                 shownPythonToolboxCategories={shownPythonToolboxCategories}
+                libraries={libraries}
+                libraryToolbox={libraryToolbox}
                 messageApi={messageApi}
                 openGamepadConfigDialog={openGamepadConfigDialog}
                 switchToProjectAndSelectTab={switchToProjectAndSelectTab}
-              />
+              />}
             </Antd.Layout>
           </Antd.Layout>
         </Antd.Layout>
@@ -713,6 +797,16 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
           shownCategories={shownPythonToolboxCategories}
           onOk={handleToolboxSettingsConfirm}
           onCancel={handleToolboxSettingsCancel}
+        />
+
+        <LibrariesModal
+          isOpen={librariesModalIsOpen}
+          onClose={() => setLibrariesModalIsOpen(false)}
+          libraries={libraries}
+          hiddenKeys={hiddenLibraryToolboxKeys}
+          onInstall={handleInstallLibrary}
+          onRemove={handleRemoveLibrary}
+          onHiddenKeysChange={saveHiddenLibraryToolboxKeys}
         />
 
         <ConfigGamepadsDialog

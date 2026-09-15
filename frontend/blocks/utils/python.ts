@@ -78,9 +78,13 @@ export const GROUP_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Group';
 export const robotPyData = generatedRobotPyData as PythonData;
 export const runtimePyData = generatedRuntimePython as PythonData;
 
+// Classes from third party libraries. See setLibraryClasses.
+const libraryPyData = new PythonData();
+
 const allPythonData: PythonData[] = [];
 allPythonData.push(robotPyData);
 allPythonData.push(runtimePyData);
+allPythonData.push(libraryPyData);
 
 export const componentClasses: ClassData[] = []
 
@@ -118,59 +122,71 @@ export function initialize() {
 
     // Process classes.
     for (const classData of pythonData.classes) {
-      // Initialize enums.
-      for (const enumData of classData.enums) {
-        PythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
-      }
+      initializeClass(classData);
 
-      // Initialize instance variables.
-      if (classData.instanceVariables.length) {
-        const varsByType: {[key: string]: VariableGettersAndSetters} =
-            organizeVarDataByType(classData.instanceVariables);
-        for (const varType in varsByType) {
-          const variableGettersAndSetters = varsByType[varType];
-          GetPythonVariable.initializeInstanceVariableGetter(
-              classData.className,
-              varType,
-              variableGettersAndSetters.varNamesForGetter,
-              variableGettersAndSetters.tooltipsForGetter);
-          if (variableGettersAndSetters.varNamesForSetter.length) {
-            SetPythonVariable.initializeInstanceVariableSetter(
-                classData.className,
-                varType,
-                variableGettersAndSetters.varNamesForSetter,
-                variableGettersAndSetters.tooltipsForSetter);
-          }
-        }
-      }
-
-      // Initialize class variables.
-      if (classData.classVariables.length) {
-        const varsByType: {[key: string]: VariableGettersAndSetters} =
-            organizeVarDataByType(classData.classVariables);
-        for (const varType in varsByType) {
-          const variableGettersAndSetters = varsByType[varType];
-          GetPythonVariable.initializeClassVariableGetter(
-              classData.className,
-              varType,
-              variableGettersAndSetters.varNamesForGetter,
-              variableGettersAndSetters.tooltipsForGetter);
-          if (variableGettersAndSetters.varNamesForSetter.length) {
-            SetPythonVariable.initializeClassVariableSetter(
-                classData.className,
-                varType,
-                variableGettersAndSetters.varNamesForSetter,
-                variableGettersAndSetters.tooltipsForSetter);
-          }
-        }
-      }
-
-      // Check whether this class is a component.
-      if (classData.isComponent) {
+      // Check whether this class is a component. Components from third party libraries are
+      // provided separately, because the user can choose whether they are shown.
+      if (classData.isComponent && pythonData !== libraryPyData) {
         componentClasses.push(classData);
       }
     }
   }
+}
+
+// Initializes enum and variable blocks for a python class.
+function initializeClass(classData: ClassData) {
+  // Initialize enums.
+  for (const enumData of classData.enums) {
+    PythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
+  }
+
+  // Initialize instance variables.
+  if (classData.instanceVariables.length) {
+    const varsByType: {[key: string]: VariableGettersAndSetters} =
+        organizeVarDataByType(classData.instanceVariables);
+    for (const varType in varsByType) {
+      const variableGettersAndSetters = varsByType[varType];
+      GetPythonVariable.initializeInstanceVariableGetter(
+          classData.className,
+          varType,
+          variableGettersAndSetters.varNamesForGetter,
+          variableGettersAndSetters.tooltipsForGetter);
+      if (variableGettersAndSetters.varNamesForSetter.length) {
+        SetPythonVariable.initializeInstanceVariableSetter(
+            classData.className,
+            varType,
+            variableGettersAndSetters.varNamesForSetter,
+            variableGettersAndSetters.tooltipsForSetter);
+      }
+    }
+  }
+
+  // Initialize class variables.
+  if (classData.classVariables.length) {
+    const varsByType: {[key: string]: VariableGettersAndSetters} =
+        organizeVarDataByType(classData.classVariables);
+    for (const varType in varsByType) {
+      const variableGettersAndSetters = varsByType[varType];
+      GetPythonVariable.initializeClassVariableGetter(
+          classData.className,
+          varType,
+          variableGettersAndSetters.varNamesForGetter,
+          variableGettersAndSetters.tooltipsForGetter);
+      if (variableGettersAndSetters.varNamesForSetter.length) {
+        SetPythonVariable.initializeClassVariableSetter(
+            classData.className,
+            varType,
+            variableGettersAndSetters.varNamesForSetter,
+            variableGettersAndSetters.tooltipsForSetter);
+      }
+    }
+  }
+}
+
+// Sets the classes provided by installed third party libraries.
+export function setLibraryClasses(classes: ClassData[]) {
+  libraryPyData.classes = classes;
+  classes.forEach(initializeClass);
 }
 
 // Returns the ClassData for the given class name.

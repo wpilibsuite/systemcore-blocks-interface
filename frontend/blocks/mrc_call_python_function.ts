@@ -43,6 +43,7 @@ import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
+import { isLibraryPythonModule } from '../libraries/library_registry';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import { makeOneContents } from '../toolbox/python_data_toolbox';
@@ -756,7 +757,9 @@ const CALL_PYTHON_FUNCTION = {
       if (!foundFunction) {
         warnings.push(Blockly.Msg.WARNING_CALL_MODULE_FUNCTION_MISSING_FUNCTION);
       }
-    } else {
+    } else if (!isLibraryPythonModule(moduleName)) {
+      // Third party libraries don't provide data about their python code, so if the module
+      // belongs to an installed library, assume it exists.
       warnings.push(Blockly.Msg.WARNING_CALL_MODULE_FUNCTION_MISSING_MODULE);
     }
   },
@@ -778,7 +781,9 @@ const CALL_PYTHON_FUNCTION = {
       if (!foundFunction) {
         warnings.push(Blockly.Msg.WARNING_CALL_STATIC_METHOD_MISSING_METHOD);
       }
-    } else {
+    } else if (!isLibraryPythonModule(className)) {
+      // Third party libraries don't provide data about their python code, so if the module
+      // belongs to an installed library, assume it exists.
       warnings.push(Blockly.Msg.WARNING_CALL_STATIC_METHOD_MISSING_CLASS);
     }
   },
@@ -799,7 +804,9 @@ const CALL_PYTHON_FUNCTION = {
       if (!foundFunction) {
         warnings.push(Blockly.Msg.WARNING_CALL_CONSTRUCTOR_MISSING_CONSTRUCTOR);
       }
-    } else {
+    } else if (!isLibraryPythonModule(className)) {
+      // Third party libraries don't provide data about their python code, so if the module
+      // belongs to an installed library, assume it exists.
       warnings.push(Blockly.Msg.WARNING_CALL_CONSTRUCTOR_MISSING_CLASS);
     }
   },
@@ -821,7 +828,9 @@ const CALL_PYTHON_FUNCTION = {
       if (!foundFunction) {
         warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_METHOD_MISSING_METHOD);
       }
-    } else {
+    } else if (!isLibraryPythonModule(className)) {
+      // Third party libraries don't provide data about their python code, so if the module
+      // belongs to an installed library, assume it exists.
       warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_METHOD_MISSING_CLASS);
     }
   },
