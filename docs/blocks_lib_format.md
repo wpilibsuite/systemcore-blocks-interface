@@ -256,10 +256,12 @@ RobotPy modules in the toolbox settings. To give users blocks for its classes, a
 be chosen in the toolbox settings, and `examples/generate_python_toolboxes.mjs` makes a category
 for each of them, with the same blocks as the built in RobotPy categories.
 
-`python_tools/generate_json.py` generates this data from Python modules. The REV Robotics example
-(`examples/rev_robotics/`) is generated this way from `robotpy-rev`: see `writeBlocksLibFiles` in
-`python_tools/json_util.py`, which writes the component classes to `components/` and everything
-else to `python_data/`.
+`JsonGenerator.writeBlocksLibFiles` in `python_tools/json_util.py` generates this data from Python
+modules. The REV Robotics example (`examples/rev_robotics/`) is generated this way from
+`robotpy-rev` by its `generate_python_data.py`, which writes the component classes to `components/`, and the classes
+and enums that the components and `shownCategories` refer to, to `python_data/`. Classes and enums
+that nothing uses aren't written, to keep the library small; they are listed in `ignore` in
+`python_toolbox.json`.
 
 ## `samples/`
 

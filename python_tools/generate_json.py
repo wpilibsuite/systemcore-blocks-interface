@@ -23,31 +23,18 @@ from absl import app
 from absl import flags
 from absl import logging
 
-# robotpy
-import ntcore
-import rev
-import wpilib
-import wpilib.simulation
-import wpimath
-import wpimath.units
-import wpinet
-import wpiutil
-
 # Runtime python
 sys.path.append("../runtime_python")
 import wpilib_blocks
 
 # Local modules
 import json_util
-import python_util
+import robotpy_modules
 
 
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('output_directory', None, 'The directory where output should be written.')
-flags.DEFINE_string('rev_library_directory', None,
-    'The directory of the REV Robotics example library (examples/rev_robotics), where the rev '
-    'components and python data should be written.')
 
 
 def main(argv):
@@ -59,18 +46,7 @@ def main(argv):
 
   pathlib.Path(f'{FLAGS.output_directory}/generated/').mkdir(parents=True, exist_ok=True)
 
-  # rev isn't built in. It is written to the REV Robotics example library below.
-  robotpy_modules = [
-    ntcore,
-    wpilib,
-    wpilib.simulation,
-    python_util.getModule('wpilib.sysid'),
-    wpimath,
-    wpimath.units,
-    wpinet,
-    wpiutil,
-  ]
-  json_generator_robotpy = json_util.JsonGenerator(robotpy_modules)
+  json_generator_robotpy = json_util.JsonGenerator(robotpy_modules.getRobotPyModules())
   file_path = f'{FLAGS.output_directory}/generated/robotpy_data.json'
   json_generator_robotpy.writeJsonFile(file_path)
 
@@ -81,13 +57,6 @@ def main(argv):
       runtime_python, [json_generator_robotpy])
   file_path = f'{FLAGS.output_directory}/generated/runtime_python.json'
   json_generator_runtime_python.writeJsonFile(file_path)
-
-  if FLAGS.rev_library_directory:
-    rev_modules = [
-      rev,
-    ]
-    json_generator_rev = json_util.JsonGenerator(rev_modules, [json_generator_robotpy])
-    json_generator_rev.writeBlocksLibFiles(FLAGS.rev_library_directory)
 
 if __name__ == '__main__':
   app.run(main)

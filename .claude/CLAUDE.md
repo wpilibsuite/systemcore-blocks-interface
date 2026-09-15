@@ -29,10 +29,10 @@ python main.py       # Dev server at localhost:5001
 
 ```bash
 cd python_tools && source venv/bin/activate
-python3.12 generate_json.py --output_directory=../frontend/blocks/utils --rev_library_directory=../examples/rev_robotics
+python3.12 generate_json.py --output_directory=../frontend/blocks/utils
 ```
 
-The `rev` module isn't built in: `generate_json.py` writes it to the REV Robotics example library (`examples/rev_robotics/components/` and `python_data/rev.json`) instead of `robotpy_data.json`.
+The `rev` module isn't built in: it is the REV Robotics example library in `examples/rev_robotics/`, which has everything specific to generating it (`generate_python_data.py`, the component definitions, and the `robotpy-rev` version in `requirements.txt`). That script uses the generic `JsonGenerator.writeBlocksLibFiles` in `python_tools/json_util.py`, keeping only the classes and enums used by its components and `python_toolbox.json` (`--add_unused_to_ignore` adds the rest to `ignore` in that file).
 
 ## Architecture
 

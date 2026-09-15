@@ -3,9 +3,6 @@
 
 # Additional packages needed for generating the json
 absl-py==2.4.0
-# For generating the REV Robotics example library. Keep the version the same as in
-# examples/rev_robotics/requirements.txt.
-robotpy-rev==2027.0.0a7.post1
 
 # For running tests
 pytest

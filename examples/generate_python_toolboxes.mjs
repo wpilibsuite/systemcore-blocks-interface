@@ -19,7 +19,10 @@
 // <example_dir>/python_toolbox.json lists the full names of the python modules and classes that
 // get toolbox categories, like the ones that can be chosen in the toolbox settings:
 //
-//   {"shownCategories": ["rev.A301", "rev.ColorSensorV3"]}
+//   {"shownCategories": ["rev.A301", "rev.ColorSensorV3"], "ignore": [...]}
+//
+// ignore is only used when the python data is generated (see writeBlocksLibFiles in
+// python_tools/json_util.py), to leave those out of the python data.
 //
 // The toolbox files are written to <output_dir>/toolboxes/. The label between the common blocks
 // and the rest of the blocks in a category is a message, so it is added to the locale files in

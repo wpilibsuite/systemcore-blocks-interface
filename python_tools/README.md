@@ -11,16 +11,17 @@ The following instructions work on macOS Sonoma 14.6.1.
     1. python3.12 -m pip install -r requirements.txt
     1. deactivate
 
-### To Regenerate robotpy_data.json and the REV Robotics example library
+### To Regenerate robotpy_data.json
     1. cd <your repo>/python_tools
     1. source venv/bin/activate
-    1. python3.12 generate_json.py --output_directory=../frontend/blocks/utils --rev_library_directory=../examples/rev_robotics
+    1. python3.12 generate_json.py --output_directory=../frontend/blocks/utils
     1. deactivate
 
-The rev module isn't built in. Its component classes are written to
-examples/rev_robotics/components/ and the rest of the module is written to
-examples/rev_robotics/python_data/rev.json. Leave out --rev_library_directory to only regenerate
-the built in json.
+### Generating third party libraries
+
+`JsonGenerator.writeBlocksLibFiles` in json_util.py writes the `components/` and `python_data/` of
+a third party library from Python modules. The REV Robotics example library uses it, in
+examples/rev_robotics/generate_python_data.py; see examples/rev_robotics/README.md.
 
 ### To run tests
     1. cd <your repo>/python_tools
