@@ -27,6 +27,7 @@ import * as I18Next from 'react-i18next';
 import { DeleteOutlined, UploadOutlined, WarningOutlined } from '@ant-design/icons';
 
 import * as blocksLib from '../libraries/blocks_lib';
+import { getLocalizedDisplayName, localizeLibraryText } from '../libraries/library_i18n';
 import * as libraryTree from '../libraries/library_tree';
 import { simpleClassName } from '../blocks/utils/python';
 
@@ -48,7 +49,8 @@ function errorToString(e: unknown): string {
 }
 
 const LibrariesModal: React.FC<LibrariesModalProps> = (props) => {
-  const { t } = I18Next.useTranslation();
+  const { t, i18n } = I18Next.useTranslation();
+  const language = i18n.language;
   const [modal, modalContextHolder] = Antd.Modal.useModal();
   const [messageApi, messageContextHolder] = Antd.message.useMessage();
   const [selectedLibraryName, setSelectedLibraryName] = React.useState<string>('');
@@ -72,9 +74,9 @@ const LibrariesModal: React.FC<LibrariesModalProps> = (props) => {
         case libraryTree.LibraryTreeNodeKind.LIBRARY:
           return (
             <Antd.Flex justify="space-between" align="center" gap="small" style={{ width: '100%' }}>
-              <Antd.Tooltip title={node.library.metadata.summary}>
+              <Antd.Tooltip title={localizeLibraryText(node.library, node.library.metadata.summary, language)}>
                 <Antd.Space size={4}>
-                  <span>{node.name}</span>
+                  <span>{localizeLibraryText(node.library, node.name, language)}</span>
                   {!blocksLib.isCompatible(node.library.metadata) && (
                     <Antd.Tag color="warning" icon={<WarningOutlined />}>
                       {t('LIBRARIES.INCOMPATIBLE')}
@@ -103,7 +105,9 @@ const LibrariesModal: React.FC<LibrariesModalProps> = (props) => {
         case libraryTree.LibraryTreeNodeKind.COMPONENT:
           return simpleClassName(node.name);
         case libraryTree.LibraryTreeNodeKind.CATEGORY:
-          return node.name;
+          // The node's name is the category name from the toolbox file, which is what the hidden
+          // keys use, so it is only translated here.
+          return localizeLibraryText(node.library, node.name, language);
       }
     };
     const makeTreeDataNode = (node: libraryTree.LibraryTreeNode): TreeDataNode => ({
@@ -164,7 +168,7 @@ const LibrariesModal: React.FC<LibrariesModalProps> = (props) => {
     }
 
     const metadata = library.metadata;
-    const name = blocksLib.getDisplayName(metadata);
+    const name = getLocalizedDisplayName(library, language);
     if (!blocksLib.isCompatible(metadata)) {
       showError(t('LIBRARIES.INCOMPATIBLE_VERSION', {
         name,
@@ -216,7 +220,7 @@ const LibrariesModal: React.FC<LibrariesModalProps> = (props) => {
   };
 
   const handleRemoveClick = async (library: blocksLib.Library): Promise<void> => {
-    const name = blocksLib.getDisplayName(library.metadata);
+    const name = getLocalizedDisplayName(library, language);
     const confirmed = await modal.confirm({
       title: t('LIBRARIES.REMOVE_TITLE', { name }),
       content: t('LIBRARIES.REMOVE_MESSAGE'),
@@ -249,7 +253,7 @@ const LibrariesModal: React.FC<LibrariesModalProps> = (props) => {
         <div>
           <Antd.Flex justify="space-between" align="baseline" gap="small">
             <Antd.Typography.Title level={5} style={{ margin: 0 }}>
-              {blocksLib.getDisplayName(metadata)}
+              {getLocalizedDisplayName(library, language)}
             </Antd.Typography.Title>
             <Antd.Typography.Text type="secondary" style={{ whiteSpace: 'nowrap' }}>
               {metadata.version}
@@ -265,7 +269,7 @@ const LibrariesModal: React.FC<LibrariesModalProps> = (props) => {
           />
         )}
         <Antd.Typography.Paragraph style={{ whiteSpace: 'pre-wrap', margin: 0 }}>
-          {metadata.details}
+          {localizeLibraryText(library, metadata.details, language)}
         </Antd.Typography.Paragraph>
       </Antd.Flex>
     );

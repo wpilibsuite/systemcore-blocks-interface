@@ -1,6 +1,6 @@
 {
   "kind": "category",
-  "name": "Demo Text",
+  "name": "%{TOOLBOX.DEMO_TEXT}",
   "categorystyle": "text_category",
   "contents": [
     {
@@ -15,7 +15,7 @@
             "type": "str"
           }
         ],
-        "tooltip": "Returns a friendly greeting for name.",
+        "tooltip": "%{TOOLTIPS.GREETING}",
         "importModule": "blocks_demo.text_helpers",
         "moduleOrClassName": "blocks_demo.text_helpers"
       },
@@ -46,7 +46,7 @@
             "type": "str"
           }
         ],
-        "tooltip": "Prints message to the robot's console with a prefix.",
+        "tooltip": "%{TOOLTIPS.LOG_MESSAGE}",
         "importModule": "blocks_demo.text_helpers",
         "moduleOrClassName": "blocks_demo.text_helpers"
       },

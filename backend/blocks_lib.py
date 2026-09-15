@@ -8,6 +8,7 @@ A .blocks_lib file is a zip file containing:
                        the library's category, that are added to the toolbox
     components/*.json - optional component classes that are added to the components toolbox
     samples/<SampleName>/*.json - optional sample projects that are shown with the built in samples
+    locales/<language>.json - optional translations for the strings that are shown to the user
 
 Installed libraries are extracted to <libraries_dir>/<name>/.
 
@@ -28,6 +29,10 @@ WHEELS_DIR = 'wheels'
 TOOLBOXES_DIR = 'toolboxes'
 COMPONENTS_DIR = 'components'
 SAMPLES_DIR = 'samples'
+LOCALES_DIR = 'locales'
+
+# The locale that has to have every message, and that is used when a message isn't translated.
+DEFAULT_LOCALE = 'en'
 
 # The files in a sample are the files of a project, plus an optional description.json.
 SAMPLE_PROJECT_INFO_FILE = 'project.info.json'
@@ -60,6 +65,12 @@ JSON_FILENAME_PATTERN = re.compile(r'^[A-Za-z0-9_.-]+\.json$')
 # frontend/storage/names.ts.
 SAMPLE_NAME_PATTERN = re.compile(r'^[A-Z][A-Za-z0-9_]*$')
 SAMPLE_MODULE_FILENAME_PATTERN = re.compile(r'^[A-Z][A-Za-z0-9_]*\.(robot|mechanism|opmode)\.json$')
+
+LOCALE_FILENAME_PATTERN = re.compile(r'^[a-z]{2,3}(-[A-Za-z0-9]+)?\.json$')
+
+# A string that is exactly %{KEY} is a reference to a message in the library's locale files. KEY is
+# a dotted path into the JSON, like the keys in the app's locale files.
+REFERENCE_PATTERN = re.compile(r'^%\{([A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*)\}$')
 
 COLOR_PATTERN = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
@@ -162,6 +173,77 @@ def validate_samples(samples: Dict[str, Dict[str, Any]]) -> None:
                     f'{SAMPLES_DIR}/{sample_name}/{filename} must contain a JSON object')
 
 
+def validate_locale(messages: Any, filename: str) -> None:
+    """Checks that the locale is an object whose values are strings or nested objects."""
+    def check(value: Any) -> bool:
+        return isinstance(value, str) or (
+            isinstance(value, dict) and all(check(child) for child in value.values()))
+    if not isinstance(messages, dict) or not check(messages):
+        raise BlocksLibError(
+            f'{filename} must contain a JSON object whose values are strings or objects')
+
+
+def lookup_message(messages: Optional[Dict[str, Any]], key: str) -> Optional[str]:
+    """Returns the message with the given dotted key, or None if there isn't one."""
+    value: Any = messages
+    for part in key.split('.'):
+        if not isinstance(value, dict):
+            return None
+        value = value.get(part)
+    return value if isinstance(value, str) else None
+
+
+def _find_translatable_strings(value: Any, found: List[str]) -> None:
+    """Adds the strings that can be translated: the "name" of each category, the "text" of each
+    label, and every "tooltip"."""
+    if isinstance(value, list):
+        for item in value:
+            _find_translatable_strings(item, found)
+    elif isinstance(value, dict):
+        for key, child in value.items():
+            if isinstance(child, str):
+                if (key == 'tooltip' or (key == 'name' and value.get('kind') == 'category')
+                        or (key == 'text' and value.get('kind') == 'label')):
+                    found.append(child)
+            else:
+                _find_translatable_strings(child, found)
+
+
+def get_referenced_keys(metadata: Dict[str, Any], toolboxes: Dict[str, Any],
+                        components: Dict[str, Any], samples: Dict[str, Dict[str, Any]]) -> Set[str]:
+    """Returns the keys of the messages that the library refers to."""
+    strings = [metadata.get('displayName'), metadata.get('summary'), metadata.get('details')]
+    translatable: List[str] = []
+    _find_translatable_strings(toolboxes, translatable)
+    _find_translatable_strings(components, translatable)
+    strings.extend(translatable)
+    for files in samples.values():
+        description = files.get(SAMPLE_DESCRIPTION_FILE)
+        if isinstance(description, dict):
+            strings.append(description.get('description'))
+            if isinstance(description.get('tags'), list):
+                strings.extend(description['tags'])
+    keys: Set[str] = set()
+    for text in strings:
+        if isinstance(text, str):
+            m = REFERENCE_PATTERN.match(text)
+            if m:
+                keys.add(m.group(1))
+    return keys
+
+
+def validate_references(referenced_keys: Set[str], locales: Dict[str, Any]) -> None:
+    """Checks that every message the library refers to is in the default locale."""
+    default_messages = locales.get(DEFAULT_LOCALE)
+    for key in sorted(referenced_keys):
+        if default_messages is None:
+            raise BlocksLibError(
+                f'The library refers to the message "{key}", but it doesn\'t have '
+                f'{LOCALES_DIR}/{DEFAULT_LOCALE}.json')
+        if lookup_message(default_messages, key) is None:
+            raise BlocksLibError(f'"{key}" is missing from {LOCALES_DIR}/{DEFAULT_LOCALE}.json')
+
+
 def parse_wheel_filename(filename: str) -> Optional[Dict[str, str]]:
     """Returns the distribution name and version of a wheel, or None if it isn't a wheel."""
     m = WHEEL_FILENAME_PATTERN.match(filename)
@@ -190,8 +272,9 @@ def get_wheel_top_level_modules(wheel_path: str) -> List[str]:
 def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
     """Validates the .blocks_lib file at zip_path and extracts it to dest_dir.
 
-    Only metadata.json, wheels/*.whl, toolboxes/*.json, components/*.json, and the project files in
-    samples/<SampleName>/ are extracted; anything else in the zip is ignored. Returns the metadata.
+    Only metadata.json, wheels/*.whl, toolboxes/*.json, components/*.json, locales/<language>.json,
+    and the project files in samples/<SampleName>/ are extracted; anything else in the zip is
+    ignored. Returns the metadata.
     """
     try:
         with zipfile.ZipFile(zip_path, 'r') as zf:
@@ -211,6 +294,9 @@ def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
 
             json_file_count = 0
             samples: Dict[str, Dict[str, Any]] = {}
+            toolboxes: Dict[str, Any] = {}
+            components: Dict[str, Any] = {}
+            locales: Dict[str, Any] = {}
             for name in names:
                 if not name.startswith(prefix):
                     continue
@@ -241,6 +327,15 @@ def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
                     with zf.open(name) as src, open(
                             os.path.join(dest_dir, WHEELS_DIR, filename), 'wb') as dst:
                         shutil.copyfileobj(src, dst)
+                elif directory == LOCALES_DIR:
+                    if not LOCALE_FILENAME_PATTERN.match(filename):
+                        continue
+                    try:
+                        content = json.loads(zf.read(name).decode('utf-8'))
+                    except (ValueError, UnicodeDecodeError) as e:
+                        raise BlocksLibError(f'{relative} is not valid JSON: {e}')
+                    validate_locale(content, relative)
+                    locales[filename[:-len('.json')]] = content
                 elif directory in (TOOLBOXES_DIR, COMPONENTS_DIR):
                     if not JSON_FILENAME_PATTERN.match(filename):
                         continue
@@ -250,8 +345,10 @@ def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
                         raise BlocksLibError(f'{relative} is not valid JSON: {e}')
                     if directory == TOOLBOXES_DIR:
                         validate_toolbox(content, relative)
+                        toolboxes[filename] = content
                     else:
                         validate_component(content, relative)
+                        components[filename] = content
                     with open(os.path.join(dest_dir, directory, filename), 'w',
                               encoding='utf-8') as f:
                         json.dump(content, f)
@@ -261,6 +358,14 @@ def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
                     f'The library must contain at least one {TOOLBOXES_DIR}/*.json, '
                     f'{COMPONENTS_DIR}/*.json, or {SAMPLES_DIR}/<SampleName>/*.json file')
             validate_samples(samples)
+            validate_references(
+                get_referenced_keys(metadata, toolboxes, components, samples), locales)
+            if locales:
+                os.makedirs(os.path.join(dest_dir, LOCALES_DIR), exist_ok=True)
+                for language, messages in locales.items():
+                    with open(os.path.join(dest_dir, LOCALES_DIR, language + '.json'), 'w',
+                              encoding='utf-8') as f:
+                        json.dump(messages, f, ensure_ascii=False)
             for sample_name, files in samples.items():
                 sample_dir = os.path.join(dest_dir, SAMPLES_DIR, sample_name)
                 os.makedirs(sample_dir, exist_ok=True)
@@ -307,6 +412,10 @@ def load_library(library_dir: str) -> Dict[str, Any]:
     toolboxes = _load_json_files(os.path.join(library_dir, TOOLBOXES_DIR))
     components = _load_json_files(os.path.join(library_dir, COMPONENTS_DIR))
 
+    locales = {filename[:-len('.json')]: messages for filename, messages
+               in _load_json_files(os.path.join(library_dir, LOCALES_DIR)).items()
+               if LOCALE_FILENAME_PATTERN.match(filename)}
+
     samples: Dict[str, Dict[str, Any]] = {}
     samples_dir = os.path.join(library_dir, SAMPLES_DIR)
     if os.path.isdir(samples_dir):
@@ -330,6 +439,7 @@ def load_library(library_dir: str) -> Dict[str, Any]:
         'toolboxes': toolboxes,
         'components': components,
         'samples': samples,
+        'locales': locales,
         'wheels': wheels,
         'pythonModules': sorted(python_modules),
     }

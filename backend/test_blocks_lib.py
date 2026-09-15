@@ -58,6 +58,15 @@ VALID_SAMPLE = {
     'samples/DemoBot/Teleop.opmode.json': {'moduleType': 'opmode'},
 }
 
+LOCALIZED_ENTRIES = {
+    'toolboxes/demo.json': {'kind': 'category', 'name': '%{TOOLBOX.DEMO}', 'contents': [
+        {'kind': 'label', 'text': '%{TOOLBOX.LABEL}'},
+        {'kind': 'block', 'type': 'text', 'extraState': {'tooltip': '%{TOOLBOX.TOOLTIP}'}},
+    ]},
+    'locales/en.json': {'TOOLBOX': {'DEMO': 'Demo', 'LABEL': 'Label', 'TOOLTIP': 'Tooltip'}},
+    'locales/es.json': {'TOOLBOX': {'DEMO': 'Demostración'}},
+}
+
 VALID_WHEEL = make_wheel([
     'demo_pkg/__init__.py',
     'demo_pkg/helpers.py',
@@ -139,6 +148,28 @@ class BlocksLibTest(unittest.TestCase):
         library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
         self.assertEqual(list(library['samples']), ['DemoBot'])
 
+    def test_install_locales(self):
+        entries = dict(self.valid_entries(summary='%{SUMMARY}'), **LOCALIZED_ENTRIES)
+        entries['locales/en.json'] = dict(entries['locales/en.json'], SUMMARY='A summary')
+        entries['locales/not_a_locale.json'] = {'SUMMARY': 'ignored'}
+        library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
+        self.assertEqual(library['locales'], {
+            'en': entries['locales/en.json'],
+            'es': {'TOOLBOX': {'DEMO': 'Demostración'}},
+        })
+        self.assertEqual(blocks_lib.list_libraries(self.libraries_dir), [library])
+
+    def test_referenced_keys(self):
+        keys = blocks_lib.get_referenced_keys(
+            dict(VALID_METADATA, displayName='%{NAME}', details='Not a %{REFERENCE}'),
+            {'demo.json': LOCALIZED_ENTRIES['toolboxes/demo.json']},
+            {'sensor.json': dict(VALID_COMPONENT, constructors=[
+                dict(VALID_COMPONENT['constructors'][0], tooltip='%{COMPONENT.TOOLTIP}')])},
+            {'DemoBot': {'description.json': {'description': '%{SAMPLE.DESCRIPTION}',
+                                              'tags': ['%{SAMPLE.TAG}', 'literal']}}})
+        self.assertEqual(keys, {'NAME', 'TOOLBOX.DEMO', 'TOOLBOX.LABEL', 'TOOLBOX.TOOLTIP',
+                                'COMPONENT.TOOLTIP', 'SAMPLE.DESCRIPTION', 'SAMPLE.TAG'})
+
     def test_install_replaces_existing(self):
         blocks_lib.install_blocks_lib(self.make_lib(self.valid_entries()), self.libraries_dir)
         blocks_lib.install_blocks_lib(
@@ -186,6 +217,14 @@ class BlocksLibTest(unittest.TestCase):
                 if k != 'samples/DemoBot/project.info.json'},
             'sample file not json': {**self.valid_entries(), **VALID_SAMPLE,
                                      'samples/DemoBot/Teleop.opmode.json': '{'},
+            'locale not an object': {**self.valid_entries(), 'locales/en.json': []},
+            'locale value not a string': {**self.valid_entries(), 'locales/en.json': {'A': 1}},
+            'reference without default locale': {
+                k: v for k, v in dict(self.valid_entries(), **LOCALIZED_ENTRIES).items()
+                if k != 'locales/en.json'},
+            'reference missing from default locale': {
+                **self.valid_entries(), **LOCALIZED_ENTRIES,
+                'locales/en.json': {'TOOLBOX': {'DEMO': 'Demo', 'LABEL': 'Label'}}},
             'sample file not an object': {**self.valid_entries(), **VALID_SAMPLE,
                                           'samples/DemoBot/Teleop.opmode.json': []},
         }

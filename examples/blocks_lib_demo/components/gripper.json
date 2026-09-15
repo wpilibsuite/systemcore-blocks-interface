@@ -4,7 +4,7 @@
   "constructors": [
     {
       "functionName": "__init__",
-      "tooltip": "A gripper that is opened and closed by a servo plugged into an Expansion Hub.",
+      "tooltip": "%{COMPONENTS.GRIPPER}",
       "args": [
         {
           "name": "usb_id",
@@ -47,7 +47,7 @@
   "instanceMethods": [
     {
       "functionName": "open",
-      "tooltip": "Opens the gripper.",
+      "tooltip": "%{COMPONENTS.GRIPPER_OPEN}",
       "args": [
         {
           "name": "self",
@@ -59,7 +59,7 @@
     },
     {
       "functionName": "close",
-      "tooltip": "Closes the gripper.",
+      "tooltip": "%{COMPONENTS.GRIPPER_CLOSE}",
       "args": [
         {
           "name": "self",
@@ -71,7 +71,7 @@
     },
     {
       "functionName": "is_open",
-      "tooltip": "Returns True if the gripper was last opened.",
+      "tooltip": "%{COMPONENTS.GRIPPER_IS_OPEN}",
       "args": [
         {
           "name": "self",

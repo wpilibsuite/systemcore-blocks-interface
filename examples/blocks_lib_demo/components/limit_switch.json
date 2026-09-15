@@ -4,7 +4,7 @@
   "constructors": [
     {
       "functionName": "__init__",
-      "tooltip": "A limit switch plugged into a Smart IO port.",
+      "tooltip": "%{COMPONENTS.LIMIT_SWITCH}",
       "args": [
         {
           "name": "channel",
@@ -33,7 +33,7 @@
   "instanceMethods": [
     {
       "functionName": "is_pressed",
-      "tooltip": "Returns True if the limit switch is pressed.",
+      "tooltip": "%{COMPONENTS.LIMIT_SWITCH_IS_PRESSED}",
       "args": [
         {
           "name": "self",

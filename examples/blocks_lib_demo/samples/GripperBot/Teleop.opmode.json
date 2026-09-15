@@ -52,7 +52,7 @@
                       "type": "str"
                     }
                   ],
-                  "tooltip": "Prints message to the robot's console with a prefix.",
+                  "tooltip": "%{blocks_demo:TOOLTIPS.LOG_MESSAGE}",
                   "importModule": "blocks_demo.text_helpers",
                   "moduleOrClassName": "blocks_demo.text_helpers"
                 },
@@ -81,7 +81,7 @@
                             "type": "str"
                           }
                         ],
-                        "tooltip": "Returns a friendly greeting for name.",
+                        "tooltip": "%{blocks_demo:TOOLTIPS.GREETING}",
                         "importModule": "blocks_demo.text_helpers",
                         "moduleOrClassName": "blocks_demo.text_helpers"
                       },
@@ -159,7 +159,7 @@
                         "functionKind": "instance_component",
                         "returnType": "None",
                         "args": [],
-                        "tooltip": "Opens the gripper.",
+                        "tooltip": "%{blocks_demo:COMPONENTS.GRIPPER_OPEN}",
                         "componentId": "}OoH|Xq%wvb.;qf#S)Up",
                         "componentClassName": "blocks_demo.components.Gripper"
                       },
@@ -196,7 +196,7 @@
                               "functionKind": "instance_component",
                               "returnType": "bool",
                               "args": [],
-                              "tooltip": "Returns True if the limit switch is pressed.",
+                              "tooltip": "%{blocks_demo:COMPONENTS.LIMIT_SWITCH_IS_PRESSED}",
                               "componentId": "Kk)EK9@WTP*L%^rw5}VP",
                               "componentClassName": "blocks_demo.components.LimitSwitch"
                             },
@@ -217,7 +217,7 @@
                         "functionKind": "instance_component",
                         "returnType": "None",
                         "args": [],
-                        "tooltip": "Closes the gripper.",
+                        "tooltip": "%{blocks_demo:COMPONENTS.GRIPPER_CLOSE}",
                         "componentId": "}OoH|Xq%wvb.;qf#S)Up",
                         "componentClassName": "blocks_demo.components.Gripper"
                       },

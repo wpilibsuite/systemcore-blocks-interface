@@ -5,7 +5,7 @@
 # With no arguments, every directory here that has a metadata.json is built.
 #
 # Each example directory has metadata.json, a python package in python/, and optional toolboxes/,
-# components/, and samples/ directories. The output is <example_dir>/build/<name>.blocks_lib.
+# components/, locales/, and samples/ directories. The output is <example_dir>/build/<name>.blocks_lib.
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -32,7 +32,7 @@ for EXAMPLE in "$@"; do
 
     cp "$EXAMPLE_DIR/metadata.json" "$STAGING_DIR/"
     ENTRIES=(metadata.json wheels)
-    for DIR in toolboxes components; do
+    for DIR in toolboxes components locales; do
         if [ -d "$EXAMPLE_DIR/$DIR" ]; then
             mkdir -p "$STAGING_DIR/$DIR"
             cp "$EXAMPLE_DIR/$DIR/"*.json "$STAGING_DIR/$DIR/"

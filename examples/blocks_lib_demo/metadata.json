@@ -1,11 +1,11 @@
 {
   "formatVersion": 1,
   "name": "blocks_demo",
-  "displayName": "Blocks Demo Library",
+  "displayName": "%{NAME}",
   "color": "#5C6BC0",
   "version": "1.0.0",
   "author": "FTC Tech Team",
-  "summary": "Example library with helper blocks and components.",
-  "details": "This library shows how a third party can add blocks to the toolbox that call functions in their own python wheel.\n\nThe Demo Math category has blocks for clamping and scaling values, with a Joystick Helpers subcategory. The Demo Text category has blocks for building and printing messages.\n\nIt also adds two components: a LimitSwitch on a Smart IO port and a Gripper driven by a servo on an Expansion Hub.",
+  "summary": "%{SUMMARY}",
+  "details": "%{DETAILS}",
   "blocksVersion": ">=0.4.0"
 }

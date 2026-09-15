@@ -1,6 +1,9 @@
 import JSZip from 'jszip';
 import { describe, expect, test } from 'vitest';
 import * as blocksLib from '../frontend/libraries/blocks_lib';
+import * as libraryI18n from '../frontend/libraries/library_i18n';
+import { setInstalledLibraries } from '../frontend/libraries/library_registry';
+import { buildLibraryTree } from '../frontend/libraries/library_tree';
 import * as samplesRegistry from '../frontend/samples/samples_registry';
 import { getLibraryToolbox } from '../frontend/toolbox/library_toolbox';
 
@@ -48,6 +51,32 @@ const SAMPLE_ENTRIES = {
   'samples/DemoBot/Teleop.opmode.json': { moduleType: 'opmode' },
 };
 
+const LOCALIZED_ENTRIES = {
+  'toolboxes/demo.json': {
+    kind: 'category',
+    name: '%{TOOLBOX.DEMO}',
+    contents: [
+      { kind: 'label', text: '%{TOOLBOX.LABEL}' },
+      { kind: 'block', type: 'text', extraState: { tooltip: '%{TOOLBOX.TOOLTIP}' } },
+      { kind: 'category', name: 'Literal', contents: [{ kind: 'block', type: 'text' }] },
+    ],
+  },
+  'components/sensor.json': {
+    ...COMPONENT,
+    instanceMethods: [{ ...COMPONENT.instanceMethods[0], tooltip: '%{COMPONENT.GET}' }],
+  },
+  'locales/en.json': {
+    NAME: 'Demo Library',
+    TOOLBOX: { DEMO: 'Demo', LABEL: 'Label', TOOLTIP: 'Tooltip' },
+    COMPONENT: { GET: 'Gets the value' },
+  },
+  'locales/es.json': {
+    NAME: 'Biblioteca de demostración',
+    TOOLBOX: { DEMO: 'Demostración' },
+    COMPONENT: { GET: 'Obtiene el valor' },
+  },
+};
+
 async function makeWheel(): Promise<ArrayBuffer> {
   const wheel = new JSZip();
   wheel.file('demo_pkg/__init__.py', '');
@@ -62,6 +91,9 @@ async function makeLib(
   const zip = new JSZip();
   for (const name in entries) {
     const content = entries[name];
+    if (content === undefined) {
+      continue;
+    }
     zip.file(prefix + name,
         (typeof content === 'string' || content instanceof ArrayBuffer) ? content : JSON.stringify(content));
   }
@@ -130,6 +162,18 @@ describe('parseBlocksLib', () => {
     expect(Object.keys(library.samples!)).toEqual(['DemoBot']);
   });
 
+  test('parses locales', async () => {
+    const library = await blocksLib.parseBlocksLib(await makeLib({
+      ...await validEntries(),
+      ...LOCALIZED_ENTRIES,
+      'metadata.json': { ...METADATA, displayName: '%{NAME}' },
+      'locales/not a locale.json': {},
+    }));
+    expect(library.locales).toEqual({ en: LOCALIZED_ENTRIES['locales/en.json'], es: LOCALIZED_ENTRIES['locales/es.json'] });
+    expect([...blocksLib.getReferencedKeys(library)].sort()).toEqual(
+        ['COMPONENT.GET', 'NAME', 'TOOLBOX.DEMO', 'TOOLBOX.LABEL', 'TOOLBOX.TOOLTIP']);
+  });
+
   test('parses a library zipped inside a folder', async () => {
     const library = await blocksLib.parseBlocksLib(await makeLib(await validEntries(), 'folder/'));
     expect(library.metadata.name).toBe('demo');
@@ -162,6 +206,12 @@ describe('parseBlocksLib', () => {
         ...await validEntries(), 'samples/DemoBot/project.info.json': {}, 'samples/DemoBot/Teleop.opmode.json': {} },
       'sample without project info': { ...await validEntries(), 'samples/DemoBot/Robot.robot.json': {} },
       'sample file not json': { ...await validEntries(), ...SAMPLE_ENTRIES, 'samples/DemoBot/Teleop.opmode.json': '{' },
+      'locale not an object': { ...await validEntries(), 'locales/en.json': [] },
+      'locale value not a string': { ...await validEntries(), 'locales/en.json': { A: 1 } },
+      'reference without default locale': {
+        ...await validEntries(), ...LOCALIZED_ENTRIES, 'locales/en.json': undefined },
+      'reference missing from default locale': {
+        ...await validEntries(), ...LOCALIZED_ENTRIES, 'locales/en.json': { TOOLBOX: { DEMO: 'Demo', LABEL: 'Label' } } },
       'sample file not an object': { ...await validEntries(), ...SAMPLE_ENTRIES, 'samples/DemoBot/Teleop.opmode.json': [] },
     };
     for (const description in cases) {
@@ -175,7 +225,7 @@ describe('parseBlocksLib', () => {
 
 describe('normalizeComponentClass', () => {
   test('fills in the optional fields', () => {
-    const classData = blocksLib.normalizeComponentClass(COMPONENT as any);
+    const classData = blocksLib.normalizeComponentClass(COMPONENT as any, 'demo');
     expect(classData.isComponent).toBe(true);
     expect(classData.staticMethods).toEqual([]);
     expect(classData.enums).toEqual([]);
@@ -294,7 +344,7 @@ describe('library samples', () => {
     expect(samples.length).toBe(builtInCount + 1);
     const sample = samples[builtInCount];
     expect(sample.sampleName).toBe('DemoBot');
-    expect(sample.library).toEqual(METADATA);
+    expect(sample.library!.metadata).toEqual(METADATA);
     expect(sample.description).toBe('A demo');
     expect(sample.tags).toEqual(['demo']);
     expect(Object.keys(sample.files).sort()).toEqual(['Robot.robot.json', 'Teleop.opmode.json', 'project.info.json']);
@@ -310,5 +360,61 @@ describe('library samples', () => {
     expect(librarySamples([incompatible])).toEqual([]);
     // Libraries installed before samples were supported don't have samples.
     expect(librarySamples([makeLibrary()])).toEqual([]);
+  });
+});
+
+describe('library translations', () => {
+  const makeLocalizedLibrary = async () => blocksLib.parseBlocksLib(await makeLib({
+    ...await validEntries(),
+    ...LOCALIZED_ENTRIES,
+    'metadata.json': { ...METADATA, displayName: '%{NAME}' },
+  }));
+
+  test('falls back to the base language, the default locale, and then the key', async () => {
+    const library = await makeLocalizedLibrary();
+    expect(libraryI18n.localizeLibraryText(library, '%{TOOLBOX.DEMO}', 'es')).toBe('Demostración');
+    expect(libraryI18n.localizeLibraryText(library, '%{TOOLBOX.DEMO}', 'es-MX')).toBe('Demostración');
+    expect(libraryI18n.localizeLibraryText(library, '%{TOOLBOX.LABEL}', 'es')).toBe('Label');
+    expect(libraryI18n.localizeLibraryText(library, '%{TOOLBOX.DEMO}', 'fr')).toBe('Demo');
+    expect(libraryI18n.localizeLibraryText(library, '%{MISSING}', 'es')).toBe('MISSING');
+    expect(libraryI18n.localizeLibraryText(library, 'Not a reference', 'es')).toBe('Not a reference');
+    expect(libraryI18n.localizeLibraryText(library, 'Not a %{TOOLBOX.DEMO}', 'es')).toBe('Not a %{TOOLBOX.DEMO}');
+    expect(libraryI18n.getLocalizedDisplayName(library, 'es')).toBe('Biblioteca de demostración');
+  });
+
+  test('translates the toolbox, but not the hidden keys', async () => {
+    const library = await makeLocalizedLibrary();
+    const libraryToolbox = getLibraryToolbox([library], new Set(), 'es');
+    const libraryCategory = libraryToolbox.categories[0] as any;
+    expect(libraryCategory.name).toBe('Biblioteca de demostración');
+    const demo = libraryCategory.contents[0];
+    expect(demo.name).toBe('Demostración');
+    expect(demo.contents[0].text).toBe('Label');
+    // Tooltips are saved in blocks, so they are qualified with the library name instead.
+    expect(demo.contents[1].extraState.tooltip).toBe('%{demo:TOOLBOX.TOOLTIP}');
+    expect(demo.contents[2].name).toBe('Literal');
+    expect(libraryToolbox.components[0].displayName).toBe('Biblioteca de demostración');
+    expect(libraryToolbox.components[0].componentClasses[0].instanceMethods[0].tooltip).toBe('%{demo:COMPONENT.GET}');
+
+    const demoKey = blocksLib.getToolboxKey('demo', 'demo.json', ['%{TOOLBOX.DEMO}']);
+    expect(buildLibraryTree([library]).nodes.has(demoKey)).toBe(true);
+    expect(getLibraryToolbox([library], new Set([demoKey]), 'es').categories).toEqual([]);
+    // The original library is not modified.
+    expect(library.toolboxes['demo.json']).toEqual(LOCALIZED_ENTRIES['toolboxes/demo.json']);
+  });
+
+  test('translates qualified references from installed libraries', async () => {
+    const library = await makeLocalizedLibrary();
+    const language = libraryI18n.getCurrentLanguage();
+    const expected = libraryI18n.localizeLibraryText(library, '%{COMPONENT.GET}', language);
+    setInstalledLibraries([library]);
+    try {
+      expect(libraryI18n.localizeInstalledLibraryText('%{demo:COMPONENT.GET}')).toBe(expected);
+      expect(libraryI18n.localizeInstalledLibraryText('%{other:COMPONENT.GET}')).toBe('COMPONENT.GET');
+      expect(libraryI18n.localizeInstalledLibraryText('%{COMPONENT.GET}')).toBe('%{COMPONENT.GET}');
+      expect(libraryI18n.localizeInstalledLibraryText('Plain tooltip')).toBe('Plain tooltip');
+    } finally {
+      setInstalledLibraries([]);
+    }
   });
 });

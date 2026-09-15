@@ -24,16 +24,24 @@ import { setLibraryClasses } from '../blocks/utils/python';
 import { Library, normalizeComponentClass } from './blocks_lib';
 
 const libraryPythonModules: Set<string> = new Set();
+const librariesByName: Map<string, Library> = new Map();
 
 export function setInstalledLibraries(libraries: Library[]): void {
   libraryPythonModules.clear();
+  librariesByName.clear();
   for (const library of libraries) {
     library.pythonModules.forEach(m => libraryPythonModules.add(m));
+    librariesByName.set(library.metadata.name, library);
   }
   // All installed component classes are registered, even the ones the user has hidden, so that
   // component blocks that are already in the user's projects keep working.
-  setLibraryClasses(libraries.flatMap(
-      library => Object.values(library.components || {}).map(normalizeComponentClass)));
+  setLibraryClasses(libraries.flatMap(library => Object.values(library.components || {}).map(
+      component => normalizeComponentClass(component, library.metadata.name))));
+}
+
+/** Returns the installed library with the given name, or undefined if it isn't installed. */
+export function getInstalledLibrary(name: string): Library | undefined {
+  return librariesByName.get(name);
 }
 
 /**

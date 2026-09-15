@@ -20,12 +20,14 @@ import { ClassData } from '../blocks/utils/python_json_types';
 import {
     getComponentKey,
     getComponentsGroupKey,
-    getDisplayName,
     getToolboxKey,
     isCompatible,
     isFlyoutToolbox,
     Library,
-    normalizeComponentClass } from '../libraries/blocks_lib';
+    mapTranslatableStrings,
+    normalizeComponentClass,
+    qualifyReference } from '../libraries/blocks_lib';
+import { getLocalizedDisplayName, localizeLibraryText } from '../libraries/library_i18n';
 
 /** The components from one library that the user can add. */
 export interface LibraryComponents {
@@ -50,10 +52,11 @@ export const EMPTY_LIBRARY_TOOLBOX: LibraryToolbox = {
 };
 
 /**
- * Returns what the installed libraries add to the toolbox, leaving out incompatible libraries and
- * anything the user has hidden.
+ * Returns what the installed libraries add to the toolbox, in the given language, leaving out
+ * incompatible libraries and anything the user has hidden.
  */
-export function getLibraryToolbox(libraries: Library[], hiddenKeys: Set<string>): LibraryToolbox {
+export function getLibraryToolbox(
+    libraries: Library[], hiddenKeys: Set<string>, language?: string): LibraryToolbox {
   const libraryToolbox: LibraryToolbox = {
     categories: [],
     components: [],
@@ -80,10 +83,17 @@ export function getLibraryToolbox(libraries: Library[], hiddenKeys: Set<string>)
       }
     }
     if (libraryBlocks.length || libraryCategories.length) {
+      // Category names and labels are translated now, since the toolbox is rebuilt when the
+      // language changes. Tooltips are saved in the blocks, so they are translated when they are
+      // shown.
+      const contents = mapTranslatableStrings(
+          [...libraryBlocks, ...libraryCategories],
+          (text, property) => property === 'tooltip' ?
+              qualifyReference(libraryName, text) : localizeLibraryText(library, text, language));
       libraryToolbox.categories.push({
         kind: 'category',
-        name: getDisplayName(library.metadata),
-        contents: [...libraryBlocks, ...libraryCategories],
+        name: getLocalizedDisplayName(library, language),
+        contents,
         ...(library.metadata.color ? {colour: library.metadata.color} : {}),
       });
     }
@@ -91,10 +101,10 @@ export function getLibraryToolbox(libraries: Library[], hiddenKeys: Set<string>)
       const components = library.components || {};
       const componentClasses = Object.keys(components).sort()
           .filter(filename => !hiddenKeys.has(getComponentKey(libraryName, filename)))
-          .map(filename => normalizeComponentClass(components[filename]));
+          .map(filename => normalizeComponentClass(components[filename], libraryName));
       if (componentClasses.length) {
         libraryToolbox.components.push({
-          displayName: getDisplayName(library.metadata),
+          displayName: getLocalizedDisplayName(library, language),
           componentClasses,
           ...(library.metadata.color ? {colour: library.metadata.color} : {}),
         });

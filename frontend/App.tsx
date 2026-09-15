@@ -362,9 +362,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const librariesStorage = React.useMemo(
       () => storage ? libraryStorage.createLibraryStorage(storage) : null, [storage]);
 
+  // Rebuilt when the language changes, since the library category names are translated.
   const libraryToolbox = React.useMemo(
-      () => getLibraryToolbox(libraries, hiddenLibraryToolboxKeys),
-      [libraries, hiddenLibraryToolboxKeys]);
+      () => getLibraryToolbox(libraries, hiddenLibraryToolboxKeys, i18n.language),
+      [libraries, hiddenLibraryToolboxKeys, i18n.language]);
 
   /** Updates the installed libraries. */
   const applyLibraries = (newLibraries: blocksLib.Library[]): void => {

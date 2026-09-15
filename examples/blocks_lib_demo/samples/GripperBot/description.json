@@ -1,8 +1,8 @@
 {
-  "description": "A gripper that opens and closes with the gamepad, and closes by itself when its limit switch is pressed. Uses the Blocks Demo Library.",
+  "description": "%{SAMPLES.GRIPPER_BOT}",
   "tags": [
-    "gripper",
-    "limit switch",
-    "servo"
+    "%{TAGS.GRIPPER}",
+    "%{TAGS.LIMIT_SWITCH}",
+    "%{TAGS.SERVO}"
   ]
 }

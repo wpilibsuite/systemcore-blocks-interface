@@ -61,7 +61,7 @@
                   ],
                   "importModule": "blocks_demo.components",
                   "className": "blocks_demo.components.Gripper",
-                  "tooltip": "A gripper that is opened and closed by a servo plugged into an Expansion Hub."
+                  "tooltip": "%{blocks_demo:COMPONENTS.GRIPPER}"
                 },
                 "fields": {
                   "NAME": "gripper",
@@ -125,7 +125,7 @@
                       ],
                       "importModule": "blocks_demo.components",
                       "className": "blocks_demo.components.LimitSwitch",
-                      "tooltip": "A limit switch plugged into a Smart IO port."
+                      "tooltip": "%{blocks_demo:COMPONENTS.LIMIT_SWITCH}"
                     },
                     "fields": {
                       "NAME": "limit_switch",

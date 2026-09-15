@@ -25,6 +25,7 @@
  *                      in the library's category, that are added to the toolbox
  *   components/*.json - optional component classes that are added to the components toolbox
  *   samples/<SampleName>/*.json - optional sample projects that are shown with the built in samples
+ *   locales/<language>.json - optional translations for the strings that are shown to the user
  *
  * The backend has an equivalent parser in backend/blocks_lib.py. Keep them in sync.
  */
@@ -43,6 +44,10 @@ const WHEELS_DIR = 'wheels';
 const TOOLBOXES_DIR = 'toolboxes';
 const COMPONENTS_DIR = 'components';
 const SAMPLES_DIR = 'samples';
+const LOCALES_DIR = 'locales';
+
+/** The locale that has to have every message, and that is used when a message isn't translated. */
+export const DEFAULT_LOCALE = 'en';
 
 // The files in a sample are the files of a project, plus an optional description.json.
 const SAMPLE_PROJECT_INFO_FILE = 'project.info.json';
@@ -59,6 +64,10 @@ const COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 // Sample names are used as project names, and sample files as project files. See storage/names.ts.
 const SAMPLE_NAME_PATTERN = /^[A-Z][A-Za-z0-9_]*$/;
 const SAMPLE_MODULE_FILENAME_PATTERN = /^[A-Z][A-Za-z0-9_]*\.(robot|mechanism|opmode)\.json$/;
+const LOCALE_FILENAME_PATTERN = /^[a-z]{2,3}(-[A-Za-z0-9]+)?\.json$/;
+// A string that is exactly %{KEY} is a reference to a message in the library's locale files. KEY is
+// a dotted path into the JSON, like the keys in the app's locale files.
+const REFERENCE_PATTERN = /^%\{([A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*)\}$/;
 
 export interface LibraryMetadata {
   /** The version of the .blocks_lib format. */
@@ -110,10 +119,20 @@ export interface Library {
    * of the sample. Libraries installed before samples were supported don't have this.
    */
   samples?: {[sampleName: string]: {[filename: string]: any}};
+  /**
+   * Maps each language, like "en" or "es", to the library's messages in that language. Libraries
+   * installed before translations were supported don't have this.
+   */
+  locales?: {[language: string]: LocaleMessages};
   /** The filenames of the wheels. */
   wheels: string[];
   /** The top level python packages and modules provided by the wheels. */
   pythonModules: string[];
+}
+
+/** The messages in a locale file. Messages can be grouped in nested objects. */
+export interface LocaleMessages {
+  [key: string]: string | LocaleMessages;
 }
 
 /** Thrown when a .blocks_lib file is not valid. */
@@ -129,8 +148,134 @@ const REQUIRED_METADATA_FIELDS: {[field: string]: 'number' | 'string'} = {
   blocksVersion: 'string',
 };
 
+/**
+ * Returns the name of the library that is shown to the user, before it is translated. Use
+ * library_i18n.getLocalizedDisplayName to show it.
+ */
 export function getDisplayName(metadata: LibraryMetadata): string {
   return metadata.displayName || metadata.name;
+}
+
+/** Returns the key if the text is a reference to a message, like %{KEY}, otherwise null. */
+export function getReferenceKey(text: unknown): string | null {
+  if (typeof text !== 'string') {
+    return null;
+  }
+  const match = REFERENCE_PATTERN.exec(text);
+  return match ? match[1] : null;
+}
+
+// A reference that also has the name of the library whose locale files have the message, like
+// %{library_name:KEY}. Tooltips are saved in the blocks in users' projects, so they are saved as
+// qualified references and translated when they are shown.
+const QUALIFIED_REFERENCE_PATTERN =
+    /^%\{([A-Za-z0-9][A-Za-z0-9_.-]{0,99}):([A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*)\}$/;
+
+/**
+ * Returns the text with a reference to a message, like %{KEY}, changed to a reference that also has
+ * the library name, like %{library_name:KEY}. Other text is returned unchanged.
+ */
+export function qualifyReference(libraryName: string, text: string): string {
+  const key = getReferenceKey(text);
+  return key ? `%{${libraryName}:${key}}` : text;
+}
+
+/** Returns the library name and key of a qualified reference, or null if the text isn't one. */
+export function parseQualifiedReference(text: string): {libraryName: string, key: string} | null {
+  const match = QUALIFIED_REFERENCE_PATTERN.exec(text);
+  return match ? {libraryName: match[1], key: match[2]} : null;
+}
+
+/** Returns the message with the given dotted key, or undefined if there isn't one. */
+export function lookupMessage(messages: LocaleMessages | undefined, key: string): string | undefined {
+  let value: string | LocaleMessages | undefined = messages;
+  for (const part of key.split('.')) {
+    if (typeof value !== 'object' || value === null) {
+      return undefined;
+    }
+    value = value[part];
+  }
+  return typeof value === 'string' ? value : undefined;
+}
+
+/**
+ * Returns a copy of the toolbox or component class with the given function applied to each string
+ * that can be translated: the "name" of each category, the "text" of each label, and every
+ * "tooltip". The function is also given the name of the property, like "tooltip".
+ */
+export function mapTranslatableStrings<T>(
+    value: T, map: (text: string, property: string) => string): T {
+  if (Array.isArray(value)) {
+    return value.map(item => mapTranslatableStrings(item, map)) as T;
+  }
+  if (typeof value !== 'object' || value === null) {
+    return value;
+  }
+  const source = value as any;
+  const result: any = {};
+  for (const key in source) {
+    const child = source[key];
+    if (typeof child === 'string' && (key === 'tooltip' ||
+        (key === 'name' && source.kind === 'category') ||
+        (key === 'text' && source.kind === 'label'))) {
+      result[key] = map(child, key);
+    } else {
+      result[key] = mapTranslatableStrings(child, map);
+    }
+  }
+  return result;
+}
+
+/** Returns the keys of the messages that the library refers to. */
+export function getReferencedKeys(library: Library): Set<string> {
+  const keys = new Set<string>();
+  const add = (text: unknown) => {
+    const key = getReferenceKey(text);
+    if (key) {
+      keys.add(key);
+    }
+  };
+  const metadata = library.metadata;
+  [metadata.displayName, metadata.summary, metadata.details].forEach(add);
+  const visit = (text: string) => {
+    add(text);
+    return text;
+  };
+  mapTranslatableStrings(library.toolboxes, visit);
+  mapTranslatableStrings(library.components || {}, visit);
+  for (const files of Object.values(library.samples || {})) {
+    const description = files[SAMPLE_DESCRIPTION_FILE];
+    if (description) {
+      add(description.description);
+      (Array.isArray(description.tags) ? description.tags : []).forEach(add);
+    }
+  }
+  return keys;
+}
+
+function validateLocale(messages: any, filename: string): LocaleMessages {
+  const check = (value: any): boolean =>
+      typeof value === 'string' ||
+      (typeof value === 'object' && value !== null && !Array.isArray(value) &&
+       Object.values(value).every(check));
+  if (typeof messages !== 'object' || messages === null || Array.isArray(messages) || !check(messages)) {
+    throw new BlocksLibError(`${filename} must contain a JSON object whose values are strings or objects`);
+  }
+  return messages as LocaleMessages;
+}
+
+/** Checks that every message the library refers to is in the default locale. */
+function validateReferences(library: Library): void {
+  const defaultMessages = library.locales?.[DEFAULT_LOCALE];
+  for (const key of getReferencedKeys(library)) {
+    if (!defaultMessages) {
+      throw new BlocksLibError(
+          `The library refers to the message "${key}", but it doesn't have ${LOCALES_DIR}/${DEFAULT_LOCALE}.json`);
+    }
+    if (lookupMessage(defaultMessages, key) === undefined) {
+      throw new BlocksLibError(`"${key}" is missing from ${LOCALES_DIR}/${DEFAULT_LOCALE}.json`);
+    }
+  }
 }
 
 export function getBlocksVersion(): string {
@@ -285,10 +430,12 @@ function normalizeFunction(functionData: any, className: string, returnType: str
 }
 
 /**
- * Returns a copy of the component class from a library, with the optional fields filled in so
- * that it can be used like the classes generated from RobotPy.
+ * Returns a copy of the component class from the library with the given name, with the optional
+ * fields filled in so that it can be used like the classes generated from RobotPy, and with the
+ * references to messages in its tooltips qualified with the library name.
  */
-export function normalizeComponentClass(component: ClassData): ClassData {
+export function normalizeComponentClass(component: ClassData, libraryName: string): ClassData {
+  component = mapTranslatableStrings(component, text => qualifyReference(libraryName, text));
   const className = component.className;
   return {
     ...component,
@@ -366,6 +513,7 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
   const toolboxes: {[filename: string]: LibraryToolboxFile} = {};
   const components: {[filename: string]: ClassData} = {};
   const samples: {[sampleName: string]: {[filename: string]: any}} = {};
+  const locales: {[language: string]: LocaleMessages} = {};
   const wheels: string[] = [];
   const pythonModules = new Set<string>();
 
@@ -399,6 +547,9 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
       }
     } else if (directory === TOOLBOXES_DIR && JSON_FILENAME_PATTERN.test(filename)) {
       toolboxes[filename] = validateToolbox(await parseJson(zip, name), `${TOOLBOXES_DIR}/${filename}`);
+    } else if (directory === LOCALES_DIR && LOCALE_FILENAME_PATTERN.test(filename)) {
+      locales[filename.substring(0, filename.length - '.json'.length)] =
+          validateLocale(await parseJson(zip, name), `${LOCALES_DIR}/${filename}`);
     } else if (directory === COMPONENTS_DIR && JSON_FILENAME_PATTERN.test(filename)) {
       components[filename] = validateComponent(await parseJson(zip, name), `${COMPONENTS_DIR}/${filename}`);
     }
@@ -412,12 +563,15 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
   }
   validateSamples(samples);
 
-  return {
+  const library: Library = {
     metadata,
     toolboxes,
     components,
     samples,
+    locales,
     wheels,
     pythonModules: [...pythonModules].sort(),
   };
+  validateReferences(library);
+  return library;
 }

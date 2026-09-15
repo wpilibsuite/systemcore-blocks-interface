@@ -43,8 +43,10 @@ export interface Sample {
   // directory. Includes project.info.json and every module file, but not description.json.
   files: { [fileName: string]: string };
   moduleFiles: SampleModuleFile[];
-  // The metadata of the library that the sample came from, or undefined for a built in sample.
-  library?: blocksLib.LibraryMetadata;
+  // The library that the sample came from, or undefined for a built in sample. The description and
+  // tags of a library's sample can be references to the library's messages; see
+  // library_i18n.localizeLibraryText.
+  library?: blocksLib.Library;
 }
 
 interface DescriptionJson {
@@ -128,7 +130,7 @@ export function listSamples(libraries: blocksLib.Library[] = []): Sample[] {
       .filter((library) => blocksLib.isCompatible(library.metadata))
       .flatMap((library) => Object.entries(library.samples || {}).map(([sampleName, files]) => ({
         ...buildSample(sampleName, files),
-        library: library.metadata,
+        library,
       })))
       .sort(compareSamples);
   return [...samples, ...librarySamples];

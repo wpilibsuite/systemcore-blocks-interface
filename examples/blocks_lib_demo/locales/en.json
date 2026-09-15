@@ -1,0 +1,34 @@
+{
+  "NAME": "Blocks Demo Library",
+  "SUMMARY": "Example library with helper blocks and components.",
+  "DETAILS": "This library shows how a third party can add blocks to the toolbox that call functions in their own python wheel.\n\nThe Demo Math category has blocks for clamping and scaling values, with a Joystick Helpers subcategory. The Demo Text category has blocks for building and printing messages.\n\nIt also adds two components: a LimitSwitch on a Smart IO port and a Gripper driven by a servo on an Expansion Hub.",
+  "TOOLBOX": {
+    "DEMO_MATH": "Demo Math",
+    "JOYSTICK_HELPERS": "Joystick Helpers",
+    "DEMO_TEXT": "Demo Text"
+  },
+  "TOOLTIPS": {
+    "CLAMP": "Limits value so that it is between low and high.",
+    "SCALE": "Maps value from the range in_min..in_max to the range out_min..out_max.",
+    "DEADBAND": "Returns 0 if value is within threshold of 0, otherwise returns value.",
+    "IS_NEAR": "Returns True if value is within tolerance of target.",
+    "GREETING": "Returns a friendly greeting for name.",
+    "LOG_MESSAGE": "Prints message to the robot's console with a prefix."
+  },
+  "COMPONENTS": {
+    "GRIPPER": "A gripper that is opened and closed by a servo plugged into an Expansion Hub.",
+    "GRIPPER_OPEN": "Opens the gripper.",
+    "GRIPPER_CLOSE": "Closes the gripper.",
+    "GRIPPER_IS_OPEN": "Returns True if the gripper was last opened.",
+    "LIMIT_SWITCH": "A limit switch plugged into a Smart IO port.",
+    "LIMIT_SWITCH_IS_PRESSED": "Returns True if the limit switch is pressed."
+  },
+  "SAMPLES": {
+    "GRIPPER_BOT": "A gripper that opens and closes with the gamepad, and closes by itself when its limit switch is pressed. Uses the Blocks Demo Library."
+  },
+  "TAGS": {
+    "GRIPPER": "gripper",
+    "LIMIT_SWITCH": "limit switch",
+    "SERVO": "servo"
+  }
+}

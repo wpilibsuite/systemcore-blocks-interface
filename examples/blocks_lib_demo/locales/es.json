@@ -1,0 +1,34 @@
+{
+  "NAME": "Biblioteca de demostración de Blocks",
+  "SUMMARY": "Biblioteca de ejemplo con bloques auxiliares y componentes.",
+  "DETAILS": "Esta biblioteca muestra cómo un tercero puede agregar bloques a la caja de herramientas que llaman a funciones de su propio wheel de Python.\n\nLa categoría Matemáticas de demostración tiene bloques para limitar y escalar valores, con una subcategoría Ayudas para joystick. La categoría Texto de demostración tiene bloques para crear e imprimir mensajes.\n\nTambién agrega dos componentes: un LimitSwitch en un puerto Smart IO y un Gripper movido por un servo en un Expansion Hub.",
+  "TOOLBOX": {
+    "DEMO_MATH": "Matemáticas de demostración",
+    "JOYSTICK_HELPERS": "Ayudas para joystick",
+    "DEMO_TEXT": "Texto de demostración"
+  },
+  "TOOLTIPS": {
+    "CLAMP": "Limita value para que esté entre low y high.",
+    "SCALE": "Convierte value del rango in_min..in_max al rango out_min..out_max.",
+    "DEADBAND": "Devuelve 0 si value está a menos de threshold de 0; si no, devuelve value.",
+    "IS_NEAR": "Devuelve True si value está a menos de tolerance de target.",
+    "GREETING": "Devuelve un saludo amistoso para name.",
+    "LOG_MESSAGE": "Imprime message en la consola del robot con un prefijo."
+  },
+  "COMPONENTS": {
+    "GRIPPER": "Una pinza que se abre y se cierra con un servo conectado a un Expansion Hub.",
+    "GRIPPER_OPEN": "Abre la pinza.",
+    "GRIPPER_CLOSE": "Cierra la pinza.",
+    "GRIPPER_IS_OPEN": "Devuelve True si la pinza se abrió por última vez.",
+    "LIMIT_SWITCH": "Un interruptor de límite conectado a un puerto Smart IO.",
+    "LIMIT_SWITCH_IS_PRESSED": "Devuelve True si el interruptor de límite está presionado."
+  },
+  "SAMPLES": {
+    "GRIPPER_BOT": "Una pinza que se abre y se cierra con el gamepad, y se cierra sola cuando se presiona su interruptor de límite. Usa la Biblioteca de demostración de Blocks."
+  },
+  "TAGS": {
+    "GRIPPER": "pinza",
+    "LIMIT_SWITCH": "interruptor de límite",
+    "SERVO": "servo"
+  }
+}

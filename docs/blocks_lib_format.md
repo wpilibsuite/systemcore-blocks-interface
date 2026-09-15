@@ -25,6 +25,9 @@ samples/
         project.info.json
         Robot.robot.json
         Teleop.opmode.json
+locales/
+    en.json
+    es.json
 ```
 
 A library needs at least one file in `toolboxes/`, `components/`, or `samples/`.
@@ -218,6 +221,52 @@ Other files are ignored. The easiest way to make a sample is to install your lib
 project in Blocks, and use **Download Current Project** in **Manage > Projects...**. The downloaded
 file is a zip of the project's files: unzip it into `samples/<SampleName>/` and add a
 `description.json`.
+
+## `locales/`
+
+Libraries can be translated into the languages that Blocks is shown in (`en`, `es`, `fr`, and
+`he`). Each `locales/<language>.json` file has the library's messages in that language, as JSON
+objects that can be nested, like Blocks' own locale files:
+
+```json
+{
+  "NAME": "My Library",
+  "TOOLBOX": {
+    "MATH": "My Math"
+  },
+  "TOOLTIPS": {
+    "CLAMP": "Limits value so that it is between low and high."
+  }
+}
+```
+
+To translate a string, replace it with a reference to a message, `%{KEY}`, where `KEY` is the
+dotted path to the message, for example `"name": "%{TOOLBOX.MATH}"`. The whole string has to be the
+reference; any other string is shown as it is, so a library doesn't have to translate everything.
+These strings can be references:
+
+| File                               | Strings                                                    |
+|------------------------------------|------------------------------------------------------------|
+| `metadata.json`                    | `displayName`, `summary`, `details`                        |
+| `toolboxes/*.json`                 | the `name` of each category, the `text` of each label, every `tooltip` |
+| `components/*.json`                | every `tooltip`                                            |
+| `samples/<SampleName>/description.json` | `description`, each of the `tags`                     |
+
+Names that are used in the generated code, like class, function, and argument names, and the
+sample's name, can't be translated.
+
+- A library that has references needs `locales/en.json`, and it has to have every message that is
+  referred to. Other languages can leave messages out.
+- A message is shown in the user's language. If it isn't translated into that language, the English
+  message is shown.
+- Tooltips are saved in the blocks in users' projects as references that include the library name,
+  like `%{my_library:TOOLTIPS.CLAMP}`, and are translated when they are shown. If you make a sample
+  with blocks that have translated tooltips, its module files will have these references.
+- Text in a sample's module files, like an OpMode's description, becomes part of the user's project
+  when they create a project from the sample, so it can't be translated. A library can have a
+  separate sample for each language instead.
+- Changing a category name to a reference changes how Blocks remembers whether the user hid that
+  category, so the category is shown again once.
 
 ## Testing
 

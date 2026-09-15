@@ -30,6 +30,7 @@ import {
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as blocksLib from '../libraries/blocks_lib';
+import { getLocalizedDisplayName, localizeLibraryText } from '../libraries/library_i18n';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
@@ -67,9 +68,22 @@ type TagFilterMode = 'AND' | 'OR';
  * project from a sample.
  */
 export default function SamplesModal(props: SamplesModalProps): React.JSX.Element {
-  const {t} = I18Next.useTranslation();
+  const {t, i18n} = I18Next.useTranslation();
+  // The descriptions and tags of library samples are translated here, so that searching and
+  // filtering use the text that is shown.
   const samples = React.useMemo<samplesRegistry.Sample[]>(
-      () => samplesRegistry.listSamples(props.libraries), [props.libraries]);
+      () => samplesRegistry.listSamples(props.libraries).map((sample) => {
+        const library = sample.library;
+        if (!library) {
+          return sample;
+        }
+        return {
+          ...sample,
+          description: localizeLibraryText(library, sample.description, i18n.language),
+          tags: sample.tags.map((tag) => localizeLibraryText(library, tag, i18n.language)),
+        };
+      }),
+      [props.libraries, i18n.language]);
   const [selectedSample, setSelectedSample] = React.useState<samplesRegistry.Sample | null>(null);
   const [selectedFileName, setSelectedFileName] = React.useState<string>('');
   const [allProjectNames, setAllProjectNames] = React.useState<string[]>([]);
@@ -111,7 +125,7 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
           return false;
         }
       }
-      const libraryName = sample.library ? blocksLib.getDisplayName(sample.library) : '';
+      const libraryName = sample.library ? getLocalizedDisplayName(sample.library, i18n.language) : '';
       if (normalizedSearchText &&
           !sample.sampleName.toLowerCase().includes(normalizedSearchText) &&
           !sample.description.toLowerCase().includes(normalizedSearchText) &&
@@ -120,7 +134,7 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
       }
       return true;
     });
-  }, [samples, searchText, selectedTags, tagFilterMode]);
+  }, [samples, searchText, selectedTags, tagFilterMode, i18n.language]);
 
   const hasActiveFilters = searchText.length > 0 || selectedTags.length > 0;
 
@@ -222,8 +236,8 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
       return null;
     }
     return (
-      <Antd.Tag icon={<BookOutlined />} color={sample.library.color}>
-        {blocksLib.getDisplayName(sample.library)}
+      <Antd.Tag icon={<BookOutlined />} color={sample.library.metadata.color}>
+        {getLocalizedDisplayName(sample.library, i18n.language)}
       </Antd.Tag>
     );
   };

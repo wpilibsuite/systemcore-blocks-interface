@@ -33,3 +33,5 @@ For each PR, make sure each of these works
 * [ ] With all four libraries installed, make sure GripperBot, PidArm, and SensorBot show up in Samples after the built in samples, each tagged with its library, and that there is no sample for LED Effects
 * [ ] Preview PidArm and make sure the Robot, HoldArm, and PrintTuning tabs show their blocks, then create a project from it and make sure it opens with no warnings
 * [ ] Remove PID Tools and make sure PidArm is no longer in Samples
+* [ ] Hide Joystick Helpers, then change the language to Español and make sure the Blocks Demo Library category, its subcategories, the + Component subcategory, block tooltips (including on blocks already in a project), the library's name and details in the Libraries dialog, and the GripperBot description and tags in Samples are in Spanish, and that Joystick Helpers is still hidden
+* [ ] Change the language to Français and make sure the Blocks Demo Library is shown in English, since it has no French translation

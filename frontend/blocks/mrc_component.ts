@@ -48,6 +48,7 @@ import {
     MechanismComponentHolderBlock,
     mrcDescendantsMayHaveChanged } from './mrc_mechanism_component_holder';
 import { ClassData, FunctionData, isPortType, upgradePortTypeString } from './utils/python_json_types';
+import { localizeInstalledLibraryText } from '../libraries/library_i18n';
 import { renameMethodCallers } from './mrc_call_python_function'
 
 
@@ -128,7 +129,7 @@ const COMPONENT = {
     this.mrcHasNotInHolderWarning = false;
     this.setStyle(MRC_STYLE_COMPONENTS);
     this.setTooltip(() => {
-      return this.mrcTooltip;
+      return localizeInstalledLibraryText(this.mrcTooltip);
     });
     const nameField = new Blockly.FieldTextInput('')
     nameField.setValidator(this.mrcNameFieldValidator.bind(this, nameField));

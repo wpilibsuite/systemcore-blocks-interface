@@ -12,7 +12,8 @@ Example third party `.blocks_lib` libraries. See `docs/blocks_lib_format.md` for
 Each example has a `metadata.json`, a Python package in `python/`, and `toolboxes/` and/or
 `components/` directories. All of them except LED Effects have a sample project in `samples/`, to
 show that samples are optional. All of them except PID Tools set a `color`, so you can see how
-library colors look in the toolbox, and that `color` is optional.
+library colors look in the toolbox, and that `color` is optional. Only Blocks Demo Library is
+translated (English and Spanish, in `locales/`), to show that translations are optional.
 
 ## Building
 

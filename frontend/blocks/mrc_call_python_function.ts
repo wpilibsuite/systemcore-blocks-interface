@@ -43,6 +43,7 @@ import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
+import { localizeInstalledLibraryText } from '../libraries/library_i18n';
 import { isLibraryPythonModule } from '../libraries/library_registry';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
@@ -276,7 +277,7 @@ const CALL_PYTHON_FUNCTION = {
         default:
           throw new Error('mrcFunctionKind has unexpected value: ' + this.mrcFunctionKind)
       }
-      const funcTooltip = this.mrcTooltip;
+      const funcTooltip = localizeInstalledLibraryText(this.mrcTooltip);
       if (funcTooltip) {
         tooltip += '\n\n' + funcTooltip;
       }
