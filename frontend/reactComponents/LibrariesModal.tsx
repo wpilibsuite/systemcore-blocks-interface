@@ -54,7 +54,7 @@ const LibrariesModal: React.FC<LibrariesModalProps> = (props) => {
   const [modal, modalContextHolder] = Antd.Modal.useModal();
   const [messageApi, messageContextHolder] = Antd.message.useMessage();
   const [selectedLibraryName, setSelectedLibraryName] = React.useState<string>('');
-  // The libraries start out collapsed.
+  // The libraries start out collapsed, except for libraries that are added while the dialog is open.
   const [expandedKeys, setExpandedKeys] = React.useState<React.Key[]>([]);
   const [busy, setBusy] = React.useState(false);
 
@@ -198,6 +198,11 @@ const LibrariesModal: React.FC<LibrariesModalProps> = (props) => {
     try {
       await props.onInstall(file.name, data);
       setSelectedLibraryName(metadata.name);
+      if (!existing) {
+        // Show what the new library adds, so the user can choose what to show in the toolbox.
+        const libraryKey = blocksLib.getToolboxKey(metadata.name);
+        setExpandedKeys(keys => keys.includes(libraryKey) ? keys : [...keys, libraryKey]);
+      }
       messageApi.success(t('LIBRARIES.INSTALLED', { name, version: metadata.version }));
     } catch (e) {
       showError(t('LIBRARIES.INSTALL_FAILED'), errorToString(e));
