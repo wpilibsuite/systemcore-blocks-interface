@@ -1,0 +1,37 @@
+{
+  "className": "field_sensors.sensors.BeamBreak",
+  "moduleName": "field_sensors.sensors",
+  "constructors": [
+    {
+      "functionName": "__init__",
+      "tooltip": "A beam break sensor plugged into a Smart IO port.",
+      "args": [
+        {
+          "name": "channel",
+          "type": "int"
+        }
+      ],
+      "isComponent": true,
+      "componentArgs": [
+        {
+          "name": "smart_io_port",
+          "type": "SYSTEMCORE_SMART_IO_PORT"
+        }
+      ]
+    }
+  ],
+  "instanceMethods": [
+    {
+      "functionName": "is_broken",
+      "tooltip": "Returns True if something is blocking the beam.",
+      "args": [
+        {
+          "name": "self",
+          "type": "field_sensors.sensors.BeamBreak"
+        }
+      ],
+      "returnType": "bool",
+      "isCommon": true
+    }
+  ]
+}

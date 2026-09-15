@@ -1,0 +1,246 @@
+{
+  "kind": "category",
+  "name": "Demo Math",
+  "categorystyle": "math_category",
+  "contents": [
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "float",
+        "args": [
+          {
+            "name": "value",
+            "type": "float"
+          },
+          {
+            "name": "low",
+            "type": "float"
+          },
+          {
+            "name": "high",
+            "type": "float"
+          }
+        ],
+        "tooltip": "Limits value so that it is between low and high.",
+        "importModule": "blocks_demo.math_helpers",
+        "moduleOrClassName": "blocks_demo.math_helpers"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "blocks_demo.math_helpers",
+        "FUNC": "clamp"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 0
+            }
+          }
+        },
+        "ARG1": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": -1
+            }
+          }
+        },
+        "ARG2": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "float",
+        "args": [
+          {
+            "name": "value",
+            "type": "float"
+          },
+          {
+            "name": "in_min",
+            "type": "float"
+          },
+          {
+            "name": "in_max",
+            "type": "float"
+          },
+          {
+            "name": "out_min",
+            "type": "float"
+          },
+          {
+            "name": "out_max",
+            "type": "float"
+          }
+        ],
+        "tooltip": "Maps value from the range in_min..in_max to the range out_min..out_max.",
+        "importModule": "blocks_demo.math_helpers",
+        "moduleOrClassName": "blocks_demo.math_helpers"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "blocks_demo.math_helpers",
+        "FUNC": "scale"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 0
+            }
+          }
+        },
+        "ARG1": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": -1
+            }
+          }
+        },
+        "ARG2": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 1
+            }
+          }
+        },
+        "ARG3": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 0
+            }
+          }
+        },
+        "ARG4": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "category",
+      "name": "Joystick Helpers",
+      "categorystyle": "math_category",
+      "contents": [
+        {
+          "kind": "block",
+          "type": "mrc_call_python_function",
+          "extraState": {
+            "functionKind": "module",
+            "returnType": "float",
+            "args": [
+              {
+                "name": "value",
+                "type": "float"
+              },
+              {
+                "name": "threshold",
+                "type": "float"
+              }
+            ],
+            "tooltip": "Returns 0 if value is within threshold of 0, otherwise returns value.",
+            "importModule": "blocks_demo.math_helpers",
+            "moduleOrClassName": "blocks_demo.math_helpers"
+          },
+          "fields": {
+            "MODULE_OR_CLASS": "blocks_demo.math_helpers",
+            "FUNC": "deadband"
+          },
+          "inputs": {
+            "ARG0": {
+              "shadow": {
+                "type": "math_number",
+                "fields": {
+                  "NUM": 0
+                }
+              }
+            },
+            "ARG1": {
+              "shadow": {
+                "type": "math_number",
+                "fields": {
+                  "NUM": 0.1
+                }
+              }
+            }
+          }
+        },
+        {
+          "kind": "block",
+          "type": "mrc_call_python_function",
+          "extraState": {
+            "functionKind": "module",
+            "returnType": "bool",
+            "args": [
+              {
+                "name": "value",
+                "type": "float"
+              },
+              {
+                "name": "target",
+                "type": "float"
+              },
+              {
+                "name": "tolerance",
+                "type": "float"
+              }
+            ],
+            "tooltip": "Returns True if value is within tolerance of target.",
+            "importModule": "blocks_demo.math_helpers",
+            "moduleOrClassName": "blocks_demo.math_helpers"
+          },
+          "fields": {
+            "MODULE_OR_CLASS": "blocks_demo.math_helpers",
+            "FUNC": "is_near"
+          },
+          "inputs": {
+            "ARG0": {
+              "shadow": {
+                "type": "math_number",
+                "fields": {
+                  "NUM": 0
+                }
+              }
+            },
+            "ARG1": {
+              "shadow": {
+                "type": "math_number",
+                "fields": {
+                  "NUM": 0
+                }
+              }
+            },
+            "ARG2": {
+              "shadow": {
+                "type": "math_number",
+                "fields": {
+                  "NUM": 0.05
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

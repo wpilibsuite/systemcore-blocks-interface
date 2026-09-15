@@ -1,0 +1,85 @@
+{
+  "className": "blocks_demo.components.Gripper",
+  "moduleName": "blocks_demo.components",
+  "constructors": [
+    {
+      "functionName": "__init__",
+      "tooltip": "A gripper that is opened and closed by a servo plugged into an Expansion Hub.",
+      "args": [
+        {
+          "name": "usb_id",
+          "type": "int"
+        },
+        {
+          "name": "channel",
+          "type": "int"
+        },
+        {
+          "name": "open_position",
+          "type": "float",
+          "defaultValue": "0.0"
+        },
+        {
+          "name": "closed_position",
+          "type": "float",
+          "defaultValue": "1.0"
+        }
+      ],
+      "isComponent": true,
+      "componentArgs": [
+        {
+          "name": "expansion_hub_servo",
+          "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT"
+        },
+        {
+          "name": "open_position",
+          "type": "float",
+          "defaultValue": "0.0"
+        },
+        {
+          "name": "closed_position",
+          "type": "float",
+          "defaultValue": "1.0"
+        }
+      ]
+    }
+  ],
+  "instanceMethods": [
+    {
+      "functionName": "open",
+      "tooltip": "Opens the gripper.",
+      "args": [
+        {
+          "name": "self",
+          "type": "blocks_demo.components.Gripper"
+        }
+      ],
+      "returnType": "None",
+      "isCommon": true
+    },
+    {
+      "functionName": "close",
+      "tooltip": "Closes the gripper.",
+      "args": [
+        {
+          "name": "self",
+          "type": "blocks_demo.components.Gripper"
+        }
+      ],
+      "returnType": "None",
+      "isCommon": true
+    },
+    {
+      "functionName": "is_open",
+      "tooltip": "Returns True if the gripper was last opened.",
+      "args": [
+        {
+          "name": "self",
+          "type": "blocks_demo.components.Gripper"
+        }
+      ],
+      "returnType": "bool",
+      "isCommon": true
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "kind": "category",
+  "name": "Demo Text",
+  "categorystyle": "text_category",
+  "contents": [
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "str",
+        "args": [
+          {
+            "name": "name",
+            "type": "str"
+          }
+        ],
+        "tooltip": "Returns a friendly greeting for name.",
+        "importModule": "blocks_demo.text_helpers",
+        "moduleOrClassName": "blocks_demo.text_helpers"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "blocks_demo.text_helpers",
+        "FUNC": "greeting"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "text",
+            "fields": {
+              "TEXT": "Robot"
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "None",
+        "args": [
+          {
+            "name": "message",
+            "type": "str"
+          }
+        ],
+        "tooltip": "Prints message to the robot's console with a prefix.",
+        "importModule": "blocks_demo.text_helpers",
+        "moduleOrClassName": "blocks_demo.text_helpers"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "blocks_demo.text_helpers",
+        "FUNC": "log_message"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "text",
+            "fields": {
+              "TEXT": "Hello"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "className": "pid_tools.controllers.SimplePID",
+  "moduleName": "pid_tools.controllers",
+  "constructors": [
+    {
+      "functionName": "__init__",
+      "tooltip": "A PID controller that isn't connected to any hardware.",
+      "args": [
+        {
+          "name": "kp",
+          "type": "float"
+        },
+        {
+          "name": "ki",
+          "type": "float"
+        },
+        {
+          "name": "kd",
+          "type": "float"
+        }
+      ],
+      "isComponent": true,
+      "componentArgs": [
+        {
+          "name": "kp",
+          "type": "float",
+          "defaultValue": "1.0"
+        },
+        {
+          "name": "ki",
+          "type": "float",
+          "defaultValue": "0.0"
+        },
+        {
+          "name": "kd",
+          "type": "float",
+          "defaultValue": "0.0"
+        }
+      ]
+    }
+  ],
+  "instanceMethods": [
+    {
+      "functionName": "calculate",
+      "tooltip": "Returns the output that moves the measurement toward the setpoint.",
+      "args": [
+        {
+          "name": "self",
+          "type": "pid_tools.controllers.SimplePID"
+        },
+        {
+          "name": "measurement",
+          "type": "float"
+        },
+        {
+          "name": "setpoint",
+          "type": "float"
+        }
+      ],
+      "returnType": "float",
+      "isCommon": true
+    },
+    {
+      "functionName": "at_setpoint",
+      "tooltip": "Returns True if the last error was within tolerance.",
+      "args": [
+        {
+          "name": "self",
+          "type": "pid_tools.controllers.SimplePID"
+        },
+        {
+          "name": "tolerance",
+          "type": "float"
+        }
+      ],
+      "returnType": "bool",
+      "isCommon": true
+    },
+    {
+      "functionName": "reset",
+      "tooltip": "Clears the accumulated error.",
+      "args": [
+        {
+          "name": "self",
+          "type": "pid_tools.controllers.SimplePID"
+        }
+      ],
+      "returnType": "None",
+      "isCommon": true
+    }
+  ]
+}

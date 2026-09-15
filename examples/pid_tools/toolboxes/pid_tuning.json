@@ -1,0 +1,123 @@
+{
+  "kind": "category",
+  "name": "PID Tuning",
+  "contents": [
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "float",
+        "args": [
+          {
+            "name": "ultimate_gain",
+            "type": "float"
+          }
+        ],
+        "tooltip": "Returns kp for a PID controller.",
+        "importModule": "pid_tools.tuning",
+        "moduleOrClassName": "pid_tools.tuning"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "pid_tools.tuning",
+        "FUNC": "ziegler_nichols_kp"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "float",
+        "args": [
+          {
+            "name": "ultimate_gain",
+            "type": "float"
+          },
+          {
+            "name": "period",
+            "type": "float"
+          }
+        ],
+        "tooltip": "Returns ki for a PID controller.",
+        "importModule": "pid_tools.tuning",
+        "moduleOrClassName": "pid_tools.tuning"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "pid_tools.tuning",
+        "FUNC": "ziegler_nichols_ki"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 1
+            }
+          }
+        },
+        "ARG1": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "block",
+      "type": "mrc_call_python_function",
+      "extraState": {
+        "functionKind": "module",
+        "returnType": "float",
+        "args": [
+          {
+            "name": "ultimate_gain",
+            "type": "float"
+          },
+          {
+            "name": "period",
+            "type": "float"
+          }
+        ],
+        "tooltip": "Returns kd for a PID controller.",
+        "importModule": "pid_tools.tuning",
+        "moduleOrClassName": "pid_tools.tuning"
+      },
+      "fields": {
+        "MODULE_OR_CLASS": "pid_tools.tuning",
+        "FUNC": "ziegler_nichols_kd"
+      },
+      "inputs": {
+        "ARG0": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 1
+            }
+          }
+        },
+        "ARG1": {
+          "shadow": {
+            "type": "math_number",
+            "fields": {
+              "NUM": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

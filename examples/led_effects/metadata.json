@@ -1,0 +1,11 @@
+{
+  "formatVersion": 1,
+  "name": "led_effects",
+  "displayName": "LED Effects",
+  "color": "#D81B60",
+  "version": "2.1.0",
+  "author": "Glow Robotics",
+  "summary": "Colors and animations for addressable LED strips.",
+  "details": "Blocks that calculate hues and brightness over time, so your LEDs can show your alliance color, cycle through a rainbow, pulse, or blink.\n\nUse the values with the AddressableLED blocks.",
+  "blocksVersion": ">=0.4.0"
+}
