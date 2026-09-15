@@ -1,7 +1,7 @@
 # Third party libraries (`.blocks_lib`)
 
-A third party can add blocks and components to the toolbox, backed by their own Python code, by
-publishing a `.blocks_lib` file. Users install it from **Manage > Libraries...**, where they can also
+A third party can add blocks and components to the toolbox, backed by their own Python code, and
+sample projects that use them, by publishing a `.blocks_lib` file. Users install it from **Manage > Libraries...**, where they can also
 remove libraries and choose which libraries, categories, and components are shown in the toolbox.
 
 See `examples/` for complete, buildable examples (`examples/build.sh` builds them).
@@ -19,9 +19,15 @@ toolboxes/
     another_category.json
 components/
     my_sensor.json
+samples/
+    MySampleRobot/
+        description.json
+        project.info.json
+        Robot.robot.json
+        Teleop.opmode.json
 ```
 
-A library needs at least one file in `toolboxes/` or `components/`.
+A library needs at least one file in `toolboxes/`, `components/`, or `samples/`.
 
 It's fine for everything to be inside a single top level folder (which is what you get when you
 zip a folder with Finder or Explorer). Other files are ignored.
@@ -184,6 +190,34 @@ self.my_limit_switch = my_library.components.LimitSwitch(
 - `isCommon` methods are listed first in the toolbox.
 - `staticMethods`, `instanceVariables`, `classVariables`, and `enums` are optional and use the same
   format as the generated data.
+
+## `samples/`
+
+Each directory in `samples/` is a sample project. The samples of installed libraries are listed in
+**Samples...** after the built in samples, with a tag showing the library they came from. Users can
+preview them and create a new project from them, just like the built in samples. When the library
+is removed, its samples are no longer listed; projects that were already created from them are
+kept.
+
+The directory name is the sample's name, which is also the default name of a project created from
+it, so it must be a valid project name (it starts with an uppercase letter and only has letters,
+digits, and `_`). The files are the same as the built in samples in `frontend/samples/`:
+
+- `project.info.json` and `Robot.robot.json` are required.
+- `*.mechanism.json` and `*.opmode.json` files are the project's mechanisms and OpModes.
+- `description.json` is optional:
+
+  ```json
+  {
+    "description": "An arm that is moved to a position by a PID controller.",
+    "tags": ["arm", "PID"]
+  }
+  ```
+
+Other files are ignored. The easiest way to make a sample is to install your library, build the
+project in Blocks, and use **Download Current Project** in **Manage > Projects...**. The downloaded
+file is a zip of the project's files: unzip it into `samples/<SampleName>/` and add a
+`description.json`.
 
 ## Testing
 

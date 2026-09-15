@@ -20,6 +20,7 @@
  */
 import * as Antd from 'antd';
 import * as React from 'react';
+import * as blocksLib from '../libraries/blocks_lib';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
 import * as I18Next from 'react-i18next';
@@ -61,6 +62,7 @@ export interface MenuProps {
   onProjectChanged: () => Promise<void>;
   openWPIToolboxSettings: () => void;
   openLibraries: () => void;
+  libraries: blocksLib.Library[];
   theme: string;
   setTheme: (theme: string) => void;
   renderer: string;
@@ -349,6 +351,7 @@ export function Component(props: MenuProps): React.JSX.Element {
         setCurrentProject={props.setCurrentProject}
         setAlertErrorMessage={props.setAlertErrorMessage}
         theme={props.theme}
+        libraries={props.libraries}
       />
       <ThemeModal
           open={themeModalOpen}

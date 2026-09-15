@@ -7,6 +7,7 @@ A .blocks_lib file is a zip file containing:
     toolboxes/*.json - blockly toolbox categories, or flyout toolboxes whose blocks go directly in
                        the library's category, that are added to the toolbox
     components/*.json - optional component classes that are added to the components toolbox
+    samples/<SampleName>/*.json - optional sample projects that are shown with the built in samples
 
 Installed libraries are extracted to <libraries_dir>/<name>/.
 
@@ -26,6 +27,12 @@ METADATA_FILE = 'metadata.json'
 WHEELS_DIR = 'wheels'
 TOOLBOXES_DIR = 'toolboxes'
 COMPONENTS_DIR = 'components'
+SAMPLES_DIR = 'samples'
+
+# The files in a sample are the files of a project, plus an optional description.json.
+SAMPLE_PROJECT_INFO_FILE = 'project.info.json'
+SAMPLE_DESCRIPTION_FILE = 'description.json'
+SAMPLE_ROBOT_FILE = 'Robot.robot.json'
 
 SUPPORTED_FORMAT_VERSIONS = [1]
 
@@ -48,6 +55,11 @@ WHEEL_FILENAME_PATTERN = re.compile(
     r'^(?P<name>[A-Za-z0-9_.]+)-(?P<version>[^-]+)(-\d[^-]*)?-[^-]+-[^-]+-[^-]+\.whl$')
 
 JSON_FILENAME_PATTERN = re.compile(r'^[A-Za-z0-9_.-]+\.json$')
+
+# Sample names are used as project names, and sample files as project files. See
+# frontend/storage/names.ts.
+SAMPLE_NAME_PATTERN = re.compile(r'^[A-Z][A-Za-z0-9_]*$')
+SAMPLE_MODULE_FILENAME_PATTERN = re.compile(r'^[A-Z][A-Za-z0-9_]*\.(robot|mechanism|opmode)\.json$')
 
 COLOR_PATTERN = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
@@ -132,6 +144,24 @@ def validate_component(component: Any, filename: str) -> None:
             raise BlocksLibError(f'"{field}" in {filename} must be an array')
 
 
+def is_sample_filename(filename: str) -> bool:
+    """Returns True if the file is one of the files that is used in a sample."""
+    return (filename in (SAMPLE_PROJECT_INFO_FILE, SAMPLE_DESCRIPTION_FILE)
+            or SAMPLE_MODULE_FILENAME_PATTERN.match(filename) is not None)
+
+
+def validate_samples(samples: Dict[str, Dict[str, Any]]) -> None:
+    """Checks that each sample has the files that every project has."""
+    for sample_name, files in samples.items():
+        for filename in (SAMPLE_PROJECT_INFO_FILE, SAMPLE_ROBOT_FILE):
+            if filename not in files:
+                raise BlocksLibError(f'{SAMPLES_DIR}/{sample_name} must have a {filename} file')
+        for filename, content in files.items():
+            if not isinstance(content, dict):
+                raise BlocksLibError(
+                    f'{SAMPLES_DIR}/{sample_name}/{filename} must contain a JSON object')
+
+
 def parse_wheel_filename(filename: str) -> Optional[Dict[str, str]]:
     """Returns the distribution name and version of a wheel, or None if it isn't a wheel."""
     m = WHEEL_FILENAME_PATTERN.match(filename)
@@ -160,8 +190,8 @@ def get_wheel_top_level_modules(wheel_path: str) -> List[str]:
 def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
     """Validates the .blocks_lib file at zip_path and extracts it to dest_dir.
 
-    Only metadata.json, wheels/*.whl, toolboxes/*.json, and components/*.json are extracted;
-    anything else in the zip is ignored. Returns the metadata.
+    Only metadata.json, wheels/*.whl, toolboxes/*.json, components/*.json, and the project files in
+    samples/<SampleName>/ are extracted; anything else in the zip is ignored. Returns the metadata.
     """
     try:
         with zipfile.ZipFile(zip_path, 'r') as zf:
@@ -180,14 +210,26 @@ def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
                 json.dump(metadata, f, indent=2)
 
             json_file_count = 0
+            samples: Dict[str, Dict[str, Any]] = {}
             for name in names:
                 if not name.startswith(prefix):
                     continue
                 relative = name[len(prefix):]
                 parts = relative.split('/')
-                # Only files directly inside wheels/ and toolboxes/ are used. Because the
-                # filename is checked against a pattern that doesn't allow '/', we never write
-                # outside of dest_dir.
+                # Because the directory and file names are checked against patterns that don't
+                # allow '/' or '..', we never write outside of dest_dir.
+                if len(parts) == 3 and parts[0] == SAMPLES_DIR:
+                    _, sample_name, filename = parts
+                    if not SAMPLE_NAME_PATTERN.match(sample_name) or not is_sample_filename(filename):
+                        continue
+                    try:
+                        content = json.loads(zf.read(name).decode('utf-8'))
+                    except (ValueError, UnicodeDecodeError) as e:
+                        raise BlocksLibError(f'{relative} is not valid JSON: {e}')
+                    samples.setdefault(sample_name, {})[filename] = content
+                    continue
+                # Other files are only used if they are directly inside wheels/, toolboxes/, or
+                # components/.
                 if len(parts) != 2:
                     continue
                 directory, filename = parts
@@ -214,10 +256,17 @@ def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
                               encoding='utf-8') as f:
                         json.dump(content, f)
                     json_file_count += 1
-            if json_file_count == 0:
+            if json_file_count == 0 and not samples:
                 raise BlocksLibError(
-                    f'The library must contain at least one {TOOLBOXES_DIR}/*.json or '
-                    f'{COMPONENTS_DIR}/*.json file')
+                    f'The library must contain at least one {TOOLBOXES_DIR}/*.json, '
+                    f'{COMPONENTS_DIR}/*.json, or {SAMPLES_DIR}/<SampleName>/*.json file')
+            validate_samples(samples)
+            for sample_name, files in samples.items():
+                sample_dir = os.path.join(dest_dir, SAMPLES_DIR, sample_name)
+                os.makedirs(sample_dir, exist_ok=True)
+                for filename, content in files.items():
+                    with open(os.path.join(sample_dir, filename), 'w', encoding='utf-8') as f:
+                        json.dump(content, f)
             return metadata
     except zipfile.BadZipFile:
         raise BlocksLibError('The library is not a valid zip file')
@@ -258,6 +307,14 @@ def load_library(library_dir: str) -> Dict[str, Any]:
     toolboxes = _load_json_files(os.path.join(library_dir, TOOLBOXES_DIR))
     components = _load_json_files(os.path.join(library_dir, COMPONENTS_DIR))
 
+    samples: Dict[str, Dict[str, Any]] = {}
+    samples_dir = os.path.join(library_dir, SAMPLES_DIR)
+    if os.path.isdir(samples_dir):
+        for sample_name in sorted(os.listdir(samples_dir)):
+            sample_dir = os.path.join(samples_dir, sample_name)
+            if SAMPLE_NAME_PATTERN.match(sample_name) and os.path.isdir(sample_dir):
+                samples[sample_name] = _load_json_files(sample_dir)
+
     wheels: List[str] = []
     python_modules: Set[str] = set()
     wheels_dir = os.path.join(library_dir, WHEELS_DIR)
@@ -272,6 +329,7 @@ def load_library(library_dir: str) -> Dict[str, Any]:
         'metadata': metadata,
         'toolboxes': toolboxes,
         'components': components,
+        'samples': samples,
         'wheels': wheels,
         'pythonModules': sorted(python_modules),
     }

@@ -21,6 +21,7 @@
 import * as Antd from 'antd';
 import {
   ArrowLeftOutlined,
+  BookOutlined,
   FolderAddOutlined,
   CloseCircleOutlined,
   RobotOutlined,
@@ -28,6 +29,7 @@ import {
 } from '@ant-design/icons';
 import * as I18Next from 'react-i18next';
 import * as React from 'react';
+import * as blocksLib from '../libraries/blocks_lib';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
@@ -43,6 +45,8 @@ interface SamplesModalProps {
   setCurrentProject: (project: storageProject.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
   theme: string;
+  /** The installed libraries. Their samples are listed after the built in samples. */
+  libraries: blocksLib.Library[];
 }
 
 /** Modal width, as a percentage of the viewport width. */
@@ -64,7 +68,8 @@ type TagFilterMode = 'AND' | 'OR';
  */
 export default function SamplesModal(props: SamplesModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
-  const [samples] = React.useState<samplesRegistry.Sample[]>(() => samplesRegistry.listSamples());
+  const samples = React.useMemo<samplesRegistry.Sample[]>(
+      () => samplesRegistry.listSamples(props.libraries), [props.libraries]);
   const [selectedSample, setSelectedSample] = React.useState<samplesRegistry.Sample | null>(null);
   const [selectedFileName, setSelectedFileName] = React.useState<string>('');
   const [allProjectNames, setAllProjectNames] = React.useState<string[]>([]);
@@ -106,9 +111,11 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
           return false;
         }
       }
+      const libraryName = sample.library ? blocksLib.getDisplayName(sample.library) : '';
       if (normalizedSearchText &&
           !sample.sampleName.toLowerCase().includes(normalizedSearchText) &&
-          !sample.description.toLowerCase().includes(normalizedSearchText)) {
+          !sample.description.toLowerCase().includes(normalizedSearchText) &&
+          !libraryName.toLowerCase().includes(normalizedSearchText)) {
         return false;
       }
       return true;
@@ -209,6 +216,18 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
     </div>
   );
 
+  /** Returns a tag showing the library that the sample came from, if it came from a library. */
+  const renderLibraryTag = (sample: samplesRegistry.Sample): React.JSX.Element | null => {
+    if (!sample.library) {
+      return null;
+    }
+    return (
+      <Antd.Tag icon={<BookOutlined />} color={sample.library.color}>
+        {blocksLib.getDisplayName(sample.library)}
+      </Antd.Tag>
+    );
+  };
+
   const renderSampleList = (): React.JSX.Element => (
     <>
       {renderFilters()}
@@ -221,7 +240,12 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
             style={{ cursor: 'pointer' }}
           >
             <Antd.List.Item.Meta
-              title={sample.sampleName}
+              title={
+                <Antd.Space size={8}>
+                  {sample.sampleName}
+                  {renderLibraryTag(sample)}
+                </Antd.Space>
+              }
               description={
                 <>
                   <div>{sample.description}</div>
@@ -275,7 +299,10 @@ export default function SamplesModal(props: SamplesModalProps): React.JSX.Elemen
           </Antd.Button>
         </Antd.Space>
         <Antd.Typography.Title level={5} style={{ marginTop: 0, flex: '0 0 auto' }}>
-          {sample.sampleName}
+          <Antd.Space size={8}>
+            {sample.sampleName}
+            {renderLibraryTag(sample)}
+          </Antd.Space>
         </Antd.Typography.Title>
         <Antd.Typography.Paragraph type="secondary" style={{ flex: '0 0 auto' }}>
           {sample.description}

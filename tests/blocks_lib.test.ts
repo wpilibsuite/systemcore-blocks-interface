@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 import { describe, expect, test } from 'vitest';
 import * as blocksLib from '../frontend/libraries/blocks_lib';
+import * as samplesRegistry from '../frontend/samples/samples_registry';
 import { getLibraryToolbox } from '../frontend/toolbox/library_toolbox';
 
 const METADATA: blocksLib.LibraryMetadata = {
@@ -38,6 +39,13 @@ const COMPONENT = {
     args: [{ name: 'self', type: 'demo_pkg.Sensor' }],
     returnType: 'bool',
   }],
+};
+
+const SAMPLE_ENTRIES = {
+  'samples/DemoBot/project.info.json': { version: '0.3.0' },
+  'samples/DemoBot/description.json': { description: 'A demo', tags: ['demo'] },
+  'samples/DemoBot/Robot.robot.json': { moduleType: 'robot' },
+  'samples/DemoBot/Teleop.opmode.json': { moduleType: 'opmode' },
 };
 
 async function makeWheel(): Promise<ArrayBuffer> {
@@ -98,6 +106,30 @@ describe('parseBlocksLib', () => {
     expect(blocksLib.isFlyoutToolbox(library.toolboxes['demo.json'])).toBe(false);
   });
 
+  test('parses samples', async () => {
+    const library = await blocksLib.parseBlocksLib(await makeLib({
+      ...await validEntries(),
+      ...SAMPLE_ENTRIES,
+      'samples/DemoBot/notes.json': {},
+      'samples/DemoBot/nested/Robot.robot.json': {},
+      'samples/lowercase/Robot.robot.json': {},
+    }));
+    expect(library.samples).toEqual({
+      DemoBot: {
+        'project.info.json': { version: '0.3.0' },
+        'description.json': { description: 'A demo', tags: ['demo'] },
+        'Robot.robot.json': { moduleType: 'robot' },
+        'Teleop.opmode.json': { moduleType: 'opmode' },
+      },
+    });
+  });
+
+  test('parses a library that only has samples', async () => {
+    const library = await blocksLib.parseBlocksLib(
+        await makeLib({ 'metadata.json': METADATA, ...SAMPLE_ENTRIES }));
+    expect(Object.keys(library.samples!)).toEqual(['DemoBot']);
+  });
+
   test('parses a library zipped inside a folder', async () => {
     const library = await blocksLib.parseBlocksLib(await makeLib(await validEntries(), 'folder/'));
     expect(library.metadata.name).toBe('demo');
@@ -126,6 +158,11 @@ describe('parseBlocksLib', () => {
         ...await validEntries(), 'toolboxes/demo.json': { kind: 'flyoutToolbox', contents: [TOOLBOX] } },
       'toolbox not json': { ...await validEntries(), 'toolboxes/demo.json': '{' },
       'bad wheel name': { ...await validEntries(), 'wheels/not-a-wheel.whl': '' },
+      'sample without robot': {
+        ...await validEntries(), 'samples/DemoBot/project.info.json': {}, 'samples/DemoBot/Teleop.opmode.json': {} },
+      'sample without project info': { ...await validEntries(), 'samples/DemoBot/Robot.robot.json': {} },
+      'sample file not json': { ...await validEntries(), ...SAMPLE_ENTRIES, 'samples/DemoBot/Teleop.opmode.json': '{' },
+      'sample file not an object': { ...await validEntries(), ...SAMPLE_ENTRIES, 'samples/DemoBot/Teleop.opmode.json': [] },
     };
     for (const description in cases) {
       await expect(blocksLib.parseBlocksLib(await makeLib(cases[description])), description)
@@ -243,5 +280,35 @@ describe('getLibraryToolbox', () => {
     const libraryToolbox = getLibraryToolbox([makeLibrary({ blocksVersion: '<0.0.1' })], new Set());
     expect(libraryToolbox.categories).toEqual([]);
     expect(libraryToolbox.components).toEqual([]);
+  });
+});
+
+describe('library samples', () => {
+  const librarySamples = (libraries: blocksLib.Library[]) =>
+      samplesRegistry.listSamples(libraries).filter(sample => sample.library);
+
+  test('lists the samples of installed libraries after the built in samples', async () => {
+    const library = await blocksLib.parseBlocksLib(await makeLib({ ...await validEntries(), ...SAMPLE_ENTRIES }));
+    const builtInCount = samplesRegistry.listSamples().length;
+    const samples = samplesRegistry.listSamples([library]);
+    expect(samples.length).toBe(builtInCount + 1);
+    const sample = samples[builtInCount];
+    expect(sample.sampleName).toBe('DemoBot');
+    expect(sample.library).toEqual(METADATA);
+    expect(sample.description).toBe('A demo');
+    expect(sample.tags).toEqual(['demo']);
+    expect(Object.keys(sample.files).sort()).toEqual(['Robot.robot.json', 'Teleop.opmode.json', 'project.info.json']);
+    expect(JSON.parse(sample.files['Robot.robot.json'])).toEqual({ moduleType: 'robot' });
+    expect(sample.moduleFiles.map(m => m.className)).toEqual(['Robot', 'Teleop']);
+  });
+
+  test('leaves out removed and incompatible libraries', async () => {
+    const library = await blocksLib.parseBlocksLib(await makeLib({ ...await validEntries(), ...SAMPLE_ENTRIES }));
+    expect(librarySamples([library]).length).toBe(1);
+    expect(librarySamples([])).toEqual([]);
+    const incompatible = { ...library, metadata: { ...library.metadata, blocksVersion: '<0.0.1' } };
+    expect(librarySamples([incompatible])).toEqual([]);
+    // Libraries installed before samples were supported don't have samples.
+    expect(librarySamples([makeLibrary()])).toEqual([]);
   });
 });

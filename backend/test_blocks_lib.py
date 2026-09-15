@@ -51,6 +51,13 @@ VALID_COMPONENT = {
     'instanceMethods': [],
 }
 
+VALID_SAMPLE = {
+    'samples/DemoBot/project.info.json': {'version': '0.3.0'},
+    'samples/DemoBot/description.json': {'description': 'A demo', 'tags': ['demo']},
+    'samples/DemoBot/Robot.robot.json': {'moduleType': 'robot'},
+    'samples/DemoBot/Teleop.opmode.json': {'moduleType': 'opmode'},
+}
+
 VALID_WHEEL = make_wheel([
     'demo_pkg/__init__.py',
     'demo_pkg/helpers.py',
@@ -114,6 +121,24 @@ class BlocksLibTest(unittest.TestCase):
         library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
         self.assertEqual(library['toolboxes']['blocks.json'], VALID_FLYOUT_TOOLBOX)
 
+    def test_install_samples(self):
+        entries = dict(self.valid_entries(), **VALID_SAMPLE)
+        library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
+        self.assertEqual(library['samples'], {'DemoBot': {
+            'Robot.robot.json': {'moduleType': 'robot'},
+            'Teleop.opmode.json': {'moduleType': 'opmode'},
+            'description.json': {'description': 'A demo', 'tags': ['demo']},
+            'project.info.json': {'version': '0.3.0'},
+        }})
+        self.assertEqual(blocks_lib.list_libraries(self.libraries_dir), [library])
+
+    def test_install_samples_only(self):
+        entries = dict(self.valid_entries(), **VALID_SAMPLE)
+        del entries['toolboxes/demo.json']
+        del entries['components/sensor.json']
+        library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
+        self.assertEqual(list(library['samples']), ['DemoBot'])
+
     def test_install_replaces_existing(self):
         blocks_lib.install_blocks_lib(self.make_lib(self.valid_entries()), self.libraries_dir)
         blocks_lib.install_blocks_lib(
@@ -153,6 +178,16 @@ class BlocksLibTest(unittest.TestCase):
             'flyout toolbox without contents': dict(self.valid_entries(), **{
                 'toolboxes/demo.json': {'kind': 'flyoutToolbox'}}),
             'bad wheel name': dict(self.valid_entries(), **{'wheels/not-a-wheel.whl': b''}),
+            'sample without robot': {
+                k: v for k, v in dict(self.valid_entries(), **VALID_SAMPLE).items()
+                if k != 'samples/DemoBot/Robot.robot.json'},
+            'sample without project info': {
+                k: v for k, v in dict(self.valid_entries(), **VALID_SAMPLE).items()
+                if k != 'samples/DemoBot/project.info.json'},
+            'sample file not json': {**self.valid_entries(), **VALID_SAMPLE,
+                                     'samples/DemoBot/Teleop.opmode.json': '{'},
+            'sample file not an object': {**self.valid_entries(), **VALID_SAMPLE,
+                                          'samples/DemoBot/Teleop.opmode.json': []},
         }
         for description, entries in cases.items():
             with self.subTest(description):
@@ -173,6 +208,12 @@ class BlocksLibTest(unittest.TestCase):
             'toolboxes/../../evil.json': VALID_TOOLBOX,
             'toolboxes/nested/deeper.json': VALID_TOOLBOX,
             'README.md': 'readme',
+            'samples/DemoBot/project.info.json': {},
+            'samples/DemoBot/Robot.robot.json': {},
+            'samples/DemoBot/notes.json': {},
+            'samples/DemoBot/nested/Robot.robot.json': {},
+            'samples/../Robot.robot.json': {},
+            'samples/lowercase/Robot.robot.json': {},
         })
         blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
         extracted = []
@@ -183,6 +224,8 @@ class BlocksLibTest(unittest.TestCase):
             'demo.blocks_lib',
             os.path.join('libraries', 'demo', 'components', 'sensor.json'),
             os.path.join('libraries', 'demo', 'metadata.json'),
+            os.path.join('libraries', 'demo', 'samples', 'DemoBot', 'Robot.robot.json'),
+            os.path.join('libraries', 'demo', 'samples', 'DemoBot', 'project.info.json'),
             os.path.join('libraries', 'demo', 'toolboxes', 'demo.json'),
             os.path.join('libraries', 'demo', 'wheels', 'demo_pkg-1.0.0-py3-none-any.whl'),
         ])

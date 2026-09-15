@@ -752,6 +752,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 onProjectChanged={onProjectChanged}
                 openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
                 openLibraries={() => setLibrariesModalIsOpen(true)}
+                libraries={libraries}
                 theme={theme}
                 setTheme={setTheme}
                 renderer={renderer}

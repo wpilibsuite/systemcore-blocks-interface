@@ -24,6 +24,7 @@
  *   toolboxes/*.json - blockly toolbox categories, or flyout toolboxes whose blocks go directly
  *                      in the library's category, that are added to the toolbox
  *   components/*.json - optional component classes that are added to the components toolbox
+ *   samples/<SampleName>/*.json - optional sample projects that are shown with the built in samples
  *
  * The backend has an equivalent parser in backend/blocks_lib.py. Keep them in sync.
  */
@@ -41,6 +42,12 @@ const METADATA_FILE = 'metadata.json';
 const WHEELS_DIR = 'wheels';
 const TOOLBOXES_DIR = 'toolboxes';
 const COMPONENTS_DIR = 'components';
+const SAMPLES_DIR = 'samples';
+
+// The files in a sample are the files of a project, plus an optional description.json.
+const SAMPLE_PROJECT_INFO_FILE = 'project.info.json';
+const SAMPLE_DESCRIPTION_FILE = 'description.json';
+const SAMPLE_ROBOT_FILE = 'Robot.robot.json';
 
 export const SUPPORTED_FORMAT_VERSIONS = [1];
 
@@ -49,6 +56,9 @@ const WHEEL_FILENAME_PATTERN = /^([A-Za-z0-9_.]+)-([^-]+)(-\d[^-]*)?-[^-]+-[^-]+
 const JSON_FILENAME_PATTERN = /^[A-Za-z0-9_.-]+\.json$/;
 const PYTHON_IDENTIFIER_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
+// Sample names are used as project names, and sample files as project files. See storage/names.ts.
+const SAMPLE_NAME_PATTERN = /^[A-Z][A-Za-z0-9_]*$/;
+const SAMPLE_MODULE_FILENAME_PATTERN = /^[A-Z][A-Za-z0-9_]*\.(robot|mechanism|opmode)\.json$/;
 
 export interface LibraryMetadata {
   /** The version of the .blocks_lib format. */
@@ -94,6 +104,12 @@ export interface Library {
    * components were supported don't have this.
    */
   components?: {[filename: string]: ClassData};
+  /**
+   * Maps each sample name to the sample's files. Each file is a project file, like
+   * Robot.robot.json or project.info.json, or description.json, which has the description and tags
+   * of the sample. Libraries installed before samples were supported don't have this.
+   */
+  samples?: {[sampleName: string]: {[filename: string]: any}};
   /** The filenames of the wheels. */
   wheels: string[];
   /** The top level python packages and modules provided by the wheels. */
@@ -227,6 +243,28 @@ function validateComponent(component: any, filename: string): ClassData {
   return component as ClassData;
 }
 
+function isSampleFilename(filename: string): boolean {
+  return filename === SAMPLE_PROJECT_INFO_FILE || filename === SAMPLE_DESCRIPTION_FILE ||
+      SAMPLE_MODULE_FILENAME_PATTERN.test(filename);
+}
+
+function validateSamples(samples: {[sampleName: string]: {[filename: string]: any}}): void {
+  for (const sampleName in samples) {
+    const files = samples[sampleName];
+    for (const filename of [SAMPLE_PROJECT_INFO_FILE, SAMPLE_ROBOT_FILE]) {
+      if (!(filename in files)) {
+        throw new BlocksLibError(`${SAMPLES_DIR}/${sampleName} must have a ${filename} file`);
+      }
+    }
+    for (const filename in files) {
+      const content = files[filename];
+      if (typeof content !== 'object' || content === null || Array.isArray(content)) {
+        throw new BlocksLibError(`${SAMPLES_DIR}/${sampleName}/${filename} must contain a JSON object`);
+      }
+    }
+  }
+}
+
 function normalizeArgs(args: any): ArgData[] {
   return (args || []).map((arg: any) => ({
     name: arg.name,
@@ -327,6 +365,7 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
 
   const toolboxes: {[filename: string]: LibraryToolboxFile} = {};
   const components: {[filename: string]: ClassData} = {};
+  const samples: {[sampleName: string]: {[filename: string]: any}} = {};
   const wheels: string[] = [];
   const pythonModules = new Set<string>();
 
@@ -335,6 +374,14 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
       continue;
     }
     const parts = name.substring(prefix.length).split('/');
+    if (parts.length === 3 && parts[0] === SAMPLES_DIR) {
+      const [, sampleName, filename] = parts;
+      if (SAMPLE_NAME_PATTERN.test(sampleName) && isSampleFilename(filename)) {
+        samples[sampleName] = samples[sampleName] || {};
+        samples[sampleName][filename] = await parseJson(zip, name);
+      }
+      continue;
+    }
     if (parts.length !== 2) {
       continue;
     }
@@ -357,15 +404,19 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
     }
   }
 
-  if (Object.keys(toolboxes).length === 0 && Object.keys(components).length === 0) {
+  if (Object.keys(toolboxes).length === 0 && Object.keys(components).length === 0 &&
+      Object.keys(samples).length === 0) {
     throw new BlocksLibError(
-        `The library must contain at least one ${TOOLBOXES_DIR}/*.json or ${COMPONENTS_DIR}/*.json file`);
+        `The library must contain at least one ${TOOLBOXES_DIR}/*.json, ${COMPONENTS_DIR}/*.json, ` +
+        `or ${SAMPLES_DIR}/<SampleName>/*.json file`);
   }
+  validateSamples(samples);
 
   return {
     metadata,
     toolboxes,
     components,
+    samples,
     wheels,
     pythonModules: [...pythonModules].sort(),
   };
