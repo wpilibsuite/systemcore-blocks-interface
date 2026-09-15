@@ -27,6 +27,9 @@ translated (English and Spanish, in `locales/`), to show that translations are o
 ./build.sh pid_tools        # builds one example
 ```
 
-Each library is written to `<example>/build/<name>.blocks_lib`. Building REV Robotics needs an
-internet connection to download its wheel, and `npm install` to generate its toolboxes. Upload them from
-**Manage > Libraries...** in Blocks.
+Each library is written to `<example>/build/<name>.blocks_lib`. 
+
+Building REV Robotics needs an internet connection to download its wheel, 
+and `npm install` to generate its toolboxes. 
+
+Upload them using **Manage > Libraries...** in Blocks.
