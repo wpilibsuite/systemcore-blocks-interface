@@ -26,6 +26,8 @@
     "DEPLOY_ANYWAY": "Implementar de todos modos",
     "PORT_CONFLICT_TITLE": "Puertos usados más de una vez",
     "PORT_CONFLICT_MESSAGE": "Estos puertos de hardware son usados por más de un componente:",
+    "MISSING_COMPONENT_CLASSES_TITLE": "Faltan clases de componentes",
+    "MISSING_COMPONENT_CLASSES_MESSAGE": "Este proyecto no se puede implementar porque usa clases de componentes que no están disponibles. Instala las bibliotecas de las que provienen en Gestionar > Bibliotecas, o quita los bloques que las usan de estos módulos:",
     "OK": "Aceptar",
     "DOWNLOAD_FAILED": "Error al descargar el proyecto.",
     "DOWNLOAD_CURRENT_PROJECT": "Descargar Proyecto Actual",

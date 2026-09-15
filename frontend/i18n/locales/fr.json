@@ -26,6 +26,8 @@
     "DEPLOY_ANYWAY": "Déployer quand même",
     "PORT_CONFLICT_TITLE": "Ports utilisés plus d'une fois",
     "PORT_CONFLICT_MESSAGE": "Ces ports matériels sont utilisés par plus d'un composant :",
+    "MISSING_COMPONENT_CLASSES_TITLE": "Classes de composants manquantes",
+    "MISSING_COMPONENT_CLASSES_MESSAGE": "Ce projet ne peut pas être déployé, car il utilise des classes de composants qui ne sont pas disponibles. Installez les bibliothèques dont elles proviennent dans Gérer > Bibliothèques, ou supprimez les blocs qui les utilisent de ces modules :",
     "OK": "OK",
     "DOWNLOAD_FAILED": "Échec du téléchargement du projet.",
     "DOWNLOAD_CURRENT_PROJECT": "Télécharger le projet actuel",

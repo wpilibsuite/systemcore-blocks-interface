@@ -25,6 +25,8 @@
     "DEPLOY_ANYWAY": "Deploy Anyway",
     "PORT_CONFLICT_TITLE": "Ports Used More Than Once",
     "PORT_CONFLICT_MESSAGE": "These hardware ports are used by more than one component:",
+    "MISSING_COMPONENT_CLASSES_TITLE": "Missing Component Classes",
+    "MISSING_COMPONENT_CLASSES_MESSAGE": "This project can't be deployed because it uses component classes that aren't available. Install the libraries they come from in Manage > Libraries, or remove the blocks that use them from these modules:",
     "OK": "OK",
     "DOWNLOAD_FAILED": "Failed to download project.",
     "DOWNLOAD_CURRENT_PROJECT": "Download Current Project",
