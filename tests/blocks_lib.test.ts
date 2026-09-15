@@ -89,6 +89,15 @@ describe('parseBlocksLib', () => {
     expect(library.pythonModules).toEqual(['demo_module', 'demo_pkg']);
   });
 
+  test('parses a flyout toolbox', async () => {
+    const flyout = { kind: 'flyoutToolbox', contents: [{ kind: 'label', text: 'Demo' }, { kind: 'block', type: 'text' }] };
+    const library = await blocksLib.parseBlocksLib(
+        await makeLib({ ...await validEntries(), 'toolboxes/blocks.json': flyout }));
+    expect(library.toolboxes['blocks.json']).toEqual(flyout);
+    expect(blocksLib.isFlyoutToolbox(library.toolboxes['blocks.json'])).toBe(true);
+    expect(blocksLib.isFlyoutToolbox(library.toolboxes['demo.json'])).toBe(false);
+  });
+
   test('parses a library zipped inside a folder', async () => {
     const library = await blocksLib.parseBlocksLib(await makeLib(await validEntries(), 'folder/'));
     expect(library.metadata.name).toBe('demo');
@@ -111,7 +120,10 @@ describe('parseBlocksLib', () => {
         ...await validEntries(), 'components/sensor.json': { ...COMPONENT, className: 'other.Sensor' } },
       'component without component constructor': {
         ...await validEntries(), 'components/sensor.json': { ...COMPONENT, constructors: [{ args: [] }] } },
-      'toolbox not a category': { ...await validEntries(), 'toolboxes/demo.json': { kind: 'flyoutToolbox' } },
+      'toolbox not a category': { ...await validEntries(), 'toolboxes/demo.json': { kind: 'block', type: 'text' } },
+      'flyout toolbox without contents': { ...await validEntries(), 'toolboxes/demo.json': { kind: 'flyoutToolbox' } },
+      'flyout toolbox with a category': {
+        ...await validEntries(), 'toolboxes/demo.json': { kind: 'flyoutToolbox', contents: [TOOLBOX] } },
       'toolbox not json': { ...await validEntries(), 'toolboxes/demo.json': '{' },
       'bad wheel name': { ...await validEntries(), 'wheels/not-a-wheel.whl': '' },
     };
@@ -207,6 +219,24 @@ describe('getLibraryToolbox', () => {
     expect('colour' in withoutColorCategory).toBe(false);
     expect('colour' in withoutColor.components[0]).toBe(false);
     expect(withoutColorCategory.contents[0].categorystyle).toBe('text_category');
+  });
+
+  test('puts the blocks from flyout toolboxes directly in the library category', () => {
+    const library = makeLibrary();
+    library.toolboxes['z_blocks.json'] = {
+      kind: 'flyoutToolbox',
+      contents: [{ kind: 'label', text: 'Label' } as any, { kind: 'block', type: 'logic_boolean' } as any],
+    };
+    const libraryCategory = getLibraryToolbox([library], new Set()).categories[0];
+    expect(libraryCategory.contents!.map((item: any) => item.kind === 'category' ? item.name : item.kind))
+        .toEqual(['label', 'block', 'Demo']);
+
+    // The blocks are still shown when all of the library's categories are hidden.
+    const allCategoriesHidden = getLibraryToolbox(
+        [library], new Set([blocksLib.getToolboxKey('demo', 'demo.json', ['Demo'])])).categories[0];
+    expect(allCategoriesHidden.contents!.map((item: any) => item.kind)).toEqual(['label', 'block']);
+
+    expect(getLibraryToolbox([library], new Set([blocksLib.getToolboxKey('demo')])).categories).toEqual([]);
   });
 
   test('leaves out incompatible libraries', () => {

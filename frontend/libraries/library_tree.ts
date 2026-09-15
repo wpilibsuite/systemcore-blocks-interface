@@ -42,8 +42,9 @@ export interface LibraryTreeNode {
   parent: LibraryTreeNode | null;
   children: LibraryTreeNode[];
   /**
-   * True if showing the node shows something even when all its children are hidden. That is only
-   * the case for a category that contains blocks, not just subcategories.
+   * True if showing the node shows something even when all its children are hidden. That is the
+   * case for a category that contains blocks, not just subcategories, and for a library that has
+   * flyout toolboxes.
    */
   hasOwnContent: boolean;
 }
@@ -104,8 +105,17 @@ export function buildLibraryTree(libraries: blocksLib.Library[]): LibraryTree {
           components[filename].className, componentsNode, true));
     }
 
-    Object.keys(library.toolboxes).sort().forEach(filename =>
-        addCategory(library.toolboxes[filename], library, filename, [], libraryNode));
+    Object.keys(library.toolboxes).sort().forEach((filename) => {
+      const toolbox = library.toolboxes[filename];
+      if (blocksLib.isFlyoutToolbox(toolbox)) {
+        // The blocks go directly in the library's category, so they don't have their own node.
+        if (toolbox.contents.length) {
+          libraryNode.hasOwnContent = true;
+        }
+      } else {
+        addCategory(toolbox, library, filename, [], libraryNode);
+      }
+    });
     return libraryNode;
   });
 

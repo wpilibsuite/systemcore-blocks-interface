@@ -4,7 +4,8 @@ Support for third party .blocks_lib libraries.
 A .blocks_lib file is a zip file containing:
     metadata.json   - information about the library (see REQUIRED_METADATA_FIELDS)
     wheels/*.whl    - python wheels that are installed on the robot when a project uses the library
-    toolboxes/*.json - blockly toolbox categories that are added to the toolbox
+    toolboxes/*.json - blockly toolbox categories, or flyout toolboxes whose blocks go directly in
+                       the library's category, that are added to the toolbox
     components/*.json - optional component classes that are added to the components toolbox
 
 Installed libraries are extracted to <libraries_dir>/<name>/.
@@ -96,9 +97,16 @@ def validate_metadata(metadata: Any) -> Dict[str, Any]:
 
 
 def validate_toolbox(toolbox: Any, filename: str) -> None:
-    """Checks that the toolbox is a blockly category."""
+    """Checks that the toolbox is a blockly category or a flyout toolbox without categories."""
+    if isinstance(toolbox, dict) and toolbox.get('kind') == 'flyoutToolbox':
+        contents = toolbox.get('contents')
+        if not isinstance(contents, list) or any(
+                not isinstance(item, dict) or item.get('kind') == 'category' for item in contents):
+            raise BlocksLibError(f'{filename} must have "contents" without any categories')
+        return
     if not isinstance(toolbox, dict) or toolbox.get('kind') != 'category':
-        raise BlocksLibError(f'{filename} must contain a JSON object with "kind": "category"')
+        raise BlocksLibError(
+            f'{filename} must contain a JSON object with "kind": "category" or "kind": "flyoutToolbox"')
     if not isinstance(toolbox.get('name'), str) or not toolbox['name']:
         raise BlocksLibError(f'{filename} must have a "name"')
 

@@ -35,6 +35,11 @@ VALID_METADATA = {
 
 VALID_TOOLBOX = {'kind': 'category', 'name': 'Demo', 'contents': []}
 
+VALID_FLYOUT_TOOLBOX = {
+    'kind': 'flyoutToolbox',
+    'contents': [{'kind': 'label', 'text': 'Demo'}, {'kind': 'block', 'type': 'text'}],
+}
+
 VALID_COMPONENT = {
     'className': 'demo_pkg.Sensor',
     'moduleName': 'demo_pkg',
@@ -104,6 +109,11 @@ class BlocksLibTest(unittest.TestCase):
         self.assertEqual(library['toolboxes'], {})
         self.assertEqual(list(library['components']), ['sensor.json'])
 
+    def test_install_flyout_toolbox(self):
+        entries = dict(self.valid_entries(), **{'toolboxes/blocks.json': VALID_FLYOUT_TOOLBOX})
+        library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
+        self.assertEqual(library['toolboxes']['blocks.json'], VALID_FLYOUT_TOOLBOX)
+
     def test_install_replaces_existing(self):
         blocks_lib.install_blocks_lib(self.make_lib(self.valid_entries()), self.libraries_dir)
         blocks_lib.install_blocks_lib(
@@ -138,6 +148,10 @@ class BlocksLibTest(unittest.TestCase):
             'toolbox not category': dict(self.valid_entries(), **{
                 'toolboxes/demo.json': {'kind': 'flyoutToolbox'}}),
             'toolbox not json': dict(self.valid_entries(), **{'toolboxes/demo.json': '{'}),
+            'flyout toolbox with a category': dict(self.valid_entries(), **{
+                'toolboxes/demo.json': {'kind': 'flyoutToolbox', 'contents': [VALID_TOOLBOX]}}),
+            'flyout toolbox without contents': dict(self.valid_entries(), **{
+                'toolboxes/demo.json': {'kind': 'flyoutToolbox'}}),
             'bad wheel name': dict(self.valid_entries(), **{'wheels/not-a-wheel.whl': b''}),
         }
         for description, entries in cases.items():

@@ -23,6 +23,7 @@ import {
     getDisplayName,
     getToolboxKey,
     isCompatible,
+    isFlyoutToolbox,
     Library,
     normalizeComponentClass } from '../libraries/blocks_lib';
 
@@ -62,21 +63,27 @@ export function getLibraryToolbox(libraries: Library[], hiddenKeys: Set<string>)
     if (!isCompatible(library.metadata) || hiddenKeys.has(getToolboxKey(libraryName))) {
       continue;
     }
-    // Put the library's categories under a category named after the library, so it's obvious
-    // where they came from.
+    // Put the library's blocks and categories under a category named after the library, so it's
+    // obvious where they came from. The blocks from flyout toolboxes go directly in that category,
+    // before the library's categories.
+    const libraryBlocks: toolboxItems.ContentsType[] = [];
     const libraryCategories: toolboxItems.Category[] = [];
     for (const filename of Object.keys(library.toolboxes).sort()) {
-      const category = filterCategory(
-          library.toolboxes[filename], libraryName, filename, [], hiddenKeys);
+      const toolbox = library.toolboxes[filename];
+      if (isFlyoutToolbox(toolbox)) {
+        libraryBlocks.push(...toolbox.contents);
+        continue;
+      }
+      const category = filterCategory(toolbox, libraryName, filename, [], hiddenKeys);
       if (category) {
         libraryCategories.push(category);
       }
     }
-    if (libraryCategories.length) {
+    if (libraryBlocks.length || libraryCategories.length) {
       libraryToolbox.categories.push({
         kind: 'category',
         name: getDisplayName(library.metadata),
-        contents: libraryCategories,
+        contents: [...libraryBlocks, ...libraryCategories],
         ...(library.metadata.color ? {colour: library.metadata.color} : {}),
       });
     }

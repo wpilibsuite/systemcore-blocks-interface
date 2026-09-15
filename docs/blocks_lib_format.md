@@ -57,10 +57,32 @@ the robot's pip cache and added to `requires` in `pyproject.toml`, pinned to the
 
 ## `toolboxes/`
 
-Each `*.json` file contains one [Blockly toolbox category](https://developers.google.com/blockly/guides/configure/web/toolboxes/category)
-(`"kind": "category"` with a `name`). Categories can contain blocks and nested categories. In the
-toolbox, a library's categories are put under a category named after the library (its
-`displayName`). Each category shows up in the Libraries dialog so users can hide it.
+In the toolbox, everything from a library is put under a category named after the library (its
+`displayName`). Each `*.json` file contains one of these:
+
+- A [Blockly toolbox category](https://developers.google.com/blockly/guides/configure/web/toolboxes/category)
+  (`"kind": "category"` with a `name`), which becomes a subcategory under the library's name.
+  Categories can contain blocks and nested categories. Each category shows up in the Libraries
+  dialog so users can hide it.
+- A [flyout toolbox](https://developers.google.com/blockly/guides/configure/web/toolboxes/flyout)
+  (`"kind": "flyoutToolbox"`), for libraries that don't want subcategories. Its blocks go directly
+  under the library's name. It can't contain categories, but it can use labels to group blocks:
+
+  ```json
+  {
+    "kind": "flyoutToolbox",
+    "contents": [
+      {"kind": "label", "text": "Rainbow"},
+      {"kind": "block", "type": "..."}
+    ]
+  }
+  ```
+
+  These blocks don't have their own check box in the Libraries dialog; they are hidden with the
+  library.
+
+A library can have both kinds of files. The blocks from flyout toolboxes are listed before the
+library's categories.
 
 Any block type that Blocks knows about can be used. To call a function in your wheel, use
 `mrc_call_python_function` with `functionKind` `module`:

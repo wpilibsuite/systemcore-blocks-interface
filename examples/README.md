@@ -6,7 +6,7 @@ Example third party `.blocks_lib` libraries. See `docs/blocks_lib_format.md` for
 |--------------------|---------------------|--------------------------------------------------|----------------------------------------|
 | `blocks_lib_demo/` | Blocks Demo Library | Demo Math (with Joystick Helpers), Demo Text     | LimitSwitch, Gripper                   |
 | `field_sensors/`   | Field Sensors       |                                                  | BeamBreak, Bumper, UltrasonicSensor    |
-| `led_effects/`     | LED Effects         | Effects (with Rainbow, Pulse and Blink)          |                                        |
+| `led_effects/`     | LED Effects         | None: its blocks are directly under LED Effects  |                                        |
 | `pid_tools/`       | PID Tools           | PID Tuning                                       | SimplePID                              |
 
 Each example has a `metadata.json`, a Python package in `python/`, and `toolboxes/` and/or

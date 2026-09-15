@@ -23,6 +23,7 @@ For each PR, make sure each of these works
 # Libraries
 * [ ] Build the example libraries with `examples/build.sh` and upload all four from Manage -> Libraries
 * [ ] Make sure all four libraries show up in the Libraries dialog and each one's details show when it is selected
+* [ ] Make sure the LED Effects blocks are directly under LED Effects in the toolbox, grouped by labels, with no subcategories
 * [ ] Make sure the Demo Math and Demo Text categories show up in the toolbox under Blocks Demo Library, and that the Blocks Demo Library category is indigo (its `color`)
 * [ ] Uncheck Joystick Helpers in the Libraries dialog and make sure only that subcategory disappears from the toolbox
 * [ ] Use a Demo Math block in an OpMode, deploy, and check that pyproject.toml requires blocks_demo==1.0.0

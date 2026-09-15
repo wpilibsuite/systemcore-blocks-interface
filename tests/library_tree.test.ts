@@ -158,6 +158,23 @@ describe('library tree', () => {
     expect(toolboxNames(allHidden)).toEqual([]);
   });
 
+  test('a library with blocks directly under it is half checked when its categories are hidden', () => {
+    const library: blocksLib.Library = {
+      ...LIBRARY,
+      toolboxes: {
+        'blocks.json': { kind: 'flyoutToolbox', contents: [block as any] },
+        'group.json': LIBRARY.toolboxes['group.json'],
+      },
+      components: {},
+    };
+    const flyoutTree = buildLibraryTree([library]);
+    // The flyout toolbox doesn't have its own node.
+    expect(flyoutTree.roots[0].children.map(child => child.key)).toEqual([KEYS.group]);
+    const checkStates = getCheckStates(flyoutTree, new Set([KEYS.group]));
+    expect(checkStates.get(KEYS.library)).toBe(HALF_CHECKED);
+    expect(getCheckStates(flyoutTree, new Set([KEYS.library])).get(KEYS.library)).toBe(UNCHECKED);
+  });
+
   test('checking a node under a hidden ancestor shows only that node', () => {
     const hidden = toggleNode(tree, new Set([KEYS.library]), KEYS.sub);
     expect(states(hidden)).toMatchObject({

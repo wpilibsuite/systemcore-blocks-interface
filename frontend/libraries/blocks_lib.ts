@@ -21,7 +21,8 @@
  * A .blocks_lib file is a zip file containing:
  *   metadata.json    - see LibraryMetadata
  *   wheels/*.whl     - python wheels installed on the robot when a project uses the library
- *   toolboxes/*.json - blockly toolbox categories that are added to the toolbox
+ *   toolboxes/*.json - blockly toolbox categories, or flyout toolboxes whose blocks go directly
+ *                      in the library's category, that are added to the toolbox
  *   components/*.json - optional component classes that are added to the components toolbox
  *
  * The backend has an equivalent parser in backend/blocks_lib.py. Keep them in sync.
@@ -69,10 +70,25 @@ export interface LibraryMetadata {
   blocksVersion: string;
 }
 
+/**
+ * A toolbox file with no categories. Its contents go directly in the category named after the
+ * library, for libraries that don't want subcategories.
+ */
+export interface FlyoutToolbox {
+  kind: 'flyoutToolbox';
+  contents: toolboxItems.ContentsType[];
+}
+
+export type LibraryToolboxFile = toolboxItems.Category | FlyoutToolbox;
+
+export function isFlyoutToolbox(toolbox: LibraryToolboxFile): toolbox is FlyoutToolbox {
+  return toolbox.kind === 'flyoutToolbox';
+}
+
 export interface Library {
   metadata: LibraryMetadata;
-  /** Maps each toolbox filename to the blockly category it contains. */
-  toolboxes: {[filename: string]: toolboxItems.Category};
+  /** Maps each toolbox filename to the category or flyout toolbox it contains. */
+  toolboxes: {[filename: string]: LibraryToolboxFile};
   /**
    * Maps each component filename to the component class it contains. Libraries installed before
    * components were supported don't have this.
@@ -170,9 +186,17 @@ function validateMetadata(metadata: any): LibraryMetadata {
   return metadata as LibraryMetadata;
 }
 
-function validateToolbox(toolbox: any, filename: string): toolboxItems.Category {
+function validateToolbox(toolbox: any, filename: string): LibraryToolboxFile {
+  if (typeof toolbox === 'object' && toolbox !== null && toolbox.kind === 'flyoutToolbox') {
+    if (!Array.isArray(toolbox.contents) ||
+        toolbox.contents.some((item: any) => !item || item.kind === 'category')) {
+      throw new BlocksLibError(`${filename} must have "contents" without any categories`);
+    }
+    return toolbox as FlyoutToolbox;
+  }
   if (typeof toolbox !== 'object' || toolbox === null || toolbox.kind !== 'category') {
-    throw new BlocksLibError(`${filename} must contain a JSON object with "kind": "category"`);
+    throw new BlocksLibError(
+        `${filename} must contain a JSON object with "kind": "category" or "kind": "flyoutToolbox"`);
   }
   if (typeof toolbox.name !== 'string' || !toolbox.name) {
     throw new BlocksLibError(`${filename} must have a "name"`);
@@ -301,7 +325,7 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
   const prefix = findRootPrefix(names);
   const metadata = validateMetadata(await parseJson(zip, prefix + METADATA_FILE));
 
-  const toolboxes: {[filename: string]: toolboxItems.Category} = {};
+  const toolboxes: {[filename: string]: LibraryToolboxFile} = {};
   const components: {[filename: string]: ClassData} = {};
   const wheels: string[] = [];
   const pythonModules = new Set<string>();
