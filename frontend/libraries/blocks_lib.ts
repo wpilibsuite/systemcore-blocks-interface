@@ -24,6 +24,8 @@
  *   toolboxes/*.json - blockly toolbox categories, or flyout toolboxes whose blocks go directly
  *                      in the library's category, that are added to the toolbox
  *   components/*.json - optional component classes that are added to the components toolbox
+ *   python_data/*.json - optional python modules and classes, in the format of the generated
+ *                        robotpy_data.json, that the library's blocks and components use
  *   samples/<SampleName>/*.json - optional sample projects that are shown with the built in samples
  *   locales/<language>.json - optional translations for the strings that are shown to the user
  *
@@ -33,7 +35,12 @@
 import JSZip from 'jszip';
 import * as semver from 'semver';
 import * as toolboxItems from '../toolbox/items';
-import { ArgData, ClassData, FunctionData } from '../blocks/utils/python_json_types';
+import {
+    ArgData,
+    ClassData,
+    FunctionData,
+    ModuleData,
+    PythonData } from '../blocks/utils/python_json_types';
 
 declare const __APP_VERSION__: string;
 
@@ -43,6 +50,7 @@ const METADATA_FILE = 'metadata.json';
 const WHEELS_DIR = 'wheels';
 const TOOLBOXES_DIR = 'toolboxes';
 const COMPONENTS_DIR = 'components';
+const PYTHON_DATA_DIR = 'python_data';
 const SAMPLES_DIR = 'samples';
 const LOCALES_DIR = 'locales';
 
@@ -113,6 +121,12 @@ export interface Library {
    * components were supported don't have this.
    */
   components?: {[filename: string]: ClassData};
+  /**
+   * Maps each python data filename to the python modules and classes it contains. These are the
+   * modules, classes, and enums that the library's blocks and components use. Libraries installed
+   * before python data was supported don't have this.
+   */
+  pythonData?: {[filename: string]: PythonData};
   /**
    * Maps each sample name to the sample's files. Each file is a project file, like
    * Robot.robot.json or project.info.json, or description.json, which has the description and tags
@@ -365,27 +379,77 @@ function validateToolbox(toolbox: any, filename: string): LibraryToolboxFile {
   return toolbox as toolboxItems.Category;
 }
 
-function validateComponent(component: any, filename: string): ClassData {
-  if (typeof component !== 'object' || component === null || Array.isArray(component)) {
-    throw new BlocksLibError(`${filename} must contain a JSON object`);
+function isJsonObject(value: any): boolean {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** Checks that classData is a class in the format of the generated python data. */
+function validateClass(classData: any, where: string): void {
+  if (!isJsonObject(classData)) {
+    throw new BlocksLibError(`${where} must contain a JSON object`);
   }
-  if (typeof component.moduleName !== 'string' || !component.moduleName ||
-      typeof component.className !== 'string' ||
-      !component.className.startsWith(component.moduleName + '.')) {
+  if (typeof classData.moduleName !== 'string' || !classData.moduleName ||
+      typeof classData.className !== 'string' ||
+      !classData.className.startsWith(classData.moduleName + '.')) {
     throw new BlocksLibError(
-        `${filename} must have a "moduleName" and a "className" that starts with the moduleName`);
+        `${where} must have a "moduleName" and a "className" that starts with the moduleName`);
   }
+  for (const field of ['constructors', 'instanceMethods', 'staticMethods', 'instanceVariables',
+      'classVariables', 'enums']) {
+    if (field in classData && !Array.isArray(classData[field])) {
+      throw new BlocksLibError(`"${field}" in ${where} must be an array`);
+    }
+  }
+}
+
+function validateComponent(component: any, filename: string): ClassData {
+  validateClass(component, filename);
   if (!Array.isArray(component.constructors) ||
       !component.constructors.some((c: any) => c && c.isComponent === true && Array.isArray(c.componentArgs))) {
     throw new BlocksLibError(
         `${filename} must have a constructor with "isComponent": true and "componentArgs"`);
   }
-  for (const field of ['instanceMethods', 'staticMethods', 'instanceVariables', 'classVariables', 'enums']) {
-    if (field in component && !Array.isArray(component[field])) {
+  return component as ClassData;
+}
+
+/** Checks that the python data is in the format of the generated robotpy_data.json. */
+function validatePythonData(pythonData: any, filename: string): PythonData {
+  if (!isJsonObject(pythonData)) {
+    throw new BlocksLibError(`${filename} must contain a JSON object`);
+  }
+  for (const field of ['modules', 'classes']) {
+    if (field in pythonData && !Array.isArray(pythonData[field])) {
       throw new BlocksLibError(`"${field}" in ${filename} must be an array`);
     }
   }
-  return component as ClassData;
+  (pythonData.modules || []).forEach((module: any, index: number) => {
+    const where = `modules[${index}] in ${filename}`;
+    if (!isJsonObject(module)) {
+      throw new BlocksLibError(`${where} must contain a JSON object`);
+    }
+    if (typeof module.moduleName !== 'string' || !module.moduleName) {
+      throw new BlocksLibError(`${where} must have a "moduleName"`);
+    }
+    for (const field of ['functions', 'moduleVariables', 'enums']) {
+      if (field in module && !Array.isArray(module[field])) {
+        throw new BlocksLibError(`"${field}" in ${where} must be an array`);
+      }
+    }
+  });
+  (pythonData.classes || []).forEach((classData: any, index: number) => {
+    validateClass(classData, `classes[${index}] in ${filename}`);
+  });
+  const aliases = pythonData.aliases ?? {};
+  if (!isJsonObject(aliases) || !Object.values(aliases).every(value => typeof value === 'string')) {
+    throw new BlocksLibError(`"aliases" in ${filename} must be an object whose values are strings`);
+  }
+  const subclasses = pythonData.subclasses ?? {};
+  if (!isJsonObject(subclasses) || !Object.values(subclasses).every(value =>
+      Array.isArray(value) && value.every(name => typeof name === 'string'))) {
+    throw new BlocksLibError(
+        `"subclasses" in ${filename} must be an object whose values are arrays of strings`);
+  }
+  return pythonData as PythonData;
 }
 
 function isSampleFilename(filename: string): boolean {
@@ -436,16 +500,44 @@ function normalizeFunction(functionData: any, className: string, returnType: str
  */
 export function normalizeComponentClass(component: ClassData, libraryName: string): ClassData {
   component = mapTranslatableStrings(component, text => qualifyReference(libraryName, text));
-  const className = component.className;
   return {
-    ...component,
-    classVariables: component.classVariables || [],
-    instanceVariables: component.instanceVariables || [],
-    constructors: component.constructors.map(f => normalizeFunction(f, className, className)),
-    instanceMethods: (component.instanceMethods || []).map(f => normalizeFunction(f, className, 'None')),
-    staticMethods: (component.staticMethods || []).map(f => normalizeFunction(f, className, 'None')),
-    enums: component.enums || [],
+    ...normalizeClass(component),
     isComponent: true,
+  };
+}
+
+/**
+ * Returns a copy of the python data from a library with the optional fields filled in, so that it
+ * can be used like the python data generated from RobotPy. Its classes aren't components, since a
+ * library's components are in its components directory.
+ */
+export function normalizePythonData(pythonData: PythonData): PythonData {
+  return {
+    modules: (pythonData.modules || []).map((moduleData): ModuleData => ({
+      ...moduleData,
+      moduleVariables: moduleData.moduleVariables || [],
+      functions: (moduleData.functions || []).map(f => normalizeFunction(f, '', 'None')),
+      enums: moduleData.enums || [],
+    })),
+    classes: (pythonData.classes || []).map(classData => ({
+      ...normalizeClass(classData),
+      isComponent: false,
+    })),
+    aliases: pythonData.aliases || {},
+    subclasses: pythonData.subclasses || {},
+  };
+}
+
+function normalizeClass(classData: ClassData): ClassData {
+  const className = classData.className;
+  return {
+    ...classData,
+    classVariables: classData.classVariables || [],
+    instanceVariables: classData.instanceVariables || [],
+    constructors: (classData.constructors || []).map(f => normalizeFunction(f, className, className)),
+    instanceMethods: (classData.instanceMethods || []).map(f => normalizeFunction(f, className, 'None')),
+    staticMethods: (classData.staticMethods || []).map(f => normalizeFunction(f, className, 'None')),
+    enums: classData.enums || [],
   };
 }
 
@@ -512,6 +604,7 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
 
   const toolboxes: {[filename: string]: LibraryToolboxFile} = {};
   const components: {[filename: string]: ClassData} = {};
+  const pythonData: {[filename: string]: PythonData} = {};
   const samples: {[sampleName: string]: {[filename: string]: any}} = {};
   const locales: {[language: string]: LocaleMessages} = {};
   const wheels: string[] = [];
@@ -552,6 +645,8 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
           validateLocale(await parseJson(zip, name), `${LOCALES_DIR}/${filename}`);
     } else if (directory === COMPONENTS_DIR && JSON_FILENAME_PATTERN.test(filename)) {
       components[filename] = validateComponent(await parseJson(zip, name), `${COMPONENTS_DIR}/${filename}`);
+    } else if (directory === PYTHON_DATA_DIR && JSON_FILENAME_PATTERN.test(filename)) {
+      pythonData[filename] = validatePythonData(await parseJson(zip, name), `${PYTHON_DATA_DIR}/${filename}`);
     }
   }
 
@@ -567,6 +662,7 @@ export async function parseBlocksLib(data: ArrayBuffer): Promise<Library> {
     metadata,
     toolboxes,
     components,
+    pythonData,
     samples,
     locales,
     wheels,

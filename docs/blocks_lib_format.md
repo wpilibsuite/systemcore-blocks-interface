@@ -19,6 +19,8 @@ toolboxes/
     another_category.json
 components/
     my_sensor.json
+python_data/
+    my_library.json
 samples/
     MySampleRobot/
         description.json
@@ -30,7 +32,8 @@ locales/
     es.json
 ```
 
-A library needs at least one file in `toolboxes/`, `components/`, or `samples/`.
+A library needs at least one file in `toolboxes/`, `components/`, or `samples/`. `python_data/`
+doesn't count, because it only describes Python code that the other files use.
 
 It's fine for everything to be inside a single top level folder (which is what you get when you
 zip a folder with Finder or Explorer). Other files are ignored.
@@ -57,7 +60,9 @@ toolbox.
 
 Python wheels that are installed on the robot. Because the robot installs packages without internet
 access, include every dependency that isn't already on the robot. Wheels must be built for the
-robot (pure Python `py3-none-any` wheels always work).
+robot (pure Python `py3-none-any` wheels always work). Wheels with compiled code have to be built
+for SystemCore; `robotpy installer download --no-deps <package>` downloads them, which is what the
+REV Robotics example does.
 
 When a project is deployed, the backend looks at the `import` statements in the generated code. For
 each library that provides an imported top level package, every wheel in the library is copied into
@@ -194,6 +199,68 @@ self.my_limit_switch = my_library.components.LimitSwitch(
 - `staticMethods`, `instanceVariables`, `classVariables`, and `enums` are optional and use the same
   format as the generated data.
 
+## `python_data/`
+
+Blocks has to know about the Python modules and classes that blocks use, not just the component
+classes. For example, a component method might return an object whose fields can be read, take an
+enum as an argument, or return a subclass of a built in class. Each `*.json` file in
+`python_data/` describes Python modules and classes in the same format as
+`frontend/blocks/utils/generated/robotpy_data.json`. Every field is optional:
+
+```json
+{
+  "modules": [
+    {
+      "moduleName": "my_library",
+      "enums": [
+        {
+          "enumClassName": "my_library.Mode",
+          "moduleName": "my_library",
+          "enumValues": ["FAST", "SLOW"],
+          "tooltip": ""
+        }
+      ],
+      "functions": [],
+      "moduleVariables": []
+    }
+  ],
+  "classes": [
+    {
+      "className": "my_library.Reading",
+      "moduleName": "my_library",
+      "instanceVariables": [
+        {"name": "value", "type": "float", "writable": false, "tooltip": ""}
+      ]
+    }
+  ],
+  "aliases": {
+    "my_library.meters": "float"
+  },
+  "subclasses": {
+    "wpilib.MotorController": ["my_library.MyMotor"]
+  }
+}
+```
+
+- `modules` and `classes` use the same format as the generated data, and the classes use the same
+  format as `components/`. Classes in `python_data/` aren't components; put component classes in
+  `components/`.
+- `aliases` maps type names to the types they are aliases for.
+- `subclasses` maps a class name to the names of its subclasses. Blocks that take the class also
+  accept the subclasses, and a library can add subclasses to a built in class.
+
+Python data doesn't add anything to the toolbox by itself, and it isn't shown with the built in
+RobotPy modules in the toolbox settings. To give users blocks for its classes, add them to
+`toolboxes/`. The REV Robotics example generates those toolbox files when it is built: its
+`python_toolbox.json` lists the modules and classes to make categories for, like the ones that can
+be chosen in the toolbox settings, and `examples/generate_python_toolboxes.mjs` makes a category
+for each of them, with the same blocks as the built in RobotPy categories.
+
+`python_tools/generate_json.py` generates this data from Python modules. The REV Robotics example
+(`examples/rev_robotics/`) is generated this way from `robotpy-rev`: see `writeBlocksLibFiles` in
+`python_tools/json_util.py`, which writes the component classes to `components/` and everything
+else to `python_data/`.
+
 ## `samples/`
 
 Each directory in `samples/` is a sample project. The samples of installed libraries are listed in
@@ -253,7 +320,7 @@ These strings can be references:
 | `samples/<SampleName>/description.json` | `description`, each of the `tags`                     |
 
 Names that are used in the generated code, like class, function, and argument names, and the
-sample's name, can't be translated.
+sample's name, can't be translated. Neither can anything in `python_data/`.
 
 - A library that has references needs `locales/en.json`, and it has to have every message that is
   referred to. Other languages can leave messages out.

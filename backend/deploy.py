@@ -72,7 +72,7 @@ class DeployResource(MethodView):
 
             # Third party libraries used by the deployed code. This also copies their wheels into
             # the pip cache so that the robotpy installer can install them.
-            requirements = [getWpilibBlocksRequirement(), "robotpy-rev == 2027.0.0a7.post1"]
+            requirements = [getWpilibBlocksRequirement()]
             requirements.extend(blocks_lib.get_requirements_for_deploy(
                 deploy_dir, LIBRARIES_DIR, PIP_CACHE_DIR))
             requires = ", ".join(f'"{r}"' for r in requirements)

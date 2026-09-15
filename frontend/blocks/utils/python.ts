@@ -78,7 +78,7 @@ export const GROUP_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Group';
 export const robotPyData = generatedRobotPyData as PythonData;
 export const runtimePyData = generatedRuntimePython as PythonData;
 
-// Classes from third party libraries. See setLibraryClasses.
+// Modules and classes from third party libraries. See setLibraryPythonData.
 const libraryPyData = new PythonData();
 
 const allPythonData: PythonData[] = [];
@@ -94,31 +94,7 @@ export function initialize() {
 
   for (const pythonData of allPythonData) {
     // Process modules.
-    for (const moduleData of pythonData.modules) {
-      // Initialize enums.
-      for (const enumData of moduleData.enums) {
-        PythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
-      }
-
-      // Initialize module variables.
-      const varsByType: {[key: string]: VariableGettersAndSetters} =
-          organizeVarDataByType(moduleData.moduleVariables);
-      for (const varType in varsByType) {
-        const variableGettersAndSetters = varsByType[varType];
-        GetPythonVariable.initializeModuleVariableGetter(
-            moduleData.moduleName,
-            varType,
-            variableGettersAndSetters.varNamesForGetter,
-            variableGettersAndSetters.tooltipsForGetter);
-        if (variableGettersAndSetters.varNamesForSetter.length) {
-          SetPythonVariable.initializeModuleVariableSetter(
-              moduleData.moduleName,
-              varType,
-              variableGettersAndSetters.varNamesForSetter,
-              variableGettersAndSetters.tooltipsForSetter);
-        }
-      }
-    }
+    pythonData.modules.forEach(initializeModule);
 
     // Process classes.
     for (const classData of pythonData.classes) {
@@ -129,6 +105,33 @@ export function initialize() {
       if (classData.isComponent && pythonData !== libraryPyData) {
         componentClasses.push(classData);
       }
+    }
+  }
+}
+
+// Initializes enum and variable blocks for a python module.
+function initializeModule(moduleData: ModuleData) {
+  // Initialize enums.
+  for (const enumData of moduleData.enums) {
+    PythonEnum.initializeEnum(enumData.enumClassName, enumData.enumValues, enumData.tooltip);
+  }
+
+  // Initialize module variables.
+  const varsByType: {[key: string]: VariableGettersAndSetters} =
+      organizeVarDataByType(moduleData.moduleVariables);
+  for (const varType in varsByType) {
+    const variableGettersAndSetters = varsByType[varType];
+    GetPythonVariable.initializeModuleVariableGetter(
+        moduleData.moduleName,
+        varType,
+        variableGettersAndSetters.varNamesForGetter,
+        variableGettersAndSetters.tooltipsForGetter);
+    if (variableGettersAndSetters.varNamesForSetter.length) {
+      SetPythonVariable.initializeModuleVariableSetter(
+          moduleData.moduleName,
+          varType,
+          variableGettersAndSetters.varNamesForSetter,
+          variableGettersAndSetters.tooltipsForSetter);
     }
   }
 }
@@ -183,10 +186,20 @@ function initializeClass(classData: ClassData) {
   }
 }
 
-// Sets the classes provided by installed third party libraries.
-export function setLibraryClasses(classes: ClassData[]) {
-  libraryPyData.classes = classes;
-  classes.forEach(initializeClass);
+// Sets the modules and classes provided by installed third party libraries. The component classes
+// are included in the classes.
+export function setLibraryPythonData(pythonData: PythonData) {
+  libraryPyData.modules = pythonData.modules;
+  libraryPyData.classes = pythonData.classes;
+  libraryPyData.aliases = pythonData.aliases;
+  libraryPyData.subclasses = pythonData.subclasses;
+  pythonData.modules.forEach(initializeModule);
+  pythonData.classes.forEach(initializeClass);
+}
+
+// Returns the modules and classes provided by installed third party libraries.
+export function getLibraryPythonData(): PythonData {
+  return libraryPyData;
 }
 
 // Returns the ClassData for the given class name.
@@ -251,15 +264,16 @@ export function getAlias(type: string): string | null {
 // Returns the list of subclass names for the given type.
 // For example, if type is 'wpilib.drive.RobotDriveBase', this function will
 // return ['wpilib.drive.DifferentialDrive', 'wpilib.drive.MecanumDrive'].
+// A library can add subclasses of a built in class, so the subclasses from all of the python data
+// are returned.
 export function getSubclassNames(type: string): string[] {
+  const subclassNames: string[] = [];
   for (const pythonData of allPythonData) {
-    for (const className in pythonData.subclasses) {
-      if (type === className) {
-        return pythonData.subclasses[className];
-      }
+    if (Object.prototype.hasOwnProperty.call(pythonData.subclasses, type)) {
+      subclassNames.push(...pythonData.subclasses[type]);
     }
   }
-  return [];
+  return subclassNames;
 }
 
 // Returns the array of allowed types for the given string.

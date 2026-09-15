@@ -16,12 +16,14 @@
  */
 
 /**
- * @fileoverview Keeps track of the python modules and component classes provided by installed
- * third party libraries, so that blocks can tell whether the modules and classes they use exist.
+ * @fileoverview Keeps track of the python modules, component classes, and python data provided by
+ * installed third party libraries, so that blocks can tell whether the modules and classes they use
+ * exist.
  */
 
-import { setLibraryClasses } from '../blocks/utils/python';
-import { Library, normalizeComponentClass } from './blocks_lib';
+import { setLibraryPythonData } from '../blocks/utils/python';
+import { PythonData } from '../blocks/utils/python_json_types';
+import { Library, normalizeComponentClass, normalizePythonData } from './blocks_lib';
 
 const libraryPythonModules: Set<string> = new Set();
 const librariesByName: Map<string, Library> = new Map();
@@ -35,8 +37,29 @@ export function setInstalledLibraries(libraries: Library[]): void {
   }
   // All installed component classes are registered, even the ones the user has hidden, so that
   // component blocks that are already in the user's projects keep working.
-  setLibraryClasses(libraries.flatMap(library => Object.values(library.components || {}).map(
-      component => normalizeComponentClass(component, library.metadata.name))));
+  setLibraryPythonData(collectPythonData(libraries));
+}
+
+/**
+ * Returns the component classes and python data of the given libraries, combined into one
+ * PythonData.
+ */
+export function collectPythonData(libraries: Library[]): PythonData {
+  const pythonData = new PythonData();
+  for (const library of libraries) {
+    for (const component of Object.values(library.components || {})) {
+      pythonData.classes.push(normalizeComponentClass(component, library.metadata.name));
+    }
+    for (const data of Object.values(library.pythonData || {}).map(normalizePythonData)) {
+      pythonData.modules.push(...data.modules);
+      pythonData.classes.push(...data.classes);
+      Object.assign(pythonData.aliases, data.aliases);
+      for (const [className, subclassNames] of Object.entries(data.subclasses)) {
+        pythonData.subclasses[className] = [...(pythonData.subclasses[className] || []), ...subclassNames];
+      }
+    }
+  }
+  return pythonData;
 }
 
 /** Returns the installed library with the given name, or undefined if it isn't installed. */

@@ -51,6 +51,13 @@ VALID_COMPONENT = {
     'instanceMethods': [],
 }
 
+VALID_PYTHON_DATA = {
+    'modules': [{'moduleName': 'demo_pkg', 'enums': [], 'functions': [], 'moduleVariables': []}],
+    'classes': [{'className': 'demo_pkg.Reading', 'moduleName': 'demo_pkg', 'instanceMethods': []}],
+    'aliases': {'demo_pkg.meters': 'float'},
+    'subclasses': {'wpilib.MotorController': ['demo_pkg.Motor']},
+}
+
 VALID_SAMPLE = {
     'samples/DemoBot/project.info.json': {'version': '0.3.0'},
     'samples/DemoBot/description.json': {'description': 'A demo', 'tags': ['demo']},
@@ -130,6 +137,17 @@ class BlocksLibTest(unittest.TestCase):
         library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
         self.assertEqual(library['toolboxes']['blocks.json'], VALID_FLYOUT_TOOLBOX)
 
+    def test_install_python_data(self):
+        entries = {**self.valid_entries(), 'python_data/demo_pkg.json': VALID_PYTHON_DATA}
+        library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
+        self.assertEqual(library['pythonData'], {'demo_pkg.json': VALID_PYTHON_DATA})
+        self.assertEqual(blocks_lib.list_libraries(self.libraries_dir), [library])
+
+    def test_install_without_python_data(self):
+        library = blocks_lib.install_blocks_lib(
+            self.make_lib(self.valid_entries()), self.libraries_dir)
+        self.assertEqual(library['pythonData'], {})
+
     def test_install_samples(self):
         entries = dict(self.valid_entries(), **VALID_SAMPLE)
         library = blocks_lib.install_blocks_lib(self.make_lib(entries), self.libraries_dir)
@@ -208,6 +226,25 @@ class BlocksLibTest(unittest.TestCase):
                 'toolboxes/demo.json': {'kind': 'flyoutToolbox', 'contents': [VALID_TOOLBOX]}}),
             'flyout toolbox without contents': dict(self.valid_entries(), **{
                 'toolboxes/demo.json': {'kind': 'flyoutToolbox'}}),
+            'only python data': {
+                'metadata.json': VALID_METADATA, 'python_data/demo_pkg.json': VALID_PYTHON_DATA},
+            'python data not an object': {**self.valid_entries(), 'python_data/demo_pkg.json': []},
+            'python data not json': {**self.valid_entries(), 'python_data/demo_pkg.json': '{'},
+            'python data classes not a list': {
+                **self.valid_entries(),
+                'python_data/demo_pkg.json': {**VALID_PYTHON_DATA, 'classes': {}}},
+            'python data class without module name': {
+                **self.valid_entries(),
+                'python_data/demo_pkg.json': {**VALID_PYTHON_DATA, 'classes': [{'className': 'Reading'}]}},
+            'python data module without name': {
+                **self.valid_entries(),
+                'python_data/demo_pkg.json': {**VALID_PYTHON_DATA, 'modules': [{'enums': []}]}},
+            'python data alias not a string': {
+                **self.valid_entries(),
+                'python_data/demo_pkg.json': {**VALID_PYTHON_DATA, 'aliases': {'a': 1}}},
+            'python data subclasses not a list': {
+                **self.valid_entries(),
+                'python_data/demo_pkg.json': {**VALID_PYTHON_DATA, 'subclasses': {'a': 'b'}}},
             'bad wheel name': dict(self.valid_entries(), **{'wheels/not-a-wheel.whl': b''}),
             'sample without robot': {
                 k: v for k, v in dict(self.valid_entries(), **VALID_SAMPLE).items()
@@ -246,6 +283,7 @@ class BlocksLibTest(unittest.TestCase):
             '../evil.json': VALID_TOOLBOX,
             'toolboxes/../../evil.json': VALID_TOOLBOX,
             'toolboxes/nested/deeper.json': VALID_TOOLBOX,
+            'python_data/nested/deeper.json': VALID_PYTHON_DATA,
             'README.md': 'readme',
             'samples/DemoBot/project.info.json': {},
             'samples/DemoBot/Robot.robot.json': {},

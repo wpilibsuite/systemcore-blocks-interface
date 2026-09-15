@@ -45,6 +45,9 @@ import python_util
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('output_directory', None, 'The directory where output should be written.')
+flags.DEFINE_string('rev_library_directory', None,
+    'The directory of the REV Robotics example library (examples/rev_robotics), where the rev '
+    'components and python data should be written.')
 
 
 def main(argv):
@@ -56,9 +59,9 @@ def main(argv):
 
   pathlib.Path(f'{FLAGS.output_directory}/generated/').mkdir(parents=True, exist_ok=True)
 
+  # rev isn't built in. It is written to the REV Robotics example library below.
   robotpy_modules = [
     ntcore,
-    rev,
     wpilib,
     wpilib.simulation,
     python_util.getModule('wpilib.sysid'),
@@ -78,6 +81,13 @@ def main(argv):
       runtime_python, [json_generator_robotpy])
   file_path = f'{FLAGS.output_directory}/generated/runtime_python.json'
   json_generator_runtime_python.writeJsonFile(file_path)
+
+  if FLAGS.rev_library_directory:
+    rev_modules = [
+      rev,
+    ]
+    json_generator_rev = json_util.JsonGenerator(rev_modules, [json_generator_robotpy])
+    json_generator_rev.writeBlocksLibFiles(FLAGS.rev_library_directory)
 
 if __name__ == '__main__':
   app.run(main)

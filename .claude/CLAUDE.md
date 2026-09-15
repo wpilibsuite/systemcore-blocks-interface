@@ -29,8 +29,10 @@ python main.py       # Dev server at localhost:5001
 
 ```bash
 cd python_tools && source venv/bin/activate
-python3.12 generate_json.py --output_directory=../frontend/blocks/utils
+python3.12 generate_json.py --output_directory=../frontend/blocks/utils --rev_library_directory=../examples/rev_robotics
 ```
+
+The `rev` module isn't built in: `generate_json.py` writes it to the REV Robotics example library (`examples/rev_robotics/components/` and `python_data/rev.json`) instead of `robotpy_data.json`.
 
 ## Architecture
 
@@ -75,7 +77,7 @@ Extends Blockly's built-in `PythonGenerator`. The generator runs when saving or 
 
 ### Third party libraries (`frontend/libraries/`, `backend/blocks_lib.py`)
 
-Third parties publish `.blocks_lib` files (zip of `metadata.json`, `wheels/`, `toolboxes/`, `components/`, `samples/`, `locales/`); the format is documented in `docs/blocks_lib_format.md` and `examples/` has buildable examples (`examples/build.sh`). The frontend and backend each have a parser — keep `frontend/libraries/blocks_lib.ts` and `backend/blocks_lib.py` in sync. Libraries are installed on the backend (`<data dir>/libraries/`) or, without a backend, kept in a storage entry. `LibrariesModal.tsx` manages them; the visible categories and component classes are added to the toolbox by `toolbox/library_toolbox.ts`. All installed component classes are registered with `blocks/utils/python.ts` (`setLibraryClasses`) so existing component blocks keep working even when hidden. Library samples are listed after the built in samples by `samples/samples_registry.ts` (`listSamples(libraries)`). Library strings can be `%{KEY}` references to the library's `locales/*.json`; `libraries/library_i18n.ts` translates them when they are shown. Hidden keys use the untranslated names, and tooltips stay references (qualified with the library name) in saved blocks. On deploy, the backend pins the wheels of libraries whose packages are imported by the generated code.
+Third parties publish `.blocks_lib` files (zip of `metadata.json`, `wheels/`, `toolboxes/`, `components/`, `python_data/`, `samples/`, `locales/`); the format is documented in `docs/blocks_lib_format.md` and `examples/` has buildable examples (`examples/build.sh`). The frontend and backend each have a parser — keep `frontend/libraries/blocks_lib.ts` and `backend/blocks_lib.py` in sync. Libraries are installed on the backend (`<data dir>/libraries/`) or, without a backend, kept in a storage entry. `LibrariesModal.tsx` manages them; the visible categories and component classes are added to the toolbox by `toolbox/library_toolbox.ts`. All installed component classes and python data (modules, classes, enums, aliases, and subclasses in the format of `robotpy_data.json`) are registered with `blocks/utils/python.ts` (`setLibraryPythonData`) so existing component blocks keep working even when hidden. Library python data is never shown with the built in RobotPy modules; a library adds blocks for it through `toolboxes/`, which the REV Robotics example generates at build time (`examples/generate_python_toolboxes.mjs`, which bundles `libraries/python_data_toolboxes.ts` with vite) for the classes in its `python_toolbox.json`. Library samples are listed after the built in samples by `samples/samples_registry.ts` (`listSamples(libraries)`). Library strings can be `%{KEY}` references to the library's `locales/*.json`; `libraries/library_i18n.ts` translates them when they are shown. Hidden keys use the untranslated names, and tooltips stay references (qualified with the library name) in saved blocks. On deploy, the backend pins the wheels of libraries whose packages are imported by the generated code.
 
 ### Backend (`backend/`)
 

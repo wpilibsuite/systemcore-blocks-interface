@@ -4,8 +4,11 @@ import * as blocksLib from '../frontend/libraries/blocks_lib';
 import * as libraryI18n from '../frontend/libraries/library_i18n';
 import { setInstalledLibraries } from '../frontend/libraries/library_registry';
 import { buildLibraryTree } from '../frontend/libraries/library_tree';
+import * as pythonDataToolboxes from '../frontend/libraries/python_data_toolboxes';
+import * as python from '../frontend/blocks/utils/python';
 import * as samplesRegistry from '../frontend/samples/samples_registry';
 import { getLibraryToolbox } from '../frontend/toolbox/library_toolbox';
+import * as robotPyToolbox from '../frontend/toolbox/robotpy_toolbox';
 
 const METADATA: blocksLib.LibraryMetadata = {
   formatVersion: 1,
@@ -42,6 +45,23 @@ const COMPONENT = {
     args: [{ name: 'self', type: 'demo_pkg.Sensor' }],
     returnType: 'bool',
   }],
+};
+
+const PYTHON_DATA = {
+  modules: [{
+    moduleName: 'demo_pkg',
+    enums: [{ enumClassName: 'demo_pkg.Mode', moduleName: 'demo_pkg', enumValues: ['FAST', 'SLOW'], tooltip: '' }],
+  }],
+  classes: [
+    { className: 'demo_pkg.Motor', moduleName: 'demo_pkg', instanceMethods: [
+      { functionName: 'stop', args: [{ name: 'self', type: 'demo_pkg.Motor' }] },
+    ] },
+    { className: 'demo_pkg.Sensor.Reading', moduleName: 'demo_pkg', instanceVariables: [
+      { name: 'value', type: 'float', writable: false, tooltip: '' },
+    ] },
+  ],
+  aliases: { 'demo_pkg.meters': 'float' },
+  subclasses: { 'wpilib.MotorController': ['demo_pkg.Motor'] },
 };
 
 const SAMPLE_ENTRIES = {
@@ -156,6 +176,13 @@ describe('parseBlocksLib', () => {
     });
   });
 
+  test('parses python data', async () => {
+    const library = await blocksLib.parseBlocksLib(
+        await makeLib({ ...await validEntries(), 'python_data/demo_pkg.json': PYTHON_DATA }));
+    expect(library.pythonData).toEqual({ 'demo_pkg.json': PYTHON_DATA });
+    expect((await blocksLib.parseBlocksLib(await makeLib(await validEntries()))).pythonData).toEqual({});
+  });
+
   test('parses a library that only has samples', async () => {
     const library = await blocksLib.parseBlocksLib(
         await makeLib({ 'metadata.json': METADATA, ...SAMPLE_ENTRIES }));
@@ -201,6 +228,19 @@ describe('parseBlocksLib', () => {
       'flyout toolbox with a category': {
         ...await validEntries(), 'toolboxes/demo.json': { kind: 'flyoutToolbox', contents: [TOOLBOX] } },
       'toolbox not json': { ...await validEntries(), 'toolboxes/demo.json': '{' },
+      'only python data': { 'metadata.json': METADATA, 'python_data/demo_pkg.json': PYTHON_DATA },
+      'python data not an object': { ...await validEntries(), 'python_data/demo_pkg.json': [] },
+      'python data not json': { ...await validEntries(), 'python_data/demo_pkg.json': '{' },
+      'python data classes not an array': {
+        ...await validEntries(), 'python_data/demo_pkg.json': { ...PYTHON_DATA, classes: {} } },
+      'python data class not in module': {
+        ...await validEntries(), 'python_data/demo_pkg.json': { ...PYTHON_DATA, classes: [{ className: 'other.Motor', moduleName: 'demo_pkg' }] } },
+      'python data module without name': {
+        ...await validEntries(), 'python_data/demo_pkg.json': { ...PYTHON_DATA, modules: [{ enums: [] }] } },
+      'python data alias not a string': {
+        ...await validEntries(), 'python_data/demo_pkg.json': { ...PYTHON_DATA, aliases: { a: 1 } } },
+      'python data subclasses not an array': {
+        ...await validEntries(), 'python_data/demo_pkg.json': { ...PYTHON_DATA, subclasses: { a: 'b' } } },
       'bad wheel name': { ...await validEntries(), 'wheels/not-a-wheel.whl': '' },
       'sample without robot': {
         ...await validEntries(), 'samples/DemoBot/project.info.json': {}, 'samples/DemoBot/Teleop.opmode.json': {} },
@@ -235,6 +275,82 @@ describe('normalizeComponentClass', () => {
         [{ name: 'smart_io_port', type: 'SYSTEMCORE_SMART_IO_PORT', defaultValue: '' }]);
     expect(classData.instanceMethods[0].tooltip).toBe('');
     expect(classData.instanceMethods[0].args[0].defaultValue).toBe('');
+  });
+});
+
+describe('normalizePythonData', () => {
+  test('fills in the optional fields', () => {
+    const pythonData = blocksLib.normalizePythonData(
+        { ...PYTHON_DATA, aliases: undefined, subclasses: undefined } as any);
+    expect(pythonData.modules[0].functions).toEqual([]);
+    expect(pythonData.modules[0].moduleVariables).toEqual([]);
+    expect(pythonData.classes[0].isComponent).toBe(false);
+    expect(pythonData.classes[0].constructors).toEqual([]);
+    expect(pythonData.classes[0].instanceMethods[0].returnType).toBe('None');
+    expect(pythonData.classes[0].instanceMethods[0].declaringClassName).toBe('demo_pkg.Motor');
+    expect(pythonData.classes[1].instanceMethods).toEqual([]);
+    expect(pythonData.aliases).toEqual({});
+    expect(pythonData.subclasses).toEqual({});
+  });
+});
+
+describe('library python data', () => {
+  const makePythonDataLibrary = async () => blocksLib.parseBlocksLib(
+      await makeLib({ ...await validEntries(), 'python_data/demo_pkg.json': PYTHON_DATA }));
+
+  /** Returns the names of the modules in the built in RobotPy toolbox categories. */
+  const getRobotPyModuleNames = (): string[] => robotPyToolbox.getToolboxCategories(null, false)
+      .map(category => (category as any).moduleName);
+
+  /** Returns the names of the categories in the toolbox file, and their subcategories. */
+  const getCategoryNames = (category: any): string[] => [
+    category.name,
+    ...(category.contents || []).filter((item: any) => item.kind === 'category').flatMap(getCategoryNames),
+  ];
+
+  test('registers the modules, classes, aliases, and subclasses of installed libraries', async () => {
+    const builtInSubclasses = python.getSubclassNames('wpilib.MotorController');
+    expect(builtInSubclasses.length).toBeGreaterThan(0);
+    setInstalledLibraries([await makePythonDataLibrary()]);
+    try {
+      expect(python.getModuleData('demo_pkg')!.moduleName).toBe('demo_pkg');
+      expect(python.getClassData('demo_pkg.Motor')!.isComponent).toBe(false);
+      expect(python.getClassData('demo_pkg.Sensor')!.isComponent).toBe(true);
+      expect(python.getEnumData('demo_pkg.Mode')!.enumValues).toEqual(['FAST', 'SLOW']);
+      expect(python.getAlias('demo_pkg.meters')).toBe('float');
+      expect(python.getSubclassNames('wpilib.MotorController')).toEqual([...builtInSubclasses, 'demo_pkg.Motor']);
+      expect(python.getAllowedTypesForSetCheck('wpilib.MotorController')).toContain('demo_pkg.Motor');
+      // Python data from libraries is not shown with the built in RobotPy modules.
+      expect(getRobotPyModuleNames()).not.toContain('demo_pkg');
+    } finally {
+      setInstalledLibraries([]);
+    }
+    expect(python.getClassData('demo_pkg.Motor')).toBeNull();
+    expect(python.getSubclassNames('wpilib.MotorController')).toEqual(builtInSubclasses);
+  });
+
+  test('makes toolbox files for the modules and classes that are shown', async () => {
+    const library = await makePythonDataLibrary();
+    const toolboxes = pythonDataToolboxes.makePythonDataToolboxes(
+        library, ['demo_pkg', 'demo_pkg.Sensor', 'demo_pkg.Sensor.Reading']);
+    expect(Object.keys(toolboxes).sort()).toEqual(['demo_pkg.json', 'sensor.json']);
+    // The module's own blocks, its enum values, are in a file named after the module.
+    expect(toolboxes['demo_pkg.json'].name).toBe('demo_pkg');
+    expect(toolboxes['demo_pkg.json'].contents!.map((block: any) => block.fields.ENUM_VALUE))
+        .toEqual(['FAST', 'SLOW']);
+    expect(getCategoryNames(toolboxes['sensor.json'])).toEqual(['Sensor', 'Reading']);
+    // Only the properties of a Blockly toolbox category are kept.
+    expect(Object.keys(toolboxes['sensor.json']).sort()).toEqual(['contents', 'kind', 'name']);
+    // The toolbox files can be used in a library, and the registered python data is restored.
+    expect(python.getClassData('demo_pkg.Motor')).toBeNull();
+    const libraryToolbox = getLibraryToolbox([{ ...library, toolboxes }], new Set());
+    expect(getCategoryNames(libraryToolbox.categories[0])).toEqual(['demo', 'demo_pkg', 'Sensor', 'Reading']);
+
+    const motorToolboxes = pythonDataToolboxes.makePythonDataToolboxes(library, ['demo_pkg.Motor']);
+    expect(Object.keys(motorToolboxes)).toEqual(['motor.json']);
+    const labels = motorToolboxes['motor.json'].contents!.filter(item => item.kind === 'label');
+    expect(labels).toEqual([]);
+    expect(pythonDataToolboxes.makePythonDataToolboxes(library, [])).toEqual({});
   });
 });
 

@@ -18,6 +18,8 @@ __author__ = "lizlooney@google.com (Liz Looney)"
 import copy
 import inspect
 import json
+import os
+import re
 import sys
 import types
 import typing
@@ -106,6 +108,8 @@ def createArgData(arg_name: str, arg_type: str, default_value: str = ''):
   arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = default_value if default_value else ''
   return arg_data
 
+# The rev components aren't built in. They are written to the REV Robotics example library in
+# examples/rev_robotics by generate_json.py.
 _DICT_COMPONENTS = {
   'rev.A301': component.Component('rev.A301',
     # As of September 2026, we only use the constructor that has just the can_port argument.
@@ -885,8 +889,58 @@ class JsonGenerator:
     return json_data
 
   def writeJsonFile(self, file_path: str):
+    _writeJson(self._getJsonData(), file_path)
+
+  def writeBlocksLibFiles(self, library_directory: str):
+    """Writes the modules and classes of the root modules as the files of a third party
+    .blocks_lib library (see docs/blocks_lib_format.md).
+
+    Each component class is written to components/<class_name>.json. The rest of the modules and
+    classes, and the type aliases and subclasses, are written to python_data/<module_name>.json.
+    Existing json files in those directories are removed first, since they are all generated.
+    """
+    root_module_names = [module.__name__ for module in self._root_modules]
+    def isInRootModules(name: str) -> bool:
+      return any(name == root or name.startswith(root + '.') for root in root_module_names)
+
     json_data = self._getJsonData()
-    json_file = open(file_path, 'w', encoding='utf-8')
+    # Base classes from other modules are included in json_data, but they are already built in.
+    classes = [class_data for class_data in json_data[_KEY_CLASSES]
+               if isInRootModules(class_data[_KEY_CLASS_NAME])]
+    component_classes = [class_data for class_data in classes if class_data[_KEY_IS_COMPONENT]]
+    python_data = {
+      _KEY_MODULES: [module_data for module_data in json_data[_KEY_MODULES]
+                     if isInRootModules(module_data[_KEY_MODULE_NAME])],
+      _KEY_CLASSES: [class_data for class_data in classes if not class_data[_KEY_IS_COMPONENT]],
+      _KEY_ALIASES: {name: alias for name, alias in json_data[_KEY_ALIASES].items()
+                     if isInRootModules(name)},
+      _KEY_SUBCLASSES: {},
+    }
+    for class_name, subclass_names in json_data[_KEY_SUBCLASSES].items():
+      subclass_names = [name for name in subclass_names if isInRootModules(name)]
+      if subclass_names:
+        python_data[_KEY_SUBCLASSES][class_name] = subclass_names
+
+    components_directory = os.path.join(library_directory, 'components')
+    python_data_directory = os.path.join(library_directory, 'python_data')
+    for directory in [components_directory, python_data_directory]:
+      os.makedirs(directory, exist_ok=True)
+      for filename in os.listdir(directory):
+        if filename.endswith('.json'):
+          os.remove(os.path.join(directory, filename))
+    for class_data in component_classes:
+      simple_class_name = class_data[_KEY_CLASS_NAME].rsplit('.', 1)[-1]
+      _writeJson(class_data, os.path.join(components_directory, f'{_toSnakeCase(simple_class_name)}.json'))
+    _writeJson(python_data, os.path.join(python_data_directory, f'{"_".join(root_module_names)}.json'))
+
+
+def _toSnakeCase(name: str) -> str:
+  """Converts UpperCamelCase to lower_snake_case. For example, ColorSensorV3 becomes
+  color_sensor_v3."""
+  return re.sub(r'(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])', '_', name).lower()
+
+
+def _writeJson(json_data, file_path: str):
+  with open(file_path, 'w', encoding='utf-8') as json_file:
     json.dump(json_data, json_file, sort_keys=True, indent=4)
     json_file.write('\n')
-    json_file.close()

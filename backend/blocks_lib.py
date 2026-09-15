@@ -7,6 +7,8 @@ A .blocks_lib file is a zip file containing:
     toolboxes/*.json - blockly toolbox categories, or flyout toolboxes whose blocks go directly in
                        the library's category, that are added to the toolbox
     components/*.json - optional component classes that are added to the components toolbox
+    python_data/*.json - optional python modules and classes, in the format of the generated
+                         robotpy_data.json, that the library's blocks and components use
     samples/<SampleName>/*.json - optional sample projects that are shown with the built in samples
     locales/<language>.json - optional translations for the strings that are shown to the user
 
@@ -28,6 +30,7 @@ METADATA_FILE = 'metadata.json'
 WHEELS_DIR = 'wheels'
 TOOLBOXES_DIR = 'toolboxes'
 COMPONENTS_DIR = 'components'
+PYTHON_DATA_DIR = 'python_data'
 SAMPLES_DIR = 'samples'
 LOCALES_DIR = 'locales'
 
@@ -134,25 +137,61 @@ def validate_toolbox(toolbox: Any, filename: str) -> None:
         raise BlocksLibError(f'{filename} must have a "name"')
 
 
-def validate_component(component: Any, filename: str) -> None:
-    """Checks that the component is a class in the format of the generated python data."""
-    if not isinstance(component, dict):
-        raise BlocksLibError(f'{filename} must contain a JSON object')
-    module_name = component.get('moduleName')
-    class_name = component.get('className')
+def _validate_class(class_data: Any, where: str) -> None:
+    """Checks that class_data is a class in the format of the generated python data."""
+    if not isinstance(class_data, dict):
+        raise BlocksLibError(f'{where} must contain a JSON object')
+    module_name = class_data.get('moduleName')
+    class_name = class_data.get('className')
     if (not isinstance(module_name, str) or not module_name or not isinstance(class_name, str)
             or not class_name.startswith(module_name + '.')):
         raise BlocksLibError(
-            f'{filename} must have a "moduleName" and a "className" that starts with the moduleName')
+            f'{where} must have a "moduleName" and a "className" that starts with the moduleName')
+    for field in ['constructors', 'instanceMethods', 'staticMethods', 'instanceVariables',
+                  'classVariables', 'enums']:
+        if field in class_data and not isinstance(class_data[field], list):
+            raise BlocksLibError(f'"{field}" in {where} must be an array')
+
+
+def validate_component(component: Any, filename: str) -> None:
+    """Checks that the component is a class in the format of the generated python data."""
+    _validate_class(component, filename)
     constructors = component.get('constructors')
     if not isinstance(constructors, list) or not any(
             isinstance(c, dict) and c.get('isComponent') is True
             and isinstance(c.get('componentArgs'), list) for c in constructors):
         raise BlocksLibError(
             f'{filename} must have a constructor with "isComponent": true and "componentArgs"')
-    for field in ['instanceMethods', 'staticMethods', 'instanceVariables', 'classVariables', 'enums']:
-        if field in component and not isinstance(component[field], list):
+
+
+def validate_python_data(python_data: Any, filename: str) -> None:
+    """Checks that the python data is in the format of the generated robotpy_data.json."""
+    if not isinstance(python_data, dict):
+        raise BlocksLibError(f'{filename} must contain a JSON object')
+    for field in ['modules', 'classes']:
+        if field in python_data and not isinstance(python_data[field], list):
             raise BlocksLibError(f'"{field}" in {filename} must be an array')
+    for index, module in enumerate(python_data.get('modules', [])):
+        where = f'modules[{index}] in {filename}'
+        if not isinstance(module, dict):
+            raise BlocksLibError(f'{where} must contain a JSON object')
+        if not isinstance(module.get('moduleName'), str) or not module['moduleName']:
+            raise BlocksLibError(f'{where} must have a "moduleName"')
+        for field in ['functions', 'moduleVariables', 'enums']:
+            if field in module and not isinstance(module[field], list):
+                raise BlocksLibError(f'"{field}" in {where} must be an array')
+    for index, class_data in enumerate(python_data.get('classes', [])):
+        _validate_class(class_data, f'classes[{index}] in {filename}')
+    aliases = python_data.get('aliases', {})
+    if not isinstance(aliases, dict) or not all(
+            isinstance(value, str) for value in aliases.values()):
+        raise BlocksLibError(f'"aliases" in {filename} must be an object whose values are strings')
+    subclasses = python_data.get('subclasses', {})
+    if not isinstance(subclasses, dict) or not all(
+            isinstance(value, list) and all(isinstance(name, str) for name in value)
+            for value in subclasses.values()):
+        raise BlocksLibError(
+            f'"subclasses" in {filename} must be an object whose values are arrays of strings')
 
 
 def is_sample_filename(filename: str) -> bool:
@@ -272,8 +311,8 @@ def get_wheel_top_level_modules(wheel_path: str) -> List[str]:
 def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
     """Validates the .blocks_lib file at zip_path and extracts it to dest_dir.
 
-    Only metadata.json, wheels/*.whl, toolboxes/*.json, components/*.json, locales/<language>.json,
-    and the project files in samples/<SampleName>/ are extracted; anything else in the zip is
+    Only metadata.json, wheels/*.whl, toolboxes/*.json, components/*.json, python_data/*.json,
+    locales/<language>.json, and the project files in samples/<SampleName>/ are extracted; anything else in the zip is
     ignored. Returns the metadata.
     """
     try:
@@ -314,8 +353,8 @@ def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
                         raise BlocksLibError(f'{relative} is not valid JSON: {e}')
                     samples.setdefault(sample_name, {})[filename] = content
                     continue
-                # Other files are only used if they are directly inside wheels/, toolboxes/, or
-                # components/.
+                # Other files are only used if they are directly inside wheels/, toolboxes/,
+                # components/, python_data/, or locales/.
                 if len(parts) != 2:
                     continue
                 directory, filename = parts
@@ -336,7 +375,7 @@ def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
                         raise BlocksLibError(f'{relative} is not valid JSON: {e}')
                     validate_locale(content, relative)
                     locales[filename[:-len('.json')]] = content
-                elif directory in (TOOLBOXES_DIR, COMPONENTS_DIR):
+                elif directory in (TOOLBOXES_DIR, COMPONENTS_DIR, PYTHON_DATA_DIR):
                     if not JSON_FILENAME_PATTERN.match(filename):
                         continue
                     try:
@@ -346,13 +385,19 @@ def extract_blocks_lib(zip_path: str, dest_dir: str) -> Dict[str, Any]:
                     if directory == TOOLBOXES_DIR:
                         validate_toolbox(content, relative)
                         toolboxes[filename] = content
-                    else:
+                        json_file_count += 1
+                    elif directory == COMPONENTS_DIR:
                         validate_component(content, relative)
                         components[filename] = content
+                        json_file_count += 1
+                    else:
+                        # Python data is only used by the library's blocks and components, so it
+                        # doesn't count as something the library adds.
+                        validate_python_data(content, relative)
+                        os.makedirs(os.path.join(dest_dir, PYTHON_DATA_DIR), exist_ok=True)
                     with open(os.path.join(dest_dir, directory, filename), 'w',
                               encoding='utf-8') as f:
                         json.dump(content, f)
-                    json_file_count += 1
             if json_file_count == 0 and not samples:
                 raise BlocksLibError(
                     f'The library must contain at least one {TOOLBOXES_DIR}/*.json, '
@@ -411,6 +456,7 @@ def load_library(library_dir: str) -> Dict[str, Any]:
 
     toolboxes = _load_json_files(os.path.join(library_dir, TOOLBOXES_DIR))
     components = _load_json_files(os.path.join(library_dir, COMPONENTS_DIR))
+    python_data = _load_json_files(os.path.join(library_dir, PYTHON_DATA_DIR))
 
     locales = {filename[:-len('.json')]: messages for filename, messages
                in _load_json_files(os.path.join(library_dir, LOCALES_DIR)).items()
@@ -438,6 +484,7 @@ def load_library(library_dir: str) -> Dict[str, Any]:
         'metadata': metadata,
         'toolboxes': toolboxes,
         'components': components,
+        'pythonData': python_data,
         'samples': samples,
         'locales': locales,
         'wheels': wheels,
