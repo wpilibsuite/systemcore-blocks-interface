@@ -108,13 +108,6 @@ def createArgData(arg_name: str, arg_type: str, default_value: str = ''):
 
 _DICT_COMPONENTS = {
   'rev.A301': component.Component('rev.A301',
-    # An A301 can be on a CAN bus provided by a MotionCore or on one of the Systemcore's
-    # own CAN buses, so it gets two blocks. They are the same kind of port, which is what
-    # lets a mechanism's A301 be given either one by the robot. The only difference is
-    # where the port starts out: the first MotionCore bus (5, shown as MC00), or the
-    # Systemcore's first CAN bus (0). The device id is only used for the latter, since a
-    # MotionCore detects the device id itself, and it defaults to whatever the constructor
-    # says, which is the device id the A301 has out of the factory.
     # As of September 2026, we only use the constructor that has just the can_port argument.
     # If A301 becomes legal for FRC (in the future), we'll need to support the constructor
     # that has both the can port and the device id.
@@ -301,16 +294,6 @@ _DICT_COMPONENTS = {
       'set_throttle',
       'set_voltage',
       'stop_motor',
-    ],
-  ),
-  '': component.Component('',
-    expected_constructor_arg_names=[
-      '',
-    ],
-    component_args=[
-    ],
-     # TODO: decide which methods are common.
-    common_method_names=[
     ],
   ),
 }

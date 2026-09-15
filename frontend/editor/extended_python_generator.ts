@@ -457,12 +457,12 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       }
 
       if (this.getModuleType() === storageModule.ModuleType.MECHANISM) {
-        // Generate code to call each when_ method, at the top of opmodePeriodic, so that the
+        // Generate code to call each when_ method, at the top of opmode_periodic, so that the
         // when conditions are checked before anything else happens on this tick.
         const whenCalls = this.getWhenCalls();
         if (whenCalls) {
-          this.classMethods['opmodePeriodic'] =
-              this.insertCodeIntoMethod('opmodePeriodic', whenCalls);
+          this.classMethods['opmode_periodic'] =
+              this.insertCodeIntoMethod('opmode_periodic', whenCalls);
         }
       }
 

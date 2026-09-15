@@ -14,6 +14,10 @@
 
 __author__ = "lizlooney@google.com (Liz Looney)"
 
+# Python Standard Library
+import copy
+import sys
+
 
 _NAME = 'name'
 _TYPE = 'type'
@@ -38,12 +42,14 @@ class Component:
     return self._expected_constructor_arg_names
 
   def get_component_args(self, actual_args: []) -> []:
-    # Reconcile the component arg types and default values with the actual constructor args
+    # Make a copy of self._component_args and reconcile the component arg types
+    # and default values with the actual constructor args.
+    component_args = copy.deepcopy(self._component_args)
     index_a = len(actual_args) - 1
-    index_c = len(self._component_args) - 1
+    index_c = len(component_args) - 1
     while index_a >= 0 and index_c >= 0:
       actual_arg = actual_args[index_a]
-      component_arg = self._component_args[index_c]
+      component_arg = component_args[index_c]
       # Empty type is filled in from the actual arg.
       if component_arg[_NAME] != actual_arg[_NAME]:
         # Print a warning, unless it's something we expect.
@@ -73,7 +79,7 @@ class Component:
         component_arg[_DEFAULT] = actual_arg[_DEFAULT]
       index_a = index_a - 1
       index_c = index_c - 1
-    return self._component_args
+    return component_args
     
   def get_common_method_names(self) -> [str]:
     return self._common_method_names
