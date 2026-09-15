@@ -30,6 +30,9 @@ import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
+import {
+    upgradeTo_0_4_0 as classMethodDefUpgradeTo_0_4_0
+    } from '../blocks/mrc_class_method_def';
 import * as workspaces from '../blocks/utils/workspaces';
 
 declare const __APP_VERSION__: string;
@@ -55,6 +58,16 @@ export async function upgradeProjectIfNecessary(
         storage, projectName,
         anyModuleType, upgradeA301ToCanPort,
         noModuleTypes, noUpgrade);
+  }
+  if (semver.lt(projectInfo.version, '0.4.0')) {
+    // Back to snake_case for python variable, function/method, and argument names.
+    // mrc_class_method_def blocks for mechanism 'opmodeStart' method need to be changed to 'opmode_start'.
+    // mrc_class_method_def blocks for mechanism 'opmodePeriodic' method need to be changed to 'opmode_periodic'.
+    // mrc_class_method_def blocks for mechanism 'opmodeEnd' method need to be changed to 'opmode_end'.
+   await upgradeBlocksFiles(
+      storage, projectName,
+      noModuleTypes, noPreupgrade,
+      isMechanism, classMethodDefUpgradeTo_0_4_0);
   }
 
   projectInfo.version = CURRENT_VERSION;
@@ -121,7 +134,6 @@ function isOpMode(moduleType: storageModule.ModuleType): boolean {
 }
 
 /** Predicate: only Mechanism modules are affected. */
-// @ts-expect-error: declared but not used
 function isMechanism(moduleType: storageModule.ModuleType): boolean {
   return moduleType === storageModule.ModuleType.MECHANISM;
 }
@@ -138,7 +150,6 @@ function noModuleTypes(_moduleType: storageModule.ModuleType): boolean {
 }
 
 /** Pre-upgrade passthrough: makes no changes to moduleContentText. */
-// @ts-expect-error: declared but not used
 function noPreupgrade(moduleContentText: string): string {
   return moduleContentText;
 }

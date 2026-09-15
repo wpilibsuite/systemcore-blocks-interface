@@ -784,8 +784,9 @@ export function createEventField(): Blockly.Field {
 }
 
 function getGamepad(gamepad: number): string {
-    // TODO: When python gets the userControls, this will remove the robot. from it, but for now we need to keep it to access the gamepads from the robot.
-    return 'self.robot.userControls.getGamepad(' + gamepad + ')';
+    // TODO: When user_controls are implemented in RobotPy, adjust the following line as necesssary,
+    // but for now we need it to access the gamepads from the robot.
+    return 'self.robot.user_controls.get_gamepad(' + gamepad + ')';
 }
 
 export function methodForButton(gamepad: number, button: string, action: string): string {

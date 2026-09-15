@@ -28,7 +28,7 @@ def _get_hsv(color: wpiutil.Color) -> (int, int, int):
     The value is [0-255]. """
 
     # Extract and normalize RGB values to 0.0-1.0
-    color_code = color.hexString().lstrip("#")
+    color_code = color.hex_string().lstrip("#")
     red = int(color_code[0:2], 16) / 255.0
     green = int(color_code[2:4], 16) / 255.0
     blue = int(color_code[4:6], 16) / 255.0
@@ -134,6 +134,6 @@ def is_magenta(color: wpiutil.Color) -> bool:
     return False
 
 
-def get_ANSI(color: wpiutil.Color) -> str:
+def get_ansi(color: wpiutil.Color) -> str:
     """Returns the ANSI prefix to use for the given color."""
     return f'\x1b[38;2;{int(color.red*255)};{int(color.green*255)};{int(color.blue*255)}m'

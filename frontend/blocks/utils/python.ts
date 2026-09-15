@@ -44,20 +44,20 @@ export const MODULE_NAME_WPILIB_BLOCKS = 'wpilib_blocks';
 
 export const CLASS_NAME_ROBOT_BASE = 'wpilib.OpModeRobot';
 export const ROBOT_METHOD_NAMES_OVERRIDEABLE: string[] = [
-  'driverStationConnected',
-  'nonePeriodic',
+  'driver_station_connected',
+  'none_periodic',
 ];
 
 export const CLASS_NAME_MECHANISM = MODULE_NAME_WPILIB_BLOCKS + '.Mechanism';
 export const MECHANISM_METHOD_NAMES_OVERRIDEABLE: string[] = [
-  'opmodeEnd',
-  'opmodePeriodic',
-  'opmodeStart',
+  'opmode_end',
+  'opmode_periodic',
+  'opmode_start',
 ];
 
 export const CLASS_NAME_OPMODE = 'wpilib.PeriodicOpMode';
 export const OPMODE_METHOD_NAMES_OVERRIDEABLE: string[] = [
-  'disabledPeriodic',
+  'disabled_periodic',
   'end',
   'periodic',
   'start',

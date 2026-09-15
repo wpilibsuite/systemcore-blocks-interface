@@ -76,7 +76,7 @@ class MethodsCategory {
     const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
 
     // The when block is allowed in the Robot, Mechanism, and OpMode modules. In a Robot or
-    // Mechanism, its when_ methods are called from opmodePeriodic; in an OpMode, from periodic.
+    // Mechanism, its when_ methods are called from opmode_periodic; in an OpMode, from periodic.
     contents.push(createWhenBlock());
 
     switch (editor.getModuleType()) {

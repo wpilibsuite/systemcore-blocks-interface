@@ -47,7 +47,7 @@ export const getCategory = () => ({
               type: 'variables_get',
               fields: {
                 VAR: {
-                  name: 'myList',
+                  name: 'my_list',
                 },
               },
             },
@@ -63,7 +63,7 @@ export const getCategory = () => ({
               type: 'variables_get',
               fields: {
                 VAR: {
-                  name: 'myList',
+                  name: 'my_list',
                 },
               },
             },
@@ -79,7 +79,7 @@ export const getCategory = () => ({
               type: 'variables_get',
               fields: {
                 VAR: {
-                  name: 'myList',
+                  name: 'my_list',
                 },
               },
             },
@@ -95,7 +95,7 @@ export const getCategory = () => ({
               type: 'variables_get',
               fields: {
                 VAR: {
-                  name: 'myList',
+                  name: 'my_list',
                 },
               },
             },
@@ -111,7 +111,7 @@ export const getCategory = () => ({
               type: 'variables_get',
               fields: {
                 VAR: {
-                  name: 'myList',
+                  name: 'my_list',
                 },
               },
             },
@@ -141,7 +141,7 @@ export const getCategory = () => ({
               type: 'variables_get',
               fields: {
                 VAR: {
-                  name: 'myList',
+                  name: 'my_list',
                 },
               },
             },

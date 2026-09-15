@@ -24,6 +24,7 @@ import typing
 
 # Local modules
 import python_util
+import component
 
 
 _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
@@ -92,6 +93,210 @@ def ignoreModule(module_name: str) -> bool:
     if module_name.startswith(prefix):
       return True
   return False
+
+def createArgData(arg_name: str, arg_type: str, default_value: str = ''):
+  if any(char.isupper() for char in arg_name):
+    print(f'WARNING: argument name {arg_name} contains an uppercase letter. '
+        'Expected lower_snake_case.',
+        file=sys.stderr)
+
+  arg_data = {}
+  arg_data[_KEY_ARGUMENT_NAME] = arg_name
+  arg_data[_KEY_ARGUMENT_TYPE] = arg_type
+  arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = default_value if default_value else ''
+  return arg_data
+
+_DICT_COMPONENTS = {
+  'rev.A301': component.Component('rev.A301',
+    # As of September 2026, we only use the constructor that has just the can_port argument.
+    # If A301 becomes legal for FRC (in the future), we'll need to support the constructor
+    # that has both the can port and the device id.
+    expected_constructor_arg_names=[
+      'can_port',
+    ],
+    component_args=[
+      createArgData('can_port', 'SYSTEMCORE_CAN_PORT')
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'get_absolute_encoder_position',
+      'get_encoder_velocity',
+      'get_relative_encoder_position',
+      'get_throttle',
+      'set_absolute_position',
+      'set_inverted',
+      'set_relative_encoder_position',
+      'set_relative_position',
+      'set_throttle',
+      'set_velocity',
+    ],
+  ),
+  'rev.ColorSensorV3': component.Component('rev.ColorSensorV3',
+    expected_constructor_arg_names=[
+      'port',
+    ],
+    component_args=[
+      createArgData('i2c_port', 'SYSTEMCORE_I2C_PORT')
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'get_color',
+      'get_proximity',
+      'get_raw_color',
+      'is_connected',
+    ],
+  ),
+  'wpilib.AddressableLED': component.Component('wpilib.AddressableLED',
+    expected_constructor_arg_names=[
+      'channel',
+    ],
+    component_args=[
+      createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'set_color_order',
+      'set_length',
+      'set_start',
+    ],
+  ),
+  'wpilib.AnalogEncoder': component.Component('wpilib.AnalogEncoder',
+    expected_constructor_arg_names=[
+      'channel', 'full_range', 'expected_zero',
+    ],
+    component_args=[
+      createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'),
+      # Default values here are overridden if the actual arg has a default value.
+      createArgData('full_range', '', '1.0'),
+      createArgData('expected_zero', '', '0.0'),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'get',
+      'set_inverted',
+    ],
+  ),
+  'wpilib.AnalogPotentiometer': component.Component('wpilib.AnalogPotentiometer',
+    expected_constructor_arg_names=[
+      'channel', 'full_range', 'offset',
+    ],
+    component_args=[
+      createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'),
+      createArgData('full_range', ''),
+      createArgData('offset', ''),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'get'
+    ],
+  ),
+  'wpilib.DigitalInput': component.Component('wpilib.DigitalInput',
+    expected_constructor_arg_names=[
+      'channel',
+    ],
+    component_args=[
+      createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'get',
+    ],
+  ),
+  'wpilib.DutyCycleEncoder': component.Component('wpilib.DutyCycleEncoder',
+    expected_constructor_arg_names=[
+      'channel', 'full_range', 'expected_zero'
+    ],
+    component_args=[
+      createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'),
+      # Default values here are overridden if the actual arg has a default value.
+      createArgData('full_range', '', '1'),
+      createArgData('expected_zero', '', '0'),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'get',
+      'is_connected',
+      'set_inverted',
+    ],
+  ),
+  'wpilib.ExpansionHubMotor': component.Component('wpilib.ExpansionHubMotor',
+    expected_constructor_arg_names=[
+      'usb_id', 'channel',
+    ],
+    component_args=[
+      createArgData('expansion_hub_motor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'get_encoder_position',
+      'get_encoder_velocity',
+      'is_hub_connected',
+      'reset_encoder',
+      'set_enabled',
+      'set_position_setpoint',
+      'set_reversed',
+      'set_throttle',
+      'set_velocity_setpoint',
+    ],
+  ),
+  'wpilib.ExpansionHubServo': component.Component('wpilib.ExpansionHubServo',
+    expected_constructor_arg_names=[
+      'usb_id', 'channel',
+    ],
+    component_args=[
+      createArgData('expansion_hub_servo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'is_hub_connected',
+      'set_angle',
+      'set_angle_range',
+      'set_enabled',
+      'set_position',
+      'set_reversed',
+    ],
+  ),
+  'wpilib.OnboardIMU': component.Component('wpilib.OnboardIMU',
+    expected_constructor_arg_names=[
+      'mount_orientation',
+    ],
+    component_args=[
+      createArgData('mount_orientation', ''),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'get_accel_x',
+      'get_accel_y',
+      'get_accel_z',
+      'get_angle_x',
+      'get_angle_y',
+      'get_angle_z',
+      'get_gyro_rate_x',
+      'get_gyro_rate_y',
+      'get_gyro_rate_z',
+      'get_yaw',
+      'reset_yaw',
+    ],
+  ),
+  'wpilib.PWMSparkMax': component.Component('wpilib.PWMSparkMax',
+    expected_constructor_arg_names=[
+      'channel',
+    ],
+    component_args=[
+      createArgData('smart_io_port', 'SYSTEMCORE_SMART_IO_PORT'),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'get_inverted',
+      'get_throttle',
+      'get_voltage',
+      'set_inverted',
+      'set_throttle',
+      'set_voltage',
+      'stop_motor',
+    ],
+  ),
+}
 
 
 class JsonGenerator:
@@ -167,26 +372,40 @@ class JsonGenerator:
   def _createArgData(self, arg_name: str, arg_type: str, default_value: str = ''):
     if default_value and default_value.startswith('<') and default_value.endswith('>'):
       default_value = '<' + self._getClassName(default_value[1:-1]) + '>'
-    arg_data = {}
-    arg_data[_KEY_ARGUMENT_NAME] = arg_name
-    arg_data[_KEY_ARGUMENT_TYPE] = arg_type
-    arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = default_value if default_value else ''
-    return arg_data
+    return createArgData(arg_name, arg_type, default_value)
 
   def _processModule(self, module) -> dict:
     module_data = {}
     module_name = self._getModuleName(module)
     module_data[_KEY_MODULE_NAME] = module_name
 
+    if any(char.isupper() for char in module_name):
+      print(f'WARNING: module name {module_name} contains an uppercase letter. '
+          'Expected lower_snake_case.',
+           file=sys.stderr)
+
     # Module variables.
     module_variables = []
     for key, value in inspect.getmembers(module, python_util.isNothing):
       if not python_util.isModuleVariableReadable(module, key, value):
         continue
+      writable = python_util.isModuleVariableWritable(module, key, value)
+
+      if writable:
+        if any(char.isupper() for char in key):
+          print(f'WARNING: writable module variable {module_name}.{key} contains an uppercase letter. '
+              'Expected lower_snake_case.',
+               file=sys.stderr)
+      else:
+        if any(char.islower() for char in key):
+          print(f'WARNING: constant module variable {module_name}.{key} contains an lowercase letter. '
+              'Expected UPPER_SNAKE_CASE.',
+               file=sys.stderr)
+
       var_data = {}
       var_data[_KEY_VARIABLE_NAME] = key
       var_data[_KEY_VARIABLE_TYPE] = self._getClassName(type(value))
-      var_data[_KEY_VARIABLE_WRITABLE] = python_util.isModuleVariableWritable(module, key, value)
+      var_data[_KEY_VARIABLE_WRITABLE] = writable
       var_data[_KEY_TOOLTIP] = ''
       module_variables.append(var_data)
     module_data[_KEY_MODULE_VARIABLES] = sorted(module_variables, key=lambda var_data: var_data[_KEY_VARIABLE_NAME])
@@ -248,6 +467,12 @@ class JsonGenerator:
               arg_names[i],
               self._getClassName(arg_type),
               arg_default_values[i] if arg_default_values[i] is not None else ''))
+
+        if any(char.isupper() for char in function_name):
+          print(f'WARNING: module function {module_name}.{function_name} contains an uppercase letter. '
+                'Expected lower_snake_case.',
+                file=sys.stderr)
+
         function_data = {}
         function_data[_KEY_FUNCTION_NAME] = function_name
         function_data[_KEY_FUNCTION_RETURN_TYPE] = self._getClassName(return_type)
@@ -267,11 +492,28 @@ class JsonGenerator:
       enum_class_name = self._getClassName(value)
       if self._getModuleName(value) != module_name:
         continue
+
+      simple_class_name = enum_class_name.rsplit('.', 1)[-1]
+      if '_' in simple_class_name:
+        print(f'WARNING: enum class name {enum_class_name} contains an underscore. '
+            'Expected UpperCamelCase.',
+             file=sys.stderr)
+      if not simple_class_name[0].isupper():
+        print(f'WARNING: enum class name {enum_class_name} doesn\'t start with an uppercase letter'
+            'Expected UpperCamelCase.',
+             file=sys.stderr)
+
       fnIsEnumValue = self._createFunctionIsEnumValue(value)
       enum_values = []
       enum_tooltip = ''
       for keyEnum, valueEnum in inspect.getmembers(value, fnIsEnumValue):
         enum_values.append(keyEnum)
+
+        if any(char.islower() for char in keyEnum):
+          print(f'WARNING: enum {enum_class_name} has a value named {keyEnum} that '
+              'contains an lowercase letter. Expected UPPER_SNAKE_CASE.',
+              file=sys.stderr)
+
         if not enum_tooltip:
           enum_tooltip = value.__doc__
       enum_values.sort()
@@ -323,6 +565,13 @@ class JsonGenerator:
 
   def _processClass(self, cls):
     class_name = self._getClassName(cls)
+
+    simple_class_name = class_name.rsplit('.', 1)[-1]
+    if not simple_class_name[0].isupper():
+      print(f'WARNING: simple class name {simple_class_name} (from class name {class_name}) doesn\'t start with an uppercase letter'
+         'Expected UpperCamelCase.',
+         file=sys.stderr)
+
     class_data = {}
     class_data[_KEY_CLASS_NAME] = class_name
     class_data[_KEY_MODULE_NAME] = self._getModuleName(cls)
@@ -337,10 +586,23 @@ class JsonGenerator:
         continue
       if (key == "WPIStruct" and type(value).__name__ == "PyCapsule"):
         continue
+      writable = python_util.isClassVariableWritable(cls, key, value)
+
+      if writable:
+        if any(char.isupper() for char in key):
+          print(f'WARNING: writable class variable {class_name}.{key} contains an uppercase letter. '
+              'Expected lower_snake_case.',
+               file=sys.stderr)
+      else:
+        if any(char.islower() for char in key):
+          print(f'WARNING: constant class variable {class_name}.{key} contains an lowercase letter. '
+              'Expected UPPER_SNAKE_CASE.',
+               file=sys.stderr)
+
       var_data = {}
       var_data[_KEY_VARIABLE_NAME] = key
       var_data[_KEY_VARIABLE_TYPE] = self._getClassName(type(value), class_name)
-      var_data[_KEY_VARIABLE_WRITABLE] = python_util.isClassVariableWritable(cls, key, value)
+      var_data[_KEY_VARIABLE_WRITABLE] = writable
       var_data[_KEY_TOOLTIP] = ''
       class_variables.append(var_data)
     class_data[_KEY_CLASS_VARIABLES] = sorted(class_variables, key=lambda var_data: var_data[_KEY_VARIABLE_NAME])
@@ -350,6 +612,12 @@ class JsonGenerator:
     for key, value in inspect.getmembers(cls, inspect.isdatadescriptor):
       if not python_util.isInstanceVariableReadable(cls, key, value):
         continue
+
+      if any(char.isupper() for char in key):
+        print(f'WARNING: instance variable {class_name}.{key} contains an uppercase letter. '
+            'Expected lower_snake_case.',
+             file=sys.stderr)
+
       var_type = python_util.getVarTypeFromGetter(value.fget)
       var_data = {}
       var_data[_KEY_VARIABLE_NAME] = key
@@ -389,6 +657,12 @@ class JsonGenerator:
                 file=sys.stderr)
           continue
         declaring_class_name = class_name
+
+        if function_name != '__init__':
+          print(f'WARNING: constructor named {function_name} is weird. '
+              'Expected __init__.',
+              file=sys.stderr)
+
         constructor_data = {}
         constructor_data[_KEY_FUNCTION_NAME] = function_name
         if comments[iSignature] is not None:
@@ -470,6 +744,12 @@ class JsonGenerator:
               arg_name,
               self._getClassName(arg_type, class_name),
               arg_default_values[i] if arg_default_values[i] is not None else ''))
+
+        if any(char.isupper() for char in function_name):
+          print(f'WARNING: function {declaring_class_name}.{function_name} contains an uppercase letter. '
+              'Expected lower_snake_case.',
+              file=sys.stderr)
+
         function_data = {}
         function_data[_KEY_FUNCTION_NAME] = function_name
         function_data[_KEY_FUNCTION_RETURN_TYPE] = self._getClassName(return_type, class_name)
@@ -494,11 +774,28 @@ class JsonGenerator:
       if not self._getClassName(value).startswith(class_name):
         continue
       enum_class_name = self._getClassName(value)
+
+      simple_class_name = enum_class_name.rsplit('.', 1)[-1]
+      if '_' in simple_class_name:
+        print(f'WARNING: enum class name {enum_class_name} contains an underscore. '
+            'Expected UpperCamelCase.',
+             file=sys.stderr)
+      if not simple_class_name[0].isupper():
+        print(f'WARNING: enum class name {enum_class_name} doesn\'t start with an uppercase letter'
+            'Expected UpperCamelCase.',
+             file=sys.stderr)
+
       fnIsEnumValue = self._createFunctionIsEnumValue(value)
       enum_values = []
       enum_tooltip = ''
       for keyEnum, valueEnum in inspect.getmembers(value, fnIsEnumValue):
         enum_values.append(keyEnum)
+
+        if any(char.islower() for char in keyEnum):
+          print(f'WARNING: enum {class_name}.{enum_class_name} has a value named {keyEnum} that '
+              'contains an lowercase letter. Expected UPPER_SNAKE_CASE.',
+              file=sys.stderr)
+
         if not enum_tooltip:
           enum_tooltip = value.__doc__
       enum_values.sort()
@@ -515,334 +812,41 @@ class JsonGenerator:
     self._processComponent(class_data)
     return class_data
 
-
   def _processComponent(self, class_data):
     """Determine whether the given class_data represents a component and, if so,
     set the isComponent field and add componentArgs to the constructor that
     blocks will use."""
-    # TODO(lizlooney): Replace the following temporary fake code with code that
-    # looks at doc string and/or parameter type aliases to tell whether this is
-    # a component and what the args are.
+    # TODO(lizlooney): Replace _DICT_COMPONENTS and the following temporary fake
+    # code with code that looks at doc string and/or parameter type aliases to
+    # tell whether this is a component and what the args are.
 
     class_name = class_data[_KEY_CLASS_NAME]
 
-    if class_name == 'wpilib.ExpansionHubMotor':
+    if class_name in _DICT_COMPONENTS:
+      component = _DICT_COMPONENTS[class_name]
       class_data[_KEY_IS_COMPONENT] = True
       found_constructor = False
       for constructor_data in class_data[_KEY_CONSTRUCTORS]:
         args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 2 and
-            args[0][_KEY_ARGUMENT_NAME] == 'usbId' and
-            args[1][_KEY_ARGUMENT_NAME] == 'channel'):
+        if component.matches_constructor_args(args):
           found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData('expansionHubMotor', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT'))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
+          constructor_data[_KEY_COMPONENT_ARGS] = component.get_component_args(args)
           constructor_data[_KEY_IS_COMPONENT] = True
       if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
+        print('ERROR: failed to find expected constructor with args named '
+              f'{component.get_expected_constructor_arg_names()} for {class_name}',
               file=sys.stderr)
+      common_method_names = dict.fromkeys(component.get_common_method_names(), False)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'getEncoderPosition' or
-            function_name == 'getEncoderVelocity' or
-            function_name == 'isHubConnected' or
-            function_name == 'resetEncoder' or
-            function_name == 'setEnabled' or
-            function_name == 'setPositionSetpoint' or
-            function_name == 'setReversed' or
-            function_name == 'setThrottle' or
-            function_name == 'setVelocitySetpoint'):
+        method_name = function_data[_KEY_FUNCTION_NAME]
+        if method_name in common_method_names:
           function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name == 'wpilib.ExpansionHubServo':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 2 and
-            args[0][_KEY_ARGUMENT_NAME] == 'usbId' and
-            args[1][_KEY_ARGUMENT_NAME] == 'channel'):
-          found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData('expansionHubServo', 'SYSTEMCORE_USB_PORT__EXPANSION_HUB_SERVO_PORT'))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
+          # Mark this method as found so we can report ones that weren't found below.
+          common_method_names[method_name] = True
+      for method_name, found in common_method_names.items():
+        if not common_method_names[method_name]:
+          print(f'ERROR: failed to find expected method named {method_name} in {class_name}',
               file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'isHubConnected' or
-            function_name == 'setAngle' or
-            function_name == 'setAngleRange' or
-            function_name == 'setEnabled' or
-            function_name == 'setPosition' or
-            function_name == 'setReversed'):
-          function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name == 'wpilib.AddressableLED':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 1 and
-            args[0][_KEY_ARGUMENT_NAME] == 'channel'):
-          found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
-              file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'setColorOrder' or
-            function_name == 'setLength' or
-            function_name == 'setStart'):
-          function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name == 'wpilib.AnalogEncoder':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 3 and
-            args[0][_KEY_ARGUMENT_NAME] == 'channel' and
-            args[1][_KEY_ARGUMENT_NAME] == 'fullRange' and
-            args[2][_KEY_ARGUMENT_NAME] == 'expectedZero'):
-          found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-          component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), '1.0'))
-          component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0.0'))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
-              file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'get' or
-            function_name == 'setInverted'):
-          function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name == 'wpilib.AnalogPotentiometer':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 3 and
-            args[0][_KEY_ARGUMENT_NAME] == 'channel' and
-            args[1][_KEY_ARGUMENT_NAME] == 'fullRange' and
-            args[2][_KEY_ARGUMENT_NAME] == 'offset'):
-          found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-          component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), args[1][_KEY_ARGUMENT_DEFAULT_VALUE]))
-          component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), args[2][_KEY_ARGUMENT_DEFAULT_VALUE]))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
-              file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'get'):
-          function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name == 'wpilib.DigitalInput':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 1 and
-            args[0][_KEY_ARGUMENT_NAME] == 'channel'):
-          found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
-              file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'get'):
-          function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name == 'wpilib.DutyCycleEncoder':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 3 and
-            args[0][_KEY_ARGUMENT_NAME] == 'channel' and
-            args[1][_KEY_ARGUMENT_NAME] == 'fullRange' and
-            args[2][_KEY_ARGUMENT_NAME] == 'expectedZero'):
-          found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-          component_args.append(self._createArgData(args[1][_KEY_ARGUMENT_NAME], self._getClassName(args[1][_KEY_ARGUMENT_TYPE]), '1'))
-          component_args.append(self._createArgData(args[2][_KEY_ARGUMENT_NAME], self._getClassName(args[2][_KEY_ARGUMENT_TYPE]), '0'))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
-              file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'get' or
-            function_name == 'isConnected' or
-            function_name == 'setInverted'):
-          function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name == 'wpilib.OnboardIMU':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 1 and
-            args[0][_KEY_ARGUMENT_NAME] == 'mountOrientation'):
-          found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData(args[0][_KEY_ARGUMENT_NAME], self._getClassName(args[0][_KEY_ARGUMENT_TYPE]), args[0][_KEY_ARGUMENT_DEFAULT_VALUE]))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
-              file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'getAccelX' or
-            function_name == 'getAccelY' or
-            function_name == 'getAccelZ' or
-            function_name == 'getAngleX' or
-            function_name == 'getAngleY' or
-            function_name == 'getAngleZ' or
-            function_name == 'getGyroRateX' or
-            function_name == 'getGyroRateY' or
-            function_name == 'getGyroRateZ' or
-            function_name == 'getYaw' or
-            function_name == 'resetYaw'):
-          function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name ==  'wpilib.PWMSparkMax':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 1 and
-            args[0][_KEY_ARGUMENT_NAME] == 'channel'):
-          found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData('smartIoPort', 'SYSTEMCORE_SMART_IO_PORT'))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
-              file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'getInverted' or
-            function_name == 'getThrottle' or
-            function_name == 'getVoltage' or
-            function_name == 'setInverted' or
-            function_name == 'setThrottle' or
-            function_name == 'setVoltage' or
-            function_name == 'stopMotor'):
-          function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name == 'rev.A301':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      # An A301 can be on a CAN bus provided by a MotionCore or on one of the Systemcore's
-      # own CAN buses, so it gets two blocks. They are the same kind of port, which is what
-      # lets a mechanism's A301 be given either one by the robot. The only difference is
-      # where the port starts out: the first MotionCore bus (5, shown as MC00), or the
-      # Systemcore's first CAN bus (0). The device id is only used for the latter, since a
-      # MotionCore detects the device id itself, and it defaults to whatever the constructor
-      # says, which is the device id the A301 has out of the factory.
-      new_constructors = []
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 2 and
-            args[0][_KEY_ARGUMENT_NAME] == 'busId' and
-            args[1][_KEY_ARGUMENT_NAME] == 'deviceId'):
-          found_constructor = True
-          default_device_id = args[1][_KEY_ARGUMENT_DEFAULT_VALUE] or '0'
-          for default_bus_id in ('5', '0'):
-            variant_data = copy.deepcopy(constructor_data)
-            variant_data[_KEY_COMPONENT_ARGS] = [self._createArgData(
-                'a301', 'SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID',
-                f'{default_bus_id}__{default_device_id}')]
-            variant_data[_KEY_IS_COMPONENT] = True
-            new_constructors.append(variant_data)
-        else:
-          new_constructors.append(constructor_data)
-      class_data[_KEY_CONSTRUCTORS] = new_constructors
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
-              file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'getAbsoluteEncoderPosition' or
-            function_name == 'getEncoderVelocity' or
-            function_name == 'getRelativeEncoderPosition' or
-            function_name == 'getThrottle' or
-            function_name == 'setAbsolutePosition' or
-            function_name == 'setInverted' or
-            function_name == 'setPosition' or
-            function_name == 'setRelativeEncoderPosition' or
-            function_name == 'setThrottle' or
-            function_name == 'setVelocity'):
-          function_data[_KEY_IS_COMMON] = True
-      return
-
-    if class_name == 'rev.ColorSensorV3':
-      class_data[_KEY_IS_COMPONENT] = True
-      found_constructor = False
-      for constructor_data in class_data[_KEY_CONSTRUCTORS]:
-        args = constructor_data[_KEY_FUNCTION_ARGS]
-        if (len(args) == 1 and
-            args[0][_KEY_ARGUMENT_NAME] == 'port'):
-          found_constructor = True
-          component_args = []
-          component_args.append(self._createArgData('i2cPort', 'SYSTEMCORE_I2C_PORT'))
-          constructor_data[_KEY_COMPONENT_ARGS] = component_args
-          constructor_data[_KEY_IS_COMPONENT] = True
-      if not found_constructor:
-        print(f'ERROR: failed to find expected constructor for {class_name}',
-              file=sys.stderr)
-      for function_data in class_data[_KEY_INSTANCE_METHODS]:
-        function_name = function_data[_KEY_FUNCTION_NAME]
-        # TODO: decide which functions are common.
-        if (function_name == 'getColor' or
-            function_name == 'getProximity' or
-            function_name == 'getRawColor' or
-            function_name == 'isConnected'):
-          function_data[_KEY_IS_COMMON] = True
-      return
 
   def _processClasses(self):
     class_data_list = []

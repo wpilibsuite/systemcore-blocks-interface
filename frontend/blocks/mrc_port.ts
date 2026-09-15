@@ -309,9 +309,20 @@ export const pythonFromBlock = function (
     if (block.mrcPortTypes[i] == PortType.SYSTEMCORE_I2C_PORT) {
       // Special case for I2C, which needs to be a wpilib.I2C.Port enum value (PORT_0 or PORT_1).
       generator.importModule('wpilib');
-      code += 'wpilib.I2C.Port.PORT_';
+      code += 'wpilib.I2C.Port.PORT_' + portNum + ', # ' + portLabel + '\n';
+    } else if (block.mrcPortTypes[i] == PortType.SYSTEMCORE_CAN_PORT) {
+      // Special case for CAN, which needs to be a wpilib.CANPort enum value
+      generator.importModule('wpilib');
+      if (isMotionCoreCanBus(portNum)) {
+        // Motioncore
+        code += 'wpilib.CANPort.CAN_D' + (portNum - SYSTEMCORE_CAN_BUS_COUNT) + ', # ' + portLabel + '\n';
+      } else {
+        // Systemcore
+        code += 'wpilib.CANPort.CAN_S' + portNum + ', # ' + portLabel + '\n';
+      }
+    } else {
+      code += portNum + ', # ' + portLabel + '\n';
     }
-    code += portNum + ', # ' + portLabel + '\n';
   }
   return [code, Order.NONE];
 }

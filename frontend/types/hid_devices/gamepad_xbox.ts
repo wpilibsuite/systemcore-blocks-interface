@@ -27,10 +27,10 @@ export function getButtonConfig() {
     const buttonConfig = new Map(genericButtonConfig);
     
     // Change naming for face buttons to match XBOX layout
-    buttonConfig.set('SOUTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_A'], method: 'getSouthFaceButton', comment: 'A' });
-    buttonConfig.set('EAST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_B'], method: 'getEastFaceButton', comment: 'B' });
-    buttonConfig.set('WEST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_X'], method: 'getWestFaceButton', comment: 'X' });
-    buttonConfig.set('NORTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_Y'], method: 'getNorthFaceButton', comment: 'Y' });
+    buttonConfig.set('SOUTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_A'], method: 'get_face_down_button', comment: 'A' });
+    buttonConfig.set('EAST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_B'], method: 'get_face_right_button', comment: 'B' });
+    buttonConfig.set('WEST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_X'], method: 'get_face_left_button', comment: 'X' });
+    buttonConfig.set('NORTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_Y'], method: 'get_face_up_button', comment: 'Y' });
 
     buttonConfig.delete('MISC1'); // Remove Misc1 - XBOX does not have this button
     buttonConfig.delete('MISC2'); // Remove Misc2 - XBOX does not have this button
