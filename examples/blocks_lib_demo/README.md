@@ -24,5 +24,5 @@ From `examples/`:
 ./build.sh blocks_lib_demo
 ```
 
-This builds the wheel and creates `blocks_lib_demo/build/blocks_demo.blocks_lib`. Upload it from
+This builds the wheel and creates `../build/blocks_demo.blocks_lib`. Upload it from
 **Manage > Libraries...** in Blocks.

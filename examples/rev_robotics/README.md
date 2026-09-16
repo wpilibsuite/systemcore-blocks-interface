@@ -53,4 +53,4 @@ From `examples/`:
 
 This downloads the wheel, which needs an internet connection, generates the toolboxes, which needs
 `npm install` to have been run, and creates
-`rev_robotics/build/rev_robotics.blocks_lib`. Upload it from **Manage > Libraries...** in Blocks.
+`../build/rev_robotics.blocks_lib`. Upload it from **Manage > Libraries...** in Blocks.

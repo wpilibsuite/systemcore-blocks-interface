@@ -8,11 +8,13 @@
 # locales/, and samples/ directories. The wheels are built from a python package in python/, and/or
 # downloaded for the robot from the packages listed in requirements.txt. If there is a
 # python_toolbox.json, toolboxes for the python modules and classes it lists are generated from the
-# python data (see generate_python_toolboxes.mjs). The output is <example_dir>/build/<name>.blocks_lib.
+# python data (see generate_python_toolboxes.mjs). The output is examples/build/<name>.blocks_lib.
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGING_DIR="$SCRIPT_DIR/../packaging"
+# Every example is built into this one directory.
+BUILD_DIR="$SCRIPT_DIR/build"
 
 if [ $# -eq 0 ]; then
     set -- "$SCRIPT_DIR"/*/metadata.json
@@ -22,12 +24,12 @@ fi
 for EXAMPLE in "$@"; do
     EXAMPLE_DIR="$(cd "$EXAMPLE" && pwd)"
     NAME="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["name"])' "$EXAMPLE_DIR/metadata.json")"
-    BUILD_DIR="$EXAMPLE_DIR/build"
-    STAGING_DIR="$BUILD_DIR/staging"
+    STAGING_DIR="$BUILD_DIR/.staging-$NAME"
+    DOWNLOAD_DIR="$BUILD_DIR/.download-$NAME"
     OUTPUT="$BUILD_DIR/$NAME.blocks_lib"
 
     echo "Building $NAME..."
-    rm -rf "$STAGING_DIR" "$OUTPUT"
+    rm -rf "$STAGING_DIR" "$DOWNLOAD_DIR" "$OUTPUT"
     mkdir -p "$STAGING_DIR/wheels"
 
     if [ -d "$EXAMPLE_DIR/python" ]; then
@@ -39,9 +41,9 @@ for EXAMPLE in "$@"; do
         # The robotpy installer downloads the wheels that are built for the robot.
         "$PACKAGING_DIR/ensure_venv.sh"
         "$PACKAGING_DIR/venv/bin/robotpy" installer download --no-deps \
-            -r "$EXAMPLE_DIR/requirements.txt" --cache-root "$BUILD_DIR/download"
-        cp "$BUILD_DIR/download/pip_cache/"*.whl "$STAGING_DIR/wheels/"
-        rm -rf "$BUILD_DIR/download"
+            -r "$EXAMPLE_DIR/requirements.txt" --cache-root "$DOWNLOAD_DIR"
+        cp "$DOWNLOAD_DIR/pip_cache/"*.whl "$STAGING_DIR/wheels/"
+        rm -rf "$DOWNLOAD_DIR"
     fi
 
     cp "$EXAMPLE_DIR/metadata.json" "$STAGING_DIR/"
