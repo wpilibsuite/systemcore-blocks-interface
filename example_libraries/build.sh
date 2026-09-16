@@ -8,7 +8,7 @@
 # locales/, and samples/ directories. The wheels are built from a python package in python/, and/or
 # downloaded for the robot from the packages listed in requirements.txt. If there is a
 # python_toolbox.json, toolboxes for the python modules and classes it lists are generated from the
-# python data (see generate_python_toolboxes.mjs). The output is examples/build/<name>.blocks_lib.
+# python data (see generate_python_toolboxes.mjs). The output is example_libraries/build/<name>.blocks_lib.
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

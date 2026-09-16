@@ -115,7 +115,7 @@ def createArgData(arg_name: str, arg_type: str, default_value: str = ''):
   return arg_data
 
 # The built in components. Libraries that are generated from other modules, like the REV Robotics
-# example in examples/rev_robotics, give JsonGenerator their own components.
+# example in example_libraries/rev_robotics, give JsonGenerator their own components.
 _DICT_COMPONENTS = {
   'wpilib.AddressableLED': component.Component('wpilib.AddressableLED',
     expected_constructor_arg_names=[

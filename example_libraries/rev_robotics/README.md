@@ -28,7 +28,7 @@ uses the generator in `python_tools/`. Run it with the `python_tools` venv (see
 `python_tools/README.md`), with `robotpy-rev` installed from `requirements.txt`:
 
 ```bash
-cd examples/rev_robotics
+cd example_libraries/rev_robotics
 source ../../python_tools/venv/bin/activate
 pip install -r requirements.txt
 python generate_python_data.py
@@ -45,7 +45,7 @@ from.
 
 ## Building
 
-From `examples/`:
+From `example_libraries/`:
 
 ```bash
 ./build.sh rev_robotics

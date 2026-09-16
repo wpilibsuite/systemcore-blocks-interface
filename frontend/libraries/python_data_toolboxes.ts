@@ -20,7 +20,7 @@
  * components, with categories for the python modules and classes that the library chooses to
  * show, like the ones that can be chosen in the toolbox settings for the built in RobotPy modules.
  *
- * This is used when a library is built (see examples/generate_python_toolboxes.mjs), not while
+ * This is used when a library is built (see example_libraries/generate_python_toolboxes.mjs), not while
  * Blocks is running. Python data from libraries is never shown with the built in RobotPy modules.
  */
 

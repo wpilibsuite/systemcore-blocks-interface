@@ -15,7 +15,7 @@
 """The RobotPy modules that are built in to Blocks.
 
 Libraries that are generated from other modules, like the REV Robotics example in
-examples/rev_robotics, give a JsonGenerator for these modules to their JsonGenerator, so that the
+example_libraries/rev_robotics, give a JsonGenerator for these modules to their JsonGenerator, so that the
 names of classes from these modules are the same as in robotpy_data.json.
 """
 

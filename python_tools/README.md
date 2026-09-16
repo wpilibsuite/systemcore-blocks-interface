@@ -21,7 +21,7 @@ The following instructions work on macOS Sonoma 14.6.1.
 
 `JsonGenerator.writeBlocksLibFiles` in json_util.py writes the `components/` and `python_data/` of
 a third party library from Python modules. The REV Robotics example library uses it, in
-examples/rev_robotics/generate_python_data.py; see examples/rev_robotics/README.md.
+example_libraries/rev_robotics/generate_python_data.py; see example_libraries/rev_robotics/README.md.
 
 ### To run tests
     1. cd <your repo>/python_tools

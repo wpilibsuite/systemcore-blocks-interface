@@ -4,7 +4,7 @@ A third party can add blocks and components to the toolbox, backed by their own 
 sample projects that use them, by publishing a `.blocks_lib` file. Users install it from **Manage > Libraries...**, where they can also
 remove libraries and choose which libraries, categories, and components are shown in the toolbox.
 
-See `examples/` for complete, buildable examples (`examples/build.sh` builds them).
+See `example_libraries/` for complete, buildable examples (`example_libraries/build.sh` builds them).
 
 ## File layout
 
@@ -253,11 +253,11 @@ Python data doesn't add anything to the toolbox by itself, and it isn't shown wi
 RobotPy modules in the toolbox settings. To give users blocks for its classes, add them to
 `toolboxes/`. The REV Robotics example generates those toolbox files when it is built: its
 `python_toolbox.json` lists the modules and classes to make categories for, like the ones that can
-be chosen in the toolbox settings, and `examples/generate_python_toolboxes.mjs` makes a category
+be chosen in the toolbox settings, and `example_libraries/generate_python_toolboxes.mjs` makes a category
 for each of them, with the same blocks as the built in RobotPy categories.
 
 `JsonGenerator.writeBlocksLibFiles` in `python_tools/json_util.py` generates this data from Python
-modules. The REV Robotics example (`examples/rev_robotics/`) is generated this way from
+modules. The REV Robotics example (`example_libraries/rev_robotics/`) is generated this way from
 `robotpy-rev` by its `generate_python_data.py`, which writes the component classes to `components/`, and the classes
 and enums that the components and `shownCategories` refer to, to `python_data/`. Classes and enums
 that nothing uses aren't written, to keep the library small; they are listed in `ignore` in

@@ -55,4 +55,4 @@ __screenshots__
 *.ipk
 
 # built third party library examples
-examples/build/
+example_libraries/build/

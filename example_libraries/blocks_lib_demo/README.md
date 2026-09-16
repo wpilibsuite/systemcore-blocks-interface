@@ -18,7 +18,7 @@ An example third party library. See `docs/blocks_lib_format.md` for the file for
 
 ## Building
 
-From `examples/`:
+From `example_libraries/`:
 
 ```bash
 ./build.sh blocks_lib_demo
