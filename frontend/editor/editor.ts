@@ -78,6 +78,7 @@ export class Editor {
   private toolbox: Blockly.utils.toolbox.ToolboxInfo = EMPTY_TOOLBOX;
   private toolboxUpdateTimeout: NodeJS.Timeout | null = null;
   private portConflictTimeout: NodeJS.Timeout | null = null;
+  private createdBlockIds: string[] = [];
 
   constructor(
       blocklyWorkspace: Blockly.WorkspaceSvg,
@@ -117,6 +118,7 @@ export class Editor {
         blockCreateEvent.ids.forEach(id => {
           const block = this.blocklyWorkspace.getBlockById(id);
           if (block) {
+            this.createdBlockIds.push(block.id);
             if (MRC_ON_LOAD in block && typeof block[MRC_ON_LOAD] === 'function') {
               block[MRC_ON_LOAD](this);
             }
@@ -169,6 +171,7 @@ export class Editor {
         blockCreateEvent.ids.forEach(id => {
           const block = this.blocklyWorkspace.getBlockById(id);
           if (block) {
+            this.createdBlockIds.push(block.id);
             if (MRC_ON_CREATE in block && typeof block[MRC_ON_CREATE] === 'function') {
               block[MRC_ON_CREATE](this);
             }
@@ -182,6 +185,20 @@ export class Editor {
 
     if (event.type === Blockly.Events.BLOCK_MOVE) {
       const blockMoveEvent = event as Blockly.Events.BlockMove;
+
+      // When the user drags a block from the toolbox onto the workspace, we don't get a
+      // BLOCK_CREATE event for it, but we do get a BLOCK_MOVE event. If we get a BLOCK_MOVE event
+      // for a block that we never got a BLOCK_CREATED event for it, simulated it now.
+      if (blockMoveEvent.blockId && !this.createdBlockIds.includes(blockMoveEvent.blockId)) {
+        this.createdBlockIds.push(blockMoveEvent.blockId);
+        const block = this.blocklyWorkspace.getBlockById(blockMoveEvent.blockId);
+        if (block) {
+          if (MRC_ON_CREATE in block && typeof block[MRC_ON_CREATE] === 'function') {
+            block[MRC_ON_CREATE](this);
+          }
+        }
+      }
+
       const reason: string[] = blockMoveEvent.reason ?? [];
       if (reason.includes('disconnect') && blockMoveEvent.oldParentId) {
         const oldParent = this.blocklyWorkspace.getBlockById(blockMoveEvent.oldParentId!);
