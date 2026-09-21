@@ -2,6 +2,7 @@
 import * as CallPythonFunction from './mrc_call_python_function';
 import * as ClassMethodDef from './mrc_class_method_def';
 import * as Component from './mrc_component';
+import * as ComponentReference from './mrc_component_reference';
 import * as Event from './mrc_event';
 import * as EventHandler from './mrc_event_handler';
 import * as GetParameter from './mrc_get_parameter';
@@ -32,6 +33,7 @@ const customBlocks = [
   CallPythonFunction,
   ClassMethodDef,
   Component,
+  ComponentReference,
   Event,
   EventHandler,
   GetParameter,
