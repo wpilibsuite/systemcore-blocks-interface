@@ -114,7 +114,7 @@ def createArgData(arg_name: str, arg_type: str, default_value: str = ''):
   arg_data[_KEY_ARGUMENT_DEFAULT_VALUE] = default_value if default_value else ''
   return arg_data
 
-# The built in components. Libraries that are generated from other modules, like the REV Robotics
+# The built-in components. Libraries that are generated from other modules, like the REV Robotics
 # example in example_libraries/rev_robotics, give JsonGenerator their own components.
 _DICT_COMPONENTS = {
   'wpilib.AddressableLED': component.Component('wpilib.AddressableLED',
@@ -274,7 +274,7 @@ class JsonGenerator:
   def __init__(self, root_modules: list[types.ModuleType], libs: list = [],
                components: dict[str, component.Component] = {}):
     """components maps class names to the components that are generated in addition to the
-    built in ones."""
+    built-in ones."""
     self._root_modules = root_modules
     self._components = {**_DICT_COMPONENTS, **components}
     (self._modules, self._classes) = python_util.collectModulesAndClasses(self._root_modules)

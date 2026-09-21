@@ -264,7 +264,7 @@ export function getAlias(type: string): string | null {
 // Returns the list of subclass names for the given type.
 // For example, if type is 'wpilib.drive.RobotDriveBase', this function will
 // return ['wpilib.drive.DifferentialDrive', 'wpilib.drive.MecanumDrive'].
-// A library can add subclasses of a built in class, so the subclasses from all of the python data
+// A library can add subclasses of a built-in class, so the subclasses from all of the python data
 // are returned.
 export function getSubclassNames(type: string): string[] {
   const subclassNames: string[] = [];

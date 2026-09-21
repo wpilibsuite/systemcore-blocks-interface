@@ -9,7 +9,7 @@ A .blocks_lib file is a zip file containing:
     components/*.json - optional component classes that are added to the components toolbox
     python_data/*.json - optional python modules and classes, in the format of the generated
                          robotpy_data.json, that the library's blocks and components use
-    samples/<SampleName>/*.json - optional sample projects that are shown with the built in samples
+    samples/<SampleName>/*.json - optional sample projects that are shown with the built-in samples
     locales/<language>.json - optional translations for the strings that are shown to the user
 
 Installed libraries are extracted to <libraries_dir>/<name>/.

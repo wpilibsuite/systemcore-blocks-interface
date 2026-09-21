@@ -26,7 +26,7 @@
  *   components/*.json - optional component classes that are added to the components toolbox
  *   python_data/*.json - optional python modules and classes, in the format of the generated
  *                        robotpy_data.json, that the library's blocks and components use
- *   samples/<SampleName>/*.json - optional sample projects that are shown with the built in samples
+ *   samples/<SampleName>/*.json - optional sample projects that are shown with the built-in samples
  *   locales/<language>.json - optional translations for the strings that are shown to the user
  *
  * The backend has an equivalent parser in backend/blocks_lib.py. Keep them in sync.

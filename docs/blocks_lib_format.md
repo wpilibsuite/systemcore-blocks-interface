@@ -203,7 +203,7 @@ self.my_limit_switch = my_library.components.LimitSwitch(
 
 Blocks has to know about the Python modules and classes that blocks use, not just the component
 classes. For example, a component method might return an object whose fields can be read, take an
-enum as an argument, or return a subclass of a built in class. Each `*.json` file in
+enum as an argument, or return a subclass of a built-in class. Each `*.json` file in
 `python_data/` describes Python modules and classes in the same format as
 `frontend/blocks/utils/generated/robotpy_data.json`. Every field is optional:
 
@@ -247,14 +247,14 @@ enum as an argument, or return a subclass of a built in class. Each `*.json` fil
   `components/`.
 - `aliases` maps type names to the types they are aliases for.
 - `subclasses` maps a class name to the names of its subclasses. Blocks that take the class also
-  accept the subclasses, and a library can add subclasses to a built in class.
+  accept the subclasses, and a library can add subclasses to a built-in class.
 
-Python data doesn't add anything to the toolbox by itself, and it isn't shown with the built in
+Python data doesn't add anything to the toolbox by itself, and it isn't shown with the built-in
 RobotPy modules in the toolbox settings. To give users blocks for its classes, add them to
 `toolboxes/`. The REV Robotics example generates those toolbox files when it is built: its
 `python_toolbox.json` lists the modules and classes to make categories for, like the ones that can
 be chosen in the toolbox settings, and `example_libraries/generate_python_toolboxes.mjs` makes a category
-for each of them, with the same blocks as the built in RobotPy categories.
+for each of them, with the same blocks as the built-in RobotPy categories.
 
 `JsonGenerator.writeBlocksLibFiles` in `python_tools/json_util.py` generates this data from Python
 modules. The REV Robotics example (`example_libraries/rev_robotics/`) is generated this way from
@@ -266,14 +266,14 @@ that nothing uses aren't written, to keep the library small; they are listed in 
 ## `samples/`
 
 Each directory in `samples/` is a sample project. The samples of installed libraries are listed in
-**Samples...** after the built in samples, with a tag showing the library they came from. Users can
-preview them and create a new project from them, just like the built in samples. When the library
+**Samples...** after the built-in samples, with a tag showing the library they came from. Users can
+preview them and create a new project from them, just like the built-in samples. When the library
 is removed, its samples are no longer listed; projects that were already created from them are
 kept.
 
 The directory name is the sample's name, which is also the default name of a project created from
 it, so it must be a valid project name (it starts with an uppercase letter and only has letters,
-digits, and `_`). The files are the same as the built in samples in `frontend/samples/`:
+digits, and `_`). The files are the same as the built-in samples in `frontend/samples/`:
 
 - `project.info.json` and `Robot.robot.json` are required.
 - `*.mechanism.json` and `*.opmode.json` files are the project's mechanisms and OpModes.

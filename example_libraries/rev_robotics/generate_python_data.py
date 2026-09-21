@@ -95,7 +95,7 @@ def main():
       'them, to ignore in python_toolbox.json, instead of warning about them.')
   args = parser.parse_args()
 
-  # The generator for the built in modules gives the rev generator the names of their classes.
+  # The generator for the built-in modules gives the rev generator the names of their classes.
   json_generator_robotpy = json_util.JsonGenerator(robotpy_modules.getRobotPyModules())
   json_generator_rev = json_util.JsonGenerator([rev], [json_generator_robotpy], COMPONENTS)
   json_generator_rev.writeBlocksLibFiles(EXAMPLE_DIR, args.add_unused_to_ignore)

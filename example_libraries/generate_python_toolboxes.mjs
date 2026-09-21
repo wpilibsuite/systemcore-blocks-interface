@@ -28,7 +28,7 @@
 // and the rest of the blocks in a category is a message, so it is added to the locale files in
 // <output_dir>/locales/, in each language that Blocks has, unless the library already has it.
 //
-// The frontend code that makes the toolbox for the built in RobotPy modules is used, bundled with
+// The frontend code that makes the toolbox for the built-in RobotPy modules is used, bundled with
 // vite, so npm install has to have been run.
 
 import fs from 'node:fs';

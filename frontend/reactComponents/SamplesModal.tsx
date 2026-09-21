@@ -46,7 +46,7 @@ interface SamplesModalProps {
   setCurrentProject: (project: storageProject.Project | null) => void;
   setAlertErrorMessage: (message: string) => void;
   theme: string;
-  /** The installed libraries. Their samples are listed after the built in samples. */
+  /** The installed libraries. Their samples are listed after the built-in samples. */
   libraries: blocksLib.Library[];
 }
 

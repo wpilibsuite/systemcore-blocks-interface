@@ -298,7 +298,7 @@ describe('library python data', () => {
   const makePythonDataLibrary = async () => blocksLib.parseBlocksLib(
       await makeLib({ ...await validEntries(), 'python_data/demo_pkg.json': PYTHON_DATA }));
 
-  /** Returns the names of the modules in the built in RobotPy toolbox categories. */
+  /** Returns the names of the modules in the built-in RobotPy toolbox categories. */
   const getRobotPyModuleNames = (): string[] => robotPyToolbox.getToolboxCategories(null, false)
       .map(category => (category as any).moduleName);
 
@@ -320,7 +320,7 @@ describe('library python data', () => {
       expect(python.getAlias('demo_pkg.meters')).toBe('float');
       expect(python.getSubclassNames('wpilib.MotorController')).toEqual([...builtInSubclasses, 'demo_pkg.Motor']);
       expect(python.getAllowedTypesForSetCheck('wpilib.MotorController')).toContain('demo_pkg.Motor');
-      // Python data from libraries is not shown with the built in RobotPy modules.
+      // Python data from libraries is not shown with the built-in RobotPy modules.
       expect(getRobotPyModuleNames()).not.toContain('demo_pkg');
     } finally {
       setInstalledLibraries([]);
@@ -453,7 +453,7 @@ describe('library samples', () => {
   const librarySamples = (libraries: blocksLib.Library[]) =>
       samplesRegistry.listSamples(libraries).filter(sample => sample.library);
 
-  test('lists the samples of installed libraries after the built in samples', async () => {
+  test('lists the samples of installed libraries after the built-in samples', async () => {
     const library = await blocksLib.parseBlocksLib(await makeLib({ ...await validEntries(), ...SAMPLE_ENTRIES }));
     const builtInCount = samplesRegistry.listSamples().length;
     const samples = samplesRegistry.listSamples([library]);

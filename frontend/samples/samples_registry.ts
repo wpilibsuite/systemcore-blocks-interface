@@ -43,7 +43,7 @@ export interface Sample {
   // directory. Includes project.info.json and every module file, but not description.json.
   files: { [fileName: string]: string };
   moduleFiles: SampleModuleFile[];
-  // The library that the sample came from, or undefined for a built in sample. The description and
+  // The library that the sample came from, or undefined for a built-in sample. The description and
   // tags of a library's sample can be references to the library's messages; see
   // library_i18n.localizeLibraryText.
   library?: blocksLib.Library;
@@ -121,7 +121,7 @@ function buildSamples(): Sample[] {
 const samples: Sample[] = buildSamples();
 
 /**
- * Returns the list of available samples: the built in samples, followed by the samples of the
+ * Returns the list of available samples: the built-in samples, followed by the samples of the
  * given libraries. Samples from libraries that don't work with this version of blocks are left
  * out.
  */

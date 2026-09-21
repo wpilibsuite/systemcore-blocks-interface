@@ -23,6 +23,7 @@ translated (English and Spanish, in `locales/`), to show that translations are o
 ## Building
 
 ```bash
+cd <your repo>/example_libraries 
 ./build.sh                  # builds all of the examples
 ./build.sh pid_tools        # builds one example
 ```
