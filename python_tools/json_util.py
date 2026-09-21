@@ -951,8 +951,7 @@ class JsonGenerator:
           if owner is None and name not in generated_enum_names}) - ignored_names)
     if not_generated_names and add_unused_to_ignore:
       python_toolbox[_KEY_IGNORE] = sorted(ignored_names | set(not_generated_names))
-      _writeJson(python_toolbox, os.path.join(library_directory, _PYTHON_TOOLBOX_FILE), indent=2,
-                 sort_keys=False)
+      _writeJson(python_toolbox, os.path.join(library_directory, _PYTHON_TOOLBOX_FILE))
       print(f'Added {len(not_generated_names)} classes and enums that were not generated to '
             f'ignore in {_PYTHON_TOOLBOX_FILE}')
     elif not_generated_names:
@@ -1023,6 +1022,7 @@ def _toSnakeCase(name: str) -> str:
 
 
 def _writeJson(json_data, file_path: str, indent: int = 4, sort_keys: bool = True):
+  print(f'INFO: writing file {file_path}',  file = sys.stderr)  
   with open(file_path, 'w', encoding='utf-8') as json_file:
     json.dump(json_data, json_file, sort_keys=sort_keys, indent=indent)
     json_file.write('\n')
