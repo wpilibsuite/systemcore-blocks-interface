@@ -14,12 +14,7 @@
 
 """Generates components/ and python_data/ for the REV Robotics library from robotpy-rev.
 
-This uses python_tools, so run it with the python_tools venv (see python_tools/README.md), with
-robotpy-rev installed from requirements.txt:
-
-    source ../../python_tools/venv/bin/activate
-    pip install -r requirements.txt
-    python generate_python_data.py [--add_unused_to_ignore]
+See README.md for directions on running it.
 
 Only the classes and enums that the library uses are written: the components below, the modules
 and classes in shownCategories in python_toolbox.json, and the classes and enums that those refer
