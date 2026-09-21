@@ -38,6 +38,7 @@ import {
     MechanismComponentHolderBlock,
     mrcDescendantsMayHaveChanged } from './mrc_mechanism_component_holder';
 import { renameMethodCallers } from './mrc_call_python_function'
+import { renameComponentOrMechanism as renameMechanismNameInComponentReferenceBlocks } from './mrc_component_reference'
 import { getMechanismInitArgName } from './mrc_component'
 import { renameMechanismName as renameMechanismNameInEventHandlers } from './mrc_event_handler'
 import { getAllowedTypesForSetCheck } from './utils/python';
@@ -182,6 +183,8 @@ const MECHANISM = {
     if (oldName && oldName !== name && oldName !== legalName) {
       // Rename any callers.
       renameMethodCallers(this.workspace, this.mrcMechanismId, legalName);
+      // Rename any component reference blocks
+      renameMechanismNameInComponentReferenceBlocks(this.workspace, this.mrcMechanismId, legalName);
       // Rename any event handlers
       renameMechanismNameInEventHandlers(this.workspace, this.mrcMechanismId, legalName);
       // Rebuild the toolbox so the mechanism's category reflects the new name.
