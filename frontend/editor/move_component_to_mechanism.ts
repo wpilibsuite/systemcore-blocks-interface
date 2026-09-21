@@ -41,6 +41,7 @@ import {
     mrcAddComponentBlockToMechanismContent,
     mrcAddMechanismBlockToRobotBlocks } from '../blocks/mrc_mechanism_component_holder';
 import { repointComponentCallsIntoMechanism } from '../blocks/mrc_call_python_function';
+import { repointComponentReferenceIntoMechanism } from '../blocks/mrc_component_reference';
 
 /**
  * Where the caller wants the component to go: either a mechanism that already exists, or a new
@@ -118,12 +119,14 @@ export async function moveComponentToMechanism(
   const mechanismId = mechanismBlock.mrcMechanismId;
   const mechanismName = mechanismBlock.getFieldValue(MECHANISM_FIELD_NAME);
 
-  // 5. Take the component block out of the robot and repoint the robot's own call blocks. Once
-  // the workspace reloads, the mrc_mechanism block rebuilds its arg sockets to include the
-  // component's args.
+  // 5. Take the component block out of the robot and repoint the robot's own call and componet
+  // reference blocks. Once the workspace reloads, the mrc_mechanism block rebuilds its arg sockets
+  // to include the component's args.
   robotEditor.reloadWithMutatedBlocks((blocks) => {
     removeBlockFromBlocks(blocks, componentBlockId);
     repointComponentCallsIntoMechanism(
+        blocks, captured.component.componentId, mechanismId, mechanismName);
+    repointComponentReferenceIntoMechanism(
         blocks, captured.component.componentId, mechanismId, mechanismName);
   });
 
@@ -300,7 +303,8 @@ async function repointOpModes(
     const opModeEditor = Editor.getEditorForModulePath(opMode.modulePath);
     if (opModeEditor) {
       const blocks = Blockly.serialization.workspaces.save(opModeEditor.getBlocklyWorkspace());
-      if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
+      if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName) ||
+          repointComponentReferenceIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
         opModeEditor.reloadWithBlocks(blocks);
         await opModeEditor.saveModule();
       }
@@ -309,7 +313,8 @@ async function repointOpModes(
     const moduleContent = storageModuleContent.parseModuleContentText(
         await storage.fetchFileContentText(opMode.modulePath));
     const blocks = moduleContent.getBlocks();
-    if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
+    if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName) ||
+        repointComponentReferenceIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
       moduleContent.setBlocks(blocks);
       await storage.saveFile(opMode.modulePath, moduleContent.getModuleContentText());
     }
