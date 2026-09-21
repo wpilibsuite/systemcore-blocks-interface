@@ -11,7 +11,7 @@ For each PR, make sure each of these works
 * [ ] When editing an OpMode, make sure the mechanism shows up in the toolbox Robot -> Mechanisms -> my_arm
 # Events
 * [ ] Add an event to the Mechanism
-* [ ] In Robot, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> my_arm -> Events
+* [ ] In Robot, make sure you can see the event handler in the toolbox Hardware -> Mechanisms -> my_arm -> Events
 * [ ] In Opmode, make sure you can see the event handler in the toolbox Robot -> Mechanisms -> my_arm -> Events
 # Mechanisms
 * [ ] Add a public component to the mechanism
