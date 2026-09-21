@@ -6,7 +6,7 @@ For each PR, make sure each of these works
 * [ ] Add a mechanism "Arm" from the + next to Tabs
 # Using robot
 * [ ] Add a component to the Robot
-* [ ] Make sure that the Arm shows up as myArm in the robot
+* [ ] Make sure that the Arm shows up as my_arm in the robot
 * [ ] When editing an OpMode, make sure the component shows up in the toolbox Robot -> Components ->
 * [ ] When editing an OpMode, make sure the mechanism shows up in the toolbox Robot -> Mechanisms -> my_arm
 # Events
