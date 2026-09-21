@@ -722,6 +722,9 @@ const CALL_PYTHON_FUNCTION = {
       case FunctionKind.INSTANCE_MECHANISM:
         this.checkMechanismInstanceMethod(editor, warnings);
         break;
+      case FunctionKind.EVENT:
+        this.checkEvent(editor, warnings);
+        break;
     }
 
     if (warnings.length) {
@@ -886,77 +889,8 @@ const CALL_PYTHON_FUNCTION = {
       componentNames.push(component.name);
       this.mrcMapComponentNameToId[component.name] = component.componentId;
     });
-    let foundComponent = false;
-    for (const componentName of componentNames) {
-      const componentId = this.mrcMapComponentNameToId[componentName];
-      if (componentId === this.mrcComponentId) {
-        foundComponent = true;
 
-        // Replace the text field for the component name with a dropdown where the user can choose
-        // between different components of the same type. For example, they can easily switch from
-        // a motor component name "left_motor" to a motor component named "right_motor".
-        const titleInput = this.getInput(INPUT_TITLE)
-        if (!titleInput) {
-          throw new Error('Could not find the title input');
-        }
-        let indexOfComponentNameField = -1;
-        for (let i = 0, field; (field = titleInput.fieldRow[i]); i++) {
-          if (field.name === FIELD_COMPONENT_NAME) {
-            indexOfComponentNameField = i;
-            break;
-          }
-        }
-        if (indexOfComponentNameField === -1) {
-          throw new Error('Could not find the component name field');
-        }
-        titleInput.removeField(FIELD_COMPONENT_NAME);
-        titleInput.insertFieldAt(indexOfComponentNameField,
-            createFieldDropdown(componentNames), FIELD_COMPONENT_NAME);
-        // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
-        // items in the dropdown if the user adds or removes a component.
-
-        this.setFieldValue(componentName, FIELD_COMPONENT_NAME);
-
-        // Since we found the component, we can break out of the loop.
-        break;
-      }
-    }
-    if (!foundComponent) {
-      if (this.mrcMechanismId) {
-        // Check whether the the component still exists, but is a private component in the mechanism.
-        for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
-          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
-            for (const mechanism of editor.getMechanisms()) {
-              if (mechanism.moduleId === mechanismInRobot.moduleId) {
-                for (const privateComponent of editor.getPrivateComponentsFromMechanism(mechanism)) {
-                  if (privateComponent.className === this.mrcComponentClassName &&
-                      privateComponent.componentId === this.mrcComponentId) {
-                    foundComponent = true;
-                    let warning = Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT;
-                    warning = warning.replace('{{mechanismClassName}}', mechanism.className);
-                    warnings.push(warning);
-                    break
-                  }
-                }
-                break;
-              }
-              if (foundComponent) {
-                break;
-              }
-            }
-            break;
-          }
-          if (foundComponent) {
-            break;
-          }
-        }
-      }
-    }
-
-    if (!foundComponent) {
-      warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT);
-    }
-
+    let warnedAboutMissingMechanism = false;
     if (this.mrcMechanismId) {
       let foundMechanism = false;
       const mechanismsInRobot = editor.getMechanismsFromRobot();
@@ -973,6 +907,80 @@ const CALL_PYTHON_FUNCTION = {
       }
       if (!foundMechanism) {
         warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM);
+        warnedAboutMissingMechanism = true;
+      }
+    }
+
+    if (!warnedAboutMissingMechanism) {
+      let foundComponent = false;
+      for (const componentName of componentNames) {
+        const componentId = this.mrcMapComponentNameToId[componentName];
+        if (componentId === this.mrcComponentId) {
+          foundComponent = true;
+
+          // Replace the text field for the component name with a dropdown where the user can choose
+          // between different components of the same type. For example, they can easily switch from
+          // a motor component name "left_motor" to a motor component named "right_motor".
+          const titleInput = this.getInput(INPUT_TITLE)
+          if (!titleInput) {
+            throw new Error('Could not find the title input');
+          }
+          let indexOfComponentNameField = -1;
+          for (let i = 0, field; (field = titleInput.fieldRow[i]); i++) {
+            if (field.name === FIELD_COMPONENT_NAME) {
+              indexOfComponentNameField = i;
+              break;
+            }
+          }
+          if (indexOfComponentNameField === -1) {
+            throw new Error('Could not find the component name field');
+          }
+          titleInput.removeField(FIELD_COMPONENT_NAME);
+          titleInput.insertFieldAt(indexOfComponentNameField,
+              createFieldDropdown(componentNames), FIELD_COMPONENT_NAME);
+          // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
+          // items in the dropdown if the user adds or removes a component.
+
+          this.setFieldValue(componentName, FIELD_COMPONENT_NAME);
+
+          // Since we found the component, we can break out of the loop.
+          break;
+        }
+      }
+      if (!foundComponent) {
+        if (this.mrcMechanismId) {
+          // Check whether the the component still exists, but is a private component in the mechanism.
+          for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
+            if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+              for (const mechanism of editor.getMechanisms()) {
+                if (mechanism.moduleId === mechanismInRobot.moduleId) {
+                  for (const privateComponent of editor.getPrivateComponentsFromMechanism(mechanism)) {
+                    if (privateComponent.className === this.mrcComponentClassName &&
+                        privateComponent.componentId === this.mrcComponentId) {
+                      foundComponent = true;
+                      let warning = Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT;
+                      warning = warning.replace('{{mechanismClassName}}', mechanism.className);
+                      warnings.push(warning);
+                      break
+                    }
+                  }
+                  break;
+                }
+                if (foundComponent) {
+                  break;
+                }
+              }
+              break;
+            }
+            if (foundComponent) {
+              break;
+            }
+          }
+        }
+      }
+
+      if (!foundComponent) {
+        warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT);
       }
     }
 
@@ -1109,6 +1117,27 @@ const CALL_PYTHON_FUNCTION = {
       if (!foundMechanism) {
         warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM);
       }
+    }
+  },
+  checkEvent: function(this: CallPythonFunctionBlock, editor: Editor, warnings: string[]): void {
+    // If this block is firing an event, check whether the event
+    // still exists and whether it has been changed.
+    // If the event doesn't exist, put a visible warning on this block.
+    // If the event name has changed, update the block.
+    let foundEvent = false;
+    for (const event of editor.getEventsFromWorkspace()) {
+      if (this.mrcEventId == event.eventId) {
+        foundEvent = true;
+
+        // If the event name has changed, we can handle that.
+        if (this.getFieldValue(FIELD_EVENT_NAME) !== event.name) {
+          this.setFieldValue(event.name, FIELD_EVENT_NAME);
+        }
+        break;
+      }
+    }
+    if (!foundEvent) {
+      warnings.push(Blockly.Msg.WARNING_FIRE_EVENT_MISSING_EVENT);
     }
   },
 
@@ -1359,6 +1388,12 @@ function getMethodCallers(workspace: Blockly.Workspace, id: string): Blockly.Blo
         callPythonFunctionBlock.mrcComponentId === id ||
         callPythonFunctionBlock.mrcEventId === id ||
         callPythonFunctionBlock.mrcMechanismId === id);
+  });
+}
+
+export function checkMethodCallers(workspace: Blockly.Workspace, id: string, editor: Editor): void {
+  getMethodCallers(workspace, id).forEach(block => {
+    (block as CallPythonFunctionBlock).checkFunction(editor);
   });
 }
 

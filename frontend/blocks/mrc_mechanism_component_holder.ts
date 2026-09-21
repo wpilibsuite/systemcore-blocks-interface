@@ -29,6 +29,8 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
+import { checkMethodCallers } from './mrc_call_python_function'
+import { checkComponentReferences } from './mrc_component_reference'
 import { createMechanismBlock, BLOCK_NAME as MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { MechanismBlock } from './mrc_mechanism';
@@ -61,6 +63,11 @@ interface MechanismComponentHolderMixin extends MechanismComponentHolderMixinTyp
   mrcComponentBlockIds: string,
   mrcPrivateComponentBlockIds: string,
   mrcEventBlockIds: string,
+
+  mrcMechanismIds: string[],
+  mrcComponentIds: string[],
+  mrcPrivateComponentIds: string[],
+  mrcEventIds: string[],
 }
 type MechanismComponentHolderMixinType = typeof MECHANISM_COMPONENT_HOLDER;
 
@@ -76,6 +83,10 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.mrcComponentBlockIds = '';
     this.mrcPrivateComponentBlockIds = '';
     this.mrcEventBlockIds = '';
+    this.mrcMechanismIds = [];
+    this.mrcComponentIds = [];
+    this.mrcPrivateComponentIds = [];
+    this.mrcEventIds = [];
   },
   ...NONCOPYABLE_BLOCK,
   saveExtraState: function (this: MechanismComponentHolderBlock): MechanismComponentHolderExtraState {
@@ -133,24 +144,28 @@ const MECHANISM_COMPONENT_HOLDER = {
    * workspace.
    */
   mrcOnLoad: function (this: MechanismComponentHolderBlock, editor: Editor): void {
-    this.collectDescendants(editor, false);
+    this.collectDescendants(editor, true);
   },
   /**
    * mrcOnDescendantDisconnect is called for each MechanismComponentHolderBlock when any descendant is
    * disconnected.
    */
   mrcOnDescendantDisconnect: function (this: MechanismComponentHolderBlock, editor: Editor): void {
-    this.collectDescendants(editor, true);
+    this.collectDescendants(editor, false);
   },
   mrcDescendantsMayHaveChanged: function (this: MechanismComponentHolderBlock, editor: Editor): void {
-    this.collectDescendants(editor, true);
+    this.collectDescendants(editor, false);
   },
   collectDescendants: function (
-    this: MechanismComponentHolderBlock, editor: Editor, updateToolboxIfDescendantsChanged: boolean): void {
+    this: MechanismComponentHolderBlock, editor: Editor, onLoad: boolean): void {
     let mechanismBlockIds = '';
     let componentBlockIds = '';
     let privateComponentBlockIds = '';
     let eventBlockIds = '';
+    const mechanismIds: string[] = [];
+    const componentIds: string[] = [];
+    const privateComponentIds: string[] = [];
+    const eventIds: string[] = [];
 
     const mechanismsInput = this.getInput(INPUT_MECHANISMS);
     if (mechanismsInput && mechanismsInput.connection) {
@@ -159,6 +174,10 @@ const MECHANISM_COMPONENT_HOLDER = {
       while (mechanismBlock) {
         if (mechanismBlock.type === MRC_MECHANISM_NAME) {
           mechanismBlockIds += mechanismBlock.id;
+          const mechanism = (mechanismBlock as MechanismBlock).getMechanism();
+          if (mechanism) {
+            mechanismIds.push(mechanism.mechanismId);
+          }
         }
         // Move to the next block in the stack.
         mechanismBlock = mechanismBlock.getNextBlock();
@@ -171,6 +190,10 @@ const MECHANISM_COMPONENT_HOLDER = {
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME) {
           componentBlockIds += componentBlock.id;
+          const component = (componentBlock as ComponentBlock).getComponent();
+          if (component) {
+            componentIds.push(component.componentId);
+          }
         }
         // Move to the next block in the stack.
         componentBlock = componentBlock.getNextBlock();
@@ -183,6 +206,10 @@ const MECHANISM_COMPONENT_HOLDER = {
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME) {
           privateComponentBlockIds += componentBlock.id;
+          const component = (componentBlock as ComponentBlock).getComponent();
+          if (component) {
+            privateComponentIds.push(component.componentId);
+          }
         }
         // Move to the next block in the stack.
         componentBlock = componentBlock.getNextBlock();
@@ -195,18 +222,74 @@ const MECHANISM_COMPONENT_HOLDER = {
       while (eventBlock) {
         if (eventBlock.type === MRC_EVENT_NAME) {
           eventBlockIds += eventBlock.id;
+          const event = (eventBlock as EventBlock).getEvent();
+          if (event) {
+            eventIds.push(event.eventId);
+          }
         }
         // Move to the next block in the stack.
         eventBlock = eventBlock.getNextBlock();
       }
     }
 
-    if (updateToolboxIfDescendantsChanged) {
+    if (!onLoad) {
       if (mechanismBlockIds !== this.mrcMechanismBlockIds ||
-        componentBlockIds !== this.mrcComponentBlockIds ||
-        privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
-        eventBlockIds !== this.mrcEventBlockIds) {
+          componentBlockIds !== this.mrcComponentBlockIds ||
+          privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
+          eventBlockIds !== this.mrcEventBlockIds) {
         editor.updateToolboxAfterDelay();
+      }
+    }
+
+    const idsOfChangedThings: string[] = [];
+    if (!onLoad) {
+      for (const id of this.mrcMechanismIds) {
+        if (!mechanismIds.includes(id)) {
+          // Mechanism was disconnected.
+          idsOfChangedThings.push(id);
+        }
+      }
+      for (const id of mechanismIds) {
+        if (!this.mrcMechanismIds.includes(id)) {
+          // Mechanism was connected.
+          idsOfChangedThings.push(id);
+        }
+      }
+      for (const id of this.mrcComponentIds) {
+        if (!componentIds.includes(id)) {
+          // Component was disconnected.
+          idsOfChangedThings.push(id);
+        }
+      }
+      for (const id of componentIds) {
+        if (!this.mrcComponentIds.includes(id)) {
+          // Component was connected.
+          idsOfChangedThings.push(id);
+        }
+      }
+      for (const id of this.mrcPrivateComponentIds) {
+        if (!privateComponentIds.includes(id)) {
+          // Private component was disconnected.
+          idsOfChangedThings.push(id);
+        }
+      }
+      for (const id of privateComponentIds) {
+        if (!this.mrcPrivateComponentIds.includes(id)) {
+          // Private component was connected.
+          idsOfChangedThings.push(id);
+        }
+      }
+      for (const id of this.mrcEventIds) {
+        if (!eventIds.includes(id)) {
+          // Event was disconnected.
+          idsOfChangedThings.push(id);
+        }
+      }
+      for (const id of eventIds) {
+        if (!this.mrcEventIds.includes(id)) {
+          // Event was disconnected.
+          idsOfChangedThings.push(id);
+        }
       }
     }
 
@@ -214,6 +297,15 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.mrcComponentBlockIds = componentBlockIds;
     this.mrcPrivateComponentBlockIds = privateComponentBlockIds;
     this.mrcEventBlockIds = eventBlockIds;
+    this.mrcMechanismIds = mechanismIds;
+    this.mrcComponentIds = componentIds;
+    this.mrcPrivateComponentIds = privateComponentIds;
+    this.mrcEventIds = eventIds;
+
+    for (const id of idsOfChangedThings) {
+      checkMethodCallers(this.workspace, id, editor);
+      checkComponentReferences(this.workspace, id, editor);
+    }
   },
   /**
    * setNameOfChildBlock is called from mrc_mechanism, mrc_component, and mrc_event blocks when they
