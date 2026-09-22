@@ -23,5 +23,5 @@
     "noUncheckedSideEffectImports": true,
     "noImplicitAny": true
   },
-  "include": ["frontend", "tests/App.test.tsx", "tests/setupTests.ts"]
+  "include": ["frontend", "tests/App.test.tsx", "tests/blocks_lib.test.ts", "tests/library_tree.test.ts", "tests/setupTests.ts"]
 }

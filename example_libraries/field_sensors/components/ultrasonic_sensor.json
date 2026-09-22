@@ -1,0 +1,63 @@
+{
+  "className": "field_sensors.sensors.UltrasonicSensor",
+  "moduleName": "field_sensors.sensors",
+  "constructors": [
+    {
+      "functionName": "__init__",
+      "tooltip": "An analog ultrasonic distance sensor plugged into a Smart IO port.",
+      "args": [
+        {
+          "name": "channel",
+          "type": "int"
+        },
+        {
+          "name": "inches_per_volt",
+          "type": "float",
+          "defaultValue": "40.0"
+        }
+      ],
+      "isComponent": true,
+      "componentArgs": [
+        {
+          "name": "smart_io_port",
+          "type": "SYSTEMCORE_SMART_IO_PORT"
+        },
+        {
+          "name": "inches_per_volt",
+          "type": "float",
+          "defaultValue": "40.0"
+        }
+      ]
+    }
+  ],
+  "instanceMethods": [
+    {
+      "functionName": "get_distance_inches",
+      "tooltip": "Returns the distance to the nearest object, in inches.",
+      "args": [
+        {
+          "name": "self",
+          "type": "field_sensors.sensors.UltrasonicSensor"
+        }
+      ],
+      "returnType": "float",
+      "isCommon": true
+    },
+    {
+      "functionName": "is_closer_than",
+      "tooltip": "Returns True if the nearest object is closer than the given distance.",
+      "args": [
+        {
+          "name": "self",
+          "type": "field_sensors.sensors.UltrasonicSensor"
+        },
+        {
+          "name": "inches",
+          "type": "float"
+        }
+      ],
+      "returnType": "bool",
+      "isCommon": true
+    }
+  ]
+}

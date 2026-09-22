@@ -1,0 +1,983 @@
+{
+    "aliases": {},
+    "classes": [
+        {
+            "className": "rev.A301.Faults",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "rev.A301.Faults",
+                    "functionName": "__init__",
+                    "returnType": "rev.A301.Faults",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "faults",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "rev.A301.Faults",
+                    "functionName": "__init__",
+                    "returnType": "rev.A301.Faults",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [],
+            "instanceVariables": [
+                {
+                    "name": "can",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "esc_eeprom",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "firmware",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "gate_driver",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "motor_startup",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "other",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "raw_bits",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                },
+                {
+                    "name": "sensor",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "temperature",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                }
+            ],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        },
+        {
+            "className": "rev.A301.FirmwareVersion",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "rev.A301.FirmwareVersion",
+                    "functionName": "__init__",
+                    "returnType": "rev.A301.FirmwareVersion",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [],
+            "instanceVariables": [
+                {
+                    "name": "major",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                },
+                {
+                    "name": "minor",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                },
+                {
+                    "name": "patch",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                },
+                {
+                    "name": "prerelease",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                }
+            ],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        },
+        {
+            "className": "rev.A301.Warnings",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "rev.A301.Warnings",
+                    "functionName": "__init__",
+                    "returnType": "rev.A301.Warnings",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "warnings",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "rev.A301.Warnings",
+                    "functionName": "__init__",
+                    "returnType": "rev.A301.Warnings",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [],
+            "instanceVariables": [
+                {
+                    "name": "brownout",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "esc_eeprom",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "ext_eeprom",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "has_reset",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "motor_loop_speed",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "other",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "overcurrent",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "overvoltage",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "raw_bits",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                },
+                {
+                    "name": "sensor",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                },
+                {
+                    "name": "stall",
+                    "tooltip": "",
+                    "type": "bool",
+                    "writable": true
+                }
+            ],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        },
+        {
+            "className": "rev.CIEColor",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "x",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "y",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "z",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "rev.CIEColor",
+                    "functionName": "__init__",
+                    "returnType": "rev.CIEColor",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.CIEColor"
+                        }
+                    ],
+                    "declaringClassName": "rev.CIEColor",
+                    "functionName": "get_x",
+                    "returnType": "float",
+                    "tooltip": "Get the X component of the color\n\n:returns: CIE X"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.CIEColor"
+                        }
+                    ],
+                    "declaringClassName": "rev.CIEColor",
+                    "functionName": "get_y",
+                    "returnType": "float",
+                    "tooltip": "Get the Y component of the color\n\n:returns: CIE Y"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.CIEColor"
+                        }
+                    ],
+                    "declaringClassName": "rev.CIEColor",
+                    "functionName": "get_yx",
+                    "returnType": "float",
+                    "tooltip": "Get the x calculated coordinate\nof the CIE 19313 color space\n\nhttps://en.wikipedia.org/wiki/CIE_1931_color_space\n\n:returns: CIE Yx"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.CIEColor"
+                        }
+                    ],
+                    "declaringClassName": "rev.CIEColor",
+                    "functionName": "get_yy",
+                    "returnType": "float",
+                    "tooltip": "Get the y calculated coordinate\nof the CIE 19313 color space\n\nhttps://en.wikipedia.org/wiki/CIE_1931_color_space\n\n:returns: CIE Yy"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.CIEColor"
+                        }
+                    ],
+                    "declaringClassName": "rev.CIEColor",
+                    "functionName": "get_z",
+                    "returnType": "float",
+                    "tooltip": "Get the Z component of the color\n\n:returns: CIE Z"
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        },
+        {
+            "className": "rev.ColorMatch",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "rev.ColorMatch",
+                    "functionName": "__init__",
+                    "returnType": "rev.ColorMatch",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.ColorMatch"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "color",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "declaringClassName": "rev.ColorMatch",
+                    "functionName": "add_color_match",
+                    "returnType": "None",
+                    "tooltip": "Add color to match object\n\n:param color: color to add to matching"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.ColorMatch"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "color_to_match",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "declaringClassName": "rev.ColorMatch",
+                    "functionName": "match_closest_color",
+                    "returnType": "tuple[wpiutil.Color, float]",
+                    "tooltip": "MatchColor uses euclidean distance to compare a given normalized RGB\nvector against stored values\n\n:param color_to_match: color to compare against stored colors\n:param confidence:     The confidence value for this match, this is\n                       simply 1 - euclidean distance of the two color vectors\n\n:returns: Closest matching color"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.ColorMatch"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "color_to_match",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "declaringClassName": "rev.ColorMatch",
+                    "functionName": "match_color",
+                    "returnType": "wpiutil.Color | None",
+                    "tooltip": "MatchColor uses euclidean distance to compare a given normalized RGB\nvector against stored values\n\n:param color_to_match: color to compare against stored colors\n\n:returns: Matched color if detected"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.ColorMatch"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "color_to_match",
+                            "type": "wpiutil.Color"
+                        }
+                    ],
+                    "declaringClassName": "rev.ColorMatch",
+                    "functionName": "match_color",
+                    "returnType": "tuple[wpiutil.Color | None, float]",
+                    "tooltip": "MatchColor uses euclidean distance to compare a given normalized RGB\nvector against stored values\n\n:param color_to_match: color to compare against stored colors\n:param confidence:     The confidence value for this match, this is\n                       simply 1 - euclidean distance of the two color vectors\n\n:returns: Matched color if detected"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.ColorMatch"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "confidence",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "rev.ColorMatch",
+                    "functionName": "set_confidence_threshold",
+                    "returnType": "None",
+                    "tooltip": "Set the confidence interval for determining color. Defaults to 0.95\n\n:param confidence: A value between 0 and 1"
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        },
+        {
+            "className": "rev.ColorSensorV3.RawColor",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "r",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "g",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "b",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "_ir",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "rev.ColorSensorV3.RawColor",
+                    "functionName": "__init__",
+                    "returnType": "rev.ColorSensorV3.RawColor",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [],
+            "instanceVariables": [
+                {
+                    "name": "blue",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                },
+                {
+                    "name": "green",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                },
+                {
+                    "name": "ir",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                },
+                {
+                    "name": "red",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                }
+            ],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        },
+        {
+            "className": "rev.Signal_A301Faults",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "rev.A301.Faults"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "error",
+                            "type": "rev.REVLibError"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Faults",
+                    "functionName": "__init__",
+                    "returnType": "rev.Signal_A301Faults",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Faults"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Faults",
+                    "functionName": "get",
+                    "returnType": "rev.A301.Faults",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Faults"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "default_value",
+                            "type": "rev.A301.Faults"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Faults",
+                    "functionName": "get",
+                    "returnType": "rev.A301.Faults",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Faults"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Faults",
+                    "functionName": "get_error",
+                    "returnType": "rev.REVLibError",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Faults"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Faults",
+                    "functionName": "get_timestamp",
+                    "returnType": "int",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Faults"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Faults",
+                    "functionName": "is_valid",
+                    "returnType": "bool",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        },
+        {
+            "className": "rev.Signal_A301Warnings",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "rev.A301.Warnings"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "error",
+                            "type": "rev.REVLibError"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Warnings",
+                    "functionName": "__init__",
+                    "returnType": "rev.Signal_A301Warnings",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Warnings"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Warnings",
+                    "functionName": "get",
+                    "returnType": "rev.A301.Warnings",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Warnings"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "default_value",
+                            "type": "rev.A301.Warnings"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Warnings",
+                    "functionName": "get",
+                    "returnType": "rev.A301.Warnings",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Warnings"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Warnings",
+                    "functionName": "get_error",
+                    "returnType": "rev.REVLibError",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Warnings"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Warnings",
+                    "functionName": "get_timestamp",
+                    "returnType": "int",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_A301Warnings"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_A301Warnings",
+                    "functionName": "is_valid",
+                    "returnType": "bool",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        },
+        {
+            "className": "rev.Signal_bool",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "bool"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "error",
+                            "type": "rev.REVLibError"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_bool",
+                    "functionName": "__init__",
+                    "returnType": "rev.Signal_bool",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_bool"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_bool",
+                    "functionName": "get",
+                    "returnType": "bool",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_bool"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "default_value",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_bool",
+                    "functionName": "get",
+                    "returnType": "bool",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_bool"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_bool",
+                    "functionName": "get_error",
+                    "returnType": "rev.REVLibError",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_bool"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_bool",
+                    "functionName": "get_timestamp",
+                    "returnType": "int",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_bool"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_bool",
+                    "functionName": "is_valid",
+                    "returnType": "bool",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        },
+        {
+            "className": "rev.Signal_double",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "error",
+                            "type": "rev.REVLibError"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_double",
+                    "functionName": "__init__",
+                    "returnType": "rev.Signal_double",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_double"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_double",
+                    "functionName": "get",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_double"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "default_value",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_double",
+                    "functionName": "get",
+                    "returnType": "float",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_double"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_double",
+                    "functionName": "get_error",
+                    "returnType": "rev.REVLibError",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_double"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_double",
+                    "functionName": "get_timestamp",
+                    "returnType": "int",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "rev.Signal_double"
+                        }
+                    ],
+                    "declaringClassName": "rev.Signal_double",
+                    "functionName": "is_valid",
+                    "returnType": "bool",
+                    "tooltip": ""
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "rev",
+            "staticMethods": []
+        }
+    ],
+    "modules": [
+        {
+            "enums": [
+                {
+                    "enumClassName": "rev.REVLibError",
+                    "enumValues": [
+                        "CANNOT_PERSIST_PARAMETERS_WHILE_ENABLED",
+                        "CANT_FIND_FIRMWARE",
+                        "CAN_DISCONNECTED",
+                        "DUPLICATE_CAN_ID",
+                        "ERROR",
+                        "FEEDBACK_SENSOR_INCOMPATIBLE_WITH_DATA_PORT_CONFIG",
+                        "FIRMWARE_TOO_NEW",
+                        "FIRMWARE_TOO_OLD",
+                        "FOLLOW_CONFIG_MISMATCH",
+                        "HAL_ERROR",
+                        "INVALID",
+                        "INVALID_BRUSHLESS_ENCODER_CONFIGURATION",
+                        "INVALID_CAN_ID",
+                        "NOT_IMPLEMENTED",
+                        "OK",
+                        "PARAM_ACCESS_MODE",
+                        "PARAM_INVALID",
+                        "PARAM_INVALID_CHANNEL",
+                        "PARAM_INVALID_ID",
+                        "PARAM_INVALID_VALUE",
+                        "PARAM_MISMATCH_TYPE",
+                        "PARAM_NOT_IMPLEMENTED_DEPRECATED",
+                        "SETPOINT_OUT_OF_RANGE",
+                        "SPARK_FLEX_BRUSHED_WITHOUT_DOCK",
+                        "SPARK_MAX_DATA_PORT_ALREADY_CONFIGURED_DIFFERENTLY",
+                        "TIMEOUT",
+                        "UNKNOWN"
+                    ],
+                    "moduleName": "rev",
+                    "tooltip": "Members:\n\n  OK\n\n  ERROR\n\n  TIMEOUT\n\n  NOT_IMPLEMENTED\n\n  HAL_ERROR\n\n  CANT_FIND_FIRMWARE\n\n  FIRMWARE_TOO_OLD\n\n  FIRMWARE_TOO_NEW\n\n  PARAM_INVALID_ID\n\n  PARAM_MISMATCH_TYPE\n\n  PARAM_ACCESS_MODE\n\n  PARAM_INVALID\n\n  PARAM_NOT_IMPLEMENTED_DEPRECATED\n\n  FOLLOW_CONFIG_MISMATCH\n\n  INVALID\n\n  SETPOINT_OUT_OF_RANGE\n\n  UNKNOWN\n\n  CAN_DISCONNECTED\n\n  DUPLICATE_CAN_ID\n\n  INVALID_CAN_ID\n\n  SPARK_MAX_DATA_PORT_ALREADY_CONFIGURED_DIFFERENTLY\n\n  SPARK_FLEX_BRUSHED_WITHOUT_DOCK\n\n  INVALID_BRUSHLESS_ENCODER_CONFIGURATION\n\n  FEEDBACK_SENSOR_INCOMPATIBLE_WITH_DATA_PORT_CONFIG\n\n  PARAM_INVALID_CHANNEL\n\n  PARAM_INVALID_VALUE\n\n  CANNOT_PERSIST_PARAMETERS_WHILE_ENABLED"
+                }
+            ],
+            "functions": [],
+            "moduleName": "rev",
+            "moduleVariables": []
+        }
+    ],
+    "subclasses": {
+        "wpilib.MotorController": [
+            "rev.A301"
+        ]
+    }
+}

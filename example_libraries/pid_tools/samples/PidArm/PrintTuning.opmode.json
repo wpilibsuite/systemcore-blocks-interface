@@ -1,0 +1,317 @@
+{
+  "moduleType": "opmode",
+  "moduleId": "*l*j/M%0^kwB3d4;a55k",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_opmode_details",
+          "id": "Q@(3|mNK.O1+d|S)^?yQ",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "fields": {
+            "TYPE": "Utility",
+            "ENABLED": true,
+            "NAME": "",
+            "GROUP": "",
+            "DESCRIPTION": "Prints the Ziegler-Nichols PID gains for an ultimate gain of 0.01 and an oscillation period of 0.5 seconds."
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "p$3x~$2/R;Vcbv*=$,ee",
+          "x": 10,
+          "y": 310,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "p$3x~$2/R;Vcbv*=$,ee",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          },
+          "inputs": {
+            "STACK": {
+              "block": {
+                "type": "text_print",
+                "id": "|[v;i7m$NL`9)IQ.Q0l6",
+                "inputs": {
+                  "TEXT": {
+                    "block": {
+                      "type": "text_join",
+                      "id": "|eo8A|3,^/z;=~h*A@G~",
+                      "extraState": {
+                        "itemCount": 2
+                      },
+                      "inputs": {
+                        "ADD0": {
+                          "block": {
+                            "type": "text",
+                            "id": "lWO|BqqqXIFp:qC?1v-*",
+                            "fields": {
+                              "TEXT": "kp: "
+                            }
+                          }
+                        },
+                        "ADD1": {
+                          "block": {
+                            "type": "mrc_call_python_function",
+                            "id": "M{oycZUsmyN6o3fN-sm8",
+                            "extraState": {
+                              "functionKind": "module",
+                              "returnType": "float",
+                              "args": [
+                                {
+                                  "name": "ultimate_gain",
+                                  "type": "float"
+                                }
+                              ],
+                              "tooltip": "Returns kp for a PID controller.",
+                              "importModule": "pid_tools.tuning",
+                              "moduleOrClassName": "pid_tools.tuning"
+                            },
+                            "fields": {
+                              "MODULE_OR_CLASS": "pid_tools.tuning",
+                              "FUNC": "ziegler_nichols_kp"
+                            },
+                            "inputs": {
+                              "ARG0": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "CxtDtj!~L+.o:q#n$+bu",
+                                  "fields": {
+                                    "NUM": 1
+                                  }
+                                },
+                                "block": {
+                                  "type": "math_number",
+                                  "id": "jp9~/dJK%6CybPS;Yi%G",
+                                  "fields": {
+                                    "NUM": 0.01
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "block": {
+                    "type": "text_print",
+                    "id": "qncSiNxoP-!c+qw}2,!;",
+                    "inputs": {
+                      "TEXT": {
+                        "block": {
+                          "type": "text_join",
+                          "id": "g}98Zdo_cfShwwIJ6Z9Q",
+                          "extraState": {
+                            "itemCount": 2
+                          },
+                          "inputs": {
+                            "ADD0": {
+                              "block": {
+                                "type": "text",
+                                "id": "]vt2jBu7fEDmmna=6mrU",
+                                "fields": {
+                                  "TEXT": "ki: "
+                                }
+                              }
+                            },
+                            "ADD1": {
+                              "block": {
+                                "type": "mrc_call_python_function",
+                                "id": "zfglu|:f.s(h4a{*]RZ*",
+                                "extraState": {
+                                  "functionKind": "module",
+                                  "returnType": "float",
+                                  "args": [
+                                    {
+                                      "name": "ultimate_gain",
+                                      "type": "float"
+                                    },
+                                    {
+                                      "name": "period",
+                                      "type": "float"
+                                    }
+                                  ],
+                                  "tooltip": "Returns ki for a PID controller.",
+                                  "importModule": "pid_tools.tuning",
+                                  "moduleOrClassName": "pid_tools.tuning"
+                                },
+                                "fields": {
+                                  "MODULE_OR_CLASS": "pid_tools.tuning",
+                                  "FUNC": "ziegler_nichols_ki"
+                                },
+                                "inputs": {
+                                  "ARG0": {
+                                    "shadow": {
+                                      "type": "math_number",
+                                      "id": "7t,I^Qg4=.R+O^_^NQBn",
+                                      "fields": {
+                                        "NUM": 1
+                                      }
+                                    },
+                                    "block": {
+                                      "type": "math_number",
+                                      "id": "15j`l7dTi([0;gf`LFp*",
+                                      "fields": {
+                                        "NUM": 0.01
+                                      }
+                                    }
+                                  },
+                                  "ARG1": {
+                                    "shadow": {
+                                      "type": "math_number",
+                                      "id": "{y%S(!aab9F(R1Kcn*;S",
+                                      "fields": {
+                                        "NUM": 1
+                                      }
+                                    },
+                                    "block": {
+                                      "type": "math_number",
+                                      "id": "5.nxcK[e17m0OsXob?%!",
+                                      "fields": {
+                                        "NUM": 0.5
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "block": {
+                        "type": "text_print",
+                        "id": "Fsr)=GGuci6Q6)a68_pY",
+                        "inputs": {
+                          "TEXT": {
+                            "block": {
+                              "type": "text_join",
+                              "id": "}:ZBBW@N/6Y8fw8gt%yK",
+                              "extraState": {
+                                "itemCount": 2
+                              },
+                              "inputs": {
+                                "ADD0": {
+                                  "block": {
+                                    "type": "text",
+                                    "id": "WycqH0B:oQt;feNu:KA!",
+                                    "fields": {
+                                      "TEXT": "kd: "
+                                    }
+                                  }
+                                },
+                                "ADD1": {
+                                  "block": {
+                                    "type": "mrc_call_python_function",
+                                    "id": ";1H(oYwF*+v:j.g~GUuf",
+                                    "extraState": {
+                                      "functionKind": "module",
+                                      "returnType": "float",
+                                      "args": [
+                                        {
+                                          "name": "ultimate_gain",
+                                          "type": "float"
+                                        },
+                                        {
+                                          "name": "period",
+                                          "type": "float"
+                                        }
+                                      ],
+                                      "tooltip": "Returns kd for a PID controller.",
+                                      "importModule": "pid_tools.tuning",
+                                      "moduleOrClassName": "pid_tools.tuning"
+                                    },
+                                    "fields": {
+                                      "MODULE_OR_CLASS": "pid_tools.tuning",
+                                      "FUNC": "ziegler_nichols_kd"
+                                    },
+                                    "inputs": {
+                                      "ARG0": {
+                                        "shadow": {
+                                          "type": "math_number",
+                                          "id": "2~:][8i^tjdfi6AqKksq",
+                                          "fields": {
+                                            "NUM": 1
+                                          }
+                                        },
+                                        "block": {
+                                          "type": "math_number",
+                                          "id": "{JqVIg9o.,eGi1?NyGje",
+                                          "fields": {
+                                            "NUM": 0.01
+                                          }
+                                        }
+                                      },
+                                      "ARG1": {
+                                        "shadow": {
+                                          "type": "math_number",
+                                          "id": "T?80b7:-Y~ZHW9bs8DFr",
+                                          "fields": {
+                                            "NUM": 1
+                                          }
+                                        },
+                                        "block": {
+                                          "type": "math_number",
+                                          "id": "TXRyMF}L)z6(|z(/+53N",
+                                          "fields": {
+                                            "NUM": 0.5
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "}Q;^JAUZUs5W4koa7Cc_",
+          "x": 10,
+          "y": 510,
+          "editable": false,
+          "extraState": {
+            "methodId": "}Q;^JAUZUs5W4koa7Cc_",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": []
+          },
+          "fields": {
+            "NAME": "periodic"
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [],
+  "components": [],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}

@@ -1,0 +1,261 @@
+{
+  "moduleType": "opmode",
+  "moduleId": "DnDGPa!g|r2pFRM+!seI",
+  "blocks": {
+    "blocks": {
+      "languageVersion": 0,
+      "blocks": [
+        {
+          "type": "mrc_opmode_details",
+          "id": "!taM?{wNj-zAWzpJHE3~",
+          "x": 10,
+          "y": 10,
+          "deletable": false,
+          "fields": {
+            "TYPE": "Teleop",
+            "ENABLED": true,
+            "NAME": "",
+            "GROUP": "",
+            "DESCRIPTION": "Hold A to move the arm to position 500. Let go to turn the motor off."
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "Kv8[xE3)hhV|A=H.npV/",
+          "x": 10,
+          "y": 310,
+          "deletable": false,
+          "editable": false,
+          "extraState": {
+            "methodId": "Kv8[xE3)hhV|A=H.npV/",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": [],
+            "pythonMethodName": "__init__"
+          },
+          "fields": {
+            "NAME": "init"
+          },
+          "inputs": {
+            "STACK": {
+              "block": {
+                "type": "mrc_call_python_function",
+                "id": ")N19PKCMqJc;R~KWyWcu",
+                "extraState": {
+                  "functionKind": "instance_component",
+                  "returnType": "None",
+                  "args": [
+                    {
+                      "name": "enabled",
+                      "type": "bool"
+                    }
+                  ],
+                  "tooltip": "Sets if the motor output is enabled or not. Defaults to false.\n\n:param enabled: True to enable, false to disable",
+                  "componentId": "z]?QLbxGA*%M!~;BBFGi",
+                  "componentClassName": "wpilib.ExpansionHubMotor"
+                },
+                "fields": {
+                  "COMPONENT_NAME": "arm_motor",
+                  "FUNC": "set_enabled"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "logic_boolean",
+                      "id": "jG[J#slSZtckA`|$q6vN",
+                      "fields": {
+                        "BOOL": "TRUE"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "mrc_class_method_def",
+          "id": "qG84U)Ht=X7_u^mYE($,",
+          "x": 10,
+          "y": 510,
+          "editable": false,
+          "extraState": {
+            "methodId": "qG84U)Ht=X7_u^mYE($,",
+            "canChangeSignature": false,
+            "canBeCalledWithinClass": false,
+            "canBeCalledOutsideClass": false,
+            "returnType": "None",
+            "params": []
+          },
+          "fields": {
+            "NAME": "periodic"
+          },
+          "inputs": {
+            "STACK": {
+              "block": {
+                "type": "controls_if",
+                "id": ")2An_7hjy!6U9u3j$a0$",
+                "extraState": {
+                  "hasElse": true
+                },
+                "inputs": {
+                  "IF0": {
+                    "block": {
+                      "type": "mrc_gamepad_boolean",
+                      "id": ")U^.8cqEJbtObza;=`XM",
+                      "fields": {
+                        "GAMEPAD_PORT": "0",
+                        "GAMEPAD_BUTTON": "SOUTH_FACE",
+                        "GAMEPAD_ACTION": "IS_DOWN"
+                      }
+                    }
+                  },
+                  "DO0": {
+                    "block": {
+                      "type": "mrc_call_python_function",
+                      "id": "og%%0%hH}ivAc,VokdAg",
+                      "extraState": {
+                        "functionKind": "instance_component",
+                        "returnType": "None",
+                        "args": [
+                          {
+                            "name": "throttle",
+                            "type": "float"
+                          }
+                        ],
+                        "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.\n                 @Common This is one of the commonly used methods for this class",
+                        "componentId": "z]?QLbxGA*%M!~;BBFGi",
+                        "componentClassName": "wpilib.ExpansionHubMotor"
+                      },
+                      "fields": {
+                        "COMPONENT_NAME": "arm_motor",
+                        "FUNC": "set_throttle"
+                      },
+                      "inputs": {
+                        "ARG0": {
+                          "block": {
+                            "type": "mrc_call_python_function",
+                            "id": "te/.0thUZy%!3t?a~89t",
+                            "extraState": {
+                              "functionKind": "instance_component",
+                              "returnType": "float",
+                              "args": [
+                                {
+                                  "name": "measurement",
+                                  "type": "float"
+                                },
+                                {
+                                  "name": "setpoint",
+                                  "type": "float"
+                                }
+                              ],
+                              "tooltip": "Returns the output that moves the measurement toward the setpoint.",
+                              "componentId": "2+#V]7cN_!o?Pei:3,i2",
+                              "componentClassName": "pid_tools.controllers.SimplePID"
+                            },
+                            "fields": {
+                              "COMPONENT_NAME": "arm_pid",
+                              "FUNC": "calculate"
+                            },
+                            "inputs": {
+                              "ARG0": {
+                                "block": {
+                                  "type": "mrc_call_python_function",
+                                  "id": "f+!L/,Sw4m)?EI1wM0Ix",
+                                  "extraState": {
+                                    "functionKind": "instance_component",
+                                    "returnType": "float",
+                                    "args": [],
+                                    "tooltip": "Gets the current position of the motor encoder. Scaled into\ndistancePerCount units.\n\n:returns: Encoder position",
+                                    "componentId": "z]?QLbxGA*%M!~;BBFGi",
+                                    "componentClassName": "wpilib.ExpansionHubMotor"
+                                  },
+                                  "fields": {
+                                    "COMPONENT_NAME": "arm_motor",
+                                    "FUNC": "get_encoder_position"
+                                  }
+                                }
+                              },
+                              "ARG1": {
+                                "block": {
+                                  "type": "math_number",
+                                  "id": "~ScdWhW[PY}dIZ]ziU6Z",
+                                  "fields": {
+                                    "NUM": 500
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "ELSE": {
+                    "block": {
+                      "type": "mrc_call_python_function",
+                      "id": ";.W071|Qa0km_WX@^2T_",
+                      "extraState": {
+                        "functionKind": "instance_component",
+                        "returnType": "None",
+                        "args": [],
+                        "tooltip": "Clears the accumulated error.",
+                        "componentId": "2+#V]7cN_!o?Pei:3,i2",
+                        "componentClassName": "pid_tools.controllers.SimplePID"
+                      },
+                      "fields": {
+                        "COMPONENT_NAME": "arm_pid",
+                        "FUNC": "reset"
+                      },
+                      "next": {
+                        "block": {
+                          "type": "mrc_call_python_function",
+                          "id": "52Ymx*VF4=H8/b.9#!Iv",
+                          "extraState": {
+                            "functionKind": "instance_component",
+                            "returnType": "None",
+                            "args": [
+                              {
+                                "name": "throttle",
+                                "type": "float"
+                              }
+                            ],
+                            "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.\n                 @Common This is one of the commonly used methods for this class",
+                            "componentId": "z]?QLbxGA*%M!~;BBFGi",
+                            "componentClassName": "wpilib.ExpansionHubMotor"
+                          },
+                          "fields": {
+                            "COMPONENT_NAME": "arm_motor",
+                            "FUNC": "set_throttle"
+                          },
+                          "inputs": {
+                            "ARG0": {
+                              "block": {
+                                "type": "math_number",
+                                "id": "Yv=#bNg,jc[SqS|X$Oh9",
+                                "fields": {
+                                  "NUM": 0
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mechanisms": [],
+  "components": [],
+  "privateComponents": [],
+  "events": [],
+  "methods": []
+}

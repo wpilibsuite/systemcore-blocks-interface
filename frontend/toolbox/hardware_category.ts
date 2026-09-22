@@ -217,11 +217,23 @@ function getComponentsCategory(
 
   const contents: toolboxItems.ContentsType[] = [];
 
-  // Add the "+ Component" category
+  // Add the "+ Component" category, with a subcategory for the components from each third party
+  // library.
+  const showSimpleClassNames = editor.getShowSimpleClassNames();
+  const addComponentContents = getAllPossibleComponents(moduleType, showSimpleClassNames);
+  editor.getLibraryComponents().forEach(libraryComponents => {
+    addComponentContents.push({
+      kind: 'category',
+      name: libraryComponents.displayName,
+      contents: getAllPossibleComponents(
+          moduleType, showSimpleClassNames, libraryComponents.componentClasses),
+      ...(libraryComponents.colour ? {colour: libraryComponents.colour} : {}),
+    });
+  });
   contents.push({
     kind: 'category',
     name: Blockly.Msg['MRC_CATEGORY_ADD_COMPONENT'],
-    contents: getAllPossibleComponents(moduleType, editor.getShowSimpleClassNames()),
+    contents: addComponentContents,
   });
 
   // Get all (regular and private) components from the current workspace.

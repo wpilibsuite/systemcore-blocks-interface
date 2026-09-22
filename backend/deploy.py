@@ -11,6 +11,10 @@ import subprocess
 from flask import Response, jsonify, request
 from flask.views import MethodView
 
+# Our imports
+import blocks_lib
+from config import LIBRARIES_DIR
+
 BASE_DIR = "/home/systemcore"
 DEPLOY_DIR = BASE_DIR + "/blocks/deployedPython"
 PIP_CACHE_DIR = "/opt/blocks/cache/pip_cache"
@@ -66,6 +70,13 @@ class DeployResource(MethodView):
             # Remove the temporary zip file
             os.remove(temp_zip_path)
 
+            # Third party libraries used by the deployed code. This also copies their wheels into
+            # the pip cache so that the robotpy installer can install them.
+            requirements = [getWpilibBlocksRequirement()]
+            requirements.extend(blocks_lib.get_requirements_for_deploy(
+                deploy_dir, LIBRARIES_DIR, PIP_CACHE_DIR))
+            requires = ", ".join(f'"{r}"' for r in requirements)
+
             # Write pyproject.toml
             pyproject_path = os.path.join(deploy_dir, 'pyproject.toml')
             with open(pyproject_path, "w", encoding="utf-8") as f:
@@ -75,7 +86,7 @@ robotpy_version = "2027.0.0.a7"
 
 components = []
 
-requires = [ "{getWpilibBlocksRequirement()}", "robotpy-rev == 2027.0.0a7.post1"]
+requires = [ {requires}]
 """
                 )
                 f.write(toml_content);

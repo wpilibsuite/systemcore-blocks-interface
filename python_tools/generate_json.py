@@ -23,23 +23,13 @@ from absl import app
 from absl import flags
 from absl import logging
 
-# robotpy
-import ntcore
-import rev
-import wpilib
-import wpilib.simulation
-import wpimath
-import wpimath.units
-import wpinet
-import wpiutil
-
 # Runtime python
 sys.path.append("../runtime_python")
 import wpilib_blocks
 
 # Local modules
 import json_util
-import python_util
+import robotpy_modules
 
 
 FLAGS = flags.FLAGS
@@ -56,18 +46,7 @@ def main(argv):
 
   pathlib.Path(f'{FLAGS.output_directory}/generated/').mkdir(parents=True, exist_ok=True)
 
-  robotpy_modules = [
-    ntcore,
-    rev,
-    wpilib,
-    wpilib.simulation,
-    python_util.getModule('wpilib.sysid'),
-    wpimath,
-    wpimath.units,
-    wpinet,
-    wpiutil,
-  ]
-  json_generator_robotpy = json_util.JsonGenerator(robotpy_modules)
+  json_generator_robotpy = json_util.JsonGenerator(robotpy_modules.getRobotPyModules())
   file_path = f'{FLAGS.output_directory}/generated/robotpy_data.json'
   json_generator_robotpy.writeJsonFile(file_path)
 

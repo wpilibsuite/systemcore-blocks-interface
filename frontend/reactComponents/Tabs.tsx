@@ -51,6 +51,8 @@ import ClassNameComponent from './ClassNameComponent';
 import CopyModuleDialog from './CopyModuleDialog';
 import { TabType, TabTypeUtils } from '../types/TabType';
 import { TabContent, TabContentRef } from './TabContent';
+import { LibraryToolbox } from '../toolbox/library_toolbox';
+import { Library } from '../libraries/blocks_lib';
 
 /** Props passed by Antd.Tabs's default tab bar to each rendered tab node. */
 interface DraggableTabPaneProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -105,6 +107,8 @@ export interface TabsProps {
   renderer: string;
   showSimpleClassNames: boolean;
   shownPythonToolboxCategories: Set<string>;
+  libraries: Library[];
+  libraryToolbox: LibraryToolbox;
   messageApi: MessageInstance;
   openGamepadConfigDialog?: () => void;
   switchToProjectAndSelectTab: (project: storageProject.Project, tabKey: string) => void;
@@ -733,6 +737,8 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
                     renderer={props.renderer}
                     showSimpleClassNames={props.showSimpleClassNames}
                     shownPythonToolboxCategories={props.shownPythonToolboxCategories}
+                    libraries={props.libraries}
+                    libraryToolbox={props.libraryToolbox}
                     messageApi={props.messageApi}
                     setAlertErrorMessage={props.setAlertErrorMessage}
                     isActive={activeKey === tab.key}

@@ -1,0 +1,9 @@
+{
+  "description": "Reads a bumper, a beam break, and an ultrasonic distance sensor. Uses the Field Sensors library.",
+  "tags": [
+    "sensors",
+    "bumper",
+    "beam break",
+    "distance sensor"
+  ]
+}

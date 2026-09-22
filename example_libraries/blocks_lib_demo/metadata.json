@@ -1,0 +1,11 @@
+{
+  "formatVersion": 1,
+  "name": "blocks_demo",
+  "displayName": "%{NAME}",
+  "color": "#5C6BC0",
+  "version": "1.0.0",
+  "author": "FTC Tech Team",
+  "summary": "%{SUMMARY}",
+  "details": "%{DETAILS}",
+  "blocksVersion": ">=0.4.0"
+}

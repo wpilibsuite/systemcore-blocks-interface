@@ -1,0 +1,982 @@
+{
+    "className": "rev.A301",
+    "classVariables": [],
+    "constructors": [
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "can_port",
+                    "type": "wpilib.CANPort"
+                }
+            ],
+            "componentArgs": [
+                {
+                    "defaultValue": "",
+                    "name": "can_port",
+                    "type": "SYSTEMCORE_CAN_PORT"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "__init__",
+            "isComponent": true,
+            "returnType": "rev.A301",
+            "tooltip": "Create a new object to control a FIRST A301 motor\n\nNOTE: If canPort indicates a Motioncore bus, the device ID will be\nauto-detected, otherwise, the defaultDeviceId is used.\n\n:param can_port: The CAN port this device is connected to."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "can_port",
+                    "type": "wpilib.CANPort"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "device_id",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "__init__",
+            "returnType": "rev.A301",
+            "tooltip": "Create a new object to control a FIRST A301 motor\n\nNOTE: If canPort indicates a Motioncore bus, the device ID will be\nauto-detected and deviceId will be ignored.\n\n:param can_port:  The CAN port this device is connected to.\n:param device_id: The device ID."
+        }
+    ],
+    "enums": [
+        {
+            "enumClassName": "rev.A301.GearboxRPM",
+            "enumValues": [
+                "RPM_215",
+                "RPM_500",
+                "RPM_UNKNOWN"
+            ],
+            "moduleName": "rev",
+            "tooltip": "Members:\n\n  RPM_UNKNOWN\n\n  RPM_215\n\n  RPM_500"
+        },
+        {
+            "enumClassName": "rev.A301.IdleMode",
+            "enumValues": [
+                "BRAKE",
+                "COAST"
+            ],
+            "moduleName": "rev",
+            "tooltip": "Members:\n\n  COAST\n\n  BRAKE"
+        }
+    ],
+    "instanceMethods": [
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "absolute_encoder_position_period_ms",
+            "returnType": "rev.A301",
+            "tooltip": "Set the period (ms) of the status frame that provides the signal returned\nby GetAbsoluteEncoderPosition().\n\nThe default period is 20ms.\nThe maximum period is 1000ms (1s).\n\nIf multiple periods are set for signals within the same status frame,\nthe minimum given value will be used.\n\n:param period_ms: The period in milliseconds\n\n:returns: The modified A301 object for method chaining"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "applied_output_period_ms",
+            "returnType": "rev.A301",
+            "tooltip": "Set the period (ms) of the status frame that provides the signal returned\nby GetAppliedOutput().\n\nThe default period is 10ms.\nThe maximum period is 1000ms (1s).\n\nIf multiple periods are set for signals within the same status frame,\nthe minimum given value will be used.\n\n:param period_ms: The period in milliseconds\n\n:returns: The modified A301 object for method chaining"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "bus_voltage_period_ms",
+            "returnType": "rev.A301",
+            "tooltip": "Set the period (ms) of the status frame that provides the signal returned\nby GetBusVoltage().\n\nThe default period is 10ms.\nThe maximum period is 1000ms (1s).\n\nIf multiple periods are set for signals within the same status frame,\nthe minimum given value will be used.\n\n:param period_ms: The period in milliseconds\n\n:returns: The modified A301 object for method chaining"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "clear_faults",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Clears all sticky faults."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "disable",
+            "returnType": "None",
+            "tooltip": "Common interface for disabling a motor."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "disable_absolute_position_continuous_input",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Disables continuous input for absolute position control.\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "enable_absolute_position_continuous_input",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Enables continuous input for absolute position control.\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "encoder_velocity_period_ms",
+            "returnType": "rev.A301",
+            "tooltip": "Set the period (ms) of the status frame that provides the signal returned\nby GetEncoderVelocity().\n\nThe default period is 20ms.\nThe maximum period is 1000ms (1s).\n\nIf multiple periods are set for signals within the same status frame,\nthe minimum given value will be used.\n\n:param period_ms: The period in milliseconds\n\n:returns: The modified A301 object for method chaining"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "faults_period_ms",
+            "returnType": "rev.A301",
+            "tooltip": "Set the period (ms) of the status frame that provides the signal returned\nby GetFaults() and GetStickyFaults().\n\nThe default period is 50ms.\nThe maximum period is 1000ms (1s).\n\nIf multiple periods are set for signals within the same status frame,\nthe minimum given value will be used.\n\n:param period_ms: The period in milliseconds\n\n:returns: The modified A301 object for method chaining"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_absolute_encoder_position",
+            "isCommon": true,
+            "returnType": "rev.Signal_double",
+            "tooltip": "Get the absolute position of the motor. This returns the native units\nof 'rotations'.\n\n:returns: Signal containing the number of rotations of the motor"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_absolute_encoder_position_period_ms",
+            "returnType": "int",
+            "tooltip": "Get the period (ms) of the status frame that provides the signal returned\nby GetAbsoluteEncoderPosition().\n\n:returns: The period in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_absolute_encoder_range_offset",
+            "returnType": "float",
+            "tooltip": "Get the offset of the range about zero of the absolute encoder.\nThis returns the native units of 'rotations'.\n\n:returns: The range offset (in rotations) of the absolute encoder"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_applied_output",
+            "returnType": "rev.Signal_double",
+            "tooltip": "Returns the A301's output duty cycle.\n\n:returns: Signal containing the applied output duty cycle"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_applied_output_period_ms",
+            "returnType": "int",
+            "tooltip": "Get the period (ms) of the status frame that provides the signal returned\nby GetAppliedOutput().\n\n:returns: The period in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_bus_voltage",
+            "returnType": "rev.Signal_double",
+            "tooltip": "Returns the voltage fed into the A301.\n\n:returns: Signal containing the bus voltage"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_bus_voltage_period_ms",
+            "returnType": "int",
+            "tooltip": "Get the period (ms) of the status frame that provides the signal returned\nby GetBusVoltage().\n\n:returns: The period in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_can_port",
+            "returnType": "wpilib.CANPort",
+            "tooltip": "Get the configured CAN port of the FIRST A301.\n\n:returns: wpi::CANPort The CAN port this device is connected to"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_device_id",
+            "returnType": "int",
+            "tooltip": "Get the configured Device ID of the FIRST A301.\n\n:returns: int device ID"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_encoder_velocity",
+            "isCommon": true,
+            "returnType": "rev.Signal_double",
+            "tooltip": "Get the velocity of the motor. This returns the native units\nof 'RPM'.\n\n:returns: Signal containing the RPM of the motor"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_encoder_velocity_period_ms",
+            "returnType": "int",
+            "tooltip": "Get the period (ms) of the status frame that provides the signal returned\nby GetEncoderVelocity().\n\n:returns: The period in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_faults",
+            "returnType": "rev.Signal_A301Faults",
+            "tooltip": "Get the active faults that are currently present on the A301. Faults\nare fatal errors that prevent the motor from running.\n\n:returns: Signal containing each fault and their active value"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_faults_period_ms",
+            "returnType": "int",
+            "tooltip": "Get the period (ms) of the status frame that provides the signal returned\nby GetFaults() and GetStickyFaults().\n\n:returns: The period in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_firmware_string",
+            "returnType": "str",
+            "tooltip": "Get the firmware version of the FIRST A301 as a string.\n\n:returns: std::string Human readable firmware version string"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_firmware_version",
+            "returnType": "rev.A301.FirmwareVersion",
+            "tooltip": "Get the firmware version of the FIRST A301.\n\n:returns: FirmwareVersion"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_gearbox_rpm",
+            "returnType": "rev._rev.Signal_A301GearboxRPM",
+            "tooltip": "Returns the RPM of the A301's attached gearbox.\n\n:returns: Signal containing the gearbox RPM (@see GearboxRPM)"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_idle_mode",
+            "returnType": "rev.A301.IdleMode",
+            "tooltip": "Queries the Idle Mode of the motor\n\n:returns: the current idle mode"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_inverted",
+            "returnType": "bool",
+            "tooltip": "Common interface for getting the inversion state of the motor controller.\n\n:returns: The inversion state."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_motor_current",
+            "returnType": "rev.Signal_double",
+            "tooltip": "Returns A301's motor current in Amps.\n\n:returns: Signal containing the motor current in Amps"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_motor_current_period_ms",
+            "returnType": "int",
+            "tooltip": "Get the period (ms) of the status frame that provides the signal returned\nby GetMotorCurrent().\n\n:returns: The period in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_motor_temperature",
+            "returnType": "rev.Signal_double",
+            "tooltip": "Returns the motor temperature in Celsius.\n\n:returns: Signal containing the motor temperature in Celsius"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_motor_temperature_period_ms",
+            "returnType": "int",
+            "tooltip": "Get the period (ms) of the status frame that provides the signal returned\nby GetMotorTemperature().\n\n:returns: The period in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_relative_encoder_position",
+            "isCommon": true,
+            "returnType": "rev.Signal_double",
+            "tooltip": "Get the position of the motor. This returns the native units\nof 'rotations'.\n\n:returns: Signal containing the number of rotations of the motor"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_relative_encoder_position_period_ms",
+            "returnType": "int",
+            "tooltip": "Get the period (ms) of the status frame that provides the signal returned\nby GetRelativeEncoderPosition().\n\n:returns: The period in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_sticky_faults",
+            "returnType": "rev.Signal_A301Faults",
+            "tooltip": "Get the sticky faults that were present on the A301 at one point\nsince the sticky faults were last cleared. Faults are fatal errors\nthat prevent the motor from running.\n\nSticky faults can be cleared with A301::ClearFaults().\n\n:returns: Signal containing each fault and their sticky value"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_sticky_warnings",
+            "returnType": "rev.Signal_A301Warnings",
+            "tooltip": "Get the sticky warnings that were present on the A301 at one point\nsince the sticky warnings were last cleared. Warnings are non-fatal\nerrors.\n\nSticky warnings can be cleared with A301::clearFaults().\n\n:returns: Signal containing each warning and their sticky value"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_throttle",
+            "isCommon": true,
+            "returnType": "float",
+            "tooltip": "Gets the throttle of the motor controller.\n\n:returns: The throttle where -1.0 represents full reverse and 1.0\n          represents full forward."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_warnings",
+            "returnType": "rev.Signal_A301Warnings",
+            "tooltip": "Get the active warnings that are currently present on the A301.\nWarnings are non-fatal errors.\n\n:returns: Signal containing each warning and their active value"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "get_warnings_period_ms",
+            "returnType": "int",
+            "tooltip": "Get the period (ms) of the status frame that provides the signal returned\nby GetWarnings() and GetStickyWarnings().\n\n:returns: The period in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "has_active_fault",
+            "returnType": "rev.Signal_bool",
+            "tooltip": ""
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "has_active_warning",
+            "returnType": "rev.Signal_bool",
+            "tooltip": "Get whether the A301 has one or more active warnings.\n\n:returns: Signal containing true if there is an active warning\n          @see GetWarnings()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "has_sticky_fault",
+            "returnType": "rev.Signal_bool",
+            "tooltip": "Get whether the A301 has one or more sticky faults.\n\n:returns: Signal containing true if there is a sticky fault\n          @see GetStickyFaults()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "has_sticky_warning",
+            "returnType": "rev.Signal_bool",
+            "tooltip": "Get whether the A301 has one or more sticky warnings.\n\n:returns: Signal containing true if there is a sticky warning\n          @see GetStickyWarnings()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "is_absolute_position_continuous_input_enabled",
+            "returnType": "bool",
+            "tooltip": "Queries the continuous input for absolute position control.\n\n:returns: true if continuous input is enabled."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "motor_current_period_ms",
+            "returnType": "rev.A301",
+            "tooltip": "Set the period (ms) of the status frame that provides the signal returned\nby GetMotorCurrent().\n\nThe default period is 10ms.\nThe maximum period is 1000ms (1s).\n\nIf multiple periods are set for signals within the same status frame,\nthe minimum given value will be used.\n\n:param period_ms: The period in milliseconds\n\n:returns: The modified A301 object for method chaining"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "motor_temperature_period_ms",
+            "returnType": "rev.A301",
+            "tooltip": "Set the period (ms) of the status frame that provides the signal returned\nby GetMotorTemperature().\n\nThe default period is 10ms.\nThe maximum period is 1000ms (1s).\n\nIf multiple periods are set for signals within the same status frame,\nthe minimum given value will be used.\n\n:param period_ms: The period in milliseconds\n\n:returns: The modified A301 object for method chaining"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "relative_encoder_position_period_ms",
+            "returnType": "rev.A301",
+            "tooltip": "Set the period (ms) of the status frame that provides the signal returned\nby GetRelativeEncoderPosition().\n\nThe default period is 20ms.\nThe maximum period is 1000ms (1s).\n\nIf multiple periods are set for signals within the same status frame,\nthe minimum given value will be used.\n\n:param period_ms: The period in milliseconds\n\n:returns: The modified A301 object for method chaining"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "position",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_absolute_encoder_position",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Set the position of the absolute encoder.\n\n:param position: Number of rotations of the motor\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "offset",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_absolute_encoder_range_offset",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Set the offset of the range about zero of the absolute encoder. Moves the\nrange between (-1.0, 0] and [0, 1), instead of the default range [-0.5,\n0.5), assuming the default units of rotations.\n\n:param offset: Fraction of a rotation [-0.5, 0.5] to shift from 0\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "abs_position",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_absolute_position",
+            "isCommon": true,
+            "returnType": "rev.REVLibError",
+            "tooltip": "Sets the absolute position of the A301 (with maximum speed).\n\n:param abs_position: The absolute position (-0.5 to 0.5) to set\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "abs_position",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "speed",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_absolute_position_with_speed",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Sets the absolute position of the A301 with a specific speed.\n\nSetting speed <= 0 will apply maximum speed)\n\n:param abs_position: The absolute position (-0.5 to 0.5) to set\n:param speed:        The speed to approach the position at (in RPM)\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "current",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_current",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Sets the motor current of the A301.\n\n:param current: The current (in Amps) to drive the motor at\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "idle_mode",
+                    "type": "rev.A301.IdleMode"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_idle_mode",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Sets the Idle Mode for the motor\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "is_inverted",
+                    "type": "bool"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_inverted",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param is_inverted: The inversion state."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "position",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_relative_encoder_position",
+            "isCommon": true,
+            "returnType": "rev.REVLibError",
+            "tooltip": "Set the position of the relative encoder.\n\n:param position: Number of rotations of the motor\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "position",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_relative_position",
+            "isCommon": true,
+            "returnType": "rev.REVLibError",
+            "tooltip": "Sets the relative position of the A301 (with maximum speed).\n\n:param position: The relative position (in Rotations) to set\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "position",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "speed",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_relative_position_with_speed",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Sets the relative position of the A301 with a specific speed.\n\n:param position: The relative position (in Rotations) to set\n:param speed:    The speed to approach the position at (in RPM)\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "throttle",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_throttle",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1.0 indicates full reverse and 1.0\n                 indicates full forward."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "velocity",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_velocity",
+            "isCommon": true,
+            "returnType": "rev.REVLibError",
+            "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "output",
+                    "type": "wpimath.units.volts"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "set_voltage",
+            "returnType": "None",
+            "tooltip": "Sets the voltage output of the SpeedController. The behavior of\nthis call differs slightly from the WPILib documentation for this call\nsince the device internally sets the desired voltage (not a\ncompensation value). That means that this *can* be a 'set-and-forget'\ncall.\n\n:param output: The voltage to output. (-12.0 V to 12.0 V)"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.A301"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.A301",
+            "functionName": "warnings_period_ms",
+            "returnType": "rev.A301",
+            "tooltip": "Set the period (ms) of the status frame that provides the signal returned\nby GetWarnings() and GetStickyWarnings().\n\nThe default period is 50ms.\nThe maximum period is 1000ms (1s).\n\nIf multiple periods are set for signals within the same status frame,\nthe minimum given value will be used.\n\n:param period_ms: The period in milliseconds\n\n:returns: The modified A301 object for method chaining"
+        }
+    ],
+    "instanceVariables": [],
+    "isComponent": true,
+    "moduleName": "rev",
+    "staticMethods": []
+}

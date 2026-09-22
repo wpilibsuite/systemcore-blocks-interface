@@ -27,6 +27,7 @@ import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
 import * as storageNames from '../storage/names';
 import { isExistingPythonModule } from '../blocks/utils/python';
+import { isLibraryPythonModule } from '../libraries/library_registry';
 
 /** Methods exposed by ClassNameComponent via ref. */
 export interface ClassNameComponentRef {
@@ -85,7 +86,7 @@ const ClassNameComponent = React.forwardRef<ClassNameComponentRef, ClassNameComp
     }
 
     const moduleName = storageNames.pascalCaseToSnakeCase(newClassName);
-    if (isExistingPythonModule(moduleName)) {
+    if (isExistingPythonModule(moduleName) || isLibraryPythonModule(moduleName)) {
       error = t('PYTHON_MODULE_NAME_ALREADY_EXISTS', { name: newClassName, moduleName: moduleName });
     }
 

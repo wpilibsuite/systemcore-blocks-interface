@@ -1,0 +1,10 @@
+{
+  "formatVersion": 1,
+  "name": "pid_tools",
+  "displayName": "PID Tools",
+  "version": "1.3.0",
+  "author": "Control Freaks",
+  "summary": "A simple PID controller component and tuning helpers.",
+  "details": "Add a SimplePID component to your robot or mechanism and call calculate in a periodic method to get the output for a motor.\n\nThe PID Tuning category calculates starting gains with the Ziegler-Nichols method.",
+  "blocksVersion": ">=0.4.0"
+}

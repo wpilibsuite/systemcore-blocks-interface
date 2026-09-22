@@ -6,6 +6,8 @@ logger = logging.getLogger(__name__)
 
 DATA_DIR = os.path.expanduser('~systemcore/blocks')
 DB_PATH = os.path.join(DATA_DIR, 'projects.db')
+# Third party .blocks_lib libraries are installed here.
+LIBRARIES_DIR = os.path.join(DATA_DIR, 'libraries')
 
 os.makedirs(DATA_DIR, exist_ok=True)
 
