@@ -70,19 +70,19 @@
                       "type": ""
                     },
                     {
-                      "name": "frontLeft",
+                      "name": "front_left",
                       "type": ""
                     },
                     {
-                      "name": "frontRight",
+                      "name": "front_right",
                       "type": ""
                     },
                     {
-                      "name": "rearLeft",
+                      "name": "rear_left",
                       "type": ""
                     },
                     {
-                      "name": "rearRight",
+                      "name": "rear_right",
                       "type": ""
                     }
                   ],
@@ -92,7 +92,7 @@
                   "mechanismClassName": "mecanum_drive.MecanumDrive"
                 },
                 "fields": {
-                  "MECHANISM_NAME": "myMecanumDrive",
+                  "MECHANISM_NAME": "my_mecanum_drive",
                   "FUNC": "test"
                 },
                 "inputs": {

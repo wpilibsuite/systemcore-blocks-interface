@@ -23,6 +23,42 @@
           },
           "fields": {
             "NAME": "init"
+          },
+          "inputs": {
+            "STACK": {
+              "block": {
+                "type": "mrc_call_python_function",
+                "id": "E4w;b-6r]Eop:.h(jhcd",
+                "extraState": {
+                  "functionKind": "instance_component",
+                  "returnType": "None",
+                  "args": [
+                    {
+                      "name": "is_inverted",
+                      "type": "bool"
+                    }
+                  ],
+                  "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param is_inverted: The inversion state.",
+                  "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+                  "componentClassName": "rev.A301"
+                },
+                "fields": {
+                  "COMPONENT_NAME": "left_motor",
+                  "FUNC": "set_inverted"
+                },
+                "inputs": {
+                  "ARG0": {
+                    "block": {
+                      "type": "logic_boolean",
+                      "id": "y6DAW]PuPp3.CGUP,DmA",
+                      "fields": {
+                        "BOOL": "TRUE"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         {
@@ -44,14 +80,14 @@
                   "componentId": "WhvJZU6~HvvJd4D+/Ndy",
                   "params": [
                     {
-                      "name": "a301",
-                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                      "defaultValue": "5__3"
+                      "name": "can_port",
+                      "type": "SYSTEMCORE_CAN_PORT",
+                      "defaultValue": ""
                     }
                   ],
                   "importModule": "rev",
                   "className": "rev.A301",
-                  "tooltip": "Create a new object to control a FIRST A301 motor\n\nThe default A301 device ID is set to 3 out of the factory.\n\n:param busId:    The CAN bus ID this device will be on.\n:param deviceId: The device ID."
+                  "tooltip": "Create a new object to control a FIRST A301 motor\n\nNOTE: If canPort indicates a Motioncore bus, the device ID will be\nauto-detected, otherwise, the defaultDeviceId is used.\n\n:param can_port: The CAN port this device is connected to."
                 },
                 "fields": {
                   "NAME": "left_motor",
@@ -65,14 +101,14 @@
                       "componentId": "SYhz+hU`y},it/FInyrJ",
                       "params": [
                         {
-                          "name": "a301",
-                          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                          "defaultValue": "5__3"
+                          "name": "can_port",
+                          "type": "SYSTEMCORE_CAN_PORT",
+                          "defaultValue": ""
                         }
                       ],
                       "importModule": "rev",
                       "className": "rev.A301",
-                      "tooltip": "Create a new object to control a FIRST A301 motor\n\nThe default A301 device ID is set to 3 out of the factory.\n\n:param busId:    The CAN bus ID this device will be on.\n:param deviceId: The device ID."
+                      "tooltip": "Create a new object to control a FIRST A301 motor\n\nNOTE: If canPort indicates a Motioncore bus, the device ID will be\nauto-detected, otherwise, the defaultDeviceId is used.\n\n:param can_port: The CAN port this device is connected to."
                     },
                     "fields": {
                       "NAME": "right_motor",
@@ -131,7 +167,7 @@
                 },
                 "fields": {
                   "COMPONENT_NAME": "left_motor",
-                  "FUNC": "setThrottle"
+                  "FUNC": "set_throttle"
                 },
                 "inputs": {
                   "ARG0": {
@@ -197,7 +233,7 @@
                     },
                     "fields": {
                       "COMPONENT_NAME": "right_motor",
-                      "FUNC": "setThrottle"
+                      "FUNC": "set_throttle"
                     },
                     "inputs": {
                       "ARG0": {
@@ -286,7 +322,7 @@
                 },
                 "fields": {
                   "COMPONENT_NAME": "left_motor",
-                  "FUNC": "setThrottle"
+                  "FUNC": "set_throttle"
                 },
                 "inputs": {
                   "ARG0": {
@@ -318,7 +354,7 @@
                     },
                     "fields": {
                       "COMPONENT_NAME": "right_motor",
-                      "FUNC": "setThrottle"
+                      "FUNC": "set_throttle"
                     },
                     "inputs": {
                       "ARG0": {
@@ -348,9 +384,9 @@
       "className": "rev.A301",
       "args": [
         {
-          "name": "a301",
-          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-          "defaultValue": "5__3"
+          "name": "can_port",
+          "type": "SYSTEMCORE_CAN_PORT",
+          "defaultValue": ""
         }
       ]
     },
@@ -360,9 +396,9 @@
       "className": "rev.A301",
       "args": [
         {
-          "name": "a301",
-          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-          "defaultValue": "5__3"
+          "name": "can_port",
+          "type": "SYSTEMCORE_CAN_PORT",
+          "defaultValue": ""
         }
       ]
     }

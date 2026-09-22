@@ -122,7 +122,7 @@
                         "mechanismClassName": "mecanum_drive.MecanumDrive"
                       },
                       "fields": {
-                        "MECHANISM_NAME": "myMecanumDrive",
+                        "MECHANISM_NAME": "my_mecanum_drive",
                         "FUNC": "drive"
                       },
                       "inputs": {
@@ -204,7 +204,7 @@
                         "mechanismClassName": "mecanum_drive.MecanumDrive"
                       },
                       "fields": {
-                        "MECHANISM_NAME": "myMecanumDrive",
+                        "MECHANISM_NAME": "my_mecanum_drive",
                         "FUNC": "drive"
                       },
                       "inputs": {
@@ -221,7 +221,7 @@
                                   "type": "math_number",
                                   "id": "URoqKs1u?$amD-*S%%ag",
                                   "fields": {
-                                    "NUM": 0.5
+                                    "NUM": -0.5
                                   }
                                 }
                               },

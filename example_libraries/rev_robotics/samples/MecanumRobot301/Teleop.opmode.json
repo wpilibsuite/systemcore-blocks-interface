@@ -116,7 +116,7 @@
                             "type": ""
                           },
                           {
-                            "name": "maxVelocity",
+                            "name": "max_velocity",
                             "type": ""
                           }
                         ],
@@ -126,7 +126,7 @@
                         "mechanismClassName": "mecanum_drive.MecanumDrive"
                       },
                       "fields": {
-                        "MECHANISM_NAME": "myMecanumDrive",
+                        "MECHANISM_NAME": "my_mecanum_drive",
                         "FUNC": "drive"
                       },
                       "inputs": {
@@ -211,7 +211,7 @@
                             "type": ""
                           },
                           {
-                            "name": "maxVelocity",
+                            "name": "max_velocity",
                             "type": ""
                           }
                         ],
@@ -221,7 +221,7 @@
                         "mechanismClassName": "mecanum_drive.MecanumDrive"
                       },
                       "fields": {
-                        "MECHANISM_NAME": "myMecanumDrive",
+                        "MECHANISM_NAME": "my_mecanum_drive",
                         "FUNC": "drive"
                       },
                       "inputs": {
