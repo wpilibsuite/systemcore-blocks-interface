@@ -21,7 +21,7 @@ For each PR, make sure each of these works
 * [ ] Generate code (right now "Deploy") and make sure there are no errors in the console
 * [ ] Check that the deploy zip file contains robot.py, teleop.py, auto.py, and arm.py.
 # Libraries
-* [ ] Build the example libraries with `example_libraries/build.sh` and upload all five from Manage -> Libraries
+* [ ] Build the example libraries with `example_libraries/build.sh` and upload Blocks Demo Library from Manage -> Libraries
 * [ ] In the Robot, make sure LimitSwitch and Gripper show up in Components -> + Component -> Blocks Demo Library, add a Gripper, and make sure its methods show up in the toolbox
 * [ ] Uncheck Components -> Gripper in the Libraries dialog and make sure Gripper disappears from + Component -> Blocks Demo Library but the Gripper already in the Robot has no warning
 * [ ] Remove the library and make sure the block in the OpMode shows a warning
