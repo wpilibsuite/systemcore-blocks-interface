@@ -232,64 +232,15 @@ const MECHANISM_COMPONENT_HOLDER = {
       }
     }
 
-    if (!onLoad) {
-      if (mechanismBlockIds !== this.mrcMechanismBlockIds ||
-          componentBlockIds !== this.mrcComponentBlockIds ||
-          privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
-          eventBlockIds !== this.mrcEventBlockIds) {
-        editor.updateToolboxAfterDelay();
-      }
-    }
+    const somethingChanged = (
+        mechanismBlockIds !== this.mrcMechanismBlockIds ||
+        componentBlockIds !== this.mrcComponentBlockIds ||
+        privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
+        eventBlockIds !== this.mrcEventBlockIds);
 
-    const idsOfChangedThings: string[] = [];
     if (!onLoad) {
-      for (const id of this.mrcMechanismIds) {
-        if (!mechanismIds.includes(id)) {
-          // Mechanism was disconnected.
-          idsOfChangedThings.push(id);
-        }
-      }
-      for (const id of mechanismIds) {
-        if (!this.mrcMechanismIds.includes(id)) {
-          // Mechanism was connected.
-          idsOfChangedThings.push(id);
-        }
-      }
-      for (const id of this.mrcComponentIds) {
-        if (!componentIds.includes(id)) {
-          // Component was disconnected.
-          idsOfChangedThings.push(id);
-        }
-      }
-      for (const id of componentIds) {
-        if (!this.mrcComponentIds.includes(id)) {
-          // Component was connected.
-          idsOfChangedThings.push(id);
-        }
-      }
-      for (const id of this.mrcPrivateComponentIds) {
-        if (!privateComponentIds.includes(id)) {
-          // Private component was disconnected.
-          idsOfChangedThings.push(id);
-        }
-      }
-      for (const id of privateComponentIds) {
-        if (!this.mrcPrivateComponentIds.includes(id)) {
-          // Private component was connected.
-          idsOfChangedThings.push(id);
-        }
-      }
-      for (const id of this.mrcEventIds) {
-        if (!eventIds.includes(id)) {
-          // Event was disconnected.
-          idsOfChangedThings.push(id);
-        }
-      }
-      for (const id of eventIds) {
-        if (!this.mrcEventIds.includes(id)) {
-          // Event was disconnected.
-          idsOfChangedThings.push(id);
-        }
+      if (somethingChanged) {
+        editor.updateToolboxAfterDelay();
       }
     }
 
@@ -302,9 +253,11 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.mrcPrivateComponentIds = privateComponentIds;
     this.mrcEventIds = eventIds;
 
-    for (const id of idsOfChangedThings) {
-      checkMethodCallers(this.workspace, id, editor);
-      checkComponentReferences(this.workspace, id, editor);
+    if (!onLoad) {
+      if (somethingChanged) {
+        checkMethodCallers(this.workspace, editor);
+        checkComponentReferences(this.workspace, editor);
+      }
     }
   },
   /**

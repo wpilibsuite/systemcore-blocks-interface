@@ -28,7 +28,6 @@ import {
     getOutputCheck } from './utils/python';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { createFieldDropdown } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
@@ -47,6 +46,7 @@ const WARNING_ID_COMPONENT_CHANGED = 'component changed';
 type ComponentReferenceBlock = Blockly.Block & ComponentReferenceMixin;
 interface ComponentReferenceMixin extends ComponentReferenceMixinType {
   mrcComponentId: string,
+  mrcComponentName: string,
   mrcMechanismId: string,
   mrcComponentClassName: string,
   mrcMapComponentNameToId: {[componentName: string]: string},
@@ -81,6 +81,7 @@ const COMPONENT_REFERENCE = {
   init: function(this: ComponentReferenceBlock): void {
     this.setStyle(MRC_STYLE_COMPONENTS);
     this.setTooltip(() => {
+      this.updateComponentIdAndName();
       const className = this.mrcComponentClassName;
       let tooltip: string;
       if (this.mrcMechanismId) {
@@ -102,18 +103,13 @@ const COMPONENT_REFERENCE = {
    * Returns the state of this block as a JSON serializable object.
    */
   saveExtraState: function(this: ComponentReferenceBlock): ComponentReferenceExtraState {
-    const componentName = this.getFieldValue(FIELD_COMPONENT_NAME);
+    this.updateComponentIdAndName();
     const extraState: ComponentReferenceExtraState = {
       componentId: this.mrcComponentId,
       mechanismId: this.mrcMechanismId,
-      componentName: componentName,
+      componentName: this.getFieldValue(FIELD_COMPONENT_NAME),
       componentClassName: this.mrcComponentClassName,
     };
-    // Since the user may have chosen a different component name from the dropdown, we need to get
-    // the componentId of the component that the user has chosen.
-    if (componentName in this.mrcMapComponentNameToId) {
-      extraState.componentId = this.mrcMapComponentNameToId[componentName];
-    }
     return extraState;
   },
   /**
@@ -124,9 +120,10 @@ const COMPONENT_REFERENCE = {
       extraState: ComponentReferenceExtraState
   ): void {
     this.mrcComponentId = extraState.componentId ? extraState.componentId : '';
+    this.mrcComponentName = extraState.componentName ? extraState.componentName : '';
     this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : '';
     this.mrcComponentClassName = extraState.componentClassName ? extraState.componentClassName : '';
-    // Initialize mrcMapComponentNameToId here. It will be filled during checkBlock.
+    // mrcMapComponentNameToId will be filled during checkBlock.
     this.mrcMapComponentNameToId = {};
 
     // Set the output plug.
@@ -144,12 +141,35 @@ const COMPONENT_REFERENCE = {
           .appendField(createFieldNonEditableText(''), FIELD_MECHANISM_NAME)
           .appendField('.');
     }
-    // Here we create a text field for the component name.
-    // Later, in checkBlock, we will replace it with a dropdown.
+
+    // For the component name field, use a dropdown where the user can choose between different
+    // components of the same type. For example, they can easily switch from a motor component name
+    // "left_motor" to a motor component named "right_motor".
+    // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
+    // items in the component name dropdown if the user adds or removes a component.
     titleInput
-        .appendField(createFieldNonEditableText(''), FIELD_COMPONENT_NAME)
+        .appendField(new Blockly.FieldDropdown(this.getComponentNameMenuGenerator()), FIELD_COMPONENT_NAME)
         .appendField(Blockly.Msg['OF_TYPE'])
         .appendField(createFieldNonEditableText(''), FIELD_COMPONENT_CLASS_NAME);
+  },
+  getComponentNameMenuGenerator: function(this: ComponentReferenceBlock): Blockly.MenuGeneratorFunction {
+    const menuGenerator: Blockly.MenuGeneratorFunction = () => {
+      const options: Blockly.MenuOption[] = [];
+      for (const componentName in this.mrcMapComponentNameToId) {
+        options.push([componentName, componentName]);
+      }
+      if (options.length > 0) {
+        return options;
+      }
+
+      // Fall back on basic default options.
+      return [[this.mrcComponentName, this.mrcComponentName]];
+    };
+    return menuGenerator;
+  },
+  updateComponentNameMenu: function(this: ComponentReferenceBlock): void {
+    const field = this.getField(FIELD_COMPONENT_NAME) as Blockly.FieldDropdown | null;
+    field?.getOptions();
   },
   getComponents: function(this: ComponentReferenceBlock, editor: Editor): storageModuleContent.Component[] {
     // Get the list of components whose type matches this.mrcComponentClassName.
@@ -185,6 +205,41 @@ const COMPONENT_REFERENCE = {
     });
     return components;
   },
+  updateComponentIdAndName: function(this: ComponentReferenceBlock): void {
+    // Since the user may have chosen a different component name from the dropdown, we need to get
+    // the name and id of the component that the user has chosen.
+    this.mrcComponentName = this.getFieldValue(FIELD_COMPONENT_NAME);
+    if (this.mrcComponentName in this.mrcMapComponentNameToId) {
+      this.mrcComponentId = this.mrcMapComponentNameToId[this.mrcComponentName];
+    }
+  },
+  renameComponentOrMechanism: function(this: ComponentReferenceBlock, id: string, newName: string): void {
+    // renameComponentOrMechanism is called when a component or mechanism block in the same module is modified.
+    this.updateComponentIdAndName();
+
+    // Update mrcMapComponentNameToId.
+    let oldName: string | null = null;
+    for (const [mappedName, mappedId] of Object.entries(this.mrcMapComponentNameToId)) {
+      if (mappedId === id) {
+        oldName = mappedName;
+        break;
+      }
+    }
+    if (oldName) {
+      delete this.mrcMapComponentNameToId[oldName];
+      this.mrcMapComponentNameToId[newName] = id;
+      this.updateComponentNameMenu();
+    }
+
+    if (id === this.mrcComponentId) {
+      this.setFieldValue(newName, FIELD_COMPONENT_NAME);
+    }
+    if (this.mrcMechanismId) {
+      if (id === this.mrcMechanismId) {
+        this.setFieldValue(newName, FIELD_MECHANISM_NAME);
+      }
+    }
+  },
 
   /**
    * mrcOnModuleCurrent is called for each ComponentReferenceBlock when the module becomes the current module.
@@ -217,12 +272,14 @@ const COMPONENT_REFERENCE = {
     // If the component has changed, update the block.
     // If the component belongs to a mechanism, also check whether the mechanism
     // still exists and whether it has been changed.
+    this.updateComponentIdAndName();
     const componentNames: string[] = [];
     this.mrcMapComponentNameToId = {}
     this.getComponents(editor).forEach(component => {
       componentNames.push(component.name);
       this.mrcMapComponentNameToId[component.name] = component.componentId;
     });
+    this.updateComponentNameMenu();
 
     let warnedAboutMissingMechanism = false;
     if (this.mrcMechanismId) {
@@ -251,32 +308,7 @@ const COMPONENT_REFERENCE = {
         const componentId = this.mrcMapComponentNameToId[componentName];
         if (componentId === this.mrcComponentId) {
           foundComponent = true;
-
-          // Replace the text field for the component name with a dropdown where the user can choose
-          // between different components of the same type. For example, they can easily switch from
-          // a motor component name "left_motor" to a motor component named "right_motor".
-          const titleInput = this.getInput(INPUT_TITLE)
-          if (!titleInput) {
-            throw new Error('Could not find the title input');
-          }
-          let indexOfComponentNameField = -1;
-          for (let i = 0, field; (field = titleInput.fieldRow[i]); i++) {
-            if (field.name === FIELD_COMPONENT_NAME) {
-              indexOfComponentNameField = i;
-              break;
-            }
-          }
-          if (indexOfComponentNameField === -1) {
-            throw new Error('Could not find the component name field');
-          }
-          titleInput.removeField(FIELD_COMPONENT_NAME);
-          titleInput.insertFieldAt(indexOfComponentNameField,
-              createFieldDropdown(componentNames), FIELD_COMPONENT_NAME);
-          // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
-          // items in the dropdown if the user adds or removes a component.
-
           this.setFieldValue(componentName, FIELD_COMPONENT_NAME);
-
           // Since we found the component, we can break out of the loop.
           break;
         }
@@ -351,6 +383,7 @@ const COMPONENT_REFERENCE = {
    * mrcChangeIds is called when a module is copied so that the copy has different ids than the original.
    */
   mrcChangeIds: function (this: ComponentReferenceBlock, oldIdToNewId: { [oldId: string]: string }): void {
+    this.updateComponentIdAndName();
     if (this.mrcComponentId && this.mrcComponentId in oldIdToNewId) {
       this.mrcComponentId = oldIdToNewId[this.mrcComponentId];
     }
@@ -364,20 +397,9 @@ const COMPONENT_REFERENCE = {
       fullLabel += this.getFieldValue(FIELD_MECHANISM_NAME) + '.';
     }
     fullLabel += this.getFieldValue(FIELD_COMPONENT_NAME) +
-        Blockly.Msg['OF_TYPE'] +
+        ' ' + Blockly.Msg['OF_TYPE'] + ' ' +
         this.getFieldValue(FIELD_COMPONENT_CLASS_NAME);
     return fullLabel;
-  },
-  renameComponentOrMechanism: function(this: ComponentReferenceBlock, id: string, newName: string): void {
-    // renameComponentOrMechanism is called when a component or mechanism block in the same module is modified.
-    if (id === this.mrcComponentId) {
-      this.setFieldValue(newName, FIELD_COMPONENT_NAME);
-    }
-    if (this.mrcMechanismId) {
-      if (id === this.mrcMechanismId) {
-        this.setFieldValue(newName, FIELD_MECHANISM_NAME);
-      }
-    }
   },
 };
 
@@ -407,23 +429,16 @@ export function pythonFromBlock(
   return [code, Order.MEMBER];
 };
 
-function getAffectedBlocks(workspace: Blockly.Workspace, id: string): Blockly.Block[] {
-  return workspace.getBlocksByType(BLOCK_NAME).filter((block) => {
-    const componentReferenceBlock = block as ComponentReferenceBlock;
-    return (
-        componentReferenceBlock.mrcComponentId === id ||
-        componentReferenceBlock.mrcMechanismId === id);
-  });
-}
-
-export function checkComponentReferences(workspace: Blockly.Workspace, id: string, editor: Editor): void {
-  getAffectedBlocks(workspace, id).forEach(block => {
+export function checkComponentReferences(workspace: Blockly.Workspace, editor: Editor): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as ComponentReferenceBlock).checkBlock(editor);
   });
 }
 
 export function renameComponentOrMechanism(workspace: Blockly.Workspace, id: string, newName: string): void {
-  getAffectedBlocks(workspace, id).forEach(block => {
+  // We need to look at all CallPythonFunctionBlocks, not just ones with a matching id, because if
+  // the thing being renamed is a component, we need to update the component name dropdown fields.
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as ComponentReferenceBlock).renameComponentOrMechanism(id, newName);
   });
 }
