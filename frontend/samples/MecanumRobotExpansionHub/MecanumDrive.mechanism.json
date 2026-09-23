@@ -34,17 +34,17 @@
                   "returnType": "None",
                   "args": [
                     {
-                      "name": "isInverted",
+                      "name": "reversed",
                       "type": "bool"
                     }
                   ],
-                  "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param isInverted: The inversion state.",
-                  "componentId": "{{`w$7oY596YUEB-M89I",
-                  "componentClassName": "rev.A301"
+                  "tooltip": "Sets if the motor and encoder should be reversed.\n\n:param reversed: True to reverse encoder, false otherwise",
+                  "componentId": "L=[.Zwa0m-wsjV3_V$H-",
+                  "componentClassName": "wpilib.ExpansionHubMotor"
                 },
                 "fields": {
-                  "COMPONENT_NAME": "frontLeftMotor",
-                  "FUNC": "setInverted"
+                  "COMPONENT_NAME": "front_left_motor",
+                  "FUNC": "set_reversed"
                 },
                 "inputs": {
                   "ARG0": {
@@ -66,17 +66,17 @@
                       "returnType": "None",
                       "args": [
                         {
-                          "name": "isInverted",
+                          "name": "reversed",
                           "type": "bool"
                         }
                       ],
-                      "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param isInverted: The inversion state.",
-                      "componentId": "`2QvHlkPo?DykBZ1A-3K",
-                      "componentClassName": "rev.A301"
+                      "tooltip": "Sets if the motor and encoder should be reversed.\n\n:param reversed: True to reverse encoder, false otherwise",
+                      "componentId": "8QYP);O=X8hi1P*thE@-",
+                      "componentClassName": "wpilib.ExpansionHubMotor"
                     },
                     "fields": {
-                      "COMPONENT_NAME": "rearLeftMotor",
-                      "FUNC": "setInverted"
+                      "COMPONENT_NAME": "rear_left_motor",
+                      "FUNC": "set_reversed"
                     },
                     "inputs": {
                       "ARG0": {
@@ -132,17 +132,17 @@
                   "componentId": "L=[.Zwa0m-wsjV3_V$H-",
                   "params": [
                     {
-                      "name": "expansionHubMotor",
+                      "name": "expansion_hub_motor",
                       "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
                       "defaultValue": ""
                     }
                   ],
                   "importModule": "wpilib",
                   "className": "wpilib.ExpansionHubMotor",
-                  "tooltip": "Constructs a servo at the requested channel on a specific USB port.\n\n:param usbId:   The USB port ID the hub is connected to\n:param channel: The motor channel"
+                  "tooltip": "Constructs a motor at the requested channel on a specific USB port.\n\n:param usb_id:  The USB port ID the hub is connected to\n:param channel: The motor channel"
                 },
                 "fields": {
-                  "NAME": "frontLeftMotor",
+                  "NAME": "front_left_motor",
                   "TYPE": "ExpansionHubMotor"
                 },
                 "next": {
@@ -153,17 +153,17 @@
                       "componentId": "vWgSIOFxo!Yr0)~cYNL]",
                       "params": [
                         {
-                          "name": "expansionHubMotor",
+                          "name": "expansion_hub_motor",
                           "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
                           "defaultValue": ""
                         }
                       ],
                       "importModule": "wpilib",
                       "className": "wpilib.ExpansionHubMotor",
-                      "tooltip": "Constructs a servo at the requested channel on a specific USB port.\n\n:param usbId:   The USB port ID the hub is connected to\n:param channel: The motor channel"
+                      "tooltip": "Constructs a motor at the requested channel on a specific USB port.\n\n:param usb_id:  The USB port ID the hub is connected to\n:param channel: The motor channel"
                     },
                     "fields": {
-                      "NAME": "frontRightMotor",
+                      "NAME": "front_right_motor",
                       "TYPE": "ExpansionHubMotor"
                     },
                     "next": {
@@ -174,17 +174,17 @@
                           "componentId": "8QYP);O=X8hi1P*thE@-",
                           "params": [
                             {
-                              "name": "expansionHubMotor",
+                              "name": "expansion_hub_motor",
                               "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
                               "defaultValue": ""
                             }
                           ],
                           "importModule": "wpilib",
                           "className": "wpilib.ExpansionHubMotor",
-                          "tooltip": "Constructs a servo at the requested channel on a specific USB port.\n\n:param usbId:   The USB port ID the hub is connected to\n:param channel: The motor channel"
+                          "tooltip": "Constructs a motor at the requested channel on a specific USB port.\n\n:param usb_id:  The USB port ID the hub is connected to\n:param channel: The motor channel"
                         },
                         "fields": {
-                          "NAME": "rearLeftMotor",
+                          "NAME": "rear_left_motor",
                           "TYPE": "ExpansionHubMotor"
                         },
                         "next": {
@@ -195,17 +195,17 @@
                               "componentId": "X:x-zpSPSgeZv28MQ96e",
                               "params": [
                                 {
-                                  "name": "expansionHubMotor",
+                                  "name": "expansion_hub_motor",
                                   "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
                                   "defaultValue": ""
                                 }
                               ],
                               "importModule": "wpilib",
                               "className": "wpilib.ExpansionHubMotor",
-                              "tooltip": "Constructs a servo at the requested channel on a specific USB port.\n\n:param usbId:   The USB port ID the hub is connected to\n:param channel: The motor channel"
+                              "tooltip": "Constructs a motor at the requested channel on a specific USB port.\n\n:param usb_id:  The USB port ID the hub is connected to\n:param channel: The motor channel"
                             },
                             "fields": {
-                              "NAME": "rearRightMotor",
+                              "NAME": "rear_right_motor",
                               "TYPE": "ExpansionHubMotor"
                             }
                           }
@@ -235,19 +235,19 @@
                 "type": ""
               },
               {
-                "name": "frontLeft",
+                "name": "front_left",
                 "type": ""
               },
               {
-                "name": "frontRight",
+                "name": "front_right",
                 "type": ""
               },
               {
-                "name": "rearLeft",
+                "name": "rear_left",
                 "type": ""
               },
               {
-                "name": "rearRight",
+                "name": "rear_right",
                 "type": ""
               }
             ]
@@ -255,10 +255,10 @@
           "fields": {
             "NAME": "test",
             "PARAM_velocity": "velocity",
-            "PARAM_frontLeft": "frontLeft",
-            "PARAM_frontRight": "frontRight",
-            "PARAM_rearLeft": "rearLeft",
-            "PARAM_rearRight": "rearRight"
+            "PARAM_front_left": "front_left",
+            "PARAM_front_right": "front_right",
+            "PARAM_rear_left": "rear_left",
+            "PARAM_rear_right": "rear_right"
           },
           "inputs": {
             "STACK": {
@@ -274,7 +274,7 @@
                       "type": "mrc_get_parameter",
                       "id": "U)X75F8Q}8}THo#3=E:m",
                       "fields": {
-                        "PARAMETER_NAME": "frontLeft"
+                        "PARAMETER_NAME": "front_left"
                       }
                     }
                   },
@@ -296,8 +296,8 @@
                         "componentClassName": "wpilib.ExpansionHubMotor"
                       },
                       "fields": {
-                        "COMPONENT_NAME": "frontLeftMotor",
-                        "FUNC": "setThrottle"
+                        "COMPONENT_NAME": "front_left_motor",
+                        "FUNC": "set_throttle"
                       },
                       "inputs": {
                         "ARG0": {
@@ -330,8 +330,8 @@
                         "componentClassName": "wpilib.ExpansionHubMotor"
                       },
                       "fields": {
-                        "COMPONENT_NAME": "frontLeftMotor",
-                        "FUNC": "setThrottle"
+                        "COMPONENT_NAME": "front_left_motor",
+                        "FUNC": "set_throttle"
                       },
                       "inputs": {
                         "ARG0": {
@@ -360,7 +360,7 @@
                           "type": "mrc_get_parameter",
                           "id": "VQymzwv3W9)rY4uoRnQ,",
                           "fields": {
-                            "PARAMETER_NAME": "frontRight"
+                            "PARAMETER_NAME": "front_right"
                           }
                         }
                       },
@@ -378,12 +378,12 @@
                               }
                             ],
                             "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.",
-                            "componentId": "L=[.Zwa0m-wsjV3_V$H-",
+                            "componentId": "vWgSIOFxo!Yr0)~cYNL]",
                             "componentClassName": "wpilib.ExpansionHubMotor"
                           },
                           "fields": {
-                            "COMPONENT_NAME": "frontLeftMotor",
-                            "FUNC": "setThrottle"
+                            "COMPONENT_NAME": "front_right_motor",
+                            "FUNC": "set_throttle"
                           },
                           "inputs": {
                             "ARG0": {
@@ -412,12 +412,12 @@
                               }
                             ],
                             "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.",
-                            "componentId": "L=[.Zwa0m-wsjV3_V$H-",
+                            "componentId": "vWgSIOFxo!Yr0)~cYNL]",
                             "componentClassName": "wpilib.ExpansionHubMotor"
                           },
                           "fields": {
-                            "COMPONENT_NAME": "frontLeftMotor",
-                            "FUNC": "setThrottle"
+                            "COMPONENT_NAME": "front_right_motor",
+                            "FUNC": "set_throttle"
                           },
                           "inputs": {
                             "ARG0": {
@@ -446,7 +446,7 @@
                               "type": "mrc_get_parameter",
                               "id": ")tlbzS_vyC$Xhq!?1.Ad",
                               "fields": {
-                                "PARAMETER_NAME": "rearLeft"
+                                "PARAMETER_NAME": "rear_left"
                               }
                             }
                           },
@@ -464,12 +464,12 @@
                                   }
                                 ],
                                 "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.",
-                                "componentId": "vWgSIOFxo!Yr0)~cYNL]",
+                                "componentId": "8QYP);O=X8hi1P*thE@-",
                                 "componentClassName": "wpilib.ExpansionHubMotor"
                               },
                               "fields": {
-                                "COMPONENT_NAME": "frontRightMotor",
-                                "FUNC": "setThrottle"
+                                "COMPONENT_NAME": "rear_left_motor",
+                                "FUNC": "set_throttle"
                               },
                               "inputs": {
                                 "ARG0": {
@@ -498,12 +498,12 @@
                                   }
                                 ],
                                 "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.",
-                                "componentId": "vWgSIOFxo!Yr0)~cYNL]",
+                                "componentId": "8QYP);O=X8hi1P*thE@-",
                                 "componentClassName": "wpilib.ExpansionHubMotor"
                               },
                               "fields": {
-                                "COMPONENT_NAME": "frontRightMotor",
-                                "FUNC": "setThrottle"
+                                "COMPONENT_NAME": "rear_left_motor",
+                                "FUNC": "set_throttle"
                               },
                               "inputs": {
                                 "ARG0": {
@@ -532,7 +532,7 @@
                                   "type": "mrc_get_parameter",
                                   "id": "%L}4VJ4/;s:dOxEoW5#_",
                                   "fields": {
-                                    "PARAMETER_NAME": "rearRight"
+                                    "PARAMETER_NAME": "rear_right"
                                   }
                                 }
                               },
@@ -550,12 +550,12 @@
                                       }
                                     ],
                                     "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.",
-                                    "componentId": "8QYP);O=X8hi1P*thE@-",
+                                    "componentId": "X:x-zpSPSgeZv28MQ96e",
                                     "componentClassName": "wpilib.ExpansionHubMotor"
                                   },
                                   "fields": {
-                                    "COMPONENT_NAME": "rearLeftMotor",
-                                    "FUNC": "setThrottle"
+                                    "COMPONENT_NAME": "rear_right_motor",
+                                    "FUNC": "set_throttle"
                                   },
                                   "inputs": {
                                     "ARG0": {
@@ -584,12 +584,12 @@
                                       }
                                     ],
                                     "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.",
-                                    "componentId": "8QYP);O=X8hi1P*thE@-",
+                                    "componentId": "X:x-zpSPSgeZv28MQ96e",
                                     "componentClassName": "wpilib.ExpansionHubMotor"
                                   },
                                   "fields": {
-                                    "COMPONENT_NAME": "rearLeftMotor",
-                                    "FUNC": "setThrottle"
+                                    "COMPONENT_NAME": "rear_right_motor",
+                                    "FUNC": "set_throttle"
                                   },
                                   "inputs": {
                                     "ARG0": {
@@ -628,19 +628,19 @@
             "returnType": "None",
             "params": [
               {
-                "name": "frontLeft",
+                "name": "front_left",
                 "type": ""
               },
               {
-                "name": "frontRight",
+                "name": "front_right",
                 "type": ""
               },
               {
-                "name": "rearLeft",
+                "name": "rear_left",
                 "type": ""
               },
               {
-                "name": "rearRight",
+                "name": "rear_right",
                 "type": ""
               }
             ]
@@ -656,11 +656,11 @@
             }
           },
           "fields": {
-            "NAME": "setWheelVelocity",
-            "PARAM_frontLeft": "frontLeft",
-            "PARAM_frontRight": "frontRight",
-            "PARAM_rearLeft": "rearLeft",
-            "PARAM_rearRight": "rearRight"
+            "NAME": "set_wheel_velocity",
+            "PARAM_front_left": "front_left",
+            "PARAM_front_right": "front_right",
+            "PARAM_rear_left": "rear_left",
+            "PARAM_rear_right": "rear_right"
           },
           "inputs": {
             "STACK": {
@@ -701,7 +701,7 @@
                                   "type": "mrc_get_parameter",
                                   "id": "LTrYR@Xi0(-BTP|H{*:O",
                                   "fields": {
-                                    "PARAMETER_NAME": "frontLeft"
+                                    "PARAMETER_NAME": "front_left"
                                   }
                                 }
                               }
@@ -759,7 +759,7 @@
                                       "type": "mrc_get_parameter",
                                       "id": "-D!TPJIs~!NiB8:g])4/",
                                       "fields": {
-                                        "PARAMETER_NAME": "frontRight"
+                                        "PARAMETER_NAME": "front_right"
                                       }
                                     }
                                   }
@@ -819,7 +819,7 @@
                                           "type": "mrc_get_parameter",
                                           "id": "+^i9iFI^vUvZ4B,G7Lq1",
                                           "fields": {
-                                            "PARAMETER_NAME": "rearLeft"
+                                            "PARAMETER_NAME": "rear_left"
                                           }
                                         }
                                       }
@@ -879,7 +879,7 @@
                                               "type": "mrc_get_parameter",
                                               "id": "2srtU/w)j%W4Gxnl7#q+",
                                               "fields": {
-                                                "PARAMETER_NAME": "rearRight"
+                                                "PARAMETER_NAME": "rear_right"
                                               }
                                             }
                                           }
@@ -919,8 +919,8 @@
                                   "componentClassName": "wpilib.ExpansionHubMotor"
                                 },
                                 "fields": {
-                                  "COMPONENT_NAME": "frontLeftMotor",
-                                  "FUNC": "setThrottle"
+                                  "COMPONENT_NAME": "front_left_motor",
+                                  "FUNC": "set_throttle"
                                 },
                                 "inputs": {
                                   "ARG0": {
@@ -928,7 +928,7 @@
                                       "type": "math_arithmetic",
                                       "id": ",VziGXziWBV?RSgeQsfi",
                                       "fields": {
-                                        "OP": "MULTIPLY"
+                                        "OP": "DIVIDE"
                                       },
                                       "inputs": {
                                         "A": {
@@ -943,7 +943,7 @@
                                             "type": "mrc_get_parameter",
                                             "id": "ARzt,6?XvG1VTt%q+dU6",
                                             "fields": {
-                                              "PARAMETER_NAME": "frontLeft"
+                                              "PARAMETER_NAME": "front_left"
                                             }
                                           }
                                         },
@@ -983,12 +983,12 @@
                                         }
                                       ],
                                       "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.",
-                                      "componentId": "L=[.Zwa0m-wsjV3_V$H-",
+                                      "componentId": "vWgSIOFxo!Yr0)~cYNL]",
                                       "componentClassName": "wpilib.ExpansionHubMotor"
                                     },
                                     "fields": {
-                                      "COMPONENT_NAME": "frontLeftMotor",
-                                      "FUNC": "setThrottle"
+                                      "COMPONENT_NAME": "front_right_motor",
+                                      "FUNC": "set_throttle"
                                     },
                                     "inputs": {
                                       "ARG0": {
@@ -996,7 +996,7 @@
                                           "type": "math_arithmetic",
                                           "id": "r/DFa/u{9|Tk{xP/l@vF",
                                           "fields": {
-                                            "OP": "MULTIPLY"
+                                            "OP": "DIVIDE"
                                           },
                                           "inputs": {
                                             "A": {
@@ -1011,7 +1011,7 @@
                                                 "type": "mrc_get_parameter",
                                                 "id": "*OnHbrn:WN?eO))#blTK",
                                                 "fields": {
-                                                  "PARAMETER_NAME": "frontRight"
+                                                  "PARAMETER_NAME": "front_right"
                                                 }
                                               }
                                             },
@@ -1051,12 +1051,12 @@
                                             }
                                           ],
                                           "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.",
-                                          "componentId": "L=[.Zwa0m-wsjV3_V$H-",
+                                          "componentId": "8QYP);O=X8hi1P*thE@-",
                                           "componentClassName": "wpilib.ExpansionHubMotor"
                                         },
                                         "fields": {
-                                          "COMPONENT_NAME": "frontLeftMotor",
-                                          "FUNC": "setThrottle"
+                                          "COMPONENT_NAME": "rear_left_motor",
+                                          "FUNC": "set_throttle"
                                         },
                                         "inputs": {
                                           "ARG0": {
@@ -1064,7 +1064,7 @@
                                               "type": "math_arithmetic",
                                               "id": "d;_lJ`~*/l1oAd)1Dq0)",
                                               "fields": {
-                                                "OP": "MULTIPLY"
+                                                "OP": "DIVIDE"
                                               },
                                               "inputs": {
                                                 "A": {
@@ -1079,7 +1079,7 @@
                                                     "type": "mrc_get_parameter",
                                                     "id": "^N1oz_C!X}i2CD9*7WO}",
                                                     "fields": {
-                                                      "PARAMETER_NAME": "rearLeft"
+                                                      "PARAMETER_NAME": "rear_left"
                                                     }
                                                   }
                                                 },
@@ -1119,12 +1119,12 @@
                                                 }
                                               ],
                                               "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.",
-                                              "componentId": "L=[.Zwa0m-wsjV3_V$H-",
+                                              "componentId": "X:x-zpSPSgeZv28MQ96e",
                                               "componentClassName": "wpilib.ExpansionHubMotor"
                                             },
                                             "fields": {
-                                              "COMPONENT_NAME": "frontLeftMotor",
-                                              "FUNC": "setThrottle"
+                                              "COMPONENT_NAME": "rear_right_motor",
+                                              "FUNC": "set_throttle"
                                             },
                                             "inputs": {
                                               "ARG0": {
@@ -1132,7 +1132,7 @@
                                                   "type": "math_arithmetic",
                                                   "id": "(V6kO:wSVU7$eM4b+nfJ",
                                                   "fields": {
-                                                    "OP": "MULTIPLY"
+                                                    "OP": "DIVIDE"
                                                   },
                                                   "inputs": {
                                                     "A": {
@@ -1147,7 +1147,7 @@
                                                         "type": "mrc_get_parameter",
                                                         "id": "vD+?.j[qnQ1.dOPU|[#~",
                                                         "fields": {
-                                                          "PARAMETER_NAME": "rearRight"
+                                                          "PARAMETER_NAME": "rear_right"
                                                         }
                                                       }
                                                     },
@@ -1233,27 +1233,27 @@
                   "returnType": "None",
                   "args": [
                     {
-                      "name": "frontLeft",
+                      "name": "front_left",
                       "type": ""
                     },
                     {
-                      "name": "frontRight",
+                      "name": "front_right",
                       "type": ""
                     },
                     {
-                      "name": "rearLeft",
+                      "name": "rear_left",
                       "type": ""
                     },
                     {
-                      "name": "rearRight",
+                      "name": "rear_right",
                       "type": ""
                     }
                   ],
-                  "actualFunctionName": "setWheelVelocity",
+                  "actualFunctionName": "set_wheel_velocity",
                   "methodId": "!`?`heP$)(#[!H7iGo(u"
                 },
                 "fields": {
-                  "FUNC": "setWheelVelocity"
+                  "FUNC": "set_wheel_velocity"
                 },
                 "inputs": {
                   "ARG0": {
@@ -1573,11 +1573,7 @@
     },
     "variables": [
       {
-        "name": "myREVLibError",
-        "id": "o}kRNLk{LR2x?47vw~1z"
-      },
-      {
-        "name": "maxAmount",
+        "name": "max_amount",
         "id": "EL]z%3@7.vYjXsRD[/dn"
       }
     ]
@@ -1587,11 +1583,11 @@
   "privateComponents": [
     {
       "componentId": "L=[.Zwa0m-wsjV3_V$H-",
-      "name": "frontLeftMotor",
+      "name": "front_left_motor",
       "className": "wpilib.ExpansionHubMotor",
       "args": [
         {
-          "name": "expansionHubMotor",
+          "name": "expansion_hub_motor",
           "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
           "defaultValue": ""
         }
@@ -1599,11 +1595,11 @@
     },
     {
       "componentId": "vWgSIOFxo!Yr0)~cYNL]",
-      "name": "frontRightMotor",
+      "name": "front_right_motor",
       "className": "wpilib.ExpansionHubMotor",
       "args": [
         {
-          "name": "expansionHubMotor",
+          "name": "expansion_hub_motor",
           "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
           "defaultValue": ""
         }
@@ -1611,11 +1607,11 @@
     },
     {
       "componentId": "8QYP);O=X8hi1P*thE@-",
-      "name": "rearLeftMotor",
+      "name": "rear_left_motor",
       "className": "wpilib.ExpansionHubMotor",
       "args": [
         {
-          "name": "expansionHubMotor",
+          "name": "expansion_hub_motor",
           "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
           "defaultValue": ""
         }
@@ -1623,11 +1619,11 @@
     },
     {
       "componentId": "X:x-zpSPSgeZv28MQ96e",
-      "name": "rearRightMotor",
+      "name": "rear_right_motor",
       "className": "wpilib.ExpansionHubMotor",
       "args": [
         {
-          "name": "expansionHubMotor",
+          "name": "expansion_hub_motor",
           "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
           "defaultValue": ""
         }
@@ -1651,27 +1647,27 @@
           "type": ""
         },
         {
-          "name": "frontLeft",
+          "name": "front_left",
           "type": ""
         },
         {
-          "name": "frontRight",
+          "name": "front_right",
           "type": ""
         },
         {
-          "name": "rearLeft",
+          "name": "rear_left",
           "type": ""
         },
         {
-          "name": "rearRight",
+          "name": "rear_right",
           "type": ""
         }
       ]
     },
     {
       "methodId": "!`?`heP$)(#[!H7iGo(u",
-      "visibleName": "setWheelVelocity",
-      "pythonName": "setWheelVelocity",
+      "visibleName": "set_wheel_velocity",
+      "pythonName": "set_wheel_velocity",
       "returnType": "None",
       "args": [
         {
@@ -1679,19 +1675,19 @@
           "type": ""
         },
         {
-          "name": "frontLeft",
+          "name": "front_left",
           "type": ""
         },
         {
-          "name": "frontRight",
+          "name": "front_right",
           "type": ""
         },
         {
-          "name": "rearLeft",
+          "name": "rear_left",
           "type": ""
         },
         {
-          "name": "rearRight",
+          "name": "rear_right",
           "type": ""
         }
       ]

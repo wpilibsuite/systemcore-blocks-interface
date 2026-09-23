@@ -45,42 +45,42 @@
                   "mechanismId": "l+x,DSm~vop!Msns`Q~h",
                   "parameters": [
                     {
-                      "name": "expansionHubMotor",
+                      "name": "expansion_hub_motor",
                       "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
                       "defaultValue": "",
                       "componentId": "L=[.Zwa0m-wsjV3_V$H-",
-                      "componentName": "frontLeftMotor",
+                      "componentName": "front_left_motor",
                       "componentArgsIndex": 0
                     },
                     {
-                      "name": "expansionHubMotor",
+                      "name": "expansion_hub_motor",
                       "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
                       "defaultValue": "",
                       "componentId": "vWgSIOFxo!Yr0)~cYNL]",
-                      "componentName": "frontRightMotor",
+                      "componentName": "front_right_motor",
                       "componentArgsIndex": 0
                     },
                     {
-                      "name": "expansionHubMotor",
+                      "name": "expansion_hub_motor",
                       "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
                       "defaultValue": "",
                       "componentId": "8QYP);O=X8hi1P*thE@-",
-                      "componentName": "rearLeftMotor",
+                      "componentName": "rear_left_motor",
                       "componentArgsIndex": 0
                     },
                     {
-                      "name": "expansionHubMotor",
+                      "name": "expansion_hub_motor",
                       "type": "SYSTEMCORE_USB_PORT__EXPANSION_HUB_MOTOR_PORT",
                       "defaultValue": "",
                       "componentId": "X:x-zpSPSgeZv28MQ96e",
-                      "componentName": "rearRightMotor",
+                      "componentName": "rear_right_motor",
                       "componentArgsIndex": 0
                     }
                   ],
                   "importModule": "mecanum_drive"
                 },
                 "fields": {
-                  "NAME": "myMecanumDrive",
+                  "NAME": "my_mecanum_drive",
                   "TYPE": "MecanumDrive"
                 },
                 "inputs": {
@@ -168,7 +168,7 @@
     {
       "moduleId": "Q:KNII-UbYdCU)TKTjHv",
       "mechanismId": "l+x,DSm~vop!Msns`Q~h",
-      "name": "myMecanumDrive",
+      "name": "my_mecanum_drive",
       "className": "mecanum_drive.MecanumDrive"
     }
   ],

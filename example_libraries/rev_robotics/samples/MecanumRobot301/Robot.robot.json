@@ -45,42 +45,42 @@
                   "mechanismId": "l+x,DSm~vop!Msns`Q~h",
                   "parameters": [
                     {
-                      "name": "a301",
-                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                      "defaultValue": "5__3",
+                      "name": "can_port",
+                      "type": "SYSTEMCORE_CAN_PORT",
+                      "defaultValue": "",
                       "componentId": "{{`w$7oY596YUEB-M89I",
-                      "componentName": "frontLeftMotor",
+                      "componentName": "front_left_motor",
                       "componentArgsIndex": 0
                     },
                     {
-                      "name": "a301",
-                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                      "defaultValue": "5__3",
+                      "name": "can_port",
+                      "type": "SYSTEMCORE_CAN_PORT",
+                      "defaultValue": "",
                       "componentId": ",Cq$re$$zJ%m;lyiSwg+",
-                      "componentName": "frontRightMotor",
+                      "componentName": "front_right_motor",
                       "componentArgsIndex": 0
                     },
                     {
-                      "name": "a301",
-                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                      "defaultValue": "5__3",
+                      "name": "can_port",
+                      "type": "SYSTEMCORE_CAN_PORT",
+                      "defaultValue": "",
                       "componentId": "`2QvHlkPo?DykBZ1A-3K",
-                      "componentName": "rearLeftMotor",
+                      "componentName": "rear_left_motor",
                       "componentArgsIndex": 0
                     },
                     {
-                      "name": "a301",
-                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                      "defaultValue": "5__3",
+                      "name": "can_port",
+                      "type": "SYSTEMCORE_CAN_PORT",
+                      "defaultValue": "",
                       "componentId": "{y[Om`ULa?;[/DNtmy?!",
-                      "componentName": "rearRightMotor",
+                      "componentName": "rear_right_motor",
                       "componentArgsIndex": 0
                     }
                   ],
                   "importModule": "mecanum_drive"
                 },
                 "fields": {
-                  "NAME": "myMecanumDrive",
+                  "NAME": "my_mecanum_drive",
                   "TYPE": "MecanumDrive"
                 },
                 "inputs": {
@@ -89,15 +89,12 @@
                       "type": "mrc_port",
                       "extraState": {
                         "portTypes": [
-                          "SYSTEMCORE_CAN_PORT",
-                          "CAN_DEVICE_ID"
+                          "SYSTEMCORE_CAN_PORT"
                         ]
                       },
                       "fields": {
                         "TYPE_0": "can",
-                        "PORT_NUM_0": "15",
-                        "TYPE_1": "device",
-                        "PORT_NUM_1": "3"
+                        "PORT_NUM_0": "15"
                       }
                     }
                   },
@@ -106,15 +103,12 @@
                       "type": "mrc_port",
                       "extraState": {
                         "portTypes": [
-                          "SYSTEMCORE_CAN_PORT",
-                          "CAN_DEVICE_ID"
+                          "SYSTEMCORE_CAN_PORT"
                         ]
                       },
                       "fields": {
                         "TYPE_0": "can",
-                        "PORT_NUM_0": "23",
-                        "TYPE_1": "device",
-                        "PORT_NUM_1": "3"
+                        "PORT_NUM_0": "23"
                       }
                     }
                   },
@@ -123,15 +117,12 @@
                       "type": "mrc_port",
                       "extraState": {
                         "portTypes": [
-                          "SYSTEMCORE_CAN_PORT",
-                          "CAN_DEVICE_ID"
+                          "SYSTEMCORE_CAN_PORT"
                         ]
                       },
                       "fields": {
                         "TYPE_0": "can",
-                        "PORT_NUM_0": "16",
-                        "TYPE_1": "device",
-                        "PORT_NUM_1": "3"
+                        "PORT_NUM_0": "16"
                       }
                     }
                   },
@@ -140,15 +131,12 @@
                       "type": "mrc_port",
                       "extraState": {
                         "portTypes": [
-                          "SYSTEMCORE_CAN_PORT",
-                          "CAN_DEVICE_ID"
+                          "SYSTEMCORE_CAN_PORT"
                         ]
                       },
                       "fields": {
                         "TYPE_0": "can",
-                        "PORT_NUM_0": "24",
-                        "TYPE_1": "device",
-                        "PORT_NUM_1": "3"
+                        "PORT_NUM_0": "24"
                       }
                     }
                   }
@@ -164,7 +152,7 @@
     {
       "moduleId": "Q:KNII-UbYdCU)TKTjHv",
       "mechanismId": "l+x,DSm~vop!Msns`Q~h",
-      "name": "myMecanumDrive",
+      "name": "my_mecanum_drive",
       "className": "mecanum_drive.MecanumDrive"
     }
   ],

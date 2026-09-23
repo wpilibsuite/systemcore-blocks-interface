@@ -34,17 +34,17 @@
                   "returnType": "None",
                   "args": [
                     {
-                      "name": "isInverted",
+                      "name": "is_inverted",
                       "type": "bool"
                     }
                   ],
-                  "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param isInverted: The inversion state.",
+                  "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param is_inverted: The inversion state.",
                   "componentId": "{{`w$7oY596YUEB-M89I",
                   "componentClassName": "rev.A301"
                 },
                 "fields": {
-                  "COMPONENT_NAME": "frontLeftMotor",
-                  "FUNC": "setInverted"
+                  "COMPONENT_NAME": "front_left_motor",
+                  "FUNC": "set_inverted"
                 },
                 "inputs": {
                   "ARG0": {
@@ -66,17 +66,17 @@
                       "returnType": "None",
                       "args": [
                         {
-                          "name": "isInverted",
+                          "name": "is_inverted",
                           "type": "bool"
                         }
                       ],
-                      "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param isInverted: The inversion state.",
+                      "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param is_inverted: The inversion state.",
                       "componentId": "`2QvHlkPo?DykBZ1A-3K",
                       "componentClassName": "rev.A301"
                     },
                     "fields": {
-                      "COMPONENT_NAME": "rearLeftMotor",
-                      "FUNC": "setInverted"
+                      "COMPONENT_NAME": "rear_left_motor",
+                      "FUNC": "set_inverted"
                     },
                     "inputs": {
                       "ARG0": {
@@ -132,17 +132,17 @@
                   "componentId": "{{`w$7oY596YUEB-M89I",
                   "params": [
                     {
-                      "name": "a301",
-                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                      "defaultValue": "5__3"
+                      "name": "can_port",
+                      "type": "SYSTEMCORE_CAN_PORT",
+                      "defaultValue": ""
                     }
                   ],
                   "importModule": "rev",
                   "className": "rev.A301",
-                  "tooltip": "Create a new object to control a FIRST A301 motor\n\nThe default A301 device ID is set to 3 out of the factory.\n\n:param busId:    The CAN bus ID this device will be on.\n:param deviceId: The device ID."
+                  "tooltip": "Create a new object to control a FIRST A301 motor\n\nNOTE: If canPort indicates a Motioncore bus, the device ID will be\nauto-detected, otherwise, the defaultDeviceId is used.\n\n:param can_port: The CAN port this device is connected to."
                 },
                 "fields": {
-                  "NAME": "frontLeftMotor",
+                  "NAME": "front_left_motor",
                   "TYPE": "A301"
                 },
                 "next": {
@@ -153,17 +153,17 @@
                       "componentId": ",Cq$re$$zJ%m;lyiSwg+",
                       "params": [
                         {
-                          "name": "a301",
-                          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                          "defaultValue": "5__3"
+                          "name": "can_port",
+                          "type": "SYSTEMCORE_CAN_PORT",
+                          "defaultValue": ""
                         }
                       ],
                       "importModule": "rev",
                       "className": "rev.A301",
-                      "tooltip": "Create a new object to control a FIRST A301 motor\n\nThe default A301 device ID is set to 3 out of the factory.\n\n:param busId:    The CAN bus ID this device will be on.\n:param deviceId: The device ID."
+                      "tooltip": "Create a new object to control a FIRST A301 motor\n\nNOTE: If canPort indicates a Motioncore bus, the device ID will be\nauto-detected, otherwise, the defaultDeviceId is used.\n\n:param can_port: The CAN port this device is connected to."
                     },
                     "fields": {
-                      "NAME": "frontRightMotor",
+                      "NAME": "front_right_motor",
                       "TYPE": "A301"
                     },
                     "next": {
@@ -174,17 +174,17 @@
                           "componentId": "`2QvHlkPo?DykBZ1A-3K",
                           "params": [
                             {
-                              "name": "a301",
-                              "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                              "defaultValue": "5__3"
+                              "name": "can_port",
+                              "type": "SYSTEMCORE_CAN_PORT",
+                              "defaultValue": ""
                             }
                           ],
                           "importModule": "rev",
                           "className": "rev.A301",
-                          "tooltip": "Create a new object to control a FIRST A301 motor\n\nThe default A301 device ID is set to 3 out of the factory.\n\n:param busId:    The CAN bus ID this device will be on.\n:param deviceId: The device ID."
+                          "tooltip": "Create a new object to control a FIRST A301 motor\n\nNOTE: If canPort indicates a Motioncore bus, the device ID will be\nauto-detected, otherwise, the defaultDeviceId is used.\n\n:param can_port: The CAN port this device is connected to."
                         },
                         "fields": {
-                          "NAME": "rearLeftMotor",
+                          "NAME": "rear_left_motor",
                           "TYPE": "A301"
                         },
                         "next": {
@@ -195,17 +195,17 @@
                               "componentId": "{y[Om`ULa?;[/DNtmy?!",
                               "params": [
                                 {
-                                  "name": "a301",
-                                  "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                                  "defaultValue": "5__3"
+                                  "name": "can_port",
+                                  "type": "SYSTEMCORE_CAN_PORT",
+                                  "defaultValue": ""
                                 }
                               ],
                               "importModule": "rev",
                               "className": "rev.A301",
-                              "tooltip": "Create a new object to control a FIRST A301 motor\n\nThe default A301 device ID is set to 3 out of the factory.\n\n:param busId:    The CAN bus ID this device will be on.\n:param deviceId: The device ID."
+                              "tooltip": "Create a new object to control a FIRST A301 motor\n\nNOTE: If canPort indicates a Motioncore bus, the device ID will be\nauto-detected, otherwise, the defaultDeviceId is used.\n\n:param can_port: The CAN port this device is connected to."
                             },
                             "fields": {
-                              "NAME": "rearRightMotor",
+                              "NAME": "rear_right_motor",
                               "TYPE": "A301"
                             }
                           }
@@ -235,19 +235,19 @@
                 "type": ""
               },
               {
-                "name": "frontLeft",
+                "name": "front_left",
                 "type": ""
               },
               {
-                "name": "frontRight",
+                "name": "front_right",
                 "type": ""
               },
               {
-                "name": "rearLeft",
+                "name": "rear_left",
                 "type": ""
               },
               {
-                "name": "rearRight",
+                "name": "rear_right",
                 "type": ""
               }
             ]
@@ -255,10 +255,10 @@
           "fields": {
             "NAME": "test",
             "PARAM_velocity": "velocity",
-            "PARAM_frontLeft": "frontLeft",
-            "PARAM_frontRight": "frontRight",
-            "PARAM_rearLeft": "rearLeft",
-            "PARAM_rearRight": "rearRight"
+            "PARAM_front_left": "front_left",
+            "PARAM_front_right": "front_right",
+            "PARAM_rear_left": "rear_left",
+            "PARAM_rear_right": "rear_right"
           },
           "inputs": {
             "STACK": {
@@ -274,7 +274,7 @@
                       "type": "mrc_get_parameter",
                       "id": "U)X75F8Q}8}THo#3=E:m",
                       "fields": {
-                        "PARAMETER_NAME": "frontLeft"
+                        "PARAMETER_NAME": "front_left"
                       }
                     }
                   },
@@ -306,8 +306,8 @@
                               "componentClassName": "rev.A301"
                             },
                             "fields": {
-                              "COMPONENT_NAME": "frontLeftMotor",
-                              "FUNC": "setVelocity"
+                              "COMPONENT_NAME": "front_left_motor",
+                              "FUNC": "set_velocity"
                             },
                             "inputs": {
                               "ARG0": {
@@ -353,8 +353,8 @@
                               "componentClassName": "rev.A301"
                             },
                             "fields": {
-                              "COMPONENT_NAME": "frontLeftMotor",
-                              "FUNC": "setVelocity"
+                              "COMPONENT_NAME": "front_left_motor",
+                              "FUNC": "set_velocity"
                             },
                             "inputs": {
                               "ARG0": {
@@ -386,7 +386,7 @@
                           "type": "mrc_get_parameter",
                           "id": "VQymzwv3W9)rY4uoRnQ,",
                           "fields": {
-                            "PARAMETER_NAME": "frontRight"
+                            "PARAMETER_NAME": "front_right"
                           }
                         }
                       },
@@ -418,8 +418,8 @@
                                   "componentClassName": "rev.A301"
                                 },
                                 "fields": {
-                                  "COMPONENT_NAME": "frontRightMotor",
-                                  "FUNC": "setVelocity"
+                                  "COMPONENT_NAME": "front_right_motor",
+                                  "FUNC": "set_velocity"
                                 },
                                 "inputs": {
                                   "ARG0": {
@@ -465,8 +465,8 @@
                                   "componentClassName": "rev.A301"
                                 },
                                 "fields": {
-                                  "COMPONENT_NAME": "frontRightMotor",
-                                  "FUNC": "setVelocity"
+                                  "COMPONENT_NAME": "front_right_motor",
+                                  "FUNC": "set_velocity"
                                 },
                                 "inputs": {
                                   "ARG0": {
@@ -498,7 +498,7 @@
                               "type": "mrc_get_parameter",
                               "id": ")tlbzS_vyC$Xhq!?1.Ad",
                               "fields": {
-                                "PARAMETER_NAME": "rearLeft"
+                                "PARAMETER_NAME": "rear_left"
                               }
                             }
                           },
@@ -530,8 +530,8 @@
                                       "componentClassName": "rev.A301"
                                     },
                                     "fields": {
-                                      "COMPONENT_NAME": "rearLeftMotor",
-                                      "FUNC": "setVelocity"
+                                      "COMPONENT_NAME": "rear_left_motor",
+                                      "FUNC": "set_velocity"
                                     },
                                     "inputs": {
                                       "ARG0": {
@@ -577,8 +577,8 @@
                                       "componentClassName": "rev.A301"
                                     },
                                     "fields": {
-                                      "COMPONENT_NAME": "rearLeftMotor",
-                                      "FUNC": "setVelocity"
+                                      "COMPONENT_NAME": "rear_left_motor",
+                                      "FUNC": "set_velocity"
                                     },
                                     "inputs": {
                                       "ARG0": {
@@ -610,7 +610,7 @@
                                   "type": "mrc_get_parameter",
                                   "id": "%L}4VJ4/;s:dOxEoW5#_",
                                   "fields": {
-                                    "PARAMETER_NAME": "rearRight"
+                                    "PARAMETER_NAME": "rear_right"
                                   }
                                 }
                               },
@@ -642,8 +642,8 @@
                                           "componentClassName": "rev.A301"
                                         },
                                         "fields": {
-                                          "COMPONENT_NAME": "rearRightMotor",
-                                          "FUNC": "setVelocity"
+                                          "COMPONENT_NAME": "rear_right_motor",
+                                          "FUNC": "set_velocity"
                                         },
                                         "inputs": {
                                           "ARG0": {
@@ -689,8 +689,8 @@
                                           "componentClassName": "rev.A301"
                                         },
                                         "fields": {
-                                          "COMPONENT_NAME": "rearRightMotor",
-                                          "FUNC": "setVelocity"
+                                          "COMPONENT_NAME": "rear_right_motor",
+                                          "FUNC": "set_velocity"
                                         },
                                         "inputs": {
                                           "ARG0": {
@@ -732,23 +732,23 @@
             "returnType": "None",
             "params": [
               {
-                "name": "maxVelocity",
+                "name": "max_velocity",
                 "type": ""
               },
               {
-                "name": "frontLeft",
+                "name": "front_left",
                 "type": ""
               },
               {
-                "name": "frontRight",
+                "name": "front_right",
                 "type": ""
               },
               {
-                "name": "rearLeft",
+                "name": "rear_left",
                 "type": ""
               },
               {
-                "name": "rearRight",
+                "name": "rear_right",
                 "type": ""
               }
             ]
@@ -764,12 +764,12 @@
             }
           },
           "fields": {
-            "NAME": "setWheelVelocity",
-            "PARAM_maxVelocity": "maxVelocity",
-            "PARAM_frontLeft": "frontLeft",
-            "PARAM_frontRight": "frontRight",
-            "PARAM_rearLeft": "rearLeft",
-            "PARAM_rearRight": "rearRight"
+            "NAME": "set_wheel_velocity",
+            "PARAM_max_velocity": "max_velocity",
+            "PARAM_front_left": "front_left",
+            "PARAM_front_right": "front_right",
+            "PARAM_rear_left": "rear_left",
+            "PARAM_rear_right": "rear_right"
           },
           "inputs": {
             "STACK": {
@@ -810,7 +810,7 @@
                                   "type": "mrc_get_parameter",
                                   "id": "LTrYR@Xi0(-BTP|H{*:O",
                                   "fields": {
-                                    "PARAMETER_NAME": "frontLeft"
+                                    "PARAMETER_NAME": "front_left"
                                   }
                                 }
                               }
@@ -868,7 +868,7 @@
                                       "type": "mrc_get_parameter",
                                       "id": "-D!TPJIs~!NiB8:g])4/",
                                       "fields": {
-                                        "PARAMETER_NAME": "frontRight"
+                                        "PARAMETER_NAME": "front_right"
                                       }
                                     }
                                   }
@@ -928,7 +928,7 @@
                                           "type": "mrc_get_parameter",
                                           "id": "+^i9iFI^vUvZ4B,G7Lq1",
                                           "fields": {
-                                            "PARAMETER_NAME": "rearLeft"
+                                            "PARAMETER_NAME": "rear_left"
                                           }
                                         }
                                       }
@@ -988,7 +988,7 @@
                                               "type": "mrc_get_parameter",
                                               "id": "2srtU/w)j%W4Gxnl7#q+",
                                               "fields": {
-                                                "PARAMETER_NAME": "rearRight"
+                                                "PARAMETER_NAME": "rear_right"
                                               }
                                             }
                                           }
@@ -1038,8 +1038,8 @@
                                         "componentClassName": "rev.A301"
                                       },
                                       "fields": {
-                                        "COMPONENT_NAME": "frontLeftMotor",
-                                        "FUNC": "setVelocity"
+                                        "COMPONENT_NAME": "front_left_motor",
+                                        "FUNC": "set_velocity"
                                       },
                                       "inputs": {
                                         "ARG0": {
@@ -1062,7 +1062,7 @@
                                                   "type": "mrc_get_parameter",
                                                   "id": "TLk}DK(aFW]AX[dv}#oh",
                                                   "fields": {
-                                                    "PARAMETER_NAME": "maxVelocity"
+                                                    "PARAMETER_NAME": "max_velocity"
                                                   }
                                                 }
                                               },
@@ -1093,7 +1093,7 @@
                                                         "type": "mrc_get_parameter",
                                                         "id": "sY!Zvu.c|i[69|a]g0`5",
                                                         "fields": {
-                                                          "PARAMETER_NAME": "frontLeft"
+                                                          "PARAMETER_NAME": "front_left"
                                                         }
                                                       }
                                                     },
@@ -1153,8 +1153,8 @@
                                             "componentClassName": "rev.A301"
                                           },
                                           "fields": {
-                                            "COMPONENT_NAME": "frontRightMotor",
-                                            "FUNC": "setVelocity"
+                                            "COMPONENT_NAME": "front_right_motor",
+                                            "FUNC": "set_velocity"
                                           },
                                           "inputs": {
                                             "ARG0": {
@@ -1177,7 +1177,7 @@
                                                       "type": "mrc_get_parameter",
                                                       "id": "pzmF(0K+@ppJ8|e=DJN@",
                                                       "fields": {
-                                                        "PARAMETER_NAME": "maxVelocity"
+                                                        "PARAMETER_NAME": "max_velocity"
                                                       }
                                                     }
                                                   },
@@ -1208,7 +1208,7 @@
                                                             "type": "mrc_get_parameter",
                                                             "id": "um,?o*ZT?a(kP#KMm-EH",
                                                             "fields": {
-                                                              "PARAMETER_NAME": "frontRight"
+                                                              "PARAMETER_NAME": "front_right"
                                                             }
                                                           }
                                                         },
@@ -1268,8 +1268,8 @@
                                                 "componentClassName": "rev.A301"
                                               },
                                               "fields": {
-                                                "COMPONENT_NAME": "rearLeftMotor",
-                                                "FUNC": "setVelocity"
+                                                "COMPONENT_NAME": "rear_left_motor",
+                                                "FUNC": "set_velocity"
                                               },
                                               "inputs": {
                                                 "ARG0": {
@@ -1292,7 +1292,7 @@
                                                           "type": "mrc_get_parameter",
                                                           "id": "0fD{*Rofv3#=ERkJW5;=",
                                                           "fields": {
-                                                            "PARAMETER_NAME": "maxVelocity"
+                                                            "PARAMETER_NAME": "max_velocity"
                                                           }
                                                         }
                                                       },
@@ -1323,7 +1323,7 @@
                                                                 "type": "mrc_get_parameter",
                                                                 "id": "}O#{.hZ?Tx|g*k#YeFhb",
                                                                 "fields": {
-                                                                  "PARAMETER_NAME": "rearLeft"
+                                                                  "PARAMETER_NAME": "rear_left"
                                                                 }
                                                               }
                                                             },
@@ -1383,8 +1383,8 @@
                                                     "componentClassName": "rev.A301"
                                                   },
                                                   "fields": {
-                                                    "COMPONENT_NAME": "rearRightMotor",
-                                                    "FUNC": "setVelocity"
+                                                    "COMPONENT_NAME": "rear_right_motor",
+                                                    "FUNC": "set_velocity"
                                                   },
                                                   "inputs": {
                                                     "ARG0": {
@@ -1407,7 +1407,7 @@
                                                               "type": "mrc_get_parameter",
                                                               "id": "iw6sS5~@{Jt`kko*I2uK",
                                                               "fields": {
-                                                                "PARAMETER_NAME": "maxVelocity"
+                                                                "PARAMETER_NAME": "max_velocity"
                                                               }
                                                             }
                                                           },
@@ -1438,7 +1438,7 @@
                                                                     "type": "mrc_get_parameter",
                                                                     "id": "nRf=DBs5|o^kuy?Y?vWq",
                                                                     "fields": {
-                                                                      "PARAMETER_NAME": "rearRight"
+                                                                      "PARAMETER_NAME": "rear_right"
                                                                     }
                                                                   }
                                                                 },
@@ -1513,7 +1513,7 @@
                 "type": ""
               },
               {
-                "name": "maxVelocity",
+                "name": "max_velocity",
                 "type": ""
               }
             ]
@@ -1523,7 +1523,7 @@
             "PARAM_forward": "forward",
             "PARAM_strafe": "strafe",
             "PARAM_rotate": "rotate",
-            "PARAM_maxVelocity": "maxVelocity"
+            "PARAM_max_velocity": "max_velocity"
           },
           "inputs": {
             "STACK": {
@@ -1535,31 +1535,31 @@
                   "returnType": "None",
                   "args": [
                     {
-                      "name": "maxVelocity",
+                      "name": "max_velocity",
                       "type": ""
                     },
                     {
-                      "name": "frontLeft",
+                      "name": "front_left",
                       "type": ""
                     },
                     {
-                      "name": "frontRight",
+                      "name": "front_right",
                       "type": ""
                     },
                     {
-                      "name": "rearLeft",
+                      "name": "rear_left",
                       "type": ""
                     },
                     {
-                      "name": "rearRight",
+                      "name": "rear_right",
                       "type": ""
                     }
                   ],
-                  "actualFunctionName": "setWheelVelocity",
+                  "actualFunctionName": "set_wheel_velocity",
                   "methodId": "!`?`heP$)(#[!H7iGo(u"
                 },
                 "fields": {
-                  "FUNC": "setWheelVelocity"
+                  "FUNC": "set_wheel_velocity"
                 },
                 "inputs": {
                   "ARG0": {
@@ -1567,7 +1567,7 @@
                       "type": "mrc_get_parameter",
                       "id": "bvmo-k*1hXBR?%az22i%",
                       "fields": {
-                        "PARAMETER_NAME": "maxVelocity"
+                        "PARAMETER_NAME": "max_velocity"
                       }
                     }
                   },
@@ -1888,11 +1888,11 @@
     },
     "variables": [
       {
-        "name": "myREVLibError",
+        "name": "rev_lib_error",
         "id": "o}kRNLk{LR2x?47vw~1z"
       },
       {
-        "name": "maxAmount",
+        "name": "max_amount",
         "id": "EL]z%3@7.vYjXsRD[/dn"
       }
     ]
@@ -1902,49 +1902,49 @@
   "privateComponents": [
     {
       "componentId": "{{`w$7oY596YUEB-M89I",
-      "name": "frontLeftMotor",
+      "name": "front_left_motor",
       "className": "rev.A301",
       "args": [
         {
-          "name": "a301",
-          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-          "defaultValue": "5__3"
+          "name": "can_port",
+          "type": "SYSTEMCORE_CAN_PORT",
+          "defaultValue": ""
         }
       ]
     },
     {
       "componentId": ",Cq$re$$zJ%m;lyiSwg+",
-      "name": "frontRightMotor",
+      "name": "front_right_motor",
       "className": "rev.A301",
       "args": [
         {
-          "name": "a301",
-          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-          "defaultValue": "5__3"
+          "name": "can_port",
+          "type": "SYSTEMCORE_CAN_PORT",
+          "defaultValue": ""
         }
       ]
     },
     {
       "componentId": "`2QvHlkPo?DykBZ1A-3K",
-      "name": "rearLeftMotor",
+      "name": "rear_left_motor",
       "className": "rev.A301",
       "args": [
         {
-          "name": "a301",
-          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-          "defaultValue": "5__3"
+          "name": "can_port",
+          "type": "SYSTEMCORE_CAN_PORT",
+          "defaultValue": ""
         }
       ]
     },
     {
       "componentId": "{y[Om`ULa?;[/DNtmy?!",
-      "name": "rearRightMotor",
+      "name": "rear_right_motor",
       "className": "rev.A301",
       "args": [
         {
-          "name": "a301",
-          "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-          "defaultValue": "5__3"
+          "name": "can_port",
+          "type": "SYSTEMCORE_CAN_PORT",
+          "defaultValue": ""
         }
       ]
     }
@@ -1966,27 +1966,27 @@
           "type": ""
         },
         {
-          "name": "frontLeft",
+          "name": "front_left",
           "type": ""
         },
         {
-          "name": "frontRight",
+          "name": "front_right",
           "type": ""
         },
         {
-          "name": "rearLeft",
+          "name": "rear_left",
           "type": ""
         },
         {
-          "name": "rearRight",
+          "name": "rear_right",
           "type": ""
         }
       ]
     },
     {
       "methodId": "!`?`heP$)(#[!H7iGo(u",
-      "visibleName": "setWheelVelocity",
-      "pythonName": "setWheelVelocity",
+      "visibleName": "set_wheel_velocity",
+      "pythonName": "set_wheel_velocity",
       "returnType": "None",
       "args": [
         {
@@ -1994,23 +1994,23 @@
           "type": ""
         },
         {
-          "name": "maxVelocity",
+          "name": "max_velocity",
           "type": ""
         },
         {
-          "name": "frontLeft",
+          "name": "front_left",
           "type": ""
         },
         {
-          "name": "frontRight",
+          "name": "front_right",
           "type": ""
         },
         {
-          "name": "rearLeft",
+          "name": "rear_left",
           "type": ""
         },
         {
-          "name": "rearRight",
+          "name": "rear_right",
           "type": ""
         }
       ]
@@ -2038,7 +2038,7 @@
           "type": ""
         },
         {
-          "name": "maxVelocity",
+          "name": "max_velocity",
           "type": ""
         }
       ]

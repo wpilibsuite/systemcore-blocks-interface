@@ -45,17 +45,17 @@
                   "mechanismId": "WtZyrOmFRU]/(dV_t^$o",
                   "parameters": [
                     {
-                      "name": "a301",
-                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                      "defaultValue": "5__3",
+                      "name": "can_port",
+                      "type": "SYSTEMCORE_CAN_PORT",
+                      "defaultValue": "",
                       "componentId": "WhvJZU6~HvvJd4D+/Ndy",
                       "componentName": "left_motor",
                       "componentArgsIndex": 0
                     },
                     {
-                      "name": "a301",
-                      "type": "SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID",
-                      "defaultValue": "5__3",
+                      "name": "can_port",
+                      "type": "SYSTEMCORE_CAN_PORT",
+                      "defaultValue": "",
                       "componentId": "SYhz+hU`y},it/FInyrJ",
                       "componentName": "right_motor",
                       "componentArgsIndex": 0
@@ -73,15 +73,12 @@
                       "type": "mrc_port",
                       "extraState": {
                         "portTypes": [
-                          "SYSTEMCORE_CAN_PORT",
-                          "CAN_DEVICE_ID"
+                          "SYSTEMCORE_CAN_PORT"
                         ]
                       },
                       "fields": {
                         "TYPE_0": "can",
-                        "PORT_NUM_0": "5",
-                        "TYPE_1": "device",
-                        "PORT_NUM_1": "3"
+                        "PORT_NUM_0": "5"
                       }
                     }
                   },
@@ -90,15 +87,12 @@
                       "type": "mrc_port",
                       "extraState": {
                         "portTypes": [
-                          "SYSTEMCORE_CAN_PORT",
-                          "CAN_DEVICE_ID"
+                          "SYSTEMCORE_CAN_PORT"
                         ]
                       },
                       "fields": {
                         "TYPE_0": "can",
-                        "PORT_NUM_0": "6",
-                        "TYPE_1": "device",
-                        "PORT_NUM_1": "3"
+                        "PORT_NUM_0": "6"
                       }
                     }
                   }
