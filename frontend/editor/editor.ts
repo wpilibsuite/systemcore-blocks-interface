@@ -186,16 +186,21 @@ export class Editor {
     if (event.type === Blockly.Events.BLOCK_MOVE) {
       const blockMoveEvent = event as Blockly.Events.BlockMove;
 
-      // When the user drags a block from the toolbox onto the workspace, we don't get a
-      // BLOCK_CREATE event for it, but we do get a BLOCK_MOVE event. If we get a BLOCK_MOVE event
-      // for a block that we never got a BLOCK_CREATED event for it, simulated it now.
+      // When the user drags a block (or a group of blocks) from the toolbox onto the workspace, we
+      // don't get a BLOCK_CREATE event for it, but we do get a BLOCK_MOVE event. If we get a
+      // BLOCK_MOVE event for a block that we never got a BLOCK_CREATED event for it, simulated it
+      // now.
       if (blockMoveEvent.blockId && !this.createdBlockIds.includes(blockMoveEvent.blockId)) {
-        this.createdBlockIds.push(blockMoveEvent.blockId);
         const block = this.blocklyWorkspace.getBlockById(blockMoveEvent.blockId);
         if (block) {
-          if (MRC_ON_CREATE in block && typeof block[MRC_ON_CREATE] === 'function') {
-            block[MRC_ON_CREATE](this);
-          }
+          block.getDescendants(false)
+              .filter(b => !this.createdBlockIds.includes(b.id))
+              .forEach(newBlock => {
+                this.createdBlockIds.push(newBlock.id);
+                if (MRC_ON_CREATE in newBlock && typeof newBlock[MRC_ON_CREATE] === 'function') {
+                  newBlock[MRC_ON_CREATE](this);
+                }
+              });
         }
       }
 
