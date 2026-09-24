@@ -541,7 +541,8 @@ const CALL_PYTHON_FUNCTION = {
   },
   updateComponentNameMenu: function(this: CallPythonFunctionBlock): void {
     const field = this.getField(FIELD_COMPONENT_NAME) as Blockly.FieldDropdown | null;
-    field?.getOptions();
+    // Call getOptions with false for useCache so it will refetch the menu items from our generator.
+    field?.getOptions(false);
   },
   /**
    * Adds or removes the mutator that lets the user show or hide the output. Only a function
