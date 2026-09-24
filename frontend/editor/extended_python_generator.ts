@@ -441,6 +441,8 @@ export class ExtendedPythonGenerator extends PythonGenerator {
             this.INDENT + 'for mechanism in self.mechanisms:\n' +
             this.INDENT.repeat(2) + 'mechanism.opmode_start()\n'
         );
+        // TODO: This is here only until WPILib makes it part of every opmode.
+        this.fromModuleImportName('wpilib', 'DriverStationDisplay');
         this.classMethods['opmode_periodic'] = (
             'def opmode_periodic(self) -> None:\n' +
             // Generate code to call each when_ method. This goes at the top, so that the when
@@ -449,7 +451,7 @@ export class ExtendedPythonGenerator extends PythonGenerator {
             this.INDENT + 'for mechanism in self.mechanisms:\n' +
             this.INDENT.repeat(2) + 'mechanism.opmode_periodic()\n' +
             // TODO: This is here only until WPILib makes it part of every opmode.
-            this.INDENT + 'wpilib.DriverStationDisplay.update_lines()\n'
+            this.INDENT + 'DriverStationDisplay.update_lines()\n'
         );
         this.classMethods['opmode_end'] = (
             'def opmode_end(self) -> None:\n' +
