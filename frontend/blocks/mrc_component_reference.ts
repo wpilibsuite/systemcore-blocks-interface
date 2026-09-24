@@ -435,7 +435,8 @@ export function pythonFromBlock(
     code += block.getFieldValue(FIELD_MECHANISM_NAME) + '.';
   }
   code += block.getFieldValue(FIELD_COMPONENT_NAME);
-  return [code, Order.MEMBER];
+  const result: [string, number] = [code, Order.MEMBER];
+  return generator.addErrorHandlingCode(block, block.mrcGetFullLabel(), result);
 };
 
 export function checkComponentReferences(workspace: Blockly.Workspace, editor: Editor): void {
