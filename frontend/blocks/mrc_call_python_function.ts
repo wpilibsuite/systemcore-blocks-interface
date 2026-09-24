@@ -737,6 +737,14 @@ const CALL_PYTHON_FUNCTION = {
     this.checkFunction(editor);
   },
   /**
+   * mrcOnChange is called for each CallPythonFunctionBlock when it is changed.
+   */
+  mrcOnChange: function(this: CallPythonFunctionBlock, editor: Editor, blockChangeEvent: Blockly.Events.BlockChange): void {
+    if (blockChangeEvent.element === 'field' && blockChangeEvent.name === FIELD_COMPONENT_NAME) {
+      this.checkFunction(editor);
+    }
+  },
+  /**
    * checkFunction checks the block, updates it, and/or adds a warning balloon if necessary.
    * It is called from mrcOnModuleCurrent, mrcOnLoad, and mrcOnCreate above.
    */

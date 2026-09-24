@@ -47,6 +47,7 @@ const EMPTY_TOOLBOX: Blockly.utils.toolbox.ToolboxInfo = {
 
 const MRC_ON_LOAD = 'mrcOnLoad';
 const MRC_ON_CREATE = 'mrcOnCreate';
+const MRC_ON_CHANGE = 'mrcOnChange';
 const MRC_ON_MOVE = 'mrcOnMove';
 const MRC_ON_DESCENDANT_DISCONNECT = 'mrcOnDescendantDisconnect';
 const MRC_ON_ANCESTOR_MOVE = 'mrcOnAncestorMove';
@@ -180,6 +181,18 @@ export class Editor {
             }
           }
         });
+      }
+    }
+
+    if (event.type === Blockly.Events.BLOCK_CHANGE) {
+      const blockChangeEvent = event as Blockly.Events.BlockChange;
+      if (blockChangeEvent.blockId) {
+        const block = this.blocklyWorkspace.getBlockById(blockChangeEvent.blockId);
+        if (block) {
+          if (MRC_ON_CHANGE in block && typeof block[MRC_ON_CHANGE] === 'function') {
+            block[MRC_ON_CHANGE](this, blockChangeEvent);
+          }
+        }
       }
     }
 

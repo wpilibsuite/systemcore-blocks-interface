@@ -303,8 +303,14 @@ async function repointOpModes(
     const opModeEditor = Editor.getEditorForModulePath(opMode.modulePath);
     if (opModeEditor) {
       const blocks = Blockly.serialization.workspaces.save(opModeEditor.getBlocklyWorkspace());
-      if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName) ||
-          repointComponentReferenceIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
+      let changed = false;
+      if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
+        changed = true;
+      }
+      if (repointComponentReferenceIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
+        changed = true;
+      }
+      if (changed) {
         opModeEditor.reloadWithBlocks(blocks);
         await opModeEditor.saveModule();
       }
@@ -313,8 +319,14 @@ async function repointOpModes(
     const moduleContent = storageModuleContent.parseModuleContentText(
         await storage.fetchFileContentText(opMode.modulePath));
     const blocks = moduleContent.getBlocks();
-    if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName) ||
-        repointComponentReferenceIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
+    let changed = false;
+    if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
+      changed = true;
+    }
+    if (repointComponentReferenceIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
+      changed = true;
+    }
+    if (changed) {
       moduleContent.setBlocks(blocks);
       await storage.saveFile(opMode.modulePath, moduleContent.getModuleContentText());
     }

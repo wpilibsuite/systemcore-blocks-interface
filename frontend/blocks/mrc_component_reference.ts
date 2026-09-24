@@ -261,6 +261,14 @@ const COMPONENT_REFERENCE = {
     this.checkBlock(editor);
   },
   /**
+   * mrcOnChange is called for each ComponentReferenceBlock when it is changed.
+   */
+  mrcOnChange: function(this: ComponentReferenceBlock, editor: Editor, blockChangeEvent: Blockly.Events.BlockChange): void {
+    if (blockChangeEvent.element === 'field' && blockChangeEvent.name === FIELD_COMPONENT_NAME) {
+      this.checkBlock(editor);
+    }
+  },
+  /**
    * checkBlock checks the block, updates it, and/or adds a warning balloon if necessary.
    * It is called from mrcOnModuleCurrent, mrcOnLoad, and mrcOnCreate above.
    */
@@ -465,20 +473,11 @@ export function repointComponentReferenceIntoMechanism(
     mechanismName: string): boolean {
   let changed = false;
 
-  console.log("repoint - looking for componentId " + componentId);
-
   const visitBlock = (blockJson: {[key: string]: any}): void => {
-    console.log("visitBlock - blockJson.type is " + blockJson.type);
-    // If this is a mrc_component_reference block, and it is calling a method on the given component,
-    // then update it to call the method on the component within the given mechanism.
+    // If this is a mrc_component_reference block, and it represents the given component,
+    // then update it to represent the component within the given mechanism.
     if (blockJson.type === BLOCK_NAME) {
       const extraState = blockJson.extraState;
-      if (extraState) {
-        console.log("visitBlock - extraState.componentId is " + extraState.componentId);
-        console.log("visitBlock - extraState.mechanismId is " + extraState.mechanismId);
-      } else {
-        console.log("visitBlock - extraState is " + extraState);
-      }
       if (extraState &&
           extraState.componentId === componentId &&
           !extraState.mechanismId) {
@@ -488,6 +487,17 @@ export function repointComponentReferenceIntoMechanism(
         }
         blockJson.fields[FIELD_MECHANISM_NAME] = mechanismName;
         changed = true;
+      }
+    }
+    if (blockJson.inputs) {
+      for (const inputName in blockJson.inputs) {
+        const input = blockJson.inputs[inputName];
+        if (input.block) {
+          visitBlock(input.block);
+        }
+        if (input.shadow) {
+          visitBlock(input.shadow);
+        }
       }
     }
     if (blockJson.next && blockJson.next.block) {
