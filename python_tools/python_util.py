@@ -111,6 +111,9 @@ def processSignature(signature_line: str) -> tuple[str, list[str], list[str], li
       arg_types.append("dict")
       arg_default_values.append(None)
       break
+    elif args[i:] == "*" or args[i:].startswith("*, "):
+      # The rest of the arguments are keyword-only, which blocks can't pass.
+      break
 
     # Get the argument name.
     iStartOfArgName = i

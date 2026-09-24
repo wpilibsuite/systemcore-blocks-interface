@@ -307,6 +307,2573 @@
     },
     "classes": [
         {
+            "className": "telemetry.DiscardTelemetryBackend",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "telemetry.DiscardTelemetryBackend",
+                    "functionName": "__init__",
+                    "returnType": "telemetry.DiscardTelemetryBackend",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.DiscardTelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema",
+                            "type": "Buffer"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.DiscardTelemetryBackend",
+                    "functionName": "add_schema",
+                    "returnType": "None",
+                    "tooltip": "Registers a data schema.  Data schemas provide information for how a\ncertain data type string can be decoded.  The type string of a data schema\nindicates the type of the schema itself (e.g. \"protobuf\" for protobuf\nschemas, \"struct\" for struct schemas, etc). In NetworkTables, schemas are\npublished just like normal topics, with the name being generated from the\nprovided name: \"/.schema/<name>\".  Duplicate calls to this function with\nthe same name are silently ignored.\n\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n:param type:        Type of schema (e.g. \"protobuf\", \"struct\", etc)\n:param schema:      Schema data"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.DiscardTelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.DiscardTelemetryBackend",
+                    "functionName": "add_schema",
+                    "returnType": "None",
+                    "tooltip": "Registers a data schema.  Data schemas provide information for how a\ncertain data type string can be decoded.  The type string of a data schema\nindicates the type of the schema itself (e.g. \"protobuf\" for protobuf\nschemas, \"struct\" for struct schemas, etc). In NetworkTables, schemas are\npublished just like normal topics, with the name being generated from the\nprovided name: \"/.schema/<name>\".  Duplicate calls to this function with\nthe same name are silently ignored.\n\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n:param type:        Type of schema (e.g. \"protobuf\", \"struct\", etc)\n:param schema:      Schema data"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.DiscardTelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.DiscardTelemetryBackend",
+                    "functionName": "get_entry",
+                    "returnType": "telemetry.TelemetryEntry",
+                    "tooltip": "Create an entry for the given path.\n\n:param path: full name\n\n:returns: telemetry entry"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.DiscardTelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.DiscardTelemetryBackend",
+                    "functionName": "has_schema",
+                    "returnType": "bool",
+                    "tooltip": "Returns whether there is a data schema already registered with the given\nname. This does NOT perform a check as to whether the schema has already\nbeen published by another node on the network.\n\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n\n:returns: True if schema already registered"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryBackend",
+                    "functionName": "remove_entry",
+                    "returnType": "None",
+                    "tooltip": "Removes an entry for the given path.\n\nBackend implementations must not throw from this method.\n\n:param path: normalized full name"
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "telemetry",
+            "staticMethods": []
+        },
+        {
+            "className": "telemetry.MultiTelemetryBackend",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "telemetry.MultiTelemetryBackend",
+                    "functionName": "__init__",
+                    "returnType": "telemetry.MultiTelemetryBackend",
+                    "tooltip": "Constructs a telemetry backend with no child backends."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "backends",
+                            "type": "collections.abc.Sequence[telemetry.TelemetryBackend]"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.MultiTelemetryBackend",
+                    "functionName": "__init__",
+                    "returnType": "telemetry.MultiTelemetryBackend",
+                    "tooltip": "Constructs a telemetry backend that forwards to multiple child backends.\n\n:param backends: child backends"
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.MultiTelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema",
+                            "type": "Buffer"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.MultiTelemetryBackend",
+                    "functionName": "add_schema",
+                    "returnType": "None",
+                    "tooltip": "Registers a data schema with every child backend.\n\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n:param type:        Type of schema (e.g. \"protobuf\", \"struct\", etc)\n:param schema:      Schema data"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.MultiTelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.MultiTelemetryBackend",
+                    "functionName": "add_schema",
+                    "returnType": "None",
+                    "tooltip": "Registers a data schema with every child backend.\n\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n:param type:        Type of schema (e.g. \"protobuf\", \"struct\", etc)\n:param schema:      Schema data"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.MultiTelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.MultiTelemetryBackend",
+                    "functionName": "get_entry",
+                    "returnType": "telemetry.TelemetryEntry",
+                    "tooltip": "Create an entry for the given path.\n\n:param path: full name\n\n:returns: telemetry entry"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.MultiTelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.MultiTelemetryBackend",
+                    "functionName": "has_schema",
+                    "returnType": "bool",
+                    "tooltip": "Returns whether every child backend has a data schema already registered\nwith the given name.\n\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n\n:returns: True if every child backend already has the schema"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.MultiTelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.MultiTelemetryBackend",
+                    "functionName": "remove_entry",
+                    "returnType": "None",
+                    "tooltip": "Removes an entry for the given path.\n\n:param path: normalized full name"
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "telemetry",
+            "staticMethods": []
+        },
+        {
+            "className": "telemetry.TelemetryBackend",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "telemetry.TelemetryBackend",
+                    "functionName": "__init__",
+                    "returnType": "telemetry.TelemetryBackend",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema",
+                            "type": "Buffer"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryBackend",
+                    "functionName": "add_schema",
+                    "returnType": "None",
+                    "tooltip": "Registers a data schema.  Data schemas provide information for how a\ncertain data type string can be decoded.  The type string of a data schema\nindicates the type of the schema itself (e.g. \"protobuf\" for protobuf\nschemas, \"struct\" for struct schemas, etc). In NetworkTables, schemas are\npublished just like normal topics, with the name being generated from the\nprovided name: \"/.schema/<name>\".  Duplicate calls to this function with\nthe same name are silently ignored.\n\nBackend implementations must not throw from this method. Recoverable schema\npublication failures should be reported through\nTelemetryRegistry::ReportWarning() and skipped.\n\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n:param type:        Type of schema (e.g. \"protobuf\", \"struct\", etc)\n:param schema:      Schema data"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryBackend",
+                    "functionName": "add_schema",
+                    "returnType": "None",
+                    "tooltip": "Registers a data schema.  Data schemas provide information for how a\ncertain data type string can be decoded.  The type string of a data schema\nindicates the type of the schema itself (e.g. \"protobuf\" for protobuf\nschemas, \"struct\" for struct schemas, etc). In NetworkTables, schemas are\npublished just like normal topics, with the name being generated from the\nprovided name: \"/.schema/<name>\".  Duplicate calls to this function with\nthe same name are silently ignored.\n\nBackend implementations must not throw from this method. Recoverable schema\npublication failures should be reported through\nTelemetryRegistry::ReportWarning() and skipped.\n\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n:param type:        Type of schema (e.g. \"protobuf\", \"struct\", etc)\n:param schema:      Schema data"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryBackend",
+                    "functionName": "get_entry",
+                    "returnType": "telemetry.TelemetryEntry",
+                    "tooltip": "Create an entry for the given path.\n\nBackend implementations must not throw from this method. Recoverable\nfailures should be reported through TelemetryRegistry::ReportWarning() and\nrepresented with a discard entry.\n\n:param path: full name\n\n:returns: telemetry entry"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryBackend",
+                    "functionName": "has_schema",
+                    "returnType": "bool",
+                    "tooltip": "Returns whether there is a data schema already registered with the given\nname. This does NOT perform a check as to whether the schema has already\nbeen published by another node on the network.\n\nBackend implementations must not throw from this method.\n\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n\n:returns: True if schema already registered"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryBackend",
+                    "functionName": "remove_entry",
+                    "returnType": "None",
+                    "tooltip": "Removes an entry for the given path.\n\nBackend implementations must not throw from this method.\n\n:param path: normalized full name"
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "telemetry",
+            "staticMethods": []
+        },
+        {
+            "className": "telemetry.TelemetryEntry",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "__init__",
+                    "returnType": "telemetry.TelemetryEntry",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "is_discard",
+                    "returnType": "bool",
+                    "tooltip": "Checks if this entry discards data.\n\n:returns: True if this entry discards logged data"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "keep_duplicates",
+                    "returnType": "None",
+                    "tooltip": "Indicates duplicate values should be preserved. Normally duplicate values\nare ignored."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "bool"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_boolean",
+                    "returnType": "None",
+                    "tooltip": "Logs a boolean.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "List[bool]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_boolean_array",
+                    "returnType": "None",
+                    "tooltip": "Logs a boolean array.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "List[int]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_boolean_array",
+                    "returnType": "None",
+                    "tooltip": "Logs a boolean array."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_double",
+                    "returnType": "None",
+                    "tooltip": "Logs a double.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "List[float]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_double_array",
+                    "returnType": "None",
+                    "tooltip": "Logs a double array.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_float",
+                    "returnType": "None",
+                    "tooltip": "Logs a float.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "List[float]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_float_array",
+                    "returnType": "None",
+                    "tooltip": "Logs a float array.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_int16",
+                    "returnType": "None",
+                    "tooltip": "Logs a short.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "List[int]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_int16_array",
+                    "returnType": "None",
+                    "tooltip": "Logs a short array.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_int32",
+                    "returnType": "None",
+                    "tooltip": "Logs an int.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "List[int]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_int32_array",
+                    "returnType": "None",
+                    "tooltip": "Logs an int array.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_int64",
+                    "returnType": "None",
+                    "tooltip": "Logs a long.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "List[int]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_int64_array",
+                    "returnType": "None",
+                    "tooltip": "Logs a long array.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "int"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_int8",
+                    "returnType": "None",
+                    "tooltip": "Logs a byte.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "Buffer"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type_string",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_raw",
+                    "returnType": "None",
+                    "tooltip": "Logs a raw value (byte array).\n\n:param value:       the value\n:param type_string: the type string\n:param timestamp:   timestamp in nanoseconds in the same time base as\n                    wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type_string",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_string",
+                    "returnType": "None",
+                    "tooltip": "Logs a String.\n\n:param value:       the value\n:param type_string: the type string\n:param timestamp:   timestamp in nanoseconds in the same time base as\n                    wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "List[str]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_string_array",
+                    "returnType": "None",
+                    "tooltip": "Logs a String array.\n\n:param value:     the value\n:param timestamp: timestamp in nanoseconds in the same time base as\n                  wpi::util::Now(), or 0 to use the current time"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "List[str]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "timestamp",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "log_string_array",
+                    "returnType": "None",
+                    "tooltip": "Logs a String array."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryEntry"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "key",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryEntry",
+                    "functionName": "set_property",
+                    "returnType": "None",
+                    "tooltip": "Sets property for a value. Properties are stored as a key/value map.\n\n:param key:   property key\n:param value: property value"
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "telemetry",
+            "staticMethods": []
+        },
+        {
+            "className": "telemetry.TelemetryLoggable",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "args",
+                            "type": "tuple"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "kwargs",
+                            "type": "dict"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryLoggable",
+                    "functionName": "__init__",
+                    "returnType": "telemetry.TelemetryLoggable",
+                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryLoggable"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryLoggable",
+                    "functionName": "get_telemetry_type",
+                    "returnType": "str",
+                    "tooltip": "Returns this object's stable telemetry type, or an empty string."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryLoggable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "table",
+                            "type": "telemetry.TelemetryTable"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryLoggable",
+                    "functionName": "log_to",
+                    "returnType": "None",
+                    "tooltip": "Logs this object's current state to ``table``."
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "telemetry",
+            "staticMethods": []
+        },
+        {
+            "className": "telemetry.TelemetryRegistry",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "args",
+                            "type": "tuple"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "kwargs",
+                            "type": "dict"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "__init__",
+                    "returnType": "telemetry.TelemetryRegistry",
+                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "telemetry",
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "backend",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema",
+                            "type": "Buffer"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "add_schema",
+                    "returnType": "None",
+                    "tooltip": "Registers a data schema.  Data schemas provide information for how a\ncertain data type string can be decoded.  The type string of a data schema\nindicates the type of the schema itself (e.g. \"protobuf\" for protobuf\nschemas, \"struct\" for struct schemas, etc). In NetworkTables, schemas are\npublished just like normal topics, with the name being generated from the\nprovided name: \"/.schema/<name>\".  Duplicate calls to this function with\nthe same name are silently ignored.\n\n:param backend:     Backend\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n:param type:        Type of schema (e.g. \"protobuf\", \"struct\", etc)\n:param schema:      Schema data"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "backend",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "add_schema",
+                    "returnType": "None",
+                    "tooltip": "Registers a data schema.  Data schemas provide information for how a\ncertain data type string can be decoded.  The type string of a data schema\nindicates the type of the schema itself (e.g. \"protobuf\" for protobuf\nschemas, \"struct\" for struct schemas, etc). In NetworkTables, schemas are\npublished just like normal topics, with the name being generated from the\nprovided name: \"/.schema/<name>\".  Duplicate calls to this function with\nthe same name are silently ignored.\n\n:param backend:     Backend\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n:param type:        Type of schema (e.g. \"protobuf\", \"struct\", etc)\n:param schema:      Schema data"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "backend",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "type"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "add_struct_schema",
+                    "returnType": "None",
+                    "tooltip": "Registers a struct schema. Duplicate calls to this function with the same\nname are silently ignored.\n\n@tparam T struct serializable type\n\n:param backend: Backend\n:param type:    optional struct type info"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "get_backend",
+                    "returnType": "telemetry.TelemetryBackend",
+                    "tooltip": "Gets the backend for logging an object. Should generally only be used\ninternally or by custom backends.\n\n:param path: full name\n\n:returns: telemetry backend, or a discard backend if no match"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "get_entry",
+                    "returnType": "telemetry.TelemetryEntry",
+                    "tooltip": "Get a telemetry entry for a particular name. The returned handle keeps the\nentry's backend alive while the entry is in use.\n\n:param path: full name\n\n:returns: telemetry entry"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "get_table",
+                    "returnType": "telemetry.TelemetryTable",
+                    "tooltip": "Get a telemetry table for a particular name.\n\n:param path: full name\n\n:returns: telemetry table"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "backend",
+                            "type": "telemetry.TelemetryBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "schema_name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "has_schema",
+                    "returnType": "bool",
+                    "tooltip": "Returns whether there is a data schema already registered with the given\nname. This does NOT perform a check as to whether the schema has already\nbeen published by another node on the network.\n\n:param backend:     Backend\n:param schema_name: Name (the string passed as the data type for topics using\n                    this schema)\n\n:returns: True if schema already registered"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "prefix",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "backend",
+                            "type": "telemetry.TelemetryBackend"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "register_backend",
+                    "returnType": "None",
+                    "tooltip": "Registers a backend for creating telemetry entries. When calling\nGetEntry(), the longest prefix match is used.\n\n:param prefix:  prefix for entries covered by this backend\n:param backend: backend"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "msg",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "report_warning",
+                    "returnType": "None",
+                    "tooltip": "Report a warning message (e.g. type mismatch).\n\n:param path: entry path\n:param msg:  warning message"
+                },
+                {
+                    "args": [],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "reset",
+                    "returnType": "None",
+                    "tooltip": "Clear all registered types and backends and closes all entries. Should\ntypically only be used by unit test code."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "None",
+                            "name": "callback",
+                            "type": "collections.abc.Callable[[str, str], None] | None"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryRegistry",
+                    "functionName": "set_report_warning",
+                    "returnType": "None",
+                    "tooltip": "Set function used for reporting warning messages (e.g. type mismatches).\n\nThe reporting function may be called concurrently and must not throw.\n\n:param callback: reporting function; pass nullptr to use default"
+                }
+            ]
+        },
+        {
+            "className": "telemetry.TelemetryTable",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "args",
+                            "type": "tuple"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "kwargs",
+                            "type": "dict"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "__init__",
+                    "returnType": "telemetry.TelemetryTable",
+                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryTable"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "get_path",
+                    "returnType": "str",
+                    "tooltip": "Gets the table path.\n\n:returns: path with trailing \"/\""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "get_table",
+                    "returnType": "telemetry.TelemetryTable",
+                    "tooltip": "Gets a child telemetry table.\n\n:param name: table name\n\n:returns: table"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryTable"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "get_type",
+                    "returnType": "str",
+                    "tooltip": "Gets the table type.\n\n:returns: Table type as set by SetType(), or empty string if none set."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryTable"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "has_type",
+                    "returnType": "bool",
+                    "tooltip": "Returns if a table type is set.\n\n:returns: True if type set by SetType(), false otherwise"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "keep_duplicates",
+                    "returnType": "None",
+                    "tooltip": "Indicates duplicate values should be preserved. Normally duplicate values\nare ignored.\n\n:param name: the name"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "object"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "log",
+                    "returnType": "None",
+                    "tooltip": "Logs a telemetry value.\n\nSequences must pass an explicit element_type. Use bool, int, float, or str\nfor primitive arrays, object to log a string array using str() for each\nelement, or a WPIStruct class for struct arrays. type_string is only used\nas custom type metadata for scalar str and bytes-like values (bytes,\nbytearray, and memoryview). Wrap other buffer exporters in memoryview to\nexplicitly log their raw bytes in C order."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "key",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "set_property",
+                    "returnType": "None",
+                    "tooltip": "Sets property for a value. Properties are stored as a key/value map.\n\n:param name:  the name\n:param key:   property key\n:param value: property value"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "type",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "set_type",
+                    "returnType": "bool",
+                    "tooltip": "Sets the table type.  TelemetryLoggable implementations can use this\nfunction to communicate the type of data in the table.  Callers should\ncheck the return value and not log data if false is returned.\n\n:param type: type string\n\n:returns: False if type mismatch."
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "telemetry",
+            "staticMethods": []
+        },
+        {
+            "className": "tunables.ComplexTunable",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "args",
+                            "type": "tuple"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "kwargs",
+                            "type": "dict"
+                        }
+                    ],
+                    "declaringClassName": "tunables.ComplexTunable",
+                    "functionName": "__init__",
+                    "returnType": "tunables.ComplexTunable",
+                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.ComplexTunable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.ComplexTunable",
+                    "functionName": "get_tunable_type",
+                    "returnType": "str",
+                    "tooltip": "Returns this object's stable tunable type, or an empty string."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.ComplexTunable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "table",
+                            "type": "tunables.TunableTable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.ComplexTunable",
+                    "functionName": "publish_tunables",
+                    "returnType": "None",
+                    "tooltip": "Publishes this object's tunable values to ``table``.\n\n        This method may be called when the tunable is initially published or\n        republished during backend migration, and it must not raise. If an\n        exception escapes, registry and backend state is not guaranteed to be\n        restored.\n        "
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.ComplexTunable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.ComplexTunable",
+                    "functionName": "update_tunables",
+                    "returnType": "None",
+                    "tooltip": "Updates callback-backed values before they are sent to the backend.\n\n        This method must not raise. If an exception escapes, registry and\n        backend state is not guaranteed to be restored.\n        "
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "tunables",
+            "staticMethods": []
+        },
+        {
+            "className": "tunables.Selectable",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "__init__",
+                    "returnType": "tunables.Selectable",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "~T"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "add",
+                    "returnType": "None",
+                    "tooltip": "Adds or replaces an option."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "~T"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "add_default",
+                    "returnType": "None",
+                    "tooltip": "Adds an option and makes it the default."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "clear",
+                    "returnType": "None",
+                    "tooltip": "Clears all options and the default selection."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "get_selected",
+                    "returnType": "typing.Optional[~T]",
+                    "tooltip": "Returns the selected option, falling back to the default."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "get_tunable_type",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "listener",
+                            "type": "collections.abc.Callable[[~T], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "on_change",
+                    "returnType": "None",
+                    "tooltip": "Sets the listener called when a valid option is selected."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "table",
+                            "type": "tunables.TunableTable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "publish_tunables",
+                    "returnType": "None",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "remove",
+                    "returnType": "None",
+                    "tooltip": "Removes an option by name."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "set_default",
+                    "returnType": "None",
+                    "tooltip": "Sets the default option by name."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Selectable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Selectable",
+                    "functionName": "update_tunables",
+                    "returnType": "None",
+                    "tooltip": "Updates callback-backed values before they are sent to the backend.\n\n        This method must not raise. If an exception escapes, registry and\n        backend state is not guaranteed to be restored.\n        "
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "tunables",
+            "staticMethods": []
+        },
+        {
+            "className": "tunables.Tunable",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "object"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Tunable",
+                    "functionName": "__init__",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates an unpublished tunable. The tunable type is inferred from value\nunless an explicit type selector is provided. Bytes, bytearray, and\nmemoryview values infer a raw tunable. Wrap other buffer exporters in\nmemoryview to explicitly use their raw bytes in C order.\n\n:param value:        initial value\n:param getter:       optional function that supplies the current local value\n:param setter:       optional function that receives values set locally or remotely\n:param on_tune:      callback that receives the value after a remote update\n:param robust:       whether to separately echo a remotely set value\n:param mutable:      whether remote updates may change the tunable\n:param value_type:   explicit value type, or None to infer it from value\n:param element_type: explicit sequence element type, or None to infer it\n:param properties:   additional tunable properties\n:param type_string:  custom tunable type string\n:param always_get:   whether to call getter on every backend update"
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Tunable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Tunable",
+                    "functionName": "get",
+                    "returnType": "object",
+                    "tooltip": "Gets the current local value. If a getter was provided, this calls it;\notherwise, it returns the stored value.\n\n:returns: current value"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Tunable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Tunable",
+                    "functionName": "mutate",
+                    "returnType": "object",
+                    "tooltip": "Gets the current individual WPIStruct object for in-place mutation and\nmarks the tunable as changed. The object is returned without copying it.\nIf a getter was provided, it supplies the current object.\n\nRaises TypeError for all other types, including struct arrays. Use get(),\nedit the value, and call set() for those types instead.\nCall mutate() again before further edits after a backend update.\n\n:returns: struct object to mutate"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.Tunable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "object"
+                        }
+                    ],
+                    "declaringClassName": "tunables.Tunable",
+                    "functionName": "set",
+                    "returnType": "None",
+                    "tooltip": "Sets the local value and marks the tunable as changed. If a setter was\nprovided, it is called with value. If a getter was also provided, its\nresult becomes the stored value.\n\n:param value: new value"
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "tunables",
+            "staticMethods": []
+        },
+        {
+            "className": "tunables.TunableBackend",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "args",
+                            "type": "tuple"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "kwargs",
+                            "type": "dict"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableBackend",
+                    "functionName": "__init__",
+                    "returnType": "tunables.TunableBackend",
+                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "uid",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableBackend",
+                    "functionName": "mark_dirty",
+                    "returnType": "None",
+                    "tooltip": "Marks a published tunable dirty after its local value changed.\n\nBackend implementations must not throw from this method.\n\n:param uid: tunable uid"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableBackend",
+                    "functionName": "remove",
+                    "returnType": "None",
+                    "tooltip": "Removes a tunable.\n\nBackend implementations must not throw from this method.\n\n:param path: normalized path"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "prefix",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableBackend",
+                    "functionName": "remove_prefix",
+                    "returnType": "list[tunables.TunableBackend.PublishedTunable]",
+                    "tooltip": "Removes all tunables under a prefix.\n\nBackend implementations must not throw from this method. The returned list\nmust describe the tunables actually removed from the backend.\n\n:param prefix: normalized path prefix\n\n:returns: removed tunables"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableBackend"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableBackend",
+                    "functionName": "retire",
+                    "returnType": "None",
+                    "tooltip": "Retires this backend after it is removed from TunableRegistry.\n\nThis stops external backend effects while the backend object may still be\nalive. Destructors remain the final RAII cleanup path and may call this\nmethod.\n\nImplementations must not throw from this method."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableBackend"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "uid",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableBackend",
+                    "functionName": "unregister_tunable",
+                    "returnType": "None",
+                    "tooltip": "Unregisters a tunable.\n\nBackend implementations must not throw from this method.\n\n:param uid: tunable uid"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableBackend"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableBackend",
+                    "functionName": "update",
+                    "returnType": "None",
+                    "tooltip": "Updates all tunable values and calls callbacks where appropriate.\n\nBackend implementations must not throw from this method. Recoverable update\nfailures should be reported through TunableRegistry::ReportWarning() and\nskipped so the robot loop and registry state can continue updating."
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "tunables",
+            "staticMethods": []
+        },
+        {
+            "className": "tunables.TunableBackend.PublishedTunable",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [],
+                    "declaringClassName": "tunables.TunableBackend.PublishedTunable",
+                    "functionName": "__init__",
+                    "returnType": "tunables.TunableBackend.PublishedTunable",
+                    "tooltip": ""
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [],
+            "instanceVariables": [
+                {
+                    "name": "path",
+                    "tooltip": "",
+                    "type": "str",
+                    "writable": true
+                },
+                {
+                    "name": "uid",
+                    "tooltip": "",
+                    "type": "int",
+                    "writable": true
+                }
+            ],
+            "isComponent": false,
+            "moduleName": "tunables",
+            "staticMethods": []
+        },
+        {
+            "className": "tunables.TunableRegistry",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "args",
+                            "type": "tuple"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "kwargs",
+                            "type": "dict"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "__init__",
+                    "returnType": "tunables.TunableRegistry",
+                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "tunables",
+            "staticMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "get_backend",
+                    "returnType": "tunables.TunableBackend",
+                    "tooltip": "Gets the backend for creating a tunable. Should generally only be used\ninternally or by custom backends.\n\n:param path: full name\n\n:returns: tunable backend, or a no-op backend if no match"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "get_table",
+                    "returnType": "tunables.TunableTable",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "normalize_name",
+                    "returnType": "str",
+                    "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "prefix",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "backend",
+                            "type": "tunables.TunableBackend"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "register_backend",
+                    "returnType": "None",
+                    "tooltip": "Registers a backend for creating tunables. When calling GetBackend(), the\nlongest prefix match is used.\n\n:param prefix:  prefix for tunables covered by this backend\n:param backend: backend"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "str | object"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "remove",
+                    "returnType": "None",
+                    "tooltip": "Removes a tunable and any descendant tunables.\n\n:param value: normalized path"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "msg",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "report_warning",
+                    "returnType": "None",
+                    "tooltip": "Report a warning message (e.g. type mismatch).\n\n:param msg: warning message"
+                },
+                {
+                    "args": [],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "reset",
+                    "returnType": "None",
+                    "tooltip": "Clear all registered backends. Should typically only be used by unit test\ncode."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "callback",
+                            "type": "collections.abc.Callable[[str], None] | None"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "set_report_warning",
+                    "returnType": "None",
+                    "tooltip": "Set function used for reporting warning messages (e.g. type mismatches).\n\nThe reporting function must not throw.\n\n:param callback: reporting function; pass null to use default"
+                },
+                {
+                    "args": [],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "update",
+                    "returnType": "None",
+                    "tooltip": "Updates all tunable values from backends."
+                },
+                {
+                    "args": [],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "with_update_mutex",
+                    "returnType": "tunables._tunables._UpdateMutexContext",
+                    "tooltip": "Return a context manager that holds the registry update mutex. Enter and exit must occur on the same thread; while entered, the context retains itself until owner-thread exit. Defensive C++ destruction on a nonowner thread abandons rather than unlocks the mutex. Critical sections should be short and every competing tunable access must participate."
+                }
+            ]
+        },
+        {
+            "className": "tunables.TunableTable",
+            "classVariables": [],
+            "constructors": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "path",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "__init__",
+                    "returnType": "tunables.TunableTable",
+                    "tooltip": "Constructs a tunable table.\n\n:param path: path with trailing \"/\"."
+                }
+            ],
+            "enums": [],
+            "instanceMethods": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "object"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "add",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a tunable whose type is inferred from value or the explicit type selectors. on_tune runs after an accepted remote update."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "bool"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "add_boolean",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a boolean tunable. on_tune receives the boolean value after an accepted remote update."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "add_double",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a 64-bit floating-point tunable. on_tune receives the stored float value."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "add_float",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a 32-bit floating-point tunable. on_tune receives the stored float value."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "add_int",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a signed 32-bit integer tunable. Values outside the native range are rejected."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "add_long",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a signed 64-bit integer tunable. Values outside the native range are rejected."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "get_path",
+                    "returnType": "str",
+                    "tooltip": "Gets the table path.\n\n:returns: path with trailing \"/\""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "get_table",
+                    "returnType": "object",
+                    "tooltip": "Returns a child table rooted at name, relative to this table."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "object"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish",
+                    "returnType": "bool",
+                    "tooltip": "Publishes an existing Tunable or complex tunable at name. Successful publications retain the value until removal."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], bool]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[bool], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_boolean",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a getter/setter-backed boolean tunable. The getter supplies local values and the setter receives remote values."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], list[bool]]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[list[bool]], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_boolean_array",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a boolean-array tunable backed by callbacks. The getter supplies a sequence and the setter receives a list."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], float]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[float], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_double",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a getter/setter-backed 64-bit floating-point tunable. The setter receives accepted remote values."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], list[float]]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[list[float]], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_double_array",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a 64-bit floating-point array tunable backed by callbacks. The setter receives a list of floats."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], float]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[float], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_float",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a getter/setter-backed 32-bit floating-point tunable. The setter receives accepted remote values."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], int]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[int], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_int",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a getter/setter-backed signed 32-bit integer tunable, rejecting values outside the native range."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], list[int]]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[list[int]], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_integer_array",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a 64-bit integer-array tunable backed by callbacks. The getter supplies a sequence and the setter receives a list."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], int]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[int], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_long",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a getter/setter-backed signed 64-bit integer tunable, rejecting values outside the native range."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], bytes]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[bytes], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_raw",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a raw byte tunable backed by callbacks. The getter supplies bytes and the setter receives bytes."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], str]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[str], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_string",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a getter/setter-backed string tunable. The getter supplies local text and the setter receives remote text."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], list[str]]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[list[str]], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_string_array",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a string-array tunable backed by callbacks. The getter supplies a sequence and the setter receives a list."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "getter",
+                            "type": "collections.abc.Callable[[], object]"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "setter",
+                            "type": "collections.abc.Callable[[object], None]"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "publish_value",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Publishes a getter/setter-backed tunable with inferred or selected type. The callbacks are retained until removal."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "tunables.TunableTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableTable",
+                    "functionName": "remove",
+                    "returnType": "None",
+                    "tooltip": "Removes the named tunable and its descendants, releasing retained Python values and callbacks."
+                }
+            ],
+            "instanceVariables": [],
+            "isComponent": false,
+            "moduleName": "tunables",
+            "staticMethods": []
+        },
+        {
             "className": "wpilib.ADXL345_I2C",
             "classVariables": [
                 {
@@ -3347,7 +5914,7 @@
                     ],
                     "declaringClassName": "wpilib.DataLogTelemetryBackend",
                     "functionName": "get_entry",
-                    "returnType": "telemetry._telemetry.TelemetryEntry",
+                    "returnType": "telemetry.TelemetryEntry",
                     "tooltip": "Create an entry for the given path.\n\n:param path: full name\n\n:returns: telemetry entry"
                 },
                 {
@@ -12275,7 +14842,7 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "tunables._tunables.TunableTable"
+                            "type": "tunables.TunableTable"
                         }
                     ],
                     "declaringClassName": "wpilib.Field2d",
@@ -21784,7 +24351,7 @@
                     ],
                     "declaringClassName": "wpilib.NetworkTablesTelemetryBackend",
                     "functionName": "get_entry",
-                    "returnType": "telemetry._telemetry.TelemetryEntry",
+                    "returnType": "telemetry.TelemetryEntry",
                     "tooltip": "Create an entry for the given path.\n\n:param path: full name\n\n:returns: telemetry entry"
                 },
                 {
@@ -21905,7 +24472,7 @@
                     ],
                     "declaringClassName": "wpilib.NetworkTablesTunableBackend",
                     "functionName": "remove_prefix",
-                    "returnType": "list[tunables._tunables.TunableBackend.PublishedTunable]",
+                    "returnType": "list[tunables.TunableBackend.PublishedTunable]",
                     "tooltip": ""
                 },
                 {
@@ -67826,7 +70393,7 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "tunables._tunables.TunableTable"
+                            "type": "tunables.TunableTable"
                         }
                     ],
                     "declaringClassName": "wpimath.BangBangController",
@@ -90732,7 +93299,7 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "tunables._tunables.TunableTable"
+                            "type": "tunables.TunableTable"
                         }
                     ],
                     "declaringClassName": "wpimath.PIDController",
@@ -91961,7 +94528,7 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "tunables._tunables.TunableTable"
+                            "type": "tunables.TunableTable"
                         }
                     ],
                     "declaringClassName": "wpimath.ProfiledPIDController",
@@ -92664,7 +95231,7 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "tunables._tunables.TunableTable"
+                            "type": "tunables.TunableTable"
                         }
                     ],
                     "declaringClassName": "wpimath.ProfiledPIDControllerRadians",
@@ -110653,6 +113220,267 @@
     ],
     "modules": [
         {
+            "enums": [],
+            "functions": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "''",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "functionName": "get_table",
+                    "returnType": "telemetry.TelemetryTable",
+                    "tooltip": "Gets a child telemetry table (or root table if not specified)\n\n:param name: table name\n\n:returns: table"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "functionName": "keep_duplicates",
+                    "returnType": "None",
+                    "tooltip": "Indicates duplicate values should be preserved. Normally duplicate values\nare ignored.\n\n:param name: the name"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "object"
+                        }
+                    ],
+                    "functionName": "log",
+                    "returnType": "None",
+                    "tooltip": "Logs a telemetry value.\n\nSequences must pass an explicit element_type. Use bool, int, float, or str\nfor primitive arrays, object to log a string array using str() for each\nelement, or a WPIStruct class for struct arrays. type_string is only used as\ncustom type metadata for scalar str and bytes-like values (bytes,\nbytearray, and memoryview). Wrap other buffer exporters in memoryview to\nexplicitly log their raw bytes in C order."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "key",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "str"
+                        }
+                    ],
+                    "functionName": "set_property",
+                    "returnType": "None",
+                    "tooltip": "Sets property for a value. Properties are stored as a key/value map.\n\n:param name:  the name\n:param key:   property key\n:param value: property value"
+                }
+            ],
+            "moduleName": "telemetry",
+            "moduleVariables": []
+        },
+        {
+            "enums": [
+                {
+                    "enumClassName": "tunables.TunableTypeValue",
+                    "enumValues": [
+                        "BOOLEAN",
+                        "BOOLEAN_ARRAY",
+                        "COMPLEX",
+                        "DOUBLE",
+                        "DOUBLE_ARRAY",
+                        "FLOAT",
+                        "FLOAT_ARRAY",
+                        "INT32",
+                        "INT32_ARRAY",
+                        "INT64",
+                        "INT64_ARRAY",
+                        "MEMBER_BOOLEAN",
+                        "MEMBER_BOOLEAN_ARRAY",
+                        "MEMBER_COMPLEX",
+                        "MEMBER_DOUBLE",
+                        "MEMBER_DOUBLE_ARRAY",
+                        "MEMBER_FLOAT",
+                        "MEMBER_FLOAT_ARRAY",
+                        "MEMBER_INT32",
+                        "MEMBER_INT32_ARRAY",
+                        "MEMBER_INT64",
+                        "MEMBER_INT64_ARRAY",
+                        "MEMBER_PROTOBUF",
+                        "MEMBER_RAW",
+                        "MEMBER_STRING",
+                        "MEMBER_STRING_ARRAY",
+                        "MEMBER_STRUCT",
+                        "PROTOBUF",
+                        "RAW",
+                        "STRING",
+                        "STRING_ARRAY",
+                        "STRUCT",
+                        "UNKNOWN"
+                    ],
+                    "moduleName": "tunables",
+                    "tooltip": "Members:\n\n  UNKNOWN\n\n  BOOLEAN\n\n  INT32\n\n  INT64\n\n  FLOAT\n\n  DOUBLE\n\n  STRING\n\n  RAW\n\n  BOOLEAN_ARRAY\n\n  INT32_ARRAY\n\n  INT64_ARRAY\n\n  FLOAT_ARRAY\n\n  DOUBLE_ARRAY\n\n  STRING_ARRAY\n\n  STRUCT\n\n  PROTOBUF\n\n  COMPLEX\n\n  MEMBER_BOOLEAN\n\n  MEMBER_INT32\n\n  MEMBER_INT64\n\n  MEMBER_FLOAT\n\n  MEMBER_DOUBLE\n\n  MEMBER_STRING\n\n  MEMBER_RAW\n\n  MEMBER_BOOLEAN_ARRAY\n\n  MEMBER_INT32_ARRAY\n\n  MEMBER_INT64_ARRAY\n\n  MEMBER_FLOAT_ARRAY\n\n  MEMBER_DOUBLE_ARRAY\n\n  MEMBER_STRING_ARRAY\n\n  MEMBER_STRUCT\n\n  MEMBER_PROTOBUF\n\n  MEMBER_COMPLEX"
+                }
+            ],
+            "functions": [
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "object"
+                        }
+                    ],
+                    "functionName": "add",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a tunable in the root table. The tunable type is\ninferred from value unless explicit type selectors are provided. on_tune runs\nafter an accepted remote update.\n\n:param name:         name relative to the root table\n:param value:        initial value\n:param value_type:   explicit value type, or None to infer it from value\n:param element_type: explicit sequence element type, or None to infer it\n:param robust:       whether to separately echo a remotely set value\n:param mutable:      whether remote updates may change the tunable\n:param on_tune:      callback that receives the value after a remote update\n:param properties:   additional tunable properties\n:param type_string:  custom tunable type string\n\n:returns: created tunable"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "bool"
+                        }
+                    ],
+                    "functionName": "add_boolean",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a boolean tunable in the root table. on_tune receives\nthe boolean value after an accepted remote update.\n\n:param name:        name relative to the root table\n:param value:       initial value\n:param robust:      whether to separately echo a remotely set value\n:param mutable:     whether remote updates may change the tunable\n:param on_tune:     callback that receives the value after a remote update\n:param properties:  additional tunable properties\n:param type_string: custom tunable type string\n\n:returns: created tunable"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        }
+                    ],
+                    "functionName": "add_double",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a 64-bit floating-point tunable in the root table.\non_tune receives the stored float value after an accepted remote update.\n\n:param name:        name relative to the root table\n:param value:       initial value\n:param robust:      whether to separately echo a remotely set value\n:param mutable:     whether remote updates may change the tunable\n:param on_tune:     callback that receives the value after a remote update\n:param properties:  additional tunable properties\n:param type_string: custom tunable type string\n\n:returns: created tunable"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        }
+                    ],
+                    "functionName": "add_float",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a 32-bit floating-point tunable in the root table.\non_tune receives the stored float value after an accepted remote update.\n\n:param name:        name relative to the root table\n:param value:       initial value\n:param robust:      whether to separately echo a remotely set value\n:param mutable:     whether remote updates may change the tunable\n:param on_tune:     callback that receives the value after a remote update\n:param properties:  additional tunable properties\n:param type_string: custom tunable type string\n\n:returns: created tunable"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "int"
+                        }
+                    ],
+                    "functionName": "add_int",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a signed 32-bit integer tunable in the root table.\nValues outside the native range are rejected.\n\n:param name:        name relative to the root table\n:param value:       initial value\n:param robust:      whether to separately echo a remotely set value\n:param mutable:     whether remote updates may change the tunable\n:param on_tune:     callback that receives the value after a remote update\n:param properties:  additional tunable properties\n:param type_string: custom tunable type string\n\n:returns: created tunable"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "int"
+                        }
+                    ],
+                    "functionName": "add_long",
+                    "returnType": "tunables.Tunable",
+                    "tooltip": "Creates and publishes a signed 64-bit integer tunable in the root table.\nValues outside the native range are rejected.\n\n:param name:        name relative to the root table\n:param value:       initial value\n:param robust:      whether to separately echo a remotely set value\n:param mutable:     whether remote updates may change the tunable\n:param on_tune:     callback that receives the value after a remote update\n:param properties:  additional tunable properties\n:param type_string: custom tunable type string\n\n:returns: created tunable"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "''",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "functionName": "get_table",
+                    "returnType": "tunables.TunableTable",
+                    "tooltip": "Gets a tunable table relative to the root table.\n\n:param name: child table name; an empty name returns the root table\n\n:returns: tunable table"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "value",
+                            "type": "object"
+                        }
+                    ],
+                    "functionName": "publish",
+                    "returnType": "bool",
+                    "tooltip": "Publishes an existing Tunable or complex tunable in the root table.\nSuccessful publications retain the value until it is removed.\n\n:param name:  name relative to the root table\n:param value: tunable to publish\n\n:returns: true if the tunable was published, false otherwise"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        }
+                    ],
+                    "functionName": "remove",
+                    "returnType": "None",
+                    "tooltip": "Removes the named tunable and its descendants from the root table, releasing\nretained Python values and callbacks.\n\n:param name: name relative to the root table"
+                }
+            ],
+            "moduleName": "tunables",
+            "moduleVariables": []
+        },
+        {
             "enums": [
                 {
                     "enumClassName": "wpilib.Alliance",
@@ -112110,7 +114938,10 @@
             "ntcore.StructArrayTopic",
             "ntcore.StructTopic"
         ],
-        "telemetry._telemetry.TelemetryBackend": [
+        "telemetry.TelemetryBackend": [
+            "telemetry.DiscardTelemetryBackend",
+            "telemetry.MockTelemetryBackend",
+            "telemetry.MultiTelemetryBackend",
             "wpilib.DataLogTelemetryBackend",
             "wpilib.NetworkTablesTelemetryBackend"
         ],
@@ -112161,15 +114992,19 @@
             "wpimath.ProfiledPIDController",
             "wpimath.ProfiledPIDControllerRadians"
         ],
+        "tunables.ComplexTunable": [
+            "tunables.Selectable"
+        ],
+        "tunables.TunableBackend": [
+            "tunables.MockTunableBackend",
+            "wpilib.NetworkTablesTunableBackend"
+        ],
         "tunables._tunables.ComplexTunable": [
             "wpilib.Field2d",
             "wpimath.BangBangController",
             "wpimath.PIDController",
             "wpimath.ProfiledPIDController",
             "wpimath.ProfiledPIDControllerRadians"
-        ],
-        "tunables._tunables.TunableBackend": [
-            "wpilib.NetworkTablesTunableBackend"
         ],
         "wpilib.BooleanEvent": [
             "wpilib.NetworkBooleanEvent"

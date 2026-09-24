@@ -32,6 +32,7 @@ import component
 _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
   'hal',
   'ntcore',
+  'telemetry.mock_backend',
   'wpinet',
 ]
 
@@ -42,6 +43,8 @@ _LIST_MODULE_NAMES_INTERNAL = [
 ]
 
 _LIST_CLASS_NAMES_INTERNAL = [
+  'telemetry.MockTelemetryBackend',
+  'tunables.MockTunableBackend',
   'wpilib_blocks.BlockExecution',
   'wpilib_blocks.DefaultUserControls',
 ]
