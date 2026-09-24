@@ -447,7 +447,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
             // conditions are checked before anything else happens on this tick.
             this.getWhenCalls() +
             this.INDENT + 'for mechanism in self.mechanisms:\n' +
-            this.INDENT.repeat(2) + 'mechanism.opmode_periodic()\n'
+            this.INDENT.repeat(2) + 'mechanism.opmode_periodic()\n' +
+            // TODO: This is here only until WPILib makes it part of every opmode.
+            this.INDENT + 'wpilib.DriverStationDisplay.update_lines()\n'
         );
         this.classMethods['opmode_end'] = (
             'def opmode_end(self) -> None:\n' +
