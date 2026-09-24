@@ -63,11 +63,6 @@ interface MechanismComponentHolderMixin extends MechanismComponentHolderMixinTyp
   mrcComponentBlockIds: string,
   mrcPrivateComponentBlockIds: string,
   mrcEventBlockIds: string,
-
-  mrcMechanismIds: string[],
-  mrcComponentIds: string[],
-  mrcPrivateComponentIds: string[],
-  mrcEventIds: string[],
 }
 type MechanismComponentHolderMixinType = typeof MECHANISM_COMPONENT_HOLDER;
 
@@ -83,10 +78,6 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.mrcComponentBlockIds = '';
     this.mrcPrivateComponentBlockIds = '';
     this.mrcEventBlockIds = '';
-    this.mrcMechanismIds = [];
-    this.mrcComponentIds = [];
-    this.mrcPrivateComponentIds = [];
-    this.mrcEventIds = [];
   },
   ...NONCOPYABLE_BLOCK,
   saveExtraState: function (this: MechanismComponentHolderBlock): MechanismComponentHolderExtraState {
@@ -162,10 +153,6 @@ const MECHANISM_COMPONENT_HOLDER = {
     let componentBlockIds = '';
     let privateComponentBlockIds = '';
     let eventBlockIds = '';
-    const mechanismIds: string[] = [];
-    const componentIds: string[] = [];
-    const privateComponentIds: string[] = [];
-    const eventIds: string[] = [];
 
     const mechanismsInput = this.getInput(INPUT_MECHANISMS);
     if (mechanismsInput && mechanismsInput.connection) {
@@ -174,10 +161,6 @@ const MECHANISM_COMPONENT_HOLDER = {
       while (mechanismBlock) {
         if (mechanismBlock.type === MRC_MECHANISM_NAME) {
           mechanismBlockIds += mechanismBlock.id;
-          const mechanism = (mechanismBlock as MechanismBlock).getMechanism();
-          if (mechanism) {
-            mechanismIds.push(mechanism.mechanismId);
-          }
         }
         // Move to the next block in the stack.
         mechanismBlock = mechanismBlock.getNextBlock();
@@ -190,10 +173,6 @@ const MECHANISM_COMPONENT_HOLDER = {
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME) {
           componentBlockIds += componentBlock.id;
-          const component = (componentBlock as ComponentBlock).getComponent();
-          if (component) {
-            componentIds.push(component.componentId);
-          }
         }
         // Move to the next block in the stack.
         componentBlock = componentBlock.getNextBlock();
@@ -206,10 +185,6 @@ const MECHANISM_COMPONENT_HOLDER = {
       while (componentBlock) {
         if (componentBlock.type === MRC_COMPONENT_NAME) {
           privateComponentBlockIds += componentBlock.id;
-          const component = (componentBlock as ComponentBlock).getComponent();
-          if (component) {
-            privateComponentIds.push(component.componentId);
-          }
         }
         // Move to the next block in the stack.
         componentBlock = componentBlock.getNextBlock();
@@ -222,10 +197,6 @@ const MECHANISM_COMPONENT_HOLDER = {
       while (eventBlock) {
         if (eventBlock.type === MRC_EVENT_NAME) {
           eventBlockIds += eventBlock.id;
-          const event = (eventBlock as EventBlock).getEvent();
-          if (event) {
-            eventIds.push(event.eventId);
-          }
         }
         // Move to the next block in the stack.
         eventBlock = eventBlock.getNextBlock();
@@ -248,10 +219,6 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.mrcComponentBlockIds = componentBlockIds;
     this.mrcPrivateComponentBlockIds = privateComponentBlockIds;
     this.mrcEventBlockIds = eventBlockIds;
-    this.mrcMechanismIds = mechanismIds;
-    this.mrcComponentIds = componentIds;
-    this.mrcPrivateComponentIds = privateComponentIds;
-    this.mrcEventIds = eventIds;
 
     if (!onLoad) {
       if (somethingChanged) {
