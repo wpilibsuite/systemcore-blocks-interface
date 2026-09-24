@@ -28,6 +28,7 @@ import { Parameter } from './mrc_class_method_def';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
+import { NONDISABLEABLE_BLOCK } from './nondisableable_block';
 import * as paramContainer from './mrc_param_container'
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
@@ -83,6 +84,7 @@ const EVENT = {
     this.updateBlock_();
   },
   ...NONCOPYABLE_BLOCK,
+  ...NONDISABLEABLE_BLOCK,
 
   /**
    * Returns the state of this block as a JSON serializable object.

@@ -43,6 +43,7 @@ import * as storageModule from '../storage/module';
 import * as storageNames from '../storage/names';
 import * as storageModuleContent from '../storage/module_content';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
+import { NONDISABLEABLE_BLOCK } from './nondisableable_block';
 import {
     BLOCK_NAME as MRC_MECHANISM_COMPONENT_HOLDER,
     MechanismComponentHolderBlock,
@@ -141,6 +142,7 @@ const COMPONENT = {
     this.setNextStatement(true, OUTPUT_NAME);
   },
   ...NONCOPYABLE_BLOCK,
+  ...NONDISABLEABLE_BLOCK,
 
   /**
     * Returns the state of this block as a JSON serializable object.
