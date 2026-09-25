@@ -21,6 +21,8 @@ names of classes from these modules are the same as in robotpy_data.json.
 
 # robotpy
 import ntcore
+import telemetry
+import tunables
 import wpilib
 import wpilib.simulation
 import wpimath
@@ -35,6 +37,8 @@ import python_util
 def getRobotPyModules() -> list:
   return [
     ntcore,
+    telemetry,
+    tunables,
     wpilib,
     wpilib.simulation,
     python_util.getModule('wpilib.sysid'),
