@@ -161,6 +161,7 @@
                         "args": [],
                         "tooltip": "%{blocks_demo:COMPONENTS.GRIPPER_OPEN}",
                         "componentId": "}OoH|Xq%wvb.;qf#S)Up",
+                        "componentName": "gripper",
                         "componentClassName": "blocks_demo.components.Gripper"
                       },
                       "fields": {
@@ -198,6 +199,7 @@
                               "args": [],
                               "tooltip": "%{blocks_demo:COMPONENTS.LIMIT_SWITCH_IS_PRESSED}",
                               "componentId": "Kk)EK9@WTP*L%^rw5}VP",
+                              "componentName": "limit_switch",
                               "componentClassName": "blocks_demo.components.LimitSwitch"
                             },
                             "fields": {
@@ -219,6 +221,7 @@
                         "args": [],
                         "tooltip": "%{blocks_demo:COMPONENTS.GRIPPER_CLOSE}",
                         "componentId": "}OoH|Xq%wvb.;qf#S)Up",
+                        "componentName": "gripper",
                         "componentClassName": "blocks_demo.components.Gripper"
                       },
                       "fields": {
