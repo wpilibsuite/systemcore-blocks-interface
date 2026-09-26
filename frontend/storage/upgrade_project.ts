@@ -279,46 +279,22 @@ export function upgradeA301ToCanPort(moduleContentText: string): string {
     });
   });
 
-  // Update the blocks.
-  storageModuleContent.getTopLevelBlocksJson(parsedContent.blocks).forEach((blockJson: any) => {
-    if (upgradeA301InBlockJson(blockJson)) {
-      changed = true;
-    }
-  });
-
-  return changed ? JSON.stringify(parsedContent, null, 2) : moduleContentText;
-}
-
-/** Updates the given block and every block below it. */
-function upgradeA301InBlockJson(blockJson: any): boolean {
-  if (!blockJson || typeof blockJson !== 'object') {
-    return false;
-  }
-  let changed = false;
-
-  if (blockJson.type === componentBlock.BLOCK_NAME) {
-    if (upgradeA301InComponentBlockJson(blockJson)) {
-      changed = true;
-    }
-  } else if (blockJson.type === mechanismBlock.BLOCK_NAME) {
-    if (upgradeA301InMechanismBlockJson(blockJson)) {
-      changed = true;
-    }
-  }
-
-  if (blockJson.inputs) {
-    for (const inputName in blockJson.inputs) {
-      const input = blockJson.inputs[inputName];
-      if (input && input.block && upgradeA301InBlockJson(input.block)) {
+  // Upgrade the blocks.
+  const visitBlockJson = (blockJson: {[key: string]: any}): void => {
+    if (blockJson.type === componentBlock.BLOCK_NAME) {
+      if (upgradeA301InComponentBlockJson(blockJson)) {
+        changed = true;
+      }
+    } else if (blockJson.type === mechanismBlock.BLOCK_NAME) {
+      if (upgradeA301InMechanismBlockJson(blockJson)) {
         changed = true;
       }
     }
-  }
-  if (blockJson.next && blockJson.next.block &&
-      upgradeA301InBlockJson(blockJson.next.block)) {
-    changed = true;
-  }
-  return changed;
+  };
+
+  storageModuleContent.visitAllBlockJson(parsedContent.blocks, visitBlockJson);
+
+  return changed ? JSON.stringify(parsedContent, null, 2) : moduleContentText;
 }
 
 /**
@@ -418,38 +394,15 @@ function upgradeTo_0_6_0(moduleContentText: string): string {
   let changed = false;
 
   // Update the blocks.
-  storageModuleContent.getTopLevelBlocksJson(parsedContent.blocks).forEach((blockJson: any) => {
-    if (upgradeBlockJsonTo_0_6_0(blockJson)) {
-      changed = true;
-    }
-  });
-
-  return changed ? JSON.stringify(parsedContent, null, 2) : moduleContentText;
-}
-
-function upgradeBlockJsonTo_0_6_0(blockJson: any): boolean {
-  if (!blockJson || typeof blockJson !== 'object') {
-    return false;
-  }
-  let changed = false;
-
-  if (blockJson.type === callPythonFunctionBlock.BLOCK_NAME) {
-    if (callPythonFunctionBlock.upgradeBlockJsonTo_0_6_0(blockJson)) {
-      changed = true;
-    }
-  }
-
-  if (blockJson.inputs) {
-    for (const inputName in blockJson.inputs) {
-      const input = blockJson.inputs[inputName];
-      if (input && input.block && upgradeBlockJsonTo_0_6_0(input.block)) {
+  const visitBlockJson = (blockJson: {[key: string]: any}): void => {
+    if (blockJson.type === callPythonFunctionBlock.BLOCK_NAME) {
+      if (callPythonFunctionBlock.upgradeBlockJsonTo_0_6_0(blockJson)) {
         changed = true;
       }
     }
-  }
-  if (blockJson.next && blockJson.next.block &&
-      upgradeBlockJsonTo_0_6_0(blockJson.next.block)) {
-    changed = true;
-  }
-  return changed;
+  };
+
+  storageModuleContent.visitAllBlockJson(parsedContent.blocks, visitBlockJson);
+
+  return changed ? JSON.stringify(parsedContent, null, 2) : moduleContentText;
 }

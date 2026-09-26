@@ -475,7 +475,7 @@ export function repointComponentReferenceIntoMechanism(
     mechanismName: string): boolean {
   let changed = false;
 
-  const visitBlock = (blockJson: {[key: string]: any}): void => {
+  const visitBlockJson = (blockJson: {[key: string]: any}): void => {
     // If this is a mrc_component_reference block, and it represents the given component,
     // then update it to represent the component within the given mechanism.
     if (blockJson.type === BLOCK_NAME) {
@@ -491,23 +491,9 @@ export function repointComponentReferenceIntoMechanism(
         changed = true;
       }
     }
-    if (blockJson.inputs) {
-      for (const inputName in blockJson.inputs) {
-        const input = blockJson.inputs[inputName];
-        if (input.block) {
-          visitBlock(input.block);
-        }
-        if (input.shadow) {
-          visitBlock(input.shadow);
-        }
-      }
-    }
-    if (blockJson.next && blockJson.next.block) {
-      visitBlock(blockJson.next.block);
-    }
   };
 
-  storageModuleContent.getTopLevelBlocksJson(blocks).forEach(visitBlock);
+  storageModuleContent.visitAllBlockJson(blocks, visitBlockJson);
   return changed;
 }
 
