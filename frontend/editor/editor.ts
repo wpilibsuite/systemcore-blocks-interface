@@ -79,7 +79,7 @@ export class Editor {
   private toolbox: Blockly.utils.toolbox.ToolboxInfo = EMPTY_TOOLBOX;
   private toolboxUpdateTimeout: NodeJS.Timeout | null = null;
   private portConflictTimeout: NodeJS.Timeout | null = null;
-  private createdBlockIds: string[] = [];
+  private createdBlockIds: Set<String> = new Set();
 
   constructor(
       blocklyWorkspace: Blockly.WorkspaceSvg,
@@ -119,7 +119,7 @@ export class Editor {
         blockCreateEvent.ids.forEach(id => {
           const block = this.blocklyWorkspace.getBlockById(id);
           if (block) {
-            this.createdBlockIds.push(block.id);
+            this.createdBlockIds.add(block.id);
             if (MRC_ON_LOAD in block && typeof block[MRC_ON_LOAD] === 'function') {
               block[MRC_ON_LOAD](this);
             }
@@ -172,7 +172,7 @@ export class Editor {
         blockCreateEvent.ids.forEach(id => {
           const block = this.blocklyWorkspace.getBlockById(id);
           if (block) {
-            this.createdBlockIds.push(block.id);
+            this.createdBlockIds.add(block.id);
             if (MRC_ON_CREATE in block && typeof block[MRC_ON_CREATE] === 'function') {
               block[MRC_ON_CREATE](this);
             }
@@ -203,13 +203,13 @@ export class Editor {
       // don't get a BLOCK_CREATE event for it, but we do get a BLOCK_MOVE event. If we get a
       // BLOCK_MOVE event for a block that we never got a BLOCK_CREATED event for it, simulated it
       // now.
-      if (blockMoveEvent.blockId && !this.createdBlockIds.includes(blockMoveEvent.blockId)) {
+      if (blockMoveEvent.blockId && !this.createdBlockIds.has(blockMoveEvent.blockId)) {
         const block = this.blocklyWorkspace.getBlockById(blockMoveEvent.blockId);
         if (block) {
           block.getDescendants(false)
-              .filter(b => !this.createdBlockIds.includes(b.id))
+              .filter(b => !this.createdBlockIds.has(b.id))
               .forEach(newBlock => {
-                this.createdBlockIds.push(newBlock.id);
+                this.createdBlockIds.add(newBlock.id);
                 if (MRC_ON_CREATE in newBlock && typeof newBlock[MRC_ON_CREATE] === 'function') {
                   newBlock[MRC_ON_CREATE](this);
                 }
@@ -245,6 +245,13 @@ export class Editor {
           descendant[MRC_ON_ANCESTOR_MOVE]();
         }
       });
+    }
+
+    if (event.type === Blockly.Events.BLOCK_DELETE) {
+      const blockDeleteEvent = event as Blockly.Events.BlockDelete;
+      if (blockDeleteEvent.ids) {
+         blockDeleteEvent.ids.forEach(id => this.createdBlockIds.delete(id));
+      }
     }
 
     if (event.type === Blockly.Events.BUBBLE_OPEN) {
