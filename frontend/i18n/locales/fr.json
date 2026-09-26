@@ -408,7 +408,9 @@
             "GET_ENUM_VALUE": "Obtient la valeur d'énumération {{enumName}}.{{valueName}}.",
             "SET_MODULE_VARIABLE": "Définit la variable {{moduleName}}.{{varName}}.",
             "SET_CLASS_VARIABLE": "Définit la variable {{className}}.{{varName}}.",
-            "SET_INSTANCE_VARIABLE": "Définit la variable {{varName}} pour l'objet {{className}} donné."
+            "SET_INSTANCE_VARIABLE": "Définit la variable {{varName}} pour l'objet {{className}} donné.",
+            "MECHANISM_COMPONENT_REFERENCE": "Le composant nommé {{componentName}} de la classe {{className}} du mécanisme nommé {{mechanismName}}.",
+            "COMPONENT_REFERENCE": "Le composant nommé {{componentName}} de la classe {{className}}."
         },
         "CATEGORY": {
             "LISTS": "Listes",
@@ -469,13 +471,17 @@
             "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "Ce bloc n'est pas autorisé à être utilisé dans un mécanisme.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "Ce bloc appelle une méthode qui n'existe plus dans le mécanisme.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "Ce bloc appelle une méthode dans un mécanisme qui n'existe plus.",
+            "FIRE_EVENT_MISSING_EVENT": "Ce bloc déclenche un événement qui n'existe plus.",
             "EVENT_NOT_IN_HOLDER": "Ce bloc ne peut aller que dans la section événements du robot ou du mécanisme.",
             "COMPONENT_NOT_IN_HOLDER": "Ce bloc ne peut aller que dans la section composants du robot ou du mécanisme.",
             "MECHANISM_NOT_IN_HOLDER": "Ce bloc ne peut aller que dans la section mécanismes du robot.",
             "COMPONENT_MISSING_COMPONENT_CLASS": "Ce bloc représente un composant dont la classe n'existe plus.",
             "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "Un PeriodicOpMode doit avoir des étapes, la méthode périodique, ou les deux.",
             "MECHANISM_NOT_FOUND": "Ce bloc fait référence à un mécanisme qui n'existe plus.",
-            "DUPLICATE_PORT": "Ce port (%1) est aussi utilisé par : %2"
+            "DUPLICATE_PORT": "Ce port (%1) est aussi utilisé par : %2",
+            "COMPONENT_REFERENCE_PRIVATE_COMPONENT": "Ce bloc représente un composant privé du mécanisme {{mechanismClassName}}.",
+            "COMPONENT_REFERENCE_MISSING_COMPONENT": "Ce bloc représente un composant qui n'existe plus.",
+            "COMPONENT_REFERENCE_MISSING_MECHANISM": "Ce bloc représente un composant appartenant à un mécanisme qui n'existe plus."
         },
         "ERROR": {
             "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind doit être \"module\", \"class\" ou \"instance\"."

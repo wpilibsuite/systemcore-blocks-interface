@@ -40,6 +40,7 @@
                   ],
                   "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param is_inverted: The inversion state.",
                   "componentId": "{{`w$7oY596YUEB-M89I",
+                  "componentName": "front_left_motor",
                   "componentClassName": "rev.A301"
                 },
                 "fields": {
@@ -72,6 +73,7 @@
                       ],
                       "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param is_inverted: The inversion state.",
                       "componentId": "`2QvHlkPo?DykBZ1A-3K",
+                      "componentName": "rear_left_motor",
                       "componentClassName": "rev.A301"
                     },
                     "fields": {
@@ -303,6 +305,7 @@
                               ],
                               "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                               "componentId": "{{`w$7oY596YUEB-M89I",
+                              "componentName": "front_left_motor",
                               "componentClassName": "rev.A301"
                             },
                             "fields": {
@@ -350,6 +353,7 @@
                               ],
                               "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                               "componentId": "{{`w$7oY596YUEB-M89I",
+                              "componentName": "front_left_motor",
                               "componentClassName": "rev.A301"
                             },
                             "fields": {
@@ -415,6 +419,7 @@
                                   ],
                                   "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                   "componentId": ",Cq$re$$zJ%m;lyiSwg+",
+                                  "componentName": "front_right_motor",
                                   "componentClassName": "rev.A301"
                                 },
                                 "fields": {
@@ -462,6 +467,7 @@
                                   ],
                                   "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                   "componentId": ",Cq$re$$zJ%m;lyiSwg+",
+                                  "componentName": "front_right_motor",
                                   "componentClassName": "rev.A301"
                                 },
                                 "fields": {
@@ -527,6 +533,7 @@
                                       ],
                                       "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                       "componentId": "`2QvHlkPo?DykBZ1A-3K",
+                                      "componentName": "rear_left_motor",
                                       "componentClassName": "rev.A301"
                                     },
                                     "fields": {
@@ -574,6 +581,7 @@
                                       ],
                                       "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                       "componentId": "`2QvHlkPo?DykBZ1A-3K",
+                                      "componentName": "rear_left_motor",
                                       "componentClassName": "rev.A301"
                                     },
                                     "fields": {
@@ -639,6 +647,7 @@
                                           ],
                                           "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                           "componentId": "{y[Om`ULa?;[/DNtmy?!",
+                                          "componentName": "rear_right_motor",
                                           "componentClassName": "rev.A301"
                                         },
                                         "fields": {
@@ -686,6 +695,7 @@
                                           ],
                                           "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                           "componentId": "{y[Om`ULa?;[/DNtmy?!",
+                                          "componentName": "rear_right_motor",
                                           "componentClassName": "rev.A301"
                                         },
                                         "fields": {
@@ -1035,6 +1045,7 @@
                                         ],
                                         "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                         "componentId": "{{`w$7oY596YUEB-M89I",
+                                        "componentName": "front_left_motor",
                                         "componentClassName": "rev.A301"
                                       },
                                       "fields": {
@@ -1150,6 +1161,7 @@
                                             ],
                                             "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                             "componentId": ",Cq$re$$zJ%m;lyiSwg+",
+                                            "componentName": "front_right_motor",
                                             "componentClassName": "rev.A301"
                                           },
                                           "fields": {
@@ -1265,6 +1277,7 @@
                                                 ],
                                                 "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                                 "componentId": "`2QvHlkPo?DykBZ1A-3K",
+                                                "componentName": "rear_left_motor",
                                                 "componentClassName": "rev.A301"
                                               },
                                               "fields": {
@@ -1380,6 +1393,7 @@
                                                     ],
                                                     "tooltip": "Sets the velocity of the A301.\n\n:param velocity: The velocity (in RPM) to set\n\n:returns: REVLibError::kOk if successful",
                                                     "componentId": "{y[Om`ULa?;[/DNtmy?!",
+                                                    "componentName": "rear_right_motor",
                                                     "componentClassName": "rev.A301"
                                                   },
                                                   "fields": {

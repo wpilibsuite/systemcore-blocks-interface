@@ -29,6 +29,8 @@ import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
+import { checkMethodCallers } from './mrc_call_python_function'
+import { checkComponentReferences } from './mrc_component_reference'
 import { createMechanismBlock, BLOCK_NAME as MRC_MECHANISM_NAME } from './mrc_mechanism';
 import { OUTPUT_NAME as MECHANISM_OUTPUT } from './mrc_mechanism';
 import { MechanismBlock } from './mrc_mechanism';
@@ -133,20 +135,20 @@ const MECHANISM_COMPONENT_HOLDER = {
    * workspace.
    */
   mrcOnLoad: function (this: MechanismComponentHolderBlock, editor: Editor): void {
-    this.collectDescendants(editor, false);
+    this.collectDescendants(editor, true);
   },
   /**
    * mrcOnDescendantDisconnect is called for each MechanismComponentHolderBlock when any descendant is
    * disconnected.
    */
   mrcOnDescendantDisconnect: function (this: MechanismComponentHolderBlock, editor: Editor): void {
-    this.collectDescendants(editor, true);
+    this.collectDescendants(editor, false);
   },
   mrcDescendantsMayHaveChanged: function (this: MechanismComponentHolderBlock, editor: Editor): void {
-    this.collectDescendants(editor, true);
+    this.collectDescendants(editor, false);
   },
   collectDescendants: function (
-    this: MechanismComponentHolderBlock, editor: Editor, updateToolboxIfDescendantsChanged: boolean): void {
+    this: MechanismComponentHolderBlock, editor: Editor, onLoad: boolean): void {
     let mechanismBlockIds = '';
     let componentBlockIds = '';
     let privateComponentBlockIds = '';
@@ -201,11 +203,14 @@ const MECHANISM_COMPONENT_HOLDER = {
       }
     }
 
-    if (updateToolboxIfDescendantsChanged) {
-      if (mechanismBlockIds !== this.mrcMechanismBlockIds ||
+    const somethingChanged = (
+        mechanismBlockIds !== this.mrcMechanismBlockIds ||
         componentBlockIds !== this.mrcComponentBlockIds ||
         privateComponentBlockIds !== this.mrcPrivateComponentBlockIds ||
-        eventBlockIds !== this.mrcEventBlockIds) {
+        eventBlockIds !== this.mrcEventBlockIds);
+
+    if (!onLoad) {
+      if (somethingChanged) {
         editor.updateToolboxAfterDelay();
       }
     }
@@ -214,6 +219,13 @@ const MECHANISM_COMPONENT_HOLDER = {
     this.mrcComponentBlockIds = componentBlockIds;
     this.mrcPrivateComponentBlockIds = privateComponentBlockIds;
     this.mrcEventBlockIds = eventBlockIds;
+
+    if (!onLoad) {
+      if (somethingChanged) {
+        checkMethodCallers(this.workspace, editor);
+        checkComponentReferences(this.workspace, editor);
+      }
+    }
   },
   /**
    * setNameOfChildBlock is called from mrc_mechanism, mrc_component, and mrc_event blocks when they

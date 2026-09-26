@@ -181,6 +181,46 @@ export function getTopLevelBlocksJson(blocks: {[key: string]: any}): any[] {
   return Array.isArray(topLevelBlocks) ? topLevelBlocks : [];
 }
 
+/**
+ * Calls the given function for every block (including shadow blocks) in the given blocks.
+ */
+export function visitAllBlockJson(
+    blocks: {[key: string]: any},
+    visitFunc: (blockJson: {[key: string]: any}) => void) {
+  // Create a walk function that will call the given visit function.
+  const walk = (blockJson: {[key: string]: any}): void => {
+    if (!blockJson || typeof blockJson !== 'object') {
+      return;
+    }
+
+    // Call the visit function.
+    visitFunc(blockJson);
+
+    // Walk through the inputs connected to the block.
+    if (blockJson.inputs) {
+      for (const inputName in blockJson.inputs) {
+        const input = blockJson.inputs[inputName];
+        if (!input) {
+          continue;
+        }
+        if (input.block) {
+          walk(input.block);
+        }
+        if (input.shadow) {
+          walk(input.shadow);
+        }
+      }
+    }
+    // Walk through the next block connected to the block.
+    if (blockJson.next && blockJson.next.block) {
+      walk(blockJson.next.block);
+    }
+  };
+
+  getTopLevelBlocksJson(blocks).forEach(walk);
+}
+
+
 export function parseModuleContentText(moduleContentText: string): ModuleContent {
   const parsedContent = JSON.parse(moduleContentText);
   if (!('moduleType' in parsedContent) ||
