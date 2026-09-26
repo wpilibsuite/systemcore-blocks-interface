@@ -28,6 +28,7 @@ import {
     getOutputCheck } from './utils/python';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { CustomDropdownWithoutValidation } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_COMPONENTS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
@@ -145,10 +146,9 @@ const COMPONENT_REFERENCE = {
     // For the component name field, use a dropdown where the user can choose between different
     // components of the same type. For example, they can easily switch from a motor component name
     // "left_motor" to a motor component named "right_motor".
-    // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
-    // items in the component name dropdown if the user adds or removes a component.
+    const dropdown: Blockly.Field = new CustomDropdownWithoutValidation(this.getComponentNameMenuGenerator());
     titleInput
-        .appendField(new Blockly.FieldDropdown(this.getComponentNameMenuGenerator()), FIELD_COMPONENT_NAME)
+        .appendField(dropdown, FIELD_COMPONENT_NAME)
         .appendField(Blockly.Msg['OF_TYPE'])
         .appendField(createFieldNonEditableText(''), FIELD_COMPONENT_CLASS_NAME);
   },

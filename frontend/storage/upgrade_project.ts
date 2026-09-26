@@ -23,6 +23,8 @@ import * as semver from 'semver';
 import * as Blockly from 'blockly/core';
 
 import * as commonStorage from './common_storage';
+import * as callPythonFunctionBlock from '../blocks/mrc_call_python_function';
+import * as classMethodDefBlock from '../blocks/mrc_class_method_def';
 import * as componentBlock from '../blocks/mrc_component';
 import * as mechanismBlock from '../blocks/mrc_mechanism';
 import * as portBlock from '../blocks/mrc_port';
@@ -30,9 +32,6 @@ import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
 import * as storageProject from './project';
-import {
-    upgradeTo_0_4_0 as classMethodDefUpgradeTo_0_4_0
-    } from '../blocks/mrc_class_method_def';
 import * as workspaces from '../blocks/utils/workspaces';
 
 declare const __APP_VERSION__: string;
@@ -64,10 +63,16 @@ export async function upgradeProjectIfNecessary(
     // mrc_class_method_def blocks for mechanism 'opmodeStart' method need to be changed to 'opmode_start'.
     // mrc_class_method_def blocks for mechanism 'opmodePeriodic' method need to be changed to 'opmode_periodic'.
     // mrc_class_method_def blocks for mechanism 'opmodeEnd' method need to be changed to 'opmode_end'.
-   await upgradeBlocksFiles(
-      storage, projectName,
-      noModuleTypes, noPreupgrade,
-      isMechanism, classMethodDefUpgradeTo_0_4_0);
+    await upgradeBlocksFiles(
+        storage, projectName,
+        noModuleTypes, noPreupgrade,
+        isMechanism, classMethodDefBlock.upgradeTo_0_4_0);
+  }
+  if (semver.lt(projectInfo.version, '0.6.0')) {
+    await upgradeBlocksFiles(
+        storage, projectName,
+        anyModuleType, upgradeTo_0_6_0,
+        noModuleTypes, noUpgrade);
   }
 
   projectInfo.version = CURRENT_VERSION;
@@ -403,4 +408,48 @@ function upgradeA301InMechanismBlockJson(blockJson: any): boolean {
     delete blockJson.inputs;
   }
   return true;
+}
+
+// Upgrade from before 0.6.0:
+// mrc_call_python_function blocks need to be upgraded.
+
+function upgradeTo_0_6_0(moduleContentText: string): string {
+  const parsedContent = JSON.parse(moduleContentText);
+  let changed = false;
+
+  // Update the blocks.
+  storageModuleContent.getTopLevelBlocksJson(parsedContent.blocks).forEach((blockJson: any) => {
+    if (upgradeBlockJsonTo_0_6_0(blockJson)) {
+      changed = true;
+    }
+  });
+
+  return changed ? JSON.stringify(parsedContent, null, 2) : moduleContentText;
+}
+
+function upgradeBlockJsonTo_0_6_0(blockJson: any): boolean {
+  if (!blockJson || typeof blockJson !== 'object') {
+    return false;
+  }
+  let changed = false;
+
+  if (blockJson.type === callPythonFunctionBlock.BLOCK_NAME) {
+    if (callPythonFunctionBlock.upgradeBlockJsonTo_0_6_0(blockJson)) {
+      changed = true;
+    }
+  }
+
+  if (blockJson.inputs) {
+    for (const inputName in blockJson.inputs) {
+      const input = blockJson.inputs[inputName];
+      if (input && input.block && upgradeBlockJsonTo_0_6_0(input.block)) {
+        changed = true;
+      }
+    }
+  }
+  if (blockJson.next && blockJson.next.block &&
+      upgradeBlockJsonTo_0_6_0(blockJson.next.block)) {
+    changed = true;
+  }
+  return changed;
 }

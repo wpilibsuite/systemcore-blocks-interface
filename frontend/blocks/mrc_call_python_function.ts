@@ -39,6 +39,7 @@ import * as value from './utils/value';
 import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
+import { CustomDropdownWithoutValidation } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
@@ -467,10 +468,9 @@ const CALL_PYTHON_FUNCTION = {
           // For the component name field, use a dropdown where the user can choose between different
           // components of the same type. For example, they can easily switch from a motor component name
           // "left_motor" to a motor component named "right_motor".
-          // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
-          // items in the component name dropdown if the user adds or removes a component.
+          const dropdown: Blockly.Field = new CustomDropdownWithoutValidation(this.getComponentNameMenuGenerator());
           titleInput
-              .appendField(new Blockly.FieldDropdown(this.getComponentNameMenuGenerator()), FIELD_COMPONENT_NAME)
+              .appendField(dropdown, FIELD_COMPONENT_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
@@ -1982,4 +1982,16 @@ export function repointComponentCallsIntoMechanism(
 
   storageModuleContent.getTopLevelBlocksJson(blocks).forEach(visitBlock);
   return changed;
+}
+
+export function upgradeBlockJsonTo_0_6_0(blockJson: any): boolean {
+  if (blockJson.extraState && blockJson.extraState.functionKind === FunctionKind.INSTANCE_COMPONENT) {
+    if (!blockJson.extraState.componentName) {
+      if (blockJson.fields && blockJson.fields[FIELD_COMPONENT_NAME]) {
+        blockJson.extraState.componentName = blockJson.fields[FIELD_COMPONENT_NAME];
+        return true;
+      }
+    }
+  }
+  return false;
 }
