@@ -17,6 +17,9 @@
 
 /**
  * @author alan@randomsmiths.com (Alan Smith)
+ * 
+ * This is based on the noncopyable block implementation so heavily that I 
+ * kept the license header from the original noncopyable block.
  */
 
 import * as Blockly from 'blockly';
