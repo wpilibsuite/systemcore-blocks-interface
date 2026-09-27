@@ -105,6 +105,7 @@
                                     "args": [],
                                     "tooltip": "Returns the distance to the nearest object, in inches.",
                                     "componentId": "NlyxIS$kbL8z~3t|G)Wa",
+                                    "componentName": "distance_sensor",
                                     "componentClassName": "field_sensors.sensors.UltrasonicSensor"
                                   },
                                   "fields": {
@@ -168,6 +169,7 @@
                                         "args": [],
                                         "tooltip": "Returns True if something is blocking the beam.",
                                         "componentId": "s?`qN,n$):/NMu1$~)Te",
+                                        "componentName": "beam_break",
                                         "componentClassName": "field_sensors.sensors.BeamBreak"
                                       },
                                       "fields": {
@@ -231,6 +233,7 @@
                                             "args": [],
                                             "tooltip": "Returns True if the bumper is pressed.",
                                             "componentId": "U/;,z6gTJe.4ihE9|-w(",
+                                            "componentName": "bumper",
                                             "componentClassName": "field_sensors.sensors.Bumper"
                                           },
                                           "fields": {

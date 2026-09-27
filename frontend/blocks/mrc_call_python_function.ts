@@ -39,7 +39,7 @@ import * as value from './utils/value';
 import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import { createFieldDropdown } from '../fields/FieldDropdown';
+import { CustomDropdownWithoutValidation } from '../fields/FieldDropdown';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
@@ -93,6 +93,7 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcActualFunctionName: string,
   mrcMethodId: string,
   mrcComponentId: string,
+  mrcComponentName: string,
   mrcEventId: string,
   mrcMechanismId: string,
   mrcComponentClassName: string,
@@ -186,6 +187,7 @@ const CALL_PYTHON_FUNCTION = {
   init: function(this: CallPythonFunctionBlock): void {
     this.setStyle(MRC_STYLE_FUNCTIONS);
     this.setTooltip(() => {
+      this.updateComponentIdAndName();
       let tooltip: string;
       switch (this.mrcFunctionKind) {
         case FunctionKind.BUILT_IN: {
@@ -289,6 +291,7 @@ const CALL_PYTHON_FUNCTION = {
    */
   saveExtraState: function(
       this: CallPythonFunctionBlock): CallPythonFunctionExtraState {
+    this.updateComponentIdAndName();
     const extraState: CallPythonFunctionExtraState = {
       functionKind: this.mrcFunctionKind,
       returnType: this.mrcReturnType,
@@ -316,14 +319,9 @@ const CALL_PYTHON_FUNCTION = {
     }
     if (this.mrcComponentId) {
       extraState.componentId = this.mrcComponentId;
-      if (this.getField(FIELD_COMPONENT_NAME)) {
-        // Since the user may have chosen a different component name from the dropdown, we need to get
-        // the componentId of the component that the user has chosen.
-        const componentName = this.getFieldValue(FIELD_COMPONENT_NAME);
-        if (componentName in this.mrcMapComponentNameToId) {
-          extraState.componentId = this.mrcMapComponentNameToId[componentName];
-        }
-      }
+    }
+    if (this.mrcFunctionKind == FunctionKind.INSTANCE_COMPONENT) {
+      extraState.componentName = this.getFieldValue(FIELD_COMPONENT_NAME);
     }
     if (this.mrcEventId) {
       extraState.eventId = this.mrcEventId;
@@ -366,13 +364,14 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcActualFunctionName = extraState.actualFunctionName ? extraState.actualFunctionName : '';
     this.mrcMethodId = extraState.methodId ? extraState.methodId : '';
     this.mrcComponentId = extraState.componentId ? extraState.componentId : '';
+    this.mrcComponentName = extraState.componentName ? extraState.componentName : '';
     this.mrcEventId = extraState.eventId ? extraState.eventId : '';
     this.mrcMechanismId = extraState.mechanismId ? extraState.mechanismId : '';
     this.mrcComponentClassName = extraState.componentClassName ? extraState.componentClassName : '';
     this.mrcMechanismClassName = extraState.mechanismClassName ? extraState.mechanismClassName : '';
     this.mrcModuleOrClassName = extraState.moduleOrClassName ? extraState.moduleOrClassName : '';
     this.mrcHideOutput = extraState.hideOutput === true;
-    // Initialize mrcMapComponentNameToId here. It will be filled during checkFunction.
+    // mrcMapComponentNameToId will be filled during checkBlock.
     this.mrcMapComponentNameToId = {};
     this.updateBlock_();
   },
@@ -466,10 +465,12 @@ const CALL_PYTHON_FUNCTION = {
                 .appendField(createFieldNonEditableText(''), FIELD_MECHANISM_NAME)
                 .appendField('.');
           }
-          // Here we create a text field for the component name.
-          // Later, in checkFunction, we will replace it with a dropdown.
+          // For the component name field, use a dropdown where the user can choose between different
+          // components of the same type. For example, they can easily switch from a motor component name
+          // "left_motor" to a motor component named "right_motor".
+          const dropdown: Blockly.Field = new CustomDropdownWithoutValidation(this.getComponentNameMenuGenerator());
           titleInput
-              .appendField(createFieldNonEditableText(''), FIELD_COMPONENT_NAME)
+              .appendField(dropdown, FIELD_COMPONENT_NAME)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
@@ -523,6 +524,26 @@ const CALL_PYTHON_FUNCTION = {
       this.removeInput('ARG' + i);
     }
   },
+  getComponentNameMenuGenerator: function(this: CallPythonFunctionBlock): Blockly.MenuGeneratorFunction {
+    const menuGenerator: Blockly.MenuGeneratorFunction = () => {
+      const options: Blockly.MenuOption[] = [];
+      for (const componentName in this.mrcMapComponentNameToId) {
+        options.push([componentName, componentName]);
+      }
+      if (options.length > 0) {
+        return options;
+      }
+
+      // Fall back on basic default options.
+      return [[this.mrcComponentName, this.mrcComponentName]];
+    };
+    return menuGenerator;
+  },
+  updateComponentNameMenu: function(this: CallPythonFunctionBlock): void {
+    const field = this.getField(FIELD_COMPONENT_NAME) as Blockly.FieldDropdown | null;
+    // Call getOptions with false for useCache so it will refetch the menu items from our generator.
+    field?.getOptions(false);
+  },
   /**
    * Adds or removes the mutator that lets the user show or hide the output. Only a function
    * that returns a value has the mutator.
@@ -569,6 +590,16 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcHideOutput = !outputContainerBlock.getShowOutput();
     this.updateBlock_();
   },
+  updateComponentIdAndName: function(this: CallPythonFunctionBlock): void {
+    // Since the user may have chosen a different component name from the dropdown, we need to get
+    // the name and id of the component that the user has chosen.
+    if (this.mrcFunctionKind === FunctionKind.INSTANCE_COMPONENT) {
+      this.mrcComponentName = this.getFieldValue(FIELD_COMPONENT_NAME);
+      if (this.mrcComponentName in this.mrcMapComponentNameToId) {
+        this.mrcComponentId = this.mrcMapComponentNameToId[this.mrcComponentName];
+      }
+    }
+  },
   renameMethodCaller: function(this: CallPythonFunctionBlock, id: string, newName: string): void {
     // renameMethodCaller is called when a component, mechanism, event, or
     // method block in the same module is modified.
@@ -580,6 +611,22 @@ const CALL_PYTHON_FUNCTION = {
         }
         break;
       case FunctionKind.INSTANCE_COMPONENT:
+        this.updateComponentIdAndName();
+
+        // Update mrcMapComponentNameToId.
+        let oldName: string | null = null;
+        for (const [mappedName, mappedId] of Object.entries(this.mrcMapComponentNameToId)) {
+          if (mappedId === id) {
+            oldName = mappedName;
+            break;
+          }
+        }
+        if (oldName) {
+          delete this.mrcMapComponentNameToId[oldName];
+          this.mrcMapComponentNameToId[newName] = id;
+          this.updateComponentNameMenu();
+        }
+
         if (id === this.mrcComponentId) {
           this.setFieldValue(newName, FIELD_COMPONENT_NAME);
         }
@@ -691,6 +738,14 @@ const CALL_PYTHON_FUNCTION = {
     this.checkFunction(editor);
   },
   /**
+   * mrcOnChange is called for each CallPythonFunctionBlock when it is changed.
+   */
+  mrcOnChange: function(this: CallPythonFunctionBlock, editor: Editor, blockChangeEvent: Blockly.Events.BlockChange): void {
+    if (blockChangeEvent.element === 'field' && blockChangeEvent.name === FIELD_COMPONENT_NAME) {
+      this.checkFunction(editor);
+    }
+  },
+  /**
    * checkFunction checks the block, updates it, and/or adds a warning balloon if necessary.
    * It is called from mrcOnModuleCurrent, mrcOnLoad, and mrcOnCreate above.
    */
@@ -721,6 +776,9 @@ const CALL_PYTHON_FUNCTION = {
         break;
       case FunctionKind.INSTANCE_MECHANISM:
         this.checkMechanismInstanceMethod(editor, warnings);
+        break;
+      case FunctionKind.EVENT:
+        this.checkEvent(editor, warnings);
         break;
     }
 
@@ -880,83 +938,16 @@ const CALL_PYTHON_FUNCTION = {
     // visible warning on it.
     // If the component belongs to a mechanism, also check whether the mechanism
     // still exists and whether it has been changed.
+    this.updateComponentIdAndName();
     const componentNames: string[] = [];
     this.mrcMapComponentNameToId = {}
     this.getComponents(editor).forEach(component => {
       componentNames.push(component.name);
       this.mrcMapComponentNameToId[component.name] = component.componentId;
     });
-    let foundComponent = false;
-    for (const componentName of componentNames) {
-      const componentId = this.mrcMapComponentNameToId[componentName];
-      if (componentId === this.mrcComponentId) {
-        foundComponent = true;
+    this.updateComponentNameMenu();
 
-        // Replace the text field for the component name with a dropdown where the user can choose
-        // between different components of the same type. For example, they can easily switch from
-        // a motor component name "left_motor" to a motor component named "right_motor".
-        const titleInput = this.getInput(INPUT_TITLE)
-        if (!titleInput) {
-          throw new Error('Could not find the title input');
-        }
-        let indexOfComponentNameField = -1;
-        for (let i = 0, field; (field = titleInput.fieldRow[i]); i++) {
-          if (field.name === FIELD_COMPONENT_NAME) {
-            indexOfComponentNameField = i;
-            break;
-          }
-        }
-        if (indexOfComponentNameField === -1) {
-          throw new Error('Could not find the component name field');
-        }
-        titleInput.removeField(FIELD_COMPONENT_NAME);
-        titleInput.insertFieldAt(indexOfComponentNameField,
-            createFieldDropdown(componentNames), FIELD_COMPONENT_NAME);
-        // TODO(lizlooney): If the current module is the robot or a mechanism, we need to update the
-        // items in the dropdown if the user adds or removes a component.
-
-        this.setFieldValue(componentName, FIELD_COMPONENT_NAME);
-
-        // Since we found the component, we can break out of the loop.
-        break;
-      }
-    }
-    if (!foundComponent) {
-      if (this.mrcMechanismId) {
-        // Check whether the the component still exists, but is a private component in the mechanism.
-        for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
-          if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
-            for (const mechanism of editor.getMechanisms()) {
-              if (mechanism.moduleId === mechanismInRobot.moduleId) {
-                for (const privateComponent of editor.getPrivateComponentsFromMechanism(mechanism)) {
-                  if (privateComponent.className === this.mrcComponentClassName &&
-                      privateComponent.componentId === this.mrcComponentId) {
-                    foundComponent = true;
-                    let warning = Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT;
-                    warning = warning.replace('{{mechanismClassName}}', mechanism.className);
-                    warnings.push(warning);
-                    break
-                  }
-                }
-                break;
-              }
-              if (foundComponent) {
-                break;
-              }
-            }
-            break;
-          }
-          if (foundComponent) {
-            break;
-          }
-        }
-      }
-    }
-
-    if (!foundComponent) {
-      warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT);
-    }
-
+    let warnedAboutMissingMechanism = false;
     if (this.mrcMechanismId) {
       let foundMechanism = false;
       const mechanismsInRobot = editor.getMechanismsFromRobot();
@@ -973,6 +964,55 @@ const CALL_PYTHON_FUNCTION = {
       }
       if (!foundMechanism) {
         warnings.push(Blockly.Msg.WARNING_CALL_MECHANISM_COMPONENT_INSTANCE_METHOD_MISSING_MECHANISM);
+        warnedAboutMissingMechanism = true;
+      }
+    }
+
+    if (!warnedAboutMissingMechanism) {
+      let foundComponent = false;
+      for (const componentName of componentNames) {
+        const componentId = this.mrcMapComponentNameToId[componentName];
+        if (componentId === this.mrcComponentId) {
+          foundComponent = true;
+          this.setFieldValue(componentName, FIELD_COMPONENT_NAME);
+          // Since we found the component, we can break out of the loop.
+          break;
+        }
+      }
+      if (!foundComponent) {
+        if (this.mrcMechanismId) {
+          // Check whether the the component still exists, but is a private component in the mechanism.
+          for (const mechanismInRobot of editor.getMechanismsFromRobot()) {
+            if (mechanismInRobot.mechanismId === this.mrcMechanismId) {
+              for (const mechanism of editor.getMechanisms()) {
+                if (mechanism.moduleId === mechanismInRobot.moduleId) {
+                  for (const privateComponent of editor.getPrivateComponentsFromMechanism(mechanism)) {
+                    if (privateComponent.className === this.mrcComponentClassName &&
+                        privateComponent.componentId === this.mrcComponentId) {
+                      foundComponent = true;
+                      let warning = Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT;
+                      warning = warning.replace('{{mechanismClassName}}', mechanism.className);
+                      warnings.push(warning);
+                      break
+                    }
+                  }
+                  break;
+                }
+                if (foundComponent) {
+                  break;
+                }
+              }
+              break;
+            }
+            if (foundComponent) {
+              break;
+            }
+          }
+        }
+      }
+
+      if (!foundComponent) {
+        warnings.push(Blockly.Msg.WARNING_CALL_COMPONENT_INSTANCE_METHOD_MISSING_COMPONENT);
       }
     }
 
@@ -1111,6 +1151,27 @@ const CALL_PYTHON_FUNCTION = {
       }
     }
   },
+  checkEvent: function(this: CallPythonFunctionBlock, editor: Editor, warnings: string[]): void {
+    // If this block is firing an event, check whether the event
+    // still exists and whether it has been changed.
+    // If the event doesn't exist, put a visible warning on this block.
+    // If the event name has changed, update the block.
+    let foundEvent = false;
+    for (const event of editor.getEventsFromWorkspace()) {
+      if (this.mrcEventId == event.eventId) {
+        foundEvent = true;
+
+        // If the event name has changed, we can handle that.
+        if (this.getFieldValue(FIELD_EVENT_NAME) !== event.name) {
+          this.setFieldValue(event.name, FIELD_EVENT_NAME);
+        }
+        break;
+      }
+    }
+    if (!foundEvent) {
+      warnings.push(Blockly.Msg.WARNING_FIRE_EVENT_MISSING_EVENT);
+    }
+  },
 
   /**
    * mrcShowSimpleClassNames is called for each CallPythonFunctionBlock:
@@ -1135,6 +1196,7 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcMethodId && this.mrcMethodId in oldIdToNewId) {
       this.mrcMethodId = oldIdToNewId[this.mrcMethodId];
     }
+    this.updateComponentIdAndName();
     if (this.mrcComponentId && this.mrcComponentId in oldIdToNewId) {
       this.mrcComponentId = oldIdToNewId[this.mrcComponentId];
     }
@@ -1362,8 +1424,16 @@ function getMethodCallers(workspace: Blockly.Workspace, id: string): Blockly.Blo
   });
 }
 
+export function checkMethodCallers(workspace: Blockly.Workspace, editor: Editor): void {
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
+    (block as CallPythonFunctionBlock).checkFunction(editor);
+  });
+}
+
 export function renameMethodCallers(workspace: Blockly.Workspace, id: string, newName: string): void {
-  getMethodCallers(workspace, id).forEach(block => {
+  // We need to look at all CallPythonFunctionBlocks, not just ones with a matching id, because if
+  // the thing being renamed is a component, we need to update the component name dropdown fields.
+  workspace.getBlocksByType(BLOCK_NAME).forEach(block => {
     (block as CallPythonFunctionBlock).renameMethodCaller(id, newName);
   });
 }
@@ -1877,7 +1947,7 @@ export function repointComponentCallsIntoMechanism(
     mechanismName: string): boolean {
   let changed = false;
 
-  const visitBlock = (blockJson: {[key: string]: any}): void => {
+  const visitBlockJson = (blockJson: {[key: string]: any}): void => {
     // If this is a mrc_call_python_function block, and it is calling a method on the given component,
     // then update it to call the method on the component within the given mechanism.
     if (blockJson.type === BLOCK_NAME) {
@@ -1894,22 +1964,20 @@ export function repointComponentCallsIntoMechanism(
         changed = true;
       }
     }
-    if (blockJson.inputs) {
-      for (const inputName in blockJson.inputs) {
-        const input = blockJson.inputs[inputName];
-        if (input.block) {
-          visitBlock(input.block);
-        }
-        if (input.shadow) {
-          visitBlock(input.shadow);
-        }
-      }
-    }
-    if (blockJson.next && blockJson.next.block) {
-      visitBlock(blockJson.next.block);
-    }
   };
 
-  storageModuleContent.getTopLevelBlocksJson(blocks).forEach(visitBlock);
+  storageModuleContent.visitAllBlockJson(blocks, visitBlockJson);
   return changed;
+}
+
+export function upgradeBlockJsonTo_0_6_0(blockJson: any): boolean {
+  if (blockJson.extraState && blockJson.extraState.functionKind === FunctionKind.INSTANCE_COMPONENT) {
+    if (!blockJson.extraState.componentName) {
+      if (blockJson.fields && blockJson.fields[FIELD_COMPONENT_NAME]) {
+        blockJson.extraState.componentName = blockJson.fields[FIELD_COMPONENT_NAME];
+        return true;
+      }
+    }
+  }
+  return false;
 }

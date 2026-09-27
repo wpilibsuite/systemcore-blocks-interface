@@ -407,7 +407,9 @@
             "GET_ENUM_VALUE": "Gets the enum value {{enumName}}.{{valueName}}.",
             "SET_MODULE_VARIABLE": "Sets the variable {{moduleName}}.{{varName}}.",
             "SET_CLASS_VARIABLE": "Sets the variable {{className}}.{{varName}}.",
-            "SET_INSTANCE_VARIABLE": "Sets the variable {{varName}} for the given {{className}} object."
+            "SET_INSTANCE_VARIABLE": "Sets the variable {{varName}} for the given {{className}} object.",
+            "MECHANISM_COMPONENT_REFERENCE": "The component named {{componentName}} of the class {{className}} from the mechanism named {{mechanismName}}.",
+            "COMPONENT_REFERENCE": "The component named {{componentName}} of the class {{className}}."
         },
         "CATEGORY":{
             "LISTS": "Lists",
@@ -468,13 +470,17 @@
             "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "This block is not allowed to be used inside a mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "This block calls a method that no longer exists in the mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method in a mechanism that no longer exists.",
+            "FIRE_EVENT_MISSING_EVENT": "This block fires an event that no longer exists.",
             "EVENT_NOT_IN_HOLDER": "This block can only go in the events section of the robot or mechanism.",
             "COMPONENT_NOT_IN_HOLDER": "This block can only go in the components section of the robot or mechanism.",
             "MECHANISM_NOT_IN_HOLDER": "This block can only go in the mechanisms section of the robot.",
             "COMPONENT_MISSING_COMPONENT_CLASS": "This block represents a component whose class no longer exists.",
             "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "A PeriodicOpMode should have steps, the periodic method, or both.",
             "MECHANISM_NOT_FOUND": "This block refers to a mechanism that no longer exists.",
-            "DUPLICATE_PORT": "This port (%1) is also used by: %2"
+            "DUPLICATE_PORT": "This port (%1) is also used by: %2",
+            "COMPONENT_REFERENCE_PRIVATE_COMPONENT": "This blocks represents a private component in the {{mechanismClassName}} mechanism.",
+            "COMPONENT_REFERENCE_MISSING_COMPONENT": "This block represents a component that no longer exists.",
+            "COMPONENT_REFERENCE_MISSING_MECHANISM": "This block represents a component that belongs to a mechanism that no longer exists."
         },
         "ERROR":{
             "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind must be \"module\", \"class\", or \"instance\"."

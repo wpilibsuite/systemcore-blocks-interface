@@ -40,6 +40,7 @@
                   ],
                   "tooltip": "Common interface for setting the inversion state of the motor controller.\n\n:param is_inverted: The inversion state.",
                   "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+                  "componentName": "left_motor",
                   "componentClassName": "rev.A301"
                 },
                 "fields": {
@@ -163,6 +164,7 @@
                   ],
                   "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1.0 indicates full reverse and 1.0\n                 indicates full forward.",
                   "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+                  "componentName": "left_motor",
                   "componentClassName": "rev.A301"
                 },
                 "fields": {
@@ -229,6 +231,7 @@
                       ],
                       "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1.0 indicates full reverse and 1.0\n                 indicates full forward.",
                       "componentId": "SYhz+hU`y},it/FInyrJ",
+                      "componentName": "right_motor",
                       "componentClassName": "rev.A301"
                     },
                     "fields": {
@@ -318,6 +321,7 @@
                   ],
                   "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1.0 indicates full reverse and 1.0\n                 indicates full forward.",
                   "componentId": "WhvJZU6~HvvJd4D+/Ndy",
+                  "componentName": "left_motor",
                   "componentClassName": "rev.A301"
                 },
                 "fields": {
@@ -350,6 +354,7 @@
                       ],
                       "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1.0 indicates full reverse and 1.0\n                 indicates full forward.",
                       "componentId": "SYhz+hU`y},it/FInyrJ",
+                      "componentName": "right_motor",
                       "componentClassName": "rev.A301"
                     },
                     "fields": {

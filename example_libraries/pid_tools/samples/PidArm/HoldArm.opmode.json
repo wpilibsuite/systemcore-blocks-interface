@@ -54,6 +54,7 @@
                   ],
                   "tooltip": "Sets if the motor output is enabled or not. Defaults to false.\n\n:param enabled: True to enable, false to disable",
                   "componentId": "z]?QLbxGA*%M!~;BBFGi",
+                  "componentName": "arm_motor",
                   "componentClassName": "wpilib.ExpansionHubMotor"
                 },
                 "fields": {
@@ -127,6 +128,7 @@
                         ],
                         "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.\n                 @Common This is one of the commonly used methods for this class",
                         "componentId": "z]?QLbxGA*%M!~;BBFGi",
+                        "componentName": "arm_motor",
                         "componentClassName": "wpilib.ExpansionHubMotor"
                       },
                       "fields": {
@@ -153,6 +155,7 @@
                               ],
                               "tooltip": "Returns the output that moves the measurement toward the setpoint.",
                               "componentId": "2+#V]7cN_!o?Pei:3,i2",
+                              "componentName": "arm_pid",
                               "componentClassName": "pid_tools.controllers.SimplePID"
                             },
                             "fields": {
@@ -170,6 +173,7 @@
                                     "args": [],
                                     "tooltip": "Gets the current position of the motor encoder. Scaled into\ndistancePerCount units.\n\n:returns: Encoder position",
                                     "componentId": "z]?QLbxGA*%M!~;BBFGi",
+                                    "componentName": "arm_motor",
                                     "componentClassName": "wpilib.ExpansionHubMotor"
                                   },
                                   "fields": {
@@ -203,6 +207,7 @@
                         "args": [],
                         "tooltip": "Clears the accumulated error.",
                         "componentId": "2+#V]7cN_!o?Pei:3,i2",
+                        "componentName": "arm_pid",
                         "componentClassName": "pid_tools.controllers.SimplePID"
                       },
                       "fields": {
@@ -224,6 +229,7 @@
                             ],
                             "tooltip": "Sets the throttle.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward.\n                 @Common This is one of the commonly used methods for this class",
                             "componentId": "z]?QLbxGA*%M!~;BBFGi",
+                            "componentName": "arm_motor",
                             "componentClassName": "wpilib.ExpansionHubMotor"
                           },
                           "fields": {

@@ -407,7 +407,9 @@
       "GET_ENUM_VALUE": "מקבל את ערך ההספירה {{enumName}}.{{valueName}}.",
       "SET_MODULE_VARIABLE": "מגדיר את המשתנה {{moduleName}}.{{varName}}.",
       "SET_CLASS_VARIABLE": "מגדיר את המשתנה {{className}}.{{varName}}.",
-      "SET_INSTANCE_VARIABLE": "מגדיר את המשתנה {{varName}} עבור אובייקט {{className}} נתון."
+      "SET_INSTANCE_VARIABLE": "מגדיר את המשתנה {{varName}} עבור אובייקט {{className}} נתון.",
+      "MECHANISM_COMPONENT_REFERENCE": "הרכיב בשם {{componentName}} של המחלקה {{className}} מהמנגנון בשם {{mechanismName}}.",
+      "COMPONENT_REFERENCE": "הרכיב בשם {{componentName}} של המחלקה {{className}}."
     },
     "CATEGORY": {
       "LISTS": "רשימות",
@@ -466,13 +468,17 @@
       "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "בלוק זה אינו מורשה לשימוש בתוך מנגנון.",
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שכבר לא קיימת במנגנון.",
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "בלוק זה קורא למתודה במנגנון שכבר לא קיים.",
+      "FIRE_EVENT_MISSING_EVENT": "בלוק זה מפעיל אירוע שכבר אינו קיים.",
       "EVENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור האירועים של הרובוט או המנגנון.",
       "COMPONENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור הרכיבים של הרובוט או המנגנון.",
       "MECHANISM_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לחלק המנגנונים של הרובוט.",
       "COMPONENT_MISSING_COMPONENT_CLASS": "בלוק זה מייצג רכיב שהמחלקה שלו כבר לא קיימת.",
       "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "ל-PeriodicOpMode צריך להיות שלבים, את השיטה המחזורית, או את שניהם.",
       "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים.",
-      "DUPLICATE_PORT": "פורט זה (%1) נמצא בשימוש גם על ידי: %2"
+      "DUPLICATE_PORT": "פורט זה (%1) נמצא בשימוש גם על ידי: %2",
+      "COMPONENT_REFERENCE_PRIVATE_COMPONENT": "בלוק זה מייצג רכיב פרטי במנגנון {{mechanismClassName}}.",
+      "COMPONENT_REFERENCE_MISSING_COMPONENT": "בלוק זה מייצג רכיב שכבר אינו קיים.",
+      "COMPONENT_REFERENCE_MISSING_MECHANISM": "בלוק זה מייצג רכיב השייך למנגנון שכבר אינו קיים."
     },
     "ERROR": {
       "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind חייב להיות \"module\", \"class\" או \"instance\"."

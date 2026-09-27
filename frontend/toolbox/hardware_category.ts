@@ -26,10 +26,15 @@ import { getRobotEventHandlersCategory, getMechanismEventHandlersCategory } from
 import { createMechanismBlock } from '../blocks/mrc_mechanism';
 import { getAllPossibleComponents } from '../blocks/mrc_component';
 import {
-    getInstanceComponentBlocks,
-    getInstanceMechanismComponentBlocks,
-    addInstanceRobotBlocks,
-    addInstanceMechanismBlocks } from '../blocks/mrc_call_python_function';
+    getInstanceComponentBlocks as getComponentMethodBlocks,
+    getInstanceMechanismComponentBlocks as getMechanismComponentMethodBlocks,
+    addInstanceRobotBlocks as addRobotMethodBlocks,
+    addInstanceMechanismBlocks as addMechanismMethodBlocks
+} from '../blocks/mrc_call_python_function';
+import {
+    getComponentReferenceBlock,
+    getMechanismComponentReferenceBlock
+} from '../blocks/mrc_component_reference';
 import { Editor } from '../editor/editor';
 
 export function getHardwareCategory(
@@ -115,7 +120,7 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
       // Get the list of methods from the mechanism and add the blocks for calling the methods.
       const mechanismMethodBlocks: toolboxItems.Item[] = [];
       const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
-      addInstanceMechanismBlocks(mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks);
+      addMechanismMethodBlocks(mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks);
       if (mechanismMethodBlocks.length > 0) {
         mechanismCategories.push({
           kind: 'category',
@@ -131,10 +136,13 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
         const componentBlocks: toolboxItems.ContentsType[] = [];
         componentsFromMechanism.forEach(component => {
           // Get the blocks for this specific component.
+          const blocks: toolboxItems.ContentsType[] = [];
+          blocks.push(getMechanismComponentReferenceBlock(component, mechanismInRobot, editor.getShowSimpleClassNames()));
+          blocks.push(...getMechanismComponentMethodBlocks(component, mechanismInRobot));
           componentBlocks.push({
             kind: 'category',
             name: component.name,
-            contents: getInstanceMechanismComponentBlocks(component, mechanismInRobot),
+            contents: blocks,
           });
         });
         mechanismCategories.push({
@@ -177,10 +185,13 @@ function getRobotComponentsCategory(editor: Editor): toolboxItems.Category {
   // component functions.
   editor.getComponentsFromRobot().forEach(component => {
     // Get the blocks for this specific component.
+    const blocks: toolboxItems.ContentsType[] = [];
+    blocks.push(getComponentReferenceBlock(component, editor.getShowSimpleClassNames()));
+    blocks.push(...getComponentMethodBlocks(component));
     contents.push({
       kind: 'category',
       name: component.name,
-      contents: getInstanceComponentBlocks(component),
+      contents: blocks,
     });
   });
 
@@ -200,7 +211,7 @@ function getRobotMethodsCategory(editor: Editor): toolboxItems.Category {
   // Get the list of methods from the robot and add the blocks for calling the
   // robot functions.
   const methodsFromRobot = editor.getMethodsFromRobot();
-  addInstanceRobotBlocks(methodsFromRobot, contents);
+  addRobotMethodBlocks(methodsFromRobot, contents);
 
   return {
     kind: 'category',
@@ -244,10 +255,13 @@ function getComponentsCategory(
   // getComponentsFromWorkspace for a robot module.
   editor.getAllComponentsFromWorkspace().forEach(component => {
     // Get the blocks for this specific component
+    const blocks: toolboxItems.ContentsType[] = [];
+    blocks.push(getComponentReferenceBlock(component, editor.getShowSimpleClassNames()));
+    blocks.push(...getComponentMethodBlocks(component));
     contents.push({
       kind: 'category',
       name: component.name,
-      contents: getInstanceComponentBlocks(component),
+      contents: blocks,
     });
   });
 
