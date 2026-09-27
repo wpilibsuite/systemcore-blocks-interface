@@ -28,6 +28,7 @@ import { ExtendedPythonGenerator, OpModeDetails, OpModeDetailsParams } from '../
 import { createFieldDropdown } from '../fields/FieldDropdown';
 import { MRC_STYLE_CLASS_BLOCKS } from '../themes/styles';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
+import { NONDISABLEABLE_BLOCK } from './nondisableable_block';
 
 export const BLOCK_NAME = 'mrc_opmode_details';
 
@@ -82,6 +83,8 @@ const OPMODE_DETAILS = {
     this.getField(FIELD_DESCRIPTION)?.setTooltip(Blockly.Msg.OPMODE_DESCRIPTION_TOOLTIP);
   },
   ...NONCOPYABLE_BLOCK,
+  ...NONDISABLEABLE_BLOCK,
+  
   checkOpMode(this: OpmodeDetailsBlock, editor: Editor): void {
     // Check that a Steps block is in the workspace or the periodic method is overridden.
     // It's ok to have both.
