@@ -26,6 +26,8 @@
   "DEPLOY_ANYWAY": "פרוס בכל זאת",
   "PORT_CONFLICT_TITLE": "פורטים בשימוש יותר מפעם אחת",
   "PORT_CONFLICT_MESSAGE": "פורטי החומרה האלה נמצאים בשימוש של יותר מרכיב אחד:",
+  "MISSING_COMPONENT_CLASSES_TITLE": "מחלקות רכיבים חסרות",
+  "MISSING_COMPONENT_CLASSES_MESSAGE": "לא ניתן לפרוס את הפרויקט הזה כי הוא משתמש במחלקות רכיבים שאינן זמינות. התקן את הספריות שמהן הן מגיעות דרך ניהול > ספריות, או הסר את הבלוקים שמשתמשים בהן מהמודולים האלה:",
   "OK": "אישור",
   "DOWNLOAD_FAILED": "הורדת הפרויקט נכשלה.",
   "DOWNLOAD_CURRENT_PROJECT": "הורד פרויקט נוכחי",
@@ -149,6 +151,31 @@
     "SORT_TABS": "סדר לשוניות",
   "MECHANISMS": "מנגנונים",
   "OPMODES": "אופמודים",
+  "LIBRARIES": {
+    "MENU_ITEM": "ספריות",
+    "TITLE": "ספריות",
+    "UPLOAD": "העלאת ספרייה...",
+    "UPLOAD_HINT": "העלו קובץ {{extension}} כדי להוסיף את הבלוקים שלו לארגז הכלים. בטלו את הסימון של ספרייה או קטגוריה כדי להסתיר אותה מארגז הכלים.",
+    "NO_LIBRARIES": "לא מותקנות ספריות",
+    "SELECT_LIBRARY": "בחרו ספרייה כדי לראות את הפרטים שלה.",
+    "COMPONENTS": "רכיבים",
+    "REMOVE": "הסר",
+    "REMOVE_TITLE": "להסיר את {{name}}?",
+    "REMOVE_MESSAGE": "הבלוקים שלה יוסרו מארגז הכלים. בלוקים שכבר משתמשים בספרייה זו יציגו אזהרה.",
+    "REMOVED": "{{name}} הוסרה",
+    "REMOVE_FAILED": "הסרת הספרייה נכשלה.",
+    "REPLACE": "החלף",
+    "REPLACE_TITLE": "להחליף את {{name}}?",
+    "REPLACE_MESSAGE": "גרסה {{oldVersion}} מותקנת. האם להחליף אותה בגרסה {{newVersion}}?",
+    "INSTALLED": "{{name}} {{version}} הותקנה",
+    "INSTALL_FAILED": "התקנת הספרייה נכשלה.",
+    "INVALID_FILE": "{{filename}} אינו ספרייה תקינה.",
+    "WRONG_EXTENSION": "{{filename}} אינו קובץ {{extension}}.",
+    "INCOMPATIBLE": "לא תואמת",
+    "INCOMPATIBLE_VERSION": "{{name}} דורשת גרסת Blocks {{range}}, אבל זו גרסה {{version}}.",
+    "INCOMPATIBLE_HIDDEN": "ספרייה זו לא עובדת עם גרסה זו של Blocks ({{version}}), ולכן הבלוקים שלה לא מוצגים בארגז הכלים.",
+    "LOAD_FAILED": "טעינת הספריות המותקנות נכשלה."
+  },
   "SAMPLES": {
     "MENU_ITEM": "דוגמאות",
     "NO_SAMPLES_FOUND": "לא נמצאו דוגמאות",
@@ -380,7 +407,9 @@
       "GET_ENUM_VALUE": "מקבל את ערך ההספירה {{enumName}}.{{valueName}}.",
       "SET_MODULE_VARIABLE": "מגדיר את המשתנה {{moduleName}}.{{varName}}.",
       "SET_CLASS_VARIABLE": "מגדיר את המשתנה {{className}}.{{varName}}.",
-      "SET_INSTANCE_VARIABLE": "מגדיר את המשתנה {{varName}} עבור אובייקט {{className}} נתון."
+      "SET_INSTANCE_VARIABLE": "מגדיר את המשתנה {{varName}} עבור אובייקט {{className}} נתון.",
+      "MECHANISM_COMPONENT_REFERENCE": "הרכיב בשם {{componentName}} של המחלקה {{className}} מהמנגנון בשם {{mechanismName}}.",
+      "COMPONENT_REFERENCE": "הרכיב בשם {{componentName}} של המחלקה {{className}}."
     },
     "CATEGORY": {
       "LISTS": "רשימות",
@@ -439,13 +468,17 @@
       "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "בלוק זה אינו מורשה לשימוש בתוך מנגנון.",
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שכבר לא קיימת במנגנון.",
       "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "בלוק זה קורא למתודה במנגנון שכבר לא קיים.",
+      "FIRE_EVENT_MISSING_EVENT": "בלוק זה מפעיל אירוע שכבר אינו קיים.",
       "EVENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור האירועים של הרובוט או המנגנון.",
       "COMPONENT_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לאזור הרכיבים של הרובוט או המנגנון.",
       "MECHANISM_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לחלק המנגנונים של הרובוט.",
       "COMPONENT_MISSING_COMPONENT_CLASS": "בלוק זה מייצג רכיב שהמחלקה שלו כבר לא קיימת.",
       "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "ל-PeriodicOpMode צריך להיות שלבים, את השיטה המחזורית, או את שניהם.",
       "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים.",
-      "DUPLICATE_PORT": "פורט זה (%1) נמצא בשימוש גם על ידי: %2"
+      "DUPLICATE_PORT": "פורט זה (%1) נמצא בשימוש גם על ידי: %2",
+      "COMPONENT_REFERENCE_PRIVATE_COMPONENT": "בלוק זה מייצג רכיב פרטי במנגנון {{mechanismClassName}}.",
+      "COMPONENT_REFERENCE_MISSING_COMPONENT": "בלוק זה מייצג רכיב שכבר אינו קיים.",
+      "COMPONENT_REFERENCE_MISSING_MECHANISM": "בלוק זה מייצג רכיב השייך למנגנון שכבר אינו קיים."
     },
     "ERROR": {
       "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind חייב להיות \"module\", \"class\" או \"instance\"."

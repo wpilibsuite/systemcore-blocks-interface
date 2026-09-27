@@ -25,6 +25,8 @@
     "DEPLOY_ANYWAY": "Deploy Anyway",
     "PORT_CONFLICT_TITLE": "Ports Used More Than Once",
     "PORT_CONFLICT_MESSAGE": "These hardware ports are used by more than one component:",
+    "MISSING_COMPONENT_CLASSES_TITLE": "Missing Component Classes",
+    "MISSING_COMPONENT_CLASSES_MESSAGE": "This project can't be deployed because it uses component classes that aren't available. Install the libraries they come from in Manage > Libraries, or remove the blocks that use them from these modules:",
     "OK": "OK",
     "DOWNLOAD_FAILED": "Failed to download project.",
     "DOWNLOAD_CURRENT_PROJECT": "Download Current Project",
@@ -148,6 +150,31 @@
     "SORT_TABS": "Sort Tabs",
     "MECHANISMS": "Mechanisms",
     "OPMODES": "OpModes",
+    "LIBRARIES": {
+        "MENU_ITEM": "Libraries",
+        "TITLE": "Libraries",
+        "UPLOAD": "Upload Library...",
+        "UPLOAD_HINT": "Upload a {{extension}} file to add its blocks to the toolbox. Uncheck a library or category to hide it from the toolbox.",
+        "NO_LIBRARIES": "No libraries installed",
+        "SELECT_LIBRARY": "Select a library to see its details.",
+        "COMPONENTS": "Components",
+        "REMOVE": "Remove",
+        "REMOVE_TITLE": "Remove {{name}}?",
+        "REMOVE_MESSAGE": "Its blocks will be removed from the toolbox. Blocks that already use this library will show a warning.",
+        "REMOVED": "Removed {{name}}",
+        "REMOVE_FAILED": "Failed to remove the library.",
+        "REPLACE": "Replace",
+        "REPLACE_TITLE": "Replace {{name}}?",
+        "REPLACE_MESSAGE": "Version {{oldVersion}} is installed. Do you want to replace it with version {{newVersion}}?",
+        "INSTALLED": "Installed {{name}} {{version}}",
+        "INSTALL_FAILED": "Failed to install the library.",
+        "INVALID_FILE": "{{filename}} is not a valid library.",
+        "WRONG_EXTENSION": "{{filename}} is not a {{extension}} file.",
+        "INCOMPATIBLE": "Incompatible",
+        "INCOMPATIBLE_VERSION": "{{name}} requires Blocks version {{range}}, but this is version {{version}}.",
+        "INCOMPATIBLE_HIDDEN": "This library does not work with this version of Blocks ({{version}}), so its blocks are not shown in the toolbox.",
+        "LOAD_FAILED": "Failed to load the installed libraries."
+    },
     "SAMPLES": {
         "MENU_ITEM": "Samples",
         "NO_SAMPLES_FOUND": "No samples found",
@@ -380,7 +407,9 @@
             "GET_ENUM_VALUE": "Gets the enum value {{enumName}}.{{valueName}}.",
             "SET_MODULE_VARIABLE": "Sets the variable {{moduleName}}.{{varName}}.",
             "SET_CLASS_VARIABLE": "Sets the variable {{className}}.{{varName}}.",
-            "SET_INSTANCE_VARIABLE": "Sets the variable {{varName}} for the given {{className}} object."
+            "SET_INSTANCE_VARIABLE": "Sets the variable {{varName}} for the given {{className}} object.",
+            "MECHANISM_COMPONENT_REFERENCE": "The component named {{componentName}} of the class {{className}} from the mechanism named {{mechanismName}}.",
+            "COMPONENT_REFERENCE": "The component named {{componentName}} of the class {{className}}."
         },
         "CATEGORY":{
             "LISTS": "Lists",
@@ -441,13 +470,17 @@
             "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "This block is not allowed to be used inside a mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "This block calls a method that no longer exists in the mechanism.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "This block calls a method in a mechanism that no longer exists.",
+            "FIRE_EVENT_MISSING_EVENT": "This block fires an event that no longer exists.",
             "EVENT_NOT_IN_HOLDER": "This block can only go in the events section of the robot or mechanism.",
             "COMPONENT_NOT_IN_HOLDER": "This block can only go in the components section of the robot or mechanism.",
             "MECHANISM_NOT_IN_HOLDER": "This block can only go in the mechanisms section of the robot.",
             "COMPONENT_MISSING_COMPONENT_CLASS": "This block represents a component whose class no longer exists.",
             "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "A PeriodicOpMode should have steps, the periodic method, or both.",
             "MECHANISM_NOT_FOUND": "This block refers to a mechanism that no longer exists.",
-            "DUPLICATE_PORT": "This port (%1) is also used by: %2"
+            "DUPLICATE_PORT": "This port (%1) is also used by: %2",
+            "COMPONENT_REFERENCE_PRIVATE_COMPONENT": "This blocks represents a private component in the {{mechanismClassName}} mechanism.",
+            "COMPONENT_REFERENCE_MISSING_COMPONENT": "This block represents a component that no longer exists.",
+            "COMPONENT_REFERENCE_MISSING_MECHANISM": "This block represents a component that belongs to a mechanism that no longer exists."
         },
         "ERROR":{
             "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind must be \"module\", \"class\", or \"instance\"."

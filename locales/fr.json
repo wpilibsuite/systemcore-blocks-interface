@@ -26,6 +26,8 @@
     "DEPLOY_ANYWAY": "Déployer quand même",
     "PORT_CONFLICT_TITLE": "Ports utilisés plus d'une fois",
     "PORT_CONFLICT_MESSAGE": "Ces ports matériels sont utilisés par plus d'un composant :",
+    "MISSING_COMPONENT_CLASSES_TITLE": "Classes de composants manquantes",
+    "MISSING_COMPONENT_CLASSES_MESSAGE": "Ce projet ne peut pas être déployé, car il utilise des classes de composants qui ne sont pas disponibles. Installez les bibliothèques dont elles proviennent dans Gérer > Bibliothèques, ou supprimez les blocs qui les utilisent de ces modules :",
     "OK": "OK",
     "DOWNLOAD_FAILED": "Échec du téléchargement du projet.",
     "DOWNLOAD_CURRENT_PROJECT": "Télécharger le projet actuel",
@@ -149,6 +151,31 @@
     "SORT_TABS": "Trier les onglets",
     "MECHANISMS": "Mécanismes",
     "OPMODES": "OpModes",
+    "LIBRARIES": {
+        "MENU_ITEM": "Bibliothèques",
+        "TITLE": "Bibliothèques",
+        "UPLOAD": "Téléverser une bibliothèque...",
+        "UPLOAD_HINT": "Téléversez un fichier {{extension}} pour ajouter ses blocs à la boîte à outils. Décochez une bibliothèque ou une catégorie pour la masquer de la boîte à outils.",
+        "NO_LIBRARIES": "Aucune bibliothèque installée",
+        "SELECT_LIBRARY": "Sélectionnez une bibliothèque pour voir ses détails.",
+        "COMPONENTS": "Composants",
+        "REMOVE": "Supprimer",
+        "REMOVE_TITLE": "Supprimer {{name}} ?",
+        "REMOVE_MESSAGE": "Ses blocs seront retirés de la boîte à outils. Les blocs qui utilisent déjà cette bibliothèque afficheront un avertissement.",
+        "REMOVED": "{{name}} a été supprimée",
+        "REMOVE_FAILED": "Échec de la suppression de la bibliothèque.",
+        "REPLACE": "Remplacer",
+        "REPLACE_TITLE": "Remplacer {{name}} ?",
+        "REPLACE_MESSAGE": "La version {{oldVersion}} est installée. Voulez-vous la remplacer par la version {{newVersion}} ?",
+        "INSTALLED": "{{name}} {{version}} a été installée",
+        "INSTALL_FAILED": "Échec de l'installation de la bibliothèque.",
+        "INVALID_FILE": "{{filename}} n'est pas une bibliothèque valide.",
+        "WRONG_EXTENSION": "{{filename}} n'est pas un fichier {{extension}}.",
+        "INCOMPATIBLE": "Incompatible",
+        "INCOMPATIBLE_VERSION": "{{name}} nécessite la version {{range}} de Blocks, mais celle-ci est la version {{version}}.",
+        "INCOMPATIBLE_HIDDEN": "Cette bibliothèque ne fonctionne pas avec cette version de Blocks ({{version}}), ses blocs ne sont donc pas affichés dans la boîte à outils.",
+        "LOAD_FAILED": "Échec du chargement des bibliothèques installées."
+    },
     "SAMPLES": {
         "MENU_ITEM": "Exemples",
         "NO_SAMPLES_FOUND": "Aucun exemple trouvé",
@@ -381,7 +408,9 @@
             "GET_ENUM_VALUE": "Obtient la valeur d'énumération {{enumName}}.{{valueName}}.",
             "SET_MODULE_VARIABLE": "Définit la variable {{moduleName}}.{{varName}}.",
             "SET_CLASS_VARIABLE": "Définit la variable {{className}}.{{varName}}.",
-            "SET_INSTANCE_VARIABLE": "Définit la variable {{varName}} pour l'objet {{className}} donné."
+            "SET_INSTANCE_VARIABLE": "Définit la variable {{varName}} pour l'objet {{className}} donné.",
+            "MECHANISM_COMPONENT_REFERENCE": "Le composant nommé {{componentName}} de la classe {{className}} du mécanisme nommé {{mechanismName}}.",
+            "COMPONENT_REFERENCE": "Le composant nommé {{componentName}} de la classe {{className}}."
         },
         "CATEGORY": {
             "LISTS": "Listes",
@@ -442,13 +471,17 @@
             "CALL_MECHANISM_INSTANCE_METHOD_INSIDE_MECHANISM": "Ce bloc n'est pas autorisé à être utilisé dans un mécanisme.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_METHOD": "Ce bloc appelle une méthode qui n'existe plus dans le mécanisme.",
             "CALL_MECHANISM_INSTANCE_METHOD_MISSING_MECHANISM": "Ce bloc appelle une méthode dans un mécanisme qui n'existe plus.",
+            "FIRE_EVENT_MISSING_EVENT": "Ce bloc déclenche un événement qui n'existe plus.",
             "EVENT_NOT_IN_HOLDER": "Ce bloc ne peut aller que dans la section événements du robot ou du mécanisme.",
             "COMPONENT_NOT_IN_HOLDER": "Ce bloc ne peut aller que dans la section composants du robot ou du mécanisme.",
             "MECHANISM_NOT_IN_HOLDER": "Ce bloc ne peut aller que dans la section mécanismes du robot.",
             "COMPONENT_MISSING_COMPONENT_CLASS": "Ce bloc représente un composant dont la classe n'existe plus.",
             "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "Un PeriodicOpMode doit avoir des étapes, la méthode périodique, ou les deux.",
             "MECHANISM_NOT_FOUND": "Ce bloc fait référence à un mécanisme qui n'existe plus.",
-            "DUPLICATE_PORT": "Ce port (%1) est aussi utilisé par : %2"
+            "DUPLICATE_PORT": "Ce port (%1) est aussi utilisé par : %2",
+            "COMPONENT_REFERENCE_PRIVATE_COMPONENT": "Ce bloc représente un composant privé du mécanisme {{mechanismClassName}}.",
+            "COMPONENT_REFERENCE_MISSING_COMPONENT": "Ce bloc représente un composant qui n'existe plus.",
+            "COMPONENT_REFERENCE_MISSING_MECHANISM": "Ce bloc représente un composant appartenant à un mécanisme qui n'existe plus."
         },
         "ERROR": {
             "VAR_KIND_MUST_BE_MODULE_CLASS_OR_INSTANCE": "mrcVarKind doit être \"module\", \"class\" ou \"instance\"."
