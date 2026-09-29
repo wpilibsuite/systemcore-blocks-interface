@@ -69,44 +69,6 @@ export const END_METHOD_NAME = 'end';
 
 export const CLASS_NAME_DRIVER_STATION_DISPLAY = MODULE_NAME_WPILIB_BLOCKS + '.DriverStationDisplay';
 
-export const MODULE_NAME_TELEMETRY = 'telemetry';
-export const CLASS_NAME_TELEMETRY_TABLE = MODULE_NAME_TELEMETRY + '.TelemetryTable';
-// The telemetry module doesn't mark any functions as common, so these are shown first.
-export const TELEMETRY_COMMON_FUNCTION_NAMES = ['get_table', 'log'];
-// The order of the telemetry blocks in the toolbox. Functions that aren't listed are shown last.
-export const TELEMETRY_FUNCTION_ORDER = [
-  'get_table',
-  'log',
-  'keep_duplicates',
-  'set_property',
-  'set_type',
-  'get_type',
-  'has_type',
-  'get_path',
-];
-
-export const MODULE_NAME_TUNABLES = 'tunables';
-export const CLASS_NAME_TUNABLE_TABLE = MODULE_NAME_TUNABLES + '.TunableTable';
-export const CLASS_NAME_TUNABLE = MODULE_NAME_TUNABLES + '.Tunable';
-// The tunables module doesn't mark any functions as common, so these are shown first.
-export const TUNABLES_COMMON_FUNCTION_NAMES = ['get_table', 'add', 'remove'];
-// The order of the tunables table blocks in the toolbox. Functions that aren't listed are shown
-// after these.
-export const TUNABLES_FUNCTION_ORDER = [
-  'get_table',
-  'add',
-  'add_boolean',
-  'add_int',
-  'add_long',
-  'add_float',
-  'add_double',
-  'publish',
-  'remove',
-  'get_path',
-];
-// The Tunable methods that are shown first, in this order.
-export const TUNABLE_COMMON_METHOD_NAMES = ['set', 'get'];
-
 export const TELEOP_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Teleop';
 export const AUTO_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Auto';
 export const UTILITY_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Utility';

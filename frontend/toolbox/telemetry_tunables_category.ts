@@ -25,22 +25,48 @@ import * as toolboxItems from './items';
 import { makeOneContents } from './python_data_toolbox';
 import { addInstanceVariableMethodBlocks, addModuleFunctionBlocks } from '../blocks/mrc_call_python_function';
 import { createTypedVariableSetterBlock } from '../blocks/mrc_set_typed_variable';
-import {
-  CLASS_NAME_TELEMETRY_TABLE,
-  CLASS_NAME_TUNABLE,
-  CLASS_NAME_TUNABLE_TABLE,
-  MODULE_NAME_TELEMETRY,
-  MODULE_NAME_TUNABLES,
-  TELEMETRY_COMMON_FUNCTION_NAMES,
-  TELEMETRY_FUNCTION_ORDER,
-  TUNABLE_COMMON_METHOD_NAMES,
-  TUNABLES_COMMON_FUNCTION_NAMES,
-  TUNABLES_FUNCTION_ORDER,
-  getClassData,
-  getModuleData } from '../blocks/utils/python';
+import { getClassData, getModuleData } from '../blocks/utils/python';
 import { FunctionData } from '../blocks/utils/python_json_types';
 
 const FUNCTION_NAME_GET_TABLE = 'get_table';
+
+const MODULE_NAME_TELEMETRY = 'telemetry';
+const CLASS_NAME_TELEMETRY_TABLE = MODULE_NAME_TELEMETRY + '.TelemetryTable';
+// The telemetry module doesn't mark any functions as common, so these are shown first.
+const TELEMETRY_COMMON_FUNCTION_NAMES = ['get_table', 'log'];
+// The order of the telemetry blocks in the toolbox. Functions that aren't listed are shown last.
+const TELEMETRY_FUNCTION_ORDER = [
+  'get_table',
+  'log',
+  'keep_duplicates',
+  'set_property',
+  'set_type',
+  'get_type',
+  'has_type',
+  'get_path',
+];
+
+const MODULE_NAME_TUNABLES = 'tunables';
+const CLASS_NAME_TUNABLE_TABLE = MODULE_NAME_TUNABLES + '.TunableTable';
+const CLASS_NAME_TUNABLE = MODULE_NAME_TUNABLES + '.Tunable';
+// The tunables module doesn't mark any functions as common, so these are shown first.
+const TUNABLES_COMMON_FUNCTION_NAMES = ['get_table', 'add', 'remove'];
+// The order of the tunables table blocks in the toolbox. Functions that aren't listed are shown
+// after these.
+const TUNABLES_FUNCTION_ORDER = [
+  'get_table',
+  'add',
+  'add_boolean',
+  'add_int',
+  'add_long',
+  'add_float',
+  'add_double',
+  'publish',
+  'remove',
+  'get_path',
+];
+// The Tunable methods that are shown first, in this order.
+const TUNABLE_COMMON_METHOD_NAMES = ['set', 'get'];
 
 // Telemetry can be logged by calling the telemetry module functions directly, or by getting a
 // TelemetryTable (with telemetry.get_table), storing it in a variable, and calling methods on
