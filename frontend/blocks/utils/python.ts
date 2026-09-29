@@ -85,6 +85,28 @@ export const TELEMETRY_FUNCTION_ORDER = [
   'get_path',
 ];
 
+export const MODULE_NAME_TUNABLES = 'tunables';
+export const CLASS_NAME_TUNABLE_TABLE = MODULE_NAME_TUNABLES + '.TunableTable';
+export const CLASS_NAME_TUNABLE = MODULE_NAME_TUNABLES + '.Tunable';
+// The tunables module doesn't mark any functions as common, so these are shown first.
+export const TUNABLES_COMMON_FUNCTION_NAMES = ['get_table', 'add'];
+// The order of the tunables table blocks in the toolbox. Functions that aren't listed are shown
+// after these.
+export const TUNABLES_FUNCTION_ORDER = [
+  'get_table',
+  'add',
+  'add_boolean',
+  'add_int',
+  'add_long',
+  'add_float',
+  'add_double',
+  'publish',
+  'remove',
+  'get_path',
+];
+// The Tunable methods that are shown first, in this order.
+export const TUNABLE_COMMON_METHOD_NAMES = ['set', 'get'];
+
 export const TELEOP_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Teleop';
 export const AUTO_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Auto';
 export const UTILITY_DECORATOR_CLASS = MODULE_NAME_WPILIB_BLOCKS + '.Utility';
@@ -294,8 +316,15 @@ export function getSubclassNames(type: string): string[] {
 
 // Returns the array of allowed types for the given string.
 // This function is used by multiple blocks to set the check for an input socket.
-export function getAllowedTypesForSetCheck(type: string): string[] {
+// The python type that any value can be used for.
+const PYTHON_TYPE_OBJECT = 'object';
+
+export function getAllowedTypesForSetCheck(type: string): string[] | null {
   // For the given python type, returns an array of compatible input types.
+  // Returns null (no check) for object, since any value can be used.
+  if (type === PYTHON_TYPE_OBJECT) {
+    return null;
+  }
   const allowedTypes: string[] = [];
   collectAllowedTypesForSetCheck(type, allowedTypes);
   return allowedTypes;
@@ -360,6 +389,10 @@ function getCheckForBuiltInType(type: string): string {
 export function getOutputCheck(type: string): string {
   // For the given python type, returns the output type.
   if (type === 'None') {
+    return '';
+  }
+  // An object can be any value, so it has no output type.
+  if (type === PYTHON_TYPE_OBJECT) {
     return '';
   }
 

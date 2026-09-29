@@ -27,12 +27,20 @@ import { addInstanceVariableMethodBlocks, addModuleFunctionBlocks } from '../blo
 import { createTypedVariableSetterBlock } from '../blocks/mrc_set_typed_variable';
 import {
   CLASS_NAME_TELEMETRY_TABLE,
+  CLASS_NAME_TUNABLE,
+  CLASS_NAME_TUNABLE_TABLE,
   MODULE_NAME_TELEMETRY,
+  MODULE_NAME_TUNABLES,
   TELEMETRY_COMMON_FUNCTION_NAMES,
   TELEMETRY_FUNCTION_ORDER,
+  TUNABLE_COMMON_METHOD_NAMES,
+  TUNABLES_COMMON_FUNCTION_NAMES,
+  TUNABLES_FUNCTION_ORDER,
   getClassData,
   getModuleData } from '../blocks/utils/python';
 import { FunctionData } from '../blocks/utils/python_json_types';
+
+const FUNCTION_NAME_GET_TABLE = 'get_table';
 
 // Telemetry can be logged by calling the telemetry module functions directly, or by getting a
 // TelemetryTable (with telemetry.get_table), storing it in a variable, and calling methods on
@@ -42,40 +50,11 @@ import { FunctionData } from '../blocks/utils/python_json_types';
 export function getTelemetryCategory(): toolboxItems.Category {
   const commonContents: toolboxItems.ContentsType[] = [];
   const moreContents: toolboxItems.ContentsType[] = [];
-  const moduleData = getModuleData(MODULE_NAME_TELEMETRY);
-  const tableClassData = getClassData(CLASS_NAME_TELEMETRY_TABLE);
-  const tableMethodNames = new Set<string>();
-  if (tableClassData) {
-    const tableCommon: toolboxItems.ContentsType[] = [];
-    const tableMore: toolboxItems.ContentsType[] = [];
-    addInstanceVariableMethodBlocks(
-        {
-          ...tableClassData,
-          instanceMethods: markCommonFunctions(
-              sortFunctions(tableClassData.instanceMethods, TELEMETRY_FUNCTION_ORDER),
-              TELEMETRY_COMMON_FUNCTION_NAMES),
-        },
-        tableCommon, tableMore, moduleData ?? undefined);
-    // get_table returns a TelemetryTable, which is stored in a TelemetryTable variable.
-    const storeTables = (item: toolboxItems.ContentsType) =>
-        returnsType(item as toolboxItems.Block, CLASS_NAME_TELEMETRY_TABLE)
-            ? storeInTypedVariable(item as toolboxItems.Block, CLASS_NAME_TELEMETRY_TABLE)
-            : item;
-    commonContents.push(...tableCommon.map(storeTables));
-    moreContents.push(...tableMore.map(storeTables));
-    tableClassData.instanceMethods.forEach(f => tableMethodNames.add(f.functionName));
-  }
-  if (moduleData) {
-    // Add blocks for any module functions that don't have a TelemetryTable method.
-    addModuleFunctionBlocks(
-        {
-          ...moduleData,
-          functions: markCommonFunctions(
-              moduleData.functions.filter(f => !tableMethodNames.has(f.functionName)),
-              TELEMETRY_COMMON_FUNCTION_NAMES),
-        },
-        commonContents, moreContents);
-  }
+  addTableBlocks(
+      MODULE_NAME_TELEMETRY, CLASS_NAME_TELEMETRY_TABLE,
+      TELEMETRY_FUNCTION_ORDER, TELEMETRY_COMMON_FUNCTION_NAMES,
+      [CLASS_NAME_TELEMETRY_TABLE],
+      commonContents, moreContents);
 
   const category = new toolboxItems.Category(
       Blockly.Msg['MRC_CATEGORY_TELEMETRY'], makeOneContents(commonContents, moreContents));
@@ -83,10 +62,86 @@ export function getTelemetryCategory(): toolboxItems.Category {
   return category;
 }
 
+// Tunables work like telemetry: the tunables module functions and the TunableTable methods
+// share blocks, with a dropdown to choose "default" (the tunables module) or a TunableTable
+// variable. The add functions return a Tunable, which is stored in a Tunable variable. The
+// Tunable blocks (set and get) have a dropdown of the Tunable variables in the module.
 export function getTunablesCategory(): toolboxItems.Category {
-  const category = new toolboxItems.Category(Blockly.Msg['MRC_CATEGORY_TUNABLES'], []);
+  const commonContents: toolboxItems.ContentsType[] = [];
+  const moreContents: toolboxItems.ContentsType[] = [];
+  addTableBlocks(
+      MODULE_NAME_TUNABLES, CLASS_NAME_TUNABLE_TABLE,
+      TUNABLES_FUNCTION_ORDER, TUNABLES_COMMON_FUNCTION_NAMES,
+      [CLASS_NAME_TUNABLE_TABLE, CLASS_NAME_TUNABLE],
+      commonContents, moreContents);
+  const tunableClassData = getClassData(CLASS_NAME_TUNABLE);
+  if (tunableClassData) {
+    addInstanceVariableMethodBlocks(
+        {
+          ...tunableClassData,
+          instanceMethods: markCommonFunctions(
+              sortFunctions(tunableClassData.instanceMethods, TUNABLE_COMMON_METHOD_NAMES),
+              TUNABLE_COMMON_METHOD_NAMES),
+        },
+        commonContents, moreContents);
+  }
+
+  const category = new toolboxItems.Category(
+      Blockly.Msg['MRC_CATEGORY_TUNABLES'], makeOneContents(commonContents, moreContents));
   category.tooltip = Blockly.Msg['MRC_CATEGORY_TUNABLES_TOOLTIP'];
   return category;
+}
+
+/**
+ * Adds blocks for the methods of the given table class. Methods that have a module function with
+ * the same name and arguments also have a "default" option that calls the module function.
+ * Blocks for functions that return one of the storedTypes are wrapped in a block that stores the
+ * result in a variable of that type.
+ */
+function addTableBlocks(
+    moduleName: string,
+    tableClassName: string,
+    functionOrder: string[],
+    commonFunctionNames: string[],
+    storedTypes: string[],
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[]) {
+  const moduleData = getModuleData(moduleName);
+  const tableClassData = getClassData(tableClassName);
+  const tableMethodNames = new Set<string>();
+  if (tableClassData) {
+    // A table's get_table returns a table, but it isn't always declared that way.
+    const instanceMethods = tableClassData.instanceMethods.map(f =>
+        (f.functionName === FUNCTION_NAME_GET_TABLE) ? {...f, returnType: tableClassName} : f);
+    const tableCommon: toolboxItems.ContentsType[] = [];
+    const tableMore: toolboxItems.ContentsType[] = [];
+    addInstanceVariableMethodBlocks(
+        {
+          ...tableClassData,
+          instanceMethods: markCommonFunctions(
+              sortFunctions(instanceMethods, functionOrder), commonFunctionNames),
+        },
+        tableCommon, tableMore, moduleData ?? undefined);
+    const storeResult = (item: toolboxItems.ContentsType) => {
+      const block = item as toolboxItems.Block;
+      const storedType = storedTypes.find(type => returnsType(block, type));
+      return storedType ? storeInTypedVariable(block, storedType) : item;
+    };
+    commonContents.push(...tableCommon.map(storeResult));
+    moreContents.push(...tableMore.map(storeResult));
+    tableClassData.instanceMethods.forEach(f => tableMethodNames.add(f.functionName));
+  }
+  if (moduleData) {
+    // Add blocks for any module functions that don't have a table method.
+    addModuleFunctionBlocks(
+        {
+          ...moduleData,
+          functions: markCommonFunctions(
+              moduleData.functions.filter(f => !tableMethodNames.has(f.functionName)),
+              commonFunctionNames),
+        },
+        commonContents, moreContents);
+  }
 }
 
 // Blocks for functions that return an object are wrapped in a variables_set block. This replaces
