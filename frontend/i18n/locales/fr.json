@@ -323,6 +323,7 @@
         "MORE_MECHANISM_METHODS_LABEL": "Plus de méthodes mécanisme",
         "MORE_OPMODE_METHODS_LABEL": "Plus de méthodes OpMode",
         "MORE_BLOCKS_LABEL": "Plus...",
+        "TYPED_VARIABLE_DEFAULT": "par défaut",
         "COMMENT_DEFAULT_TEXT": "Saisissez votre commentaire ici !",
         "CONFIG_GAMEPADS_BUTTON": "⚙️ Configurer les manettes",
         "GAMEPAD": {
@@ -431,6 +432,10 @@
             "DRIVER_STATION": "Station de pilotage",
             "DRIVER_STATION_DISPLAY": "Affichage",
             "DRIVER_STATION_GAMEPADS": "Manettes",
+            "TELEMETRY": "Télémétrie",
+            "TELEMETRY_TOOLTIP": "Enregistrez des données ici pour les afficher dans des graphiques et des tableaux de bord.",
+            "TUNABLES": "Réglables",
+            "TUNABLES_TOOLTIP": "Utilisez des valeurs qui peuvent être modifiées dans les tableaux de bord.",
             "TEST": "Test",
             "PAGINATION_TOTAL": "{{start}}-{{end}} sur {{total}} éléments"
         },

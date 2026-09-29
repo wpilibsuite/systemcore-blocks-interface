@@ -323,6 +323,7 @@
         "MORE_MECHANISM_METHODS_LABEL": "Más Métodos del Mecanismo",
         "MORE_OPMODE_METHODS_LABEL": "Más Métodos del OpMode",
         "MORE_BLOCKS_LABEL": "Más...",
+        "TYPED_VARIABLE_DEFAULT": "predeterminado",
         "COMMENT_DEFAULT_TEXT": "¡Ingresa tu comentario aquí!",
         "CONFIG_GAMEPADS_BUTTON": "⚙️ Configurar Gamepads",
         "GAMEPAD": {
@@ -431,6 +432,10 @@
             "DRIVER_STATION": "Estación del Conductor",
             "DRIVER_STATION_DISPLAY": "Pantalla",
             "DRIVER_STATION_GAMEPADS": "Mandos de Juego",
+            "TELEMETRY": "Telemetría",
+            "TELEMETRY_TOOLTIP": "Registra datos aquí para poder graficarlos y mostrarlos en los paneles.",
+            "TUNABLES": "Ajustables",
+            "TUNABLES_TOOLTIP": "Usa valores que se pueden cambiar en los paneles.",
             "TEST": "Prueba",
             "PAGINATION_TOTAL": "{{start}}-{{end}} de {{total}} elementos"
         },

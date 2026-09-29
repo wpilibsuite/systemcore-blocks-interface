@@ -322,6 +322,7 @@
     "MORE_MECHANISM_METHODS_LABEL": "מתודות נוספות למנגנון",
     "MORE_OPMODE_METHODS_LABEL": "מתודות נוספות לאופמוד",
     "MORE_BLOCKS_LABEL": "עוד...",
+    "TYPED_VARIABLE_DEFAULT": "ברירת מחדל",
     "COMMENT_DEFAULT_TEXT": "הזן את ההערה שלך כאן!",
     "CONFIG_GAMEPADS_BUTTON": "⚙️ הגדר בקרים",
     "GAMEPAD": {
@@ -430,6 +431,10 @@
       "DRIVER_STATION": "תחנת נהג",
       "DRIVER_STATION_DISPLAY": "תצוגה",
       "DRIVER_STATION_GAMEPADS": "בקרי משחק",
+      "TELEMETRY": "טלמטריה",
+      "TELEMETRY_TOOLTIP": "רשמו כאן נתונים כדי להציג אותם בגרפים ובלוחות מחוונים.",
+      "TUNABLES": "ערכים מתכווננים",
+      "TUNABLES_TOOLTIP": "השתמשו בערכים שניתן לשנות בלוחות המחוונים.",
       "TEST": "בדיקה",
             "PAGINATION_TOTAL": "{{start}}-{{end}} מתוך {{total}} פריטים"
     },
