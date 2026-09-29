@@ -89,7 +89,7 @@ export const MODULE_NAME_TUNABLES = 'tunables';
 export const CLASS_NAME_TUNABLE_TABLE = MODULE_NAME_TUNABLES + '.TunableTable';
 export const CLASS_NAME_TUNABLE = MODULE_NAME_TUNABLES + '.Tunable';
 // The tunables module doesn't mark any functions as common, so these are shown first.
-export const TUNABLES_COMMON_FUNCTION_NAMES = ['get_table', 'add'];
+export const TUNABLES_COMMON_FUNCTION_NAMES = ['get_table', 'add', 'remove'];
 // The order of the tunables table blocks in the toolbox. Functions that aren't listed are shown
 // after these.
 export const TUNABLES_FUNCTION_ORDER = [
