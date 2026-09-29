@@ -26,6 +26,7 @@ import * as commonStorage from './common_storage';
 import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
+import * as userSettingsEntries from './user_settings_entries';
 import { upgradeProjectIfNecessary, CURRENT_VERSION } from './upgrade_project';
 import { GamepadTypeUtils } from '../types/GamepadType';
 import { mrcAddMechanismBlockToRobotContent } from '../blocks/mrc_mechanism_component_holder';
@@ -164,7 +165,9 @@ export async function renameProject(
     storage: commonStorage.Storage, projectName: string, newProjectName: string): Promise<void> {
   const oldPath = storageNames.makeProjectDirectoryPath(projectName);
   const newPath = storageNames.makeProjectDirectoryPath(newProjectName);
+  const fileNames = await storage.list(oldPath);
   await storage.rename(oldPath, newPath);
+  await userSettingsEntries.renameProjectSettings(storage, projectName, newProjectName, fileNames);
 }
 
 /**
@@ -286,7 +289,10 @@ export async function uploadProjectFiles(
  */
 export async function deleteProject(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
-  await storage.delete(storageNames.makeProjectDirectoryPath(projectName));
+  const projectPath = storageNames.makeProjectDirectoryPath(projectName);
+  const fileNames = await storage.list(projectPath);
+  await storage.delete(projectPath);
+  await userSettingsEntries.deleteProjectSettings(storage, projectName, fileNames);
 }
 
 /**
@@ -348,6 +354,7 @@ export async function removeModuleFromProject(
     }
     await storage.delete(modulePath);
     await saveProjectInfo(storage, project.projectName, project.projectInfo);
+    await userSettingsEntries.deleteModuleSettings(storage, project.projectName, modulePath);
   }
 }
 
@@ -389,6 +396,8 @@ export async function renameModuleInProject(
       break;
   }
   await saveProjectInfo(storage, project.projectName, project.projectInfo);
+  await userSettingsEntries.renameModuleSettings(
+      storage, project.projectName, oldModulePath, newModulePath);
 
   return newModulePath;
 }

@@ -174,6 +174,26 @@ class ClientSideStorage implements commonStorage.Storage {
     });
   }
 
+  async deleteEntry(entryKey: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([ENTRIES_STORE_NAME], 'readwrite');
+      transaction.oncomplete = () => {
+        resolve();
+      };
+      transaction.onabort = () => {
+        console.log('IndexedDB transaction aborted.');
+        reject(new Error('IndexedDB transaction aborted.'));
+      };
+      const entriesObjectStore = transaction.objectStore(ENTRIES_STORE_NAME);
+      const deleteRequest = entriesObjectStore.delete(entryKey);
+      deleteRequest.onerror = () => {
+        console.log('IndexedDB delete request failed. deleteRequest.error is...');
+        console.log(deleteRequest.error);
+        throw new Error('IndexedDB delete request failed.');
+      };
+    });
+  }
+
   async list(path: string): Promise<string[]> {
     if (!path.endsWith('/')) {
       path += '/';
