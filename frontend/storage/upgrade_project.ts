@@ -74,6 +74,12 @@ export async function upgradeProjectIfNecessary(
         anyModuleType, upgradeTo_0_6_0,
         noModuleTypes, noUpgrade);
   }
+  if (semver.lt(projectInfo.version, '0.7.0')) {
+    await upgradeBlocksFiles(
+        storage, projectName,
+        anyModuleType, upgradeTo_0_7_0,
+        noModuleTypes, noUpgrade);
+  }
 
   projectInfo.version = CURRENT_VERSION;
   await storageProject.saveProjectInfo(storage, projectName, projectInfo);
@@ -397,6 +403,33 @@ function upgradeTo_0_6_0(moduleContentText: string): string {
   const visitBlockJson = (blockJson: {[key: string]: any}): void => {
     if (blockJson.type === callPythonFunctionBlock.BLOCK_NAME) {
       if (callPythonFunctionBlock.upgradeBlockJsonTo_0_6_0(blockJson)) {
+        changed = true;
+      }
+    }
+  };
+
+  storageModuleContent.visitAllBlockJson(parsedContent.blocks, visitBlockJson);
+
+  return changed ? JSON.stringify(parsedContent, null, 2) : moduleContentText;
+}
+
+// Upgrade from before 0.7.0:
+// mrc_port blocks are now shadow blocks, so that they can't be deleted.
+
+function upgradeTo_0_7_0(moduleContentText: string): string {
+  const parsedContent = JSON.parse(moduleContentText);
+  let changed = false;
+
+  // Update the blocks.
+  const visitBlockJson = (blockJson: {[key: string]: any}): void => {
+    if (!blockJson.inputs) {
+      return;
+    }
+    for (const inputName in blockJson.inputs) {
+      const input = blockJson.inputs[inputName];
+      if (input && input.block && input.block.type === portBlock.BLOCK_NAME && !input.shadow) {
+        input.shadow = input.block;
+        delete input.block;
         changed = true;
       }
     }

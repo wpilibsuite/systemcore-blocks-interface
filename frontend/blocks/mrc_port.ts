@@ -388,7 +388,7 @@ function createCanBusOptions(): Blockly.MenuOption[] {
 }
 
 /**
- * Parses the given string into an array of mrc_port blocks
+ * Parses the given string into the value of an input that holds an mrc_port shadow block.
  *
  * @param portTypeString A single string consisting of one or more port types.
  * Multiple port types are separated by __ (two underscores). Each port type
@@ -414,8 +414,10 @@ export function createPort(portTypeString: string, defaultPortNumbers?: string):
   const extraState: PortExtraState = {
     portTypes: portTypes.map((portType) => portTypeToString(portType)),
   };
+  // The port is a shadow block so that it can't be deleted, but its port numbers can still be
+  // changed. A third party port block can be plugged in on top of it.
   return {
-    block: {
+    shadow: {
       type: BLOCK_NAME,
       extraState,
       fields,

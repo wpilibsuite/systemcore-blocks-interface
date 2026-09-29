@@ -169,6 +169,8 @@ type CapturedComponent = {
    * same way as component.args. An entry is null if that socket was empty.
    */
   argBlocks: (Blockly.serialization.blocks.State | null)[],
+  /** Whether each of argBlocks is a shadow block, indexed the same way as argBlocks. */
+  argBlockIsShadow: boolean[],
 };
 
 function captureComponent(robotEditor: Editor, componentBlockId: string): CapturedComponent {
@@ -185,6 +187,7 @@ function captureComponent(robotEditor: Editor, componentBlockId: string): Captur
   }
 
   const argBlocks: (Blockly.serialization.blocks.State | null)[] = [];
+  const argBlockIsShadow: boolean[] = [];
   for (let i = 0; i < component.args.length; i++) {
     const argInput = componentBlock.getInput(COMPONENT_INPUT_ARG_PREFIX + i);
     const argBlock = argInput && argInput.connection
@@ -193,6 +196,7 @@ function captureComponent(robotEditor: Editor, componentBlockId: string): Captur
     argBlocks.push(argBlock
         ? Blockly.serialization.blocks.save(argBlock, {addNextBlocks: false})
         : null);
+    argBlockIsShadow.push(argBlock ? argBlock.isShadow() : false);
   }
 
   return {
@@ -200,6 +204,7 @@ function captureComponent(robotEditor: Editor, componentBlockId: string): Captur
     importModule: componentBlock.mrcImportModule,
     tooltip: componentBlock.mrcTooltip,
     argBlocks: argBlocks,
+    argBlockIsShadow: argBlockIsShadow,
   };
 }
 
@@ -279,9 +284,14 @@ function rebuildMechanismBlockAndRestoreArgBlocks(
     }
     // Get rid of the default value block that checkMechanism put here.
     const defaultBlock = argInput.connection.targetBlock();
-    if (defaultBlock) {
+    if (defaultBlock && !defaultBlock.isShadow()) {
       argInput.connection.disconnect();
       defaultBlock.dispose(false);
+    }
+    if (captured.argBlockIsShadow[parameter.componentArgsIndex]) {
+      // This replaces the default shadow block, if there is one.
+      argInput.connection.setShadowState(argBlockState);
+      continue;
     }
     const argBlock = Blockly.serialization.blocks.append(argBlockState, workspace);
     if (argBlock.outputConnection) {
