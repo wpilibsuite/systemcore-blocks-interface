@@ -23,6 +23,7 @@ import * as React from 'react';
 import * as blocksLib from '../libraries/blocks_lib';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
+import { MOST_RECENT_PROJECT_NAME_KEY } from '../storage/user_settings_entries';
 import * as I18Next from 'react-i18next';
 import {TabType, TabTypeUtils } from '../types/TabType';
 
@@ -76,8 +77,6 @@ export interface MenuProps {
 /** Default selected menu keys. */
 const DEFAULT_SELECTED_KEYS = ['1'];
 
-/** Storage key for the most recent project name. */
-const MOST_RECENT_PROJECT_NAME_KEY = 'mostRecentProject';
 
 /**
  * Creates a menu item with the specified properties.

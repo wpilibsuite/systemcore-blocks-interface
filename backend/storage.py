@@ -62,6 +62,20 @@ class StorageEntryResource(MethodView):
             db.session.rollback()
             return jsonify({'error': 'Failed to save entry'}), 500
 
+    def delete(self, entry_key: str) -> Response:
+        """Delete entry. Deleting an entry that doesn't exist is not an error."""
+        entry = StorageEntry.query.filter_by(entry_key=entry_key).first()
+        if not entry:
+            return jsonify({'message': 'Entry deleted successfully'})
+        db.session.delete(entry)
+
+        try:
+            db.session.commit()
+            return jsonify({'message': 'Entry deleted successfully'})
+        except Exception:
+            db.session.rollback()
+            return jsonify({'error': 'Failed to delete entry'}), 500
+
 class StorageResource(MethodView):
     def get(self, path: str) -> Response:
         """Get file content or list directory based on path"""

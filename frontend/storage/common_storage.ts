@@ -26,6 +26,8 @@ export interface Storage {
 
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
 
+  deleteEntry(entryKey: string): Promise<void>;
+
   // Functions for storing files.
   
   list(path: string): Promise<string[]>;

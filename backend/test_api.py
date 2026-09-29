@@ -38,6 +38,16 @@ class TestStorageAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn("value", data)
+
+        # Delete the entry
+        response = requests.delete(f"{self.base_url}/entries/test_key")
+        self.assertEqual(response.status_code, 200)
+        response = requests.get(f"{self.base_url}/entries/test_key?default=default_val")
+        self.assertEqual(response.json()["value"], "default_val")
+
+        # Deleting a missing entry is not an error
+        response = requests.delete(f"{self.base_url}/entries/missing_key")
+        self.assertEqual(response.status_code, 200)
     
     def test_storage_file_operations(self):
         """Test storage file endpoints"""

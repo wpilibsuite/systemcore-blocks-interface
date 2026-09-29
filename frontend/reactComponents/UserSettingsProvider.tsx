@@ -22,6 +22,11 @@
 
 import * as React from 'react';
 import { Storage } from '../storage/common_storage';
+import {
+  makeModuleScrollKey,
+  makeModuleZoomKey,
+  makeOpenTabsKey,
+} from '../storage/user_settings_entries';
 import { FIRST_BLOCKS_STYLE_RENDERER_NAME } from '../themes/first_blocks_style';
 
 /** Storage keys for user settings. */
@@ -42,18 +47,6 @@ export const DEFAULT_ZOOM = 1.0;
 
 /** Sentinel returned by fetchEntry when a module has no zoom level saved yet. */
 const NO_SAVED_MODULE_ZOOM = '__no_saved_module_zoom__';
-
-/** Sentinel returned by fetchEntry when a module has no scroll position saved yet. */
-const NO_SAVED_MODULE_SCROLL = '__no_saved_module_scroll__';
-
-/** Helper function to generate project-specific storage key for open tabs. */
-const getUserOptionsKey = (projectName: string): string => `user_options_${projectName}`;
-
-/** Helper function to generate the storage key for a module's saved zoom level. */
-const getModuleZoomKey = (modulePath: string): string => `userZoom_${modulePath}`;
-
-/** Helper function to generate the storage key for a module's saved scroll position. */
-const getModuleScrollKey = (modulePath: string): string => `userScroll_${modulePath}`;
 
 /** A workspace scroll position (the coordinates of the upper-left corner of the view). */
 export interface ModuleScroll {
@@ -87,7 +80,7 @@ export interface UserSettingsContextType {
   updateModuleZoom: (modulePath: string, zoom: number) => Promise<void>;
   /** Gets the saved scroll position for a module, or DEFAULT_MODULE_SCROLL if none is saved. */
   getModuleScroll: (modulePath: string) => Promise<ModuleScroll>;
-  /** Saves the scroll position for a module, unless it's (0, 0). */
+  /** Saves the scroll position for a module, or deletes the saved one if it's (0, 0). */
   updateModuleScroll: (modulePath: string, x: number, y: number) => Promise<void>;
   isLoading: boolean;
   error: string | null;
@@ -214,7 +207,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
         return DEFAULT_ZOOM;
       }
 
-      const storageKey = getModuleZoomKey(modulePath);
+      const storageKey = makeModuleZoomKey(modulePath);
       const zoomString = await storage.fetchEntry(storageKey, NO_SAVED_MODULE_ZOOM);
       if (zoomString !== NO_SAVED_MODULE_ZOOM) {
         const zoom = parseFloat(zoomString);
@@ -236,7 +229,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
   const updateModuleZoom = async (modulePath: string, zoom: number): Promise<void> => {
     try {
       if (storage) {
-        const storageKey = getModuleZoomKey(modulePath);
+        const storageKey = makeModuleZoomKey(modulePath);
         await Promise.all([
           storage.saveEntry(storageKey, zoom.toString()),
           storage.saveEntry(USER_LAST_ZOOM_KEY, zoom.toString()),
@@ -257,7 +250,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
         return DEFAULT_MODULE_SCROLL;
       }
 
-      const storageKey = getModuleScrollKey(modulePath);
+      const storageKey = makeModuleScrollKey(modulePath);
       const scrollJson = await storage.fetchEntry(storageKey, JSON.stringify(DEFAULT_MODULE_SCROLL));
       const parsed = JSON.parse(scrollJson);
       if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
@@ -271,11 +264,8 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
   };
 
   /**
-   * Save the scroll position for a module. For the common case of (0, 0) on a module that has
-   * nothing saved yet, skips the write - there's nothing worth persisting. But if (0, 0) is
-   * reached after a different position had been saved, that old position must be explicitly
-   * overwritten back to (0, 0); otherwise the next load would incorrectly restore it instead of
-   * using the origin, since there's no way to delete a saved entry outright.
+   * Save the scroll position for a module. (0, 0) is the default, so instead of saving it, any
+   * previously saved position is deleted.
    */
   const updateModuleScroll = async (modulePath: string, x: number, y: number): Promise<void> => {
     try {
@@ -284,12 +274,10 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
         return;
       }
 
-      const storageKey = getModuleScrollKey(modulePath);
+      const storageKey = makeModuleScrollKey(modulePath);
       if (x === 0 && y === 0) {
-        const existing = await storage.fetchEntry(storageKey, NO_SAVED_MODULE_SCROLL);
-        if (existing === NO_SAVED_MODULE_SCROLL) {
-          return;
-        }
+        await storage.deleteEntry(storageKey);
+        return;
       }
       await storage.saveEntry(storageKey, JSON.stringify({ x, y }));
     } catch (err) {
@@ -319,7 +307,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
       setError(null);
       
       if (storage) {
-        const storageKey = getUserOptionsKey(projectName);
+        const storageKey = makeOpenTabsKey(projectName);
         await storage.saveEntry(storageKey, JSON.stringify(tabPaths));
       } else {
         console.warn('No storage available, cannot save open tabs');
@@ -338,7 +326,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
         return [];
       }
       
-      const storageKey = getUserOptionsKey(projectName);
+      const storageKey = makeOpenTabsKey(projectName);
       const tabsJson = await storage.fetchEntry(storageKey, JSON.stringify([]));
       
       try {
