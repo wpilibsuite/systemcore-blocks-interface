@@ -38,11 +38,13 @@ export function getDriverStationDisplayCategory(
         addStaticMethodBlocks(classData, commonContents, moreContents, editor.getShowSimpleClassNames());
         plugDefaultColorBlocks([...commonContents, ...moreContents], editor.getShowSimpleClassNames());
     }
-    return new toolboxItems.Category(
+    const category = new toolboxItems.Category(
         name,
         makeOneContents(commonContents, moreContents),
         toolboxItems.ExpandedState.EXPANDED
     );
+    category.tooltip = Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY_TOOLTIP'];
+    return category;
 }
 
 // addStaticMethodBlocks plugs a generic workspace-variable getter (e.g. "myColor")

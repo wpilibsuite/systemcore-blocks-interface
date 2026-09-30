@@ -432,6 +432,7 @@
             "DRIVER_STATION": "Station de pilotage",
             "DISPLAY": "Affichage",
             "DRIVER_STATION_DISPLAY": "Affichage de la station de pilotage",
+            "DRIVER_STATION_DISPLAY_TOOLTIP": "Affichez des informations sur l'écran de la station de pilotage.",
             "OBSERVABILITY": "Observabilité",
             "OBSERVABILITY_TOOLTIP": "Voyez ce que fait le robot pendant son fonctionnement.",
             "DRIVER_STATION_GAMEPADS": "Manettes",

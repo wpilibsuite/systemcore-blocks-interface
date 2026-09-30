@@ -431,6 +431,7 @@
             "DRIVER_STATION": "Driver Station",
             "DISPLAY": "Display",
             "DRIVER_STATION_DISPLAY": "Driver Station Display",
+            "DRIVER_STATION_DISPLAY_TOOLTIP": "Put information on the Driver Station display.",
             "OBSERVABILITY": "Observability",
             "OBSERVABILITY_TOOLTIP": "See what the robot is doing while it runs.",
             "DRIVER_STATION_GAMEPADS": "Gamepads",

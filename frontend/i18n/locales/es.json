@@ -432,6 +432,7 @@
             "DRIVER_STATION": "Estación del Conductor",
             "DISPLAY": "Pantalla",
             "DRIVER_STATION_DISPLAY": "Pantalla de la Estación del Conductor",
+            "DRIVER_STATION_DISPLAY_TOOLTIP": "Muestra información en la pantalla de la Estación del Conductor.",
             "OBSERVABILITY": "Observabilidad",
             "OBSERVABILITY_TOOLTIP": "Mira lo que hace el robot mientras funciona.",
             "DRIVER_STATION_GAMEPADS": "Mandos de Juego",

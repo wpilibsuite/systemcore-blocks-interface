@@ -431,6 +431,7 @@
       "DRIVER_STATION": "תחנת נהג",
       "DISPLAY": "תצוגה",
       "DRIVER_STATION_DISPLAY": "תצוגת תחנת הנהג",
+      "DRIVER_STATION_DISPLAY_TOOLTIP": "הציגו מידע בתצוגה של תחנת הנהג.",
       "OBSERVABILITY": "ניטור",
       "OBSERVABILITY_TOOLTIP": "ראו מה הרובוט עושה בזמן שהוא פועל.",
       "DRIVER_STATION_GAMEPADS": "בקרי משחק",
