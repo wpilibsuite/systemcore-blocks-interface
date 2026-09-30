@@ -5,8 +5,8 @@ import * as common from './toolbox_common'
 import { Editor } from '../editor/editor';
 import { getHardwareCategory } from './hardware_category';
 import { getCategory as getEventCategory } from './event_category';
-import { getDriverStationCategory, getDriverStationDisplayCategory } from './driver_station_category';
-import { getTelemetryCategory, getTunablesCategory } from './telemetry_tunables_category';
+import { getDriverStationCategory } from './driver_station_category';
+import { getObservabilityCategory } from './observability_category';
 import './tooltip_category';
 
 export function getToolboxJSON(
@@ -19,19 +19,16 @@ export function getToolboxJSON(
   switch (editor.getModuleType()) {
     case storageModule.ModuleType.ROBOT:
     case storageModule.ModuleType.MECHANISM:
-      toolbox.contents.push(getDriverStationDisplayCategory(editor));
+      toolbox.contents.push(getObservabilityCategory(editor));
       toolbox.contents.push(getHardwareCategory(editor));
-      toolbox.contents.push(getTelemetryCategory());
-      toolbox.contents.push(getTunablesCategory());
       toolbox.contents.push(new toolboxItems.Sep());
       toolbox.contents.push(...common.getToolboxItems(editor));
       toolbox.contents.push(getEventCategory(editor));
       break;
     case storageModule.ModuleType.OPMODE:
       toolbox.contents.push(getDriverStationCategory(editor));
+      toolbox.contents.push(getObservabilityCategory(editor));
       toolbox.contents.push(getHardwareCategory(editor));
-      toolbox.contents.push(getTelemetryCategory());
-      toolbox.contents.push(getTunablesCategory());
       toolbox.contents.push(new toolboxItems.Sep());
       toolbox.contents.push(...common.getToolboxItems(editor));
       break;

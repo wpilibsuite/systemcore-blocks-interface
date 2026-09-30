@@ -23,9 +23,13 @@ import * as Blockly from 'blockly/core';
 
 import * as toolboxItems from './items';
 import { makeOneContents } from './python_data_toolbox';
-import { addInstanceVariableMethodBlocks, addModuleFunctionBlocks } from '../blocks/mrc_call_python_function';
+import {
+    addConstructorBlocks,
+    addInstanceVariableMethodBlocks,
+    addModuleFunctionBlocks } from '../blocks/mrc_call_python_function';
+import { createEnumBlock } from '../blocks/mrc_get_python_enum_value';
 import { createTypedVariableSetterBlock } from '../blocks/mrc_set_typed_variable';
-import { getClassData, getModuleData } from '../blocks/utils/python';
+import { getClassData, getEnumData, getModuleData } from '../blocks/utils/python';
 import { FunctionData } from '../blocks/utils/python_json_types';
 
 const FUNCTION_NAME_GET_TABLE = 'get_table';
@@ -67,6 +71,15 @@ const TUNABLES_FUNCTION_ORDER = [
 ];
 // The Tunable methods that are shown first, in this order.
 const TUNABLE_COMMON_METHOD_NAMES = ['set', 'get'];
+
+const CLASS_NAME_ALERT = 'wpiutil.Alert';
+const ENUM_CLASS_NAME_ALERT_LEVEL = CLASS_NAME_ALERT + '.Level';
+// The level plugged into the Alert constructor blocks.
+const ALERT_DEFAULT_LEVEL = 'HIGH';
+// The Alert methods that are shown first.
+const ALERT_COMMON_METHOD_NAMES = ['set'];
+// The order of the Alert methods in the toolbox. Methods that aren't listed are shown last.
+const ALERT_METHOD_ORDER = ['set', 'set_text', 'get', 'get_text', 'get_level', 'close'];
 
 // Telemetry can be logged by calling the telemetry module functions directly, or by getting a
 // TelemetryTable (with telemetry.get_table), storing it in a variable, and calling methods on
@@ -116,6 +129,62 @@ export function getTunablesCategory(): toolboxItems.Category {
       Blockly.Msg['MRC_CATEGORY_TUNABLES'], makeOneContents(commonContents, moreContents));
   category.tooltip = Blockly.Msg['MRC_CATEGORY_TUNABLES_TOOLTIP'];
   return category;
+}
+
+// An Alert is created with its constructor and stored in an Alert variable. The Alert blocks
+// (set, set_text, etc.) have a dropdown of the Alert variables in the module.
+export function getAlertsCategory(showSimpleClassNames: boolean): toolboxItems.Category {
+  const commonContents: toolboxItems.ContentsType[] = [];
+  const moreContents: toolboxItems.ContentsType[] = [];
+  const alertClassData = getClassData(CLASS_NAME_ALERT);
+  if (alertClassData) {
+    const constructorCommon: toolboxItems.ContentsType[] = [];
+    const constructorMore: toolboxItems.ContentsType[] = [];
+    addConstructorBlocks(
+        {
+          ...alertClassData,
+          // The constructor without a group is the common one.
+          constructors: alertClassData.constructors.map(f => ({
+            ...f,
+            isCommon: f.isCommon || !f.args.some(arg => arg.name === 'group'),
+          })),
+        },
+        constructorCommon, constructorMore, showSimpleClassNames);
+    const storeAlert = (item: toolboxItems.ContentsType) => {
+      const block = storeInTypedVariable(item as toolboxItems.Block, CLASS_NAME_ALERT);
+      plugDefaultAlertLevel(block.inputs!['VALUE'].block, showSimpleClassNames);
+      return block;
+    };
+    commonContents.push(...constructorCommon.map(storeAlert));
+    moreContents.push(...constructorMore.map(storeAlert));
+    addInstanceVariableMethodBlocks(
+        {
+          ...alertClassData,
+          instanceMethods: markCommonFunctions(
+              sortFunctions(alertClassData.instanceMethods, ALERT_METHOD_ORDER),
+              ALERT_COMMON_METHOD_NAMES),
+        },
+        commonContents, moreContents);
+  }
+
+  const category = new toolboxItems.Category(
+      Blockly.Msg['MRC_CATEGORY_ALERTS'], makeOneContents(commonContents, moreContents));
+  category.tooltip = Blockly.Msg['MRC_CATEGORY_ALERTS_TOOLTIP'];
+  return category;
+}
+
+// Plugs a level enum block into the level argument of the given Alert constructor block, so the
+// level can be chosen with the dropdown.
+function plugDefaultAlertLevel(block: toolboxItems.Block, showSimpleClassNames: boolean) {
+  const args = block.extraState?.args as {name: string, type: string}[] | undefined;
+  const levelArgIndex = args?.findIndex(arg => arg.type === ENUM_CLASS_NAME_ALERT_LEVEL) ?? -1;
+  const enumData = getEnumData(ENUM_CLASS_NAME_ALERT_LEVEL);
+  if (levelArgIndex !== -1 && enumData) {
+    block.inputs = block.inputs ?? {};
+    block.inputs['ARG' + levelArgIndex] = {
+      block: createEnumBlock(ALERT_DEFAULT_LEVEL, enumData, showSimpleClassNames),
+    };
+  }
 }
 
 /**
