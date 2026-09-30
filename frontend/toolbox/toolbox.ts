@@ -19,16 +19,16 @@ export function getToolboxJSON(
   switch (editor.getModuleType()) {
     case storageModule.ModuleType.ROBOT:
     case storageModule.ModuleType.MECHANISM:
-      toolbox.contents.push(getObservabilityCategory(editor));
       toolbox.contents.push(getHardwareCategory(editor));
+      toolbox.contents.push(getObservabilityCategory(editor));
       toolbox.contents.push(new toolboxItems.Sep());
       toolbox.contents.push(...common.getToolboxItems(editor));
       toolbox.contents.push(getEventCategory(editor));
       break;
     case storageModule.ModuleType.OPMODE:
       toolbox.contents.push(getDriverStationCategory(editor));
-      toolbox.contents.push(getObservabilityCategory(editor));
       toolbox.contents.push(getHardwareCategory(editor));
+      toolbox.contents.push(getObservabilityCategory(editor));
       toolbox.contents.push(new toolboxItems.Sep());
       toolbox.contents.push(...common.getToolboxItems(editor));
       break;
