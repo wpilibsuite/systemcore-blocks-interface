@@ -46,6 +46,7 @@
     "package:dist": "rsync -a dist/ packaging/overlay/opt/blocks/dist",
     "test": "vitest",
     "gen": "node src/Blockly/gen.js",
+    "blocks-to-svg": "node scripts/blocks_to_svg/blocks_to_svg.mjs",
     "dev": "vite",
     "tscheck": "npx tsc -b --noEmit"
   },
