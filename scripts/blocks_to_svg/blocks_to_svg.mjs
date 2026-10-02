@@ -24,6 +24,9 @@
 //
 // Options:
 //   -o, --output <file>   The path and name of the SVG file. Can't be used with output_dir.
+//   --lang <languages>    The language, like es, or a comma-separated list of languages, like
+//                         en,es,he. Defaults to en. With more than one, each SVG's name has the
+//                         language before .svg, like Robot.robot.es.svg.
 //   --block <block>       Only render this top block and the blocks connected to it. It can be
 //                         the block's type and name, like mrc_class_method_def:periodic, its
 //                         type if only one top block has that type, or its id. If there isn't
@@ -51,12 +54,13 @@ const MODULE_TYPES = ['robot', 'mechanism', 'opmode'];
 const CALLER_DIR = process.env.INIT_CWD ?? process.cwd();
 
 const USAGE = 'Usage: node scripts/blocks_to_svg/blocks_to_svg.mjs ' +
-    '[-o <file>] [--block <type[:name]>] [--theme <name>] [--renderer <name>] [--module-type <type>] ' +
+    '[-o <file>] [--lang <languages>] [--block <type[:name]>] [--theme <name>] [--renderer <name>] [--module-type <type>] ' +
     '<blocks.json> [output_dir]';
 
 function parseArgs(args) {
   const options = { theme: 'light', renderer: 'first_blocks_style', moduleType: null };
   let output = null;
+  let languages = ['en'];
   const positional = [];
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -64,7 +68,7 @@ function parseArgs(args) {
       console.log(USAGE);
       process.exit(0);
     }
-    const match = arg.match(/^(-o|--output|--block|--theme|--renderer|--module-type)(?:=(.*))?$/);
+    const match = arg.match(/^(-o|--output|--lang|--block|--theme|--renderer|--module-type)(?:=(.*))?$/);
     if (match) {
       const value = match[2] ?? args[++i];
       if (value === undefined) {
@@ -72,6 +76,8 @@ function parseArgs(args) {
       }
       if (match[1] === '-o' || match[1] === '--output') {
         output = value;
+      } else if (match[1] === '--lang') {
+        languages = value.split(',').map(language => language.trim()).filter(language => language);
       } else {
         options[match[1] === '--module-type' ? 'moduleType' : match[1].slice(2)] = value;
       }
@@ -98,7 +104,13 @@ function parseArgs(args) {
   } else if (!MODULE_TYPES.includes(options.moduleType)) {
     throw new Error(`--module-type must be one of ${MODULE_TYPES.join(', ')}`);
   }
-  return { inputFile, outputFile, options };
+  if (languages.length === 0) {
+    throw new Error(`--lang needs at least one language\n${USAGE}`);
+  }
+  // With more than one language, each file gets the language before its extension.
+  const outputFiles = languages.map(language => [language, languages.length === 1 ? outputFile :
+      outputFile.replace(/(\.[^./\\]*)?$/, extension => `.${language}${extension}`)]);
+  return { inputFile, outputFiles, options };
 }
 
 /**
@@ -130,7 +142,7 @@ async function bundleRenderer(outDir) {
 }
 
 async function main() {
-  const { inputFile, outputFile, options } = parseArgs(process.argv.slice(2));
+  const { inputFile, outputFiles, options } = parseArgs(process.argv.slice(2));
   const jsonText = fs.readFileSync(inputFile, 'utf-8');
 
   const bundleDir = fs.mkdtempSync(path.join(os.tmpdir(), 'blocks-to-svg-'));
@@ -146,22 +158,24 @@ async function main() {
       if (errors.length) {
         throw errors[0];
       }
-      const { svg, error } = await page.evaluate(([jsonText, options]) =>
-          window.renderBlocksToSvg(jsonText, options).then(
-              svg => ({ svg }), error => ({ error: error.message })),
-          [jsonText, options]);
-      if (error) {
-        throw new Error(error);
+      for (const [language, outputFile] of outputFiles) {
+        const { svg, error } = await page.evaluate(([jsonText, options]) =>
+            window.renderBlocksToSvg(jsonText, options).then(
+                svg => ({ svg }), error => ({ error: error.message })),
+            [jsonText, { ...options, language }]);
+        if (error) {
+          throw new Error(error);
+        }
+        fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+        fs.writeFileSync(outputFile, svg + '\n');
+        console.log(`Wrote ${outputFile}`);
       }
-      fs.mkdirSync(path.dirname(outputFile), { recursive: true });
-      fs.writeFileSync(outputFile, svg + '\n');
     } finally {
       await browser.close();
     }
   } finally {
     fs.rmSync(bundleDir, { recursive: true, force: true });
   }
-  console.log(`Wrote ${outputFile}`);
 }
 
 main().catch(e => {

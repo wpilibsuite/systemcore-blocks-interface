@@ -23,6 +23,8 @@
 
 import * as Blockly from 'blockly/core';
 import * as En from 'blockly/msg/en';
+import * as Es from 'blockly/msg/es';
+import * as He from 'blockly/msg/he';
 import 'blockly/blocks';
 import i18n from 'i18next';
 
@@ -33,14 +35,26 @@ import * as workspaces from '../../frontend/blocks/utils/workspaces';
 import * as storageModule from '../../frontend/storage/module';
 import { themes } from '../../frontend/themes/mrc_themes';
 import '../../frontend/themes/first_blocks_style'; // Registers the first_blocks_style renderer.
-import enMessages from '../../frontend/i18n/locales/en.json';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/** The app's messages, keyed by language. */
+const APP_MESSAGES: {[language: string]: object} = Object.fromEntries(
+    Object.entries(import.meta.glob<object>(
+        '../../frontend/i18n/locales/*.json', { eager: true, import: 'default' }))
+        .map(([file, messages]) => [file.replace(/^.*\/|\.json$/g, ''), messages]));
+
+/**
+ * Blockly's own messages, keyed by language. Like the app (see BlocklyComponent), other languages
+ * use the English ones.
+ */
+const BLOCKLY_MESSAGES: {[language: string]: object} = { en: En, es: Es, he: He };
 
 /** Space around the blocks in the SVG, in pixels. */
 const MARGIN = 10;
 
 export interface RenderOptions {
+  language: string;
   theme: string;
   renderer: string;
   /** Used when the content isn't a module file, which has its own module type. */
@@ -61,14 +75,24 @@ async function initialize(): Promise<void> {
   await i18n.init({
     lng: 'en',
     fallbackLng: 'en',
-    resources: { en: { translation: enMessages } },
+    resources: Object.fromEntries(Object.entries(APP_MESSAGES).map(
+        ([language, messages]) => [language, { translation: messages }])),
     interpolation: { escapeValue: false },
   });
-  Blockly.setLocale(En as any);
-  Blockly.setLocale(customTokens(i18n.t.bind(i18n) as (key: string) => string));
   CustomBlocks.setup(Object.create(null));
   initializePythonBlocks();
   initialized = true;
+}
+
+/** Sets the language of the app's and Blockly's messages, like the app does when it changes. */
+async function setLanguage(language: string): Promise<void> {
+  if (!(language in APP_MESSAGES)) {
+    const languages = Object.keys(APP_MESSAGES).sort();
+    throw new Error(`Unknown language "${language}". The languages are ${languages.join(', ')}.`);
+  }
+  await i18n.changeLanguage(language);
+  Blockly.setLocale((BLOCKLY_MESSAGES[language] ?? En) as any);
+  Blockly.setLocale(customTokens(i18n.t.bind(i18n) as (key: string) => string));
 }
 
 /**
@@ -205,6 +229,7 @@ function makeSvg(workspace: Blockly.WorkspaceSvg, injectionDiv: Element): string
 /** Returns an SVG of the blocks in the given JSON text. */
 async function renderBlocksToSvg(jsonText: string, options: RenderOptions): Promise<string> {
   await initialize();
+  await setLanguage(options.language);
   const { blocks, moduleType } = parseContent(JSON.parse(jsonText), options.moduleType);
 
   const themeName = 'mrc_theme_' + options.theme.replace(/-/g, '_');
@@ -219,6 +244,7 @@ async function renderBlocksToSvg(jsonText: string, options: RenderOptions): Prom
   container.style.height = '1000px';
   document.body.appendChild(container);
   const workspace = Blockly.inject(container, {
+    rtl: i18n.dir() === 'rtl',
     theme,
     renderer: options.renderer,
     scrollbars: false,
