@@ -21,6 +21,19 @@
 
 import * as Blockly from 'blockly/core';
 
+const CSS_CLASS_NAME = 'mrcNonEditableTextField';
+
+// Blockly only adds the blocklyEditableField/blocklyNonEditableField classes (which the renderers
+// use to style field rects) to fields that are EDITABLE, so this field's rect would otherwise get
+// the SVG default black fill. Instead, make it look like a label (text on the block colour) with
+// a thin outline.
+Blockly.Css.register(`
+  .${CSS_CLASS_NAME}>rect {
+    fill: none;
+    stroke-width: 1;
+  }
+`);
+
 class FieldNonEditableText extends Blockly.FieldTextInput {
   constructor(value: string) {
     super(value);
@@ -28,6 +41,37 @@ class FieldNonEditableText extends Blockly.FieldTextInput {
   }
 
   protected override showEditor_() {
+  }
+
+  override initView(): void {
+    super.initView();
+    Blockly.utils.dom.addClass(this.fieldGroup_!, CSS_CLASS_NAME);
+  }
+
+  override applyColour(): void {
+    // Called when the block is coloured, including when the theme changes.
+    super.applyColour();
+    this.matchBorderToText_();
+  }
+
+  protected override render_(): void {
+    super.render_();
+    this.matchBorderToText_();
+  }
+
+  /**
+   * Sets the outline colour to the text colour, which comes from the renderer and theme CSS.
+   * CSS can't refer to another element's colour, so this copies it.
+   */
+  private matchBorderToText_(): void {
+    if (!this.borderRect_ || !this.textElement_) {
+      return;
+    }
+    // The computed fill is empty if the field isn't in the document yet. It is set on a later call.
+    const textColour = getComputedStyle(this.textElement_).fill;
+    if (textColour) {
+      this.borderRect_.setAttribute('stroke', textColour);
+    }
   }
 }
 

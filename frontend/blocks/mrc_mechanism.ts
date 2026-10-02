@@ -309,17 +309,25 @@ const MECHANISM = {
         this.mrcImportModule = importModule;
       }
 
-      // Save the old parameters and the blocks that are connected to their sockets.
+      // Save the old parameters, the blocks that are connected to their sockets, and their
+      // shadow blocks. The shadow blocks are saved as state because a shadow block is disposed,
+      // rather than orphaned, when another block is connected in its place.
       const oldParameters: Parameter[] = [];
       const oldConnectedBlocks: (Blockly.Block | null)[] = [];
+      const oldShadowStates: (Blockly.serialization.blocks.State | null)[] = [];
       for (let i = 0; i < this.mrcParameters.length; i++) {
         oldParameters[i] = this.mrcParameters[i];
         oldConnectedBlocks[i] = null;
+        oldShadowStates[i] = null;
         const argInput = this.getInput(INPUT_ARG_PREFIX + i);
         if (argInput) {
           argInput.setCheck(null);
-          if (argInput.connection && argInput.connection.targetBlock()) {
-            oldConnectedBlocks[i] = argInput.connection.targetBlock();
+          if (argInput.connection) {
+            const targetBlock = argInput.connection.targetBlock();
+            if (targetBlock && !targetBlock.isShadow()) {
+              oldConnectedBlocks[i] = targetBlock;
+            }
+            oldShadowStates[i] = argInput.connection.getShadowState(true);
           }
         }
       }
@@ -368,17 +376,24 @@ const MECHANISM = {
               // The old connected block is already connected to this input.
               oldConnectedBlocks[foundOldParameterIndex] = null;
             } else {
-              // Move the old connected block to this input.
-              const oldConnectedBlock = oldConnectedBlocks[foundOldParameterIndex];
-              if (oldConnectedBlock && oldConnectedBlock.outputConnection && argInput.connection) {
-                argInput.connection.connect(oldConnectedBlock.outputConnection);
-                oldConnectedBlocks[foundOldParameterIndex] = null;
+              // Move the old connected block and the old shadow block to this input.
+              if (argInput.connection) {
+                const oldConnectedBlock = oldConnectedBlocks[foundOldParameterIndex];
+                if (oldConnectedBlock && oldConnectedBlock.outputConnection) {
+                  argInput.connection.connect(oldConnectedBlock.outputConnection);
+                  oldConnectedBlocks[foundOldParameterIndex] = null;
+                }
+                argInput.connection.setShadowState(oldShadowStates[foundOldParameterIndex]);
               }
             }
           } else {
-            // Disconnect the old connected block.
-            if (argInput.connection && argInput.connection.targetBlock()) {
-              argInput.connection.disconnect();
+            // Disconnect the old connected block and get rid of the old shadow block.
+            if (argInput.connection) {
+              const targetBlock = argInput.connection.targetBlock();
+              if (targetBlock && !targetBlock.isShadow()) {
+                argInput.connection.disconnect();
+              }
+              argInput.connection.setShadowState(null);
             }
           }
           argInput.setCheck(getAllowedTypesForSetCheck(this.mrcParameters[parametersIndex].type));
@@ -415,7 +430,12 @@ const MECHANISM = {
           defaultValue = '';
         }
         const value = valueForComponentArgInput(this.mrcParameters[i].type, defaultValue, editor.getShowSimpleClassNames());
-        if (value) {
+        if (value && value.shadow) {
+          const argInput = this.getInput(INPUT_ARG_PREFIX + i);
+          if (argInput && argInput.connection) {
+            argInput.connection.setShadowState(value.shadow);
+          }
+        } else if (value) {
           // Connect the new block to the input.
           const newBlockState = value.block;
           const newBlock = this.workspace.newBlock(newBlockState.type) as Blockly.BlockSvg;
