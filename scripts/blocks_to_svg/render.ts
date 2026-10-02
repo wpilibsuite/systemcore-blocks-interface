@@ -45,6 +45,11 @@ export interface RenderOptions {
   renderer: string;
   /** Used when the content isn't a module file, which has its own module type. */
   moduleType: string;
+  /**
+   * The top block to render, with the blocks connected to it: its type and name (like
+   * mrc_class_method_def:periodic), type, or id. If not given, all the blocks are rendered.
+   */
+  block?: string;
 }
 
 let initialized = false;
@@ -86,6 +91,51 @@ function parseContent(
     throw new Error('The JSON is not a module file, workspace, block, or list of blocks.');
   }
   return { blocks, moduleType: storageModule.stringToModuleType(moduleType) };
+}
+
+/** The field that has the name of a block, like the name of a method in mrc_class_method_def. */
+const FIELD_NAME = 'NAME';
+
+/**
+ * Returns the block's type, followed by a colon and its name if it has one, like
+ * mrc_class_method_def:periodic.
+ */
+function getTypeAndName(block: Blockly.BlockSvg): string {
+  const name = block.getField(FIELD_NAME) ? block.getFieldValue(FIELD_NAME) : null;
+  return name ? `${block.type}:${name}` : block.type;
+}
+
+/** Returns a line describing the top block, so that the user can pick it. */
+function describeTopBlock(block: Blockly.BlockSvg): string {
+  const MAX_TEXT_LENGTH = 60;
+  // Blockly adds direction marks around some text, which aren't wanted in a terminal.
+  let text = block.toString().replace(/[\u200e\u200f]/g, '').replace(/\s+/g, ' ');
+  if (text.length > MAX_TEXT_LENGTH) {
+    text = text.substring(0, MAX_TEXT_LENGTH - 3) + '...';
+  }
+  return `  ${getTypeAndName(block)}  (id ${block.id})  ${text}`;
+}
+
+/**
+ * Returns the top block with the given id, type and name (like mrc_class_method_def:periodic), or
+ * type. Throws an error listing the top blocks if there isn't exactly one.
+ */
+function findTopBlock(workspace: Blockly.WorkspaceSvg, key: string): Blockly.BlockSvg {
+  const topBlocks = workspace.getTopBlocks(true);
+  const blockWithId = topBlocks.find(block => block.id === key);
+  if (blockWithId) {
+    return blockWithId;
+  }
+  const matchingBlocks = topBlocks.filter(
+      block => getTypeAndName(block) === key || block.type === key);
+  if (matchingBlocks.length === 1) {
+    return matchingBlocks[0];
+  }
+  const message = matchingBlocks.length ?
+      `There are ${matchingBlocks.length} top blocks that match "${key}". Use one of:` :
+      `There is no top block that matches "${key}". The top blocks are:`;
+  const candidates = matchingBlocks.length ? matchingBlocks : topBlocks;
+  throw new Error([message, ...candidates.map(describeTopBlock)].join('\n'));
 }
 
 /** Returns the text of all the style sheets in the document, which includes Blockly's CSS. */
@@ -179,6 +229,14 @@ async function renderBlocksToSvg(jsonText: string, options: RenderOptions): Prom
     Blockly.serialization.workspaces.load(blocks, workspace);
     if (workspace.getTopBlocks().length === 0) {
       throw new Error('There are no blocks.');
+    }
+    if (options.block) {
+      const topBlock = findTopBlock(workspace, options.block);
+      for (const block of workspace.getTopBlocks()) {
+        if (block !== topBlock) {
+          block.dispose(false);
+        }
+      }
     }
     return makeSvg(workspace, container.querySelector('.injectionDiv') ?? container);
   } finally {

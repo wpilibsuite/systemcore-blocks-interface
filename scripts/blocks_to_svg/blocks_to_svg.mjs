@@ -24,6 +24,10 @@
 //
 // Options:
 //   -o, --output <file>   The path and name of the SVG file. Can't be used with output_dir.
+//   --block <block>       Only render this top block and the blocks connected to it. It can be
+//                         the block's type and name, like mrc_class_method_def:periodic, its
+//                         type if only one top block has that type, or its id. If there isn't
+//                         exactly one matching block, the choices are listed.
 //   --theme <name>        The theme, like light or dark. Defaults to light.
 //   --renderer <name>     The Blockly renderer. Defaults to first_blocks_style.
 //   --module-type <type>  robot, mechanism, or opmode, for JSON that isn't a module file.
@@ -47,7 +51,7 @@ const MODULE_TYPES = ['robot', 'mechanism', 'opmode'];
 const CALLER_DIR = process.env.INIT_CWD ?? process.cwd();
 
 const USAGE = 'Usage: node scripts/blocks_to_svg/blocks_to_svg.mjs ' +
-    '[-o <file>] [--theme <name>] [--renderer <name>] [--module-type <type>] ' +
+    '[-o <file>] [--block <type[:name]>] [--theme <name>] [--renderer <name>] [--module-type <type>] ' +
     '<blocks.json> [output_dir]';
 
 function parseArgs(args) {
@@ -60,7 +64,7 @@ function parseArgs(args) {
       console.log(USAGE);
       process.exit(0);
     }
-    const match = arg.match(/^(-o|--output|--theme|--renderer|--module-type)(?:=(.*))?$/);
+    const match = arg.match(/^(-o|--output|--block|--theme|--renderer|--module-type)(?:=(.*))?$/);
     if (match) {
       const value = match[2] ?? args[++i];
       if (value === undefined) {
