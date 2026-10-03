@@ -25,6 +25,8 @@
     "DEPLOY_ANYWAY": "Deploy Anyway",
     "DEPLOY_ON_ROBOT": "Deploy on robot",
     "DEPLOY_REQUIRES_BACKEND": "Deploying requires the robot's backend server, which isn't available.",
+    "DOWNLOAD_ZIP": "Download zip",
+    "DOWNLOAD_ZIP_FAILED": "Failed to download project zip.",
     "PORT_CONFLICT_TITLE": "Ports Used More Than Once",
     "PORT_CONFLICT_MESSAGE": "These hardware ports are used by more than one component:",
     "MISSING_COMPONENT_CLASSES_TITLE": "Missing Component Classes",

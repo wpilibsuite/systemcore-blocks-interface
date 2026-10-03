@@ -26,6 +26,8 @@
     "DEPLOY_ANYWAY": "Déployer quand même",
     "DEPLOY_ON_ROBOT": "Déployer sur le robot",
     "DEPLOY_REQUIRES_BACKEND": "Le déploiement nécessite le serveur du robot, qui n'est pas disponible.",
+    "DOWNLOAD_ZIP": "Télécharger le zip",
+    "DOWNLOAD_ZIP_FAILED": "Échec du téléchargement du zip du projet.",
     "PORT_CONFLICT_TITLE": "Ports utilisés plus d'une fois",
     "PORT_CONFLICT_MESSAGE": "Ces ports matériels sont utilisés par plus d'un composant :",
     "MISSING_COMPONENT_CLASSES_TITLE": "Classes de composants manquantes",
