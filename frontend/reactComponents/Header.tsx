@@ -79,6 +79,9 @@ export default function Header(props: HeaderProps): React.JSX.Element {
   const deployIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
   const [modal, modalContextHolder] = Antd.Modal.useModal();
 
+  // Server side storage is only used when the backend is available, and deploying requires it.
+  const backendAvailable = props.storage instanceof serverSideStorage.ServerSideStorage;
+
   /** Opens the rename modal and loads existing project names. */
   const openRenameModal = async (): Promise<void> => {
     if (!props.project || !props.storage) {
@@ -170,7 +173,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
       props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
       return;
     }
-    if (!props.storage) {
+    if (!props.storage || !backendAvailable) {
       return;
     }
 
@@ -230,42 +233,27 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     try {
       const blobUrl = await createPythonFiles.producePythonProjectBlob(props.project, props.storage);
 
-      const serverAvailable = await serverSideStorage.isServerAvailable();
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
 
-      if (serverAvailable) {
-        const response = await fetch(blobUrl);
-        const blob = await response.blob();
+      const formData = new FormData();
+      formData.append('file', blob, `${props.project.projectName}.zip`);
 
-        const formData = new FormData();
-        formData.append('file', blob, `${props.project.projectName}.zip`);
+      const deployResponse = await fetch('/deploy', {
+        method: 'POST',
+        body: formData,
+      });
 
-        const deployResponse = await fetch('/deploy', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!deployResponse.ok) {
-          throw new Error('Deploy to server failed');
-        }
-
-        await deployResponse.json();
-        URL.revokeObjectURL(blobUrl);
-
-        stopTimer();
-        setDeployStatus('success');
-        setTimeout(() => setDeployModalOpen(false), 2000);
-      } else {
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = `${props.project.projectName}.zip`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(blobUrl);
-
-        stopTimer();
-        setDeployModalOpen(false);
+      if (!deployResponse.ok) {
+        throw new Error('Deploy to server failed');
       }
+
+      await deployResponse.json();
+      URL.revokeObjectURL(blobUrl);
+
+      stopTimer();
+      setDeployStatus('success');
+      setTimeout(() => setDeployModalOpen(false), 2000);
     } catch (error) {
       console.error('Failed to deploy project:', error);
       stopTimer();
@@ -370,16 +358,19 @@ export default function Header(props: HeaderProps): React.JSX.Element {
           {renderUnsavedIndicator()}
         </Antd.Typography>
         {renderErrorAlert()}
-        <Antd.Button
-          data-tour="deploy-button"
-          type="primary"
-          size="large"
-          icon={<PlaySquareOutlined />}
-          onClick={handleDeploy}
-          style={{ marginLeft: 'auto' }}
-        >
-          {t('DEPLOY')}
-        </Antd.Button>
+        <Antd.Tooltip title={backendAvailable ? t('DEPLOY_ON_ROBOT') : t('DEPLOY_REQUIRES_BACKEND')}>
+          <Antd.Button
+            data-tour="deploy-button"
+            type="primary"
+            size="large"
+            icon={<PlaySquareOutlined />}
+            onClick={handleDeploy}
+            disabled={!backendAvailable}
+            style={{ marginLeft: 'auto' }}
+          >
+            {t('DEPLOY')}
+          </Antd.Button>
+        </Antd.Tooltip>
       </Antd.Flex>
       <Antd.Modal
         open={deployModalOpen}

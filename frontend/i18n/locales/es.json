@@ -24,6 +24,8 @@
     "DEPLOY_IN_PROGRESS": "Desplegando al robot...",
     "DEPLOY_ELAPSED": "{{seconds}}s transcurridos",
     "DEPLOY_ANYWAY": "Implementar de todos modos",
+    "DEPLOY_ON_ROBOT": "Desplegar en el robot",
+    "DEPLOY_REQUIRES_BACKEND": "Para desplegar se necesita el servidor del robot, que no está disponible.",
     "PORT_CONFLICT_TITLE": "Puertos usados más de una vez",
     "PORT_CONFLICT_MESSAGE": "Estos puertos de hardware son usados por más de un componente:",
     "MISSING_COMPONENT_CLASSES_TITLE": "Faltan clases de componentes",
