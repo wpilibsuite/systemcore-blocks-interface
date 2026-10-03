@@ -25,13 +25,14 @@ import * as createPythonFiles from '../storage/create_python_files';
 import * as missingComponentClasses from '../blocks/utils/missing_component_classes';
 import * as portConflicts from '../blocks/utils/port_conflicts';
 import * as serverSideStorage from '../storage/server_side_storage';
+import { isDebugMode } from '../debug';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAutosave } from './AutosaveManager';
 import lightFIRSTLogo from '../assets/FIRST_HorzRGB.png';
 import darkFIRSTLogo from '../assets/FIRST_HorzRGB_reverse.png';
 import ProjectNameComponent from './ProjectNameComponent';
-import { PlaySquareOutlined } from '@ant-design/icons';
+import { DownloadOutlined, PlaySquareOutlined } from '@ant-design/icons';
 
 /** Function type for setting string values. */
 type StringFunction = (input: string) => void;
@@ -79,6 +80,11 @@ export default function Header(props: HeaderProps): React.JSX.Element {
   const deployIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
   const [modal, modalContextHolder] = Antd.Modal.useModal();
 
+  // Server side storage is only used when the backend is available, and deploying requires it.
+  const backendAvailable = props.storage instanceof serverSideStorage.ServerSideStorage;
+  // In debug mode, a download button lets the zip of Python files be downloaded.
+  const debugMode = React.useMemo(() => isDebugMode(), []);
+
   /** Opens the rename modal and loads existing project names. */
   const openRenameModal = async (): Promise<void> => {
     if (!props.project || !props.storage) {
@@ -113,10 +119,11 @@ export default function Header(props: HeaderProps): React.JSX.Element {
   };
 
   /**
-   * Asks the user whether to deploy anyway when more than one component or mechanism is
-   * using the same hardware port. Returns true if the deploy should continue.
+   * Asks the user whether to deploy (or download) anyway when more than one component or
+   * mechanism is using the same hardware port. Returns true if the deploy should continue.
    */
-  const confirmPortConflicts = (conflicts: portConflicts.PortConflict[]): Promise<boolean> => {
+  const confirmPortConflicts = (
+      conflicts: portConflicts.PortConflict[], forDownload: boolean): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       modal.confirm({
         title: t('PORT_CONFLICT_TITLE'),
@@ -132,7 +139,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
             </ul>
           </div>
         ),
-        okText: t('DEPLOY_ANYWAY'),
+        okText: forDownload ? t('DOWNLOAD') : t('DEPLOY_ANYWAY'),
         cancelText: t('CANCEL'),
         onOk: () => resolve(true),
         onCancel: () => resolve(false),
@@ -164,8 +171,65 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     });
   };
 
-  /** Handles the deploy action to generate and send Python files to the robot. */
-  const handleDeploy = async (): Promise<void> => {
+  /** Downloads the generated Python files as a zip. */
+  const downloadZip = async (
+      project: storageProject.Project, storage: commonStorage.Storage): Promise<void> => {
+    const blobUrl = await createPythonFiles.producePythonProjectBlob(project, storage);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = `${project.projectName}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
+  };
+
+  /**
+   * Saves the current tab and checks that the project can be deployed (or downloaded).
+   * Returns true if it should continue.
+   */
+  const checkBeforeDeploy = async (
+      project: storageProject.Project,
+      storage: commonStorage.Storage,
+      forDownload: boolean): Promise<boolean> => {
+    const failedMessage = forDownload ? t('DOWNLOAD_ZIP_FAILED') : t('DEPLOY_FAILED');
+
+    try {
+      await props.saveCurrentTab();
+    } catch (error) {
+      console.error('Failed to save before deploy:', error);
+      props.setAlertErrorMessage(failedMessage);
+      return false;
+    }
+
+    // The generated code can't run if it uses component classes that don't exist.
+    try {
+      const missing = await missingComponentClasses.findProjectMissingComponentClasses(
+          project, storage);
+      if (missing.length > 0) {
+        showMissingComponentClasses(missing);
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to check for missing component classes:', error);
+      props.setAlertErrorMessage(failedMessage);
+      return false;
+    }
+
+    try {
+      const conflicts = await portConflicts.findRobotPortConflicts(project, storage);
+      if (conflicts.length > 0) {
+        return await confirmPortConflicts(conflicts, forDownload);
+      }
+    } catch (error) {
+      // Not being able to check the ports shouldn't stop the user from deploying.
+      console.error('Failed to check for duplicate ports:', error);
+    }
+    return true;
+  };
+
+  /** Debug only: handles the download action to download the generated Python files as a zip. */
+  const handleDownload = async (): Promise<void> => {
     if (!props.project) {
       props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
       return;
@@ -173,42 +237,31 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     if (!props.storage) {
       return;
     }
-
-    // Save and check for duplicate ports before showing the deploy progress modal, so that
-    // the user can cancel the deploy without ever seeing it.
+    if (!await checkBeforeDeploy(props.project, props.storage, true)) {
+      return;
+    }
     try {
-      await props.saveCurrentTab();
+      await downloadZip(props.project, props.storage);
     } catch (error) {
-      console.error('Failed to save before deploy:', error);
-      props.setAlertErrorMessage(t('DEPLOY_FAILED'));
+      console.error('Failed to download project zip:', error);
+      props.setAlertErrorMessage(t('DOWNLOAD_ZIP_FAILED'));
+    }
+  };
+
+  /** Handles the deploy action to generate and send Python files to the robot. */
+  const handleDeploy = async (): Promise<void> => {
+    if (!props.project) {
+      props.setAlertErrorMessage(t('NO_PROJECT_SELECTED'));
+      return;
+    }
+    if (!props.storage || !backendAvailable) {
       return;
     }
 
-    // The generated code can't run if it uses component classes that don't exist.
-    try {
-      const missing = await missingComponentClasses.findProjectMissingComponentClasses(
-          props.project, props.storage);
-      if (missing.length > 0) {
-        showMissingComponentClasses(missing);
-        return;
-      }
-    } catch (error) {
-      console.error('Failed to check for missing component classes:', error);
-      props.setAlertErrorMessage(t('DEPLOY_FAILED'));
+    // Save and check the project before showing the deploy progress modal, so that the user
+    // can cancel the deploy without ever seeing it.
+    if (!await checkBeforeDeploy(props.project, props.storage, false)) {
       return;
-    }
-
-    try {
-      const conflicts = await portConflicts.findRobotPortConflicts(props.project, props.storage);
-      if (conflicts.length > 0) {
-        const proceed = await confirmPortConflicts(conflicts);
-        if (!proceed) {
-          return;
-        }
-      }
-    } catch (error) {
-      // Not being able to check the ports shouldn't stop the user from deploying.
-      console.error('Failed to check for duplicate ports:', error);
     }
 
     setDeployElapsed(0);
@@ -230,42 +283,27 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     try {
       const blobUrl = await createPythonFiles.producePythonProjectBlob(props.project, props.storage);
 
-      const serverAvailable = await serverSideStorage.isServerAvailable();
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
 
-      if (serverAvailable) {
-        const response = await fetch(blobUrl);
-        const blob = await response.blob();
+      const formData = new FormData();
+      formData.append('file', blob, `${props.project.projectName}.zip`);
 
-        const formData = new FormData();
-        formData.append('file', blob, `${props.project.projectName}.zip`);
+      const deployResponse = await fetch('/deploy', {
+        method: 'POST',
+        body: formData,
+      });
 
-        const deployResponse = await fetch('/deploy', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!deployResponse.ok) {
-          throw new Error('Deploy to server failed');
-        }
-
-        await deployResponse.json();
-        URL.revokeObjectURL(blobUrl);
-
-        stopTimer();
-        setDeployStatus('success');
-        setTimeout(() => setDeployModalOpen(false), 2000);
-      } else {
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = `${props.project.projectName}.zip`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(blobUrl);
-
-        stopTimer();
-        setDeployModalOpen(false);
+      if (!deployResponse.ok) {
+        throw new Error('Deploy to server failed');
       }
+
+      await deployResponse.json();
+      URL.revokeObjectURL(blobUrl);
+
+      stopTimer();
+      setDeployStatus('success');
+      setTimeout(() => setDeployModalOpen(false), 2000);
     } catch (error) {
       console.error('Failed to deploy project:', error);
       stopTimer();
@@ -370,16 +408,31 @@ export default function Header(props: HeaderProps): React.JSX.Element {
           {renderUnsavedIndicator()}
         </Antd.Typography>
         {renderErrorAlert()}
-        <Antd.Button
-          data-tour="deploy-button"
-          type="primary"
-          size="large"
-          icon={<PlaySquareOutlined />}
-          onClick={handleDeploy}
-          style={{ marginLeft: 'auto' }}
-        >
-          {t('DEPLOY')}
-        </Antd.Button>
+        <Antd.Flex gap="small" style={{ marginLeft: 'auto' }}>
+          {debugMode && (
+            <Antd.Tooltip title={t('DOWNLOAD_ZIP')}>
+              <Antd.Button
+                size="large"
+                icon={<DownloadOutlined />}
+                onClick={handleDownload}
+              >
+                {t('DOWNLOAD')}
+              </Antd.Button>
+            </Antd.Tooltip>
+          )}
+          <Antd.Tooltip title={backendAvailable ? t('DEPLOY_ON_ROBOT') : t('DEPLOY_REQUIRES_BACKEND')}>
+            <Antd.Button
+              data-tour="deploy-button"
+              type="primary"
+              size="large"
+              icon={<PlaySquareOutlined />}
+              onClick={handleDeploy}
+              disabled={!backendAvailable}
+            >
+              {t('DEPLOY')}
+            </Antd.Button>
+          </Antd.Tooltip>
+        </Antd.Flex>
       </Antd.Flex>
       <Antd.Modal
         open={deployModalOpen}

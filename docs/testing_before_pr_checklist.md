@@ -17,8 +17,8 @@ For each PR, make sure each of these works
 * [ ] Add a public component to the mechanism
 * [ ] Add a private component to the mechanism
 * [ ] Make sure that in the Robot you can see the public component (and not the private one) in the toolbox
-# Code Generation
-* [ ] Generate code (right now "Deploy") and make sure there are no errors in the console
+# Code Generation (must be loaded with ?debug)
+* [ ] Generate code ("Download" button) and make sure there are no errors in the console.  
 * [ ] Check that the deploy zip file contains robot.py, teleop.py, auto.py, and arm.py.
 # Libraries
 * [ ] Build the example libraries with `example_libraries/build.sh` and upload Blocks Demo Library from Manage -> Libraries
