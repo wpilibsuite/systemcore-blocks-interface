@@ -84,6 +84,16 @@ export class ServerSideStorage implements commonStorage.Storage {
     return data.value || defaultValue;
   }
 
+  async deleteEntry(entryKey: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/entries/${encodeURIComponent(entryKey)}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete entry: ${response.statusText}`);
+    }
+  }
+
   async list(path: string): Promise<string[]> {
     if (!path.endsWith('/')) {
       path += '/';
