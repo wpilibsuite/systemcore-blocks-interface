@@ -66,7 +66,7 @@ class StorageEntryResource(MethodView):
         """Delete entry. Deleting an entry that doesn't exist is not an error."""
         entry = StorageEntry.query.filter_by(entry_key=entry_key).first()
         if not entry:
-            return jsonify({'message': 'Entry deleted successfully'})
+            return jsonify({'message': 'No entry to delete'})
         db.session.delete(entry)
 
         try:
