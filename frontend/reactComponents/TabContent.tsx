@@ -49,6 +49,7 @@ const CODE_PANEL_MIN_SIZE = 100;
 /** Interface for methods exposed by TabContent via ref. */
 export interface TabContentRef {
   saveModule: () => Promise<void>;
+  pasteBlocks: (copyData: Blockly.clipboard.BlockCopyData) => void;
 }
 
 export interface TabContentProps {
@@ -111,7 +112,21 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
         autosave.markAsSaved();
       }
     },
-  }), [editorInstance, autosave]);
+    pasteBlocks: (copyData: Blockly.clipboard.BlockCopyData) => {
+      if (!blocklyComponent.current) {
+        return;
+      }
+      // Paste at the center of the visible part of the workspace.
+      const workspace = blocklyComponent.current.getBlocklyWorkspace();
+      const metrics = workspace.getMetrics();
+      const center = new Blockly.utils.Coordinate(
+          metrics.viewLeft + metrics.viewWidth / 2,
+          metrics.viewTop + metrics.viewHeight / 2);
+      if (!Blockly.clipboard.paste(copyData, workspace, center)) {
+        console.error('Failed to paste blocks into module:', modulePath);
+      }
+    },
+  }), [editorInstance, autosave, modulePath]);
 
   /** Handles Blockly workspace changes and triggers code regeneration. */
   const handleBlocksChanged = React.useCallback((event: Blockly.Events.Abstract): void => {

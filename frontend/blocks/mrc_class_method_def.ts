@@ -358,6 +358,15 @@ const CLASS_METHOD_DEF = {
   canChangeSignature: function (this: ClassMethodDefBlock): boolean {
     return this.mrcCanChangeSignature;
   },
+  /**
+   * mrcGetReasonCannotMoveToOtherModule is called when this block is dragged onto another tab.
+   * Custom methods can be moved to another module, where the name field's validator renames them
+   * if their name is already used. Methods that override a base class method can't be moved,
+   * because the other module's base class may not have them.
+   */
+  mrcGetReasonCannotMoveToOtherModule: function (this: ClassMethodDefBlock): string | null {
+    return this.mrcCanChangeSignature ? null : Blockly.Msg.CANNOT_MOVE_METHOD_OVERRIDE_TO_OTHER_TAB;
+  },
   getMethodName: function (this: ClassMethodDefBlock): string {
     return this.getFieldValue(FIELD_METHOD_NAME);
   },

@@ -28,6 +28,7 @@ import { customTokens } from '../blocks/tokens';
 import { themes } from '../themes/mrc_themes';
 import '../themes/first_blocks_style'; // Registers the first_blocks_style renderer.
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
+import {pluginInfo as TabDropDraggerPluginInfo} from '../blocks/utils/tab_drop_dragger';
 import { getGridColour, getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
 import { DEFAULT_ZOOM } from './UserSettingsProvider';
 
@@ -134,6 +135,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
     renderer: props.renderer,
     plugins: {
       ...HardwareConnectionsPluginInfo,
+      ...TabDropDraggerPluginInfo,
     },
   });
 

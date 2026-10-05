@@ -20,6 +20,7 @@
  */
 import * as React from 'react';
 import * as Antd from 'antd';
+import * as Blockly from 'blockly';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageProject from '../storage/project';
@@ -53,6 +54,11 @@ import { TabType, TabTypeUtils } from '../types/TabType';
 import { TabContent, TabContentRef } from './TabContent';
 import { LibraryToolbox } from '../toolbox/library_toolbox';
 import { Library } from '../libraries/blocks_lib';
+import {
+  DROP_NOT_ALLOWED_TAB_CLASS,
+  DROP_TARGET_TAB_CLASS,
+  setTabDropHandler,
+} from '../blocks/utils/tab_drop_dragger';
 
 /** Props passed by Antd.Tabs's default tab bar to each rendered tab node. */
 interface DraggableTabPaneProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -121,6 +127,7 @@ export interface TabsProps {
 export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): React.JSX.Element => {
   const { t } = I18Next.useTranslation();
   const [modal, contextHolder] = Antd.Modal.useModal();
+  const { token } = Antd.theme.useToken();
 
   const [activeKey, setActiveKey] = React.useState(props.tabList.length > 0 ? props.tabList[0].key : '');
   const [addTabDialogOpen, setAddTabDialogOpen] = React.useState(false);
@@ -134,6 +141,9 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
   // Store refs to TabContent components for each tab
   const tabContentRefs = React.useRef<Map<string, TabContentRef>>(new Map());
+
+  // Blocks that were dropped on a tab, to be pasted once that tab is active.
+  const pendingPaste = React.useRef<{tabKey: string, copyData: Blockly.clipboard.BlockCopyData} | null>(null);
 
   // Force the tab context menu closed on any outside click. Listens for 'pointerdown' rather
   // than 'mousedown': Blockly calls preventDefault() on its own pointerdown handling within the
@@ -184,6 +194,35 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
       }
     }
   };
+
+  /** Handles blocks that were cut from the active tab by dropping them on another tab. */
+  const handleBlocksDroppedOnTab = (tabKey: string, copyData: Blockly.clipboard.BlockCopyData): void => {
+    pendingPaste.current = { tabKey, copyData };
+    handleTabChange(tabKey);
+  };
+
+  // The tab drop handler is registered once, so it calls through a ref to always use the latest
+  // handleBlocksDroppedOnTab (and the state it sees).
+  const blocksDroppedOnTabHandler = React.useRef(handleBlocksDroppedOnTab);
+  blocksDroppedOnTabHandler.current = handleBlocksDroppedOnTab;
+  React.useEffect(() => {
+    setTabDropHandler({
+      onBlocksDropped: (tabKey, copyData) => blocksDroppedOnTabHandler.current(tabKey, copyData),
+      onBlocksNotAllowed: (reason) => props.messageApi.warning(reason),
+    });
+    return () => setTabDropHandler(null);
+  }, [props.messageApi]);
+
+  // Paste blocks that were dropped on a tab once it has become active. TabContent's own effect
+  // makes the workspace visible (and defers restoring its scroll position) before this effect
+  // runs, so deferring the paste puts the blocks in the center of the restored view.
+  React.useEffect(() => {
+    const paste = pendingPaste.current;
+    if (paste && paste.tabKey === activeKey) {
+      pendingPaste.current = null;
+      setTimeout(() => tabContentRefs.current.get(paste.tabKey)?.pasteBlocks(paste.copyData));
+    }
+  }, [activeKey]);
 
   /** Goes to a specific tab, adding it if needed or updating if renamed. */
   const gotoTab = (tabKey: string): void => {
@@ -587,6 +626,19 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
 
         .ant-tabs-tabpane {
           height: 100%;
+        }
+
+        .tabs-row .ant-tabs-tab.${DROP_TARGET_TAB_CLASS} {
+          outline: 2px dashed currentColor;
+          outline-offset: -4px;
+        }
+
+        .tabs-row .ant-tabs-tab.${DROP_NOT_ALLOWED_TAB_CLASS} {
+          outline: 2px dashed ${token.colorError};
+          outline-offset: -4px;
+          background: ${token.colorErrorBg};
+          color: ${token.colorError};
+          cursor: not-allowed !important;
         }
       `}</style>
       {contextHolder}
