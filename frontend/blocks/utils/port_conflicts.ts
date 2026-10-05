@@ -203,10 +203,12 @@ export function collectPortUsagesFromBlocksJson(blocks: {[key: string]: any}): P
     if (blockJson.inputs) {
       for (const inputName in blockJson.inputs) {
         const input = blockJson.inputs[inputName];
-        if (!input || !input.block) {
+        // A shadow block is only used when there isn't a regular block on top of it.
+        const inputBlock = input ? (input.block || input.shadow) : null;
+        if (!inputBlock) {
           continue;
         }
-        walk(input.block, getOwnerFromBlockJson(blockJson, inputName, owner));
+        walk(inputBlock, getOwnerFromBlockJson(blockJson, inputName, owner));
       }
     }
     if (blockJson.next && blockJson.next.block) {

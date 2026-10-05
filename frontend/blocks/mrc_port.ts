@@ -23,7 +23,6 @@ import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
 import { MRC_STYLE_PORTS } from '../themes/styles'
-import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { createFieldLabeledDropdown, createFieldNumberDropdown } from '../fields/field_number_dropdown';
 import {
@@ -38,6 +37,8 @@ import {
 export const BLOCK_NAME = 'mrc_port';
 export const OUTPUT_NAME = 'mrc_port';
 
+// The port type labels aren't saved, but blocks saved before they were labels have values for
+// these fields, so the labels keep these names to load those blocks without warnings.
 const FIELD_PREFIX_TYPE = 'TYPE_';
 const FIELD_PREFIX_PORT_NUM = 'PORT_NUM_';
 const INPUT_PREFIX_PORT = 'PORT_';
@@ -140,7 +141,8 @@ const PORT = {
         return value;
       });
       this.appendDummyInput(INPUT_PREFIX_PORT + i)
-          .appendField(createFieldNonEditableText(''), FIELD_PREFIX_TYPE + i)
+          .appendField(
+              new Blockly.FieldLabel(getLabelForPort(this.mrcPortTypes[i])), FIELD_PREFIX_TYPE + i)
           .appendField(portNumberField, FIELD_PREFIX_PORT_NUM + i)
           .setAlign(Blockly.inputs.Align.RIGHT);
     }
@@ -388,7 +390,7 @@ function createCanBusOptions(): Blockly.MenuOption[] {
 }
 
 /**
- * Parses the given string into an array of mrc_port blocks
+ * Parses the given string into the value of an input that holds an mrc_port shadow block.
  *
  * @param portTypeString A single string consisting of one or more port types.
  * Multiple port types are separated by __ (two underscores). Each port type
@@ -401,21 +403,20 @@ export function createPort(portTypeString: string, defaultPortNumbers?: string):
   const portNumbers = defaultPortNumbers
       ? defaultPortNumbers.split(PORT_TYPE_DELIMITER) : [];
 
-  // Based on the port type, specify the appropriate fields. The field numbers match the
-  // positions in portTypes, which is what loadExtraState uses when it creates the fields.
+  // Specify the port number fields. The field numbers match the positions in portTypes, which
+  // is what loadExtraState uses when it creates the fields. The labels for the port types come
+  // from the port types, so they aren't specified here.
   const fields: {[key: string]: any} = {};
   for (let i = 0; i < portTypes.length; i++) {
-    const label = getLabelForPort(portTypes[i]);
-    if (label) {
-      fields[FIELD_PREFIX_TYPE + i] = label;
-      fields[FIELD_PREFIX_PORT_NUM + i] = portNumbers[i] || '0';
-    }
+    fields[FIELD_PREFIX_PORT_NUM + i] = portNumbers[i] || '0';
   }
   const extraState: PortExtraState = {
     portTypes: portTypes.map((portType) => portTypeToString(portType)),
   };
+  // The port is a shadow block so that it can't be deleted, but its port numbers can still be
+  // changed. A third party port block can be plugged in on top of it.
   return {
-    block: {
+    shadow: {
       type: BLOCK_NAME,
       extraState,
       fields,

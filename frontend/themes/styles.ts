@@ -106,7 +106,8 @@ export const add_mrc_styles = function (theme: Blockly.Theme): Blockly.Theme {
     });
     theme.setBlockStyle(MRC_STYLE_PORTS, {
         colourPrimary: "#5ba55b",
-        colourSecondary: "#deedde",
+        // Port blocks are shadow blocks, which are filled with colourSecondary.
+        colourSecondary: "#85bd85",
         colourTertiary: "#498449",
         hat: ""
     });
