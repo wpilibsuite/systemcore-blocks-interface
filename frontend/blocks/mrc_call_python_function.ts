@@ -779,13 +779,22 @@ const CALL_PYTHON_FUNCTION = {
    * mrcOnChange is called for each CallPythonFunctionBlock when it is changed.
    */
   mrcOnChange: function(this: CallPythonFunctionBlock, editor: Editor, blockChangeEvent: Blockly.Events.BlockChange): void {
-    if (blockChangeEvent.element === 'field' && blockChangeEvent.name === FIELD_COMPONENT_NAME) {
+    if (blockChangeEvent.element === 'field' &&
+        (blockChangeEvent.name === FIELD_COMPONENT_NAME || blockChangeEvent.name === FIELD_VARIABLE)) {
       this.checkFunction(editor);
     }
   },
   /**
+   * mrcOnVariableTypeChange is called for each CallPythonFunctionBlock when the type of a variable
+   * that it uses is changed.
+   */
+  mrcOnVariableTypeChange: function(this: CallPythonFunctionBlock, editor: Editor): void {
+    this.checkFunction(editor);
+  },
+  /**
    * checkFunction checks the block, updates it, and/or adds a warning balloon if necessary.
-   * It is called from mrcOnModuleCurrent, mrcOnLoad, and mrcOnCreate above.
+   * It is called from mrcOnModuleCurrent, mrcOnLoad, mrcOnCreate, mrcOnChange, and
+   * mrcOnVariableTypeChange above.
    */
   checkFunction: function(this: CallPythonFunctionBlock, editor: Editor): void {
     const warnings: string[] = [];
@@ -809,6 +818,7 @@ const CALL_PYTHON_FUNCTION = {
         if (this.mrcDefaultModuleName) {
           this.checkDefaultModuleFunction(warnings);
         }
+        this.checkVariableType(warnings);
         break;
       case FunctionKind.INSTANCE_WITHIN:
         this.checkInstanceMethodWithin(editor, warnings);
@@ -958,6 +968,20 @@ const CALL_PYTHON_FUNCTION = {
       }
     } else if (!isLibraryPythonModule(this.mrcDefaultModuleName)) {
       warnings.push(Blockly.Msg.WARNING_CALL_MODULE_FUNCTION_MISSING_MODULE);
+    }
+  },
+  checkVariableType: function(this: CallPythonFunctionBlock, warnings: string[]): void {
+    // Variables get their types from the values assigned to them, so the chosen variable might
+    // not be the class whose method this block calls. If it isn't, put a visible warning on this
+    // block.
+    if (this.usesDefaultModule()) {
+      return;
+    }
+    const variable = this.workspace.getVariableMap().getVariableById(this.getFieldValue(FIELD_VARIABLE));
+    if (variable && variable.getType() !== this.mrcModuleOrClassName) {
+      warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_VARIABLE_WRONG_TYPE
+          .replace('{{variableName}}', variable.getName())
+          .replace('{{className}}', this.mrcModuleOrClassName));
     }
   },
   /**

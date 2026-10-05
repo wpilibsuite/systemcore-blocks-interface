@@ -30,6 +30,9 @@ const CREATE_VARIABLE_ID = 'MRC_CREATE_TYPED_VARIABLE';
  * A variable dropdown that only shows the variables of the given type. Variables belong to the
  * workspace, so only the variables in the current module are shown. The dropdown also has an
  * option to create a new variable of the given type.
+ *
+ * A variable's type is inferred from the values assigned to it, so the chosen variable might not
+ * have the given type. It is kept, and shown in the dropdown, so the block can warn about it.
  */
 export class FieldTypedVariable extends Blockly.FieldVariable {
   private readonly varType: string;
@@ -39,6 +42,10 @@ export class FieldTypedVariable extends Blockly.FieldVariable {
     this.varType = varType;
     this.menuGenerator_ = (): Blockly.MenuOption[] => {
       const options = Blockly.FieldVariable.dropdownCreate.call(this);
+      const selectedVariable = this.getVariable();
+      if (selectedVariable && selectedVariable.getType() !== this.varType) {
+        options.unshift([selectedVariable.getName(), selectedVariable.getId()]);
+      }
       // Put the create option after the variables, before the rename and delete options.
       let index = options.findIndex(
           option => Array.isArray(option) && option[1] === Blockly.RENAME_VARIABLE_ID);
@@ -48,6 +55,13 @@ export class FieldTypedVariable extends Blockly.FieldVariable {
       options.splice(index, 0, [Blockly.Msg['NEW_VARIABLE'], CREATE_VARIABLE_ID]);
       return options;
     };
+  }
+
+  protected override doClassValidation_(newValue?: string): string | null {
+    // Allow variables of any type. See the class comment.
+    const workspace = this.getSourceBlock()?.workspace;
+    return (workspace && newValue && workspace.getVariableMap().getVariableById(newValue))
+        ? newValue : null;
   }
 
   protected override onItemSelected_(menu: Blockly.Menu, menuItem: Blockly.MenuItem) {
@@ -82,7 +96,8 @@ type VariableState = {
 
 /**
  * A dropdown with a "default" option followed by the variables of the given type in the current
- * module. The value is DEFAULT_OPTION_VALUE or the id of the chosen variable. Blockly finds the
+ * module. Like FieldTypedVariable, the chosen variable is kept if its type changes. The value is
+ * DEFAULT_OPTION_VALUE or the id of the chosen variable. Blockly finds the
  * blocks that use a variable through fields that reference variables, so renaming a variable
  * updates this field and deleting a variable deletes the blocks that have it chosen.
  *
@@ -123,12 +138,15 @@ export class FieldTypedVariableOrDefault extends Blockly.FieldDropdown {
       return options;
     }
     const variables = workspace.getVariableMap().getVariablesOfType(this.varType);
+    const selectedVariable = this.getVariable();
+    if (selectedVariable && selectedVariable.getType() !== this.varType) {
+      variables.push(selectedVariable);
+    }
     variables.sort((a, b) => a.getName().localeCompare(b.getName()));
     for (const variable of variables) {
       options.push([variable.getName(), variable.getId()]);
     }
     options.push([Blockly.Msg['NEW_VARIABLE'], CREATE_VARIABLE_ID]);
-    const selectedVariable = this.getVariable();
     if (selectedVariable) {
       options.push([
         Blockly.Msg['RENAME_VARIABLE'].replace('%1', selectedVariable.getName()),
@@ -147,8 +165,9 @@ export class FieldTypedVariableOrDefault extends Blockly.FieldDropdown {
       return newValue;
     }
     const workspace = this.getSourceBlock()?.workspace;
-    const variable = (workspace && newValue) ? workspace.getVariableMap().getVariableById(newValue) : null;
-    return (variable && variable.getType() === this.varType) ? newValue! : null;
+    // Allow variables of any type. See the comment for FieldTypedVariable.
+    return (workspace && newValue && workspace.getVariableMap().getVariableById(newValue))
+        ? newValue : null;
   }
 
   protected override doValueUpdate_(newValue: string): void {

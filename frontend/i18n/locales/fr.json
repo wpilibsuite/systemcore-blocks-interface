@@ -470,6 +470,8 @@
             "CALL_CONSTRUCTOR_MISSING_CLASS": "Ce bloc appelle un constructeur dans une classe qui n'existe plus.",
             "CALL_CONSTRUCTOR_MISSING_CONSTRUCTOR": "Ce bloc appelle un constructeur qui n'existe plus.",
             "CALL_INSTANCE_METHOD_MISSING_CLASS": "Ce bloc appelle une méthode dans une classe qui n'existe plus.",
+            "CALL_INSTANCE_VARIABLE_WRONG_TYPE": "La variable {{variableName}} ne contient pas toujours un {{className}}, donc ce bloc risque de ne pas fonctionner.",
+            "SET_VARIABLE_DIFFERENT_TYPE": "Ceci donne à {{variableName}} une valeur de type {{valueType}}, mais ailleurs elle reçoit une valeur de type {{variableType}}.",
             "CALL_INSTANCE_METHOD_MISSING_METHOD": "Ce bloc appelle une méthode qui n'existe plus.",
             "CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD": "Ce bloc appelle une méthode qui n'existe pas dans ce module.",
             "CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT": "Ce bloc appelle une méthode sur un composant privé dans le mécanisme {{mechanismClassName}}.",

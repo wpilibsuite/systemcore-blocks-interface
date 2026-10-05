@@ -20,7 +20,6 @@ import * as OutputContainer from './mrc_output_container';
 import * as ParamContainer from './mrc_param_container'
 import * as Port from './mrc_port';
 import * as SetPythonVariable from './mrc_set_python_variable';
-import * as SetTypedVariable from './mrc_set_typed_variable';
 import * as Steps from './mrc_steps';
 import * as When from './mrc_when';
 import * as StepContainer from './mrc_step_container';
@@ -29,6 +28,7 @@ import * as GamepadBoolean from './mrc_gamepad_boolean';
 import * as GamepadAnalog from './mrc_gamepad_analog';
 import * as GamepadBooleanEvent from './mrc_gamepad_boolean_event';
 import * as GamepadRumble from './mrc_gamepad_rumble';
+import { registerVariableMap } from './utils/variable_types';
 
 const customBlocks = [
   CallPythonFunction,
@@ -52,7 +52,6 @@ const customBlocks = [
   ParamContainer,
   Port,
   SetPythonVariable,
-  SetTypedVariable,
   Steps,
   When,
   StepContainer,
@@ -64,6 +63,7 @@ const customBlocks = [
 ];
 
 export const setup = function(forBlock: any) {
+  registerVariableMap();
   customBlocks.forEach(block => {
     block.setup();
     const maybeBlock = block as { pythonFromBlock?: any; BLOCK_NAME?: string };

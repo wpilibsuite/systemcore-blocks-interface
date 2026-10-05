@@ -28,9 +28,9 @@ import {
     addInstanceVariableMethodBlocks,
     addModuleFunctionBlocks } from '../blocks/mrc_call_python_function';
 import { createEnumBlock } from '../blocks/mrc_get_python_enum_value';
-import { createTypedVariableSetterBlock } from '../blocks/mrc_set_typed_variable';
 import { getClassData, getEnumData, getModuleData } from '../blocks/utils/python';
 import { FunctionData } from '../blocks/utils/python_json_types';
+import * as variable from '../blocks/utils/variable';
 
 const FUNCTION_NAME_GET_TABLE = 'get_table';
 
@@ -239,12 +239,14 @@ function addTableBlocks(
   }
 }
 
-// Blocks for functions that return an object are wrapped in a variables_set block. This replaces
-// that with a block that sets a variable of the given type, so the variable can be chosen from
-// the dropdowns of blocks that get a variable of that type.
+// Returns a block that stores the value of the given block in a variable named for the given
+// type. Blocks for functions that return an object are already wrapped in a variables_set block,
+// but its variable is named for the declared return type, which isn't always the given type.
+// When the block is added to the workspace, the variable gets the type of the value, so it can be
+// chosen from the dropdowns of blocks that get a variable of that type.
 function storeInTypedVariable(block: toolboxItems.Block, varType: string): toolboxItems.Block {
   const valueBlock = (block.type === 'variables_set') ? block.inputs?.['VALUE']?.block : block;
-  return createTypedVariableSetterBlock(varType, valueBlock);
+  return variable.createVariableSetterBlock(variable.varNameForType(varType), valueBlock);
 }
 
 // Returns copies of the given functions with isCommon set for the given function names.
