@@ -54,6 +54,8 @@ import { TabType, TabTypeUtils } from '../types/TabType';
 import { TabContent, TabContentRef } from './TabContent';
 import { LibraryToolbox } from '../toolbox/library_toolbox';
 import { Library } from '../libraries/blocks_lib';
+import { MovePlan, executeMove, prepareMove } from '../editor/move_blocks_to_module';
+import MoveBlocksConfirmContent from './MoveBlocksConfirmContent';
 import {
   DROP_NOT_ALLOWED_TAB_CLASS,
   DROP_TARGET_TAB_CLASS,
@@ -195,10 +197,64 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
     }
   };
 
-  /** Handles blocks that were cut from the active tab by dropping them on another tab. */
-  const handleBlocksDroppedOnTab = (tabKey: string, copyData: Blockly.clipboard.BlockCopyData): void => {
-    pendingPaste.current = { tabKey, copyData };
-    handleTabChange(tabKey);
+  /**
+   * Asks the user to confirm moving blocks when some blocks won't work after the move. Resolves to
+   * whether to move, and whether to also move the robot components in plan.componentsToMove.
+   */
+  const confirmMove = async (plan: MovePlan): Promise<{move: boolean, moveComponents: boolean}> => {
+    let moveComponents = plan.componentsToMove.length > 0;
+    if (plan.breakages.length === 0) {
+      return { move: true, moveComponents };
+    }
+    const changesOtherTabs = plan.componentsToMove.length > 0 ||
+        [...plan.callerEdits.keys()].some(modulePath =>
+            modulePath !== plan.sourceModule.modulePath && modulePath !== plan.targetModule.modulePath);
+    const confirmed = await modal.confirm({
+      title: t('MOVE_BLOCKS_CONFIRM_TITLE', { name: plan.targetModule.className }),
+      content: (
+        <MoveBlocksConfirmContent
+          plan={plan}
+          changesOtherTabs={changesOtherTabs}
+          onMoveComponentsChange={(checked) => { moveComponents = checked; }}
+        />
+      ),
+      okText: t('MOVE'),
+      cancelText: t('CANCEL'),
+    });
+    return { move: confirmed, moveComponents };
+  };
+
+  /**
+   * Handles blocks from the active tab being dropped on another tab: moves them to that tab, keeping
+   * the blocks that refer to them working where possible, and makes that tab active.
+   */
+  const handleBlocksDroppedOnTab = async (
+      tabKey: string, copyData: Blockly.clipboard.BlockCopyData, sourceBlockId: string | null): Promise<void> => {
+    if (!props.storage || !props.project) {
+      return;
+    }
+    const sourceModule = storageProject.findModuleByModulePath(props.project, activeKey);
+    const targetModule = storageProject.findModuleByModulePath(props.project, tabKey);
+    if (!sourceModule || !targetModule) {
+      return;
+    }
+    try {
+      const plan = await prepareMove(
+          props.storage, props.project, copyData, sourceBlockId, sourceModule, targetModule);
+      const { move, moveComponents } = await confirmMove(plan);
+      if (!move) {
+        return;
+      }
+      const result = await executeMove(props.storage, props.project, plan, moveComponents);
+      pendingPaste.current = { tabKey, copyData: result.copyData };
+      await handleTabChange(tabKey);
+      if (result.changedCount > 0 || plan.movedBlockEdits.size > 0) {
+        props.messageApi.success(t('MOVE_BLOCKS_SUCCESS', { name: targetModule.className }));
+      }
+    } catch (error) {
+      console.error('Error moving blocks to another tab:', error);
+      props.setAlertErrorMessage(t('MOVE_BLOCKS_FAILED', { name: targetModule.className }));
+    }
   };
 
   // The tab drop handler is registered once, so it calls through a ref to always use the latest
@@ -207,7 +263,8 @@ export const Component = React.forwardRef<TabsRef, TabsProps>((props, ref): Reac
   blocksDroppedOnTabHandler.current = handleBlocksDroppedOnTab;
   React.useEffect(() => {
     setTabDropHandler({
-      onBlocksDropped: (tabKey, copyData) => blocksDroppedOnTabHandler.current(tabKey, copyData),
+      onBlocksDropped: (tabKey, copyData, sourceBlockId) =>
+          blocksDroppedOnTabHandler.current(tabKey, copyData, sourceBlockId),
       onBlocksNotAllowed: (reason) => props.messageApi.warning(reason),
     });
     return () => setTabDropHandler(null);

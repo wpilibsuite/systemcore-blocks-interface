@@ -24,6 +24,7 @@
 import * as Blockly from 'blockly';
 
 import { Editor } from './editor';
+import { mutateModuleBlocks } from './module_blocks';
 import * as commonStorage from '../storage/common_storage';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
@@ -310,36 +311,14 @@ async function repointOpModes(
     mechanismId: string,
     mechanismName: string): Promise<void> {
   for (const opMode of project.opModes) {
-    const opModeEditor = Editor.getEditorForModulePath(opMode.modulePath);
-    if (opModeEditor) {
-      const blocks = Blockly.serialization.workspaces.save(opModeEditor.getBlocklyWorkspace());
-      let changed = false;
-      if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
-        changed = true;
-      }
-      if (repointComponentReferenceIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
-        changed = true;
-      }
-      if (changed) {
-        opModeEditor.reloadWithBlocks(blocks);
-        await opModeEditor.saveModule();
-      }
-      continue;
-    }
-    const moduleContent = storageModuleContent.parseModuleContentText(
-        await storage.fetchFileContentText(opMode.modulePath));
-    const blocks = moduleContent.getBlocks();
-    let changed = false;
-    if (repointComponentCallsIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
-      changed = true;
-    }
-    if (repointComponentReferenceIntoMechanism(blocks, componentId, mechanismId, mechanismName)) {
-      changed = true;
-    }
-    if (changed) {
-      moduleContent.setBlocks(blocks);
-      await storage.saveFile(opMode.modulePath, moduleContent.getModuleContentText());
-    }
+    await mutateModuleBlocks(storage, opMode, (blocks) => {
+      // Don't short circuit: both kinds of blocks need to be repointed.
+      const callsChanged = repointComponentCallsIntoMechanism(
+          blocks, componentId, mechanismId, mechanismName);
+      const referencesChanged = repointComponentReferenceIntoMechanism(
+          blocks, componentId, mechanismId, mechanismName);
+      return callsChanged || referencesChanged;
+    });
   }
 }
 

@@ -25,8 +25,13 @@ import * as Blockly from 'blockly';
 
 /** Handles blocks being dropped on a tab other than the active tab. */
 export interface TabDropHandler {
-  /** Called when blocks have been cut from the active tab by dropping them on another tab. */
-  onBlocksDropped: (tabKey: string, copyData: Blockly.clipboard.BlockCopyData) => void;
+  /**
+   * Called when blocks have been dropped on another tab. The drag has been reverted, so the blocks
+   * are still in the active tab, where sourceBlockId is the id of the first one. If the blocks were
+   * dragged from the toolbox, they aren't in any workspace and sourceBlockId is null.
+   */
+  onBlocksDropped: (
+      tabKey: string, copyData: Blockly.clipboard.BlockCopyData, sourceBlockId: string | null) => void;
   /** Called when blocks that can't be moved to another tab were dropped on one. */
   onBlocksNotAllowed: (reason: string) => void;
 }
@@ -101,40 +106,47 @@ export class TabDropDragger extends Blockly.dragging.Dragger {
     const block = this.draggable;
     const reasonCannotMove = this.getReasonCannotMoveToOtherTab();
     if (reasonCannotMove !== null) {
-      // Revert the drag, instead of leaving the blocks where they were dropped,
-      // which is outside the visible part of the workspace. Like onDragRevert,
-      // blocks that were dragged out of the flyout are deleted.
-      if (this.revertShouldDelete) {
-        const group = Blockly.Events.getGroup();
-        block.endDrag(e, Blockly.DragDisposition.DELETE);
-        Blockly.Events.setGroup(group);
-        block.dispose();
-      } else {
-        block.revertDrag();
-        block.endDrag(e, Blockly.DragDisposition.REVERT);
-        Blockly.getFocusManager().focusNode(block);
-      }
-      Blockly.Events.setGroup(false);
+      this.revertDragToTab(block, e);
       handler.onBlocksNotAllowed(reasonCannotMove);
       return;
     }
 
+    // Save the blocks before reverting the drag, while the blocks that are being
+    // dragged are still separate from the rest of the workspace.
     const copyData: Blockly.clipboard.BlockCopyData = {
       paster: Blockly.clipboard.BlockPaster.TYPE,
       blockState: Blockly.serialization.blocks.save(block, {addNextBlocks: true})!,
       typeCounts: Blockly.common.getBlockTypeCounts(block),
     };
-
-    // Remove the blocks from this workspace the same way dropping them on the
-    // trashcan does.
-    const group = Blockly.Events.getGroup();
-    block.endDrag(e, Blockly.DragDisposition.DELETE);
-    Blockly.Events.setGroup(group);
-    block.dispose();
-    Blockly.Events.setGroup(false);
+    // The blocks are removed from this workspace later, once the move has been
+    // worked out and, if needed, confirmed by the user.
+    const sourceBlockId = this.revertDragToTab(block, e) ? block.id : null;
 
     // Let the drag gesture finish before the tab is changed.
-    setTimeout(() => handler.onBlocksDropped(tabKey, copyData));
+    setTimeout(() => handler.onBlocksDropped(tabKey, copyData, sourceBlockId));
+  }
+
+  /**
+   * Reverts a drag that ended on a tab, instead of leaving the blocks where
+   * they were dropped, which is outside the visible part of the workspace.
+   * Like onDragRevert, blocks that were dragged out of the flyout are deleted.
+   *
+   * @returns true if the blocks are still in the workspace.
+   */
+  private revertDragToTab(block: Blockly.BlockSvg, e?: PointerEvent | KeyboardEvent): boolean {
+    const deleteBlocks = this.revertShouldDelete;
+    if (deleteBlocks) {
+      const group = Blockly.Events.getGroup();
+      block.endDrag(e, Blockly.DragDisposition.DELETE);
+      Blockly.Events.setGroup(group);
+      block.dispose();
+    } else {
+      block.revertDrag();
+      block.endDrag(e, Blockly.DragDisposition.REVERT);
+      Blockly.getFocusManager().focusNode(block);
+    }
+    Blockly.Events.setGroup(false);
+    return !deleteBlocks;
   }
 
   /**

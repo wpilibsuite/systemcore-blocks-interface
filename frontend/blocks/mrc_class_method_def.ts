@@ -501,6 +501,19 @@ export const pythonFromBlock = function (
   return '';
 }
 
+/**
+ * Returns the methodId of the method defined by the given mrc_class_method_def block JSON, or null
+ * if the JSON isn't a mrc_class_method_def block. This is used when blocks are moved from one
+ * module to another.
+ */
+export function getMethodIdFromBlockJson(blockJson: {[key: string]: any}): string | null {
+  if (blockJson.type !== BLOCK_NAME || !blockJson.extraState) {
+    return null;
+  }
+  // loadExtraState uses the block id when there is no methodId.
+  return (blockJson.extraState as ClassMethodDefExtraState).methodId || blockJson.id || null;
+}
+
 // Functions used for creating blocks for the toolbox.
 
 export function createCustomMethodBlock(): toolboxItems.Block {

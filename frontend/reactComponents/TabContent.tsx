@@ -124,7 +124,13 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
           metrics.viewTop + metrics.viewHeight / 2);
       if (!Blockly.clipboard.paste(copyData, workspace, center)) {
         console.error('Failed to paste blocks into module:', modulePath);
+        return;
       }
+      // Save right away, so that other modules see the pasted blocks (for example a method that
+      // was moved here) the next time they read this module.
+      editorInstance?.saveModule().then(() => autosave.markAsSaved()).catch((error) => {
+        console.error('Error saving module after pasting blocks:', error);
+      });
     },
   }), [editorInstance, autosave, modulePath]);
 

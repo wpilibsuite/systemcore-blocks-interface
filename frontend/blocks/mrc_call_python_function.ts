@@ -1970,6 +1970,110 @@ export function repointComponentCallsIntoMechanism(
   return changed;
 }
 
+/**
+ * Where a block that calls a method in this project finds the method: in the module the block is
+ * in, in the robot, or in a mechanism in the robot.
+ */
+export type MethodCallTarget =
+    {kind: 'within'} |
+    {kind: 'robot'} |
+    {kind: 'mechanism', mechanismInRobot: storageModuleContent.MechanismInRobot};
+
+/**
+ * What a mrc_call_python_function block refers to in this project. Blocks that call python
+ * functions (for example wpilib functions) don't refer to anything in the project.
+ */
+export type CallReference =
+    {kind: 'method', methodId: string, target: 'within' | 'robot' | 'mechanism', mechanismId: string, label: string} |
+    {kind: 'component', componentId: string, mechanismId: string, label: string} |
+    {kind: 'event', eventId: string, label: string};
+
+/**
+ * Returns what the given mrc_call_python_function block JSON refers to in this project, or null
+ * if the JSON isn't a mrc_call_python_function block that refers to something in the project.
+ * This is used when blocks are moved from one module to another.
+ */
+export function getCallReferenceFromBlockJson(blockJson: {[key: string]: any}): CallReference | null {
+  if (blockJson.type !== BLOCK_NAME || !blockJson.extraState) {
+    return null;
+  }
+  const extraState = blockJson.extraState as CallPythonFunctionExtraState;
+  const fields = blockJson.fields || {};
+  const functionName = fields[FIELD_FUNCTION_NAME] || '';
+  const mechanismName = fields[FIELD_MECHANISM_NAME] || '';
+  switch (extraState.functionKind) {
+    case FunctionKind.INSTANCE_WITHIN:
+      return {kind: 'method', methodId: extraState.methodId || '', target: 'within', mechanismId: '',
+          label: functionName + '()'};
+    case FunctionKind.INSTANCE_ROBOT:
+      return {kind: 'method', methodId: extraState.methodId || '', target: 'robot', mechanismId: '',
+          label: Blockly.Msg.ROBOT_LOWER_CASE + '.' + functionName + '()'};
+    case FunctionKind.INSTANCE_MECHANISM:
+      return {kind: 'method', methodId: extraState.methodId || '', target: 'mechanism',
+          mechanismId: extraState.mechanismId || '', label: mechanismName + '.' + functionName + '()'};
+    case FunctionKind.INSTANCE_COMPONENT: {
+      const componentName = fields[FIELD_COMPONENT_NAME] || extraState.componentName || '';
+      const mechanismId = extraState.mechanismId || '';
+      return {kind: 'component', componentId: extraState.componentId || '', mechanismId: mechanismId,
+          label: (mechanismId ? mechanismName + '.' : '') + componentName + '.' + functionName + '()'};
+    }
+    case FunctionKind.EVENT:
+      return {kind: 'event', eventId: extraState.eventId || '', label: fields[FIELD_EVENT_NAME] || ''};
+  }
+  return null;
+}
+
+/**
+ * Changes where the given method call block JSON finds the method it calls. This is used when
+ * blocks are moved from one module to another. The block's checks update the method name and
+ * arguments when the block is loaded.
+ */
+export function setMethodCallTargetInBlockJson(
+    blockJson: {[key: string]: any}, target: MethodCallTarget): void {
+  const extraState = blockJson.extraState as CallPythonFunctionExtraState;
+  if (!blockJson.fields) {
+    blockJson.fields = {};
+  }
+  switch (target.kind) {
+    case 'within':
+      extraState.functionKind = FunctionKind.INSTANCE_WITHIN;
+      break;
+    case 'robot':
+      extraState.functionKind = FunctionKind.INSTANCE_ROBOT;
+      break;
+    case 'mechanism':
+      extraState.functionKind = FunctionKind.INSTANCE_MECHANISM;
+      extraState.mechanismId = target.mechanismInRobot.mechanismId;
+      extraState.mechanismClassName = target.mechanismInRobot.className;
+      blockJson.fields[FIELD_MECHANISM_NAME] = target.mechanismInRobot.name;
+      return;
+  }
+  delete extraState.mechanismId;
+  delete extraState.mechanismClassName;
+  delete blockJson.fields[FIELD_MECHANISM_NAME];
+}
+
+/**
+ * Changes which mechanism, if any, the component called by the given component method call block
+ * JSON belongs to. Use null for a component in the module the block is in, or in the robot when the
+ * block is in an opmode. This is used when blocks are moved from one module to another.
+ */
+export function setComponentCallMechanismInBlockJson(
+    blockJson: {[key: string]: any},
+    mechanismInRobot: storageModuleContent.MechanismInRobot | null): void {
+  const extraState = blockJson.extraState as CallPythonFunctionExtraState;
+  if (!blockJson.fields) {
+    blockJson.fields = {};
+  }
+  if (mechanismInRobot) {
+    extraState.mechanismId = mechanismInRobot.mechanismId;
+    blockJson.fields[FIELD_MECHANISM_NAME] = mechanismInRobot.name;
+  } else {
+    delete extraState.mechanismId;
+    delete blockJson.fields[FIELD_MECHANISM_NAME];
+  }
+}
+
 export function upgradeBlockJsonTo_0_6_0(blockJson: any): boolean {
   if (blockJson.extraState && blockJson.extraState.functionKind === FunctionKind.INSTANCE_COMPONENT) {
     if (!blockJson.extraState.componentName) {
