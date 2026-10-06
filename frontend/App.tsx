@@ -99,10 +99,11 @@ const App: React.FC = (): React.JSX.Element => {
   /** Opens storage asynchronously, preferring the backend when available. */
   const openStorage = async (): Promise<void> => {
     try {
+      // User settings are always kept in the browser, even when projects are kept on the backend.
+      const clientStorage = await clientSideStorage.openClientSideStorage();
       if (await serverSideStorage.isServerAvailable()) {
-        setStorage(new serverSideStorage.ServerSideStorage());
+        setStorage(new serverSideStorage.ServerSideStorage(clientStorage));
       } else {
-        const clientStorage = await clientSideStorage.openClientSideStorage();
         setStorage(clientStorage);
       }
     } catch (e) {

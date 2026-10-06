@@ -20,7 +20,8 @@
  */
 
 export interface Storage {
-  // Functions for storing key/value entries.
+  // Functions for storing key/value entries. Entries hold settings that are specific to the user,
+  // so they are always kept in the browser's storage.
 
   saveEntry(entryKey: string, entryValue: string): Promise<void>;
 
