@@ -22,20 +22,8 @@
 
 import * as React from 'react';
 import { Storage } from '../storage/common_storage';
-import {
-  makeModuleScrollKey,
-  makeModuleZoomKey,
-  makeOpenTabsKey,
-} from '../storage/user_settings_entries';
+import * as userSettings from '../storage/user_settings';
 import { FIRST_BLOCKS_STYLE_RENDERER_NAME } from '../themes/first_blocks_style';
-
-/** Storage keys for user settings. */
-const USER_LANGUAGE_KEY = 'userLanguage';
-const USER_THEME_KEY = 'userTheme';
-const USER_SHOW_SIMPLE_CLASS_NAMES_KEY = 'userShowSimpleClassNames';
-const USER_RENDERER_KEY = 'userRenderer';
-/** Stores the most recently used zoom level across all modules. */
-const USER_LAST_ZOOM_KEY = 'userLastZoom';
 
 /** Default values for user settings. */
 export const DEFAULT_LANGUAGE = 'en';
@@ -45,14 +33,8 @@ export const DEFAULT_RENDERER = FIRST_BLOCKS_STYLE_RENDERER_NAME;
 /** The zoom level (e.g. 1.0 = 100%) used when the user has never set a zoom level. */
 export const DEFAULT_ZOOM = 1.0;
 
-/** Sentinel returned by fetchEntry when a module has no zoom level saved yet. */
-const NO_SAVED_MODULE_ZOOM = '__no_saved_module_zoom__';
-
 /** A workspace scroll position (the coordinates of the upper-left corner of the view). */
-export interface ModuleScroll {
-  x: number;
-  y: number;
-}
+export type ModuleScroll = userSettings.ModuleScroll;
 
 /** The scroll position used for a module that has no scroll position saved. */
 export const DEFAULT_MODULE_SCROLL: ModuleScroll = { x: 0, y: 0 };
@@ -72,16 +54,18 @@ export interface UserSettingsContextType {
   updateTheme: (theme: string) => Promise<void>;
   updateShowSimpleClassNames: (showSimpleClassNames: boolean) => Promise<void>;
   updateRenderer: (renderer: string) => Promise<void>;
-  updateOpenTabs: (projectName: string, tabPaths: string[]) => Promise<void>;
-  getOpenTabs: (projectName: string) => Promise<string[]>;
+  /** Saves the moduleIds of a project's open tabs. */
+  updateOpenTabs: (projectId: string, moduleIds: string[]) => Promise<void>;
+  /** Gets the moduleIds of a project's saved open tabs. */
+  getOpenTabs: (projectId: string) => Promise<string[]>;
   /** Gets the saved zoom level for a module, or DEFAULT_ZOOM if none is saved. */
-  getModuleZoom: (modulePath: string) => Promise<number>;
+  getModuleZoom: (projectId: string, moduleId: string) => Promise<number>;
   /** Saves the zoom level for a module. */
-  updateModuleZoom: (modulePath: string, zoom: number) => Promise<void>;
+  updateModuleZoom: (projectId: string, moduleId: string, zoom: number) => Promise<void>;
   /** Gets the saved scroll position for a module, or DEFAULT_MODULE_SCROLL if none is saved. */
-  getModuleScroll: (modulePath: string) => Promise<ModuleScroll>;
+  getModuleScroll: (projectId: string, moduleId: string) => Promise<ModuleScroll>;
   /** Saves the scroll position for a module, or deletes the saved one if it's (0, 0). */
-  updateModuleScroll: (modulePath: string, x: number, y: number) => Promise<void>;
+  updateModuleScroll: (projectId: string, moduleId: string, x: number, y: number) => Promise<void>;
   isLoading: boolean;
   error: string | null;
   storage: Storage | null;
@@ -119,18 +103,14 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
         setIsLoading(true);
         setError(null);
 
-        const [language, theme, showSimpleClassNames, renderer] = await Promise.all([
-          validStorage.fetchEntry(USER_LANGUAGE_KEY, DEFAULT_LANGUAGE),
-          validStorage.fetchEntry(USER_THEME_KEY, DEFAULT_THEME),
-          validStorage.fetchEntry(USER_SHOW_SIMPLE_CLASS_NAMES_KEY, DEFAULT_SHOW_SIMPLE_CLASS_NAMES.toString()),
-          validStorage.fetchEntry(USER_RENDERER_KEY, DEFAULT_RENDERER),
-        ]);
+        const savedSettings = await userSettings.fetchUserSettings(validStorage);
 
         setSettings({
-          language,
-          theme,
-          showSimpleClassNames: showSimpleClassNames.toLowerCase() === "true",
-          renderer,
+          language: savedSettings.language ?? DEFAULT_LANGUAGE,
+          theme: savedSettings.theme ?? DEFAULT_THEME,
+          showSimpleClassNames:
+              savedSettings.showSimpleClassNames ?? DEFAULT_SHOW_SIMPLE_CLASS_NAMES,
+          renderer: savedSettings.renderer ?? DEFAULT_RENDERER,
         });
       } catch (err) {
         setError(`Failed to load user settings: ${err}`);
@@ -153,7 +133,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     try {
       setError(null);
       if (storage) {
-        await storage.saveEntry(USER_LANGUAGE_KEY, language);
+        await userSettings.updateUserSettings(storage, saved => {
+          saved.language = language;
+        });
         setSettings(prev => ({ ...prev, language }));
       } else {
         console.warn('No storage available, cannot save language');
@@ -170,7 +152,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     try {
       setError(null);
       if (storage) {
-        await storage.saveEntry(USER_THEME_KEY, theme);
+        await userSettings.updateUserSettings(storage, saved => {
+          saved.theme = theme;
+        });
         setSettings(prev => ({ ...prev, theme }));
       }
     } catch (err) {
@@ -185,7 +169,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     try {
       setError(null);
       if (storage) {
-        await storage.saveEntry(USER_RENDERER_KEY, renderer);
+        await userSettings.updateUserSettings(storage, saved => {
+          saved.renderer = renderer;
+        });
         setSettings(prev => ({ ...prev, renderer }));
       }
     } catch (err) {
@@ -201,64 +187,60 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
    * module, since that's most likely what they expect. Falls back to DEFAULT_ZOOM if the user
    * has never set a zoom level at all.
    */
-  const getModuleZoom = async (modulePath: string): Promise<number> => {
+  const getModuleZoom = async (projectId: string, moduleId: string): Promise<number> => {
     try {
       if (!storage) {
         return DEFAULT_ZOOM;
       }
 
-      const storageKey = makeModuleZoomKey(modulePath);
-      const zoomString = await storage.fetchEntry(storageKey, NO_SAVED_MODULE_ZOOM);
-      if (zoomString !== NO_SAVED_MODULE_ZOOM) {
-        const zoom = parseFloat(zoomString);
-        if (!Number.isNaN(zoom)) {
-          return zoom;
-        }
+      const { zoom } = await userSettings.fetchModuleSettings(storage, projectId, moduleId);
+      if (typeof zoom === 'number' && !Number.isNaN(zoom)) {
+        return zoom;
       }
 
-      const lastZoomString = await storage.fetchEntry(USER_LAST_ZOOM_KEY, DEFAULT_ZOOM.toString());
-      const lastZoom = parseFloat(lastZoomString);
-      return Number.isNaN(lastZoom) ? DEFAULT_ZOOM : lastZoom;
+      const { lastZoom } = await userSettings.fetchUserSettings(storage);
+      return (typeof lastZoom === 'number' && !Number.isNaN(lastZoom)) ? lastZoom : DEFAULT_ZOOM;
     } catch (err) {
-      console.error(`Error loading zoom for module ${modulePath}:`, err);
+      console.error(`Error loading zoom for module ${moduleId}:`, err);
       return DEFAULT_ZOOM;
     }
   };
 
   /** Save the zoom level for a module, and remember it as the most recently used zoom level. */
-  const updateModuleZoom = async (modulePath: string, zoom: number): Promise<void> => {
+  const updateModuleZoom = async (projectId: string, moduleId: string, zoom: number): Promise<void> => {
     try {
       if (storage) {
-        const storageKey = makeModuleZoomKey(modulePath);
         await Promise.all([
-          storage.saveEntry(storageKey, zoom.toString()),
-          storage.saveEntry(USER_LAST_ZOOM_KEY, zoom.toString()),
+          userSettings.updateModuleSettings(storage, projectId, moduleId, saved => {
+            saved.zoom = zoom;
+          }),
+          userSettings.updateUserSettings(storage, saved => {
+            saved.lastZoom = zoom;
+          }),
         ]);
       } else {
         console.warn('No storage available, cannot save zoom for module');
       }
     } catch (err) {
-      console.error(`Error saving zoom for module ${modulePath}:`, err);
+      console.error(`Error saving zoom for module ${moduleId}:`, err);
       throw err;
     }
   };
 
   /** Get the saved scroll position for a module, or DEFAULT_MODULE_SCROLL if none is saved. */
-  const getModuleScroll = async (modulePath: string): Promise<ModuleScroll> => {
+  const getModuleScroll = async (projectId: string, moduleId: string): Promise<ModuleScroll> => {
     try {
       if (!storage) {
         return DEFAULT_MODULE_SCROLL;
       }
 
-      const storageKey = makeModuleScrollKey(modulePath);
-      const scrollJson = await storage.fetchEntry(storageKey, JSON.stringify(DEFAULT_MODULE_SCROLL));
-      const parsed = JSON.parse(scrollJson);
-      if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
-        return { x: parsed.x, y: parsed.y };
+      const { scroll } = await userSettings.fetchModuleSettings(storage, projectId, moduleId);
+      if (scroll && typeof scroll.x === 'number' && typeof scroll.y === 'number') {
+        return { x: scroll.x, y: scroll.y };
       }
       return DEFAULT_MODULE_SCROLL;
     } catch (err) {
-      console.error(`Error loading scroll position for module ${modulePath}:`, err);
+      console.error(`Error loading scroll position for module ${moduleId}:`, err);
       return DEFAULT_MODULE_SCROLL;
     }
   };
@@ -267,21 +249,19 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
    * Save the scroll position for a module. (0, 0) is the default, so instead of saving it, any
    * previously saved position is deleted.
    */
-  const updateModuleScroll = async (modulePath: string, x: number, y: number): Promise<void> => {
+  const updateModuleScroll = async (
+      projectId: string, moduleId: string, x: number, y: number): Promise<void> => {
     try {
       if (!storage) {
         console.warn('No storage available, cannot save scroll position for module');
         return;
       }
 
-      const storageKey = makeModuleScrollKey(modulePath);
-      if (x === 0 && y === 0) {
-        await storage.deleteEntry(storageKey);
-        return;
-      }
-      await storage.saveEntry(storageKey, JSON.stringify({ x, y }));
+      await userSettings.updateModuleSettings(storage, projectId, moduleId, saved => {
+        saved.scroll = (x === 0 && y === 0) ? undefined : { x, y };
+      });
     } catch (err) {
-      console.error(`Error saving scroll position for module ${modulePath}:`, err);
+      console.error(`Error saving scroll position for module ${moduleId}:`, err);
       throw err;
     }
   };
@@ -291,7 +271,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
     try {
       setError(null);
       if (storage) {
-        await storage.saveEntry(USER_SHOW_SIMPLE_CLASS_NAMES_KEY, showSimpleClassNames.toString());
+        await userSettings.updateUserSettings(storage, saved => {
+          saved.showSimpleClassNames = showSimpleClassNames;
+        });
         setSettings(prev => ({ ...prev, showSimpleClassNames }));
       }
     } catch (err) {
@@ -302,13 +284,12 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
   };
 
   /** Update open tabs for a specific project. */
-  const updateOpenTabs = async (projectName: string, tabPaths: string[]): Promise<void> => {
+  const updateOpenTabs = async (projectId: string, moduleIds: string[]): Promise<void> => {
     try {
       setError(null);
-      
+
       if (storage) {
-        const storageKey = makeOpenTabsKey(projectName);
-        await storage.saveEntry(storageKey, JSON.stringify(tabPaths));
+        await userSettings.saveOpenTabs(storage, projectId, moduleIds);
       } else {
         console.warn('No storage available, cannot save open tabs');
       }
@@ -320,23 +301,14 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({
   };
 
   /** Get open tabs for a specific project. */
-  const getOpenTabs = async (projectName: string): Promise<string[]> => {
+  const getOpenTabs = async (projectId: string): Promise<string[]> => {
     try {
       if (!storage) {
         return [];
       }
-      
-      const storageKey = makeOpenTabsKey(projectName);
-      const tabsJson = await storage.fetchEntry(storageKey, JSON.stringify([]));
-      
-      try {
-        return JSON.parse(tabsJson);
-      } catch (error) {
-        console.warn(`Failed to parse open tabs for project ${projectName}, using default:`, error);
-        return [];
-      }
+      return await userSettings.fetchOpenTabs(storage, projectId);
     } catch (err) {
-      console.error(`Error loading open tabs for project ${projectName}:`, err);
+      console.error(`Error loading open tabs for project ${projectId}:`, err);
       return [];
     }
   };

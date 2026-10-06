@@ -73,14 +73,33 @@ class ServerLibraryStorage implements LibraryStorage {
 const LIBRARIES_ENTRY_KEY = 'installedLibraries';
 
 /**
+ * Moves the libraries installed without a backend from the entry they used to be kept in, whose
+ * key didn't start with local/.
+ * @param clientStorage The storage used when there is no backend.
+ */
+export async function upgradeLegacyEntry(clientStorage: commonStorage.Storage): Promise<void> {
+  const NO_ENTRY = '__no_entry__';
+  const librariesJson = await clientStorage.fetchEntry(LIBRARIES_ENTRY_KEY, NO_ENTRY);
+  if (librariesJson !== NO_ENTRY) {
+    await clientStorage.saveEntry(
+        commonStorage.makeStorageKey(clientStorage, LIBRARIES_ENTRY_KEY), librariesJson);
+    await clientStorage.deleteEntry(LIBRARIES_ENTRY_KEY);
+  }
+}
+
+/**
  * Without a backend, the parsed libraries are kept in a storage entry. The wheels aren't kept
  * because there is no robot to deploy them to.
  */
 class ClientLibraryStorage implements LibraryStorage {
-  constructor(private readonly storage: commonStorage.Storage) {}
+  private readonly entryKey: string;
+
+  constructor(private readonly storage: commonStorage.Storage) {
+    this.entryKey = commonStorage.makeStorageKey(storage, LIBRARIES_ENTRY_KEY);
+  }
 
   async list(): Promise<Library[]> {
-    return JSON.parse(await this.storage.fetchEntry(LIBRARIES_ENTRY_KEY, '[]'));
+    return JSON.parse(await this.storage.fetchEntry(this.entryKey, '[]'));
   }
 
   async install(_filename: string, data: ArrayBuffer): Promise<Library> {
@@ -99,7 +118,7 @@ class ClientLibraryStorage implements LibraryStorage {
 
   private async save(libraries: Library[]): Promise<void> {
     libraries.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
-    await this.storage.saveEntry(LIBRARIES_ENTRY_KEY, JSON.stringify(libraries));
+    await this.storage.saveEntry(this.entryKey, JSON.stringify(libraries));
   }
 }
 

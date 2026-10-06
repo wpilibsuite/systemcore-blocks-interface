@@ -62,6 +62,8 @@ export async function isServerAvailable(): Promise<boolean> {
  * of being shared by everyone who connects to the backend.
  */
 export class ServerSideStorage implements commonStorage.Storage {
+  readonly entryKeyPrefix = 'server/';
+
   /**
    * @param entryStorage The browser's storage, used for entries.
    */
@@ -77,6 +79,10 @@ export class ServerSideStorage implements commonStorage.Storage {
 
   async deleteEntry(entryKey: string): Promise<void> {
     await this.entryStorage.deleteEntry(entryKey);
+  }
+
+  async listEntryKeys(): Promise<string[]> {
+    return this.entryStorage.listEntryKeys();
   }
 
   async list(path: string): Promise<string[]> {
