@@ -13,6 +13,38 @@
                     "ENABLED": true,
                     "NAME": "",
                     "GROUP": ""
+                },
+                "inputs": {
+                    "FOREGROUND_COLOR": {
+                        "shadow": {
+                            "type": "mrc_get_python_variable",
+                            "extraState": {
+                                "varKind": "class",
+                                "moduleOrClassName": "wpiutil.Color",
+                                "varType": "wpiutil.Color",
+                                "importModule": "wpiutil"
+                            },
+                            "fields": {
+                                "MODULE_OR_CLASS": "wpiutil.Color",
+                                "VAR": "WHITE"
+                            }
+                        }
+                    },
+                    "BACKGROUND_COLOR": {
+                        "shadow": {
+                            "type": "mrc_get_python_variable",
+                            "extraState": {
+                                "varKind": "class",
+                                "moduleOrClassName": "wpiutil.Color",
+                                "varType": "wpiutil.Color",
+                                "importModule": "wpiutil"
+                            },
+                            "fields": {
+                                "MODULE_OR_CLASS": "wpiutil.Color",
+                                "VAR": "BLACK"
+                            }
+                        }
+                    }
                 }
             },
             {

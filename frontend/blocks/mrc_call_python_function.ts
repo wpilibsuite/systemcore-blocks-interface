@@ -54,7 +54,7 @@ import { makeOneContents } from '../toolbox/python_data_toolbox';
 
 export const BLOCK_NAME = 'mrc_call_python_function';
 
-enum FunctionKind {
+export enum FunctionKind {
   BUILT_IN = 'built-in',
   MODULE = 'module',
   STATIC = 'static',

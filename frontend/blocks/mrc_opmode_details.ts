@@ -22,7 +22,9 @@
 
 import * as Blockly from 'blockly';
 
-import { PERIODIC_METHOD_NAME } from './utils/python';
+import { PERIODIC_METHOD_NAME, getAllowedTypesForSetCheck } from './utils/python';
+import { BLOCK_NAME as MRC_CALL_PYTHON_FUNCTION, FunctionKind } from './mrc_call_python_function';
+import { BLOCK_NAME as MRC_GET_PYTHON_VARIABLE, VariableKind } from './mrc_get_python_variable';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator, OpModeDetails, OpModeDetailsParams } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
@@ -42,12 +44,23 @@ const FIELD_ENABLED = 'ENABLED';
 const FIELD_NAME = 'NAME';
 const FIELD_GROUP = 'GROUP';
 const FIELD_DESCRIPTION = 'DESCRIPTION';
+const FIELD_FOREGROUND_COLOR_LABEL = 'FOREGROUND_COLOR_LABEL';
+const FIELD_BACKGROUND_COLOR_LABEL = 'BACKGROUND_COLOR_LABEL';
+const INPUT_FOREGROUND_COLOR = 'FOREGROUND_COLOR';
+const INPUT_BACKGROUND_COLOR = 'BACKGROUND_COLOR';
+
+const COLOR_CLASS_NAME = 'wpiutil.Color';
+const COLOR_MODULE_NAME = 'wpiutil';
+const DEFAULT_FOREGROUND_COLOR = 'WHITE';
+const DEFAULT_BACKGROUND_COLOR = 'BLACK';
 
 const WARNING_ID_STEPS_OR_PERIODIC_REQUIRED = 'id_steps_or_periodic_required';
+const WARNING_ID_UNSUPPORTED_COLOR = 'id_unsupported_color';
 
 type OpmodeDetailsBlock = Blockly.Block & OpmodeDetailsMixin;
 interface OpmodeDetailsMixin extends OpmodeDetailsMixinType {
   mrcHasStepsOrPeriodicRequiredWarning: boolean,
+  mrcHasUnsupportedColorWarning: boolean,
 }
 type OpmodeDetailsMixinType = typeof OPMODE_DETAILS;
 
@@ -57,6 +70,7 @@ const OPMODE_DETAILS = {
     */
   init: function (this: OpmodeDetailsBlock): void {
     this.mrcHasStepsOrPeriodicRequiredWarning = false;
+    this.mrcHasUnsupportedColorWarning = false;
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
     this.appendDummyInput()
       .appendField(Blockly.Msg.TYPE)
@@ -74,13 +88,21 @@ const OPMODE_DETAILS = {
         .appendField(new Blockly.FieldTextInput(''), FIELD_GROUP);
     this.appendDummyInput()
         .appendField(Blockly.Msg.DISPLAY_DESCRIPTION)
-        .appendField(new Blockly.FieldTextInput(''), FIELD_DESCRIPTION);        
+        .appendField(new Blockly.FieldTextInput(''), FIELD_DESCRIPTION);
+    this.appendValueInput(INPUT_FOREGROUND_COLOR)
+        .setCheck(getAllowedTypesForSetCheck(COLOR_CLASS_NAME))
+        .appendField(new Blockly.FieldLabel(Blockly.Msg.DISPLAY_FOREGROUND_COLOR), FIELD_FOREGROUND_COLOR_LABEL);
+    this.appendValueInput(INPUT_BACKGROUND_COLOR)
+        .setCheck(getAllowedTypesForSetCheck(COLOR_CLASS_NAME))
+        .appendField(new Blockly.FieldLabel(Blockly.Msg.DISPLAY_BACKGROUND_COLOR), FIELD_BACKGROUND_COLOR_LABEL);
 
     this.getField(FIELD_TYPE)?.setTooltip(Blockly.Msg.OPMODE_TYPE_TOOLTIP);
     this.getField(FIELD_ENABLED)?.setTooltip(Blockly.Msg.OPMODE_ENABLED_TOOLTIP);
     this.getField(FIELD_NAME)?.setTooltip(Blockly.Msg.OPMODE_NAME_TOOLTIP);
     this.getField(FIELD_GROUP)?.setTooltip(Blockly.Msg.OPMODE_GROUP_TOOLTIP);
     this.getField(FIELD_DESCRIPTION)?.setTooltip(Blockly.Msg.OPMODE_DESCRIPTION_TOOLTIP);
+    this.getField(FIELD_FOREGROUND_COLOR_LABEL)?.setTooltip(Blockly.Msg.OPMODE_FOREGROUND_COLOR_TOOLTIP);
+    this.getField(FIELD_BACKGROUND_COLOR_LABEL)?.setTooltip(Blockly.Msg.OPMODE_BACKGROUND_COLOR_TOOLTIP);
   },
   ...NONCOPYABLE_BLOCK,
   ...NONDISABLEABLE_BLOCK,
@@ -103,6 +125,32 @@ const OPMODE_DETAILS = {
         }
         this.mrcHasStepsOrPeriodicRequiredWarning = true;
       }
+    }
+    this.checkColors();
+  },
+  /**
+   * Adds a warning to the block if a color input holds something that can't be
+   * passed to add_opmode, or removes the warning if not.
+   */
+  checkColors(this: OpmodeDetailsBlock): void {
+    const isSupported = (inputName: string): boolean => {
+      const target = this.getInputTargetBlock(inputName);
+      if (!target) {
+        return true;
+      }
+      const blockJson = Blockly.serialization.blocks.save(target, {addCoordinates: false, addNextBlocks: false});
+      return getColorCodeFromInputJson({block: blockJson}) !== null;
+    };
+    if (isSupported(INPUT_FOREGROUND_COLOR) && isSupported(INPUT_BACKGROUND_COLOR)) {
+      this.setWarningText(null, WARNING_ID_UNSUPPORTED_COLOR);
+      this.mrcHasUnsupportedColorWarning = false;
+    } else if (!this.mrcHasUnsupportedColorWarning) {
+      this.setWarningText(Blockly.Msg.WARNING_OPMODE_UNSUPPORTED_COLOR, WARNING_ID_UNSUPPORTED_COLOR);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
+      this.mrcHasUnsupportedColorWarning = true;
     }
   },
 }
@@ -136,11 +184,97 @@ export function getOpModeDetailsFromBlocksJson(blocksJson: {[key: string]: any},
         description: block.fields[FIELD_DESCRIPTION] ?? '',
         enabled: block.fields[FIELD_ENABLED] !== false && block.fields[FIELD_ENABLED] !== 'FALSE',
         type: block.fields[FIELD_TYPE] ?? OPMODE_TYPE_TELEOP,
+        foregroundColor: getColorCodeFromInputJson(block.inputs?.[INPUT_FOREGROUND_COLOR]),
+        backgroundColor: getColorCodeFromInputJson(block.inputs?.[INPUT_BACKGROUND_COLOR]),
       };
       return new OpModeDetails(params);
     }
   }
   return null;
+}
+
+/**
+ * Returns the block JSON connected to the given input JSON, or null if nothing
+ * is connected. A real block takes precedence over the shadow block.
+ */
+function getConnectedBlockJson(inputJson: {[key: string]: any} | undefined): {[key: string]: any} | null {
+  return inputJson?.block ?? inputJson?.shadow ?? null;
+}
+
+/**
+ * Returns the python code for the color plugged into the given input JSON, or
+ * null if the color can't be determined without running the opmode.
+ *
+ * The colors are passed to add_opmode in the robot's __init__, which is
+ * generated from the opmode's saved blocks, so only a wpiutil.Color constant
+ * (for example, wpiutil.Color.WHITE) or a wpiutil.Color constructor whose
+ * arguments are all numbers (for example, wpiutil.Color(255, 128, 0)) are
+ * supported.
+ */
+function getColorCodeFromInputJson(inputJson: {[key: string]: any} | undefined): string | null {
+  const blockJson = getConnectedBlockJson(inputJson);
+  if (!blockJson) {
+    return null;
+  }
+  if (blockJson.type === MRC_GET_PYTHON_VARIABLE &&
+      blockJson.extraState?.varKind === VariableKind.CLASS &&
+      blockJson.extraState?.moduleOrClassName === COLOR_CLASS_NAME &&
+      blockJson.fields?.VAR) {
+    return COLOR_CLASS_NAME + '.' + blockJson.fields.VAR;
+  }
+  if (blockJson.type === MRC_CALL_PYTHON_FUNCTION &&
+      blockJson.extraState?.functionKind === FunctionKind.CONSTRUCTOR &&
+      blockJson.extraState?.moduleOrClassName === COLOR_CLASS_NAME) {
+    const args: any[] = blockJson.extraState.args ?? [];
+    const argCodes: string[] = [];
+    for (let i = 0; i < args.length; i++) {
+      const argBlockJson = getConnectedBlockJson(blockJson.inputs?.['ARG' + i]);
+      if (argBlockJson?.type !== 'math_number' || argBlockJson.fields?.NUM === undefined) {
+        // Variables and other expressions aren't available in the robot's __init__.
+        return null;
+      }
+      argCodes.push(String(argBlockJson.fields.NUM));
+    }
+    return COLOR_CLASS_NAME + '(' + argCodes.join(', ') + ')';
+  }
+  return null;
+}
+
+function createColorShadowJson(colorName: string): {[key: string]: any} {
+  return {
+    shadow: {
+      type: MRC_GET_PYTHON_VARIABLE,
+      extraState: {
+        varKind: VariableKind.CLASS,
+        moduleOrClassName: COLOR_CLASS_NAME,
+        varType: COLOR_CLASS_NAME,
+        importModule: COLOR_MODULE_NAME,
+      },
+      fields: {
+        MODULE_OR_CLASS: COLOR_CLASS_NAME,
+        VAR: colorName,
+      },
+    },
+  };
+}
+
+/**
+ * Adds the default foreground and background color shadow blocks to an
+ * mrc_opmode_details block's JSON, if they are missing.
+ * Returns true if the block JSON was changed.
+ */
+export function upgradeBlockJsonTo_0_8_0(blockJson: {[key: string]: any}): boolean {
+  let changed = false;
+  blockJson.inputs ??= {};
+  if (!blockJson.inputs[INPUT_FOREGROUND_COLOR]) {
+    blockJson.inputs[INPUT_FOREGROUND_COLOR] = createColorShadowJson(DEFAULT_FOREGROUND_COLOR);
+    changed = true;
+  }
+  if (!blockJson.inputs[INPUT_BACKGROUND_COLOR]) {
+    blockJson.inputs[INPUT_BACKGROUND_COLOR] = createColorShadowJson(DEFAULT_BACKGROUND_COLOR);
+    changed = true;
+  }
+  return changed;
 }
 
 export function checkOpMode(workspace: Blockly.Workspace, editor: Editor) {
