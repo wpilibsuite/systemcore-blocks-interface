@@ -41,12 +41,6 @@ interface CodeDisplayProps {
   onToggleCollapse?: () => void;
 }
 
-/** Success message for copy operation. */
-const COPY_SUCCESS_MESSAGE = 'Copy completed successfully.';
-
-/** Error message prefix for copy failures. */
-const COPY_ERROR_MESSAGE_PREFIX = 'Could not copy code: ';
-
 /**
  * Component that displays syntax-highlighted code with copy functionality.
  * Shows generated Python code in a dark theme with a copy button.
@@ -71,11 +65,11 @@ export default function CodeDisplay(props: CodeDisplayProps): React.JSX.Element 
       () => {
         props.messageApi.open({
           type: 'success',
-          content: COPY_SUCCESS_MESSAGE,
+          content: t('COPY_CODE_SUCCESS'),
         });
       },
       (err) => {
-        props.setAlertErrorMessage(COPY_ERROR_MESSAGE_PREFIX + err);
+        props.setAlertErrorMessage(t('COPY_CODE_FAILED', { error: String(err) }));
       }
     );
   };

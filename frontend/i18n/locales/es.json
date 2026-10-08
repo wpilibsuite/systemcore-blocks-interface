@@ -147,6 +147,8 @@
     "RENAME_ELLIPSIS": "Renombrar...",
     "DELETE_ELLIPSIS": "Eliminar...",
     "COPY_ELLIPSIS": "Copiar...",
+    "COPY_CODE_SUCCESS": "Copia completada correctamente.",
+    "COPY_CODE_FAILED": "No se pudo copiar el código: {{error}}",
     "SORT_TABS": "Ordenar Pestañas",
     "addTabDialog": {
         "title": "Agregar Pestaña",

@@ -152,6 +152,8 @@
     "RENAME_ELLIPSIS": "Renommer...",
     "DELETE_ELLIPSIS": "Supprimer...",
     "COPY_ELLIPSIS": "Copier...",
+    "COPY_CODE_SUCCESS": "Copie effectuée avec succès.",
+    "COPY_CODE_FAILED": "Impossible de copier le code : {{error}}",
     "SORT_TABS": "Trier les onglets",
     "MECHANISMS": "Mécanismes",
     "OPMODES": "OpModes",

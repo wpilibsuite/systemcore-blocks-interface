@@ -152,6 +152,8 @@
     "RENAME_ELLIPSIS": "שנה שם...",
     "DELETE_ELLIPSIS": "מחק...",
     "COPY_ELLIPSIS": "העתק...",
+    "COPY_CODE_SUCCESS": "ההעתקה הושלמה בהצלחה.",
+    "COPY_CODE_FAILED": "לא ניתן להעתיק את הקוד: {{error}}",
     "SORT_TABS": "סדר לשוניות",
   "MECHANISMS": "מנגנונים",
   "OPMODES": "אופמודים",
