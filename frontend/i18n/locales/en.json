@@ -328,6 +328,8 @@
         "MORE_BLOCKS_LABEL": "More...",
         "COMMENT_DEFAULT_TEXT": "Enter your comment here!",
         "CONFIG_GAMEPADS_BUTTON": "⚙️ Configure Gamepads",
+        "ADD_ITEM": "add item",
+        "TO_LIST": "to list",
         "GAMEPAD": {
             "TITLE": "Gamepad",
             "BUTTON_A": "A",
@@ -413,7 +415,10 @@
             "SET_CLASS_VARIABLE": "Sets the variable {{className}}.{{varName}}.",
             "SET_INSTANCE_VARIABLE": "Sets the variable {{varName}} for the given {{className}} object.",
             "MECHANISM_COMPONENT_REFERENCE": "The component named {{componentName}} of the class {{className}} from the mechanism named {{mechanismName}}.",
-            "COMPONENT_REFERENCE": "The component named {{componentName}} of the class {{className}}."
+            "COMPONENT_REFERENCE": "The component named {{componentName}} of the class {{className}}.",
+            "LIST_ADD_ITEM": "Add the item to the end of the list.",
+            "MATH_MAX": "Returns the greater of two numerical values.",
+            "MATH_MIN": "Returns the smaller of two numerical values."
         },
         "CATEGORY":{
             "LISTS": "Lists",

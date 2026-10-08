@@ -328,6 +328,8 @@
     "MORE_BLOCKS_LABEL": "עוד...",
     "COMMENT_DEFAULT_TEXT": "הזן את ההערה שלך כאן!",
     "CONFIG_GAMEPADS_BUTTON": "⚙️ הגדר בקרים",
+    "ADD_ITEM": "הוסף פריט",
+    "TO_LIST": "לרשימה",
     "GAMEPAD": {
       "TITLE": "בקר משחק",
       "BUTTON_A": "A",
@@ -413,7 +415,10 @@
       "SET_CLASS_VARIABLE": "מגדיר את המשתנה {{className}}.{{varName}}.",
       "SET_INSTANCE_VARIABLE": "מגדיר את המשתנה {{varName}} עבור אובייקט {{className}} נתון.",
       "MECHANISM_COMPONENT_REFERENCE": "הרכיב בשם {{componentName}} של המחלקה {{className}} מהמנגנון בשם {{mechanismName}}.",
-      "COMPONENT_REFERENCE": "הרכיב בשם {{componentName}} של המחלקה {{className}}."
+      "COMPONENT_REFERENCE": "הרכיב בשם {{componentName}} של המחלקה {{className}}.",
+      "LIST_ADD_ITEM": "מוסיף את הפריט לסוף הרשימה.",
+      "MATH_MAX": "מחזיר את הגדול מבין שני ערכים מספריים.",
+      "MATH_MIN": "מחזיר את הקטן מבין שני ערכים מספריים."
     },
     "CATEGORY": {
       "LISTS": "רשימות",
