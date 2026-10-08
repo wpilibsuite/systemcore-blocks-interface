@@ -482,7 +482,7 @@
       "MECHANISM_NOT_IN_HOLDER": "בלוק זה יכול להיכנס רק לחלק המנגנונים של הרובוט.",
       "COMPONENT_MISSING_COMPONENT_CLASS": "בלוק זה מייצג רכיב שהמחלקה שלו כבר לא קיימת.",
       "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "ל-PeriodicOpMode צריך להיות שלבים, את השיטה המחזורית, או את שניהם.",
-      "OPMODE_UNSUPPORTED_COLOR": "הצבעים חייבים להיות Color (כמו Color.WHITE) או יצירת Color עם מספרים עבור אדום, ירוק וכחול. לא ניתן להשתמש כאן במשתנים או בבלוקים אחרים.",
+      "OPMODE_UNSUPPORTED_COLOR": "צבעי ה־OpMode חייבים להיות Color (כמו Color.WHITE) או יצירת Color עם מספרים עבור אדום, ירוק וכחול. לא ניתן להשתמש כאן במשתנים או בבלוקים אחרים.",
       "MECHANISM_NOT_FOUND": "בלוק זה מתייחס למנגנון שכבר לא קיים.",
       "DUPLICATE_PORT": "פורט זה (%1) נמצא בשימוש גם על ידי: %2",
       "COMPONENT_REFERENCE_PRIVATE_COMPONENT": "בלוק זה מייצג רכיב פרטי במנגנון {{mechanismClassName}}.",

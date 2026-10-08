@@ -483,7 +483,7 @@
             "MECHANISM_NOT_IN_HOLDER": "Este bloque solo puede ir en la sección de mecanismos del robot.",
             "COMPONENT_MISSING_COMPONENT_CLASS": "Este bloque representa un componente cuya clase ya no existe.",
             "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "Un PeriodicOpMode debe tener pasos, el método periódico o ambos.",
-            "OPMODE_UNSUPPORTED_COLOR": "Los colores deben ser un Color (como Color.WHITE) o crear Color con números para rojo, verde y azul. Aquí no se pueden usar variables ni otros bloques.",
+            "OPMODE_UNSUPPORTED_COLOR": "Los colores del OpMode deben ser un Color (como Color.WHITE) o crear Color con números para rojo, verde y azul. Aquí no se pueden usar variables ni otros bloques.",
             "MECHANISM_NOT_FOUND": "Este bloque se refiere a un mecanismo que ya no existe.",
             "DUPLICATE_PORT": "Este puerto (%1) también es usado por: %2",
             "COMPONENT_REFERENCE_PRIVATE_COMPONENT": "Este bloque representa un componente privado en el mecanismo {{mechanismClassName}}.",

@@ -484,7 +484,7 @@
             "MECHANISM_NOT_IN_HOLDER": "This block can only go in the mechanisms section of the robot.",
             "COMPONENT_MISSING_COMPONENT_CLASS": "This block represents a component whose class no longer exists.",
             "OPMODE_STEPS_OR_PERIODIC_REQUIRED": "A PeriodicOpMode should have steps, the periodic method, or both.",
-            "OPMODE_UNSUPPORTED_COLOR": "The colors must be a Color (like Color.WHITE) or create Color with numbers for red, green, and blue. Variables and other blocks can't be used here.",
+            "OPMODE_UNSUPPORTED_COLOR": "OpMode colors must be a Color (like Color.WHITE) or create Color with numbers for red, green, and blue. Variables and other blocks can't be used here.",
             "MECHANISM_NOT_FOUND": "This block refers to a mechanism that no longer exists.",
             "DUPLICATE_PORT": "This port (%1) is also used by: %2",
             "COMPONENT_REFERENCE_PRIVATE_COMPONENT": "This blocks represents a private component in the {{mechanismClassName}} mechanism.",

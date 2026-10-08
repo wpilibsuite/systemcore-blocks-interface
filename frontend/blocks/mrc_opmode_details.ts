@@ -60,7 +60,8 @@ const WARNING_ID_UNSUPPORTED_COLOR = 'id_unsupported_color';
 type OpmodeDetailsBlock = Blockly.Block & OpmodeDetailsMixin;
 interface OpmodeDetailsMixin extends OpmodeDetailsMixinType {
   mrcHasStepsOrPeriodicRequiredWarning: boolean,
-  mrcHasUnsupportedColorWarning: boolean,
+  /** The ids of the blocks that have the unsupported color warning. */
+  mrcUnsupportedColorBlockIds: Set<string>,
 }
 type OpmodeDetailsMixinType = typeof OPMODE_DETAILS;
 
@@ -70,7 +71,7 @@ const OPMODE_DETAILS = {
     */
   init: function (this: OpmodeDetailsBlock): void {
     this.mrcHasStepsOrPeriodicRequiredWarning = false;
-    this.mrcHasUnsupportedColorWarning = false;
+    this.mrcUnsupportedColorBlockIds = new Set();
     this.setStyle(MRC_STYLE_CLASS_BLOCKS);
     this.appendDummyInput()
       .appendField(Blockly.Msg.TYPE)
@@ -129,29 +130,40 @@ const OPMODE_DETAILS = {
     this.checkColors();
   },
   /**
-   * Adds a warning to the block if a color input holds something that can't be
-   * passed to add_opmode, or removes the warning if not.
+   * Adds a warning to each block in the color inputs that keeps the color from
+   * being passed to add_opmode, and removes the warning from blocks that no
+   * longer do.
    */
   checkColors(this: OpmodeDetailsBlock): void {
-    const isSupported = (inputName: string): boolean => {
+    const unsupportedBlockIds = new Set<string>();
+    for (const inputName of [INPUT_FOREGROUND_COLOR, INPUT_BACKGROUND_COLOR]) {
       const target = this.getInputTargetBlock(inputName);
-      if (!target) {
-        return true;
+      if (target) {
+        const blockJson = Blockly.serialization.blocks.save(target, {addCoordinates: false, addNextBlocks: false});
+        const unsupportedBlockId = analyzeColorInputJson({block: blockJson}).unsupportedBlockId;
+        if (unsupportedBlockId) {
+          unsupportedBlockIds.add(unsupportedBlockId);
+        }
       }
-      const blockJson = Blockly.serialization.blocks.save(target, {addCoordinates: false, addNextBlocks: false});
-      return getColorCodeFromInputJson({block: blockJson}) !== null;
-    };
-    if (isSupported(INPUT_FOREGROUND_COLOR) && isSupported(INPUT_BACKGROUND_COLOR)) {
-      this.setWarningText(null, WARNING_ID_UNSUPPORTED_COLOR);
-      this.mrcHasUnsupportedColorWarning = false;
-    } else if (!this.mrcHasUnsupportedColorWarning) {
-      this.setWarningText(Blockly.Msg.WARNING_OPMODE_UNSUPPORTED_COLOR, WARNING_ID_UNSUPPORTED_COLOR);
-      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
-      if (icon) {
-        icon.setBubbleVisible(true);
-      }
-      this.mrcHasUnsupportedColorWarning = true;
     }
+    // Remove the warning from blocks that are no longer unsupported, or are no
+    // longer in a color input.
+    for (const id of this.mrcUnsupportedColorBlockIds) {
+      if (!unsupportedBlockIds.has(id)) {
+        this.workspace.getBlockById(id)?.setWarningText(null, WARNING_ID_UNSUPPORTED_COLOR);
+      }
+    }
+    // Add the warning to blocks that just became unsupported.
+    for (const id of unsupportedBlockIds) {
+      if (!this.mrcUnsupportedColorBlockIds.has(id)) {
+        const block = this.workspace.getBlockById(id);
+        if (block) {
+          block.setWarningText(Blockly.Msg.WARNING_OPMODE_UNSUPPORTED_COLOR, WARNING_ID_UNSUPPORTED_COLOR);
+          block.getIcon(Blockly.icons.IconType.WARNING)?.setBubbleVisible(true);
+        }
+      }
+    }
+    this.mrcUnsupportedColorBlockIds = unsupportedBlockIds;
   },
 }
 
@@ -201,9 +213,23 @@ function getConnectedBlockJson(inputJson: {[key: string]: any} | undefined): {[k
   return inputJson?.block ?? inputJson?.shadow ?? null;
 }
 
+type ColorAnalysis = {
+  /** The python code for the color, or null if the color isn't supported. */
+  code: string | null,
+  /** The id of the block that makes the color unsupported, if there is one. */
+  unsupportedBlockId: string | null,
+};
+
 /**
  * Returns the python code for the color plugged into the given input JSON, or
  * null if the color can't be determined without running the opmode.
+ */
+function getColorCodeFromInputJson(inputJson: {[key: string]: any} | undefined): string | null {
+  return analyzeColorInputJson(inputJson).code;
+}
+
+/**
+ * Analyzes the color plugged into the given input JSON.
  *
  * The colors are passed to add_opmode in the robot's __init__, which is
  * generated from the opmode's saved blocks, so only a wpiutil.Color constant
@@ -211,16 +237,16 @@ function getConnectedBlockJson(inputJson: {[key: string]: any} | undefined): {[k
  * arguments are all numbers (for example, wpiutil.Color(255, 128, 0)) are
  * supported.
  */
-function getColorCodeFromInputJson(inputJson: {[key: string]: any} | undefined): string | null {
+function analyzeColorInputJson(inputJson: {[key: string]: any} | undefined): ColorAnalysis {
   const blockJson = getConnectedBlockJson(inputJson);
   if (!blockJson) {
-    return null;
+    return {code: null, unsupportedBlockId: null};
   }
   if (blockJson.type === MRC_GET_PYTHON_VARIABLE &&
       blockJson.extraState?.varKind === VariableKind.CLASS &&
       blockJson.extraState?.moduleOrClassName === COLOR_CLASS_NAME &&
       blockJson.fields?.VAR) {
-    return COLOR_CLASS_NAME + '.' + blockJson.fields.VAR;
+    return {code: COLOR_CLASS_NAME + '.' + blockJson.fields.VAR, unsupportedBlockId: null};
   }
   if (blockJson.type === MRC_CALL_PYTHON_FUNCTION &&
       blockJson.extraState?.functionKind === FunctionKind.CONSTRUCTOR &&
@@ -229,15 +255,18 @@ function getColorCodeFromInputJson(inputJson: {[key: string]: any} | undefined):
     const argCodes: string[] = [];
     for (let i = 0; i < args.length; i++) {
       const argBlockJson = getConnectedBlockJson(blockJson.inputs?.['ARG' + i]);
-      if (argBlockJson?.type !== 'math_number' || argBlockJson.fields?.NUM === undefined) {
+      if (!argBlockJson) {
+        return {code: null, unsupportedBlockId: blockJson.id ?? null};
+      }
+      if (argBlockJson.type !== 'math_number' || argBlockJson.fields?.NUM === undefined) {
         // Variables and other expressions aren't available in the robot's __init__.
-        return null;
+        return {code: null, unsupportedBlockId: argBlockJson.id ?? null};
       }
       argCodes.push(String(argBlockJson.fields.NUM));
     }
-    return COLOR_CLASS_NAME + '(' + argCodes.join(', ') + ')';
+    return {code: COLOR_CLASS_NAME + '(' + argCodes.join(', ') + ')', unsupportedBlockId: null};
   }
-  return null;
+  return {code: null, unsupportedBlockId: blockJson.id ?? null};
 }
 
 function createColorShadowJson(colorName: string): {[key: string]: any} {
