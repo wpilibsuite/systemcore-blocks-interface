@@ -435,7 +435,6 @@
             "DRIVER_STATION": "Estación del Conductor",
             "DRIVER_STATION_DISPLAY": "Pantalla",
             "DRIVER_STATION_GAMEPADS": "Mandos de Juego",
-            "TEST": "Prueba",
             "PAGINATION_TOTAL": "{{start}}-{{end}} de {{total}} elementos"
         },
         "WARNING":{

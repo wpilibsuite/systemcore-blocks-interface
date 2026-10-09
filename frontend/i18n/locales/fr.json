@@ -435,7 +435,6 @@
             "DRIVER_STATION": "Station de pilotage",
             "DRIVER_STATION_DISPLAY": "Affichage",
             "DRIVER_STATION_GAMEPADS": "Manettes",
-            "TEST": "Test",
             "PAGINATION_TOTAL": "{{start}}-{{end}} sur {{total}} éléments"
         },
         "WARNING": {

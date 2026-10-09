@@ -434,7 +434,6 @@
       "DRIVER_STATION": "תחנת נהג",
       "DRIVER_STATION_DISPLAY": "תצוגה",
       "DRIVER_STATION_GAMEPADS": "בקרי משחק",
-      "TEST": "בדיקה",
             "PAGINATION_TOTAL": "{{start}}-{{end}} מתוך {{total}} פריטים"
     },
     "WARNING": {

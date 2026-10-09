@@ -434,7 +434,6 @@
             "DRIVER_STATION": "Driver Station",
             "DRIVER_STATION_DISPLAY": "Display",
             "DRIVER_STATION_GAMEPADS": "Gamepads",
-            "TEST": "Test",
             "PAGINATION_TOTAL": "{{start}}-{{end}} of {{total}} items"
         },
         "WARNING":{
