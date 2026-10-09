@@ -30,7 +30,6 @@ import { getCategory as getTextCategory } from './text_category';
 import { getCategory as getListsCategory } from './lists_category';
 import { getCategory as getMiscCategory } from './misc_category';
 import { getCategory as getMethodsCategory } from './methods_category';
-import { getCategory as getTestCategory } from './test_category';
 import { Editor } from '../editor/editor';
 
 
@@ -67,11 +66,6 @@ export function getToolboxItems(
         kind: 'sep',
       },
     ]);
-  }
-
-  const testCategory = getTestCategory();
-  if (testCategory.contents && testCategory.contents.length > 0) {
-    contents.push.apply(contents, [testCategory]);
   }
 
   contents.push.apply(
