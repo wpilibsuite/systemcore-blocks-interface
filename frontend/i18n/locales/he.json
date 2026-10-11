@@ -18,7 +18,7 @@
   "MOVE_BLOCKS_CHANGES_OTHER_TABS": "זה משנה גם לשוניות אחרות, ולכן ביטול לא יכול לבטל את הכול.",
   "MOVE_BLOCKS_SUCCESS": "הבלוקים הועברו אל {{name}} והבלוקים שקוראים בין לשוניות עודכנו.",
   "MOVE_BLOCKS_FAILED": "העברת הבלוקים אל {{name}} נכשלה.",
-  "__TODO__": "These translations were done by Claude Sonnet 4.6. They need to be verified by a native Hebrew speaker.",
+  "__TODO__": "These strings were created with the assistance of various AI tools and need to be reviewed by a native Hebrew speaker.",
   "mechanism_delete": "מחק מנגנון",
   "mechanism_rename": "שנה שם מנגנון",
   "mechanism_copy": "העתק מנגנון",
