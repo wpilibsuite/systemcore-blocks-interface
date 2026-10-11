@@ -446,6 +446,12 @@
             "OBSERVABILITY": "Observability",
             "OBSERVABILITY_TOOLTIP": "See what the robot is doing while it runs.",
             "DRIVER_STATION_GAMEPADS": "Gamepads",
+            "TELEMETRY": "Telemetry",
+            "TELEMETRY_TOOLTIP": "Log data here so that it can be charted and shown in dashboards.",
+            "TUNABLES": "Tunables",
+            "TUNABLES_TOOLTIP": "Use values that can be changed in the dashboards.",
+            "ALERTS": "Alerts",
+            "ALERTS_TOOLTIP": "Show problems and warnings in the dashboards.",
             "PAGINATION_TOTAL": "{{start}}-{{end}} of {{total}} items"
         },
         "WARNING":{

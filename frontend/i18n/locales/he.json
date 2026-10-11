@@ -446,7 +446,13 @@
       "OBSERVABILITY": "ניטור",
       "OBSERVABILITY_TOOLTIP": "ראו מה הרובוט עושה בזמן שהוא פועל.",
       "DRIVER_STATION_GAMEPADS": "בקרי משחק",
-            "PAGINATION_TOTAL": "{{start}}-{{end}} מתוך {{total}} פריטים"
+      "TELEMETRY": "טלמטריה",
+      "TELEMETRY_TOOLTIP": "רשמו כאן נתונים כדי להציג אותם בגרפים ובלוחות מחוונים.",
+      "TUNABLES": "ערכים מתכווננים",
+      "TUNABLES_TOOLTIP": "השתמשו בערכים שניתן לשנות בלוחות המחוונים.",
+      "ALERTS": "התראות",
+      "ALERTS_TOOLTIP": "הציגו בעיות ואזהרות בלוחות המחוונים.",
+      "PAGINATION_TOTAL": "{{start}}-{{end}} מתוך {{total}} פריטים"
     },
     "WARNING": {
       "GET_MODULE_VARIABLE_MISSING_MODULE": "בלוק זה מקבל משתנה מודול בתוך מודול שכבר אינו קיים.",
