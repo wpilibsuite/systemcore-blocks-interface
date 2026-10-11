@@ -483,7 +483,11 @@ export const pythonFromBlock = function (
     });
   }
 
-  let code = 'def ' + funcName + '(' + paramString + '):\n';
+  let code = 'def ' + funcName + '(' + paramString + ')';
+  if (block.mrcReturnType) {
+    code += ' -> ' + block.mrcReturnType;
+  }
+  code += ':\n';
 
   code +=
       xfix1 +
@@ -549,19 +553,29 @@ export function createCustomMethodBlockWithReturn(): toolboxItems.Block {
 export function getBaseClassBlocks(
     workspace: Blockly.WorkspaceSvg, baseClassName: string, methodNamesOverrideable: string[],
     methodNamesAlreadyOverridden: string[]): toolboxItems.ContentsType[] {
-  const contents: toolboxItems.ContentsType[] = [];
   const classData = getClassData(baseClassName);
   if (classData) {
-    classData.instanceMethods
-        .filter(functionData => methodNamesOverrideable.includes(functionData.functionName))
-        .forEach(functionData => {
-            if (methodNamesAlreadyOverridden.includes(functionData.functionName)) {
-              contents.push(createButton(workspace, functionData));
-            } else {
-              contents.push(createClassMethodDefBlock(functionData));
-            }
-        });
+    return getBlocksForInstanceMethods(
+        workspace,
+        classData.instanceMethods
+            .filter(functionData => methodNamesOverrideable.includes(functionData.functionName)),
+        methodNamesAlreadyOverridden);
   }
+  return [];
+}
+
+export function getBlocksForInstanceMethods(
+    workspace: Blockly.WorkspaceSvg, instanceMethods: FunctionData[],
+    methodNamesAlreadyOverridden: string[]): toolboxItems.ContentsType[] {
+  const contents: toolboxItems.ContentsType[] = [];
+  instanceMethods
+      .forEach(functionData => {
+          if (methodNamesAlreadyOverridden.includes(functionData.functionName)) {
+            contents.push(createButton(workspace, functionData));
+          } else {
+            contents.push(createClassMethodDefBlock(functionData));
+          }
+      });
   return contents;
 }
 
