@@ -112,6 +112,7 @@ async function fixOldFiles(db: IDBDatabase): Promise<void> {
 }
 
 class ClientSideStorage implements commonStorage.Storage {
+  readonly entryKeyPrefix = 'local/';
   db: IDBDatabase;
 
   static create(db: IDBDatabase) {
@@ -190,6 +191,21 @@ class ClientSideStorage implements commonStorage.Storage {
         console.log('IndexedDB delete request failed. deleteRequest.error is...');
         console.log(deleteRequest.error);
         throw new Error('IndexedDB delete request failed.');
+      };
+    });
+  }
+
+  async listEntryKeys(): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      const getAllKeysRequest = this.db.transaction([ENTRIES_STORE_NAME], 'readonly')
+          .objectStore(ENTRIES_STORE_NAME).getAllKeys();
+      getAllKeysRequest.onerror = () => {
+        console.log('IndexedDB getAllKeys request failed. getAllKeysRequest.error is...');
+        console.log(getAllKeysRequest.error);
+        reject(new Error('IndexedDB getAllKeys request failed.'));
+      };
+      getAllKeysRequest.onsuccess = () => {
+        resolve(getAllKeysRequest.result.map(key => String(key)));
       };
     });
   }

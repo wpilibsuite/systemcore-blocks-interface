@@ -31,16 +31,16 @@ export const setup = function() {
   Blockly.Blocks[BLOCK_NAME] = {
     init: function() {
       this.appendDummyInput()
-          .appendField("add item");
+          .appendField(Blockly.Msg.LIST_ADD_ITEM);
       this.appendValueInput("ITEM");
       this.appendDummyInput()
-          .appendField("to list");
+          .appendField(Blockly.Msg.LIST_ADD_ITEM_TO_LIST);
       this.appendValueInput("LIST")
           .setCheck("Array");
       this.setPreviousStatement(true);
       this.setNextStatement(true);
       this.setStyle('list_blocks');
-      this.setTooltip("Add the item to the end of the list.");
+      this.setTooltip(Blockly.Msg.LIST_ADD_ITEM_TOOLTIP);
     },
   };
 };

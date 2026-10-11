@@ -39,10 +39,23 @@ The `rev` module isn't built in: it is the REV Robotics example library in `exam
 ### Storage abstraction (`frontend/storage/common_storage.ts`)
 
 A `Storage` interface is implemented by two backends:
-- `client_side_storage.ts` — browser localStorage, used in dev/standalone mode
+- `client_side_storage.ts` — browser IndexedDB, used in dev/standalone mode (when there is no backend)
 - `server_side_storage.ts` — REST calls to the Flask backend, used on SystemCore
 
-All project data (Blockly workspace state + metadata) is stored as JSON through this interface. Projects live at `projects/<ProjectName>/`.
+All project data (Blockly workspace state + metadata) is stored as JSON files through this interface. Projects live at `projects/<ProjectName>/`.
+
+The interface also has key/value **entries** (`saveEntry`, `fetchEntry`, `deleteEntry`, `listEntryKeys`). Entries are always kept in the browser's IndexedDB, even with a backend (`ServerSideStorage` passes them to the browser storage it is given), so they are mostly used for user settings. Don't put anything in entries that should be shared by everyone using the robot; that belongs on the backend (see `/entries` below).
+
+### User settings (`frontend/storage/user_settings.ts`)
+
+All user settings go through `user_settings.ts`; don't add separate entries for new settings.
+- `userSettings` — one entry with the user's general settings (language, theme, renderer, `lastZoom`, tour, toolbox categories). Add new general settings as properties of `UserSettingsData`. It is shared whether or not there is a backend.
+- `Project_<projectId>` — one entry for each project, holding `openTabs` (moduleIds) and a `Module_<moduleId>` object (`zoom`, `scroll`) for each module.
+- `mostRecentProjectId` — the projectId of the most recently opened project.
+
+Project settings are keyed by `projectId`/`moduleId`, not names or paths, so renames don't need to update them. Settings for projects and modules that no longer exist (for example, because they were deleted in another browser) are removed on startup (`removeStaleProjectSettings`) and when a project is fetched (`removeStaleModuleSettings`).
+
+Entries that are tied to one storage's projects (`Project_*`, `mostRecentProjectId`, and `installedLibraries` for libraries installed without a backend) have keys starting with `local/` or `server/`, made with `commonStorage.makeStorageKey`. Both can be in the same IndexedDB (if the page was loaded from the same origin with and without a backend), and the prefix keeps one storage's cleanup from deleting the other's entries.
 
 ### Project data model (`frontend/storage/`)
 
@@ -77,13 +90,13 @@ Extends Blockly's built-in `PythonGenerator`. The generator runs when saving or 
 
 ### Third party libraries (`frontend/libraries/`, `backend/blocks_lib.py`)
 
-Third parties publish `.blocks_lib` files (zip of `metadata.json`, `wheels/`, `toolboxes/`, `components/`, `python_data/`, `samples/`, `locales/`); the format is documented in `docs/blocks_lib_format.md` and `example_libraries/` has buildable examples (`example_libraries/build.sh`). The frontend and backend each have a parser — keep `frontend/libraries/blocks_lib.ts` and `backend/blocks_lib.py` in sync. Libraries are installed on the backend (`<data dir>/libraries/`) or, without a backend, kept in a storage entry. `LibrariesModal.tsx` manages them; the visible categories and component classes are added to the toolbox by `toolbox/library_toolbox.ts`. All installed component classes and python data (modules, classes, enums, aliases, and subclasses in the format of `robotpy_data.json`) are registered with `blocks/utils/python.ts` (`setLibraryPythonData`) so existing component blocks keep working even when hidden. Library python data is never shown with the built in RobotPy modules; a library adds blocks for it through `toolboxes/`, which the REV Robotics example generates at build time (`example_libraries/generate_python_toolboxes.mjs`, which bundles `libraries/python_data_toolboxes.ts` with vite) for the classes in its `python_toolbox.json`. Library samples are listed after the built in samples by `samples/samples_registry.ts` (`listSamples(libraries)`). Library strings can be `%{KEY}` references to the library's `locales/*.json`; `libraries/library_i18n.ts` translates them when they are shown. Hidden keys use the untranslated names, and tooltips stay references (qualified with the library name) in saved blocks. On deploy, the backend pins the wheels of libraries whose packages are imported by the generated code.
+Third parties publish `.blocks_lib` files (zip of `metadata.json`, `wheels/`, `toolboxes/`, `components/`, `python_data/`, `samples/`, `locales/`); the format is documented in `docs/blocks_lib_format.md` and `example_libraries/` has buildable examples (`example_libraries/build.sh`). The frontend and backend each have a parser — keep `frontend/libraries/blocks_lib.ts` and `backend/blocks_lib.py` in sync. Libraries are installed on the backend (`<data dir>/libraries/`) or, without a backend, kept in the `local/installedLibraries` entry. `LibrariesModal.tsx` manages them; the visible categories and component classes are added to the toolbox by `toolbox/library_toolbox.ts`. All installed component classes and python data (modules, classes, enums, aliases, and subclasses in the format of `robotpy_data.json`) are registered with `blocks/utils/python.ts` (`setLibraryPythonData`) so existing component blocks keep working even when hidden. Library python data is never shown with the built in RobotPy modules; a library adds blocks for it through `toolboxes/`, which the REV Robotics example generates at build time (`example_libraries/generate_python_toolboxes.mjs`, which bundles `libraries/python_data_toolboxes.ts` with vite) for the classes in its `python_toolbox.json`. Library samples are listed after the built in samples by `samples/samples_registry.ts` (`listSamples(libraries)`). Library strings can be `%{KEY}` references to the library's `locales/*.json`; `libraries/library_i18n.ts` translates them when they are shown. Hidden keys use the untranslated names, and tooltips stay references (qualified with the library name) in saved blocks. On deploy, the backend pins the wheels of libraries whose packages are imported by the generated code.
 
 ### Backend (`backend/`)
 
 Flask + Flask-RESTful app. Key endpoints:
 - `GET/POST /storage/<path>` — file and directory operations backed by SQLite (`projects.db`)
-- `GET/POST /entries/<key>` — key-value settings storage
+- `GET/POST/DELETE /entries/<key>` — key-value storage on the robot. The frontend doesn't use it at the moment (user settings are kept in the browser); it is kept for values that belong to the robot rather than to a user
 - `POST /deploy` — receives a zip, extracts to `/home/systemcore/blocks/deployedPython/`, then uses `robotpy installer` to stop/restart the robot
 - During production, the backend is run with gunicorn so be careful not to put code in the
 `if __name__ == '__main__':` that needs to run both when being tested and in production

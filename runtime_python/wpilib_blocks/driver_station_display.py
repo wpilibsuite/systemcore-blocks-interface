@@ -7,8 +7,8 @@ from . import color as color_utils
 
 def _colorPrefixedLine(color: wpiutil.Color, line: str) -> str:
     if color is None:
-        return line
-    return color_utils.get_ansi(color) + line
+        return str(line)
+    return color_utils.get_ansi(color) + str(line)
 
 
 class DriverStationDisplay:

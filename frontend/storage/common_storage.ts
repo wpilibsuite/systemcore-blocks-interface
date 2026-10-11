@@ -20,13 +20,22 @@
  */
 
 export interface Storage {
-  // Functions for storing key/value entries.
+  /**
+   * The prefix of the keys of entries that are tied to this storage's projects, such as the
+   * settings for each project. See makeStorageKey.
+   */
+  readonly entryKeyPrefix: string;
+
+  // Functions for storing key/value entries. Entries hold settings that are specific to the user,
+  // so they are always kept in the browser's storage.
 
   saveEntry(entryKey: string, entryValue: string): Promise<void>;
 
   fetchEntry(entryKey: string, defaultValue: string): Promise<string>;
 
   deleteEntry(entryKey: string): Promise<void>;
+
+  listEntryKeys(): Promise<string[]>;
 
   // Functions for storing files.
   
@@ -39,4 +48,16 @@ export interface Storage {
   saveFile(filePath: string, fileContentText: string): Promise<void>;
 
   delete(path: string): Promise<void>;
+}
+
+/**
+ * Returns the key of an entry that is tied to the given storage's projects. Entries are always kept
+ * in the browser, so the entries for projects kept in the browser and projects kept on the backend
+ * can be in the same place (if the page was loaded from the same origin both with and without a
+ * backend, for example because the backend didn't respond in time). Their keys start with local/
+ * and server/ respectively, so that one storage's entries are never mistaken for the other's.
+ * Entries that aren't tied to a storage, such as the user's general settings, have no prefix.
+ */
+export function makeStorageKey(storage: Storage, entryKey: string): string {
+  return storage.entryKeyPrefix + entryKey;
 }
