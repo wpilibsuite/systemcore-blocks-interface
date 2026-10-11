@@ -33,6 +33,7 @@ import * as opmodeDetails from '../blocks/mrc_opmode_details';
 import * as blockSteps from '../blocks/mrc_steps';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 import * as portConflicts from '../blocks/utils/port_conflicts';
+import { canChangeVariableTypes, updateVariableTypes } from '../blocks/utils/variable_types';
 import * as workspaces from '../blocks/utils/workspaces';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { applyExpandedCategories, getToolboxJSON } from '../toolbox/toolbox';
@@ -53,6 +54,7 @@ const MRC_ON_DESCENDANT_DISCONNECT = 'mrcOnDescendantDisconnect';
 const MRC_ON_ANCESTOR_MOVE = 'mrcOnAncestorMove';
 const MRC_ON_MODULE_CURRENT = 'mrcOnModuleCurrent';
 const MRC_ON_MUTATOR_OPEN = 'mrcOnMutatorOpen';
+const MRC_ON_VARIABLE_TYPE_CHANGE = 'mrcOnVariableTypeChange';
 const MRC_SHOW_SIMPLE_CLASS_NAMES = 'mrcShowSimpleClassNames';
 
 export class Editor {
@@ -144,6 +146,9 @@ export class Editor {
       opmodeDetails.checkOpMode(this.blocklyWorkspace, this);
     }
     this.checkPortConflictsAfterDelay();
+
+    // Variables in projects saved before variables had types get their types now.
+    updateVariableTypes(this.blocklyWorkspace);
   }
 
   private onChangeAfterLoading(event: Blockly.Events.Abstract) {
@@ -164,6 +169,23 @@ export class Editor {
 
     if (event.type === Blockly.Events.VIEWPORT_CHANGE) {
       this.setPasteLocation();
+    }
+
+    // Variables get their types from the values assigned to them.
+    if (canChangeVariableTypes(event)) {
+      updateVariableTypes(this.blocklyWorkspace);
+    }
+
+    if (event instanceof Blockly.Events.VarTypeChange) {
+      if (event.varId) {
+        // Call MRC_ON_VARIABLE_TYPE_CHANGE on the blocks that use the variable.
+        Blockly.Variables.getVariableUsesById(this.blocklyWorkspace, event.varId)
+            .forEach(block => {
+              if (MRC_ON_VARIABLE_TYPE_CHANGE in block && typeof block[MRC_ON_VARIABLE_TYPE_CHANGE] === 'function') {
+                block[MRC_ON_VARIABLE_TYPE_CHANGE](this);
+              }
+            });
+      }
     }
 
     if (event.type === Blockly.Events.BLOCK_CREATE) {

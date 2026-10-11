@@ -28,6 +28,7 @@ import * as GamepadBoolean from './mrc_gamepad_boolean';
 import * as GamepadAnalog from './mrc_gamepad_analog';
 import * as GamepadBooleanEvent from './mrc_gamepad_boolean_event';
 import * as GamepadRumble from './mrc_gamepad_rumble';
+import { registerVariableMap } from './utils/variable_types';
 
 const customBlocks = [
   CallPythonFunction,
@@ -62,6 +63,7 @@ const customBlocks = [
 ];
 
 export const setup = function(forBlock: any) {
+  registerVariableMap();
   customBlocks.forEach(block => {
     block.setup();
     const maybeBlock = block as { pythonFromBlock?: any; BLOCK_NAME?: string };

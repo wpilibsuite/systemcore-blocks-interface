@@ -40,6 +40,10 @@ import * as variable from './utils/variable';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { CustomDropdownWithoutValidation } from '../fields/FieldDropdown';
+import {
+    DEFAULT_OPTION_VALUE,
+    FieldTypedVariable,
+    FieldTypedVariableOrDefault } from '../fields/field_typed_variable';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
@@ -60,6 +64,7 @@ enum FunctionKind {
   STATIC = 'static',
   CONSTRUCTOR = 'constructor',
   INSTANCE = 'instance',
+  INSTANCE_VARIABLE = 'instance_variable', // For calling a method on a variable of a specific type.
   INSTANCE_WITHIN = 'instance_within',
   INSTANCE_COMPONENT = 'instance_component',
   INSTANCE_ROBOT = 'instance_robot',
@@ -75,6 +80,7 @@ const FIELD_FUNCTION_NAME = 'FUNC';
 const FIELD_EVENT_NAME = 'EVENT';
 const FIELD_COMPONENT_NAME = 'COMPONENT_NAME';
 const FIELD_MECHANISM_NAME = 'MECHANISM_NAME';
+const FIELD_VARIABLE = 'VAR';
 
 type FunctionArg = {
   name: string,
@@ -101,6 +107,7 @@ interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
   mrcModuleOrClassName: string,
   mrcMapComponentNameToId: {[componentName: string]: string},
   mrcHideOutput: boolean,
+  mrcDefaultModuleName: string,
 }
 type CallPythonFunctionMixinType = typeof CALL_PYTHON_FUNCTION;
 
@@ -170,7 +177,7 @@ type CallPythonFunctionExtraState = {
   mechanismClassName?: string,
   /**
    * The module or class name. Specified only if the function kind is MODULE, STATIC, CONSTRUCTOR,
-   * or INSTANCE.
+   * INSTANCE, or INSTANCE_VARIABLE. For INSTANCE_VARIABLE, it is also the type of the variable.
    */
   moduleOrClassName?: string,
   /**
@@ -178,6 +185,12 @@ type CallPythonFunctionExtraState = {
    * Specified only if the output is hidden.
    */
   hideOutput?: boolean,
+  /**
+   * The module whose function is called when the default option is chosen in the variable
+   * dropdown. Specified only if the function kind is INSTANCE_VARIABLE and the module has a
+   * function with the same name and arguments as the method.
+   */
+  defaultModuleName?: string,
 }
 
 const CALL_PYTHON_FUNCTION = {
@@ -220,7 +233,15 @@ const CALL_PYTHON_FUNCTION = {
           tooltip = tooltip.replace('{{className}}', className);
           break;
         }
-        case FunctionKind.INSTANCE: {
+        case FunctionKind.INSTANCE:
+        case FunctionKind.INSTANCE_VARIABLE: {
+          if (this.usesDefaultModule()) {
+            tooltip = Blockly.Msg.CALL_MODULE_FUNCTION_TOOLTIP;
+            tooltip = tooltip
+                .replace('{{moduleName}}', this.mrcDefaultModuleName)
+                .replace('{{functionName}}', this.getFieldValue(FIELD_FUNCTION_NAME));
+            break;
+          }
           const className = this.mrcModuleOrClassName;
           const functionName = this.getFieldValue(FIELD_FUNCTION_NAME);
           tooltip = Blockly.Msg.CALL_INSTANCE_METHOD_TOOLTIP;
@@ -341,6 +362,9 @@ const CALL_PYTHON_FUNCTION = {
     if (this.mrcHideOutput) {
       extraState.hideOutput = true;
     }
+    if (this.mrcDefaultModuleName) {
+      extraState.defaultModuleName = this.mrcDefaultModuleName;
+    }
     return extraState;
   },
   /**
@@ -371,6 +395,7 @@ const CALL_PYTHON_FUNCTION = {
     this.mrcMechanismClassName = extraState.mechanismClassName ? extraState.mechanismClassName : '';
     this.mrcModuleOrClassName = extraState.moduleOrClassName ? extraState.moduleOrClassName : '';
     this.mrcHideOutput = extraState.hideOutput === true;
+    this.mrcDefaultModuleName = extraState.defaultModuleName ? extraState.defaultModuleName : '';
     // mrcMapComponentNameToId will be filled during checkBlock.
     this.mrcMapComponentNameToId = {};
     this.updateBlock_();
@@ -436,6 +461,19 @@ const CALL_PYTHON_FUNCTION = {
           this.appendDummyInput(INPUT_TITLE)
               .appendField(Blockly.Msg.CALL)
               .appendField(createFieldNonEditableText(''), FIELD_MODULE_OR_CLASS_NAME)
+              .appendField('.')
+              .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
+          break;
+        case FunctionKind.INSTANCE_VARIABLE:
+          // For the object, use a dropdown of the variables in this module whose type is the class.
+          this.appendDummyInput(INPUT_TITLE)
+              .appendField(Blockly.Msg.CALL)
+              .appendField(
+                  // If there is a default module, the dropdown also has the default option.
+                  this.mrcDefaultModuleName
+                      ? new FieldTypedVariableOrDefault(this.mrcModuleOrClassName)
+                      : new FieldTypedVariable(this.mrcModuleOrClassName),
+                  FIELD_VARIABLE)
               .appendField('.')
               .appendField(createFieldNonEditableText(''), FIELD_FUNCTION_NAME);
           break;
@@ -741,13 +779,22 @@ const CALL_PYTHON_FUNCTION = {
    * mrcOnChange is called for each CallPythonFunctionBlock when it is changed.
    */
   mrcOnChange: function(this: CallPythonFunctionBlock, editor: Editor, blockChangeEvent: Blockly.Events.BlockChange): void {
-    if (blockChangeEvent.element === 'field' && blockChangeEvent.name === FIELD_COMPONENT_NAME) {
+    if (blockChangeEvent.element === 'field' &&
+        (blockChangeEvent.name === FIELD_COMPONENT_NAME || blockChangeEvent.name === FIELD_VARIABLE)) {
       this.checkFunction(editor);
     }
   },
   /**
+   * mrcOnVariableTypeChange is called for each CallPythonFunctionBlock when the type of a variable
+   * that it uses is changed.
+   */
+  mrcOnVariableTypeChange: function(this: CallPythonFunctionBlock, editor: Editor): void {
+    this.checkFunction(editor);
+  },
+  /**
    * checkFunction checks the block, updates it, and/or adds a warning balloon if necessary.
-   * It is called from mrcOnModuleCurrent, mrcOnLoad, and mrcOnCreate above.
+   * It is called from mrcOnModuleCurrent, mrcOnLoad, mrcOnCreate, mrcOnChange, and
+   * mrcOnVariableTypeChange above.
    */
   checkFunction: function(this: CallPythonFunctionBlock, editor: Editor): void {
     const warnings: string[] = [];
@@ -764,6 +811,14 @@ const CALL_PYTHON_FUNCTION = {
         break;
       case FunctionKind.INSTANCE:
         this.checkInstanceMethod(warnings);
+        break;
+      case FunctionKind.INSTANCE_VARIABLE:
+        // The self argument is chosen with the variable dropdown, so the block doesn't have it.
+        this.checkInstanceMethod(warnings, false);
+        if (this.mrcDefaultModuleName) {
+          this.checkDefaultModuleFunction(warnings);
+        }
+        this.checkVariableType(warnings);
         break;
       case FunctionKind.INSTANCE_WITHIN:
         this.checkInstanceMethodWithin(editor, warnings);
@@ -869,17 +924,23 @@ const CALL_PYTHON_FUNCTION = {
       warnings.push(Blockly.Msg.WARNING_CALL_CONSTRUCTOR_MISSING_CLASS);
     }
   },
-  checkInstanceMethod: function(this: CallPythonFunctionBlock, warnings: string[]): void {
+  checkInstanceMethod: function(
+      this: CallPythonFunctionBlock, warnings: string[], blockHasSelfArg: boolean = true): void {
     // If this block is calling a class method, check whether the class and method still exist.
     // If the class or method doesn't exist, put a visible warning on this block.
+    // If blockHasSelfArg is false, the block's args don't include self, so self is left out of
+    // the args it is compared with.
    const className = this.mrcModuleOrClassName;
     const classData = getClassData(className);
     if (classData) {
       let foundFunction = false;
       const blockFunctionName = this.getFieldValue(FIELD_FUNCTION_NAME);
       for (const functionData of classData.instanceMethods) {
+        const functionDataToMatch = blockHasSelfArg
+            ? functionData
+            : {...functionData, args: functionData.args.slice(1)};
         if (blockFunctionName === functionData.functionName &&
-            blockArgsMatchFunctionDataArgs(this.mrcArgs, functionData)) {
+            blockArgsMatchFunctionDataArgs(this.mrcArgs, functionDataToMatch)) {
           foundFunction = true;
           break;
         }
@@ -892,6 +953,44 @@ const CALL_PYTHON_FUNCTION = {
       // belongs to an installed library, assume it exists.
       warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_METHOD_MISSING_CLASS);
     }
+  },
+  checkDefaultModuleFunction: function(this: CallPythonFunctionBlock, warnings: string[]): void {
+    // If this block can call a function in the default module, check whether the module and
+    // function still exist.
+    const moduleData = getModuleData(this.mrcDefaultModuleName);
+    if (moduleData) {
+      const blockFunctionName = this.getFieldValue(FIELD_FUNCTION_NAME);
+      const foundFunction = moduleData.functions.some(functionData =>
+          blockFunctionName === functionData.functionName &&
+          blockArgsMatchFunctionDataArgs(this.mrcArgs, functionData));
+      if (!foundFunction) {
+        warnings.push(Blockly.Msg.WARNING_CALL_MODULE_FUNCTION_MISSING_FUNCTION);
+      }
+    } else if (!isLibraryPythonModule(this.mrcDefaultModuleName)) {
+      warnings.push(Blockly.Msg.WARNING_CALL_MODULE_FUNCTION_MISSING_MODULE);
+    }
+  },
+  checkVariableType: function(this: CallPythonFunctionBlock, warnings: string[]): void {
+    // Variables get their types from the values assigned to them, so the chosen variable might
+    // not be the class whose method this block calls. If it isn't, put a visible warning on this
+    // block.
+    if (this.usesDefaultModule()) {
+      return;
+    }
+    const variable = this.workspace.getVariableMap().getVariableById(this.getFieldValue(FIELD_VARIABLE));
+    if (variable && variable.getType() !== this.mrcModuleOrClassName) {
+      warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_VARIABLE_WRONG_TYPE
+          .replace('{{variableName}}', variable.getName())
+          .replace('{{className}}', this.mrcModuleOrClassName));
+    }
+  },
+  /**
+   * Returns true if this block calls a function in the default module instead of a method on a
+   * variable.
+   */
+  usesDefaultModule: function(this: CallPythonFunctionBlock): boolean {
+    return !!this.mrcDefaultModuleName &&
+        this.getFieldValue(FIELD_VARIABLE) === DEFAULT_OPTION_VALUE;
   },
   checkInstanceMethodWithin: function(this: CallPythonFunctionBlock, editor: Editor, warnings: string[]): void {
     // If this block is calling a method defined in this module, check whether the method still
@@ -1227,6 +1326,10 @@ const CALL_PYTHON_FUNCTION = {
         return Blockly.Msg.CALL + ' ' +
             this.mrcModuleOrClassName + '.' +
             this.getFieldValue(FIELD_FUNCTION_NAME);
+      case FunctionKind.INSTANCE_VARIABLE:
+        return Blockly.Msg.CALL + ' ' +
+            this.getField(FIELD_VARIABLE)?.getText() + '.' +
+            this.getFieldValue(FIELD_FUNCTION_NAME);
       case FunctionKind.INSTANCE_WITHIN:
         return Blockly.Msg.CALL + ' ' +
             this.getFieldValue(FIELD_FUNCTION_NAME);
@@ -1308,6 +1411,20 @@ export function pythonFromBlock(
           : block.getFieldValue(FIELD_FUNCTION_NAME);
       code = selfValue + '.' + functionName;
       argStartIndex = 1; // Skip the self argument.
+      break;
+    }
+    case FunctionKind.INSTANCE_VARIABLE: {
+      let objectCode: string;
+      if (block.usesDefaultModule()) {
+        generator.importModule(block.mrcDefaultModuleName);
+        objectCode = block.mrcDefaultModuleName;
+      } else {
+        objectCode = generator.getVariableName(block.getFieldValue(FIELD_VARIABLE));
+      }
+      const functionName = (block.mrcActualFunctionName)
+          ? block.mrcActualFunctionName
+          : block.getFieldValue(FIELD_FUNCTION_NAME);
+      code = objectCode + '.' + functionName;
       break;
     }
     case FunctionKind.INSTANCE_WITHIN: {
@@ -1693,6 +1810,88 @@ function createInstanceMethodBlock(
   return createBlock(extraState, fields, inputs);
 }
 
+/**
+ * Adds blocks that call the instance methods of the given class on a variable. Each block has a
+ * dropdown of the variables in the module whose type is the class.
+ * If defaultModuleData is given, methods that match a function in that module (same name and
+ * arguments, without self) also have a default option in the dropdown, which calls the module
+ * function. The blocks start with the default option chosen.
+ */
+export function addInstanceVariableMethodBlocks(
+    classData: ClassData,
+    commonContents: toolboxItems.ContentsType[],
+    moreContents: toolboxItems.ContentsType[],
+    defaultModuleData?: ModuleData) {
+  classData.instanceMethods.forEach(functionData => {
+    const argsWithoutSelf = functionData.args.slice(1);
+    const hasDefault = !!defaultModuleData && defaultModuleData.functions.some(moduleFunction =>
+        moduleFunction.functionName === functionData.functionName &&
+        argsMatch(moduleFunction.args, argsWithoutSelf));
+    const block = createInstanceVariableMethodBlock(
+        classData.className, functionData, hasDefault ? defaultModuleData!.moduleName : '');
+    if (functionData.isCommon) {
+      commonContents.push(block);
+    } else {
+      moreContents.push(block);
+    }
+  });
+}
+
+function argsMatch(args1: ArgData[], args2: ArgData[]): boolean {
+  return args1.length === args2.length &&
+      args1.every((arg, i) => arg.name === args2[i].name && arg.type === args2[i].type);
+}
+
+function createInstanceVariableMethodBlock(
+    className: string,
+    functionData: FunctionData,
+    defaultModuleName: string): toolboxItems.Block {
+  const extraStateForSelf: Partial<CallPythonFunctionExtraState> = {
+    moduleOrClassName: className,
+  };
+  const fields: {[key: string]: any} = {};
+  if (defaultModuleName) {
+    extraStateForSelf.defaultModuleName = defaultModuleName;
+    fields[FIELD_VARIABLE] = DEFAULT_OPTION_VALUE;
+  } else {
+    fields[FIELD_VARIABLE] = {
+      name: variable.varNameForType(className),
+      type: className,
+    };
+  }
+  return createInstanceMethodBlockWithSelfField(
+      FunctionKind.INSTANCE_VARIABLE,
+      extraStateForSelf,
+      fields,
+      functionData);
+}
+
+/**
+ * Creates a block that calls an instance method where self is represented by fields (like the
+ * component or variable dropdown) instead of a socket.
+ */
+function createInstanceMethodBlockWithSelfField(
+    functionKind: FunctionKind,
+    extraStateForSelf: Partial<CallPythonFunctionExtraState>,
+    fieldsForSelf: {[key: string]: any},
+    functionData: FunctionData): toolboxItems.Block {
+  const extraState: CallPythonFunctionExtraState = {
+    functionKind: functionKind,
+    returnType: functionData.returnType,
+    args: [],
+    tooltip: functionData.tooltip,
+    ...extraStateForSelf,
+  };
+  const fields: {[key: string]: any} = {...fieldsForSelf};
+  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
+  const inputs: {[key: string]: any} = {};
+  // The 0 argument is 'self', but self is represented by fields.
+  // We don't include the arg for the self argument because we don't need a socket for it.
+  const argsWithoutSelf = functionData.args.slice(1);
+  processArgs(argsWithoutSelf, extraState, inputs);
+  return createBlock(extraState, fields, inputs);
+}
+
 export function addInstanceWithinBlocks(
     methods: storageModuleContent.Method[],
     contents: toolboxItems.ContentsType[]) {
@@ -1769,54 +1968,38 @@ export function getInstanceMechanismComponentBlocks(
 
 function createInstanceComponentBlock(
     component: storageModuleContent.Component, functionData: FunctionData): toolboxItems.Block {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.INSTANCE_COMPONENT,
-    returnType: functionData.returnType,
-    args: [],
-    tooltip: functionData.tooltip,
-    importModule: '',
-    componentClassName: component.className,
-    componentName: component.name,
-    componentId: component.componentId,
-  };
   const fields: {[key: string]: any} = {};
   fields[FIELD_COMPONENT_NAME] = component.name;
-  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
-  const inputs: {[key: string]: any} = {};
-  // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
-  // self is represented by the FIELD_COMPONENT_NAME field.
-  // We don't include the arg for the self argument because we don't need a socket for it.
-  const argsWithoutSelf = functionData.args.slice(1);
-  processArgs(argsWithoutSelf, extraState, inputs);
-  return createBlock(extraState, fields, inputs);
+  return createInstanceMethodBlockWithSelfField(
+      FunctionKind.INSTANCE_COMPONENT,
+      {
+        importModule: '',
+        componentClassName: component.className,
+        componentName: component.name,
+        componentId: component.componentId,
+      },
+      fields,
+      functionData);
 }
 
 function createInstanceMechanismComponentBlock(
     component: storageModuleContent.Component,
     functionData: FunctionData, 
     mechanismInRobot: storageModuleContent.MechanismInRobot): toolboxItems.Block {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.INSTANCE_COMPONENT,
-    returnType: functionData.returnType,
-    args: [],
-    tooltip: functionData.tooltip,
-    importModule: '',
-    componentClassName: component.className,
-    componentName: component.name,
-    componentId: component.componentId,
-    mechanismId: mechanismInRobot.mechanismId,
-  };
   const fields: {[key: string]: any} = {};
   fields[FIELD_MECHANISM_NAME] = mechanismInRobot.name;
   fields[FIELD_COMPONENT_NAME] = component.name;
-  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
-  const inputs: {[key: string]: any} = {};
-  // For INSTANCE_COMPONENT functions, the 0 argument is 'self', but
-  // self is represented by the FIELD_COMPONENT_NAME field.
-  // We don't include the arg for the self argument because we don't need a socket for it.
-  const argsWithoutSelf = functionData.args.slice(1);
-  processArgs(argsWithoutSelf, extraState, inputs);
-  return createBlock(extraState, fields, inputs);
+  return createInstanceMethodBlockWithSelfField(
+      FunctionKind.INSTANCE_COMPONENT,
+      {
+        importModule: '',
+        componentClassName: component.className,
+        componentName: component.name,
+        componentId: component.componentId,
+        mechanismId: mechanismInRobot.mechanismId,
+      },
+      fields,
+      functionData);
 }
 
 export function addInstanceRobotBlocks(
