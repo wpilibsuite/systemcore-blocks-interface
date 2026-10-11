@@ -22,7 +22,6 @@
 import * as robotPyToolbox from './robotpy_toolbox';
 import * as runtimePyToolbox from './runtimepy_toolbox';
 import * as toolboxItems from './items';
-import * as Blockly from 'blockly/core';
 import { getCategory as getLogicCategory } from './logic_category';
 import { getCategory as getLoopCategory } from './loop_category';
 import { getCategory as getMathCategory } from './math_category';
@@ -30,7 +29,7 @@ import { getCategory as getTextCategory } from './text_category';
 import { getCategory as getListsCategory } from './lists_category';
 import { getCategory as getMiscCategory } from './misc_category';
 import { getCategory as getMethodsCategory } from './methods_category';
-import { getCategory as getTestCategory } from './test_category';
+import { getCategory as getVariablesCategory } from './variables_category';
 import { Editor } from '../editor/editor';
 
 
@@ -69,11 +68,6 @@ export function getToolboxItems(
     ]);
   }
 
-  const testCategory = getTestCategory();
-  if (testCategory.contents && testCategory.contents.length > 0) {
-    contents.push.apply(contents, [testCategory]);
-  }
-
   contents.push.apply(
     contents,
     [
@@ -86,12 +80,7 @@ export function getToolboxItems(
       {
         kind: 'sep',
       },
-      {
-        kind: 'category',
-        name: Blockly.Msg['MRC_CATEGORY_VARIABLES'],
-        categorystyle: 'variable_category',
-        custom: 'VARIABLE',
-      },
+      getVariablesCategory(editor),
       getMethodsCategory(editor),
 
     ],
