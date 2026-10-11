@@ -30,12 +30,14 @@ import {
     CLASS_NAME_ROBOT_BASE,
     MECHANISM_METHOD_NAMES_OVERRIDEABLE,
     OPMODE_METHOD_NAMES_OVERRIDEABLE,
+    ROBOT_SPECIAL_INSTANCE_METHODS,
     ROBOT_METHOD_NAMES_OVERRIDEABLE } from '../blocks/utils/python';
 import { addInstanceWithinBlocks } from '../blocks/mrc_call_python_function';
 import {
     createCustomMethodBlock,
     createCustomMethodBlockWithReturn,
-    getBaseClassBlocks } from '../blocks/mrc_class_method_def';
+    getBaseClassBlocks,
+    getBlocksForInstanceMethods } from '../blocks/mrc_class_method_def';
 import { createStepsBlock } from '../blocks/mrc_steps';
 import { createWhenBlock } from '../blocks/mrc_when';
 import { Editor } from '../editor/editor';
@@ -82,6 +84,8 @@ class MethodsCategory {
     switch (editor.getModuleType()) {
       case storageModule.ModuleType.ROBOT:
         // Add the methods for a Robot.
+        contents.push(...getBlocksForInstanceMethods(
+            workspace, ROBOT_SPECIAL_INSTANCE_METHODS, methodNamesAlreadyOverridden));
         this.addBaseClassBlocksForCurrentModule(
             workspace, Blockly.Msg['MORE_ROBOT_METHODS_LABEL'], CLASS_NAME_ROBOT_BASE,
             ROBOT_METHOD_NAMES_OVERRIDEABLE, methodNamesAlreadyOverridden, contents);
