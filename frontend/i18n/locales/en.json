@@ -302,7 +302,7 @@
         "NO_STEPS": "(no steps)",
         "CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE": "This method is already on the workspace.",
         "CANNOT_MOVE_BLOCKS_TO_OTHER_TAB": "These blocks can't be moved to another tab.",
-        "CANNOT_MOVE_METHOD_OVERRIDE_TO_OTHER_TAB": "Methods that override a base class method can't be moved to another tab.",
+        "CANNOT_MOVE_METHOD_OVERRIDE_TO_OTHER_TAB": "This built-in method can't be moved to another tab.",
         "CANNOT_MOVE_COMPONENT_TO_OTHER_TAB": "Components can't be moved to another tab.",
         "CANNOT_MOVE_ROBOT_COMPONENT_TO_OTHER_TAB": "Components can't be moved to another tab. To move this component into a mechanism, click its \"Move this component into a mechanism\" button.",
         "CANNOT_MOVE_EVENT_TO_OTHER_TAB": "Events can't be moved to another tab.",

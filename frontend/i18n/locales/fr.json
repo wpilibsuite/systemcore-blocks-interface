@@ -303,7 +303,7 @@
         "NO_STEPS": "(aucune étape)",
         "CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE": "Cette méthode est déjà dans l'espace de travail.",
         "CANNOT_MOVE_BLOCKS_TO_OTHER_TAB": "Ces blocs ne peuvent pas être déplacés vers un autre onglet.",
-        "CANNOT_MOVE_METHOD_OVERRIDE_TO_OTHER_TAB": "Les méthodes qui redéfinissent une méthode de la classe de base ne peuvent pas être déplacées vers un autre onglet.",
+        "CANNOT_MOVE_METHOD_OVERRIDE_TO_OTHER_TAB": "Cette méthode intégrée ne peut pas être déplacée vers un autre onglet.",
         "CANNOT_MOVE_COMPONENT_TO_OTHER_TAB": "Les composants ne peuvent pas être déplacés vers un autre onglet.",
         "CANNOT_MOVE_ROBOT_COMPONENT_TO_OTHER_TAB": "Les composants ne peuvent pas être déplacés vers un autre onglet. Pour déplacer ce composant dans un mécanisme, cliquez sur son bouton « Déplacer ce composant dans un mécanisme ».",
         "CANNOT_MOVE_EVENT_TO_OTHER_TAB": "Les événements ne peuvent pas être déplacés vers un autre onglet.",

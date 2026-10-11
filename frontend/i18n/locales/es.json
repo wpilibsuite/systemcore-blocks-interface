@@ -303,7 +303,7 @@
         "NO_STEPS": "(sin pasos)",
         "CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE": "Este método ya está en el espacio de trabajo.",
         "CANNOT_MOVE_BLOCKS_TO_OTHER_TAB": "Estos bloques no se pueden mover a otra pestaña.",
-        "CANNOT_MOVE_METHOD_OVERRIDE_TO_OTHER_TAB": "Los métodos que sobrescriben un método de la clase base no se pueden mover a otra pestaña.",
+        "CANNOT_MOVE_METHOD_OVERRIDE_TO_OTHER_TAB": "Este método incorporado no se puede mover a otra pestaña.",
         "CANNOT_MOVE_COMPONENT_TO_OTHER_TAB": "Los componentes no se pueden mover a otra pestaña.",
         "CANNOT_MOVE_ROBOT_COMPONENT_TO_OTHER_TAB": "Los componentes no se pueden mover a otra pestaña. Para mover este componente a un mecanismo, haz clic en su botón \"Mover este componente a un mecanismo\".",
         "CANNOT_MOVE_EVENT_TO_OTHER_TAB": "Los eventos no se pueden mover a otra pestaña.",
