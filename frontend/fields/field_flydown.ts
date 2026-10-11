@@ -25,6 +25,19 @@
 import * as Blockly from 'blockly';
 import {BLOCK_NAME as JUMP_TO_STEP} from '../blocks/mrc_jump_to_step';
 import {BLOCK_NAME as GET_PARAMETER} from '../blocks/mrc_get_parameter';
+import {matchBorderToText} from './FieldNonEditableText';
+
+const NON_EDITABLE_CSS_CLASS_NAME = 'mrcNonEditableFlydownField';
+
+// A flydown field that isn't editable (a parameter) looks like a label (text on the block colour)
+// with a thin dashed outline. See FieldNonEditableText, which has a solid outline.
+Blockly.Css.register(`
+  .${NON_EDITABLE_CSS_CLASS_NAME}>rect {
+    fill: none;
+    stroke-width: 1;
+    stroke-dasharray: 3 2;
+  }
+`);
 
 enum FlydownLocation {
     DISPLAY_BELOW = 'displayBelow',
@@ -213,10 +226,31 @@ export class FieldFlydown extends Blockly.FieldTextInput {
     public override initView() {
         super.initView();
 
+        if (!this.EDITABLE) {
+            Blockly.utils.dom.addClass(this.fieldGroup_!, NON_EDITABLE_CSS_CLASS_NAME);
+        }
+
         // Add event listeners instead of using mouseOverWrapper_
         if (this.getClickTarget_()) {
             this.getClickTarget_()!.addEventListener('mouseover', this.boundMouseOverHandler_);
             this.getClickTarget_()!.addEventListener('mouseout', this.boundMouseOutHandler_);
+        }
+    }
+
+    override applyColour(): void {
+        // Called when the block is coloured, including when the theme changes.
+        super.applyColour();
+        this.matchBorderToText_();
+    }
+
+    protected override render_(): void {
+        super.render_();
+        this.matchBorderToText_();
+    }
+
+    private matchBorderToText_(): void {
+        if (!this.EDITABLE) {
+            matchBorderToText(this.borderRect_, this.textElement_);
         }
     }
 
