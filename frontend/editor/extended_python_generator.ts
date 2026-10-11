@@ -57,6 +57,9 @@ export interface OpModeDetailsParams {
   description: string;
   enabled: boolean;
   type: string;
+  // The python code for wpiutil.Color values, for example 'wpiutil.Color.WHITE'.
+  foregroundColor: string | null;
+  backgroundColor: string | null;
 }
 
 export class OpModeDetails {
@@ -66,20 +69,26 @@ export class OpModeDetails {
   private description: string;
   private enabled: boolean;
   private type: string;
+  private foregroundColor: string | null;
+  private backgroundColor: string | null;
 
-  constructor({ className, name, group, description, enabled, type }: OpModeDetailsParams) {
+  constructor({ className, name, group, description, enabled, type, foregroundColor, backgroundColor }: OpModeDetailsParams) {
     this.className = className;
     this.name = name;
     this.group = group;
     this.description = description;
     this.enabled = enabled;
     this.type = type;
+    this.foregroundColor = foregroundColor;
+    this.backgroundColor = backgroundColor;
   }
   getName(): string { return this.name; }
   getGroup(): string { return this.group; }
   getDescription(): string { return this.description; }
   getEnabled(): boolean { return this.enabled; }
   getType(): string { return this.type; }
+  getForegroundColor(): string | null { return this.foregroundColor; }
+  getBackgroundColor(): string | null { return this.backgroundColor; }
   getClassName(): string { return this.className; }
   generateDecorators(generator: ExtendedPythonGenerator, className: string): string {
     let code = '';
@@ -240,7 +249,15 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           const opModeClassName = opModeDetails.getClassName();
           const opModeModuleName = pascalCaseToSnakeCase(opModeClassName);
           this.importModule(opModeModuleName);
-          const call = `self.add_opmode(${opModeModuleName}.${opModeClassName}, ${robotMode}, '${name}', '${group}', '${description}')`;
+          let colorArgs = '';
+          const foregroundColor = opModeDetails.getForegroundColor();
+          const backgroundColor = opModeDetails.getBackgroundColor();
+          // add_opmode ignores the colors unless both are given.
+          if (foregroundColor && backgroundColor) {
+            this.importModule('wpiutil');
+            colorArgs = `, ${foregroundColor}, ${backgroundColor}`;
+          }
+          const call = `self.add_opmode(${opModeModuleName}.${opModeClassName}, ${robotMode}, '${name}', '${group}', '${description}'${colorArgs})`;
           if (opModeDetails.getEnabled()) {
             initStatements += this.INDENT + call + '\n';
           } else {
