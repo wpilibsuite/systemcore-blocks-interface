@@ -22,6 +22,7 @@
 import {
     ClassData,
     EnumData,
+    FunctionData,
     isPortType,
     ModuleData,
     organizeVarDataByType,
@@ -42,30 +43,71 @@ export const MODULE_NAME_WPILIB_BLOCKS = 'wpilib_blocks';
 
 // TODO(lizlooney): Update these constants if necessary when we update wpilib.
 
+export const OPMODE_START_METHOD_NAME = 'opmode_start';
+export const OPMODE_PERIODIC_METHOD_NAME = 'opmode_periodic';
+export const OPMODE_END_METHOD_NAME = 'opmode_end';
+
 export const CLASS_NAME_ROBOT_BASE = 'wpilib.OpModeRobot';
 export const ROBOT_METHOD_NAMES_OVERRIDEABLE: string[] = [
   'driver_station_connected',
   'none_periodic',
 ];
+// opmode_start, opmode_periodic, and opmode_end do not actually existing in wpilib.OpModeRobot,
+// so we provide FunctionData for them here:
+export const ROBOT_OPMODE_START_METHOD: FunctionData = {
+  args: [{
+    defaultValue: '',
+    name: 'self',
+    type: CLASS_NAME_ROBOT_BASE
+  }],
+  functionName: OPMODE_START_METHOD_NAME,
+  returnType: 'None',
+  tooltip: '',
+};
+export const ROBOT_OPMODE_PERIODIC_METHOD: FunctionData = {
+  args: [{
+    defaultValue: '',
+    name: 'self',
+    type: CLASS_NAME_ROBOT_BASE
+  }],
+  functionName: OPMODE_PERIODIC_METHOD_NAME,
+  returnType: 'None',
+  tooltip: '',
+};
+export const ROBOT_OPMODE_END_METHOD: FunctionData = {
+  args: [{
+    defaultValue: '',
+    name: 'self',
+    type: CLASS_NAME_ROBOT_BASE
+  }],
+  functionName: OPMODE_END_METHOD_NAME,
+  returnType: 'None',
+  tooltip: '',
+};
+export const ROBOT_SPECIAL_INSTANCE_METHODS: FunctionData[] = [
+  ROBOT_OPMODE_START_METHOD,
+  ROBOT_OPMODE_PERIODIC_METHOD,
+  ROBOT_OPMODE_END_METHOD,
+];
 
 export const CLASS_NAME_MECHANISM = MODULE_NAME_WPILIB_BLOCKS + '.Mechanism';
 export const MECHANISM_METHOD_NAMES_OVERRIDEABLE: string[] = [
-  'opmode_end',
-  'opmode_periodic',
-  'opmode_start',
+  OPMODE_END_METHOD_NAME,
+  OPMODE_PERIODIC_METHOD_NAME,
+  OPMODE_START_METHOD_NAME,
 ];
 
 export const CLASS_NAME_OPMODE = 'wpilib.PeriodicOpMode';
-export const OPMODE_METHOD_NAMES_OVERRIDEABLE: string[] = [
-  'disabled_periodic',
-  'end',
-  'periodic',
-  'start',
-];
-
 export const START_METHOD_NAME = 'start';
 export const PERIODIC_METHOD_NAME = 'periodic';
 export const END_METHOD_NAME = 'end';
+export const OPMODE_METHOD_NAMES_OVERRIDEABLE: string[] = [
+  'disabled_periodic',
+  END_METHOD_NAME,
+  PERIODIC_METHOD_NAME,
+  START_METHOD_NAME,
+];
+
 
 export const CLASS_NAME_DRIVER_STATION_DISPLAY = MODULE_NAME_WPILIB_BLOCKS + '.DriverStationDisplay';
 
@@ -208,6 +250,18 @@ export function getClassData(className: string): ClassData | null {
     for (const classData of pythonData.classes) {
       if (classData.className === className) {
         return classData;
+      }
+    }
+  }
+  return null;
+}
+
+export function getInstanceMethod(className: string, methodName: string): FunctionData | null {
+  const classData = getClassData(className);
+  if (classData) {
+    for (const functionData of classData.instanceMethods) {
+      if (functionData.functionName === methodName) {
+        return functionData;
       }
     }
   }
