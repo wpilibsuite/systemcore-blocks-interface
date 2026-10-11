@@ -33,6 +33,7 @@ import {
     stringToPortType,
     stringToPortTypeArray,
     upgradePortTypeString } from './utils/python_json_types';
+import { replaceTokens } from './tokens';
 
 export const BLOCK_NAME = 'mrc_port';
 export const OUTPUT_NAME = 'mrc_port';
@@ -100,6 +101,68 @@ const PORT = {
     this.mrcDuplicatePortWarning = null;
     this.setStyle(MRC_STYLE_PORTS);
     this.setOutput(true);
+    this.setTooltip(() => {
+      const portNumbers = this.getPortNumbers();
+      const tooltipLines: string[] = [];
+      for (let i = 0; i < this.mrcPortTypes.length; i++) {
+        if (!isPortNumberShown(this.mrcPortTypes, portNumbers, i)) {
+          continue;
+        }
+        let portNum = this.getFieldValue(FIELD_PREFIX_PORT_NUM + i);
+        switch (this.mrcPortTypes[i]) {
+          case PortType.SYSTEMCORE_CAN_PORT:
+            if (isMotionCoreCanBus(portNum)) {
+              portNum -= SYSTEMCORE_CAN_BUS_COUNT;
+              tooltipLines.push(
+                  replaceTokens(Blockly.Msg.MOTIONCORE_CAN_PORT_TOOLTIP, { portNum: portNum }));
+            } else {
+              tooltipLines.push(
+                  replaceTokens(Blockly.Msg.SYSTEMCORE_CAN_PORT_TOOLTIP, { portNum: portNum }));
+            }
+            break;
+          case PortType.CAN_DEVICE_ID:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.SYSTEMCORE_CAN_PORT_TOOLTIP, { portNum: portNum }));
+            break;
+          case PortType.SYSTEMCORE_SMART_IO_PORT:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.SYSTEMCORE_SMART_IO_PORT_TOOLTIP, { portNum: portNum }));
+            break;
+          case PortType.SYSTEMCORE_I2C_PORT:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.SYSTEMCORE_I2C_PORT_TOOLTIP, { portNum: portNum }));
+            break;
+          case PortType.SYSTEMCORE_USB_PORT:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.SYSTEMCORE_USB_PORT_TOOLTIP, { portNum: portNum }));
+            break;
+          case PortType.EXPANSION_HUB_MOTOR_PORT:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.EXPANSION_HUB_MOTOR_PORT_TOOLTIP, { portNum: portNum }));
+            break;
+          case PortType.EXPANSION_HUB_SERVO_PORT:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.EXPANSION_HUB_SERVO_PORT_TOOLTIP, { portNum: portNum }));
+            break;
+          case PortType.MOTIONCORE_DEVICE_PORT:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.MOTIONCORE_DEVICE_PORT_TOOLTIP, { portNum: portNum }));
+            break;
+          case PortType.MOTIONCORE_ENCODER_PORT:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.MOTIONCORE_ENCODER_PORT_TOOLTIP, { portNum: portNum }));
+            break;
+          case PortType.USB_HUB_PORT:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.USB_HUB_PORT_TOOLTIP, { portNum: portNum }));
+            break;
+          default:
+            console.error('Unknown port type ' + this.mrcPortTypes[i]);
+            break;
+        }
+      }
+      return tooltipLines.join('\n');
+    });
   },
 
   /**
