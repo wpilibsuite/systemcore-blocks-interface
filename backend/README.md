@@ -4,7 +4,7 @@ A Flask-based REST API for providing storage capabilities (key-value pairs and f
 
 ## Features
 
-- **Key-Value Storage**: Store and retrieve key-value pairs
+- **Key-Value Storage**: Store and retrieve key-value pairs on the robot
 - **File Storage**: Store, retrieve, list, rename, and delete files and directories
 - **SQLite Database**: Persistent storage using SQLite
 - **CORS Support**: Cross-origin resource sharing for frontend integration
@@ -13,8 +13,11 @@ A Flask-based REST API for providing storage capabilities (key-value pairs and f
 
 ### Key-Value Storage (Entries)
 
+These are for values that belong to the robot, so they are shared by everyone who connects to it. The frontend doesn't use them at the moment: user settings are specific to a user, so they are kept in the browser instead.
+
 - `GET /entries/<entry_key>` - Fetch entry value by key (supports `?default=value` query param)
 - `POST /entries/<entry_key>` - Save entry value
+- `DELETE /entries/<entry_key>` - Delete entry (deleting an entry that doesn't exist is not an error)
 
 ### File and Directory Operations
 
@@ -46,14 +49,14 @@ A Flask-based REST API for providing storage capabilities (key-value pairs and f
 
 #### Save an Entry
 ```bash
-curl -X POST http://localhost:5001/entries/user_settings \
+curl -X POST http://localhost:5001/entries/team_number \
   -H "Content-Type: application/json" \
-  -d '{"value": "{\"theme\": \"dark\", \"language\": \"en\"}"}'
+  -d '{"value": "1234"}'
 ```
 
 #### Fetch an Entry
 ```bash
-curl http://localhost:5001/entries/user_settings
+curl http://localhost:5001/entries/team_number
 ```
 
 #### Fetch an Entry with Default Value
@@ -126,20 +129,17 @@ The API includes CORS (Cross-Origin Resource Sharing) headers to allow frontend 
 
 ## Frontend Integration
 
-The server-side storage implementation in `src/storage/server_side_storage.ts` provides a TypeScript interface that connects to this Flask backend. It implements the `Storage` interface with methods for:
+The server-side storage implementation in `frontend/storage/server_side_storage.ts` connects to this Flask backend. It implements the `Storage` interface with methods for:
 
-- Key-value storage (`saveEntry`, `fetchEntry`)
-- File operations (`saveFile`, `fetchFileContentText`, `list`, `rename`, `delete`)
+- File operations (`saveFile`, `fetchFileContentText`, `list`, `rename`, `delete`), which use this backend
+- Key-value entries (`saveEntry`, `fetchEntry`, `deleteEntry`, `listEntryKeys`), which don't use this backend. They hold user settings, which are specific to a user, so they are kept in the browser storage that `ServerSideStorage` is given.
 
 Example usage in TypeScript:
 ```typescript
+import { openClientSideStorage } from './storage/client_side_storage';
 import { ServerSideStorage } from './storage/server_side_storage';
 
-const storage = new ServerSideStorage();
-
-// Save and fetch key-value data
-await storage.saveEntry('user_settings', JSON.stringify({theme: 'dark'}));
-const settings = await storage.fetchEntry('user_settings', '{}');
+const storage = new ServerSideStorage(await openClientSideStorage());
 
 // File operations
 await storage.saveFile('projects/robot1/main.py', 'print("Hello Robot!")');

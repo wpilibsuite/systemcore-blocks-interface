@@ -42,6 +42,7 @@ import * as storageModule from './storage/module';
 import * as storageProject from './storage/project';
 import * as clientSideStorage from './storage/client_side_storage';
 import * as serverSideStorage from './storage/server_side_storage';
+import * as userSettings from './storage/user_settings';
 
 import * as CustomBlocks from './blocks/setup_custom_blocks';
 
@@ -62,18 +63,6 @@ import {
 import { useUserSettings } from './reactComponents/useUserSettings';
 import AppTour from './reactComponents/AppTour';
 
-/** Storage key for shown toolbox categories. */
-const SHOWN_TOOLBOX_CATEGORIES_KEY = 'shownPythonToolboxCategories';
-
-/** Storage key for the library toolbox categories that the user has hidden. */
-const HIDDEN_LIBRARY_TOOLBOX_KEYS_KEY = 'hiddenLibraryToolboxKeys';
-
-/** Storage key that tracks whether the user has completed the tour. */
-const TOUR_COMPLETED_KEY = 'tourCompleted';
-
-/** Default toolbox categories JSON. */
-const DEFAULT_TOOLBOX_CATEGORIES_JSON = '[]';
-
 /** Error message for storage opening failures. */
 const STORAGE_ERROR_MESSAGE = 'Failed to open client side storage. Caught the following error...';
 
@@ -89,6 +78,13 @@ const FULL_HEIGHT = '100%';
 /** Background color for testing layout. */
 const LAYOUT_BACKGROUND_COLOR = '#0F0';
 
+/** Returns the moduleIds of the modules shown in the given tabs, whose keys are module paths. */
+function getTabModuleIds(project: storageProject.Project, tabs: Tabs.TabItem[]): string[] {
+  return tabs
+      .map(tab => storageProject.findModuleByModulePath(project, tab.key)?.moduleId)
+      .filter((moduleId): moduleId is string => !!moduleId);
+}
+
 /**
  * Main application component that manages the Blockly interface, code generation,
  * project management, and user interface layout.
@@ -99,12 +95,13 @@ const App: React.FC = (): React.JSX.Element => {
   /** Opens storage asynchronously, preferring the backend when available. */
   const openStorage = async (): Promise<void> => {
     try {
-      if (await serverSideStorage.isServerAvailable()) {
-        setStorage(new serverSideStorage.ServerSideStorage());
-      } else {
-        const clientStorage = await clientSideStorage.openClientSideStorage();
-        setStorage(clientStorage);
-      }
+      // User settings are always kept in the browser, even when projects are kept on the backend.
+      const clientStorage = await clientSideStorage.openClientSideStorage();
+      const newStorage = (await serverSideStorage.isServerAvailable()) ?
+          new serverSideStorage.ServerSideStorage(clientStorage) : clientStorage;
+      await libraryStorage.upgradeLegacyEntry(clientStorage);
+      await userSettings.upgradeLegacyEntries(newStorage);
+      setStorage(newStorage);
     } catch (e) {
       console.error(STORAGE_ERROR_MESSAGE);
       console.error(e);
@@ -327,9 +324,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     }
 
     try {
-      const value = await storage.fetchEntry(SHOWN_TOOLBOX_CATEGORIES_KEY, DEFAULT_TOOLBOX_CATEGORIES_JSON);
-      const shownCategories: Set<string> = new Set(JSON.parse(value));
-      setShownPythonToolboxCategories(shownCategories);
+      const { shownPythonToolboxCategories } = await userSettings.fetchUserSettings(storage);
+      setShownPythonToolboxCategories(new Set(shownPythonToolboxCategories ?? []));
     } catch (e) {
       console.error(TOOLBOX_FETCH_ERROR_MESSAGE);
       console.error(e);
@@ -345,7 +341,9 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     setShownPythonToolboxCategories(updatedShownCategories);
     const array = Array.from(updatedShownCategories);
     array.sort();
-    await storage.saveEntry(SHOWN_TOOLBOX_CATEGORIES_KEY, JSON.stringify(array));
+    await userSettings.updateUserSettings(storage, settings => {
+      settings.shownPythonToolboxCategories = array;
+    });
   };
 
   /** Handles toolbox settings modal close. */
@@ -380,11 +378,11 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       return;
     }
     try {
-      const [installed, hiddenKeysJson] = await Promise.all([
+      const [installed, { hiddenLibraryToolboxKeys }] = await Promise.all([
         librariesStorage.list(),
-        storage.fetchEntry(HIDDEN_LIBRARY_TOOLBOX_KEYS_KEY, '[]'),
+        userSettings.fetchUserSettings(storage),
       ]);
-      setHiddenLibraryToolboxKeys(new Set(JSON.parse(hiddenKeysJson)));
+      setHiddenLibraryToolboxKeys(new Set(hiddenLibraryToolboxKeys ?? []));
       applyLibraries(installed);
     } catch (e) {
       console.error('Failed to load libraries:', e);
@@ -401,7 +399,9 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     setHiddenLibraryToolboxKeys(hiddenKeys);
     const array = Array.from(hiddenKeys);
     array.sort();
-    await storage.saveEntry(HIDDEN_LIBRARY_TOOLBOX_KEYS_KEY, JSON.stringify(array));
+    await userSettings.updateUserSettings(storage, settings => {
+      settings.hiddenLibraryToolboxKeys = array;
+    });
   };
 
   const handleInstallLibrary = async (filename: string, data: ArrayBuffer): Promise<void> => {
@@ -494,21 +494,18 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         
         // Try to load saved tabs first
         try {
-          const savedTabPaths = await getOpenTabs(project.projectName);
+          const savedTabModuleIds = await getOpenTabs(project.projectInfo.projectId);
           
-          if (savedTabPaths.length > 0) {
+          if (savedTabModuleIds.length > 0) {
             // Filter saved tabs to only include those that still exist in the project
-            const validSavedTabs = savedTabPaths.filter((tabPath: string) => {
-              const module = storageProject.findModuleByModulePath(project!, tabPath);
-              return module !== null;
-            });
+            const validSavedModules = savedTabModuleIds
+                .map((moduleId: string) => storageProject.findModuleByModuleId(project!, moduleId))
+                .filter((module): module is storageModule.Module => module !== null);
             
-            if (validSavedTabs.length > 0) {
+            if (validSavedModules.length > 0) {
               usedSavedTabs = true;
-              // Convert paths back to TabItem objects
-              tabsToSet = validSavedTabs.map((path: string) => {
-                const module = storageProject.findModuleByModulePath(project!, path);
-                if (!module) return null;
+              // Convert modules to TabItem objects
+              tabsToSet = validSavedModules.map((module: storageModule.Module) => {
                 
                 let type: TabType;
                 let title: string;
@@ -531,7 +528,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 }
                 
                 return {
-                  key: path,
+                  key: module.modulePath,
                   title,
                   type,
                 };
@@ -591,8 +588,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
         // Only auto-save if we didn't use saved tabs (i.e., this is a new project or the first time)
         if (!usedSavedTabs) {
           try {
-            const tabPaths = tabsToSet.map(tab => tab.key);
-            await updateOpenTabs(project.projectName, tabPaths);
+            await updateOpenTabs(
+                project.projectInfo.projectId, getTabModuleIds(project, tabsToSet));
           } catch (error) {
             console.error('Failed to auto-save default tabs:', error);
           }
@@ -640,8 +637,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       // Don't save tabs while we're in the process of loading them
       if (project?.projectName && tabItems.length > 0 && !isLoadingTabs) {
         try {
-          const tabPaths = tabItems.map(tab => tab.key);
-          await updateOpenTabs(project.projectName, tabPaths);
+          await updateOpenTabs(
+              project.projectInfo.projectId, getTabModuleIds(project, tabItems));
         } catch (error) {
           console.error('Failed to save open tabs:', error);
           // Don't show alert for save failures as they're not critical to user workflow
@@ -662,7 +659,9 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   const handleTourClose = async (): Promise<void> => {
     setTourOpen(false);
     if (storage) {
-      await storage.saveEntry(TOUR_COMPLETED_KEY, 'true');
+      await userSettings.updateUserSettings(storage, settings => {
+        settings.tourCompleted = true;
+      });
     }
   };
 
@@ -672,8 +671,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       return;
     }
     hasCheckedTour.current = true;
-    storage.fetchEntry(TOUR_COMPLETED_KEY, 'false').then((value) => {
-      if (value === 'false') {
+    userSettings.fetchUserSettings(storage).then(({ tourCompleted }) => {
+      if (!tourCompleted) {
         setTourOpen(true);
       }
     });

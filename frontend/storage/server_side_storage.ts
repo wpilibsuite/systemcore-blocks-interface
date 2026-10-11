@@ -56,42 +56,33 @@ export async function isServerAvailable(): Promise<boolean> {
   }
 }
 
+/**
+ * Keeps files on the backend. Entries hold settings that are specific to the user (such as their
+ * language, theme, zoom levels, and open tabs), so they are kept in the browser's storage instead
+ * of being shared by everyone who connects to the backend.
+ */
 export class ServerSideStorage implements commonStorage.Storage {
+  readonly entryKeyPrefix = 'server/';
+
+  /**
+   * @param entryStorage The browser's storage, used for entries.
+   */
+  constructor(private readonly entryStorage: commonStorage.Storage) {}
 
   async saveEntry(entryKey: string, entryValue: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/entries/${encodeURIComponent(entryKey)}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ value: entryValue }),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to save entry: ${response.statusText}`);
-    }
+    await this.entryStorage.saveEntry(entryKey, entryValue);
   }
 
   async fetchEntry(entryKey: string, defaultValue: string): Promise<string> {
-    const url = `${API_BASE_URL}/entries/${encodeURIComponent(entryKey)}?default=${encodeURIComponent(defaultValue)}`;
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch entry: ${response.statusText}`);
-    }
-    
-    const data = await response.json();
-    return data.value || defaultValue;
+    return this.entryStorage.fetchEntry(entryKey, defaultValue);
   }
 
   async deleteEntry(entryKey: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/entries/${encodeURIComponent(entryKey)}`, {
-      method: 'DELETE',
-    });
+    await this.entryStorage.deleteEntry(entryKey);
+  }
 
-    if (!response.ok) {
-      throw new Error(`Failed to delete entry: ${response.statusText}`);
-    }
+  async listEntryKeys(): Promise<string[]> {
+    return this.entryStorage.listEntryKeys();
   }
 
   async list(path: string): Promise<string[]> {

@@ -23,7 +23,7 @@ import * as React from 'react';
 import * as blocksLib from '../libraries/blocks_lib';
 import * as commonStorage from '../storage/common_storage';
 import * as storageProject from '../storage/project';
-import { MOST_RECENT_PROJECT_NAME_KEY } from '../storage/user_settings_entries';
+import * as userSettings from '../storage/user_settings';
 import * as I18Next from 'react-i18next';
 import {TabType, TabTypeUtils } from '../types/TabType';
 
@@ -194,15 +194,18 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
   };
 
-  /** Fetches and sets the most recent project. */
+  /**
+   * Fetches and sets the most recent project, after removing the user settings for projects that
+   * no longer exist (for example, because they were deleted in another browser).
+   */
   const fetchMostRecentProject = async (): Promise<void> => {
     if (props.storage) {
-      const mostRecentProjectName = await props.storage.fetchEntry(
-          MOST_RECENT_PROJECT_NAME_KEY,
-          ''
-      );
+      const projectIdToName = await storageProject.fetchProjectIds(props.storage, projectNames);
+      await userSettings.removeStaleProjectSettings(props.storage, [...projectIdToName.keys()]);
+      const mostRecentProjectId = await userSettings.fetchMostRecentProjectId(props.storage);
+      const mostRecentProjectName = projectIdToName.get(mostRecentProjectId);
       let projectNameToFetch: string = '';
-      if (projectNames.includes(mostRecentProjectName)) {
+      if (mostRecentProjectName) {
         projectNameToFetch = mostRecentProjectName;
       } else if (projectNames.length) {
         projectNameToFetch = projectNames[0];
@@ -214,13 +217,11 @@ export function Component(props: MenuProps): React.JSX.Element {
     }
   };
 
-  /** Saves the most recent project name to storage. */
-  const setMostRecentProjectName = async (): Promise<void> => {
+  /** Saves the projectId of the most recent project to storage. */
+  const setMostRecentProject = async (): Promise<void> => {
     if (props.storage) {
-      await props.storage.saveEntry(
-          MOST_RECENT_PROJECT_NAME_KEY,
-          props.currentProject?.projectName || ''
-      );
+      await userSettings.saveMostRecentProjectId(
+          props.storage, props.currentProject?.projectInfo.projectId || '');
     }
   };
 
@@ -302,7 +303,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   // Update menu items and save project when project, language, or showSimpleClassNames changes
   React.useEffect(() => {
     if (props.currentProject) {
-      setMostRecentProjectName();
+      setMostRecentProject();
       setMenuItems(getMenuItems(t, props.showSimpleClassNames));
       setNoProjects(false);
     }
