@@ -152,6 +152,8 @@
     "RENAME_ELLIPSIS": "Renommer...",
     "DELETE_ELLIPSIS": "Supprimer...",
     "COPY_ELLIPSIS": "Copier...",
+    "COPY_CODE_SUCCESS": "Copie effectuée avec succès.",
+    "COPY_CODE_FAILED": "Impossible de copier le code : {{error}}",
     "SORT_TABS": "Trier les onglets",
     "MECHANISMS": "Mécanismes",
     "OPMODES": "OpModes",
@@ -329,6 +331,8 @@
         "MORE_BLOCKS_LABEL": "Plus...",
         "COMMENT_DEFAULT_TEXT": "Saisissez votre commentaire ici !",
         "CONFIG_GAMEPADS_BUTTON": "⚙️ Configurer les manettes",
+        "ADD_ITEM": "ajouter l'élément",
+        "TO_LIST": "à la liste",
         "GAMEPAD": {
             "TITLE": "Manette",
             "BUTTON_A": "A",
@@ -414,7 +418,10 @@
             "SET_CLASS_VARIABLE": "Définit la variable {{className}}.{{varName}}.",
             "SET_INSTANCE_VARIABLE": "Définit la variable {{varName}} pour l'objet {{className}} donné.",
             "MECHANISM_COMPONENT_REFERENCE": "Le composant nommé {{componentName}} de la classe {{className}} du mécanisme nommé {{mechanismName}}.",
-            "COMPONENT_REFERENCE": "Le composant nommé {{componentName}} de la classe {{className}}."
+            "COMPONENT_REFERENCE": "Le composant nommé {{componentName}} de la classe {{className}}.",
+            "LIST_ADD_ITEM": "Ajoute l'élément à la fin de la liste.",
+            "MATH_MAX": "Renvoie la plus grande de deux valeurs numériques.",
+            "MATH_MIN": "Renvoie la plus petite de deux valeurs numériques."
         },
         "CATEGORY": {
             "LISTS": "Listes",

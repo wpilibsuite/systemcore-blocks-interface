@@ -46,8 +46,8 @@ export const setup = function() {
           .setAlign(Blockly.inputs.Align.RIGHT);
       this.setStyle('math_blocks');
       const TOOLTIPS = [
-        ["max", "Returns the greater of two numerical values."],
-        ["min", "Returns the smaller of two numerical values."],
+        ["max", Blockly.Msg.MATH_MAX_TOOLTIP],
+        ["min", Blockly.Msg.MATH_MIN_TOOLTIP],
       ];
       this.setTooltip(() => {
         const key = this.getFieldValue("FUNC");

@@ -147,6 +147,8 @@
     "RENAME_ELLIPSIS": "Renombrar...",
     "DELETE_ELLIPSIS": "Eliminar...",
     "COPY_ELLIPSIS": "Copiar...",
+    "COPY_CODE_SUCCESS": "Copia completada correctamente.",
+    "COPY_CODE_FAILED": "No se pudo copiar el código: {{error}}",
     "SORT_TABS": "Ordenar Pestañas",
     "addTabDialog": {
         "title": "Agregar Pestaña",
@@ -329,6 +331,8 @@
         "MORE_BLOCKS_LABEL": "Más...",
         "COMMENT_DEFAULT_TEXT": "¡Ingresa tu comentario aquí!",
         "CONFIG_GAMEPADS_BUTTON": "⚙️ Configurar Gamepads",
+        "ADD_ITEM": "añadir elemento",
+        "TO_LIST": "a la lista",
         "GAMEPAD": {
             "TITLE": "Mando de Juego",
             "BUTTON_A": "A",
@@ -414,7 +418,10 @@
             "SET_CLASS_VARIABLE": "Establece la variable {{className}}.{{varName}}.",
             "SET_INSTANCE_VARIABLE": "Establece la variable {{varName}} para el objeto {{className}} dado.",
             "MECHANISM_COMPONENT_REFERENCE": "El componente llamado {{componentName}} de la clase {{className}} del mecanismo llamado {{mechanismName}}.",
-            "COMPONENT_REFERENCE": "El componente llamado {{componentName}} de la clase {{className}}."
+            "COMPONENT_REFERENCE": "El componente llamado {{componentName}} de la clase {{className}}.",
+            "LIST_ADD_ITEM": "Añade el elemento al final de la lista.",
+            "MATH_MAX": "Devuelve el mayor de dos valores numéricos.",
+            "MATH_MIN": "Devuelve el menor de dos valores numéricos."
         },
         "CATEGORY": {
             "LISTS": "Listas",
