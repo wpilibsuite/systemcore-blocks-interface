@@ -27,6 +27,7 @@ import * as callPythonFunctionBlock from '../blocks/mrc_call_python_function';
 import * as classMethodDefBlock from '../blocks/mrc_class_method_def';
 import * as componentBlock from '../blocks/mrc_component';
 import * as mechanismBlock from '../blocks/mrc_mechanism';
+import * as opModeDetailsBlock from '../blocks/mrc_opmode_details';
 import * as portBlock from '../blocks/mrc_port';
 import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
@@ -78,6 +79,12 @@ export async function upgradeProjectIfNecessary(
     await upgradeBlocksFiles(
         storage, projectName,
         anyModuleType, upgradeTo_0_7_0,
+        noModuleTypes, noUpgrade);
+  }
+  if (semver.lt(projectInfo.version, '0.8.0')) {
+    await upgradeBlocksFiles(
+        storage, projectName,
+        isOpMode, upgradeTo_0_8_0,
         noModuleTypes, noUpgrade);
   }
 
@@ -139,7 +146,6 @@ function anyModuleType(_moduleType: storageModule.ModuleType): boolean {
 }
 
 /** Predicate: only OpMode modules are affected. */
-// @ts-expect-error: declared but not used
 function isOpMode(moduleType: storageModule.ModuleType): boolean {
   return moduleType === storageModule.ModuleType.OPMODE;
 }
@@ -430,6 +436,27 @@ function upgradeTo_0_7_0(moduleContentText: string): string {
       if (input && input.block && input.block.type === portBlock.BLOCK_NAME && !input.shadow) {
         input.shadow = input.block;
         delete input.block;
+        changed = true;
+      }
+    }
+  };
+
+  storageModuleContent.visitAllBlockJson(parsedContent.blocks, visitBlockJson);
+
+  return changed ? JSON.stringify(parsedContent, null, 2) : moduleContentText;
+}
+
+// Upgrade from before 0.8.0:
+// mrc_opmode_details blocks now have foreground and background color inputs.
+
+function upgradeTo_0_8_0(moduleContentText: string): string {
+  const parsedContent = JSON.parse(moduleContentText);
+  let changed = false;
+
+  // Update the blocks.
+  const visitBlockJson = (blockJson: {[key: string]: any}): void => {
+    if (blockJson.type === opModeDetailsBlock.BLOCK_NAME) {
+      if (opModeDetailsBlock.upgradeBlockJsonTo_0_8_0(blockJson)) {
         changed = true;
       }
     }
