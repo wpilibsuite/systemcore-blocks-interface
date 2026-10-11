@@ -21,15 +21,15 @@
  */
 
 import * as Blockly from 'blockly/core';
-import { createFieldDropdown } from './FieldDropdown';
+import { FieldDropdownWithBorderRect } from './FieldDropdown';
 import { createFieldNonEditableText } from './FieldNonEditableText';
 
 export function createFieldNumberDropdown(min: number, max: number): Blockly.Field {
-  const items: string[] = [];
+  const options: Blockly.MenuOption[] = [];
   for (let i = min; i <= max; i++) {
-    items.push(i.toString());
+    options.push([i.toString(), i.toString()]);
   }
-  return createFieldDropdown(items);
+  return createFieldLabeledDropdown(options);
 }
 
 /**
@@ -41,5 +41,5 @@ export function createFieldLabeledDropdown(options: Blockly.MenuOption[]): Block
   if (options.length === 1) {
     return createFieldNonEditableText(options[0][1] as string);
   }
-  return new Blockly.FieldDropdown(options);
+  return new FieldDropdownWithBorderRect(options);
 }

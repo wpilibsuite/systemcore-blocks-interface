@@ -33,6 +33,20 @@ export function createFieldDropdown(items: string[]): Blockly.Field {
   return new Blockly.FieldDropdown(options);
 }
 
+/**
+ * A dropdown that always has its own border rect. In the zelos renderer, a dropdown on a shadow
+ * block doesn't have a border rect and uses the whole block as its click target instead. If a
+ * shadow block has more than one dropdown (like a port block with two port numbers), they all
+ * share the block as their click target, so only one of them can be opened, and Blockly throws
+ * an error when the block is disposed because it unbinds the tooltip events from the block once
+ * for each dropdown.
+ */
+export class FieldDropdownWithBorderRect extends Blockly.FieldDropdown {
+  protected override shouldAddBorderRect_(): boolean {
+    return true;
+  }
+}
+
 /*
  * Create a custom dropdown that accepts any value and displays it correctly
  * This is necessary because we need to be able to force a parameter or step into the dropdown
