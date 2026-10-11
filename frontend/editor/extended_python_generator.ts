@@ -28,18 +28,27 @@ import { STEPS_METHOD_NAME } from '../blocks/mrc_steps';
 import { OPMODE_TYPE_AUTO, OPMODE_TYPE_TELEOP, OPMODE_TYPE_UTILITY } from '../blocks/mrc_opmode_details';
 import { pascalCaseToSnakeCase } from '../storage/names';
 
+import { FunctionData } from '../blocks/utils/python_json_types';
 import {
     MODULE_NAME_WPILIB_BLOCKS,
+    CLASS_NAME_MECHANISM,
     CLASS_NAME_OPMODE,
     TELEOP_DECORATOR_CLASS,
     AUTO_DECORATOR_CLASS,
     UTILITY_DECORATOR_CLASS,
     NAME_DECORATOR_CLASS,
     GROUP_DECORATOR_CLASS,
+    ROBOT_OPMODE_START_METHOD,
+    ROBOT_OPMODE_PERIODIC_METHOD,
+    ROBOT_OPMODE_END_METHOD,
+    OPMODE_START_METHOD_NAME,
+    OPMODE_PERIODIC_METHOD_NAME,
+    OPMODE_END_METHOD_NAME,
     START_METHOD_NAME,
     PERIODIC_METHOD_NAME,
     END_METHOD_NAME,
     getClassData,
+    getInstanceMethod,
 } from '../blocks/utils/python';
 import * as storageModule from '../storage/module';
 
@@ -453,15 +462,17 @@ export class ExtendedPythonGenerator extends PythonGenerator {
             this.INDENT.repeat(2) + 'for event_handler in self.event_handlers[event_name]:\n' +
             this.INDENT.repeat(3) + 'event_handler(*args)\n'
         )
-        this.classMethods['opmode_start'] = (
-            'def opmode_start(self) -> None:\n' +
+        const opmodeStartMethod = ROBOT_OPMODE_START_METHOD;
+        const opmodeStartCode = (
             this.INDENT + 'for mechanism in self.mechanisms:\n' +
             this.INDENT.repeat(2) + 'mechanism.opmode_start()\n'
         );
+        this.classMethods[opmodeStartMethod.functionName] = this.insertCodeIntoMethod(
+            opmodeStartMethod, opmodeStartCode);
         // TODO: This is here only until WPILib makes it part of every opmode.
         this.fromModuleImportName('wpilib', 'DriverStationDisplay');
-        this.classMethods['opmode_periodic'] = (
-            'def opmode_periodic(self) -> None:\n' +
+        const opmodePeriodicMethod = ROBOT_OPMODE_PERIODIC_METHOD;
+        const opmodePeriodicCode = (
             // Generate code to call each when_ method. This goes at the top, so that the when
             // conditions are checked before anything else happens on this tick.
             this.getWhenCalls() +
@@ -470,11 +481,15 @@ export class ExtendedPythonGenerator extends PythonGenerator {
             // TODO: This is here only until WPILib makes it part of every opmode.
             this.INDENT + 'DriverStationDisplay.update_lines()\n'
         );
-        this.classMethods['opmode_end'] = (
-            'def opmode_end(self) -> None:\n' +
+        this.classMethods[opmodePeriodicMethod.functionName] = this.insertCodeIntoMethod(
+            opmodePeriodicMethod, opmodePeriodicCode);
+        const opmodeEndMethod = ROBOT_OPMODE_END_METHOD;
+        const opmodeEndCode = (
             this.INDENT + 'for mechanism in self.mechanisms:\n' +
             this.INDENT.repeat(2) + 'mechanism.opmode_end()\n'
         );
+        this.classMethods[opmodeEndMethod.functionName] = this.insertCodeIntoMethod(
+            opmodeEndMethod, opmodeEndCode);
       }
 
       if (this.getModuleType() === storageModule.ModuleType.MECHANISM) {
@@ -482,27 +497,46 @@ export class ExtendedPythonGenerator extends PythonGenerator {
         // when conditions are checked before anything else happens on this tick.
         const whenCalls = this.getWhenCalls();
         if (whenCalls) {
-          this.classMethods['opmode_periodic'] =
-              this.insertCodeIntoMethod('opmode_periodic', whenCalls);
+          const opmodePeriodicMethod = getInstanceMethod(CLASS_NAME_MECHANISM, OPMODE_PERIODIC_METHOD_NAME);
+          if (!opmodePeriodicMethod) {
+            throw new Error(`Could not find method ${OPMODE_PERIODIC_METHOD_NAME} in class ${CLASS_NAME_MECHANISM}`);
+          }
+          this.classMethods[opmodePeriodicMethod.functionName] = this.insertCodeIntoMethod(
+              opmodePeriodicMethod, whenCalls);
         }
       }
 
       if (this.getModuleType() === storageModule.ModuleType.OPMODE) {
-        // Add code to the Start method to call robot.opmode_start.
-        this.classMethods[START_METHOD_NAME] = this.insertCodeIntoMethod(START_METHOD_NAME, '', 'opmode_start');
+        // Add code to the opmode's start method to call robot.opmode_start.
+        const startMethod = getInstanceMethod(CLASS_NAME_OPMODE, START_METHOD_NAME);
+        if (!startMethod) {
+          throw new Error(`Could not find method ${START_METHOD_NAME} in class ${CLASS_NAME_OPMODE}`);
+        }
+        this.classMethods[startMethod.functionName] = this.insertCodeIntoMethod(
+            startMethod, '', OPMODE_START_METHOD_NAME);
 
         // Add code to the periodic method to call robot.opmode_periodic. The when_ method calls
         // go at the top, before that, so that the when conditions are checked before anything
         // else happens on this tick.
-        let periodicCode = this.insertCodeIntoMethod(PERIODIC_METHOD_NAME, this.getWhenCalls(), 'opmode_periodic');
+        const periodicMethod = getInstanceMethod(CLASS_NAME_OPMODE, PERIODIC_METHOD_NAME);
+        if (!periodicMethod) {
+          throw new Error(`Could not find method ${PERIODIC_METHOD_NAME} in class ${CLASS_NAME_OPMODE}`);
+        }
+        let periodicCode = this.insertCodeIntoMethod(
+            periodicMethod, this.getWhenCalls(), OPMODE_PERIODIC_METHOD_NAME);
         if (STEPS_METHOD_NAME in this.classMethods) {
           // Generate code to call the steps method after the user's code.
           periodicCode += this.INDENT + `self.${STEPS_METHOD_NAME}()\n`;
         }
-        this.classMethods[PERIODIC_METHOD_NAME] = periodicCode;
+        this.classMethods[periodicMethod.functionName] = periodicCode;
 
         // Add code to the End method to call robot.opmode_end.
-        this.classMethods[END_METHOD_NAME] = this.insertCodeIntoMethod(END_METHOD_NAME, '', 'opmode_end');
+        const endMethod = getInstanceMethod(CLASS_NAME_OPMODE, END_METHOD_NAME);
+        if (!endMethod) {
+          throw new Error(`Could not find method ${END_METHOD_NAME} in class ${CLASS_NAME_OPMODE}`);
+        }
+        this.classMethods[endMethod.functionName] = this.insertCodeIntoMethod(
+            endMethod, '', OPMODE_END_METHOD_NAME);
       }
 
       const classMethods = [];
@@ -575,8 +609,16 @@ export class ExtendedPythonGenerator extends PythonGenerator {
    * is given, a call to self.robot.<robotMethodName>() immediately after prefixCode. Any code
    * already registered for this method (e.g., from the user's blocks) is preserved after that.
    */
-  private insertCodeIntoMethod(methodName: string, prefixCode: string, robotMethodName?: string): string {
-    let defAndSuper = `def ${methodName}(self):\n`;
+  private insertCodeIntoMethod(
+      functionData: FunctionData,
+      prefixCode: string,
+      robotMethodName?: string): string {
+    const methodName = functionData.functionName;
+    let defAndSuper = `def ${methodName}(self)`;
+    if (functionData.returnType) {
+      defAndSuper += ` -> ${functionData.returnType}`;
+    }
+    defAndSuper += ':\n';
     if (this.shouldGenerateSuperCall(methodName)) {
       defAndSuper += this.INDENT + `super().${methodName}()\n`;
     }
