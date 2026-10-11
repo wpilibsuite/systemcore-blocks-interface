@@ -59,19 +59,24 @@ class FieldNonEditableText extends Blockly.FieldTextInput {
     this.matchBorderToText_();
   }
 
-  /**
-   * Sets the outline colour to the text colour, which comes from the renderer and theme CSS.
-   * CSS can't refer to another element's colour, so this copies it.
-   */
   private matchBorderToText_(): void {
-    if (!this.borderRect_ || !this.textElement_) {
-      return;
-    }
-    // The computed fill is empty if the field isn't in the document yet. It is set on a later call.
-    const textColour = getComputedStyle(this.textElement_).fill;
-    if (textColour) {
-      this.borderRect_.setAttribute('stroke', textColour);
-    }
+    matchBorderToText(this.borderRect_, this.textElement_);
+  }
+}
+
+/**
+ * Sets the outline colour of a field's rect to the field's text colour, which comes from the
+ * renderer and theme CSS. CSS can't refer to another element's colour, so this copies it.
+ */
+export function matchBorderToText(
+    borderRect: SVGRectElement | null, textElement: SVGTextElement | null): void {
+  if (!borderRect || !textElement) {
+    return;
+  }
+  // The computed fill is empty if the field isn't in the document yet. It is set on a later call.
+  const textColour = getComputedStyle(textElement).fill;
+  if (textColour) {
+    borderRect.setAttribute('stroke', textColour);
   }
 }
 
