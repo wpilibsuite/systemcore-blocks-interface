@@ -122,7 +122,7 @@ const PORT = {
             break;
           case PortType.CAN_DEVICE_ID:
             tooltipLines.push(
-                replaceTokens(Blockly.Msg.SYSTEMCORE_CAN_PORT_TOOLTIP, { portNum: portNum }));
+                replaceTokens(Blockly.Msg.CAN_DEVICE_ID_TOOLTIP, { portNum: portNum }));
             break;
           case PortType.SYSTEMCORE_SMART_IO_PORT:
             tooltipLines.push(
