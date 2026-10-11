@@ -171,8 +171,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     // Fetch the module content and this module's saved zoom/scroll from storage.
     const [moduleContentText, moduleZoom, moduleScroll] = await Promise.all([
       storage.fetchFileContentText(modulePath),
-      getModuleZoom(modulePath),
-      getModuleScroll(modulePath),
+      getModuleZoom(project.projectInfo.projectId, module.moduleId),
+      getModuleScroll(project.projectInfo.projectId, module.moduleId),
     ]);
     // The workspace may have been disposed (e.g. by React StrictMode's dev-only double-mount,
     // or a theme/renderer change forcing a recreate) while the fetches above were in flight.
@@ -251,17 +251,17 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
 
   /** Called (debounced) when the user changes the workspace's zoom level. */
   const handleZoomChange = React.useCallback((zoom: number) => {
-    updateModuleZoom(modulePath, zoom).catch((error) => {
+    updateModuleZoom(project.projectInfo.projectId, module.moduleId, zoom).catch((error) => {
       console.error('Failed to save zoom level for module:', error);
     });
-  }, [modulePath, updateModuleZoom]);
+  }, [project.projectInfo.projectId, module.moduleId, updateModuleZoom]);
 
   /** Called (debounced) when the user scrolls/pans the workspace. */
   const handleScrollChange = React.useCallback((x: number, y: number) => {
-    updateModuleScroll(modulePath, x, y).catch((error) => {
+    updateModuleScroll(project.projectInfo.projectId, module.moduleId, x, y).catch((error) => {
       console.error('Failed to save scroll position for module:', error);
     });
-  }, [modulePath, updateModuleScroll]);
+  }, [project.projectInfo.projectId, module.moduleId, updateModuleScroll]);
 
   /** Update editor when showSimpleClassNames changes. */
   React.useEffect(() => {

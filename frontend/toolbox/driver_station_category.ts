@@ -18,7 +18,7 @@ export function getDriverStationCategory(editor: Editor): toolboxItems.Category 
     return new toolboxItems.Category(
               Blockly.Msg['MRC_CATEGORY_DRIVER_STATION'],
               [
-                getDriverStationDisplayCategory(editor),
+                getDriverStationDisplayCategory(editor, Blockly.Msg['MRC_CATEGORY_DISPLAY']),
                 getDriverStationGamepadsCategory(editor),
               ],
               toolboxItems.ExpandedState.EXPANDED);
@@ -26,8 +26,11 @@ export function getDriverStationCategory(editor: Editor): toolboxItems.Category 
 
 // The display blocks (Add Data / Add Line) are just calls to the static
 // methods of wpilib_blocks.DriverStationDisplay, generated via the generic
-// mrc_call_python_function block.
-export function getDriverStationDisplayCategory(editor: Editor): toolboxItems.Category {
+// mrc_call_python_function block. The category is named Driver Station Display, unless another
+// name is given (it is just Display when it is inside the Driver Station category).
+export function getDriverStationDisplayCategory(
+    editor: Editor,
+    name: string = Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY']): toolboxItems.Category {
     const commonContents: toolboxItems.ContentsType[] = [];
     const moreContents: toolboxItems.ContentsType[] = [];
     const classData = getClassData(CLASS_NAME_DRIVER_STATION_DISPLAY);
@@ -35,11 +38,13 @@ export function getDriverStationDisplayCategory(editor: Editor): toolboxItems.Ca
         addStaticMethodBlocks(classData, commonContents, moreContents, editor.getShowSimpleClassNames());
         plugDefaultColorBlocks([...commonContents, ...moreContents], editor.getShowSimpleClassNames());
     }
-    return new toolboxItems.Category(
-        Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY'],
+    const category = new toolboxItems.Category(
+        name,
         makeOneContents(commonContents, moreContents),
         toolboxItems.ExpandedState.EXPANDED
     );
+    category.tooltip = Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY_TOOLTIP'];
+    return category;
 }
 
 // addStaticMethodBlocks plugs a generic workspace-variable getter (e.g. "myColor")

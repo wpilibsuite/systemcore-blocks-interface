@@ -26,7 +26,7 @@ import * as commonStorage from './common_storage';
 import * as storageModule from './module';
 import * as storageModuleContent from './module_content';
 import * as storageNames from './names';
-import * as userSettingsEntries from './user_settings_entries';
+import * as userSettings from './user_settings';
 import { upgradeProjectIfNecessary, CURRENT_VERSION } from './upgrade_project';
 import { GamepadTypeUtils } from '../types/GamepadType';
 import { mrcAddMechanismBlockToRobotContent } from '../blocks/mrc_mechanism_component_holder';
@@ -129,7 +129,14 @@ export async function fetchProject(
   
   // Load project info
   project.projectInfo = await fetchProjectInfo(storage, projectName);
-  
+  if (!project.projectInfo.projectId) {
+    // User settings are keyed by projectId, so make sure the project has one.
+    await saveProjectInfo(storage, projectName, project.projectInfo);
+  }
+
+  await userSettings.removeStaleModuleSettings(
+      storage, project.projectInfo.projectId, getAllModules(project).map(m => m.moduleId));
+
   return project;
 }
 
@@ -165,9 +172,7 @@ export async function renameProject(
     storage: commonStorage.Storage, projectName: string, newProjectName: string): Promise<void> {
   const oldPath = storageNames.makeProjectDirectoryPath(projectName);
   const newPath = storageNames.makeProjectDirectoryPath(newProjectName);
-  const fileNames = await storage.list(oldPath);
   await storage.rename(oldPath, newPath);
-  await userSettingsEntries.renameProjectSettings(storage, projectName, newProjectName, fileNames);
 }
 
 /**
@@ -234,6 +239,22 @@ export async function peekUploadedProjectId(blobUrl: string): Promise<string> {
 }
 
 /**
+ * Returns the projectIds of the given projects, mapped to the project names. Projects that
+ * don't have a projectId yet are left out.
+ */
+export async function fetchProjectIds(
+    storage: commonStorage.Storage, projectNames: string[]): Promise<Map<string, string>> {
+  const projectIdToName = new Map<string, string>();
+  for (const name of projectNames) {
+    const info = await fetchProjectInfo(storage, name);
+    if (info.projectId) {
+      projectIdToName.set(info.projectId, name);
+    }
+  }
+  return projectIdToName;
+}
+
+/**
  * Returns the name of the project whose projectId matches the given id, or null.
  */
 export async function findProjectNameByProjectId(
@@ -290,9 +311,11 @@ export async function uploadProjectFiles(
 export async function deleteProject(
     storage: commonStorage.Storage, projectName: string): Promise<void> {
   const projectPath = storageNames.makeProjectDirectoryPath(projectName);
-  const fileNames = await storage.list(projectPath);
+  const projectInfo = await fetchProjectInfo(storage, projectName);
   await storage.delete(projectPath);
-  await userSettingsEntries.deleteProjectSettings(storage, projectName, fileNames);
+  if (projectInfo.projectId) {
+    await userSettings.deleteProjectSettings(storage, projectInfo.projectId);
+  }
 }
 
 /**
@@ -354,7 +377,8 @@ export async function removeModuleFromProject(
     }
     await storage.delete(modulePath);
     await saveProjectInfo(storage, project.projectName, project.projectInfo);
-    await userSettingsEntries.deleteModuleSettings(storage, project.projectName, modulePath);
+    await userSettings.deleteModuleSettings(
+        storage, project.projectInfo.projectId, module.moduleId);
   }
 }
 
@@ -396,8 +420,6 @@ export async function renameModuleInProject(
       break;
   }
   await saveProjectInfo(storage, project.projectName, project.projectInfo);
-  await userSettingsEntries.renameModuleSettings(
-      storage, project.projectName, oldModulePath, newModulePath);
 
   return newModulePath;
 }
@@ -574,6 +596,20 @@ export function findModuleByClassName(project: Project, className: string): stor
     }
   }
   return null;
+}
+
+/**
+ * Returns all the modules in the given project.
+ */
+export function getAllModules(project: Project): storageModule.Module[] {
+  return [project.robot, ...project.mechanisms, ...project.opModes];
+}
+
+/**
+ * Returns the module with the given moduleId inside the given project, or null if it is not found.
+ */
+export function findModuleByModuleId(project: Project, moduleId: string): storageModule.Module | null {
+  return getAllModules(project).find(m => m.moduleId === moduleId) ?? null;
 }
 
 /**

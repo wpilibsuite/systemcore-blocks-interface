@@ -147,6 +147,8 @@
     "RENAME_ELLIPSIS": "Renombrar...",
     "DELETE_ELLIPSIS": "Eliminar...",
     "COPY_ELLIPSIS": "Copiar...",
+    "COPY_CODE_SUCCESS": "Copia completada correctamente.",
+    "COPY_CODE_FAILED": "No se pudo copiar el código: {{error}}",
     "SORT_TABS": "Ordenar Pestañas",
     "addTabDialog": {
         "title": "Agregar Pestaña",
@@ -327,8 +329,11 @@
         "MORE_MECHANISM_METHODS_LABEL": "Más Métodos del Mecanismo",
         "MORE_OPMODE_METHODS_LABEL": "Más Métodos del OpMode",
         "MORE_BLOCKS_LABEL": "Más...",
+        "TYPED_VARIABLE_DEFAULT": "predeterminado",
         "COMMENT_DEFAULT_TEXT": "¡Ingresa tu comentario aquí!",
         "CONFIG_GAMEPADS_BUTTON": "⚙️ Configurar Gamepads",
+        "ADD_ITEM": "añadir elemento",
+        "TO_LIST": "a la lista",
         "GAMEPAD": {
             "TITLE": "Mando de Juego",
             "BUTTON_A": "A",
@@ -414,7 +419,10 @@
             "SET_CLASS_VARIABLE": "Establece la variable {{className}}.{{varName}}.",
             "SET_INSTANCE_VARIABLE": "Establece la variable {{varName}} para el objeto {{className}} dado.",
             "MECHANISM_COMPONENT_REFERENCE": "El componente llamado {{componentName}} de la clase {{className}} del mecanismo llamado {{mechanismName}}.",
-            "COMPONENT_REFERENCE": "El componente llamado {{componentName}} de la clase {{className}}."
+            "COMPONENT_REFERENCE": "El componente llamado {{componentName}} de la clase {{className}}.",
+            "LIST_ADD_ITEM": "Añade el elemento al final de la lista.",
+            "MATH_MAX": "Devuelve el mayor de dos valores numéricos.",
+            "MATH_MIN": "Devuelve el menor de dos valores numéricos."
         },
         "CATEGORY": {
             "LISTS": "Listas",
@@ -433,7 +441,11 @@
             "ADD_MECHANISM": "+ Mecanismo",
             "ADD_COMPONENT": "+ Componente",
             "DRIVER_STATION": "Estación del Conductor",
-            "DRIVER_STATION_DISPLAY": "Pantalla",
+            "DISPLAY": "Pantalla",
+            "DRIVER_STATION_DISPLAY": "Pantalla de la Estación del Conductor",
+            "DRIVER_STATION_DISPLAY_TOOLTIP": "Muestra información en la pantalla de la Estación del Conductor.",
+            "OBSERVABILITY": "Observabilidad",
+            "OBSERVABILITY_TOOLTIP": "Mira lo que hace el robot mientras funciona.",
             "DRIVER_STATION_GAMEPADS": "Mandos de Juego",
             "PAGINATION_TOTAL": "{{start}}-{{end}} de {{total}} elementos"
         },
@@ -460,6 +472,8 @@
             "CALL_CONSTRUCTOR_MISSING_CLASS": "Este bloque llama a un constructor en una clase que ya no existe.",
             "CALL_CONSTRUCTOR_MISSING_CONSTRUCTOR": "Este bloque llama a un constructor que ya no existe.",
             "CALL_INSTANCE_METHOD_MISSING_CLASS": "Este bloque llama a un método de una clase que ya no existe.",
+            "CALL_INSTANCE_VARIABLE_WRONG_TYPE": "La variable {{variableName}} no siempre contiene un {{className}}, por lo que este bloque podría no funcionar.",
+            "SET_VARIABLE_DIFFERENT_TYPE": "Esto asigna a {{variableName}} un valor de tipo {{valueType}}, pero en otro lugar se le asigna un valor de tipo {{variableType}}.",
             "CALL_INSTANCE_METHOD_MISSING_METHOD": "Este bloque llama a un método que ya no existe.",
             "CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD": "Este bloque llama a un método que no existe en este módulo.",
             "CALL_COMPONENT_INSTANCE_METHOD_PRIVATE_COMPONENT": "Este bloque llama a un método en un componente privado en el mecanismo {{mechanismClassName}}.",

@@ -106,6 +106,8 @@ export class Category extends Item  {
   /** The color of the category, for example '#1e88e5'. Blockly ignores this if categorystyle is set. */
   colour?: string;
   custom?: string;
+  /** The tooltip shown when hovering over the category. See tooltip_category.ts. */
+  tooltip?: string;
 
   /** The blocks for this category. */
   contents?: ContentsType[] = [];
