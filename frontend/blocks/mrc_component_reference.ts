@@ -497,6 +497,48 @@ export function repointComponentReferenceIntoMechanism(
   return changed;
 }
 
+/**
+ * Returns the component that the given mrc_component_reference block JSON represents, or null if
+ * the JSON isn't a mrc_component_reference block. This is used when blocks are moved from one
+ * module to another.
+ */
+export function getComponentReferenceFromBlockJson(
+    blockJson: {[key: string]: any}): {componentId: string, mechanismId: string, label: string} | null {
+  if (blockJson.type !== BLOCK_NAME || !blockJson.extraState) {
+    return null;
+  }
+  const extraState = blockJson.extraState as ComponentReferenceExtraState;
+  const fields = blockJson.fields || {};
+  const componentName = fields[FIELD_COMPONENT_NAME] || extraState.componentName || '';
+  const mechanismId = extraState.mechanismId || '';
+  return {
+    componentId: extraState.componentId,
+    mechanismId: mechanismId,
+    label: (mechanismId ? (fields[FIELD_MECHANISM_NAME] || '') + '.' : '') + componentName,
+  };
+}
+
+/**
+ * Changes which mechanism, if any, the component represented by the given mrc_component_reference
+ * block JSON belongs to. Use null for a component in the module the block is in, or in the robot
+ * when the block is in an opmode. This is used when blocks are moved from one module to another.
+ */
+export function setComponentReferenceMechanismInBlockJson(
+    blockJson: {[key: string]: any},
+    mechanismInRobot: storageModuleContent.MechanismInRobot | null): void {
+  const extraState = blockJson.extraState as ComponentReferenceExtraState;
+  if (!blockJson.fields) {
+    blockJson.fields = {};
+  }
+  if (mechanismInRobot) {
+    extraState.mechanismId = mechanismInRobot.mechanismId;
+    blockJson.fields[FIELD_MECHANISM_NAME] = mechanismInRobot.name;
+  } else {
+    delete extraState.mechanismId;
+    delete blockJson.fields[FIELD_MECHANISM_NAME];
+  }
+}
+
 // Functions used for creating blocks for the toolbox.
 
 export function getComponentReferenceBlock(

@@ -143,6 +143,15 @@ const COMPONENT = {
     this.setNextStatement(true, OUTPUT_NAME);
   },
   ...NONCOPYABLE_BLOCK,
+  /**
+   * mrcGetReasonCannotMoveToOtherModule is called when this block is dragged onto another tab.
+   */
+  mrcGetReasonCannotMoveToOtherModule: function (this: ComponentBlock): string {
+    // A component in the robot can be moved into a mechanism another way, so say how.
+    return this.canMoveToMechanism()
+        ? Blockly.Msg.CANNOT_MOVE_ROBOT_COMPONENT_TO_OTHER_TAB
+        : Blockly.Msg.CANNOT_MOVE_COMPONENT_TO_OTHER_TAB;
+  },
   ...NONDISABLEABLE_BLOCK,
 
   /**

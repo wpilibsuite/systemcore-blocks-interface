@@ -68,6 +68,12 @@ const STEPS = {
     }
   },
   ...NONCOPYABLE_BLOCK,
+  /**
+   * mrcGetReasonCannotMoveToOtherModule is called when this block is dragged onto another tab.
+   */
+  mrcGetReasonCannotMoveToOtherModule: function (this: StepsBlock): string {
+    return Blockly.Msg.CANNOT_MOVE_STEPS_TO_OTHER_TAB;
+  },
   saveExtraState: function (this: StepsBlock): StepsExtraState {
     return {
       stepNames: this.mrcStepNames,

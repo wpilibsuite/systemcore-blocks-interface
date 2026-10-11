@@ -441,6 +441,24 @@ function generateRegisterEventHandler(
   }
 }
 
+/**
+ * Returns who sends the event handled by the given mrc_event_handler block JSON, or null if the
+ * JSON isn't a mrc_event_handler block. This is used when blocks are moved from one module to
+ * another.
+ */
+export function getEventHandlerSenderFromBlockJson(
+    blockJson: {[key: string]: any}): {senderType: SenderType, label: string} | null {
+  if (blockJson.type !== BLOCK_NAME || !blockJson.extraState) {
+    return null;
+  }
+  const extraState = blockJson.extraState as EventHandlerExtraState;
+  const fields = blockJson.fields || {};
+  return {
+    senderType: extraState.senderType,
+    label: (fields[FIELD_SENDER] || '') + '.' + (fields[FIELD_EVENT_NAME] || ''),
+  };
+}
+
 // Functions used for creating blocks for the toolbox.
 
 export function addRobotEventHandlerBlocks(
