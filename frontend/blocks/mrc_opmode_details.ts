@@ -23,8 +23,13 @@
 import * as Blockly from 'blockly';
 
 import { PERIODIC_METHOD_NAME, getAllowedTypesForSetCheck } from './utils/python';
-import { BLOCK_NAME as MRC_CALL_PYTHON_FUNCTION, FunctionKind } from './mrc_call_python_function';
-import { BLOCK_NAME as MRC_GET_PYTHON_VARIABLE, VariableKind } from './mrc_get_python_variable';
+import {
+    BLOCK_NAME as MRC_CALL_PYTHON_FUNCTION,
+    getConstructorCallFromBlockJson } from './mrc_call_python_function';
+import {
+    BLOCK_NAME as MRC_GET_PYTHON_VARIABLE,
+    createClassVariableGetterBlockJson,
+    getClassVariableFromBlockJson } from './mrc_get_python_variable';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator, OpModeDetails, OpModeDetailsParams } from '../editor/extended_python_generator';
 import { createFieldDropdown } from '../fields/FieldDropdown';
@@ -242,48 +247,37 @@ function analyzeColorInputJson(inputJson: {[key: string]: any} | undefined): Col
   if (!blockJson) {
     return {code: null, unsupportedBlockId: null};
   }
-  if (blockJson.type === MRC_GET_PYTHON_VARIABLE &&
-      blockJson.extraState?.varKind === VariableKind.CLASS &&
-      blockJson.extraState?.moduleOrClassName === COLOR_CLASS_NAME &&
-      blockJson.fields?.VAR) {
-    return {code: COLOR_CLASS_NAME + '.' + blockJson.fields.VAR, unsupportedBlockId: null};
-  }
-  if (blockJson.type === MRC_CALL_PYTHON_FUNCTION &&
-      blockJson.extraState?.functionKind === FunctionKind.CONSTRUCTOR &&
-      blockJson.extraState?.moduleOrClassName === COLOR_CLASS_NAME) {
-    const args: any[] = blockJson.extraState.args ?? [];
-    const argCodes: string[] = [];
-    for (let i = 0; i < args.length; i++) {
-      const argBlockJson = getConnectedBlockJson(blockJson.inputs?.['ARG' + i]);
-      if (!argBlockJson) {
-        return {code: null, unsupportedBlockId: blockJson.id ?? null};
-      }
-      if (argBlockJson.type !== 'math_number' || argBlockJson.fields?.NUM === undefined) {
-        // Variables and other expressions aren't available in the robot's __init__.
-        return {code: null, unsupportedBlockId: argBlockJson.id ?? null};
-      }
-      argCodes.push(String(argBlockJson.fields.NUM));
+  if (blockJson.type === MRC_GET_PYTHON_VARIABLE) {
+    const classVariable = getClassVariableFromBlockJson(blockJson);
+    if (classVariable?.className === COLOR_CLASS_NAME) {
+      return {code: COLOR_CLASS_NAME + '.' + classVariable.varName, unsupportedBlockId: null};
     }
-    return {code: COLOR_CLASS_NAME + '(' + argCodes.join(', ') + ')', unsupportedBlockId: null};
+  }
+  if (blockJson.type === MRC_CALL_PYTHON_FUNCTION) {
+    const constructorCall = getConstructorCallFromBlockJson(blockJson);
+    if (constructorCall?.className === COLOR_CLASS_NAME) {
+      const argCodes: string[] = [];
+      for (const argInputJson of constructorCall.argInputJsons) {
+        const argBlockJson = getConnectedBlockJson(argInputJson);
+        if (!argBlockJson) {
+          return {code: null, unsupportedBlockId: blockJson.id ?? null};
+        }
+        if (argBlockJson.type !== 'math_number' || argBlockJson.fields?.NUM === undefined) {
+          // Variables and other expressions aren't available in the robot's __init__.
+          return {code: null, unsupportedBlockId: argBlockJson.id ?? null};
+        }
+        argCodes.push(String(argBlockJson.fields.NUM));
+      }
+      return {code: COLOR_CLASS_NAME + '(' + argCodes.join(', ') + ')', unsupportedBlockId: null};
+    }
   }
   return {code: null, unsupportedBlockId: blockJson.id ?? null};
 }
 
 function createColorShadowJson(colorName: string): {[key: string]: any} {
   return {
-    shadow: {
-      type: MRC_GET_PYTHON_VARIABLE,
-      extraState: {
-        varKind: VariableKind.CLASS,
-        moduleOrClassName: COLOR_CLASS_NAME,
-        varType: COLOR_CLASS_NAME,
-        importModule: COLOR_MODULE_NAME,
-      },
-      fields: {
-        MODULE_OR_CLASS: COLOR_CLASS_NAME,
-        VAR: colorName,
-      },
-    },
+    shadow: createClassVariableGetterBlockJson(
+        COLOR_MODULE_NAME, COLOR_CLASS_NAME, COLOR_CLASS_NAME, colorName),
   };
 }
 

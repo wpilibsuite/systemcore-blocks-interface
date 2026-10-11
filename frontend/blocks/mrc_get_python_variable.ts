@@ -550,6 +550,48 @@ function createModuleOrClassVariableGetterBlock(
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
 }
 
+/**
+ * Returns the JSON for a block that gets the given class variable, for use in
+ * a saved workspace.
+ */
+export function createClassVariableGetterBlockJson(
+    importModule: string,
+    className: string,
+    varType: string,
+    varName: string): {[key: string]: any} {
+  const extraState: GetPythonVariableExtraState = {
+    varKind: VariableKind.CLASS,
+    moduleOrClassName: className,
+    varType: varType,
+    importModule: importModule,
+  };
+  return {
+    type: BLOCK_NAME,
+    extraState: extraState,
+    fields: {
+      [FIELD_MODULE_OR_CLASS_NAME]: className,
+      [FIELD_VARIABLE_NAME]: varName,
+    },
+  };
+}
+
+/**
+ * If the given mrc_get_python_variable block JSON gets a class variable,
+ * returns the class name and the variable name. Otherwise, returns null.
+ */
+export function getClassVariableFromBlockJson(
+    blockJson: {[key: string]: any}): {className: string, varName: string} | null {
+  if (blockJson.extraState?.varKind === VariableKind.CLASS &&
+      blockJson.extraState?.moduleOrClassName &&
+      blockJson.fields?.[FIELD_VARIABLE_NAME]) {
+    return {
+      className: blockJson.extraState.moduleOrClassName,
+      varName: blockJson.fields[FIELD_VARIABLE_NAME],
+    };
+  }
+  return null;
+}
+
 export function addInstanceVariableBlocks(
     classData: ClassData,
     commonContents: toolboxItems.ContentsType[],

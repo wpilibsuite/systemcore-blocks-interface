@@ -2153,6 +2153,25 @@ export function repointComponentCallsIntoMechanism(
   return changed;
 }
 
+/**
+ * If the given mrc_call_python_function block JSON calls a constructor,
+ * returns the class name and the input JSON for each argument (undefined if the input
+ * isn't in the block JSON). Otherwise, returns null.
+ */
+export function getConstructorCallFromBlockJson(
+    blockJson: {[key: string]: any}
+): {className: string, argInputJsons: ({[key: string]: any} | undefined)[]} | null {
+  if (blockJson.extraState?.functionKind !== FunctionKind.CONSTRUCTOR ||
+      !blockJson.extraState?.moduleOrClassName) {
+    return null;
+  }
+  const args: FunctionArg[] = blockJson.extraState.args ?? [];
+  return {
+    className: blockJson.extraState.moduleOrClassName,
+    argInputJsons: args.map((_arg, i) => blockJson.inputs?.['ARG' + i]),
+  };
+}
+
 export function upgradeBlockJsonTo_0_6_0(blockJson: any): boolean {
   if (blockJson.extraState && blockJson.extraState.functionKind === FunctionKind.INSTANCE_COMPONENT) {
     if (!blockJson.extraState.componentName) {
