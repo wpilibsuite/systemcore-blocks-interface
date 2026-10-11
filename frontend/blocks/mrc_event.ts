@@ -84,6 +84,12 @@ const EVENT = {
     this.updateBlock_();
   },
   ...NONCOPYABLE_BLOCK,
+  /**
+   * mrcGetReasonCannotMoveToOtherModule is called when this block is dragged onto another tab.
+   */
+  mrcGetReasonCannotMoveToOtherModule: function (this: EventBlock): string {
+    return Blockly.Msg.CANNOT_MOVE_EVENT_TO_OTHER_TAB;
+  },
   ...NONDISABLEABLE_BLOCK,
 
   /**

@@ -358,6 +358,15 @@ const CLASS_METHOD_DEF = {
   canChangeSignature: function (this: ClassMethodDefBlock): boolean {
     return this.mrcCanChangeSignature;
   },
+  /**
+   * mrcGetReasonCannotMoveToOtherModule is called when this block is dragged onto another tab.
+   * Custom methods can be moved to another module, where the name field's validator renames them
+   * if their name is already used. Methods that override a base class method can't be moved,
+   * because the other module's base class may not have them.
+   */
+  mrcGetReasonCannotMoveToOtherModule: function (this: ClassMethodDefBlock): string | null {
+    return this.mrcCanChangeSignature ? null : Blockly.Msg.CANNOT_MOVE_METHOD_OVERRIDE_TO_OTHER_TAB;
+  },
   getMethodName: function (this: ClassMethodDefBlock): string {
     return this.getFieldValue(FIELD_METHOD_NAME);
   },
@@ -490,6 +499,19 @@ export const pythonFromBlock = function (
   block.mrcFuncName = funcName;
 
   return '';
+}
+
+/**
+ * Returns the methodId of the method defined by the given mrc_class_method_def block JSON, or null
+ * if the JSON isn't a mrc_class_method_def block. This is used when blocks are moved from one
+ * module to another.
+ */
+export function getMethodIdFromBlockJson(blockJson: {[key: string]: any}): string | null {
+  if (blockJson.type !== BLOCK_NAME || !blockJson.extraState) {
+    return null;
+  }
+  // loadExtraState uses the block id when there is no methodId.
+  return (blockJson.extraState as ClassMethodDefExtraState).methodId || blockJson.id || null;
 }
 
 // Functions used for creating blocks for the toolbox.

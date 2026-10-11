@@ -112,6 +112,12 @@ const MECHANISM = {
     this.setNextStatement(true, OUTPUT_NAME);
   },
   ...NONCOPYABLE_BLOCK,
+  /**
+   * mrcGetReasonCannotMoveToOtherModule is called when this block is dragged onto another tab.
+   */
+  mrcGetReasonCannotMoveToOtherModule: function (this: MechanismBlock): string {
+    return Blockly.Msg.CANNOT_MOVE_MECHANISM_TO_OTHER_TAB;
+  },
   ...NONDISABLEABLE_BLOCK,
 
   /**
