@@ -453,7 +453,6 @@
             "TUNABLES_TOOLTIP": "Usa valores que se pueden cambiar en los paneles.",
             "ALERTS": "Alertas",
             "ALERTS_TOOLTIP": "Muestra problemas y advertencias en los paneles.",
-            "TEST": "Prueba",
             "PAGINATION_TOTAL": "{{start}}-{{end}} de {{total}} elementos"
         },
         "WARNING":{

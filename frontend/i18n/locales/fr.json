@@ -453,7 +453,6 @@
             "TUNABLES_TOOLTIP": "Utilisez des valeurs qui peuvent être modifiées dans les tableaux de bord.",
             "ALERTS": "Alertes",
             "ALERTS_TOOLTIP": "Affichez les problèmes et les avertissements dans les tableaux de bord.",
-            "TEST": "Test",
             "PAGINATION_TOTAL": "{{start}}-{{end}} sur {{total}} éléments"
         },
         "WARNING": {

@@ -452,8 +452,7 @@
       "TUNABLES_TOOLTIP": "השתמשו בערכים שניתן לשנות בלוחות המחוונים.",
       "ALERTS": "התראות",
       "ALERTS_TOOLTIP": "הציגו בעיות ואזהרות בלוחות המחוונים.",
-      "TEST": "בדיקה",
-            "PAGINATION_TOTAL": "{{start}}-{{end}} מתוך {{total}} פריטים"
+      "PAGINATION_TOTAL": "{{start}}-{{end}} מתוך {{total}} פריטים"
     },
     "WARNING": {
       "GET_MODULE_VARIABLE_MISSING_MODULE": "בלוק זה מקבל משתנה מודול בתוך מודול שכבר אינו קיים.",
