@@ -26,7 +26,10 @@ translated (English and Spanish, in `locales/`), to show that translations are o
 cd <your repo>/example_libraries 
 ./build.sh                  # builds all of the examples
 ./build.sh pid_tools        # builds one example
+./build.sh --force          # builds them even if nothing changed
 ```
+
+An example is skipped if its `.blocks_lib` is newer than everything it is built from.
 
 Each library is written to `example_libraries/build/<name>.blocks_lib`. 
 

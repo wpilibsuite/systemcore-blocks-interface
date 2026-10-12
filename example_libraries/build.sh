@@ -1,8 +1,9 @@
 #!/bin/bash
 # Builds a .blocks_lib file for each example library.
 #
-# Usage: ./build.sh [example_dir ...]
-# With no arguments, every directory here that has a metadata.json is built.
+# Usage: ./build.sh [--force] [example_dir ...]
+# With no arguments, every directory here that has a metadata.json is built. An example whose
+# .blocks_lib is newer than everything it is built from is skipped, unless --force is given.
 #
 # Each example directory has metadata.json, and optional toolboxes/, components/, python_data/,
 # locales/, and samples/ directories. The wheels are built from a python package in python/, and/or
@@ -15,6 +16,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGING_DIR="$SCRIPT_DIR/../packaging"
 # Every example is built into this one directory.
 BUILD_DIR="$SCRIPT_DIR/build"
+REPO_DIR="$SCRIPT_DIR/.."
+
+FORCE=false
+if [ "$1" = "--force" ]; then
+    FORCE=true
+    shift
+fi
 
 if [ $# -eq 0 ]; then
     set -- "$SCRIPT_DIR"/*/metadata.json
@@ -27,6 +35,19 @@ for EXAMPLE in "$@"; do
     STAGING_DIR="$BUILD_DIR/.staging-$NAME"
     DOWNLOAD_DIR="$BUILD_DIR/.download-$NAME"
     OUTPUT="$BUILD_DIR/$NAME.blocks_lib"
+
+    # What the output is built from: the example and this script, and for generated toolboxes, the
+    # generator and the frontend code and version that it bundles.
+    INPUTS=("$EXAMPLE_DIR" "${BASH_SOURCE[0]}")
+    if [ -f "$EXAMPLE_DIR/python_toolbox.json" ]; then
+        INPUTS+=("$SCRIPT_DIR/generate_python_toolboxes.mjs" "$REPO_DIR/frontend"
+            "$REPO_DIR/package.json" "$REPO_DIR/package-lock.json")
+    fi
+    if ! $FORCE && [ -f "$OUTPUT" ] && [ -z "$(find "${INPUTS[@]}" \
+            \( -name __pycache__ -o -name .DS_Store \) -prune -o -newer "$OUTPUT" -print | head -1)" ]; then
+        echo "$NAME is up to date, skipping."
+        continue
+    fi
 
     echo "Building $NAME..."
     rm -rf "$STAGING_DIR" "$DOWNLOAD_DIR" "$OUTPUT"

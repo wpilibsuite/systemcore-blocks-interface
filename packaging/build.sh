@@ -106,13 +106,19 @@ echo "IPK package created."
 echo "Package: ${IPK_FILE}"
 echo ""
 echo "Package structure:"
-echo "  CONTROL files:"
-find control -type f | sort | sed 's/^/    /'
-echo "  Overlay files (will be installed):"
-find overlay -type f | sort | sed 's/^overlay/    /' | head -15
+# List what is actually in the archives, rather than the source directories,
+# which can have files that aren't packaged (like .DS_Store).
+CONTROL_FILES=$(tar -tzf "$BUILD_DIR/control.tar.gz" | grep -v '/$' | sed 's|^\./||' | sort)
+DATA_FILES=$(tar -tzf "$BUILD_DIR/data.tar.gz" | grep -v '/$' | sed 's|^\./|/|' | sort)
+DATA_FILE_COUNT=$(echo "$DATA_FILES" | wc -l)
+echo "  CONTROL files (control.tar.gz):"
+echo "$CONTROL_FILES" | sed 's/^/    /'
+echo "  Overlay files (data.tar.gz, will be installed):"
+# sed reads all of its input, so echo doesn't get a broken pipe like it would with head.
+echo "$DATA_FILES" | sed -n '1,15s/^/    /p'
 
-if [ "$(find overlay -type f | wc -l)" -gt 15 ]; then
-    echo "    ... and $(($(find overlay -type f | wc -l) - 15)) more files"
+if [ "$DATA_FILE_COUNT" -gt 15 ]; then
+    echo "    ... and $((DATA_FILE_COUNT - 15)) more files"
 fi
 
 echo ""
