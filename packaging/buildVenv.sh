@@ -10,6 +10,16 @@ SITE_PACKAGES="$VENV_DIR/lib/python${PYTHON_VER}/site-packages"
 VENV_BIN="$VENV_DIR/bin"
 "$SCRIPT_DIR/ensure_venv.sh"
 
+# The venv only depends on the robotpy-installer version and this script, so skip the rebuild
+# if it was already built from both. The stamp is kept outside the overlay so it isn't packaged.
+STAMP="$WHEELS_DIR/.venv_built"
+if [ -f "$VENV_DIR/pyvenv.cfg" ] && [ -f "$STAMP" ] \
+    && [ "$(cat "$STAMP")" = "$ROBOTPY_INSTALLER_VERSION" ] \
+    && [ ! "${BASH_SOURCE[0]}" -nt "$STAMP" ]; then
+    echo "Venv is up to date at $VENV_DIR, skipping."
+    exit 0
+fi
+
 echo "Cleaning previous venv..."
 rm -rf "$VENV_DIR"
 mkdir -p "$SITE_PACKAGES"
@@ -135,5 +145,7 @@ fi
 ACTIVATE
 
 chmod +x "$VENV_BIN/activate"
+
+echo "$ROBOTPY_INSTALLER_VERSION" > "$STAMP"
 
 echo "Done. Venv at $VENV_DIR"
