@@ -62,6 +62,7 @@ import {
 } from './reactComponents/UserSettingsProvider';
 import { useUserSettings } from './reactComponents/useUserSettings';
 import AppTour from './reactComponents/AppTour';
+import ConnectionLostModal from './reactComponents/ConnectionLostModal';
 
 /** Error message for storage opening failures. */
 const STORAGE_ERROR_MESSAGE = 'Failed to open client side storage. Caught the following error...';
@@ -821,6 +822,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
           isOpen={tourOpen}
           onClose={handleTourClose}
         />
+
+        {storage instanceof serverSideStorage.ServerSideStorage && <ConnectionLostModal />}
       </AutosaveProvider>
     </Antd.ConfigProvider>
   );

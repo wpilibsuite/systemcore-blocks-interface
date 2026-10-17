@@ -29,17 +29,17 @@ function toStorageUrl(path: string): string {
   return `${API_BASE_URL}/storage/${stripped}`;
 }
 
-export async function isServerAvailable(): Promise<boolean> {
+export async function isServerAvailable(timeoutMs: number = 5000): Promise<boolean> {
   try {
     // Create a timeout promise
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Timeout')), 5000); // 5 second timeout
+      setTimeout(() => reject(new Error('Timeout')), timeoutMs);
     });
     
     // Check the specific API status endpoint to distinguish backend from static file server
     // Use absolute path without base URL since /statusz is a backend endpoint
     const response = await Promise.race([
-      fetch('/statusz'),
+      fetch('/statusz', { cache: 'no-store' }),
       timeoutPromise
     ]);
         
