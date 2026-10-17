@@ -6,7 +6,7 @@ set -euo pipefail
 # Run from the repo root (one level above this script), regardless of where it's invoked from
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-npx npm-check-updates -i
+npx npm-check-updates -i --install never
 # Remove node_modules too: packages with exact peer pins (e.g. vitest and @vitest/*)
 # can't be resolved against the old versions still installed there.
 rm -rf package-lock.json node_modules
