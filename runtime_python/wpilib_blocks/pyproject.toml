@@ -16,5 +16,8 @@ dependencies = []
 [tool.setuptools.dynamic]
 version = {file = "VERSION.txt"}
 
+[tool.setuptools]
+packages = ["wpilib_blocks"]
+
 [tool.setuptools.package-dir]
 "wpilib_blocks" = "."
