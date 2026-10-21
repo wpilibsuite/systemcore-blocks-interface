@@ -94,6 +94,16 @@ class FieldColorDropdown extends FieldDropdownWithBorderRect {
         'transform',
         'translate(' + rectangleAreaWidth + ', 0)',
       );
+      // A tspan arrow is inside the text element, so it moves with the text, but an svg arrow
+      // (used by zelos) is positioned separately by super.render_ and has to be moved too.
+      // WARNING: svgArrow is private in Blockly's FieldDropdown.
+      const svgArrow: SVGElement | null = (this as any).svgArrow;
+      if (svgArrow) {
+        svgArrow.setAttribute(
+          'transform',
+          'translate(' + rectangleAreaWidth + ', 0) ' + svgArrow.getAttribute('transform'),
+        );
+      }
     }
     this.size_.width += rectangleAreaWidth;
     this.positionBorderRect_();
