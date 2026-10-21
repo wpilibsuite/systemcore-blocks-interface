@@ -30,7 +30,7 @@ export function createFieldDropdown(items: string[]): Blockly.Field {
   items.forEach((item) => {
     options.push([item, item]);
   });
-  return new Blockly.FieldDropdown(options);
+  return new FieldDropdownWithBorderRect(options);
 }
 
 /**
@@ -55,7 +55,7 @@ export class FieldDropdownWithBorderRect extends Blockly.FieldDropdown {
  * 
  * WARNING: This class relies on Blockly internals that are not part of the public API.
  */
-export class CustomDropdownWithoutValidation extends Blockly.FieldDropdown {
+export class CustomDropdownWithoutValidation extends FieldDropdownWithBorderRect {
   override doClassValidation_(newValue?: string): string | null {
     // Always accept the value, even if it's not in the current options
     return newValue ?? null;

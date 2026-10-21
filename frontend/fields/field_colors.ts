@@ -19,8 +19,9 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 import * as Blockly from 'blockly/core';
+import { FieldDropdownWithBorderRect } from './FieldDropdown';
 
-class FieldColorDropdown extends Blockly.FieldDropdown {
+class FieldColorDropdown extends FieldDropdownWithBorderRect {
   static RECTANGLE_WIDTH = 40;
   static RECTANGLE_HEIGHT = 12;
   private static RECTANGLE_BORDER = 1;
