@@ -19,8 +19,9 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 import * as Blockly from 'blockly/core';
+import { FieldDropdownWithBorderRect } from './FieldDropdown';
 
-class FieldColorDropdown extends Blockly.FieldDropdown {
+class FieldColorDropdown extends FieldDropdownWithBorderRect {
   static RECTANGLE_WIDTH = 40;
   static RECTANGLE_HEIGHT = 12;
   private static RECTANGLE_BORDER = 1;
@@ -93,6 +94,16 @@ class FieldColorDropdown extends Blockly.FieldDropdown {
         'transform',
         'translate(' + rectangleAreaWidth + ', 0)',
       );
+      // A tspan arrow is inside the text element, so it moves with the text, but an svg arrow
+      // (used by zelos) is positioned separately by super.render_ and has to be moved too.
+      // WARNING: svgArrow is private in Blockly's FieldDropdown.
+      const svgArrow: SVGElement | null = (this as any).svgArrow;
+      if (svgArrow) {
+        svgArrow.setAttribute(
+          'transform',
+          'translate(' + rectangleAreaWidth + ', 0) ' + svgArrow.getAttribute('transform'),
+        );
+      }
     }
     this.size_.width += rectangleAreaWidth;
     this.positionBorderRect_();

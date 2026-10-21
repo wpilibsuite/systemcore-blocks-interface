@@ -23,6 +23,7 @@
 import * as Blockly from 'blockly/core';
 import * as storageProject from '../storage/project';
 import { GamepadType, GamepadTypeUtils } from '../types/GamepadType';
+import { FieldDropdownWithBorderRect } from './FieldDropdown';
 import { GamepadDropdownOptionsChange } from './gamepad_dropdown_options_change';
 
 const MIN_GAMEPAD_PORT = 0;
@@ -64,7 +65,7 @@ export function createTitleField(): Blockly.Field {
 }
 
 export function createPortField(onlyWithRumble: boolean = false): Blockly.FieldDropdown {
-    return new Blockly.FieldDropdown(function(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
+    return new FieldDropdownWithBorderRect(function(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
         const options: Blockly.MenuOption[] = [];
 
         // Only show ports that have gamepads configured (not NONE)
@@ -113,7 +114,7 @@ interface DependencyData {
  * based on the selected gamepad port. When the port changes, the button options
  * update to match the capabilities of the newly selected gamepad type.
  */
-export class FieldGamepadButtonDropdown extends Blockly.FieldDropdown {
+export class FieldGamepadButtonDropdown extends FieldDropdownWithBorderRect {
   /**
    * Contains data used by this dropdown field's menu generator.
    * This is public so that the GamepadDropdownOptionsChange event can
@@ -330,7 +331,7 @@ export class FieldGamepadButtonDropdown extends Blockly.FieldDropdown {
  * based on the selected gamepad port. When the port changes, the axis options
  * update to match the capabilities of the newly selected gamepad type.
  */
-export class FieldGamepadAxisDropdown extends Blockly.FieldDropdown {
+export class FieldGamepadAxisDropdown extends FieldDropdownWithBorderRect {
   /**
    * Contains data used by this dropdown field's menu generator.
    * This is public so that the GamepadDropdownOptionsChange event can
@@ -547,7 +548,7 @@ export class FieldGamepadAxisDropdown extends Blockly.FieldDropdown {
  * based on the selected gamepad port. When the port changes, the rumble options
  * update to match the capabilities of the newly selected gamepad type.
  */
-export class FieldGamepadRumbleDropdown extends Blockly.FieldDropdown {
+export class FieldGamepadRumbleDropdown extends FieldDropdownWithBorderRect {
   /**
    * Contains data used by this dropdown field's menu generator.
    * This is public so that the GamepadDropdownOptionsChange event can
@@ -772,13 +773,13 @@ export function createRumbleField(): Blockly.Field {
 }
 
 export function createActionField(): Blockly.Field {
-    return new Blockly.FieldDropdown(
+    return new FieldDropdownWithBorderRect(
         Array.from(ACTION_CONFIG.entries()).map(([key, config]) => [config.display(), key])
     )
 }
 
 export function createEventField(): Blockly.Field {
-    return new Blockly.FieldDropdown(
+    return new FieldDropdownWithBorderRect(
         Array.from(EVENT_CONFIG.entries()).map(([key, config]) => [config.display(), key])
     )
 }
