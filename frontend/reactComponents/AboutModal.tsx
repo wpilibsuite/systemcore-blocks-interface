@@ -22,6 +22,7 @@ import * as React from 'react';
 import * as Antd from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import licenseText from '../../LICENSE.md?raw';
 
 declare const __APP_VERSION__: string;
 const __APP_NAME__ = "SystemCore Blocks";
@@ -114,7 +115,7 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
             footer={[<Antd.Button key="submit" onClick={onClose}>{t('ABOUT.OK')}</Antd.Button>]}
             onCancel={onClose}
             onOk={onClose}
-            width={600}
+            width={680}
             centered
         >
             <Antd.Space direction="vertical" style={{ width: '100%' }} size="small">
@@ -127,6 +128,23 @@ const AboutDialog: React.FC<AboutDialogProps> = ({
 
                 <Antd.Tabs
                     items={[
+                        {
+                            key: 'license',
+                            label: t('ABOUT.LICENSE'),
+                            children: (
+                                <Antd.Input.TextArea
+                                    value={licenseText}
+                                    readOnly
+                                    wrap="off"
+                                    rows={12}
+                                    style={{
+                                        resize: 'none',
+                                        fontFamily: 'monospace',
+                                        fontSize: '12px'
+                                    }}
+                                />
+                            )
+                        },
                         {
                             key: 'attributions',
                             label: t('ABOUT.TAB_ATTRIBUTIONS'),
