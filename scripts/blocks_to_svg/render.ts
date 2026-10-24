@@ -174,6 +174,29 @@ function getCssText(): string {
 }
 
 /**
+ * Blockly centers text vertically with dominant-baseline="central", which some SVG renderers, like
+ * librsvg (rsvg-convert, which LyX uses), ignore, so the text is drawn too high. This removes it
+ * from the copy's text elements and moves them down by the same amount, which is half the
+ * difference between the font's ascent and descent, so that they are centered in every renderer.
+ */
+function replaceCentralBaselines(original: Element, copy: Element): void {
+  const context = document.createElement('canvas').getContext('2d')!;
+  const copyTexts = Array.from(copy.querySelectorAll('text'));
+  Array.from(original.querySelectorAll('text')).forEach((originalText, i) => {
+    const style = getComputedStyle(originalText);
+    if (style.dominantBaseline !== 'central') {
+      return;
+    }
+    context.font = style.font;
+    const metrics = context.measureText(originalText.textContent ?? '');
+    const offset = (metrics.fontBoundingBoxAscent - metrics.fontBoundingBoxDescent) / 2;
+    const copyText = copyTexts[i];
+    copyText.setAttribute('y', String(Number(copyText.getAttribute('y') ?? 0) + offset));
+    copyText.removeAttribute('dominant-baseline');
+  });
+}
+
+/**
  * Makes a standalone SVG with a copy of the workspace's blocks. The ancestors of the block canvas
  * are copied without their transforms so that the CSS selectors that use their classes still
  * match, and the view box is the bounding box of the blocks in workspace coordinates.
@@ -221,6 +244,7 @@ function makeSvg(workspace: Blockly.WorkspaceSvg, injectionDiv: Element): string
   }
   const canvasCopy = canvas.cloneNode(true) as Element;
   canvasCopy.removeAttribute('transform');
+  replaceCentralBaselines(canvas, canvasCopy);
   parent.appendChild(canvasCopy);
 
   return new XMLSerializer().serializeToString(svg);
