@@ -32,6 +32,7 @@ import { useAutosave } from './AutosaveManager';
 import lightFIRSTLogo from '../assets/FIRST_HorzRGB.png';
 import darkFIRSTLogo from '../assets/FIRST_HorzRGB_reverse.png';
 import ProjectNameComponent from './ProjectNameComponent';
+import { useCreateVersionPrompt } from './CreateVersionPrompt';
 import { DownloadOutlined, PlaySquareOutlined } from '@ant-design/icons';
 
 /** Function type for setting string values. */
@@ -79,6 +80,8 @@ export default function Header(props: HeaderProps): React.JSX.Element {
   const [deployError, setDeployError] = React.useState<string>('');
   const deployIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
   const [modal, modalContextHolder] = Antd.Modal.useModal();
+  const { askToCreateVersion, createVersionPrompt } =
+      useCreateVersionPrompt(props.setAlertErrorMessage);
 
   // Server side storage is only used when the backend is available, and deploying requires it.
   const backendAvailable = props.storage instanceof serverSideStorage.ServerSideStorage;
@@ -261,6 +264,9 @@ export default function Header(props: HeaderProps): React.JSX.Element {
     // Save and check the project before showing the deploy progress modal, so that the user
     // can cancel the deploy without ever seeing it.
     if (!await checkBeforeDeploy(props.project, props.storage, false)) {
+      return;
+    }
+    if (!await askToCreateVersion(props.storage, props.project.projectName, 'deploy')) {
       return;
     }
 
@@ -471,6 +477,7 @@ export default function Header(props: HeaderProps): React.JSX.Element {
         </div>
       </Antd.Modal>
       {modalContextHolder}
+      {createVersionPrompt}
     </Antd.Flex>
   );
 }

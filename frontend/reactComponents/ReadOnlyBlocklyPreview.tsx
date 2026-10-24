@@ -40,7 +40,35 @@ interface ReadOnlyBlocklyPreviewProps {
    * copying a block. Defaults to true.
    */
   interactive?: boolean;
+  /**
+   * Whether the user can select a block and copy it, when interactive. Defaults to true. Pass
+   * selectable={false} to keep scrolling and zooming without selection or the copy button.
+   */
+  selectable?: boolean;
+  /** Ids of blocks to outline, for showing the differences between two versions of a module. */
+  highlights?: BlockHighlights;
+  /**
+   * Called with the workspace once its blocks are loaded, and with null when the workspace is
+   * disposed. Used to scroll the workspace from outside.
+   */
+  onWorkspaceChanged?: (workspace: Blockly.WorkspaceSvg | null) => void;
 }
+
+/** Ids of blocks to outline in the colors for added, removed, changed, and moved blocks. */
+export interface BlockHighlights {
+  added?: Set<string>;
+  removed?: Set<string>;
+  changed?: Set<string>;
+  moved?: Set<string>;
+}
+
+/** The CSS class (defined in index.css) for each kind of highlight. */
+const HIGHLIGHT_CLASSES: [keyof BlockHighlights, string][] = [
+  ['added', 'mrcDiffAdded'],
+  ['removed', 'mrcDiffRemoved'],
+  ['changed', 'mrcDiffChanged'],
+  ['moved', 'mrcDiffMoved'],
+];
 
 const FULL_SIZE_STYLE: React.CSSProperties = {
   width: '100%',
@@ -69,10 +97,14 @@ const COPY_BUTTON_STYLE: React.CSSProperties = {
  */
 export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProps): React.JSX.Element {
   const interactive = props.interactive ?? true;
+  const selectable = interactive && (props.selectable ?? true);
   const {t} = I18Next.useTranslation();
   const blocklyDiv = React.useRef<HTMLDivElement | null>(null);
   const selectedBlockRef = React.useRef<Blockly.BlockSvg | null>(null);
   const [hasSelectedBlock, setHasSelectedBlock] = React.useState(false);
+  // A ref, so that a new callback doesn't recreate the workspace.
+  const onWorkspaceChangedRef = React.useRef(props.onWorkspaceChanged);
+  onWorkspaceChangedRef.current = props.onWorkspaceChanged;
 
   const getBlocklyTheme = (): Blockly.Theme | undefined => {
     const blocklyThemeName = 'mrc_theme_' + props.theme.replace(/-/g, '_');
@@ -123,15 +155,22 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
 
     workspaces.addWorkspace(workspace, moduleContent.getModuleType());
     Blockly.serialization.workspaces.load(moduleContent.getBlocks(), workspace);
-    workspace.scrollCenter();
+    const firstHighlightedBlock = highlightBlocks(workspace, props.highlights);
+    if (firstHighlightedBlock) {
+      workspace.centerOnBlock(firstHighlightedBlock.id);
+    } else {
+      workspace.scrollCenter();
+    }
 
     const resizeObserver = new ResizeObserver(() => {
       Blockly.svgResize(workspace);
     });
     resizeObserver.observe(container);
+    onWorkspaceChangedRef.current?.(workspace);
 
-    if (!interactive) {
+    if (!selectable) {
       return () => {
+        onWorkspaceChangedRef.current?.(null);
         resizeObserver.disconnect();
         workspaces.removeWorkspace(workspace);
         workspace.dispose();
@@ -182,6 +221,7 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
     container.addEventListener('keydown', handleKeyDown);
 
     return () => {
+      onWorkspaceChangedRef.current?.(null);
       resizeObserver.disconnect();
       container.removeEventListener('keydown', handleKeyDown);
       container.removeEventListener('pointerdown', handlePointerDown, true);
@@ -189,11 +229,11 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
       workspaces.removeWorkspace(workspace);
       workspace.dispose();
     };
-  }, [props.moduleContentText, props.theme, props.renderer, interactive]);
+  }, [props.moduleContentText, props.theme, props.renderer, interactive, selectable, props.highlights]);
 
   return (
     <div style={{ position: 'relative', ...FULL_SIZE_STYLE }}>
-      {interactive && (
+      {selectable && (
         <Antd.Tooltip title={t('SAMPLES.COPY_BLOCK_TOOLTIP')}>
           <Antd.Button
             style={COPY_BUTTON_STYLE}
@@ -209,4 +249,26 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
       <div ref={blocklyDiv} style={FULL_SIZE_STYLE} />
     </div>
   );
+}
+
+/**
+ * Adds the highlight CSS classes to the given blocks. Returns the top-most highlighted block, or
+ * null if no blocks were highlighted.
+ */
+function highlightBlocks(
+    workspace: Blockly.WorkspaceSvg, highlights?: BlockHighlights): Blockly.BlockSvg | null {
+  let first: Blockly.BlockSvg | null = null;
+  for (const [kind, className] of HIGHLIGHT_CLASSES) {
+    for (const id of highlights?.[kind] ?? []) {
+      const block = workspace.getBlockById(id);
+      if (!block) {
+        continue;
+      }
+      block.addClass(className);
+      if (!first || block.getRelativeToSurfaceXY().y < first.getRelativeToSurfaceXY().y) {
+        first = block;
+      }
+    }
+  }
+  return first;
 }
