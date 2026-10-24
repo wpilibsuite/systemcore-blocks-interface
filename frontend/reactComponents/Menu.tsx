@@ -38,7 +38,8 @@ import {
   CheckOutlined,
   ControlOutlined,
   AppstoreOutlined,
-  BookOutlined
+  BookOutlined,
+  HistoryOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
@@ -47,6 +48,7 @@ import ThemeModal from './ThemeModal';
 import LanguageModal from './LanguageModal';
 import SamplesModal from './SamplesModal';
 import RendererModal from './RendererModal';
+import VersionsModal from './VersionsModal';
 
 /** Type definition for menu items. */
 type MenuItem = Required<Antd.MenuProps>['items'][number];
@@ -107,6 +109,7 @@ function getMenuItems(
   return [
     getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
       getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
+      getItem(t('VERSIONS.MENU_ITEM') + '...', 'manageVersions', <HistoryOutlined />),
       getItem(t('MECHANISMS') + '...', 'manageMechanisms', TabTypeUtils.getIcon(TabType.MECHANISM)),
       getItem(t('OPMODES') + '...', 'manageOpmodes', TabTypeUtils.getIcon(TabType.OPMODE)),
       getItem(t('LIBRARIES.MENU_ITEM') + '...', 'manageLibraries', <BookOutlined />),
@@ -149,6 +152,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
   const [rendererModalOpen, setRendererModalOpen] = React.useState<boolean>(false);
   const [languageModalOpen, setLanguageModalOpen] = React.useState<boolean>(false);
+  const [versionsModalOpen, setVersionsModalOpen] = React.useState<boolean>(false);
 
   const handleThemeChange = (newTheme: string) => {
     props.setTheme(newTheme);
@@ -252,6 +256,9 @@ export function Component(props: MenuProps): React.JSX.Element {
     } else if (key === 'manageProjects') {
       props.saveCurrentTab();
       setProjectModalOpen(true);
+    } else if (key === 'manageVersions') {
+      props.saveCurrentTab();
+      setVersionsModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
     } else if (key === 'samples') {
@@ -352,6 +359,16 @@ export function Component(props: MenuProps): React.JSX.Element {
         setAlertErrorMessage={props.setAlertErrorMessage}
         theme={props.theme}
         libraries={props.libraries}
+      />
+      <VersionsModal
+        isOpen={versionsModalOpen}
+        onClose={() => setVersionsModalOpen(false)}
+        storage={props.storage}
+        currentProject={props.currentProject}
+        setCurrentProject={props.setCurrentProject}
+        setAlertErrorMessage={props.setAlertErrorMessage}
+        theme={props.theme}
+        renderer={props.renderer}
       />
       <ThemeModal
           open={themeModalOpen}

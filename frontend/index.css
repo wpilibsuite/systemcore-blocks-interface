@@ -62,3 +62,45 @@ code {
 .blocklyToolboxContents {
   scroll-behavior: smooth !important;
 }
+/* Blocks that differ between a version and the current project (see VersionsModal.tsx). The
+ * colors are used for the legend too. Only the block's own outline is styled, not its children. */
+:root {
+  --mrc-diff-added: #2e9d4c;
+  --mrc-diff-removed: #d9363e;
+  --mrc-diff-changed: #e8a317;
+  --mrc-diff-moved: var(--mrc-diff-changed);
+}
+
+.mrcDiffAdded > .blocklyPath,
+.mrcDiffRemoved > .blocklyPath,
+.mrcDiffMoved > .blocklyPath,
+.mrcDiffChanged > .blocklyPath {
+  stroke-width: 4px;
+}
+
+.mrcDiffAdded > .blocklyPath {
+  stroke: var(--mrc-diff-added);
+}
+
+.mrcDiffRemoved > .blocklyPath {
+  stroke: var(--mrc-diff-removed);
+}
+
+/* Moved blocks are dotted: zero-length dashes with round caps are drawn as dots. This is before
+ * changed, so a block that was moved and changed is outlined as changed. */
+.mrcDiffMoved > .blocklyPath {
+  stroke: var(--mrc-diff-moved);
+  stroke-dasharray: 0 8;
+  stroke-linecap: round;
+}
+
+.mrcDiffChanged > .blocklyPath {
+  stroke: var(--mrc-diff-changed);
+  stroke-dasharray: none;
+  stroke-linecap: butt;
+}
+
+/* The change that was last scrolled to with Previous Change or Next Change. */
+.mrcDiffCurrent > .blocklyPath {
+  stroke-width: 7px;
+}

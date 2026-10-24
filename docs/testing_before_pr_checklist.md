@@ -25,3 +25,9 @@ For each PR, make sure each of these works
 * [ ] In the Robot, make sure LimitSwitch and Gripper show up in Components -> + Component -> Blocks Demo Library, add a Gripper, and make sure its methods show up in the toolbox
 * [ ] Uncheck Components -> Gripper in the Libraries dialog and make sure Gripper disappears from + Component -> Blocks Demo Library but the Gripper already in the Robot has no warning
 * [ ] Remove the library and make sure the block in the OpMode shows a warning
+# Versions (test with and without the backend)
+* [ ] From Manage -> Versions, create a version with a description and one without. They're listed newest first
+* [ ] To Robot, change what port a component is on and delete the gripper
+* [ ] In Auto, move the opmode details box without making a change
+* [ ] Look at compare versions, and make sure that the diff is correct
+* [ ] Restore the version made and make sure that it is restored

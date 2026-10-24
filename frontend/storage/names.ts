@@ -47,6 +47,11 @@ import * as storageModule from './module';
  *
  * The file path of the project info file is /projects/<ProjectName>/project.info.json.
  * The file path of a module is /projects/<ProjectName>/<ClassName>.<ModuleType>.json.
+ *
+ * Versions
+ * A version is a copy of a project's files, saved so the user can compare with or go back to it.
+ * Each version is stored in /projects/<ProjectName>/versions/<VersionId>/, which holds a copy of
+ * the project's files and a file called 'version.info.json'.
  */
 
 // The class name of the Robot module that is created automatically when a new project is created.
@@ -63,6 +68,12 @@ export const UPLOAD_DOWNLOAD_FILE_EXTENSION = '.blocks';
 
 // The file name of the project info file.
 const PROJECT_INFO_FILE_NAME = 'project.info.json';
+
+// The name of the directory, inside a project's directory, that holds the project's versions.
+const VERSIONS_DIRECTORY_NAME = 'versions';
+
+// The file name of a version's info file.
+export const VERSION_INFO_FILE_NAME = 'version.info.json';
 
 // A project name starts with an uppercase letter, followed by alphanumeric characters or an underscore.
 const REGEX_PROJECT_NAME_PART = '[A-Z][A-Za-z0-9_]*';
@@ -153,6 +164,28 @@ export function makeFilePath(projectName: string, fileName: string): string {
  */
 export function makeProjectInfoPath(projectName: string): string {
   return makeFilePath(projectName, PROJECT_INFO_FILE_NAME);
+}
+
+/**
+ * Returns the path of the directory that holds the versions of the given project.
+ */
+export function makeVersionsDirectoryPath(projectName: string): string {
+  return makeFilePath(projectName, VERSIONS_DIRECTORY_NAME + '/');
+}
+
+/**
+ * Returns the path of the directory that holds the given version of the given project.
+ */
+export function makeVersionDirectoryPath(projectName: string, versionId: string): string {
+  return makeVersionsDirectoryPath(projectName) + versionId + '/';
+}
+
+/**
+ * Returns the path of a file in the given version of the given project.
+ */
+export function makeVersionFilePath(
+    projectName: string, versionId: string, fileName: string): string {
+  return makeVersionDirectoryPath(projectName, versionId) + fileName;
 }
 
 /**

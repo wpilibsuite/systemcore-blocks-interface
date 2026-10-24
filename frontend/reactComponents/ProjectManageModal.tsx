@@ -28,6 +28,7 @@ import * as storageProject from '../storage/project';
 import ProjectNameComponent from './ProjectNameComponent';
 import ManageTable from './ManageTable';
 import UploadConflictDialog from './UploadConflictDialog';
+import { useCreateVersionPrompt } from './CreateVersionPrompt';
 
 /** Props for the ProjectManageModal component. */
 interface ProjectManageModalProps {
@@ -65,6 +66,8 @@ const CONTAINER_PADDING = '12px';
  */
 export default function ProjectManageModal(props: ProjectManageModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
+  const { askToCreateVersion, createVersionPrompt } =
+      useCreateVersionPrompt(props.setAlertErrorMessage);
   const { token } = Antd.theme.useToken();
   const [modal, modalContextHolder] = Antd.Modal.useModal();
   const [messageApi, messageContextHolder] = Antd.message.useMessage();
@@ -253,6 +256,9 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     if (!props.currentProject || !props.storage) {
       return;
     }
+    if (!await askToCreateVersion(props.storage, props.currentProject.projectName, 'download')) {
+      return;
+    }
     try {
       const blobUrl = await storageProject.downloadProject(props.storage, props.currentProject.projectName);
       const filename = props.currentProject.projectName + storageNames.UPLOAD_DOWNLOAD_FILE_EXTENSION;
@@ -409,6 +415,7 @@ export default function ProjectManageModal(props: ProjectManageModalProps): Reac
     <>
       {modalContextHolder}
       {messageContextHolder}
+      {createVersionPrompt}
       {conflictOpen && props.storage && (
         <UploadConflictDialog
           isOpen={conflictOpen}
