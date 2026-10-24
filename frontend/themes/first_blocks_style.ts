@@ -85,6 +85,23 @@
  * back to an ordinary border rect - tinted and dark-on-light via the
  * getCSS_ override above, like every other field - while the block itself
  * keeps its normal category colour, matching Thrasos.
+ *
+ * Zelos also draws every value input inline (RenderInfo.isInline is always
+ * true, whatever block.getInputsInline() says), so, for example, a port
+ * block plugged into a component looks like one of the component's own
+ * fields. Like Thrasos, this renderer only draws a block's value inputs
+ * inline when the block's inputs are inline; otherwise they are external
+ * connectors, with a socket in the right edge of the block shaped to fit the
+ * connected block's left end. Blockly's ExternalValueInput and its connection
+ * position assume the classic puzzle tab, so
+ * FirstBlocksStyleExternalValueInput and FirstBlocksStyleDrawer size, draw,
+ * and position the socket for Zelos's dynamic shapes.
+ *
+ * Zelos draws the whole right side of a reporter block (one with an output
+ * connection) as a copy of its output shape, so it has nowhere to put an
+ * external input. A reporter block with external inputs keeps Zelos's output
+ * shape on its left side but gets a straight right side with the sockets in
+ * it, drawn row by row like the classic renderers.
  */
 
 import * as Blockly from 'blockly/core';
@@ -210,11 +227,146 @@ class FirstBlocksStyleBottomRow extends Blockly.zelos.BottomRow {
   }
 }
 
+/**
+ * An external value input for a Zelos dynamic connection shape. Blockly's
+ * ExternalValueInput expects the numeric shape sizes of the classic puzzle
+ * tab, but Zelos shapes size themselves from the height of the connected
+ * block, so the sizes are worked out here instead. The socket has the shape of
+ * the connected block's output (round, hexagonal, or square), is as tall as
+ * that block, and is as wide as that block's left end, which fits into it.
+ */
+class FirstBlocksStyleExternalValueInput extends Blockly.blockRendering.ExternalValueInput {
+  constructor(constants: FirstBlocksStyleConstantProvider, input: Blockly.Input) {
+    super(constants, input);
+    const insertionMarker =
+        (input.connection as Blockly.RenderedConnection).getInsertionMarker();
+    if (this.connectedBlock && this.connectedBlock.outputConnection) {
+      this.shape = constants.shapeFor(this.connectedBlock.outputConnection);
+    }
+    let height = constants.MIN_BLOCK_HEIGHT;
+    if (insertionMarker) {
+      height = insertionMarker.getHeightWidth().height;
+    } else if (this.connectedBlock) {
+      height = this.connectedBlock.getHeightWidth().height;
+    }
+    const shape = this.shape as Blockly.blockRendering.DynamicShape;
+    this.height = height;
+    this.connectionHeight = height;
+    this.connectionWidth = shape.width(height);
+    this.width = this.connectionWidth;
+  }
+}
+
 class FirstBlocksStyleRenderInfo extends Blockly.zelos.RenderInfo {
+  /** Whether any row of the block has an external value input. */
+  hasExternalInputs = false;
+
   constructor(renderer: Blockly.zelos.Renderer, block: Blockly.BlockSvg) {
     super(renderer, block);
     this.topRow = new FirstBlocksStyleTopRow(this.constants_);
     this.bottomRow = new FirstBlocksStyleBottomRow(this.constants_);
+    // Zelos always sets isInline to true. Use the block's setting instead, as
+    // the common RenderInfo (and so Thrasos) does.
+    this.isInline = block.getInputsInline() && !block.isCollapsed();
+  }
+
+  override addInput_(input: Blockly.Input, activeRow: Blockly.blockRendering.Row): void {
+    if (!this.isInline && input instanceof Blockly.inputs.ValueInput) {
+      activeRow.elements.push(new FirstBlocksStyleExternalValueInput(
+          this.constants_ as FirstBlocksStyleConstantProvider, input));
+      activeRow.hasExternalInput = true;
+      this.hasExternalInputs = true;
+      return;
+    }
+    super.addInput_(input, activeRow);
+  }
+
+  override getInRowSpacing_(
+      prev: Blockly.blockRendering.Measurable | null,
+      next: Blockly.blockRendering.Measurable | null): number {
+    // Zelos leaves no padding at the end of a reporter block's rows, because
+    // its output shape on the right side provides it. A reporter block with
+    // external inputs has a straight right side, so keep the padding there.
+    if (this.hasExternalInputs && prev && !next &&
+        !Blockly.blockRendering.Types.isExternalInput(prev)) {
+      return this.constants_.MEDIUM_PADDING;
+    }
+    return super.getInRowSpacing_(prev, next);
+  }
+
+  protected override finalizeOutputConnection_(): void {
+    super.finalizeOutputConnection_();
+    // A reporter block with external inputs doesn't have Zelos's output shape
+    // on its right side, so take away the width Zelos added for it.
+    if (this.hasExternalInputs && this.rightSide && this.rightSide.width) {
+      this.width -= this.rightSide.width;
+      this.widthWithChildren -= this.rightSide.width;
+      this.rightSide.width = 0;
+    }
+  }
+
+  protected override finalizeHorizontalAlignment_(): void {
+    // This pulls the ends of each row into Zelos's output shapes on both sides
+    // of a reporter block, which doesn't fit a straight right side.
+    if (this.hasExternalInputs) {
+      return;
+    }
+    super.finalizeHorizontalAlignment_();
+  }
+}
+
+class FirstBlocksStyleDrawer extends Blockly.zelos.Drawer {
+  declare info_: FirstBlocksStyleRenderInfo;
+
+  override drawOutline_(): void {
+    if (this.info_.hasExternalInputs) {
+      // Zelos draws a reporter block's outline without looking at its rows,
+      // which would leave out the sockets. Draw it row by row like the common
+      // drawer does. drawLeft_ still draws Zelos's output shape on the left.
+      Blockly.blockRendering.Drawer.prototype['drawOutline_'].call(this);
+      return;
+    }
+    super.drawOutline_();
+  }
+
+  // Draws the socket for an external input as the reverse of the connected
+  // block's left end, so that end nests into the right edge of this block.
+  // The socket is centred on the row.
+  protected override drawValueInput_(row: Blockly.blockRendering.Row): void {
+    const input = row.getLastInput() as FirstBlocksStyleExternalValueInput;
+    const shape = input.shape as Blockly.blockRendering.DynamicShape;
+    this.positionExternalValueConnection_(row);
+    this.outlinePath_ +=
+        Blockly.utils.svgPaths.lineOnAxis('H', input.xPos + input.width) +
+        Blockly.utils.svgPaths.lineOnAxis('V', input.centerline - input.height / 2) +
+        shape.pathDown(input.height) +
+        Blockly.utils.svgPaths.lineOnAxis('V', row.yPos + row.height);
+  }
+
+  // The connection is at the deepest point of the socket, which is where the
+  // tip of the connected block's left end (its output connection) goes.
+  protected override positionExternalValueConnection_(row: Blockly.blockRendering.Row): void {
+    const input = row.getLastInput();
+    if (input && input.connectionModel) {
+      const connX = this.info_.RTL ? -input.xPos : input.xPos;
+      input.connectionModel.setOffsetInBlock(connX, input.centerline);
+    }
+  }
+
+  override drawConnectionHighlightPath(
+      measurable: Blockly.blockRendering.Connection): SVGElement | undefined {
+    if (!Blockly.blockRendering.Types.isExternalInput(measurable)) {
+      return super.drawConnectionHighlightPath(measurable);
+    }
+    const input = measurable as FirstBlocksStyleExternalValueInput;
+    const shape = input.shape as Blockly.blockRendering.DynamicShape;
+    const path =
+        Blockly.utils.svgPaths.moveTo(input.connectionWidth, -input.height / 2) +
+        shape.pathDown(input.height);
+    const conn = input.connectionModel;
+    const block = conn.getSourceBlock();
+    return block.pathObject.addConnectionHighlight?.(
+        conn, path, conn.getOffsetInBlock(), block.RTL);
   }
 }
 
@@ -225,6 +377,12 @@ class FirstBlocksStyleRenderer extends Blockly.zelos.Renderer {
 
   protected makeRenderInfo_(block: Blockly.BlockSvg): FirstBlocksStyleRenderInfo {
     return new FirstBlocksStyleRenderInfo(this, block);
+  }
+
+  protected makeDrawer_(
+      block: Blockly.BlockSvg,
+      info: Blockly.blockRendering.RenderInfo): FirstBlocksStyleDrawer {
+    return new FirstBlocksStyleDrawer(block, info as FirstBlocksStyleRenderInfo);
   }
 }
 
