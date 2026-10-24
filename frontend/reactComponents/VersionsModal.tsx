@@ -68,6 +68,9 @@ const MODAL_TOP = '5vh';
 /** Height of the modal body, accounting for the title bar, footer, and padding. */
 const MODAL_BODY_HEIGHT = 'calc(90vh - 165px)';
 
+/** Number of versions shown on each page of the version list. */
+const VERSIONS_PAGE_SIZE = 10;
+
 /** Width of the list of modules in the compare view. */
 const MODULE_LIST_WIDTH = 240;
 
@@ -154,6 +157,8 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
   const autosave = useAutosave();
   const [modal, contextHolder] = Antd.Modal.useModal();
   const [versions, setVersions] = React.useState<storageVersions.VersionInfo[]>([]);
+  // The page of the version list, kept here so that it isn't lost while a comparison is shown.
+  const [page, setPage] = React.useState(1);
   const [loading, setLoading] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [descriptionDialog, setDescriptionDialog] = React.useState<DescriptionDialog | null>(null);
@@ -190,7 +195,11 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
     }
     setLoading(true);
     try {
-      setVersions(await storageVersions.listVersions(props.storage, projectName));
+      const list = await storageVersions.listVersions(props.storage, projectName);
+      setVersions(list);
+      // If versions were deleted, the page might not exist anymore.
+      const pageCount = Math.max(1, Math.ceil(list.length / VERSIONS_PAGE_SIZE));
+      setPage(p => Math.min(p, pageCount));
     } catch (e) {
       console.error('Failed to load versions:', e);
       props.setAlertErrorMessage(t('VERSIONS.LOAD_FAILED'));
@@ -205,6 +214,7 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
       setSelectedModuleId('');
       return;
     }
+    setPage(1);
     loadVersions();
   }, [props.isOpen, props.storage, projectName]);
 
@@ -228,6 +238,8 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
         // Save the current tab first, so that the version includes the latest changes.
         await autosave.triggerSave();
         await storageVersions.createVersion(props.storage, projectName, description);
+        // Versions are listed newest first, so the new version is on the first page.
+        setPage(1);
       } else {
         await storageVersions.updateVersionDescription(
             props.storage, projectName, descriptionDialog.version.versionId, description);
@@ -504,7 +516,14 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
         loading={loading || busy}
         columns={columns}
         dataSource={versions}
-        pagination={false}
+        pagination={versions.length > VERSIONS_PAGE_SIZE ? {
+          current: page,
+          pageSize: VERSIONS_PAGE_SIZE,
+          onChange: setPage,
+          showSizeChanger: false,
+          showTotal: (total, range) =>
+              t('PAGINATION_ITEMS', { range0: range[0], range1: range[1], total }),
+        } : false}
         locale={{ emptyText: t('VERSIONS.NO_VERSIONS') }}
         onRow={(version) => ({
           onClick: () => handleCompare(version),
