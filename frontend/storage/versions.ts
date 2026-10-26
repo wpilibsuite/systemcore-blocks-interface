@@ -20,6 +20,9 @@
  * @author alan@porpoiseful.com (Alan Smith)
  */
 
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
+
 import * as commonStorage from './common_storage';
 import * as storageNames from './names';
 import * as storageProject from './project';
@@ -27,10 +30,15 @@ import * as versionDiff from './version_diff';
 import { MemoryStorage } from './memory_storage';
 import { upgradeProjectIfNecessary } from './upgrade_project';
 
-// A version is a copy of the project's files, kept in the project's versions directory (see
-// names.ts). Renaming or deleting a project renames or deletes its versions too, but copying or
-// downloading a project leaves them out. Stored versions are never changed: if a version was saved
+// A version is a list of the project's files, kept in the project's versions directory (see
+// names.ts), with the hash of each file's content. The content is stored once for each hash, in the
+// versions' objects directory, so a file that is the same in many versions is only stored once.
+// Renaming or deleting a project renames or deletes its versions too, but copying or downloading a
+// project leaves them out. Stored versions and objects are never changed: if a version was saved
 // with an older storage format, it is upgraded in memory when it is fetched.
+//
+// Nothing stops two users of the same robot from creating and deleting versions at the same time,
+// so the order of the steps in createVersion and collectGarbage matters; see those functions.
 
 export type VersionInfo = {
   versionId: string,
@@ -38,76 +46,155 @@ export type VersionInfo = {
   createdAt: string, // ISO 8601
 };
 
+/** The contents of a version's info file. */
+type VersionManifest = VersionInfo & {
+  files: {[fileName: string]: string}, // the hash of each file's content
+  // False while the version's objects are being saved. Incomplete versions aren't listed.
+  complete: boolean,
+};
+
+/**
+ * How long after it was created a version that is still incomplete is considered abandoned (for
+ * example, because the browser was closed while it was being saved), and is deleted.
+ */
+const ABANDONED_VERSION_AGE_MS = 60 * 60 * 1000;
+
 /**
  * Returns the versions of the given project, newest first.
  */
 export async function listVersions(
     storage: commonStorage.Storage, projectName: string): Promise<VersionInfo[]> {
-  const versionDirectoryNames = await storage.list(
-      storageNames.makeVersionsDirectoryPath(projectName));
   const versions: VersionInfo[] = [];
-  for (const versionDirectoryName of versionDirectoryNames) {
-    if (!versionDirectoryName.endsWith('/')) {
-      continue;
-    }
-    const versionId = versionDirectoryName.slice(0, versionDirectoryName.length - 1);
-    try {
-      versions.push(await fetchVersionInfo(storage, projectName, versionId));
-    } catch (e) {
-      console.error('Failed to load version ' + versionId + ':', e);
+  for (const manifest of await fetchAllManifests(storage, projectName)) {
+    if (manifest.complete) {
+      versions.push({
+        versionId: manifest.versionId,
+        description: manifest.description,
+        createdAt: manifest.createdAt,
+      });
     }
   }
   versions.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return versions;
 }
 
-async function fetchVersionInfo(
-    storage: commonStorage.Storage, projectName: string, versionId: string): Promise<VersionInfo> {
+/**
+ * Returns the manifests of all of the given project's versions, including incomplete ones. Versions
+ * whose info file can't be read (for example, because it is from before versions listed their
+ * files) are left out.
+ */
+async function fetchAllManifests(
+    storage: commonStorage.Storage, projectName: string): Promise<VersionManifest[]> {
+  const names = await storage.list(storageNames.makeVersionsDirectoryPath(projectName));
+  const manifests: VersionManifest[] = [];
+  for (const name of names) {
+    if (!name.endsWith('/') || name === storageNames.VERSION_OBJECTS_DIRECTORY_NAME + '/') {
+      continue;
+    }
+    const versionId = name.slice(0, name.length - 1);
+    try {
+      manifests.push(await fetchManifest(storage, projectName, versionId));
+    } catch (e) {
+      console.error('Failed to load version ' + versionId + ':', e);
+    }
+  }
+  return manifests;
+}
+
+async function fetchManifest(
+    storage: commonStorage.Storage, projectName: string,
+    versionId: string): Promise<VersionManifest> {
   const text = await storage.fetchFileContentText(storageNames.makeVersionFilePath(
       projectName, versionId, storageNames.VERSION_INFO_FILE_NAME));
   const parsed = JSON.parse(text);
+  if (!parsed.files || typeof parsed.files !== 'object') {
+    throw new Error('Version ' + versionId + ' does not list its files.');
+  }
   return {
     versionId: versionId,
     description: parsed.description || '',
     createdAt: parsed.createdAt || '',
+    files: parsed.files,
+    complete: parsed.complete === true,
   };
 }
 
-async function saveVersionInfo(
-    storage: commonStorage.Storage, projectName: string, versionInfo: VersionInfo): Promise<void> {
+async function saveManifest(
+    storage: commonStorage.Storage, projectName: string, manifest: VersionManifest): Promise<void> {
   await storage.saveFile(
       storageNames.makeVersionFilePath(
-          projectName, versionInfo.versionId, storageNames.VERSION_INFO_FILE_NAME),
-      JSON.stringify(versionInfo, null, 2));
+          projectName, manifest.versionId, storageNames.VERSION_INFO_FILE_NAME),
+      JSON.stringify(manifest, null, 2));
+}
+
+/** Returns the hashes of the objects that are stored for the given project's versions. */
+async function listObjectHashes(
+    storage: commonStorage.Storage, projectName: string): Promise<Set<string>> {
+  // Each object's file name is its hash.
+  const fileNames = await storage.list(storageNames.makeVersionObjectsDirectoryPath(projectName));
+  return new Set(fileNames.filter(fileName => !fileName.endsWith('/')));
+}
+
+/**
+ * Returns the SHA-256 hash of the given text, as lowercase hex. The browser's own crypto.subtle
+ * can't be used, since it is only available in secure contexts, and the robot is served over http.
+ */
+export function hashContent(text: string): string {
+  return bytesToHex(sha256(utf8ToBytes(text)));
 }
 
 /**
  * Returns a new version id. It is used in file paths (and URLs, with a backend), so it only has
- * lowercase letters and digits, unlike Blockly's ids.
+ * lowercase letters and digits, unlike Blockly's ids. It is never 'objects', since it is longer.
  */
 function makeVersionId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
 }
 
 /**
- * Creates a version holding a copy of the project's current files.
+ * Creates a version of the project's current files.
  */
 export async function createVersion(
     storage: commonStorage.Storage, projectName: string, description: string): Promise<VersionInfo> {
-  const versionInfo: VersionInfo = {
+  const files = await storageProject.fetchProjectFiles(storage, projectName);
+  const hashToContent = new Map<string, string>();
+  const fileHashes: {[fileName: string]: string} = {};
+  for (const fileName in files) {
+    const hash = hashContent(files[fileName]);
+    fileHashes[fileName] = hash;
+    hashToContent.set(hash, files[fileName]);
+  }
+  const manifest: VersionManifest = {
     versionId: makeVersionId(),
     description: description.trim(),
     createdAt: new Date().toISOString(),
+    files: fileHashes,
+    complete: false,
   };
-  const files = await storageProject.fetchProjectFiles(storage, projectName);
-  for (const fileName in files) {
-    await storage.saveFile(
-        storageNames.makeVersionFilePath(projectName, versionInfo.versionId, fileName),
-        files[fileName]);
-  }
-  // The info file is saved last, so that a version whose files weren't all saved isn't listed.
-  await saveVersionInfo(storage, projectName, versionInfo);
-  return versionInfo;
+
+  // The manifest is saved before the objects, so that collectGarbage (which lists the objects
+  // before it reads the manifests) never deletes an object that this version is about to use.
+  await saveManifest(storage, projectName, manifest);
+  const saveMissingObjects = async (): Promise<void> => {
+    const storedHashes = await listObjectHashes(storage, projectName);
+    for (const [hash, content] of hashToContent) {
+      if (!storedHashes.has(hash)) {
+        await storage.saveFile(storageNames.makeVersionObjectPath(projectName, hash), content);
+      }
+    }
+  };
+  await saveMissingObjects();
+  // Look again, in case an object that was already stored was deleted by collectGarbage after
+  // deleting another version, before this version's manifest was saved.
+  await saveMissingObjects();
+
+  manifest.complete = true;
+  await saveManifest(storage, projectName, manifest);
+  return {
+    versionId: manifest.versionId,
+    description: manifest.description,
+    createdAt: manifest.createdAt,
+  };
 }
 
 /**
@@ -116,17 +203,44 @@ export async function createVersion(
 export async function updateVersionDescription(
     storage: commonStorage.Storage, projectName: string, versionId: string,
     description: string): Promise<void> {
-  const versionInfo = await fetchVersionInfo(storage, projectName, versionId);
-  versionInfo.description = description.trim();
-  await saveVersionInfo(storage, projectName, versionInfo);
+  const manifest = await fetchManifest(storage, projectName, versionId);
+  manifest.description = description.trim();
+  await saveManifest(storage, projectName, manifest);
 }
 
 /**
- * Deletes a version.
+ * Deletes a version, and the objects that no other version uses.
  */
 export async function deleteVersion(
     storage: commonStorage.Storage, projectName: string, versionId: string): Promise<void> {
   await storage.delete(storageNames.makeVersionDirectoryPath(projectName, versionId));
+  await collectGarbage(storage, projectName);
+}
+
+/**
+ * Deletes the objects that no version uses, and versions that were abandoned while they were being
+ * created. The objects are listed before the manifests are read: createVersion saves a version's
+ * manifest before its objects, so any object that is listed here belongs to a manifest that is
+ * read here, and objects saved after the list was made are left alone.
+ */
+async function collectGarbage(
+    storage: commonStorage.Storage, projectName: string): Promise<void> {
+  const storedHashes = await listObjectHashes(storage, projectName);
+  const usedHashes = new Set<string>();
+  const now = Date.now();
+  for (const manifest of await fetchAllManifests(storage, projectName)) {
+    if (!manifest.complete &&
+        now - new Date(manifest.createdAt).getTime() > ABANDONED_VERSION_AGE_MS) {
+      await storage.delete(storageNames.makeVersionDirectoryPath(projectName, manifest.versionId));
+      continue;
+    }
+    Object.values(manifest.files).forEach(hash => usedHashes.add(hash));
+  }
+  for (const hash of storedHashes) {
+    if (!usedHashes.has(hash)) {
+      await storage.delete(storageNames.makeVersionObjectPath(projectName, hash));
+    }
+  }
 }
 
 /**
@@ -136,14 +250,15 @@ export async function deleteVersion(
 export async function fetchVersionFiles(
     storage: commonStorage.Storage, projectName: string,
     versionId: string): Promise<{[fileName: string]: string}> {
-  const versionDirectoryPath = storageNames.makeVersionDirectoryPath(projectName, versionId);
+  const manifest = await fetchManifest(storage, projectName, versionId);
   const memoryStorage = new MemoryStorage();
-  for (const fileName of await storage.list(versionDirectoryPath)) {
+  for (const fileName in manifest.files) {
     if (storageNames.isValidModuleFileName(fileName) ||
         storageNames.isValidProjectInfoFileName(fileName)) {
-      await memoryStorage.saveFile(
-          storageNames.makeFilePath(projectName, fileName),
-          await storage.fetchFileContentText(versionDirectoryPath + fileName));
+      // This throws if the object is missing.
+      const content = await storage.fetchFileContentText(
+          storageNames.makeVersionObjectPath(projectName, manifest.files[fileName]));
+      await memoryStorage.saveFile(storageNames.makeFilePath(projectName, fileName), content);
     }
   }
   await upgradeProjectIfNecessary(memoryStorage, projectName);

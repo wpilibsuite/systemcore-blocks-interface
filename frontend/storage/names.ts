@@ -28,7 +28,8 @@ import * as storageModule from './module';
  * All projects are stored in a directory called '/projects/'.
  *
  * Files in a project are stored in a subdirectory whose name is the project name. All files have
- * the extension '.json' and contain JSON text.
+ * the extension '.json' and contain JSON text, except for the objects of the project's versions
+ * (see Versions below), which are named by their hash.
  *
  * Project information is stored in a file called 'project.info.json'.
  *
@@ -50,8 +51,9 @@ import * as storageModule from './module';
  *
  * Versions
  * A version is a copy of a project's files, saved so the user can compare with or go back to it.
- * Each version is stored in /projects/<ProjectName>/versions/<VersionId>/, which holds a copy of
- * the project's files and a file called 'version.info.json'.
+ * Each version is a file called /projects/<ProjectName>/versions/<VersionId>/version.info.json,
+ * which lists the hash of each of the project's files. The content of the files is stored once for
+ * each hash, in /projects/<ProjectName>/versions/objects/<Hash>, which has no extension.
  */
 
 // The class name of the Robot module that is created automatically when a new project is created.
@@ -74,6 +76,10 @@ const VERSIONS_DIRECTORY_NAME = 'versions';
 
 // The file name of a version's info file.
 export const VERSION_INFO_FILE_NAME = 'version.info.json';
+
+// The name of the directory, inside a project's versions directory, that holds the content of the
+// files in the project's versions, each stored once under its hash.
+export const VERSION_OBJECTS_DIRECTORY_NAME = 'objects';
 
 // A project name starts with an uppercase letter, followed by alphanumeric characters or an underscore.
 const REGEX_PROJECT_NAME_PART = '[A-Z][A-Za-z0-9_]*';
@@ -178,6 +184,22 @@ export function makeVersionsDirectoryPath(projectName: string): string {
  */
 export function makeVersionDirectoryPath(projectName: string, versionId: string): string {
   return makeVersionsDirectoryPath(projectName) + versionId + '/';
+}
+
+/**
+ * Returns the path of the directory that holds the content of the files in the given project's
+ * versions.
+ */
+export function makeVersionObjectsDirectoryPath(projectName: string): string {
+  return makeVersionsDirectoryPath(projectName) + VERSION_OBJECTS_DIRECTORY_NAME + '/';
+}
+
+/**
+ * Returns the path of the file that holds the content with the given hash, for the given
+ * project's versions.
+ */
+export function makeVersionObjectPath(projectName: string, hash: string): string {
+  return makeVersionObjectsDirectoryPath(projectName) + hash;
 }
 
 /**

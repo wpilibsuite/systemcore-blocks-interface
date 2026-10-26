@@ -282,16 +282,116 @@ describe('versions', () => {
 
   test('an old version is upgraded when fetched, without changing it in storage', async () => {
     const storage = await makeProject();
-    const version = await storageVersions.createVersion(storage, 'MyRobot', 'v1');
-    const infoPath = storageNames.makeVersionFilePath('MyRobot', version.versionId, 'project.info.json');
+    const infoPath = storageNames.makeProjectInfoPath('MyRobot');
     const info = JSON.parse(await storage.fetchFileContentText(infoPath));
+    const currentVersion = info.version;
     info.version = '0.7.0';
     const oldInfoText = JSON.stringify(info, null, 2);
     await storage.saveFile(infoPath, oldInfoText);
+    const version = await storageVersions.createVersion(storage, 'MyRobot', 'v1');
 
     const files = await storageVersions.fetchVersionFiles(storage, 'MyRobot', version.versionId);
-    const currentInfo = await storageProject.fetchProjectInfo(storage, 'MyRobot');
-    expect(JSON.parse(files['project.info.json']).version).toBe(currentInfo.version);
-    expect(await storage.fetchFileContentText(infoPath)).toBe(oldInfoText);
+    expect(JSON.parse(files['project.info.json']).version).toBe(currentVersion);
+    const objectPath = storageNames.makeVersionObjectPath('MyRobot', storageVersions.hashContent(oldInfoText));
+    expect(await storage.fetchFileContentText(objectPath)).toBe(oldInfoText);
+  });
+
+  /** Returns the number of objects stored for MyRobot's versions. */
+  async function countObjects(storage: MemoryStorage): Promise<number> {
+    return (await storage.list(storageNames.makeVersionObjectsDirectoryPath('MyRobot'))).length;
+  }
+
+  /** Changes the Robot module's blocks to a number block with the given number. */
+  async function changeRobot(storage: MemoryStorage, num: number): Promise<void> {
+    const robotPath = storageNames.makeRobotPath('MyRobot');
+    const robotContent = storageModuleContent.parseModuleContentText(
+        await storage.fetchFileContentText(robotPath));
+    robotContent.setBlocks(makeBlocks(numberBlock('n1', num)));
+    await storage.saveFile(robotPath, robotContent.getModuleContentText());
+  }
+
+  test('hashContent returns the SHA-256 hash', () => {
+    expect(storageVersions.hashContent('abc')).toBe(
+        'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
+  });
+
+  test('files that are the same in several versions are stored once', async () => {
+    const storage = await makeProject();
+    await storageVersions.createVersion(storage, 'MyRobot', 'v1');
+    // Robot, Teleop, and the project info file.
+    expect(await countObjects(storage)).toBe(3);
+    await storageVersions.createVersion(storage, 'MyRobot', 'v2');
+    expect(await countObjects(storage)).toBe(3);
+    await changeRobot(storage, 1);
+    await storageVersions.createVersion(storage, 'MyRobot', 'v3');
+    expect(await countObjects(storage)).toBe(4);
+  });
+
+  test('deleting versions deletes the objects that no other version uses', async () => {
+    const storage = await makeProject();
+    const v1 = await storageVersions.createVersion(storage, 'MyRobot', 'v1');
+    const v1Files = await storageVersions.fetchVersionFiles(storage, 'MyRobot', v1.versionId);
+    await changeRobot(storage, 1);
+    const v2 = await storageVersions.createVersion(storage, 'MyRobot', 'v2');
+    await changeRobot(storage, 2);
+    const v3 = await storageVersions.createVersion(storage, 'MyRobot', 'v3');
+    const v3Files = await storageVersions.fetchVersionFiles(storage, 'MyRobot', v3.versionId);
+    expect(await countObjects(storage)).toBe(5);
+
+    // Only v2 used its Robot.
+    await storageVersions.deleteVersion(storage, 'MyRobot', v2.versionId);
+    expect(await countObjects(storage)).toBe(4);
+    expect(await storageVersions.fetchVersionFiles(storage, 'MyRobot', v1.versionId)).toEqual(v1Files);
+    expect(await storageVersions.fetchVersionFiles(storage, 'MyRobot', v3.versionId)).toEqual(v3Files);
+
+    // v1 and v3 share Teleop and the project info file.
+    await storageVersions.deleteVersion(storage, 'MyRobot', v1.versionId);
+    expect(await countObjects(storage)).toBe(3);
+    await storageVersions.deleteVersion(storage, 'MyRobot', v3.versionId);
+    expect(await countObjects(storage)).toBe(0);
+  });
+
+  test('incomplete versions are not listed, and are deleted once they are abandoned', async () => {
+    const storage = await makeProject();
+    const other = await storageVersions.createVersion(storage, 'MyRobot', 'other');
+    await changeRobot(storage, 1);
+    const incomplete = await storageVersions.createVersion(storage, 'MyRobot', 'incomplete');
+    const manifestPath = storageNames.makeVersionFilePath(
+        'MyRobot', incomplete.versionId, storageNames.VERSION_INFO_FILE_NAME);
+    const manifest = JSON.parse(await storage.fetchFileContentText(manifestPath));
+    manifest.complete = false;
+    await storage.saveFile(manifestPath, JSON.stringify(manifest));
+    expect((await storageVersions.listVersions(storage, 'MyRobot')).map(v => v.versionId))
+        .toEqual([other.versionId]);
+
+    // A version that is still being created keeps its objects when another version is deleted.
+    const third = await storageVersions.createVersion(storage, 'MyRobot', 'third');
+    await storageVersions.deleteVersion(storage, 'MyRobot', third.versionId);
+    expect(await countObjects(storage)).toBe(4);
+
+    // Once it is over an hour old, it is deleted along with the objects only it used.
+    manifest.createdAt = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+    await storage.saveFile(manifestPath, JSON.stringify(manifest));
+    await storageVersions.deleteVersion(storage, 'MyRobot', other.versionId);
+    expect(await countObjects(storage)).toBe(0);
+    expect(await storage.list(storageNames.makeVersionsDirectoryPath('MyRobot'))).toEqual([]);
+  });
+
+  test('fetching a version whose object is missing fails', async () => {
+    const storage = await makeProject();
+    const version = await storageVersions.createVersion(storage, 'MyRobot', 'v1');
+    const robotText = await storage.fetchFileContentText(storageNames.makeRobotPath('MyRobot'));
+    await storage.delete(storageNames.makeVersionObjectPath('MyRobot', storageVersions.hashContent(robotText)));
+    await expect(storageVersions.fetchVersionFiles(storage, 'MyRobot', version.versionId))
+        .rejects.toThrow();
+  });
+
+  test('changing the description keeps the version\'s files', async () => {
+    const storage = await makeProject();
+    const version = await storageVersions.createVersion(storage, 'MyRobot', 'v1');
+    const files = await storageVersions.fetchVersionFiles(storage, 'MyRobot', version.versionId);
+    await storageVersions.updateVersionDescription(storage, 'MyRobot', version.versionId, 'new');
+    expect(await storageVersions.fetchVersionFiles(storage, 'MyRobot', version.versionId))
+        .toEqual(files);
   });
 });

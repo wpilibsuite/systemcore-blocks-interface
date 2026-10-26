@@ -9,6 +9,22 @@ Also, making a full copy of the projects leads to bloat of repeated pieces that 
 * Under the projects there is a /versions/versionId that would have its own
 'version.info.json' which would have the description, the save date, and what files are in it.
 * Under the projects there is a /versions/objects that have each module with its SHA256 hash
+    * Each object is named `<sha256>` (with no extension), and `version.info.json` has `files` (file name → hash) and `complete`
+    * The hash uses `@noble/hashes`, because the browser's `crypto.subtle` only works in secure
+    contexts and the robot is served over http
+* Stored versions and objects are never changed.  A version saved with an older project format is upgraded in memory when it is compared or restored.
+
+# Saving and cleaning up
+There is no locking between students using the same robot, so the order of the steps matters.
+* Creating a version:
+    1. Save `version.info.json` with `complete: false`
+    2. Save the objects that aren't already stored
+    3. Check again, and save any that were deleted in the meantime
+    4. Save `version.info.json` with `complete: true`
+* Versions that aren't complete aren't listed.  If one is still incomplete an hour after it was
+created (for example, the browser was closed while saving), it is deleted.
+* Deleting a version deletes its `version.info.json` and then garbage collects: it lists the
+objects *first*, then reads every `version.info.json` (including incomplete ones), and deletes the listed objects that none of them use.  Since a version's `version.info.json` is saved before its objects, an object that is listed always belongs to a `version.info.json` that is read.
 
 # Restores
 * Before restoring: restoring into the current project first saves the current state as a "Before restoring …" version, so a restore can always be undone.
@@ -50,6 +66,7 @@ means the entire module is saved again.
 * Recreated blocks: because blocks are matched by id, a block that's deleted and then recreated identically shows as removed plus added, not unchanged.
 * Shared by everyone on the robot: versions belong to the robot's project, not to a student. Anyone using the robot sees and can delete them. 
 * Deleting a version can't be undone.
+* If a version is created at exactly the same time another one is deleted, the garbage collection could still delete an object the new version uses.  Comparing or restoring that version would then fail with an error.
 
 # UI plan
 * For the first version, have a list of versions that you can compare to each other, edit the 

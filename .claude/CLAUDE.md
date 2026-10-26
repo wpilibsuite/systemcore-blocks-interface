@@ -65,7 +65,7 @@ A **Project** contains one **Robot**, zero or more **Mechanisms**, and zero or m
 
 `module_content.ts` parses/serializes these files. `upgrade_project.ts` contains versioned migrations; bump `CURRENT_VERSION` and add a migration function when the storage format changes.
 
-**Versions** (`versions.ts`) are copies of a project's files in `projects/<ProjectName>/versions/<versionId>/` (with a `version.info.json`), so renaming or deleting a project takes them along; `listProjectFileNames` leaves them out of copies, downloads, and `fetchProjectFiles`. Stored versions are never changed: `fetchVersionFiles` upgrades them in a `MemoryStorage`. `version_diff.ts` compares modules by moduleId and blocks by block id, for `VersionsModal.tsx`.
+**Versions** (`versions.ts`, design in `docs/project_versions_design.md`) are `projects/<ProjectName>/versions/<versionId>/version.info.json` manifests listing the SHA-256 (`hashContent`) of each project file; the content is stored once per hash in `versions/objects/<hash>` and garbage collected when a version is deleted. Keep the order of steps in `createVersion` and `collectGarbage`, since there is no locking. Everything is under the project directory, so renaming or deleting a project takes them along; `listProjectFileNames` leaves them out of copies, downloads, and `fetchProjectFiles`. Stored versions and objects are never changed: `fetchVersionFiles` upgrades them in a `MemoryStorage`. `version_diff.ts` compares modules by moduleId and blocks by block id, for `VersionsModal.tsx`.
 
 ### Editor (`frontend/editor/editor.ts`)
 
