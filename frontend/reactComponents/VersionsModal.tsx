@@ -21,7 +21,6 @@
 import * as Antd from 'antd';
 import {
   ArrowDownOutlined,
-  ArrowLeftOutlined,
   ArrowUpOutlined,
   DeleteOutlined,
   DiffOutlined,
@@ -74,6 +73,9 @@ const VERSIONS_PAGE_SIZE = 10;
 /** Width of the list of modules in the compare view. */
 const MODULE_LIST_WIDTH = 240;
 
+/** Space between the two block previews in the compare view. */
+const PANE_GAP = 12;
+
 /** Border around each block preview in the compare view. */
 const PREVIEW_BORDER = '1px solid rgba(128,128,128,0.3)';
 
@@ -110,7 +112,7 @@ const SCROLL_SYNC_IGNORE_MS = 100;
 const CURRENT_CHANGE_CLASS = 'mrcDiffCurrent';
 
 /** The two block previews in the compare view. */
-type Pane = 'version' | 'current';
+type Pane = 'left' | 'right';
 
 /** A changed block, and the panes it is shown in. The first pane is used to order the changes. */
 type BlockChange = {
@@ -119,7 +121,7 @@ type BlockChange = {
 };
 
 function getOtherPane(pane: Pane): Pane {
-  return pane === 'version' ? 'current' : 'version';
+  return pane === 'left' ? 'right' : 'left';
 }
 
 /** Scrolls and zooms one workspace to match another. */
@@ -138,12 +140,12 @@ type DescriptionDialog =
   | { mode: 'edit', version: storageVersions.VersionInfo };
 
 /**
- * The version being compared, what it is compared with (a newer version, or the current project if
- * newerVersion is null), and the differences.
+ * The version in the left pane, what is in the right pane (another version, or the current project
+ * if rightVersion is null), and the differences between them.
  */
 type Comparison = {
-  version: storageVersions.VersionInfo,
-  newerVersion: storageVersions.VersionInfo | null,
+  leftVersion: storageVersions.VersionInfo,
+  rightVersion: storageVersions.VersionInfo | null,
   moduleDiffs: versionDiff.ModuleDiff[],
   hasChanges: boolean,
 };
@@ -173,7 +175,7 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
   const [changeIndex, setChangeIndex] = React.useState(-1);
   // The compare view's workspaces, and when each was last scrolled to match the other.
   const workspacesRef = React.useRef<Record<Pane, Blockly.WorkspaceSvg | null>>(
-      { version: null, current: null });
+      { left: null, right: null });
   const drivenAtRef = React.useRef(new Map<string, number>());
   const scrollTogetherRef = React.useRef(scrollTogether);
   scrollTogetherRef.current = scrollTogether;
@@ -269,8 +271,9 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
   };
 
   /**
-   * Compares a version with the current project, or with another version. When two versions are
-   * compared, the older one is shown on the left.
+   * Compares a version with the current project, or with another version. The version goes in the
+   * left pane and the current project in the right pane. When two versions are compared, the one
+   * that was created first goes in the left pane.
    */
   const handleCompare = async (
       version: storageVersions.VersionInfo,
@@ -278,24 +281,25 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
     if (!props.storage) {
       return;
     }
-    let newerVersion: storageVersions.VersionInfo | null = null;
+    let leftVersion = version;
+    let rightVersion: storageVersions.VersionInfo | null = null;
     if (otherVersion) {
-      [version, newerVersion] = (otherVersion.createdAt < version.createdAt)
+      [leftVersion, rightVersion] = (otherVersion.createdAt < version.createdAt)
           ? [otherVersion, version] : [version, otherVersion];
     }
     setBusy(true);
     try {
       await autosave.triggerSave();
-      const versionFiles = await storageVersions.fetchVersionFiles(
-          props.storage, projectName, version.versionId);
-      const newerFiles = newerVersion
+      const leftFiles = await storageVersions.fetchVersionFiles(
+          props.storage, projectName, leftVersion.versionId);
+      const rightFiles = rightVersion
           ? await storageVersions.fetchVersionFiles(
-              props.storage, projectName, newerVersion.versionId)
+              props.storage, projectName, rightVersion.versionId)
           : await storageProject.fetchProjectFiles(props.storage, projectName);
-      const moduleDiffs = versionDiff.diffModules(versionFiles, newerFiles);
+      const moduleDiffs = versionDiff.diffModules(leftFiles, rightFiles);
       const hasChanges = await storageVersions.hasChangesBetween(
-          projectName, versionFiles, newerFiles);
-      setComparison({ version, newerVersion, moduleDiffs, hasChanges });
+          projectName, leftFiles, rightFiles);
+      setComparison({ leftVersion, rightVersion, moduleDiffs, hasChanges });
       selectModule(moduleDiffs.length ? moduleDiffs[0].moduleId : '');
     } catch (e) {
       console.error('Failed to compare with version:', e);
@@ -480,7 +484,8 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
           <Antd.Space size={4} wrap>
             {renderCompareButton(version)}
             <Antd.Tooltip title={t('VERSIONS.EDIT_DESCRIPTION')}>
-              <Antd.Button size="small" icon={<EditOutlined />} onClick={() => openEditDialog(version)} />
+              <Antd.Button
+                size="small" icon={<EditOutlined />} onClick={() => openEditDialog(version)} />
             </Antd.Tooltip>
             <Antd.Popconfirm
               title={t('VERSIONS.DELETE_CONFIRM')}
@@ -545,12 +550,14 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
   );
 
   const renderPreviewPane = (
-      pane: Pane, title: string | null, contentText: string | null, emptyText: string,
+      pane: Pane, title: React.ReactNode, contentText: string | null, emptyText: string,
       highlights: BlockHighlights): React.JSX.Element => (
     <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minWidth: 0 }}>
-      {title && (
-        <Antd.Typography.Text strong style={{ marginBottom: 4 }}>{title}</Antd.Typography.Text>
-      )}
+      <div style={{ marginBottom: 4 }}>
+        {typeof title === 'string'
+            ? <Antd.Typography.Text strong>{title}</Antd.Typography.Text>
+            : title}
+      </div>
       <div style={{ flex: '1 1 auto', minHeight: 0, border: PREVIEW_BORDER }}>
         {contentText ? (
           <ReadOnlyBlocklyPreview
@@ -593,9 +600,10 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
     }
     const blockDiff = selectedDiff.blockDiff;
     const changes: BlockChange[] = [
-      ...[...blockDiff.removed].map(blockId => ({ blockId, panes: ['version'] as Pane[] })),
-      ...[...blockDiff.changed].map(blockId => ({ blockId, panes: ['current', 'version'] as Pane[] })),
-      ...[...blockDiff.added].map(blockId => ({ blockId, panes: ['current'] as Pane[] })),
+      ...[...blockDiff.removed].map(blockId => ({ blockId, panes: ['left'] as Pane[] })),
+      ...[...blockDiff.changed].map(
+          blockId => ({ blockId, panes: ['right', 'left'] as Pane[] })),
+      ...[...blockDiff.added].map(blockId => ({ blockId, panes: ['right'] as Pane[] })),
     ];
     const getPosition = (change: BlockChange): Blockly.utils.Coordinate =>
         workspacesRef.current[change.panes[0]]?.getBlockById(change.blockId)
@@ -657,8 +665,8 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
     });
     // Once every pane that has blocks is loaded, go to the first change.
     const loaded =
-        (!selectedDiff?.oldContentText || workspacesRef.current.version) &&
-        (!selectedDiff?.currentContentText || workspacesRef.current.current);
+        (!selectedDiff?.leftContentText || workspacesRef.current.left) &&
+        (!selectedDiff?.rightContentText || workspacesRef.current.right);
     if (loaded) {
       setTimeout(() => goToChange(0), 0);
     }
@@ -666,20 +674,20 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
 
   const handleScrollTogetherChange = (checked: boolean): void => {
     setScrollTogether(checked);
-    const version = workspacesRef.current.version;
-    const current = workspacesRef.current.current;
-    if (checked && version && current) {
-      matchViewport(current, version, drivenAtRef.current);
+    const left = workspacesRef.current.left;
+    const right = workspacesRef.current.right;
+    if (checked && left && right) {
+      matchViewport(right, left, drivenAtRef.current);
     }
   };
 
   // These are memoized so that the previews aren't recreated every time this renders.
-  const versionHighlights = React.useMemo<BlockHighlights>(() => ({
+  const leftHighlights = React.useMemo<BlockHighlights>(() => ({
     removed: selectedDiff?.blockDiff.removed,
     changed: selectedDiff?.blockDiff.changed,
     moved: selectedDiff?.blockDiff.moved,
   }), [selectedDiff]);
-  const currentHighlights = React.useMemo<BlockHighlights>(() => ({
+  const rightHighlights = React.useMemo<BlockHighlights>(() => ({
     added: selectedDiff?.blockDiff.added,
     changed: selectedDiff?.blockDiff.changed,
     moved: selectedDiff?.blockDiff.moved,
@@ -706,7 +714,8 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
       <Antd.Typography.Text type="secondary">
         {changeCount === 0
             ? t('VERSIONS.NO_CHANGES')
-            : t('VERSIONS.CHANGE_POSITION', { index: Math.max(changeIndex, 0) + 1, count: changeCount })}
+            : t('VERSIONS.CHANGE_POSITION',
+                { index: Math.max(changeIndex, 0) + 1, count: changeCount })}
       </Antd.Typography.Text>
       {selectedDiff && selectedDiff.blockDiff.moved.size > 0 && (
         <Antd.Typography.Text type="secondary" style={{ marginLeft: 16 }}>
@@ -725,83 +734,107 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
     </Antd.Space>
   );
 
-  const renderComparison = (c: Comparison): React.JSX.Element => (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Antd.Space style={{ marginBottom: 12, flex: '0 0 auto' }} wrap>
-        <Antd.Button icon={<ArrowLeftOutlined />} onClick={() => setComparison(null)}>
-          {t('VERSIONS.BACK_TO_VERSIONS')}
-        </Antd.Button>
-        {/* With two versions, it isn't clear which one would be restored, so restore from the list. */}
-        {!c.newerVersion && renderRestoreButton(c.version, !c.hasChanges)}
-        <Antd.Space size={16} style={{ marginLeft: 16 }}>
-          {renderLegendItem('var(--mrc-diff-added)', t('VERSIONS.LEGEND_ADDED'))}
-          {renderLegendItem('var(--mrc-diff-removed)', t('VERSIONS.LEGEND_REMOVED'))}
-          {renderLegendItem('var(--mrc-diff-changed)', t('VERSIONS.LEGEND_CHANGED'))}
-          {renderLegendItem('var(--mrc-diff-moved)', t('VERSIONS.LEGEND_MOVED'), 'dotted')}
+  const renderComparison = (c: Comparison): React.JSX.Element => {
+    const leftTitle = t('VERSIONS.VERSION') + ': ' + getVersionLabel(c.leftVersion);
+    const rightTitle = c.rightVersion
+        ? t('VERSIONS.VERSION') + ': ' + getVersionLabel(c.rightVersion)
+        : t('VERSIONS.CURRENT');
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Antd.Space style={{ marginBottom: 12, flex: '0 0 auto' }} wrap>
+          {/* With two versions, it isn't clear which one would be restored, so Restore isn't
+              shown. */}
+          {!c.rightVersion && renderRestoreButton(c.leftVersion, !c.hasChanges)}
+          <Antd.Space size={16} style={{ marginLeft: 16 }}>
+            {renderLegendItem('var(--mrc-diff-added)', t('VERSIONS.LEGEND_ADDED'))}
+            {renderLegendItem('var(--mrc-diff-removed)', t('VERSIONS.LEGEND_REMOVED'))}
+            {renderLegendItem('var(--mrc-diff-changed)', t('VERSIONS.LEGEND_CHANGED'))}
+            {renderLegendItem('var(--mrc-diff-moved)', t('VERSIONS.LEGEND_MOVED'), 'dotted')}
+          </Antd.Space>
         </Antd.Space>
-      </Antd.Space>
-      <div style={{ display: 'flex', flex: '1 1 auto', minHeight: 0, gap: 12 }}>
-        <div style={{ width: MODULE_LIST_WIDTH, flex: '0 0 auto', overflow: 'auto' }}>
-          <Antd.List
-            size="small"
-            dataSource={c.moduleDiffs}
-            renderItem={(diff) => {
-              const className = diff.currentClassName ?? diff.oldClassName!;
-              const renamed = diff.oldClassName && diff.currentClassName &&
-                  diff.oldClassName !== diff.currentClassName;
-              return (
-                <Antd.List.Item
-                  onClick={() => selectModule(diff.moduleId)}
-                  style={{
-                    cursor: 'pointer',
-                    paddingInline: 8,
-                    background: diff.moduleId === selectedModuleId
-                        ? 'rgba(128,128,128,0.2)' : undefined,
-                  }}
-                >
-                  <Antd.List.Item.Meta
-                    avatar={TabTypeUtils.getIcon(MODULE_TYPE_TO_TAB_TYPE[diff.moduleType])}
-                    title={className}
-                    description={renamed
-                        ? t('VERSIONS.RENAMED_FROM', { name: diff.oldClassName }) : undefined}
-                  />
-                  <Antd.Tag color={CHANGE_TAG_COLORS[diff.change]}>
-                    {t(CHANGE_LABEL_KEYS[diff.change])}
-                  </Antd.Tag>
-                </Antd.List.Item>
-              );
-            }}
-          />
-        </div>
-        {selectedDiff && (
-          <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 auto', minWidth: 0 }}>
-            {!isUnchanged && renderChangeNavigation()}
-            <div style={{ display: 'flex', flex: '1 1 auto', minHeight: 0, gap: 12 }}>
-              {isUnchanged ? (
-                renderPreviewPane(
-                    'current', null,
-                    selectedDiff.currentContentText, t('VERSIONS.NOT_IN_CURRENT'), currentHighlights)
-              ) : (
-                <>
-                  {renderPreviewPane(
-                      'version', t('VERSIONS.VERSION') + ': ' + getVersionLabel(c.version),
-                      selectedDiff.oldContentText, t('VERSIONS.NOT_IN_VERSION'), versionHighlights)}
-                  {renderPreviewPane(
-                      'current',
-                      c.newerVersion
-                          ? t('VERSIONS.VERSION') + ': ' + getVersionLabel(c.newerVersion)
-                          : t('VERSIONS.CURRENT'),
-                      selectedDiff.currentContentText,
-                      c.newerVersion ? t('VERSIONS.NOT_IN_VERSION') : t('VERSIONS.NOT_IN_CURRENT'),
-                      currentHighlights)}
-                </>
-              )}
-            </div>
+        <div style={{ display: 'flex', flex: '1 1 auto', minHeight: 0, gap: 12 }}>
+          <div style={{ width: MODULE_LIST_WIDTH, flex: '0 0 auto', overflow: 'auto' }}>
+            <Antd.List
+              size="small"
+              dataSource={c.moduleDiffs}
+              renderItem={(diff) => {
+                const className = diff.rightClassName ?? diff.leftClassName!;
+                const renamed = diff.leftClassName && diff.rightClassName &&
+                    diff.leftClassName !== diff.rightClassName;
+                return (
+                  <Antd.List.Item
+                    onClick={() => selectModule(diff.moduleId)}
+                    style={{
+                      cursor: 'pointer',
+                      paddingInline: 8,
+                      background: diff.moduleId === selectedModuleId
+                          ? 'rgba(128,128,128,0.2)' : undefined,
+                    }}
+                  >
+                    <Antd.List.Item.Meta
+                      avatar={TabTypeUtils.getIcon(MODULE_TYPE_TO_TAB_TYPE[diff.moduleType])}
+                      title={className}
+                      description={renamed
+                          ? t('VERSIONS.RENAMED_FROM', { name: diff.leftClassName }) : undefined}
+                    />
+                    <Antd.Tag color={CHANGE_TAG_COLORS[diff.change]}>
+                      {t(CHANGE_LABEL_KEYS[diff.change])}
+                    </Antd.Tag>
+                  </Antd.List.Item>
+                );
+              }}
+            />
           </div>
-        )}
+          {selectedDiff && (
+            <div style={{
+              display: 'flex', flexDirection: 'column', flex: '1 1 auto', minWidth: 0,
+            }}>
+              {!isUnchanged && renderChangeNavigation()}
+              <div style={{ display: 'flex', flex: '1 1 auto', minHeight: 0, gap: PANE_GAP }}>
+                {isUnchanged ? (
+                  // Both titles are where they would be with two panes.
+                  renderPreviewPane(
+                      'right',
+                      <div style={{ display: 'flex', gap: PANE_GAP }}>
+                        <Antd.Typography.Text strong style={{ flex: '1 1 0', minWidth: 0 }}>
+                          {leftTitle}
+                        </Antd.Typography.Text>
+                        <Antd.Typography.Text strong style={{ flex: '1 1 0', minWidth: 0 }}>
+                          {rightTitle}
+                        </Antd.Typography.Text>
+                      </div>,
+                      selectedDiff.rightContentText, t('VERSIONS.NOT_IN_CURRENT'),
+                      rightHighlights)
+                ) : (
+                  <>
+                    {renderPreviewPane(
+                        'left', leftTitle,
+                        selectedDiff.leftContentText, t('VERSIONS.NOT_IN_VERSION'),
+                        leftHighlights)}
+                    {renderPreviewPane(
+                        'right', rightTitle,
+                        selectedDiff.rightContentText,
+                        c.rightVersion
+                            ? t('VERSIONS.NOT_IN_VERSION') : t('VERSIONS.NOT_IN_CURRENT'),
+                        rightHighlights)}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  /** In the compare view, goes back to the list of versions. Otherwise, closes the dialog. */
+  const handleCloseOrBack = (): void => {
+    if (comparison) {
+      setComparison(null);
+    } else {
+      props.onClose();
+    }
+  };
 
   return (
     <>
@@ -809,9 +842,9 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
       <Antd.Modal
         title={t('VERSIONS.TITLE', { projectName: projectName })}
         open={props.isOpen}
-        onCancel={props.onClose}
+        onCancel={handleCloseOrBack}
         footer={[
-          <Antd.Button key="close" type="primary" onClick={props.onClose}>
+          <Antd.Button key="close" type="primary" onClick={handleCloseOrBack}>
             {t('OK')}
           </Antd.Button>,
         ]}

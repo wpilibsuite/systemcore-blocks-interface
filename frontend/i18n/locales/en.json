@@ -209,7 +209,6 @@
     "NO_VERSIONS": "This project doesn't have any versions yet. Create one to save the project as it is now.",
     "COMPARE": "Compare",
     "COMPARE_WITH_VERSION": "Compare with another version",
-    "BACK_TO_VERSIONS": "Back to Versions",
     "RESTORE": "Restore",
     "RESTORE_HERE": "Restore This Project",
     "RESTORE_HERE_CONFIRM": "Restore the project to this version? The project as it is now will be saved as a new version first, so you can get it back.",

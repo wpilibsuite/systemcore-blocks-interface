@@ -210,7 +210,6 @@
     "NO_VERSIONS": "Ce projet n'a pas encore de versions. Créez-en une pour enregistrer le projet dans son état actuel.",
     "COMPARE": "Comparer",
     "COMPARE_WITH_VERSION": "Comparer avec une autre version",
-    "BACK_TO_VERSIONS": "Retour aux versions",
     "RESTORE": "Restaurer",
     "RESTORE_HERE": "Restaurer ce projet",
     "RESTORE_HERE_CONFIRM": "Restaurer le projet à cette version ? Le projet dans son état actuel sera d'abord enregistré comme une nouvelle version, afin que vous puissiez le récupérer.",
