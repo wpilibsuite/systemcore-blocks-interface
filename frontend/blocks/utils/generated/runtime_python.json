@@ -44,8 +44,8 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "line",
-                            "type": "str"
+                            "name": "data",
+                            "type": "object"
                         }
                     ],
                     "declaringClassName": "wpilib_blocks.DriverStationDisplay",
