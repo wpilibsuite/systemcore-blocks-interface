@@ -3,8 +3,9 @@ import glob
 import os
 import re
 import shutil
-import zipfile
 import subprocess
+import threading
+import zipfile
 
 
 # Third-party imports
@@ -18,6 +19,9 @@ from config import LIBRARIES_DIR
 BASE_DIR = "/home/systemcore"
 DEPLOY_DIR = BASE_DIR + "/blocks/deployedPython"
 PIP_CACHE_DIR = "/opt/blocks/cache/pip_cache"
+
+# Only one deploy can run at a time, since each one replaces DEPLOY_DIR and temp_deploy.zip.
+_deploy_lock = threading.Lock()
 
 
 def getWpilibBlocksRequirement() -> str:
@@ -39,6 +43,14 @@ def getWpilibBlocksRequirement() -> str:
 class DeployResource(MethodView):
     def post(self) -> Response:
         """Upload and extract a zip file to the deploy directory"""
+        if not _deploy_lock.acquire(blocking=False):
+            return jsonify({'error': 'A deploy is already in progress'}), 409
+        try:
+            return self._deploy()
+        finally:
+            _deploy_lock.release()
+
+    def _deploy(self) -> Response:
         if 'file' not in request.files:
             return jsonify({'error': 'No file provided'}), 400
 
