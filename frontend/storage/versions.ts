@@ -155,7 +155,8 @@ function makeVersionId(): string {
  * Creates a version of the project's current files.
  */
 export async function createVersion(
-    storage: commonStorage.Storage, projectName: string, description: string): Promise<VersionInfo> {
+    storage: commonStorage.Storage, projectName: string,
+    description: string): Promise<VersionInfo> {
   const files = await storageProject.fetchProjectFiles(storage, projectName);
   const hashToContent = new Map<string, string>();
   const fileHashes: {[fileName: string]: string} = {};
@@ -322,18 +323,18 @@ export async function hasChangesSinceLatestVersion(
  */
 export async function hasChangesBetween(
     projectName: string,
-    oldFiles: {[fileName: string]: string},
-    newFiles: {[fileName: string]: string}): Promise<boolean> {
-  if (versionDiff.diffModules(oldFiles, newFiles).some(
+    leftFiles: {[fileName: string]: string},
+    rightFiles: {[fileName: string]: string}): Promise<boolean> {
+  if (versionDiff.diffModules(leftFiles, rightFiles).some(
       moduleDiff => moduleDiff.change !== versionDiff.ModuleChange.UNCHANGED)) {
     return true;
   }
-  const oldProjectInfo = await storageProject.fetchProjectInfo(
-      await makeStorageWithFiles(projectName, oldFiles), projectName);
-  const newProjectInfo = await storageProject.fetchProjectInfo(
-      await makeStorageWithFiles(projectName, newFiles), projectName);
-  return JSON.stringify(oldProjectInfo.gamepadConfig) !==
-      JSON.stringify(newProjectInfo.gamepadConfig);
+  const leftProjectInfo = await storageProject.fetchProjectInfo(
+      await makeStorageWithFiles(projectName, leftFiles), projectName);
+  const rightProjectInfo = await storageProject.fetchProjectInfo(
+      await makeStorageWithFiles(projectName, rightFiles), projectName);
+  return JSON.stringify(leftProjectInfo.gamepadConfig) !==
+      JSON.stringify(rightProjectInfo.gamepadConfig);
 }
 
 /**

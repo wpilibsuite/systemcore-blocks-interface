@@ -16,7 +16,9 @@
  */
 
 /**
- * @fileoverview Finds the differences between a version of a project and the current project.
+ * @fileoverview Finds the differences between two sets of a project's files, such as a version and
+ * the current project. The two sides are called left and right, as in the compare view, where the
+ * left side's blocks are shown on the left and the right side's on the right.
  * @author alan@porpoiseful.com (Alan Smith)
  */
 
@@ -32,8 +34,8 @@ export enum ModuleChange {
 }
 
 export type BlockDiff = {
-  added: Set<string>, // ids of blocks only in the current module
-  removed: Set<string>, // ids of blocks only in the version's module
+  added: Set<string>, // ids of blocks only in the right module
+  removed: Set<string>, // ids of blocks only in the left module
   changed: Set<string>, // ids of blocks in both whose own content differs
   moved: Set<string>, // ids of top-level blocks in both that are at a different position
 };
@@ -41,10 +43,10 @@ export type BlockDiff = {
 export type ModuleDiff = {
   moduleId: string,
   moduleType: storageModule.ModuleType,
-  oldClassName: string | null, // null if the module was added after the version
-  currentClassName: string | null, // null if the module was removed after the version
-  oldContentText: string | null,
-  currentContentText: string | null,
+  leftClassName: string | null, // the left module's class name, or null if it is only on the right
+  rightClassName: string | null, // the right module's class name, or null if only on the left
+  leftContentText: string | null,
+  rightContentText: string | null,
   change: ModuleChange,
   blockDiff: BlockDiff,
 };
@@ -72,41 +74,41 @@ const CHANGE_ORDER = [
 ];
 
 /**
- * Compares the modules in two sets of project files (maps of fileName → content). Modules are
- * matched by moduleId, so a module that was renamed is still compared with its earlier self.
+ * Compares the modules in the left and right sets of project files (maps of fileName → content).
+ * Modules are matched by moduleId, so a module that was renamed is still compared with itself.
  */
 export function diffModules(
-    oldFiles: {[fileName: string]: string},
-    currentFiles: {[fileName: string]: string}): ModuleDiff[] {
-  const oldModules = indexModules(oldFiles);
-  const currentModules = indexModules(currentFiles);
-  const moduleIds = new Set([...oldModules.keys(), ...currentModules.keys()]);
+    leftFiles: {[fileName: string]: string},
+    rightFiles: {[fileName: string]: string}): ModuleDiff[] {
+  const leftModules = indexModules(leftFiles);
+  const rightModules = indexModules(rightFiles);
+  const moduleIds = new Set([...leftModules.keys(), ...rightModules.keys()]);
 
   const diffs: ModuleDiff[] = [];
   for (const moduleId of moduleIds) {
-    const oldModule = oldModules.get(moduleId) ?? null;
-    const currentModule = currentModules.get(moduleId) ?? null;
+    const leftModule = leftModules.get(moduleId) ?? null;
+    const rightModule = rightModules.get(moduleId) ?? null;
     const blockDiff = diffBlocks(
-        oldModule ? oldModule.content.getBlocks() : {},
-        currentModule ? currentModule.content.getBlocks() : {});
+        leftModule ? leftModule.content.getBlocks() : {},
+        rightModule ? rightModule.content.getBlocks() : {});
     let change: ModuleChange;
-    if (!oldModule) {
+    if (!leftModule) {
       change = ModuleChange.ADDED;
-    } else if (!currentModule) {
+    } else if (!rightModule) {
       change = ModuleChange.REMOVED;
     } else if (blockDiff.added.size || blockDiff.removed.size || blockDiff.changed.size ||
-        blockDiff.moved.size || oldModule.className !== currentModule.className) {
+        blockDiff.moved.size || leftModule.className !== rightModule.className) {
       change = ModuleChange.CHANGED;
     } else {
       change = ModuleChange.UNCHANGED;
     }
     diffs.push({
       moduleId: moduleId,
-      moduleType: (currentModule ?? oldModule)!.moduleType,
-      oldClassName: oldModule?.className ?? null,
-      currentClassName: currentModule?.className ?? null,
-      oldContentText: oldModule?.contentText ?? null,
-      currentContentText: currentModule?.contentText ?? null,
+      moduleType: (rightModule ?? leftModule)!.moduleType,
+      leftClassName: leftModule?.className ?? null,
+      rightClassName: rightModule?.className ?? null,
+      leftContentText: leftModule?.contentText ?? null,
+      rightContentText: rightModule?.contentText ?? null,
       change: change,
       blockDiff: blockDiff,
     });
@@ -115,7 +117,7 @@ export function diffModules(
   diffs.sort((a, b) =>
       (CHANGE_ORDER.indexOf(a.change) - CHANGE_ORDER.indexOf(b.change)) ||
       (MODULE_TYPE_ORDER.indexOf(a.moduleType) - MODULE_TYPE_ORDER.indexOf(b.moduleType)) ||
-      (a.currentClassName ?? a.oldClassName!).localeCompare(b.currentClassName ?? b.oldClassName!));
+      (a.rightClassName ?? a.leftClassName!).localeCompare(b.rightClassName ?? b.leftClassName!));
   return diffs;
 }
 
@@ -149,29 +151,31 @@ function indexModules(files: {[fileName: string]: string}): Map<string, ModuleFi
  *   are at a different position are listed in moved.
  */
 export function diffBlocks(
-    oldBlocks: {[key: string]: any}, currentBlocks: {[key: string]: any}): BlockDiff {
-  const oldInfos = indexBlocks(oldBlocks);
-  const currentInfos = indexBlocks(currentBlocks);
-  const diff: BlockDiff = {added: new Set(), removed: new Set(), changed: new Set(), moved: new Set()};
+    leftBlocks: {[key: string]: any}, rightBlocks: {[key: string]: any}): BlockDiff {
+  const leftInfos = indexBlocks(leftBlocks);
+  const rightInfos = indexBlocks(rightBlocks);
+  const diff: BlockDiff = {
+    added: new Set(), removed: new Set(), changed: new Set(), moved: new Set(),
+  };
 
-  for (const [id, currentInfo] of currentInfos) {
-    const oldInfo = oldInfos.get(id);
-    if (oldInfo?.position && currentInfo.position && oldInfo.position !== currentInfo.position) {
+  for (const [id, rightInfo] of rightInfos) {
+    const leftInfo = leftInfos.get(id);
+    if (leftInfo?.position && rightInfo.position && leftInfo.position !== rightInfo.position) {
       diff.moved.add(id);
     }
-    if (!oldInfo) {
-      if (!currentInfo.enclosingId || oldInfos.has(currentInfo.enclosingId)) {
+    if (!leftInfo) {
+      if (!rightInfo.enclosingId || leftInfos.has(rightInfo.enclosingId)) {
         diff.added.add(id);
       }
-    } else if (oldInfo.fingerprint !== currentInfo.fingerprint ||
-        oldInfo.location !== currentInfo.location ||
-        getPreviousBlockIn(oldInfo, currentInfos) !== getPreviousBlockIn(currentInfo, oldInfos)) {
+    } else if (leftInfo.fingerprint !== rightInfo.fingerprint ||
+        leftInfo.location !== rightInfo.location ||
+        getPreviousBlockIn(leftInfo, rightInfos) !== getPreviousBlockIn(rightInfo, leftInfos)) {
       diff.changed.add(id);
     }
   }
-  for (const [id, oldInfo] of oldInfos) {
-    if (!currentInfos.has(id) &&
-        (!oldInfo.enclosingId || currentInfos.has(oldInfo.enclosingId))) {
+  for (const [id, leftInfo] of leftInfos) {
+    if (!rightInfos.has(id) &&
+        (!leftInfo.enclosingId || rightInfos.has(leftInfo.enclosingId))) {
       diff.removed.add(id);
     }
   }

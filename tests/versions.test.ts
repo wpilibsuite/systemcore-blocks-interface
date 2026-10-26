@@ -49,9 +49,9 @@ function moduleContentText(moduleId: string, blocks: any): string {
 
 describe('diffBlocks', () => {
   test('finds added, removed, and changed blocks', () => {
-    const oldBlocks = makeBlocks(printBlock('p1', numberBlock('n1', 1)), numberBlock('n2', 2));
-    const newBlocks = makeBlocks(printBlock('p1', numberBlock('n1', 5)), numberBlock('n3', 3));
-    const diff = versionDiff.diffBlocks(oldBlocks, newBlocks);
+    const leftBlocks = makeBlocks(printBlock('p1', numberBlock('n1', 1)), numberBlock('n2', 2));
+    const rightBlocks = makeBlocks(printBlock('p1', numberBlock('n1', 5)), numberBlock('n3', 3));
+    const diff = versionDiff.diffBlocks(leftBlocks, rightBlocks);
     expect([...diff.changed]).toEqual(['n1']);
     expect([...diff.added]).toEqual(['n3']);
     expect([...diff.removed]).toEqual(['n2']);
@@ -76,15 +76,15 @@ describe('diffBlocks', () => {
   test('deleting a block marks only that block, not the blocks inside it or its parent', () => {
     // if (p1 printing n1) { p2 printing n2 }, with p3 after p2.
     const statements = stack(printBlock('p2', numberBlock('n2', 2)), printBlock('p3', numberBlock('n3', 3)));
-    const oldBlocks = makeBlocks(ifBlock('if1', stack(printBlock('p1', numberBlock('n1', 1)), statements)));
-    const newBlocks = makeBlocks(ifBlock('if1', stack(printBlock('p1', numberBlock('n1', 1)))));
-    const diff = versionDiff.diffBlocks(oldBlocks, newBlocks);
+    const leftBlocks = makeBlocks(ifBlock('if1', stack(printBlock('p1', numberBlock('n1', 1)), statements)));
+    const rightBlocks = makeBlocks(ifBlock('if1', stack(printBlock('p1', numberBlock('n1', 1)))));
+    const diff = versionDiff.diffBlocks(leftBlocks, rightBlocks);
     expect([...diff.removed].sort()).toEqual(['p2', 'p3']);
     expect([...diff.changed]).toEqual([]);
     expect([...diff.added]).toEqual([]);
 
     // Deleting the if block marks only the if block.
-    const deletedIf = versionDiff.diffBlocks(oldBlocks, makeBlocks());
+    const deletedIf = versionDiff.diffBlocks(leftBlocks, makeBlocks());
     expect([...deletedIf.removed]).toEqual(['if1']);
   });
 
@@ -144,8 +144,8 @@ describe('diffModules', () => {
         });
     const byId = new Map(diffs.map(d => [d.moduleId, d]));
     expect(byId.get('arm')!.change).toBe(versionDiff.ModuleChange.CHANGED);
-    expect(byId.get('arm')!.oldClassName).toBe('Arm');
-    expect(byId.get('arm')!.currentClassName).toBe('Elbow');
+    expect(byId.get('arm')!.leftClassName).toBe('Arm');
+    expect(byId.get('arm')!.rightClassName).toBe('Elbow');
     expect(byId.get('claw')!.change).toBe(versionDiff.ModuleChange.REMOVED);
     expect(byId.get('lift')!.change).toBe(versionDiff.ModuleChange.ADDED);
   });
