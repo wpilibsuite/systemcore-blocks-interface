@@ -117,7 +117,7 @@ Flask + Flask-RESTful app. Key endpoints:
 
 ## Deploying to SystemCore
 
-See `docs/running_on_systemcore.md` for initial setup. After setup, `./scripts/updateSystemcore.sh` syncs the repo and built assets; then refresh the browser at `http://robot.local:9001`.
+See `docs/running_on_systemcore.md`. `npm run package` builds a Blocks `.ipk` into `packaging/`, which is installed with Add Package at `http://robot.local` (remove the installed Blocks first if the version number is the same).
 
 ## PR Testing Checklist
 
