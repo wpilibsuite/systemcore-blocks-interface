@@ -93,23 +93,51 @@
  * inline when the block's inputs are inline; otherwise they are external
  * connectors, with a socket in the right edge of the block shaped to fit the
  * connected block's left end. Blockly's ExternalValueInput and its connection
- * position assume the classic puzzle tab, so
- * FirstBlocksStyleExternalValueInput and FirstBlocksStyleDrawer size, draw,
- * and position the socket for Zelos's dynamic shapes.
+ * position assume the classic puzzle tab and the classic renderers' spacing,
+ * so FirstBlocksStyleExternalValueInput and FirstBlocksStyleDrawer size, draw,
+ * and position the socket to fit Zelos's dynamic shapes and spacing.
  *
  * Zelos draws the whole right side of a reporter block (one with an output
  * connection) as a copy of its output shape, so it has nowhere to put an
  * external input. A reporter block with external inputs keeps Zelos's output
  * shape on its left side but gets a straight right side with the sockets in
  * it, drawn row by row like the classic renderers.
+ *
+ * Zelos makes booleans hexagonal and everything else round. This renderer
+ * gives each kind of value its own shape (see shapeFor), so it is easy to see
+ * what kind of value goes where: booleans are hexagonal, numbers are round,
+ * text has a tab shaped like a plug, objects (such as components and lists)
+ * have the classic puzzle tab, like Thrasos, and ports are square. A
+ * connection that takes any value also has the puzzle tab, until a block with
+ * a type is connected to it, when it takes that block's shape instead. A
+ * reporter block with a tab output is drawn like a Thrasos one, with square
+ * corners and a straight right side.
  */
 
 import * as Blockly from 'blockly/core';
+import { isPortType } from '../blocks/utils/python_json_types';
 
 export const FIRST_BLOCKS_STYLE_RENDERER_NAME = 'first_blocks_style';
 
 /** Grid unit (in px) used to size Zelos blocks. Zelos's default is 4. */
 const COMPACT_GRID_UNIT = 2;
+
+/** The shape type of the plug tab, after the ones in ConstantProvider.SHAPES. */
+const PLUG_SHAPE_TYPE = 6;
+
+/**
+ * Corner radius of the square shape for ports. Zelos uses CORNER_RADIUS, which
+ * at this block height makes it look too much like the round shape.
+ */
+const SQUARED_CORNER_RADIUS = 4;
+
+/** How far the slanted ends of the plug tab go along the block's edge. */
+const PLUG_TAB_SLANT_HEIGHT = 4;
+
+/** Returns whether the given shape is one of Zelos's dynamic shapes. */
+function isDynamicShape(shape: object): boolean {
+  return (shape as {isDynamic?: boolean}).isDynamic === true;
+}
 
 class FirstBlocksStyleConstantProvider extends Blockly.zelos.ConstantProvider {
   constructor() {
@@ -120,6 +148,72 @@ class FirstBlocksStyleConstantProvider extends Blockly.zelos.ConstantProvider {
     this.CORNER_RADIUS = 8;
     this.FIELD_BORDER_RECT_RADIUS = 4;
     this.FULL_BLOCK_FIELDS = false;
+  }
+
+  /** The shape of a text connection: a tab that narrows to its end, like a plug. */
+  PLUG_TAB: Blockly.blockRendering.PuzzleTab | null = null;
+
+  override init(): void {
+    super.init();
+    this.PLUG_TAB = this.makePlugTab_();
+  }
+
+  protected override makeSquared() {
+    const cornerRadius = this.CORNER_RADIUS;
+    this.CORNER_RADIUS = SQUARED_CORNER_RADIUS;
+    const shape = super.makeSquared();
+    this.CORNER_RADIUS = cornerRadius;
+    return shape;
+  }
+
+  private makePlugTab_(): Blockly.blockRendering.PuzzleTab {
+    const width = this.TAB_WIDTH;
+    const height = this.TAB_HEIGHT;
+    const straightHeight = height - 2 * PLUG_TAB_SLANT_HEIGHT;
+    const makePath = (dir: number) =>
+        Blockly.utils.svgPaths.line([
+          Blockly.utils.svgPaths.point(-width, dir * PLUG_TAB_SLANT_HEIGHT)]) +
+        Blockly.utils.svgPaths.lineOnAxis('v', dir * straightHeight) +
+        Blockly.utils.svgPaths.line([
+          Blockly.utils.svgPaths.point(width, dir * PLUG_TAB_SLANT_HEIGHT)]);
+    return {
+      type: PLUG_SHAPE_TYPE,
+      width,
+      height,
+      pathDown: makePath(1),
+      pathUp: makePath(-1),
+    };
+  }
+
+  override shapeFor(connection: Blockly.RenderedConnection) {
+    if (connection.type === Blockly.ConnectionType.INPUT_VALUE ||
+        connection.type === Blockly.ConnectionType.OUTPUT_VALUE) {
+      // Like Zelos, use the checks of the connected connection if this one
+      // doesn't have any.
+      let checks = connection.getCheck();
+      if (!checks && connection.targetConnection) {
+        checks = connection.targetConnection.getCheck();
+      }
+      // A connection that takes any value (no checks) has a puzzle tab, like
+      // one that takes an object.
+      if (!checks || checks.length === 0) {
+        return this.PUZZLE_TAB;
+      }
+      if (checks.includes('Boolean')) {
+        return this.HEXAGONAL!;
+      }
+      if (checks.includes('Number')) {
+        return this.ROUNDED!;
+      }
+      if (checks.includes('String')) {
+        return this.PLUG_TAB!;
+      }
+      if (checks.some(check => isPortType(check))) {
+        return this.SQUARED!;
+      }
+      return this.PUZZLE_TAB;
+    }
+    return super.shapeFor(connection);
   }
 
   override getCSS_(selector: string): string[] {
@@ -228,12 +322,15 @@ class FirstBlocksStyleBottomRow extends Blockly.zelos.BottomRow {
 }
 
 /**
- * An external value input for a Zelos dynamic connection shape. Blockly's
- * ExternalValueInput expects the numeric shape sizes of the classic puzzle
- * tab, but Zelos shapes size themselves from the height of the connected
- * block, so the sizes are worked out here instead. The socket has the shape of
- * the connected block's output (round, hexagonal, or square), is as tall as
- * that block, and is as wide as that block's left end, which fits into it.
+ * An external value input sized to fit the connected block. Blockly's
+ * ExternalValueInput expects the classic renderers' spacing, where the
+ * connected block sticks out above and below the input's row, and the numeric
+ * shape sizes of a tab, but Zelos shapes size themselves from the height of
+ * the connected block. So the sizes are worked out here instead. The socket
+ * has the shape of the connected block's output, is as tall as that block (so
+ * the block fits within the row), and is as wide as that block's left end,
+ * which fits into it. A puzzle or plug tab socket is as far from the top of
+ * the input as the tab is from the top of a block.
  */
 class FirstBlocksStyleExternalValueInput extends Blockly.blockRendering.ExternalValueInput {
   constructor(constants: FirstBlocksStyleConstantProvider, input: Blockly.Input) {
@@ -241,7 +338,10 @@ class FirstBlocksStyleExternalValueInput extends Blockly.blockRendering.External
     const insertionMarker =
         (input.connection as Blockly.RenderedConnection).getInsertionMarker();
     if (this.connectedBlock && this.connectedBlock.outputConnection) {
-      this.shape = constants.shapeFor(this.connectedBlock.outputConnection);
+      const connectedShape = constants.shapeFor(this.connectedBlock.outputConnection);
+      if (isDynamicShape(connectedShape) === this.isDynamicShape) {
+        this.shape = connectedShape;
+      }
     }
     let height = constants.MIN_BLOCK_HEIGHT;
     if (insertionMarker) {
@@ -249,10 +349,18 @@ class FirstBlocksStyleExternalValueInput extends Blockly.blockRendering.External
     } else if (this.connectedBlock) {
       height = this.connectedBlock.getHeightWidth().height;
     }
-    const shape = this.shape as Blockly.blockRendering.DynamicShape;
     this.height = height;
-    this.connectionHeight = height;
-    this.connectionWidth = shape.width(height);
+    if (this.isDynamicShape) {
+      const shape = this.shape as Blockly.blockRendering.DynamicShape;
+      this.connectionHeight = height;
+      this.connectionWidth = shape.width(height);
+      this.connectionOffsetY = 0;
+    } else {
+      const tab = this.shape as Blockly.blockRendering.PuzzleTab;
+      this.connectionHeight = tab.height;
+      this.connectionWidth = tab.width;
+      this.connectionOffsetY = constants.TAB_OFFSET_FROM_TOP;
+    }
     this.width = this.connectionWidth;
   }
 }
@@ -279,6 +387,16 @@ class FirstBlocksStyleRenderInfo extends Blockly.zelos.RenderInfo {
       return;
     }
     super.addInput_(input, activeRow);
+    // Zelos's empty inline inputs are shorter than a puzzle or plug tab and the
+    // space above it, and only leave room for one padding beside a tab (where
+    // they leave room for two dynamic shapes), so make an empty one with a tab
+    // as tall as a block and as wide as the dynamic ones.
+    const elem = activeRow.elements[activeRow.elements.length - 1];
+    if (Blockly.blockRendering.Types.isInlineInput(elem) && !elem.isDynamicShape &&
+        !elem.connectedBlock) {
+      elem.height = Math.max(elem.height, this.constants_.MIN_BLOCK_HEIGHT);
+      elem.width = elem.connectionWidth + 2 * this.constants_.EMPTY_INLINE_INPUT_PADDING;
+    }
   }
 
   override getInRowSpacing_(
@@ -307,11 +425,43 @@ class FirstBlocksStyleRenderInfo extends Blockly.zelos.RenderInfo {
 
   protected override finalizeHorizontalAlignment_(): void {
     // This pulls the ends of each row into Zelos's output shapes on both sides
-    // of a reporter block, which doesn't fit a straight right side.
-    if (this.hasExternalInputs) {
+    // of a reporter block, which doesn't fit a straight right side or a tab
+    // output.
+    if (this.hasExternalInputs ||
+        (this.outputConnection && !this.outputConnection.isDynamicShape)) {
       return;
     }
     super.finalizeHorizontalAlignment_();
+  }
+
+  protected override finalizeVerticalAlignment_(): void {
+    super.finalizeVerticalAlignment_();
+    // Leave as much room below the tab of a puzzle or plug tab output as
+    // there is above it, by making the first input row taller if needed.
+    if (this.outputConnection && !this.outputConnection.isDynamicShape &&
+        this.inputRows.length > 0) {
+      const minHeight = 2 * this.constants_.TAB_OFFSET_FROM_TOP + this.constants_.TAB_HEIGHT;
+      const height = this.rows.reduce((sum, row) => sum + row.height, 0);
+      if (height < minHeight) {
+        this.inputRows[0].height += minHeight - height;
+      }
+    }
+  }
+
+  protected override getNegativeSpacing_(elem: Blockly.blockRendering.Measurable): number {
+    // Zelos doesn't know how much space to leave around a puzzle or plug tab
+    // inside its output shapes, so don't pull an inline input with one into
+    // them.
+    if (elem && Blockly.blockRendering.Types.isInlineInput(elem)) {
+      const connectedBlock = elem.connectedBlock;
+      const innerShape = connectedBlock ?
+          (connectedBlock.pathObject as Blockly.zelos.PathObject).outputShapeType :
+          elem.shape.type;
+      if (innerShape === this.constants_.SHAPES.PUZZLE || innerShape === PLUG_SHAPE_TYPE) {
+        return 0;
+      }
+    }
+    return super.getNegativeSpacing_(elem);
   }
 }
 
@@ -329,32 +479,88 @@ class FirstBlocksStyleDrawer extends Blockly.zelos.Drawer {
     super.drawOutline_();
   }
 
+  // Zelos draws an empty inline input as an outline of its dynamic shape. Draw
+  // one with a puzzle or plug tab the same way.
+  override drawInlineInput_(input: Blockly.blockRendering.InlineInput): void {
+    if (input.isDynamicShape) {
+      super.drawInlineInput_(input);
+      return;
+    }
+    this.positionInlineInputConnection_(input);
+    if (input.connectedBlock || this.info_.isInsertionMarker) {
+      return;
+    }
+    const yPos = input.centerline - input.height / 2;
+    const path = Blockly.utils.svgPaths.moveTo(input.xPos + input.connectionWidth, yPos) +
+        this.getTabInlineInputPath_(input);
+    (this.block_.pathObject as Blockly.zelos.PathObject).setOutlinePath(input.input.name, path);
+  }
+
+  // Returns the outline of an inline input with a puzzle or plug tab, starting
+  // at its top left corner, to the right of the tab.
+  private getTabInlineInputPath_(input: Blockly.blockRendering.InlineInput): string {
+    const width = input.width - input.connectionWidth;
+    const tabBottom = input.connectionOffsetY + input.connectionHeight;
+    return Blockly.utils.svgPaths.lineOnAxis('h', width) +
+        Blockly.utils.svgPaths.lineOnAxis('v', input.height) +
+        Blockly.utils.svgPaths.lineOnAxis('h', -width) +
+        Blockly.utils.svgPaths.lineOnAxis('v', tabBottom - input.height) +
+        (input.shape as Blockly.blockRendering.PuzzleTab).pathUp +
+        'z';
+  }
+
   // Draws the socket for an external input as the reverse of the connected
   // block's left end, so that end nests into the right edge of this block.
-  // The socket is centred on the row.
+  // The input is centred on the row.
   protected override drawValueInput_(row: Blockly.blockRendering.Row): void {
     const input = row.getLastInput() as FirstBlocksStyleExternalValueInput;
-    const shape = input.shape as Blockly.blockRendering.DynamicShape;
     this.positionExternalValueConnection_(row);
+    const socketPath = input.isDynamicShape ?
+        (input.shape as Blockly.blockRendering.DynamicShape).pathDown(input.height) :
+        (input.shape as Blockly.blockRendering.PuzzleTab).pathDown;
+    const top = input.centerline - input.height / 2;
     this.outlinePath_ +=
         Blockly.utils.svgPaths.lineOnAxis('H', input.xPos + input.width) +
-        Blockly.utils.svgPaths.lineOnAxis('V', input.centerline - input.height / 2) +
-        shape.pathDown(input.height) +
+        Blockly.utils.svgPaths.lineOnAxis('V', top + input.connectionOffsetY) +
+        socketPath +
         Blockly.utils.svgPaths.lineOnAxis('V', row.yPos + row.height);
   }
 
-  // The connection is at the deepest point of the socket, which is where the
-  // tip of the connected block's left end (its output connection) goes.
+  // The connection is where the connected block's output connection goes: the
+  // deepest point of a dynamic socket, which the tip of the block's left end
+  // fits into, or the top of a tab socket, on the right edge of this block.
   protected override positionExternalValueConnection_(row: Blockly.blockRendering.Row): void {
-    const input = row.getLastInput();
+    const input = row.getLastInput() as FirstBlocksStyleExternalValueInput | null;
     if (input && input.connectionModel) {
-      const connX = this.info_.RTL ? -input.xPos : input.xPos;
-      input.connectionModel.setOffsetInBlock(connX, input.centerline);
+      let connX = input.xPos;
+      let connY = input.centerline;
+      if (!input.isDynamicShape) {
+        connX += input.width;
+        connY += input.connectionOffsetY - input.height / 2;
+      }
+      input.connectionModel.setOffsetInBlock(this.info_.RTL ? -connX : connX, connY);
     }
   }
 
   override drawConnectionHighlightPath(
       measurable: Blockly.blockRendering.Connection): SVGElement | undefined {
+    if (measurable.connectionModel.type === Blockly.ConnectionType.INPUT_VALUE &&
+        !measurable.isDynamicShape) {
+      if (Blockly.blockRendering.Types.isInlineInput(measurable)) {
+        // Highlight the whole inline input, like Zelos does.
+        const input = measurable as Blockly.blockRendering.InlineInput;
+        const path = Blockly.utils.svgPaths.moveTo(0, -input.connectionOffsetY) +
+            this.getTabInlineInputPath_(input);
+        const conn = input.connectionModel;
+        const block = conn.getSourceBlock();
+        return block.pathObject.addConnectionHighlight?.(
+            conn, path, conn.getOffsetInBlock(), block.RTL);
+      }
+      // Zelos's drawer assumes a dynamic shape, so use the common drawer's
+      // tab highlight.
+      return Blockly.blockRendering.Drawer.prototype.drawConnectionHighlightPath.call(
+          this, measurable);
+    }
     if (!Blockly.blockRendering.Types.isExternalInput(measurable)) {
       return super.drawConnectionHighlightPath(measurable);
     }
