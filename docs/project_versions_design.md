@@ -3,7 +3,7 @@ Without some sort of versioning support, a team is limited to remembering to dow
 and save it off the robot (or making a copy on the robot) before making a change.   Even with this,
 there is no easy way to see the visual difference between the changes.
 
-Also, making a full copy of the projects leads to bloat of repeated pieces that don't change.
+Also, making a full copy of the projects leads to bloat of repeated pieces that haven't changed.
 
 # Proposed Solution
 * Under the projects there is a /versions/versionId that would have its own
@@ -81,6 +81,7 @@ description or delete.
     * Hide versions that are less than x older than the one after it
 * Allowing bulk delete
 * Allow setting left/right for diffs ( a la code search by Google - https://cs.android.com/android/_/android/platform/hardware/google/camera/+/cd15337bd229dd521a860d88bca3e37c3ca845f7:common/hal/common/hal_types.h )
+* Allow "diff" betweeen separate projects
 
 
 
