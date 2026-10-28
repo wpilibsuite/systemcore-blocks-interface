@@ -57,8 +57,8 @@ app.add_url_rule('/libraries', view_func=LibrariesResource.as_view('libraries'))
 app.add_url_rule('/libraries/<name>', view_func=LibraryResource.as_view('library'))
 
 # API health check endpoint to distinguish from static file serving
-@app.route('/statusz')
-def statusz() -> Response:
+@app.route('/healthz')
+def healthz() -> Response:
     """Health check endpoint to identify backend server"""
     return jsonify({
         'status': 'ok',

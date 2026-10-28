@@ -99,7 +99,7 @@ Third parties publish `.blocks_lib` files (zip of `metadata.json`, `wheels/`, `t
 Flask + Flask-RESTful app. Key endpoints:
 - `GET/POST /storage/<path>` — file and directory operations backed by SQLite (`projects.db`)
 - `GET/POST/DELETE /entries/<key>` — key-value storage on the robot. The frontend doesn't use it at the moment (user settings are kept in the browser); it is kept for values that belong to the robot rather than to a user
-- `GET /statusz` — identifies the Python backend; the frontend calls it at startup to choose server-side storage and then every second as a heartbeat (`ConnectionLostModal.tsx`)
+- `GET /healthz` — identifies the Python backend; the frontend calls it at startup to choose server-side storage and then every second as a heartbeat (`ConnectionLostModal.tsx`)
 - `POST /deploy` — receives a zip, extracts to `/home/systemcore/blocks/deployedPython/`, then uses `robotpy installer` to stop/restart the robot
 - During production, the backend is run with gunicorn so be careful not to put code in the
 `if __name__ == '__main__':` that needs to run both when being tested and in production
@@ -119,7 +119,7 @@ Flask + Flask-RESTful app. Key endpoints:
 
 ## Deploying to SystemCore
 
-See `docs/running_on_systemcore.md` for initial setup. After setup, `./scripts/updateSystemcore.sh` syncs the repo and built assets; then refresh the browser at `http://robot.local:9001`.
+See `docs/running_on_systemcore.md`. `npm run package` builds a Blocks `.ipk` into `packaging/`, which is installed with Add Package at `http://robot.local` (remove the installed Blocks first if the version number is the same).
 
 ## PR Testing Checklist
 
