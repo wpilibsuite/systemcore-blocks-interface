@@ -404,6 +404,7 @@
       "RUMBLE_LEFT_TRIGGER": "Vibration gâchette gauche",
       "RUMBLE_RIGHT_TRIGGER": "Vibration gâchette droite",
       "LEDS": "LEDs",
+      "SET_LEDS": "régler les LEDs à",
       "IS_DOWN": "est appuyé",
       "PRESSED": "Appuyé",
       "RELEASED": "Relâché",
@@ -412,6 +413,7 @@
       "EVENT_CHANGED": "Au changement"
     },
     "TOOLTIP": {
+      "GAMEPAD_SET_LEDS": "Règle la couleur des LEDs de la manette. Les manettes avec une seule couleur de LED utilisent la valeur la plus lumineuse entre le rouge, le vert et le bleu.",
       "EVALUATE_BUT_IGNORE_RESULT": "Exécute le bloc connecté et ignore le résultat. Permet d'appeler une fonction en ignorant la valeur de retour.",
       "SHOW_OUTPUT": "Décochez cette case pour masquer la sortie de ce bloc afin de pouvoir l'utiliser comme instruction. La valeur renvoyée par la fonction sera ignorée.",
       "NONE": "Renvoie None.",

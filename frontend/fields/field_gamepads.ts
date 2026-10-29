@@ -21,6 +21,7 @@
  */
 
 import * as Blockly from 'blockly/core';
+import type { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageProject from '../storage/project';
 import { GamepadType, GamepadTypeUtils } from '../types/GamepadType';
 import { FieldDropdownWithBorderRect } from './FieldDropdown';
@@ -64,7 +65,23 @@ export function createTitleField(): Blockly.Field {
     return new Blockly.FieldLabel(Blockly.Msg['GAMEPAD']);   
 }
 
-export function createPortField(onlyWithRumble: boolean = false): Blockly.FieldDropdown {
+/** An output that only some gamepad types support. */
+export type GamepadOutput = 'rumble' | 'leds';
+
+function supportsOutput(gamepadType: GamepadType, output: GamepadOutput): boolean {
+    switch (output) {
+        case 'rumble':
+            return GamepadTypeUtils.getRumbleConfig(gamepadType) !== null;
+        case 'leds':
+            return GamepadTypeUtils.getLEDConfig(gamepadType) !== null;
+    }
+}
+
+/**
+ * Creates a dropdown of the ports that have gamepads configured. If output is given, only the
+ * ports whose gamepad type supports that output are shown.
+ */
+export function createPortField(output?: GamepadOutput): Blockly.FieldDropdown {
     return new FieldDropdownWithBorderRect(function(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
         const options: Blockly.MenuOption[] = [];
 
@@ -72,7 +89,7 @@ export function createPortField(onlyWithRumble: boolean = false): Blockly.FieldD
         for (let port = MIN_GAMEPAD_PORT; port <= MAX_GAMEPAD_PORT; port++) {
             const gamepadType = GamepadTypeUtils.getGamepad(port, currentGamepadConfig);
             if (gamepadType !== GamepadType.NONE) {
-                if (onlyWithRumble && !GamepadTypeUtils.getRumbleConfig(gamepadType)) {
+                if (output && !supportsOutput(gamepadType, output)) {
                     continue;
                 }
                 const portStr = port.toString();
@@ -825,6 +842,18 @@ export function methodForRumble(gamepad: number, rumble: string, value : number)
     
     return getGamepad(gamepad) + '.setRumble(' +
         (rumbleConfig?.get(rumble)?.rumbleType ?? '') + ', ' + value + ')\n';
+}
+
+export function methodForLeds(
+    generator: ExtendedPythonGenerator, gamepad: number, colorCode: string): string {
+    // set_leds takes red, green, and blue values from 0 to 255, but a wpiutil.Color has values
+    // from 0 to 1. The conversion is done in a helper function so that the color expression is
+    // only evaluated once.
+    const functionName = generator.provideFunction_('set_gamepad_leds', [
+        'def ' + generator.FUNCTION_NAME_PLACEHOLDER_ + '(gamepad, color):',
+        generator.INDENT + 'gamepad.set_leds(int(color.red * 255), int(color.green * 255), int(color.blue * 255))',
+    ]);
+    return functionName + '(' + getGamepad(gamepad) + ', ' + colorCode + ')\n';
 }
 
 // Register field types with Blockly

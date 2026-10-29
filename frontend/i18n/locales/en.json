@@ -403,6 +403,7 @@
       "RUMBLE_LEFT_TRIGGER": "Left Trigger Rumble",
       "RUMBLE_RIGHT_TRIGGER": "Right Trigger Rumble",
       "LEDS": "LEDs",
+      "SET_LEDS": "set LEDs to",
       "IS_DOWN": "is down",
       "PRESSED": "Pressed",
       "RELEASED": "Released",
@@ -411,6 +412,7 @@
       "EVENT_CHANGED": "On Changed"
     },
     "TOOLTIP":{
+      "GAMEPAD_SET_LEDS": "Sets the color of the LEDs on the gamepad. Gamepads with only one LED color use the brightest of red, green, and blue.",
       "EVALUATE_BUT_IGNORE_RESULT": "Executes the connected block and ignores the result.  Allows you to call a function and ignore the return value.",
       "SHOW_OUTPUT": "Uncheck this to hide the output of this block so that it can be used as a statement. The value returned by the function will be ignored.",
       "NONE": "Returns None.",
