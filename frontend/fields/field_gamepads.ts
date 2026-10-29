@@ -47,6 +47,10 @@ export const AXIS_FIELD_NAME = 'GAMEPAD_AXIS';
 export const EVENT_FIELD_NAME = 'GAMEPAD_EVENT';
 export const RUMBLE_FIELD_NAME = 'GAMEPAD_RUMBLE';
 
+/** The python module that must be imported for methodForRumble. */
+export const RUMBLE_MODULE = 'wpilib';
+const RUMBLE_TYPE_ENUM = RUMBLE_MODULE + '.GenericHID.RumbleType';
+
 const ACTION_CONFIG = new Map([
     ['IS_DOWN', { display: () => Blockly.Msg['GAMEPAD_IS_DOWN'], suffix: '' }],
     ['WAS_PRESSED', { display: () => Blockly.Msg['GAMEPAD_PRESSED'], suffix: 'Pressed' }],
@@ -822,9 +826,15 @@ export function methodForRumble(gamepad: number, rumble: string, value : number)
     
     // Get the rumble configuration for this gamepad type
     const rumbleConfig = GamepadTypeUtils.getRumbleConfig(gamepadType);
-    
-    return getGamepad(gamepad) + '.setRumble(' +
-        (rumbleConfig?.get(rumble)?.rumbleType ?? '') + ', ' + value + ')\n';
+    const config = rumbleConfig?.get(rumble);
+
+    // There is no gamepad with rumble on this port (the port field shows '---').
+    if (config === undefined) {
+        return '// This controller has no rumble motors, so this line does nothing.\n';
+    }
+
+    return getGamepad(gamepad) + '.set_rumble(' +
+        RUMBLE_TYPE_ENUM + '.' + config.rumbleType + ', ' + value + ')\n';
 }
 
 // Register field types with Blockly
