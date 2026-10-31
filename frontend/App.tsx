@@ -744,6 +744,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 openLibraries={() => setLibrariesModalIsOpen(true)}
                 libraries={libraries}
                 theme={theme}
+                renderer={renderer}
                 saveCurrentTab={saveCurrentTab}
                 startTour={() => setTourOpen(true)}
               />

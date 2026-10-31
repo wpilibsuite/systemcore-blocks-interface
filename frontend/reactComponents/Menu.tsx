@@ -33,12 +33,14 @@ import {
   QuestionCircleOutlined,
   InfoCircleOutlined,
   AppstoreOutlined,
-  BookOutlined
+  BookOutlined,
+  HistoryOutlined
 } from '@ant-design/icons';
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
 import AboutDialog from './AboutModal';
 import SamplesModal from './SamplesModal';
+import VersionsModal from './VersionsModal';
 
 /** Type definition for menu items. */
 type MenuItem = Required<Antd.MenuProps>['items'][number];
@@ -57,6 +59,7 @@ export interface MenuProps {
   openLibraries: () => void;
   libraries: blocksLib.Library[];
   theme: string;
+  renderer: string;
   saveCurrentTab: () => Promise<void>;
   startTour?: () => void;
 }
@@ -91,6 +94,7 @@ function getItem(
 function getMenuItems(t: (key: string) => string): MenuItem[] {
   return [
     getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
+    getItem(t('VERSIONS.MENU_ITEM') + '...', 'manageVersions', <HistoryOutlined />),
     getItem(t('MECHANISMS') + '...', 'manageMechanisms', TabTypeUtils.getIcon(TabType.MECHANISM)),
     getItem(t('OPMODES') + '...', 'manageOpmodes', TabTypeUtils.getIcon(TabType.OPMODE)),
     getItem(t('LIBRARIES.MENU_ITEM') + '...', 'manageLibraries', <BookOutlined />),
@@ -120,6 +124,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [samplesModalOpen, setSamplesModalOpen] = React.useState<boolean>(false);
+  const [versionsModalOpen, setVersionsModalOpen] = React.useState<boolean>(false);
 
   /** Fetches the list of project names from storage. */
   const fetchListOfProjectNames = async (): Promise<string[]> => {
@@ -215,6 +220,9 @@ export function Component(props: MenuProps): React.JSX.Element {
     } else if (key === 'manageProjects') {
       props.saveCurrentTab();
       setProjectModalOpen(true);
+    } else if (key === 'manageVersions') {
+      props.saveCurrentTab();
+      setVersionsModalOpen(true);
     } else if (key === 'about') {
       setAboutDialogVisible(true);
     } else if (key === 'samples') {
@@ -307,6 +315,16 @@ export function Component(props: MenuProps): React.JSX.Element {
         setAlertErrorMessage={props.setAlertErrorMessage}
         theme={props.theme}
         libraries={props.libraries}
+      />
+      <VersionsModal
+        isOpen={versionsModalOpen}
+        onClose={() => setVersionsModalOpen(false)}
+        storage={props.storage}
+        currentProject={props.currentProject}
+        setCurrentProject={props.setCurrentProject}
+        setAlertErrorMessage={props.setAlertErrorMessage}
+        theme={props.theme}
+        renderer={props.renderer}
       />
     </>
   );
