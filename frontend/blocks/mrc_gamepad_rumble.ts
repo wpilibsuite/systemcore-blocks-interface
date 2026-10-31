@@ -38,7 +38,7 @@ export const setup = function() {
     init: function() {
       this.appendDummyInput()
           .appendField(Gamepad.createTitleField())
-          .appendField(Gamepad.createPortField('rumble'), Gamepad.PORT_FIELD_NAME)
+          .appendField(Gamepad.createPortField(Gamepad.GamepadOutput.RUMBLE), Gamepad.PORT_FIELD_NAME)
           .appendField(Gamepad.createRumbleField(), Gamepad.RUMBLE_FIELD_NAME)
           .appendField(Blockly.Msg.TO)
           .appendField(new Blockly.FieldNumber(1, 0, 1, 0.1), VALUE_FIELD_NAME);

@@ -70,13 +70,16 @@ export function createTitleField(): Blockly.Field {
 }
 
 /** An output that only some gamepad types support. */
-export type GamepadOutput = 'rumble' | 'leds';
+export enum GamepadOutput {
+    RUMBLE,
+    LEDS,
+}
 
 function supportsOutput(gamepadType: GamepadType, output: GamepadOutput): boolean {
     switch (output) {
-        case 'rumble':
+        case GamepadOutput.RUMBLE:
             return GamepadTypeUtils.getRumbleConfig(gamepadType) !== null;
-        case 'leds':
+        case GamepadOutput.LEDS:
             return GamepadTypeUtils.getLEDConfig(gamepadType) !== null;
     }
 }
@@ -93,7 +96,7 @@ export function createPortField(output?: GamepadOutput): Blockly.FieldDropdown {
         for (let port = MIN_GAMEPAD_PORT; port <= MAX_GAMEPAD_PORT; port++) {
             const gamepadType = GamepadTypeUtils.getGamepad(port, currentGamepadConfig);
             if (gamepadType !== GamepadType.NONE) {
-                if (output && !supportsOutput(gamepadType, output)) {
+                if (output !== undefined && !supportsOutput(gamepadType, output)) {
                     continue;
                 }
                 const portStr = port.toString();

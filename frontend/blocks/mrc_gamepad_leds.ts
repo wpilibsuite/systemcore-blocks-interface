@@ -39,7 +39,7 @@ export const setup = function() {
       this.appendValueInput(INPUT_COLOR)
           .setCheck(getAllowedTypesForSetCheck(COLOR_CLASS_NAME))
           .appendField(Gamepad.createTitleField())
-          .appendField(Gamepad.createPortField('leds'), Gamepad.PORT_FIELD_NAME)
+          .appendField(Gamepad.createPortField(Gamepad.GamepadOutput.LEDS), Gamepad.PORT_FIELD_NAME)
           .appendField(Blockly.Msg['GAMEPAD_SET_LEDS']);
       this.setOutput(false);
       this.setPreviousStatement(true, null);
