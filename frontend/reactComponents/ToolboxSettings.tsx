@@ -20,8 +20,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Button, Flex, Modal, Splitter, Tree, Typography } from 'antd';
+import { Flex, Splitter, Tree, Typography } from 'antd';
 import type { TreeDataNode, TreeProps } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import * as toolboxItems from '../toolbox/items';
 import * as robotPyToolbox from '../toolbox/robotpy_toolbox';
@@ -31,15 +32,15 @@ import * as robotPyToolbox from '../toolbox/robotpy_toolbox';
 // as a category in the blockly toolbox. Similarly, the term class refers to a
 // python class that appears as a category in the blockly toolbox.
 
-type ToolboxSettingsModalProps = {
-  isOpen: boolean;
+type ToolboxSettingsProps = {
   shownCategories: Set<string>;
-  onOk: (shownCategories: Set<string>) => void;
-  onCancel: () => void;
+  onShownCategoriesChange: (shownCategories: Set<string>) => void;
 }
 
-const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, shownCategories, onOk, onCancel }) => {
-  const [robotPyCategories, setRobotPyCategories] = useState<toolboxItems.ContentsType[]>([]);
+const ToolboxSettings: React.FC<ToolboxSettingsProps> = ({ shownCategories, onShownCategoriesChange }) => {
+  const { t } = useTranslation();
+  const [robotPyCategories] = useState<toolboxItems.ContentsType[]>(
+      () => robotPyToolbox.getToolboxCategories(null, false));
   const [shownModuleCategories, setShownModuleCategories] = useState<string[]>([]);
   const [moduleTreeData, setModuleTreeData] = useState<TreeDataNode[]>([]);
   const [moduleTreeKeys, setModuleTreeKeys] = useState<React.Key[]>([]);
@@ -51,13 +52,6 @@ const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, sho
   const [classTreeKeys, setClassTreeKeys] = useState<React.Key[]>([]);
   const [classTreeExpandedKeys, setClassTreeExpandedKeys] = useState<React.Key[]>([]);
   const [classTreeCheckedKeys, setClassTreeCheckedKeys] = useState<React.Key[]>([]);
-
-  const afterOpenChange = (open: boolean) => {
-    // When the modal is opened, update the robotPyCategories.
-    if (open) {
-      setRobotPyCategories(robotPyToolbox.getToolboxCategories(null, false));
-    }
-  };
 
   useEffect(() => {
     // When robotPyCategories is set, update the moduleTreeData, moduleTreeKeys,
@@ -139,79 +133,56 @@ const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, sho
     setClassTreeCheckedKeys(checkedKeys);
   }, [classTreeData, shownClassCategories]);
 
-  const addShownModuleCategory = (categoryToAdd: string) => {
-    setShownModuleCategories([...shownModuleCategories, categoryToAdd]);
-  };
-
-  const removeShownModuleCategory = (categoryToRemove: string) => {
-    const newShownModuleCategories = shownModuleCategories.filter((str) => str !== categoryToRemove);
+  const updateShownCategories = (newShownModuleCategories: string[], newShownClassCategories: string[]) => {
     setShownModuleCategories(newShownModuleCategories);
-  };
-
-  const addShownClassCategory = (categoryToAdd: string) => {
-    setShownClassCategories([...shownClassCategories, categoryToAdd]);
-  };
-
-  const removeShownClassCategory = (categoryToRemove: string) => {
-    const newShownClassCategories = shownClassCategories.filter((str) => str !== categoryToRemove);
     setShownClassCategories(newShownClassCategories);
+    onShownCategoriesChange(new Set([...newShownModuleCategories, ...newShownClassCategories]));
   };
 
   const handleModuleTreeChecked: TreeProps['onCheck'] = (a: any, e) => {
+    let newShownModuleCategories = shownModuleCategories;
     if (e.checked) {
       a.checked.forEach((key: any) => {
         if (!moduleTreeCheckedKeys.includes(key)) {
           // This module category should be shown.
-          const moduleName = key as string;
-          addShownModuleCategory(moduleName);
+          newShownModuleCategories = [...newShownModuleCategories, key as string];
         }
       });
     } else {
       moduleTreeCheckedKeys.forEach((key: any) => {
         if (!a.checked.includes(key)) {
           // This module category should be not shown.
-          const moduleName = key as string;
-          removeShownModuleCategory(moduleName);
+          newShownModuleCategories = newShownModuleCategories.filter((str) => str !== key);
         }
       });
     }
+    updateShownCategories(newShownModuleCategories, shownClassCategories);
   };
 
   const handleClassTreeChecked: TreeProps['onCheck'] = (a: any, e) => {
+    let newShownClassCategories = shownClassCategories;
     if (e.checked) {
       a.checked.forEach((key: any) => {
         if (!classTreeCheckedKeys.includes(key)) {
           // This class category should be shown.
-          const className = key as string;
-          addShownClassCategory(className);
+          newShownClassCategories = [...newShownClassCategories, key as string];
         }
       });
     } else {
       classTreeCheckedKeys.forEach((key: any) => {
         if (!a.checked.includes(key)) {
           // This class category should be not shown.
-          const className = key as string;
-          removeShownClassCategory(className);
+          newShownClassCategories = newShownClassCategories.filter((str) => str !== key);
         }
       });
     }
+    updateShownCategories(shownModuleCategories, newShownClassCategories);
   };
 
   const handleModuleTreeSelected: TreeProps['onSelect'] = (a: React.Key[]) => {
     if (a.length === 1) {
       setModuleTreeSelectedKey(a[0]);
     }
-  };
-
-  const handleOkClicked = () => {
-    const shownCategories: Set<string> = new Set();
-    shownModuleCategories.forEach((category) => {
-      shownCategories.add(category);
-    });
-    shownClassCategories.forEach((category) => {
-      shownCategories.add(category);
-    });
-    onOk(shownCategories);
   };
 
   const collectTreeData = (
@@ -271,83 +242,62 @@ const ToolboxSettingsModal: React.FC<ToolboxSettingsModalProps> = ({ isOpen, sho
   };
 
   return (
-    <Modal
-      title="Toolbox Settings"
-      open={isOpen}
-      afterOpenChange={afterOpenChange}
-      onCancel={onCancel}
-      footer={[
-        <Button
-          key="cancel"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>,
-        <Button
-          key="ok"
-          onClick={handleOkClicked}
-        >
-          OK
-        </Button>
-      ]}
+    <Splitter
     >
-      <Splitter
+      <Flex
+        vertical
+        gap="0"
       >
-        <Flex
-          vertical
-          gap="0"
+        <Typography.Paragraph>
+           {t('PYTHON_MODULES')}
+        </Typography.Paragraph>
+        <div
+          style={{
+            height: 300,
+            overflow: 'auto',
+          }}
         >
-          <Typography.Paragraph>
-             Python Modules
-          </Typography.Paragraph>
-          <div
-            style={{
-              height: 300,
-              overflow: 'auto',
-            }}
-          >
-            <Tree
-              blockNode
-              checkable
-              checkStrictly
-              expandedKeys={moduleTreeExpandedKeys}
-              onExpand={setModuleTreeExpandedKeys}
-              checkedKeys={moduleTreeCheckedKeys}
-              onCheck={handleModuleTreeChecked}
-              selectedKeys={[moduleTreeSelectedKey]}
-              onSelect={handleModuleTreeSelected}
-              treeData={moduleTreeData}
-            />
-          </div>
-        </Flex>
-        <Flex
-          vertical
-          gap="0"
+          <Tree
+            blockNode
+            checkable
+            checkStrictly
+            expandedKeys={moduleTreeExpandedKeys}
+            onExpand={setModuleTreeExpandedKeys}
+            checkedKeys={moduleTreeCheckedKeys}
+            onCheck={handleModuleTreeChecked}
+            selectedKeys={[moduleTreeSelectedKey]}
+            onSelect={handleModuleTreeSelected}
+            treeData={moduleTreeData}
+          />
+        </div>
+      </Flex>
+      <Flex
+        vertical
+        gap="0"
+      >
+        <Typography.Paragraph>
+           {t('PYTHON_CLASSES')}
+        </Typography.Paragraph>
+        <div
+          style={{
+            height: 300,
+            overflow: 'auto',
+          }}
         >
-          <Typography.Paragraph>
-             Python Classes
-          </Typography.Paragraph>
-          <div
-            style={{
-              height: 300,
-              overflow: 'auto',
-            }}
-          >
-            <Tree
-              blockNode
-              checkable
-              checkStrictly
-              expandedKeys={classTreeExpandedKeys}
-              onExpand={setClassTreeExpandedKeys}
-              checkedKeys={classTreeCheckedKeys}
-              onCheck={handleClassTreeChecked}
-              treeData={classTreeData}
-            />
-          </div>
-        </Flex>
-      </Splitter>
-    </Modal>
+          <Tree
+            blockNode
+            checkable
+            checkStrictly
+            expandedKeys={classTreeExpandedKeys}
+            onExpand={setClassTreeExpandedKeys}
+            checkedKeys={classTreeCheckedKeys}
+            onCheck={handleClassTreeChecked}
+            treeData={classTreeData}
+          />
+        </div>
+      </Flex>
+    </Splitter>
   );
 };
 
-export default ToolboxSettingsModal;
+export default ToolboxSettings;
