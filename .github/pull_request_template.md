@@ -12,6 +12,10 @@
 - [ ] Documentation update
 - [ ] Code style/formatting updates
 - [ ] Refactoring / Renaming
+- [ ] UI change
+- [ ] Blocks style change
+- [ ] Blocks theme change
+- [ ] Python tools
 - [ ] Other <!-- Make sure that it isn't one of the above -->
 
 ## How Has This Been Tested?
@@ -20,10 +24,13 @@
 2. Click on '...'
 3. See error/success '...'
 
+## Screenshots (if applicable)
+<!-- Make sure for UI changes, Blocks style changes, or Blocks theme changes that you have a screenshot --> 
+
 ## Checklist
 <!-- Review the options below and check off what has been completed. -->
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my own code
 - [ ] I have made corresponding changes to the documentation
 - [ ] My changes generate no new warnings
-- [ ] I have run through the [docs/testing_before_pr_checklist.md]
+- [ ] I have run through the [docs/testing_before_pr_checklist.md](https://github.com/wpilibsuite/systemcore-blocks-interface/blob/main/docs/testing_before_pr_checklist.md)
