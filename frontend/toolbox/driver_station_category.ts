@@ -9,6 +9,7 @@ import { CLASS_NAME_DRIVER_STATION_DISPLAY, getClassData } from '../blocks/utils
 import { BLOCK_NAME as MRC_GAMEPAD_BOOLEAN  } from '../blocks/mrc_gamepad_boolean';
 import { BLOCK_NAME as MRC_GAMEPAD_ANALOG  } from '../blocks/mrc_gamepad_analog';
 import { BLOCK_NAME as MRC_GAMEPAD_RUMBLE  } from '../blocks/mrc_gamepad_rumble';
+import { BLOCK_NAME as MRC_GAMEPAD_LEDS, INPUT_COLOR as MRC_GAMEPAD_LEDS_INPUT_COLOR } from '../blocks/mrc_gamepad_leds';
 import { BLOCK_NAME as MRC_WHEN, INPUT_BOOL as MRC_WHEN_INPUT_BOOL } from '../blocks/mrc_when';
 import * as Gamepad from '../fields/field_gamepads';
 
@@ -60,23 +61,30 @@ function plugDefaultColorBlocks(blocks: toolboxItems.ContentsType[], showSimpleC
         }
         const colorArgIndex = args.findIndex(arg => arg.type === 'wpiutil.Color');
         if (colorArgIndex !== -1) {
-            // Plug in a real (non-shadow) wpiutil.Color.WHITE class variable getter, so
-            // users can just change the color using the dropdown rather than needing to
-            // find and attach the block themselves.
-            const classData = getClassData('wpiutil.Color');
-            if (classData) {
-                const varData = classData.classVariables.find((v) => v.name === 'WHITE');
-                if (varData) {
-                    block.inputs['ARG' + colorArgIndex] = {
-                    block: createClassVariableGetterBlock(classData, varData, showSimpleClassNames),
-                    };
-                }
+            // Plug in a real (non-shadow) block.
+            const colorBlock = createWhiteColorBlock(showSimpleClassNames);
+            if (colorBlock) {
+                block.inputs['ARG' + colorArgIndex] = { block: colorBlock };
             }
         }
     });
 }
 
-function getDriverStationGamepadsCategory(_editor: Editor): toolboxItems.Category {
+// Creates a wpiutil.Color.WHITE class variable getter, to plug into color inputs, so users can
+// just change the color using the dropdown rather than needing to find and attach the block
+// themselves.
+function createWhiteColorBlock(showSimpleClassNames: boolean): toolboxItems.Block | null {
+    const classData = getClassData('wpiutil.Color');
+    if (classData) {
+        const varData = classData.classVariables.find((v) => v.name === 'WHITE');
+        if (varData) {
+            return createClassVariableGetterBlock(classData, varData, showSimpleClassNames);
+        }
+    }
+    return null;
+}
+
+function getDriverStationGamepadsCategory(editor: Editor): toolboxItems.Category {
     return new toolboxItems.Category(
               Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_GAMEPADS'],
               [
@@ -88,12 +96,24 @@ function getDriverStationGamepadsCategory(_editor: Editor): toolboxItems.Categor
                 new toolboxItems.Block(MRC_GAMEPAD_BOOLEAN, null, null, null),
                 new toolboxItems.Block(MRC_GAMEPAD_ANALOG, null, null, null),
                 new toolboxItems.Block(MRC_GAMEPAD_RUMBLE, null, null, null),
+                createGamepadLedsBlock(editor.getShowSimpleClassNames()),
                 createSampleWhenGamepadButtonBlock(),
                 // TODO: Add events back here when we figure out how the code will be generated
                 //new toolboxItems.Label("Events"),
                 //new toolboxItems.Block(MRC_GAMEPAD_BOOLEAN_EVENT, null, null, null),
               ],
               toolboxItems.ExpandedState.EXPANDED);
+}
+
+// Creates a gamepad LEDs block, with a wpiutil.Color.WHITE getter as the shadow block of its
+// color input, so the input always has a color. Users can change the color using the dropdown.
+function createGamepadLedsBlock(showSimpleClassNames: boolean): toolboxItems.Block {
+    const inputs: {[key: string]: any} = {};
+    const colorBlock = createWhiteColorBlock(showSimpleClassNames);
+    if (colorBlock) {
+        inputs[MRC_GAMEPAD_LEDS_INPUT_COLOR] = { shadow: colorBlock };
+    }
+    return new toolboxItems.Block(MRC_GAMEPAD_LEDS, null, null, inputs);
 }
 
 // Creates a sample "when" block, with a shadow block for "Gamepad 0 A is down" plugged
