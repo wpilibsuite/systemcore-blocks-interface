@@ -322,6 +322,8 @@
     "DEPLOY_DESC": "Envoie votre code Python généré directement au robot.",
     "PROJECTS_TITLE": "Projets",
     "PROJECTS_DESC": "Créez, renommez, copiez ou supprimez des projets, ou ouvrez un autre projet.",
+    "VERSIONS_TITLE": "Versions",
+    "VERSIONS_DESC": "Enregistrez des versions de votre projet pour pouvoir les comparer ou y revenir plus tard.",
     "MECHANISMS_TITLE": "Mécanismes",
     "MECHANISMS_DESC": "Créez, renommez, copiez ou supprimez les mécanismes de ce projet.",
     "OPMODES_TITLE": "OpModes",

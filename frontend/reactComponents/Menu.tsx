@@ -40,7 +40,6 @@ import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
 import AboutDialog from './AboutModal';
 import SamplesModal from './SamplesModal';
-import RendererModal from './RendererModal';
 import VersionsModal from './VersionsModal';
 
 /** Type definition for menu items. */
@@ -60,6 +59,7 @@ export interface MenuProps {
   openLibraries: () => void;
   libraries: blocksLib.Library[];
   theme: string;
+  renderer: string;
   saveCurrentTab: () => Promise<void>;
   startTour?: () => void;
 }
@@ -124,18 +124,7 @@ export function Component(props: MenuProps): React.JSX.Element {
   const [noProjects, setNoProjects] = React.useState<boolean>(false);
   const [aboutDialogVisible, setAboutDialogVisible] = React.useState<boolean>(false);
   const [samplesModalOpen, setSamplesModalOpen] = React.useState<boolean>(false);
-  const [themeModalOpen, setThemeModalOpen] = React.useState<boolean>(false);
-  const [rendererModalOpen, setRendererModalOpen] = React.useState<boolean>(false);
-  const [languageModalOpen, setLanguageModalOpen] = React.useState<boolean>(false);
   const [versionsModalOpen, setVersionsModalOpen] = React.useState<boolean>(false);
-
-  const handleThemeChange = (newTheme: string) => {
-    props.setTheme(newTheme);
-  };
-
-  const handleRendererChange = (newRenderer: string) => {
-    props.setRenderer(newRenderer);
-  };
 
   /** Fetches the list of project names from storage. */
   const fetchListOfProjectNames = async (): Promise<string[]> => {
@@ -337,24 +326,6 @@ export function Component(props: MenuProps): React.JSX.Element {
         theme={props.theme}
         renderer={props.renderer}
       />
-      <ThemeModal
-          open={themeModalOpen}
-          onClose={() => setThemeModalOpen(false)}
-          currentTheme={props.theme}
-          currentRenderer={props.renderer}
-          onThemeChange={handleThemeChange}
-        />
-      <RendererModal
-          open={rendererModalOpen}
-          onClose={() => setRendererModalOpen(false)}
-          currentRenderer={props.renderer}
-          currentTheme={props.theme}
-          onRendererChange={handleRendererChange}
-        />
-      <LanguageModal
-          open={languageModalOpen}
-          onClose={() => setLanguageModalOpen(false)}
-        />
     </>
   );
 }
