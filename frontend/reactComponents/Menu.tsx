@@ -32,11 +32,6 @@ import {
   FolderOutlined,
   QuestionCircleOutlined,
   InfoCircleOutlined,
-  BgColorsOutlined,
-  BuildOutlined,
-  GlobalOutlined,
-  CheckOutlined,
-  ControlOutlined,
   AppstoreOutlined,
   BookOutlined,
   HistoryOutlined
@@ -44,8 +39,6 @@ import {
 import FileManageModal from './FileManageModal';
 import ProjectManageModal from './ProjectManageModal';
 import AboutDialog from './AboutModal';
-import ThemeModal from './ThemeModal';
-import LanguageModal from './LanguageModal';
 import SamplesModal from './SamplesModal';
 import RendererModal from './RendererModal';
 import VersionsModal from './VersionsModal';
@@ -63,15 +56,10 @@ export interface MenuProps {
   setCurrentProject: (project: storageProject.Project | null) => void;
   switchToProjectAndSelectTab: (project: storageProject.Project, tabKey: string) => void;
   onProjectChanged: () => Promise<void>;
-  openWPIToolboxSettings: () => void;
+  openSettings: () => void;
   openLibraries: () => void;
   libraries: blocksLib.Library[];
   theme: string;
-  setTheme: (theme: string) => void;
-  renderer: string;
-  setRenderer: (renderer: string) => void;
-  showSimpleClassNames: boolean;
-  setShowSimpleClassNames: (show: boolean) => void;
   saveCurrentTab: () => Promise<void>;
   startTour?: () => void;
 }
@@ -103,28 +91,15 @@ function getItem(
 /**
  * Generates menu items for a given project.
  */
-function getMenuItems(
-    t: (key: string) => string,
-    showSimpleClassNames: boolean): MenuItem[] {
+function getMenuItems(t: (key: string) => string): MenuItem[] {
   return [
-    getItem(t('MANAGE'), 'manage', <ControlOutlined />, [
-      getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
-      getItem(t('VERSIONS.MENU_ITEM') + '...', 'manageVersions', <HistoryOutlined />),
-      getItem(t('MECHANISMS') + '...', 'manageMechanisms', TabTypeUtils.getIcon(TabType.MECHANISM)),
-      getItem(t('OPMODES') + '...', 'manageOpmodes', TabTypeUtils.getIcon(TabType.OPMODE)),
-      getItem(t('LIBRARIES.MENU_ITEM') + '...', 'manageLibraries', <BookOutlined />),
-    ]),
-    getItem(t('SETTINGS'), 'settings', <SettingOutlined />, [
-      getItem(t('WPI_TOOLBOX'), 'wpi_toolbox'),
-        getItem(
-          t('SHOW_SIMPLE_CLASS_NAMES'),
-          'toggle_show_simple_classNames',
-          showSimpleClassNames ? <CheckOutlined /> : undefined
-        ),
-      getItem(t('THEME') + '...', 'theme', <BgColorsOutlined />),
-      getItem(t('STYLE') + '...', 'renderer', <BuildOutlined />),
-      getItem(t('LANGUAGE') + '...', 'language', <GlobalOutlined />),
-    ]),
+    getItem(t('PROJECTS') + '...', 'manageProjects', <FolderOutlined />),
+    getItem(t('VERSIONS.MENU_ITEM') + '...', 'manageVersions', <HistoryOutlined />),
+    getItem(t('MECHANISMS') + '...', 'manageMechanisms', TabTypeUtils.getIcon(TabType.MECHANISM)),
+    getItem(t('OPMODES') + '...', 'manageOpmodes', TabTypeUtils.getIcon(TabType.OPMODE)),
+    getItem(t('LIBRARIES.MENU_ITEM') + '...', 'manageLibraries', <BookOutlined />),
+    {type: 'divider'},
+    getItem(t('SETTINGS') + '...', 'settings', <SettingOutlined />),
     getItem(t('SAMPLES.MENU_ITEM') + '...', 'samples', <AppstoreOutlined />),
     getItem(t('HELP'), 'help', <QuestionCircleOutlined />, [
       getItem(t('TOUR.MENU_ITEM') + '...', 'tour', <QuestionCircleOutlined />),
@@ -267,16 +242,8 @@ export function Component(props: MenuProps): React.JSX.Element {
       props.startTour?.();
     } else if (key === 'manageLibraries') {
       props.openLibraries();
-    } else if (key === 'wpi_toolbox'){
-      props.openWPIToolboxSettings();
-    } else if (key === 'toggle_show_simple_classNames'){
-      props.setShowSimpleClassNames(!props.showSimpleClassNames)
-    } else if (key === 'theme') {
-      setThemeModalOpen(true);
-    } else if (key === 'renderer') {
-      setRendererModalOpen(true);
-    } else if (key === 'language') {
-      setLanguageModalOpen(true);
+    } else if (key === 'settings') {
+      props.openSettings();
     } else {
       // TODO: Handle other menu actions
 
@@ -307,14 +274,14 @@ export function Component(props: MenuProps): React.JSX.Element {
     fetchMostRecentProject();
   }, [projectNames]);
 
-  // Update menu items and save project when project, language, or showSimpleClassNames changes
+  // Update menu items and save project when project or language changes
   React.useEffect(() => {
     if (props.currentProject) {
       setMostRecentProject();
-      setMenuItems(getMenuItems(t, props.showSimpleClassNames));
+      setMenuItems(getMenuItems(t));
       setNoProjects(false);
     }
-  }, [props.currentProject, i18n.language, props.showSimpleClassNames]);
+  }, [props.currentProject, i18n.language]);
 
   return (
     <>

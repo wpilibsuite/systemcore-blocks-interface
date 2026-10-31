@@ -25,11 +25,13 @@
  */
 
 import * as Blockly from 'blockly/core';
-import { PythonGenerator } from 'blockly/python';
 import { MRC_STYLE_DRIVER_STATION } from '../themes/styles';
 import * as Gamepad from '../fields/field_gamepads';
+import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 
 export const BLOCK_NAME = 'mrc_gamepad_rumble';
+
+const VALUE_FIELD_NAME = 'VALUE';
 
 export const setup = function() {
   Blockly.Blocks[BLOCK_NAME] = {
@@ -39,7 +41,7 @@ export const setup = function() {
           .appendField(Gamepad.createPortField(true), Gamepad.PORT_FIELD_NAME)
           .appendField(Gamepad.createRumbleField(), Gamepad.RUMBLE_FIELD_NAME)
           .appendField(Blockly.Msg.TO)
-          .appendField(new Blockly.FieldNumber(1, 0, 1, 0.1), Blockly.Msg.VALUE);
+          .appendField(new Blockly.FieldNumber(1, 0, 1, 0.1), VALUE_FIELD_NAME);
       this.setOutput(false);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -50,12 +52,14 @@ export const setup = function() {
 
 export const pythonFromBlock = function(
     block: Blockly.Block,
-    _: PythonGenerator,
+    generator: ExtendedPythonGenerator,
 ) {
-  let result = Gamepad.methodForRumble(
+  const code = Gamepad.methodForRumble(
     block.getFieldValue(Gamepad.PORT_FIELD_NAME),
-    block.getFieldValue(Gamepad.RUMBLE_FIELD_NAME), 
-    block.getFieldValue(Blockly.Msg.VALUE));
-  
-  return result;
+    block.getFieldValue(Gamepad.RUMBLE_FIELD_NAME),
+    block.getFieldValue(VALUE_FIELD_NAME));
+  if (code) {
+    generator.importModule(Gamepad.RUMBLE_MODULE);
+  }
+  return code;
 }

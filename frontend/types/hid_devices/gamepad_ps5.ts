@@ -18,6 +18,7 @@
 /**
  * @author alan@porpoiseful.com (Alan Smith)
  */
+import * as Generic from './gamepad_generic';
 import * as PS4 from './gamepad_ps4';
 
 /** Returns the button configuration for PS5 gamepad. */
@@ -30,9 +31,9 @@ export function getAxisConfig() {
     return PS4.getAxisConfig();
 }
 
-/** Returns the axis configuration for PS5 gamepad. */
+/** Returns the rumble configuration for PS5 gamepad. */
 export function getRumbleConfig() {
-    return PS4.getRumbleConfig();
+    return Generic.getRumbleConfig();  // unlike the PS4, the PS5 has trigger rumble
 }
 
 /** Returns the LED configuration for PS5 gamepad. */

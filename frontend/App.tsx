@@ -26,7 +26,7 @@ import { pythonGenerator } from 'blockly/python';
 import Header from './reactComponents/Header';
 import * as Menu from './reactComponents/Menu';
 import SiderCollapseTrigger from './reactComponents/SiderCollapseTrigger';
-import ToolboxSettingsModal from './reactComponents/ToolboxSettings';
+import SettingsModal from './reactComponents/SettingsModal';
 import LibrariesModal from './reactComponents/LibrariesModal';
 import ConfigGamepadsDialog from './reactComponents/ConfigGamepadsDialog';
 import { GamepadTypeUtils } from './types/GamepadType';
@@ -52,7 +52,7 @@ import * as libraryStorage from './libraries/library_storage';
 import { getLibraryToolbox } from './toolbox/library_toolbox';
 
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
-import { antdThemeFromString } from './reactComponents/ThemeModal';
+import { antdThemeFromString } from './reactComponents/ThemeSettings';
 import { useTranslation } from 'react-i18next';
 import {
   UserSettingsProvider,
@@ -162,7 +162,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
 
   const [alertErrorMessage, setAlertErrorMessage] = React.useState('');
   const [messageApi, contextHolder] = Antd.message.useMessage();
-  const [toolboxSettingsModalIsOpen, setToolboxSettingsModalIsOpen] = React.useState(false);
+  const [settingsModalIsOpen, setSettingsModalIsOpen] = React.useState(false);
   const [librariesModalIsOpen, setLibrariesModalIsOpen] = React.useState(false);
   const [libraries, setLibraries] = React.useState<blocksLib.Library[]>([]);
   const [librariesLoaded, setLibrariesLoaded] = React.useState(false);
@@ -333,8 +333,8 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     }
   };
 
-  /** Handles toolbox settings modal confirmation. */
-  const handleToolboxSettingsOk = async (updatedShownCategories: Set<string>): Promise<void> => {
+  /** Updates and saves the shown Python toolbox categories. */
+  const handleShownPythonToolboxCategoriesChange = async (updatedShownCategories: Set<string>): Promise<void> => {
     if (!storage) {
       return;
     }
@@ -345,17 +345,6 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
     await userSettings.updateUserSettings(storage, settings => {
       settings.shownPythonToolboxCategories = array;
     });
-  };
-
-  /** Handles toolbox settings modal close. */
-  const handleToolboxSettingsCancel = (): void => {
-    setToolboxSettingsModalIsOpen(false);
-  };
-
-  /** Handles toolbox settings modal OK with updated categories. */
-  const handleToolboxSettingsConfirm = (updatedShownCategories: Set<string>): void => {
-    setToolboxSettingsModalIsOpen(false);
-    handleToolboxSettingsOk(updatedShownCategories);
   };
 
   const librariesStorage = React.useMemo(
@@ -751,15 +740,10 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
                 setCurrentProject={setProject}
                 switchToProjectAndSelectTab={switchToProjectAndSelectTab}
                 onProjectChanged={onProjectChanged}
-                openWPIToolboxSettings={() => setToolboxSettingsModalIsOpen(true)}
+                openSettings={() => setSettingsModalIsOpen(true)}
                 openLibraries={() => setLibrariesModalIsOpen(true)}
                 libraries={libraries}
                 theme={theme}
-                setTheme={setTheme}
-                renderer={renderer}
-                setRenderer={setRenderer}
-                showSimpleClassNames={showSimpleClassNames}
-                setShowSimpleClassNames={setShowSimpleClassNames}
                 saveCurrentTab={saveCurrentTab}
                 startTour={() => setTourOpen(true)}
               />
@@ -794,11 +778,17 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
           </Antd.Layout>
         </Antd.Layout>
 
-        <ToolboxSettingsModal
-          isOpen={toolboxSettingsModalIsOpen}
-          shownCategories={shownPythonToolboxCategories}
-          onOk={handleToolboxSettingsConfirm}
-          onCancel={handleToolboxSettingsCancel}
+        <SettingsModal
+          isOpen={settingsModalIsOpen}
+          onClose={() => setSettingsModalIsOpen(false)}
+          theme={theme}
+          onThemeChange={setTheme}
+          renderer={renderer}
+          onRendererChange={setRenderer}
+          showSimpleClassNames={showSimpleClassNames}
+          onShowSimpleClassNamesChange={setShowSimpleClassNames}
+          shownPythonToolboxCategories={shownPythonToolboxCategories}
+          onShownPythonToolboxCategoriesChange={handleShownPythonToolboxCategoriesChange}
         />
 
         <LibrariesModal
