@@ -58,8 +58,20 @@ export const pythonFromBlock = function(
   if (!colorCode) {
     colorCode = generator.importModuleDotClass(COLOR_CLASS_NAME) + '.WHITE';
   }
-  return Gamepad.methodForLeds(
+  return methodForLeds(
     generator,
     block.getFieldValue(Gamepad.PORT_FIELD_NAME),
     colorCode);
+}
+
+function methodForLeds(
+    generator: ExtendedPythonGenerator, gamepad: number, colorCode: string): string {
+  // set_leds takes red, green, and blue values from 0 to 255, but a wpiutil.Color has values
+  // from 0 to 1. The conversion is done in a helper function so that the color expression is
+  // only evaluated once.
+  const functionName = generator.provideFunction_('set_gamepad_leds', [
+    'def ' + generator.FUNCTION_NAME_PLACEHOLDER_ + '(gamepad, color):',
+    generator.INDENT + 'gamepad.set_leds(int(color.red * 255), int(color.green * 255), int(color.blue * 255))',
+  ]);
+  return functionName + '(' + Gamepad.getPythonForGamepad(gamepad) + ', ' + colorCode + ')\n';
 }

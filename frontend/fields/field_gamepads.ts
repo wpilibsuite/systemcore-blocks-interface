@@ -21,7 +21,6 @@
  */
 
 import * as Blockly from 'blockly/core';
-import type { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageProject from '../storage/project';
 import { GamepadType, GamepadTypeUtils } from '../types/GamepadType';
 import { FieldDropdownWithBorderRect } from './FieldDropdown';
@@ -48,14 +47,17 @@ export const AXIS_FIELD_NAME = 'GAMEPAD_AXIS';
 export const EVENT_FIELD_NAME = 'GAMEPAD_EVENT';
 export const RUMBLE_FIELD_NAME = 'GAMEPAD_RUMBLE';
 
-/** The python module that must be imported for methodForRumble. */
-export const RUMBLE_MODULE = 'wpilib';
-const RUMBLE_TYPE_ENUM = RUMBLE_MODULE + '.GenericHID.RumbleType';
+/** The values of the action field. These are saved in the blocks, so they must not change. */
+export enum GamepadAction {
+    IS_DOWN = 'IS_DOWN',
+    WAS_PRESSED = 'WAS_PRESSED',
+    WAS_RELEASED = 'WAS_RELEASED',
+}
 
 const ACTION_CONFIG = new Map([
-    ['IS_DOWN', { display: () => Blockly.Msg['GAMEPAD_IS_DOWN'], suffix: '' }],
-    ['WAS_PRESSED', { display: () => Blockly.Msg['GAMEPAD_PRESSED'], suffix: 'Pressed' }],
-    ['WAS_RELEASED', { display: () => Blockly.Msg['GAMEPAD_RELEASED'], suffix: 'Released' }]
+    [GamepadAction.IS_DOWN, { display: () => Blockly.Msg['GAMEPAD_IS_DOWN'] }],
+    [GamepadAction.WAS_PRESSED, { display: () => Blockly.Msg['GAMEPAD_PRESSED'] }],
+    [GamepadAction.WAS_RELEASED, { display: () => Blockly.Msg['GAMEPAD_RELEASED'] }]
 ]);
 
 const EVENT_CONFIG = new Map([
@@ -808,65 +810,16 @@ export function createEventField(): Blockly.Field {
     )
 }
 
-function getGamepad(gamepad: number): string {
+/** Returns the type of the gamepad configured on the given port. */
+export function getGamepadType(gamepad: number): GamepadType {
+    return GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
+}
+
+/** Returns the python code for the gamepad on the given port. */
+export function getPythonForGamepad(gamepad: number): string {
     // TODO: When user_controls are implemented in RobotPy, adjust the following line as necesssary,
     // but for now we need it to access the gamepads from the robot.
     return 'self.robot.user_controls.get_gamepad(' + gamepad + ')';
-}
-
-export function methodForButton(gamepad: number, button: string, action: string): string {
-    const gamepadType = GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
-    
-    // Get the button configuration for this gamepad type
-    const buttonConfig = GamepadTypeUtils.getButtonConfig(gamepadType);
-    const config = buttonConfig?.get(button);
-    const suffix = ACTION_CONFIG.get(action);
-
-    if (config === undefined || suffix === undefined) {
-        return '';
-    }
-
-    return getGamepad(gamepad) + '.' +
-        config.method +
-        suffix.suffix + '()';
-}
-
-export function methodForAxis(gamepad: number, axis: string): string {
-    const gamepadType = GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
-    
-    // Get the axis configuration for this gamepad type
-    const axisConfig = GamepadTypeUtils.getAxisConfig(gamepadType);
-    
-    return getGamepad(gamepad) + '.' +
-        (axisConfig?.get(axis)?.method ?? '') + '()';
-}
-
-export function methodForRumble(gamepad: number, rumble: string, value : number): string {
-    const gamepadType = GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
-    
-    // Get the rumble configuration for this gamepad type
-    const rumbleConfig = GamepadTypeUtils.getRumbleConfig(gamepadType);
-    const config = rumbleConfig?.get(rumble);
-
-    // There is no gamepad with rumble on this port (the port field shows '---').
-    if (config === undefined) {
-        return '// This controller has no rumble motors, so this line does nothing.\n';
-    }
-
-    return getGamepad(gamepad) + '.set_rumble(' +
-        RUMBLE_TYPE_ENUM + '.' + config.rumbleType + ', ' + value + ')\n';
-}
-
-export function methodForLeds(
-    generator: ExtendedPythonGenerator, gamepad: number, colorCode: string): string {
-    // set_leds takes red, green, and blue values from 0 to 255, but a wpiutil.Color has values
-    // from 0 to 1. The conversion is done in a helper function so that the color expression is
-    // only evaluated once.
-    const functionName = generator.provideFunction_('set_gamepad_leds', [
-        'def ' + generator.FUNCTION_NAME_PLACEHOLDER_ + '(gamepad, color):',
-        generator.INDENT + 'gamepad.set_leds(int(color.red * 255), int(color.green * 255), int(color.blue * 255))',
-    ]);
-    return functionName + '(' + getGamepad(gamepad) + ', ' + colorCode + ')\n';
 }
 
 // Register field types with Blockly
