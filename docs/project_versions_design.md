@@ -6,10 +6,9 @@ there is no easy way to see the visual difference between the changes.
 Also, making a full copy of the projects leads to bloat of repeated pieces that haven't changed.
 
 # Proposed Solution
-* Under the projects there is a /versions/versionId that would have its own
-'version.info.json' which would have the description, the save date, and what files are in it.
+* Under the projects there is a /versions/versionId.json file which would have the description, the save date, and what files are in it.
 * Under the projects there is a /versions/objects that have each module with its SHA256 hash
-    * Each object is named `<sha256>` (with no extension), and `version.info.json` has `files` (file name → hash) and `complete`
+    * Each object is named `<sha256>` (with no extension), and `versionId.json` has `files` (file name → hash) and `complete`
     * The hash uses `@noble/hashes`, because the browser's `crypto.subtle` only works in secure
     contexts and the robot is served over http
 * Stored versions and objects are never changed.  A version saved with an older project format is upgraded in memory when it is compared or restored.
@@ -17,14 +16,14 @@ Also, making a full copy of the projects leads to bloat of repeated pieces that 
 # Saving and cleaning up
 There is no locking between students using the same robot, so the order of the steps matters.
 * Creating a version:
-    1. Save `version.info.json` with `complete: false`
+    1. Save `versionId.json` with `complete: false`
     2. Save the objects that aren't already stored
     3. Check again, and save any that were deleted in the meantime
-    4. Save `version.info.json` with `complete: true`
+    4. Save `versionId.json` with `complete: true`
 * Versions that aren't complete aren't listed.  If one is still incomplete an hour after it was
 created (for example, the browser was closed while saving), it is deleted.
-* Deleting a version deletes its `version.info.json` and then garbage collects: it lists the
-objects *first*, then reads every `version.info.json` (including incomplete ones), and deletes the listed objects that none of them use.  Since a version's `version.info.json` is saved before its objects, an object that is listed always belongs to a `version.info.json` that is read.
+* Deleting a version deletes its `versionId.json` and then garbage collects: it lists the
+objects *first*, then reads every `versionId.json` (including incomplete ones), and deletes the listed objects that none of them use.  Since a version's `versionId.json` is saved before its objects, an object that is listed always belongs to a `versionId.json` that is read.
 
 # Restores
 * Before restoring: restoring into the current project first saves the current state as a "Before restoring …" version, so a restore can always be undone.

@@ -46,7 +46,10 @@ export type VersionInfo = {
   createdAt: string, // ISO 8601
 };
 
-/** The contents of a version's info file. */
+/**
+ * The contents of a version's info file, plus its versionId, which is the file's name and isn't
+ * saved in it.
+ */
 type VersionManifest = VersionInfo & {
   files: {[fileName: string]: string}, // the hash of each file's content
   // False while the version's objects are being saved. Incomplete versions aren't listed.
@@ -88,10 +91,11 @@ async function fetchAllManifests(
   const names = await storage.list(storageNames.makeVersionsDirectoryPath(projectName));
   const manifests: VersionManifest[] = [];
   for (const name of names) {
-    if (!name.endsWith('/') || name === storageNames.VERSION_OBJECTS_DIRECTORY_NAME + '/') {
+    // Skip the objects directory.
+    if (!name.endsWith(storageNames.VERSION_INFO_FILE_EXTENSION)) {
       continue;
     }
-    const versionId = name.slice(0, name.length - 1);
+    const versionId = name.slice(0, name.length - storageNames.VERSION_INFO_FILE_EXTENSION.length);
     try {
       manifests.push(await fetchManifest(storage, projectName, versionId));
     } catch (e) {
@@ -104,8 +108,8 @@ async function fetchAllManifests(
 async function fetchManifest(
     storage: commonStorage.Storage, projectName: string,
     versionId: string): Promise<VersionManifest> {
-  const text = await storage.fetchFileContentText(storageNames.makeVersionFilePath(
-      projectName, versionId, storageNames.VERSION_INFO_FILE_NAME));
+  const text = await storage.fetchFileContentText(
+      storageNames.makeVersionInfoPath(projectName, versionId));
   const parsed = JSON.parse(text);
   if (!parsed.files || typeof parsed.files !== 'object') {
     throw new Error('Version ' + versionId + ' does not list its files.');
@@ -121,10 +125,10 @@ async function fetchManifest(
 
 async function saveManifest(
     storage: commonStorage.Storage, projectName: string, manifest: VersionManifest): Promise<void> {
+  const {versionId, ...content} = manifest;
   await storage.saveFile(
-      storageNames.makeVersionFilePath(
-          projectName, manifest.versionId, storageNames.VERSION_INFO_FILE_NAME),
-      JSON.stringify(manifest, null, 2));
+      storageNames.makeVersionInfoPath(projectName, versionId),
+      JSON.stringify(content, null, 2));
 }
 
 /** Returns the hashes of the objects that are stored for the given project's versions. */
@@ -148,8 +152,7 @@ export function hashContent(text: string): string {
  * base 36 (8 digits from 1972 until 2059) followed by 8 random base 36 digits, so two versions
  * only collide if they are created in the same millisecond and get the same random digits. It is
  * used in file paths (and URLs, with a backend), so it only has lowercase letters and digits,
- * unlike Blockly's ids. Since it is a fixed 16 characters long, we don't have to worry about
- * collisions with 'objects' (where the contents of the versions are stored).
+ * unlike Blockly's ids. 
  */
 function makeVersionId(): string {
   return Date.now().toString(36) +
@@ -219,7 +222,7 @@ export async function updateVersionDescription(
  */
 export async function deleteVersion(
     storage: commonStorage.Storage, projectName: string, versionId: string): Promise<void> {
-  await storage.delete(storageNames.makeVersionDirectoryPath(projectName, versionId));
+  await storage.delete(storageNames.makeVersionInfoPath(projectName, versionId));
   await collectGarbage(storage, projectName);
 }
 
@@ -237,7 +240,7 @@ async function collectGarbage(
   for (const manifest of await fetchAllManifests(storage, projectName)) {
     if (!manifest.complete &&
         now - new Date(manifest.createdAt).getTime() > ABANDONED_VERSION_AGE_MS) {
-      await storage.delete(storageNames.makeVersionDirectoryPath(projectName, manifest.versionId));
+      await storage.delete(storageNames.makeVersionInfoPath(projectName, manifest.versionId));
       continue;
     }
     Object.values(manifest.files).forEach(hash => usedHashes.add(hash));

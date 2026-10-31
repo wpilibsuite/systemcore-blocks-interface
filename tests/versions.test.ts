@@ -356,8 +356,7 @@ describe('versions', () => {
     const other = await storageVersions.createVersion(storage, 'MyRobot', 'other');
     await changeRobot(storage, 1);
     const incomplete = await storageVersions.createVersion(storage, 'MyRobot', 'incomplete');
-    const manifestPath = storageNames.makeVersionFilePath(
-        'MyRobot', incomplete.versionId, storageNames.VERSION_INFO_FILE_NAME);
+    const manifestPath = storageNames.makeVersionInfoPath('MyRobot', incomplete.versionId);
     const manifest = JSON.parse(await storage.fetchFileContentText(manifestPath));
     manifest.complete = false;
     await storage.saveFile(manifestPath, JSON.stringify(manifest));

@@ -51,9 +51,9 @@ import * as storageModule from './module';
  *
  * Versions
  * A version is a copy of a project's files, saved so the user can compare with or go back to it.
- * Each version is a file called /projects/<ProjectName>/versions/<VersionId>/version.info.json,
- * which lists the hash of each of the project's files. The content of the files is stored once for
- * each hash, in /projects/<ProjectName>/versions/objects/<Hash>, which has no extension.
+ * Each version is a file called /projects/<ProjectName>/versions/<VersionId>.json, which lists the
+ * hash of each of the project's files. The content of the files is stored once for each hash, in
+ * /projects/<ProjectName>/versions/objects/<Hash>, which has no extension.
  */
 
 // The class name of the Robot module that is created automatically when a new project is created.
@@ -74,12 +74,12 @@ const PROJECT_INFO_FILE_NAME = 'project.info.json';
 // The name of the directory, inside a project's directory, that holds the project's versions.
 const VERSIONS_DIRECTORY_NAME = 'versions';
 
-// The file name of a version's info file.
-export const VERSION_INFO_FILE_NAME = 'version.info.json';
+// The extension of a version's info file, which is named after the versionId.
+export const VERSION_INFO_FILE_EXTENSION = '.json';
 
 // The name of the directory, inside a project's versions directory, that holds the content of the
 // files in the project's versions, each stored once under its hash.
-export const VERSION_OBJECTS_DIRECTORY_NAME = 'objects';
+const VERSION_OBJECTS_DIRECTORY_NAME = 'objects';
 
 // A project name starts with an uppercase letter, followed by alphanumeric characters or an underscore.
 const REGEX_PROJECT_NAME_PART = '[A-Z][A-Za-z0-9_]*';
@@ -180,10 +180,10 @@ export function makeVersionsDirectoryPath(projectName: string): string {
 }
 
 /**
- * Returns the path of the directory that holds the given version of the given project.
+ * Returns the path of the info file of the given version of the given project.
  */
-export function makeVersionDirectoryPath(projectName: string, versionId: string): string {
-  return makeVersionsDirectoryPath(projectName) + versionId + '/';
+export function makeVersionInfoPath(projectName: string, versionId: string): string {
+  return makeVersionsDirectoryPath(projectName) + versionId + VERSION_INFO_FILE_EXTENSION;
 }
 
 /**
@@ -200,14 +200,6 @@ export function makeVersionObjectsDirectoryPath(projectName: string): string {
  */
 export function makeVersionObjectPath(projectName: string, hash: string): string {
   return makeVersionObjectsDirectoryPath(projectName) + hash;
-}
-
-/**
- * Returns the path of a file in the given version of the given project.
- */
-export function makeVersionFilePath(
-    projectName: string, versionId: string, fileName: string): string {
-  return makeVersionDirectoryPath(projectName, versionId) + fileName;
 }
 
 /**
