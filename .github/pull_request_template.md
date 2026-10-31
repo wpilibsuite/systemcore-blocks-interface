@@ -15,6 +15,7 @@
 - [ ] UI change
 - [ ] Blocks style change
 - [ ] Blocks theme change
+- [ ] Python tools
 - [ ] Other <!-- Make sure that it isn't one of the above -->
 
 ## How Has This Been Tested?
