@@ -112,6 +112,15 @@
  * a type is connected to it, when it takes that block's shape instead. A
  * reporter block with a tab output is drawn like a Thrasos one, with square
  * corners and a straight right side.
+ *
+ * Zelos outlines each block with a 1px line in the style's colourTertiary,
+ * which at compact size (and with our styles, some of whose colourTertiary is
+ * lighter than the block) makes it hard to see where one block ends and the
+ * next of the same colour starts. This renderer outlines each block with a
+ * thicker line in a darker shade of the block's own colour instead. It also
+ * draws a faint white line just inside the top edge of each block (like
+ * Geras's highlight, but only along the top), so that where two blocks meet
+ * there is a light line below the dark one.
  */
 
 import * as Blockly from 'blockly/core';
@@ -133,6 +142,31 @@ const SQUARED_CORNER_RADIUS = 4;
 
 /** How far the slanted ends of the plug tab go along the block's edge. */
 const PLUG_TAB_SLANT_HEIGHT = 4;
+
+/**
+ * How much black is mixed into a block's colour for its outline. Zelos mixes
+ * in 0.25 for its generated colourTertiary.
+ */
+const OUTLINE_DARKEN_FACTOR = 0.3;
+
+/** Width of a block's outline. The default of 1 is hard to see at this size. */
+const OUTLINE_WIDTH = 1.5;
+
+/** CSS class of the light line inside the top edge of each block. */
+const TOP_HIGHLIGHT_CLASS = 'firstBlocksStyleTopHighlight';
+
+/** Width of the light line inside the top edge of each block. */
+const TOP_HIGHLIGHT_WIDTH = 1;
+
+/** Opacity of the light line inside the top edge of each block. */
+const TOP_HIGHLIGHT_OPACITY = 0.35;
+
+/**
+ * Moves the light line down from the top edge of the block, so that it is
+ * just inside the outline rather than on top of it.
+ */
+const TOP_HIGHLIGHT_TRANSFORM =
+    `translate(0 ${(OUTLINE_WIDTH + TOP_HIGHLIGHT_WIDTH) / 2})`;
 
 /** Returns whether the given shape is one of Zelos's dynamic shapes. */
 function isDynamicShape(shape: object): boolean {
@@ -229,6 +263,19 @@ class FirstBlocksStyleConstantProvider extends Blockly.zelos.ConstantProvider {
       `font-weight: normal;`,
       `}`,
 
+      // Block outlines, so that blocks of the same colour next to each other
+      // are easy to tell apart.
+      `${selector} .blocklyPath {`,
+      `stroke-width: ${OUTLINE_WIDTH};`,
+      `}`,
+      `${selector} .${TOP_HIGHLIGHT_CLASS} {`,
+      `fill: none;`,
+      `stroke: #fff;`,
+      `stroke-width: ${TOP_HIGHLIGHT_WIDTH};`,
+      `stroke-opacity: ${TOP_HIGHLIGHT_OPACITY};`,
+      `pointer-events: none;`,
+      `}`,
+
       // Fields.
       `${selector} .blocklyText {`,
       `fill: #fff;`,
@@ -307,6 +354,66 @@ class FirstBlocksStyleConstantProvider extends Blockly.zelos.ConstantProvider {
       `}`,
     ];
   }
+}
+
+/**
+ * Draws each block's outline in a darker shade of the block's own colour.
+ * Zelos uses the style's colourTertiary, but our styles (see styles.ts) set
+ * colourTertiary for Geras's highlight, so for some of them it is lighter
+ * than the block and the outline is hard to see.
+ *
+ * Also draws a light line just inside the top edge of the block, so that
+ * where one block meets another there is a light line below the dark one.
+ */
+class FirstBlocksStylePathObject extends Blockly.zelos.PathObject {
+  /** The light line inside the top edge of the block. */
+  private readonly svgPathTopHighlight: SVGElement;
+
+  constructor(
+      root: SVGElement, style: Blockly.Theme.BlockStyle,
+      constants: FirstBlocksStyleConstantProvider) {
+    super(root, style, constants);
+    this.svgPathTopHighlight = Blockly.utils.dom.createSvgElement(
+        Blockly.utils.Svg.PATH, {'class': TOP_HIGHLIGHT_CLASS}, root);
+  }
+
+  /** Sets the path of the light line inside the top edge of the block. */
+  setTopHighlightPath(pathString: string): void {
+    this.svgPathTopHighlight.setAttribute('d', pathString);
+  }
+
+  override beginDrawing(): void {
+    super.beginDrawing();
+    this.svgPathTopHighlight.setAttribute('transform', TOP_HIGHLIGHT_TRANSFORM);
+  }
+
+  override flipRTL(): void {
+    super.flipRTL();
+    this.svgPathTopHighlight.setAttribute(
+        'transform', `scale(-1 1) ${TOP_HIGHLIGHT_TRANSFORM}`);
+  }
+
+  override applyColour(block: Blockly.BlockSvg): void {
+    super.applyColour(block);
+    // Like Zelos, outline a shadow block in its parent's colour.
+    const parent = block.getParent();
+    const colour = block.isShadow() && parent ? parent.getColour() : this.style.colourPrimary;
+    this.svgPath.setAttribute('stroke', outlineColourFor(colour));
+  }
+}
+
+/** Returns the outline colour for a block with the given colour. */
+function outlineColourFor(colour: string): string {
+  return Blockly.utils.colour.blend('#000', colour, OUTLINE_DARKEN_FACTOR) || colour;
+}
+
+/**
+ * Returns the given path without its final vertical line, if it ends with
+ * one. The common drawer ends the top of a block with a line down the right
+ * side of the top row, which isn't part of the top edge.
+ */
+function withoutFinalVerticalLine(pathString: string): string {
+  return pathString.replace(/\s*v\s*[-+.\deE]+\s*$/, '');
 }
 
 class FirstBlocksStyleTopRow extends Blockly.zelos.TopRow {
@@ -468,6 +575,27 @@ class FirstBlocksStyleRenderInfo extends Blockly.zelos.RenderInfo {
 class FirstBlocksStyleDrawer extends Blockly.zelos.Drawer {
   declare info_: FirstBlocksStyleRenderInfo;
 
+  /** The top edge of the block's outline, for the light line inside it. */
+  private topHighlightPath_ = '';
+
+  override draw(): void {
+    super.draw();
+    (this.block_.pathObject as FirstBlocksStylePathObject).setTopHighlightPath(
+        this.info_.isInsertionMarker ? '' : this.topHighlightPath_);
+  }
+
+  protected override drawTop_(): void {
+    const start = this.outlinePath_.length;
+    super.drawTop_();
+    this.topHighlightPath_ = withoutFinalVerticalLine(this.outlinePath_.substring(start));
+  }
+
+  protected override drawFlatTop_(): void {
+    const start = this.outlinePath_.length;
+    super.drawFlatTop_();
+    this.topHighlightPath_ = withoutFinalVerticalLine(this.outlinePath_.substring(start));
+  }
+
   override drawOutline_(): void {
     if (this.info_.hasExternalInputs) {
       // Zelos draws a reporter block's outline without looking at its rows,
@@ -579,6 +707,11 @@ class FirstBlocksStyleDrawer extends Blockly.zelos.Drawer {
 class FirstBlocksStyleRenderer extends Blockly.zelos.Renderer {
   protected makeConstants_(): FirstBlocksStyleConstantProvider {
     return new FirstBlocksStyleConstantProvider();
+  }
+
+  override makePathObject(root: SVGElement, style: Blockly.Theme.BlockStyle): FirstBlocksStylePathObject {
+    return new FirstBlocksStylePathObject(
+        root, style, this.getConstants() as FirstBlocksStyleConstantProvider);
   }
 
   protected makeRenderInfo_(block: Blockly.BlockSvg): FirstBlocksStyleRenderInfo {
