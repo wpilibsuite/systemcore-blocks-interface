@@ -140,6 +140,13 @@ const PLUG_SHAPE_TYPE = 6;
  */
 const SQUARED_CORNER_RADIUS = 4;
 
+/**
+ * Colour of the text in fields. Thrasos uses #575E75, which on the translucent
+ * white field background over the block's colour has too little contrast to
+ * read easily (about 3.7:1 on a variable block).
+ */
+const FIELD_TEXT_COLOUR = '#333';
+
 /** How far the slanted ends of the plug tab go along the block's edge. */
 const PLUG_TAB_SLANT_HEIGHT = 4;
 
@@ -294,7 +301,7 @@ class FirstBlocksStyleConstantProvider extends Blockly.zelos.ConstantProvider {
       `${selector} .blocklyEditableField>text,`,
       `${selector} .blocklyNonEditableField>g>text,`,
       `${selector} .blocklyEditableField>g>text {`,
-      `fill: #575E75;`,
+      `fill: ${FIELD_TEXT_COLOUR};`,
       `}`,
 
       // Flyout labels.
@@ -320,7 +327,7 @@ class FirstBlocksStyleConstantProvider extends Blockly.zelos.ConstantProvider {
       `${selector} .blocklyHtmlInput {`,
       `font-family: ${this.FIELD_TEXT_FONTFAMILY};`,
       `font-weight: ${this.FIELD_TEXT_FONTWEIGHT};`,
-      `color: #575E75;`,
+      `color: ${FIELD_TEXT_COLOUR};`,
       `}`,
 
       // Widget and Dropdown Div
