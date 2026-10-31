@@ -37,7 +37,8 @@ import {
     createCustomMethodBlock,
     createCustomMethodBlockWithReturn,
     getBaseClassBlocks,
-    getBlocksForInstanceMethods } from '../blocks/mrc_class_method_def';
+    getBlocksForInstanceMethods,
+    getInitBlockOrButton } from '../blocks/mrc_class_method_def';
 import { createStepsBlock } from '../blocks/mrc_steps';
 import { createWhenBlock } from '../blocks/mrc_when';
 import { Editor } from '../editor/editor';
@@ -76,6 +77,9 @@ class MethodsCategory {
 
     // Collect the method names that are already overridden in the blockly workspace.
     const methodNamesAlreadyOverridden = editor.getMethodNamesAlreadyOverriddenInWorkspace();
+
+    // The init method (__init__ in python) is allowed in the Robot, Mechanism, and OpMode modules.
+    contents.push(getInitBlockOrButton(workspace, methodNamesAlreadyOverridden));
 
     // The when block is allowed in the Robot, Mechanism, and OpMode modules. In a Robot or
     // Mechanism, its when_ methods are called from opmode_periodic; in an OpMode, from periodic.

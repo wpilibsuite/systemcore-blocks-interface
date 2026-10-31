@@ -3,24 +3,6 @@
         "languageVersion": 0,
         "blocks": [
             {
-                "type": "mrc_class_method_def",
-                "x": 10,
-                "y": 310,
-                "deletable": false,
-                "editable": false,
-                "extraState": {
-                    "canChangeSignature": false,
-                    "canBeCalledWithinClass": false,
-                    "canBeCalledOutsideClass": false,
-                    "returnType": "None",
-                    "params": [],
-                    "pythonMethodName": "__init__"
-                },
-                "fields": {
-                    "NAME": "init"
-                }
-            },
-            {
                 "type": "mrc_mechanism_component_holder",
                 "x": 10,
                 "y": 10,
