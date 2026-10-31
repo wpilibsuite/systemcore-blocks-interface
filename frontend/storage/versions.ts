@@ -144,11 +144,16 @@ export function hashContent(text: string): string {
 }
 
 /**
- * Returns a new version id. It is used in file paths (and URLs, with a backend), so it only has
- * lowercase letters and digits, unlike Blockly's ids. It is never 'objects', since it is longer.
+ * Returns a new version id: 16 lowercase letters and digits, the current time in milliseconds in
+ * base 36 (8 digits from 1972 until 2059) followed by 8 random base 36 digits, so two versions
+ * only collide if they are created in the same millisecond and get the same random digits. It is
+ * used in file paths (and URLs, with a backend), so it only has lowercase letters and digits,
+ * unlike Blockly's ids. Since it is a fixed 16 characters long, we don't have to worry about
+ * collisions with 'objects' (where the contents of the versions are stored).
  */
 function makeVersionId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  return Date.now().toString(36) +
+      Math.random().toString(36).slice(2, 10).padEnd(8, '0');
 }
 
 /**
