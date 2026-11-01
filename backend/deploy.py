@@ -94,7 +94,7 @@ class DeployResource(MethodView):
             with open(pyproject_path, "w", encoding="utf-8") as f:
                 toml_content = (
 f"""[tool.robotpy]
-robotpy_version = "2027.0.0.a7"
+robotpy_version = "2027.0.0.a8"
 
 components = []
 
