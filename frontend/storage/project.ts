@@ -184,8 +184,7 @@ export async function renameProject(
  */
 export async function copyProject(
     storage: commonStorage.Storage, projectName: string, newProjectName: string): Promise<void> {
-  const projectFileNames: string[] = await storage.list(
-      storageNames.makeProjectDirectoryPath(projectName));
+  const projectFileNames: string[] = await listProjectFileNames(storage, projectName);
 
   for (const projectFileName of projectFileNames) {
     const filePath = storageNames.makeFilePath(projectName, projectFileName);
@@ -277,11 +276,23 @@ export async function getUploadedFiles(blobUrl: string): Promise<{[fileName: str
 }
 
 /**
+ * Returns the names of the project's own files (its modules and project info file). Other things
+ * in the project directory, such as the versions directory, are left out.
+ */
+export async function listProjectFileNames(
+    storage: commonStorage.Storage, projectName: string): Promise<string[]> {
+  const fileNames = await storage.list(storageNames.makeProjectDirectoryPath(projectName));
+  return fileNames.filter(fileName =>
+      storageNames.isValidModuleFileName(fileName) ||
+      storageNames.isValidProjectInfoFileName(fileName));
+}
+
+/**
  * Fetches all files in a project directory as a map of fileName → content.
  */
 export async function fetchProjectFiles(
     storage: commonStorage.Storage, projectName: string): Promise<{[fileName: string]: string}> {
-  const fileNames = await storage.list(storageNames.makeProjectDirectoryPath(projectName));
+  const fileNames = await listProjectFileNames(storage, projectName);
   const files: {[fileName: string]: string} = {};
   for (const fileName of fileNames) {
     const filePath = storageNames.makeFilePath(projectName, fileName);
@@ -637,8 +648,7 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
  */
 export async function downloadProject(
     storage: commonStorage.Storage, projectName: string): Promise<string> {
-  const fileNames: string[] = await storage.list(
-      storageNames.makeProjectDirectoryPath(projectName));
+  const fileNames: string[] = await listProjectFileNames(storage, projectName);
 
   const fileNameToFileContentText: {[fileName: string]: string} = {}; // value is file content text
   for (const fileName of fileNames) {
