@@ -56,7 +56,7 @@ export function getRumbleConfig() {
     return Generic.getRumbleConfig();
 }
 
-/** Returns the LED configuration for generic gamepad. */
+/** An XBOX controller doesn't have an LED */
 export function getLEDConfig() {
-    return Generic.getLEDConfig();
+    return null;
 }
