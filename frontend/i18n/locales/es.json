@@ -414,6 +414,9 @@
     "CONFIG_GAMEPADS_BUTTON": "⚙️ Configurar Gamepads",
     "ADD_ITEM": "añadir elemento",
     "TO_LIST": "a la lista",
+    "FORMAT_NUMBER": "formatear",
+    "FORMAT_NUMBER_TO": "con",
+    "FORMAT_NUMBER_DECIMAL_PLACES": "decimales",
     "GAMEPAD": {
       "TITLE": "Mando de Juego",
       "BUTTON_A": "A",
@@ -517,7 +520,8 @@
       "COMPONENT_REFERENCE": "El componente llamado {{componentName}} de la clase {{className}}.",
       "LIST_ADD_ITEM": "Añade el elemento al final de la lista.",
       "MATH_MAX": "Devuelve el mayor de dos valores numéricos.",
-      "MATH_MIN": "Devuelve el menor de dos valores numéricos."
+      "MATH_MIN": "Devuelve el menor de dos valores numéricos.",
+      "TEXT_FORMAT_NUMBER": "Devuelve el número como texto, redondeado al número de decimales indicado."
     },
     "CATEGORY": {
       "LISTS": "Listas",

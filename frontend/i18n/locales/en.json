@@ -413,6 +413,9 @@
     "CONFIG_GAMEPADS_BUTTON": "⚙️ Configure Gamepads",
     "ADD_ITEM": "add item",
     "TO_LIST": "to list",
+    "FORMAT_NUMBER": "format",
+    "FORMAT_NUMBER_TO": "to",
+    "FORMAT_NUMBER_DECIMAL_PLACES": "decimals",
     "GAMEPAD": {
       "TITLE": "Gamepad",
       "BUTTON_A": "A",
@@ -516,7 +519,8 @@
       "COMPONENT_REFERENCE": "The component named {{componentName}} of the class {{className}}.",
       "LIST_ADD_ITEM": "Add the item to the end of the list.",
       "MATH_MAX": "Returns the greater of two numerical values.",
-      "MATH_MIN": "Returns the smaller of two numerical values."
+      "MATH_MIN": "Returns the smaller of two numerical values.",
+      "TEXT_FORMAT_NUMBER": "Returns the number as text, rounded to the given number of decimal places."
     },
     "CATEGORY":{
       "LISTS": "Lists",

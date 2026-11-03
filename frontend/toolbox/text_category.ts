@@ -28,6 +28,20 @@ export const getCategory = () => ({
         },
         {
             kind: 'block',
+            type: 'mrc_text_format_number',
+            inputs: {
+                NUMBER: {
+                    shadow: {
+                        type: 'math_number',
+                        fields: {
+                            NUM: 3.14159,
+                        },
+                    },
+                },
+            },
+        },
+        {
+            kind: 'block',
             type: 'text_length',
             inputs: {
                 VALUE: {

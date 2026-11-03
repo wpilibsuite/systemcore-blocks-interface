@@ -414,6 +414,9 @@
     "CONFIG_GAMEPADS_BUTTON": "⚙️ Configurer les manettes",
     "ADD_ITEM": "ajouter l'élément",
     "TO_LIST": "à la liste",
+    "FORMAT_NUMBER": "formater",
+    "FORMAT_NUMBER_TO": "avec",
+    "FORMAT_NUMBER_DECIMAL_PLACES": "décimales",
     "GAMEPAD": {
       "TITLE": "Manette",
       "BUTTON_A": "A",
@@ -517,7 +520,8 @@
       "COMPONENT_REFERENCE": "Le composant nommé {{componentName}} de la classe {{className}}.",
       "LIST_ADD_ITEM": "Ajoute l'élément à la fin de la liste.",
       "MATH_MAX": "Renvoie la plus grande de deux valeurs numériques.",
-      "MATH_MIN": "Renvoie la plus petite de deux valeurs numériques."
+      "MATH_MIN": "Renvoie la plus petite de deux valeurs numériques.",
+      "TEXT_FORMAT_NUMBER": "Renvoie le nombre sous forme de texte, arrondi au nombre de décimales indiqué."
     },
     "CATEGORY": {
       "LISTS": "Listes",
