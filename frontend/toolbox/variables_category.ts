@@ -51,6 +51,6 @@ function variablesFlyout(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox
   return [
     new toolboxItems.Button(Blockly.Msg['NEW_VARIABLE'], CREATE_VARIABLE_CALLBACK_KEY),
     ...Blockly.Variables.jsonFlyoutCategoryBlocks(
-        workspace, workspace.getVariableMap().getAllVariables(), true),
+        workspace, workspace.getVariableMap().getAllVariables(), false),
   ];
 }
