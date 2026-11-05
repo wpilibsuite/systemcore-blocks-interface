@@ -411,6 +411,8 @@
     "CONFIG_GAMEPADS_BUTTON": "⚙️ הגדר בקרים",
     "ADD_ITEM": "הוסף פריט",
     "TO_LIST": "לרשימה",
+    "FORMAT_NUMBER": "עצב עם",
+    "FORMAT_NUMBER_DECIMAL_PLACES": "ספרות עשרוניות",
     "GAMEPAD": {
       "TITLE": "בקר משחק",
       "BUTTON_A": "A",
@@ -514,7 +516,8 @@
       "COMPONENT_REFERENCE": "הרכיב בשם {{componentName}} של המחלקה {{className}}.",
       "LIST_ADD_ITEM": "מוסיף את הפריט לסוף הרשימה.",
       "MATH_MAX": "מחזיר את הגדול מבין שני ערכים מספריים.",
-      "MATH_MIN": "מחזיר את הקטן מבין שני ערכים מספריים."
+      "MATH_MIN": "מחזיר את הקטן מבין שני ערכים מספריים.",
+      "TEXT_FORMAT_NUMBER": "מחזיר את המספר כטקסט, מעוגל למספר הספרות אחרי הנקודה שצוין."
     },
     "CATEGORY": {
       "LISTS": "רשימות",

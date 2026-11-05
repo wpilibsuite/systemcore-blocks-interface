@@ -29,6 +29,7 @@ import * as GamepadAnalog from './mrc_gamepad_analog';
 import * as GamepadBooleanEvent from './mrc_gamepad_boolean_event';
 import * as GamepadRumble from './mrc_gamepad_rumble';
 import * as GamepadLeds from './mrc_gamepad_leds';
+import * as TextFormatNumber from './mrc_text_format_number';
 import { registerVariableMap } from './utils/variable_types';
 
 const customBlocks = [
@@ -62,6 +63,7 @@ const customBlocks = [
   GamepadBooleanEvent,
   GamepadRumble,
   GamepadLeds,
+  TextFormatNumber,
 ];
 
 export const setup = function(forBlock: any) {
