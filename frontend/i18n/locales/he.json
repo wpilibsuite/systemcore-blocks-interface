@@ -413,8 +413,7 @@
     "CONFIG_GAMEPADS_BUTTON": "⚙️ הגדר בקרים",
     "ADD_ITEM": "הוסף פריט",
     "TO_LIST": "לרשימה",
-    "FORMAT_NUMBER": "עצב",
-    "FORMAT_NUMBER_TO": "עם",
+    "FORMAT_NUMBER": "עצב עם",
     "FORMAT_NUMBER_DECIMAL_PLACES": "ספרות עשרוניות",
     "GAMEPAD": {
       "TITLE": "בקר משחק",

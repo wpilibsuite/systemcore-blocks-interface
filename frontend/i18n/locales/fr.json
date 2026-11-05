@@ -414,8 +414,7 @@
     "CONFIG_GAMEPADS_BUTTON": "⚙️ Configurer les manettes",
     "ADD_ITEM": "ajouter l'élément",
     "TO_LIST": "à la liste",
-    "FORMAT_NUMBER": "formater",
-    "FORMAT_NUMBER_TO": "avec",
+    "FORMAT_NUMBER": "formater avec",
     "FORMAT_NUMBER_DECIMAL_PLACES": "décimales",
     "GAMEPAD": {
       "TITLE": "Manette",

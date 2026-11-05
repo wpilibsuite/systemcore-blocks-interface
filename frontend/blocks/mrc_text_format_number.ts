@@ -39,7 +39,6 @@ export const setup = function() {
       this.appendValueInput(INPUT_NUMBER)
           .setCheck('Number')
           .appendField(Blockly.Msg.TEXT_FORMAT_NUMBER)
-          .appendField(Blockly.Msg.TEXT_FORMAT_NUMBER_TO)
           .appendField(
               new Blockly.FieldNumber(DEFAULT_DECIMAL_PLACES, 0, MAX_DECIMAL_PLACES, 1),
               FIELD_DECIMAL_PLACES)

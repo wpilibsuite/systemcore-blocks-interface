@@ -413,8 +413,7 @@
     "CONFIG_GAMEPADS_BUTTON": "⚙️ Configure Gamepads",
     "ADD_ITEM": "add item",
     "TO_LIST": "to list",
-    "FORMAT_NUMBER": "format",
-    "FORMAT_NUMBER_TO": "to",
+    "FORMAT_NUMBER": "format to",
     "FORMAT_NUMBER_DECIMAL_PLACES": "decimals",
     "GAMEPAD": {
       "TITLE": "Gamepad",

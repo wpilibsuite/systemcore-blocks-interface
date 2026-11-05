@@ -414,8 +414,7 @@
     "CONFIG_GAMEPADS_BUTTON": "⚙️ Configurar Gamepads",
     "ADD_ITEM": "añadir elemento",
     "TO_LIST": "a la lista",
-    "FORMAT_NUMBER": "formatear",
-    "FORMAT_NUMBER_TO": "con",
+    "FORMAT_NUMBER": "formatear con",
     "FORMAT_NUMBER_DECIMAL_PLACES": "decimales",
     "GAMEPAD": {
       "TITLE": "Mando de Juego",
