@@ -51,7 +51,6 @@
                 "type": "mrc_class_method_def",
                 "x": 10,
                 "y": 310,
-                "deletable": false,
                 "editable": false,
                 "extraState": {
                     "canChangeSignature": false,

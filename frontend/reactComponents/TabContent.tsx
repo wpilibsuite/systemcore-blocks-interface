@@ -173,8 +173,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   /** Called when workspace is created. */
   const setupWorkspace = React.useCallback(async (_modulePath: string, newWorkspace: Blockly.WorkspaceSvg) => {
     newWorkspace.addChangeListener(handleBlocksChanged);
-    classMethodDef.registerToolboxButton(newWorkspace, messageApi);
-    eventHandler.registerToolboxButton(newWorkspace, messageApi);
+    classMethodDef.registerToolboxButton(newWorkspace);
+    eventHandler.registerToolboxButton(newWorkspace);
     
     // Register gamepad config button callback if the function is provided
     if (openGamepadConfigDialog) {

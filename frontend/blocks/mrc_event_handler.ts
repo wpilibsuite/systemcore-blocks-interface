@@ -23,7 +23,6 @@
 import * as Blockly from 'blockly';
 import {Order} from 'blockly/python';
 
-import type { MessageInstance } from 'antd/es/message/interface';
 import { Parameter } from './mrc_class_method_def';
 import { Editor } from '../editor/editor';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
@@ -34,6 +33,7 @@ import * as toolboxItems from '../toolbox/items';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import { checkParameterBlocks } from './mrc_get_parameter';
+import { scrollToBlock } from './utils/scroll_to_block';
 
 export const BLOCK_NAME = 'mrc_event_handler';
 
@@ -524,13 +524,17 @@ export function addMechanismEventHandlerBlocks(
 
 function createButton(
     workspace: Blockly.WorkspaceSvg, senderName: string, eventName: string): toolboxItems.Button {
-  // Use non-breakable spaces so it looks more like an event handler block.
-  const spaces = '\u00A0\u00A0';
-  const text = workspace.RTL
-      ? (spaces + eventName + spaces + senderName + spaces + Blockly.Msg.WHEN + spaces)
-      : (spaces + Blockly.Msg.WHEN + spaces + senderName + spaces + eventName + spaces);
+  const text = getButtonText(workspace, senderName, eventName);
   const style = BUTTON_STYLE_PREFIX + workspace.getTheme().name;
   return new toolboxItems.Button(text, BUTTON_CALLBACK_KEY, style);
+}
+
+function getButtonText(workspace: Blockly.Workspace, senderName: string, eventName: string): string {
+  // Use non-breakable spaces so it looks more like an event handler block.
+  const spaces = '\u00A0\u00A0';
+  return workspace.RTL
+      ? (spaces + eventName + spaces + senderName + spaces + Blockly.Msg.WHEN + spaces)
+      : (spaces + Blockly.Msg.WHEN + spaces + senderName + spaces + eventName + spaces);
 }
 
 function createMechanismEventHandlerBlock(
@@ -596,8 +600,16 @@ export function renameMechanismName(workspace: Blockly.Workspace, mechanismId: s
   });
 }
 
-export function registerToolboxButton(workspace: Blockly.WorkspaceSvg, messageApi: MessageInstance) {
-  workspace.registerButtonCallback(BUTTON_CALLBACK_KEY, function (_button) {
-    messageApi.info(Blockly.Msg.EVENT_HANDLER_ALREADY_ON_WORKSPACE);
+export function registerToolboxButton(workspace: Blockly.WorkspaceSvg) {
+  workspace.registerButtonCallback(BUTTON_CALLBACK_KEY, function (button) {
+    // Scroll the workspace to the event handler block whose button was clicked.
+    const buttonText = button.getButtonText();
+    const targetWorkspace = button.getTargetWorkspace();
+    const block = targetWorkspace.getBlocksByType(BLOCK_NAME).find(block =>
+        getButtonText(targetWorkspace, block.getFieldValue(FIELD_SENDER),
+            block.getFieldValue(FIELD_EVENT_NAME)) === buttonText);
+    if (block) {
+      scrollToBlock(targetWorkspace, block);
+    }
   });
 }

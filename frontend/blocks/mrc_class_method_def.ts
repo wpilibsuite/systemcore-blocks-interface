@@ -23,12 +23,10 @@
 import * as Blockly from 'blockly';
 import { Order } from 'blockly/python';
 
-import type { MessageInstance } from 'antd/es/message/interface';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
 import { createParameterFieldFlydown } from '../fields/field_flydown';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
-import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
 import * as toolboxItems from '../toolbox/items';
@@ -36,6 +34,7 @@ import { getClassData } from './utils/python';
 import { FunctionData } from './utils/python_json_types';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 import { makeLegalName } from './utils/validator';
+import { scrollToBlock } from './utils/scroll_to_block';
 import { NONCOPYABLE_BLOCK } from './noncopyable_block';
 import { checkParameterBlocks, BLOCK_NAME as MRC_GET_PARAMETER_BLOCK_NAME } from './mrc_get_parameter';
 import * as paramContainer from './mrc_param_container'
@@ -44,6 +43,9 @@ export const BLOCK_NAME = 'mrc_class_method_def';
 
 const BUTTON_CALLBACK_KEY = 'CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE';
 const BUTTON_STYLE_PREFIX = 'classMethodDefButtonStyle_';
+
+const INIT_METHOD_NAME = 'init';
+const INIT_PYTHON_METHOD_NAME = '__init__';
 
 const NO_RETURN_VALUE = 'None';
 const UNTYPED_RETURN_VALUE = '';
@@ -448,7 +450,7 @@ export const pythonFromBlock = function (
     // After executing the function body, revisit this block for the return.
     xfix2 = xfix1;
   }
-  if (block.mrcPythonMethodName === '__init__') {
+  if (block.mrcPythonMethodName === INIT_PYTHON_METHOD_NAME) {
     const superInitParameters = generator.getSuperInitParameters();
     branch = generator.INDENT + 'super().__init__(' + superInitParameters + ')\n' +
         generator.generateInitStatements() + branch;
@@ -466,15 +468,10 @@ export const pythonFromBlock = function (
 
   let paramString = 'self';
 
-  if (generator.getModuleType() === storageModule.ModuleType.MECHANISM && block.mrcPythonMethodName === '__init__') {
-    const mechanismInitArgNames: string[] = generator.getMechanismInitArgNames();
-    if (mechanismInitArgNames.length) {
-      paramString += ', ' + mechanismInitArgNames.join(', ');
-    }
-  }
-
-  if (generator.getModuleType() === storageModule.ModuleType.OPMODE && block.mrcPythonMethodName === '__init__') {
-    paramString += ', robot';
+  if (block.mrcPythonMethodName === INIT_PYTHON_METHOD_NAME) {
+    generator.getInitParameterNames().forEach(name => {
+      paramString += ', ' + name;
+    });
   }
 
   if (block.mrcParameters.length != 0) {
@@ -550,6 +547,29 @@ export function createCustomMethodBlockWithReturn(): toolboxItems.Block {
   return new toolboxItems.Block(BLOCK_NAME, extraState, fields, inputs);
 }
 
+/**
+ * Returns the block for defining the init method (__init__ in python), or, if the init method is
+ * already in the workspace, a button that says so.
+ */
+export function getInitBlockOrButton(
+    workspace: Blockly.WorkspaceSvg,
+    methodNamesAlreadyOverridden: string[]): toolboxItems.ContentsType {
+  if (methodNamesAlreadyOverridden.includes(INIT_METHOD_NAME)) {
+    return createButton(workspace, INIT_METHOD_NAME);
+  }
+  const extraState: ClassMethodDefExtraState = {
+    canChangeSignature: false,
+    canBeCalledWithinClass: false,
+    canBeCalledOutsideClass: false,
+    returnType: NO_RETURN_VALUE,
+    params: [],
+    pythonMethodName: INIT_PYTHON_METHOD_NAME,
+  };
+  const fields: {[key: string]: any} = {};
+  fields[FIELD_METHOD_NAME] = INIT_METHOD_NAME;
+  return new toolboxItems.Block(BLOCK_NAME, extraState, fields, null);
+}
+
 export function getBaseClassBlocks(
     workspace: Blockly.WorkspaceSvg, baseClassName: string, methodNamesOverrideable: string[],
     methodNamesAlreadyOverridden: string[]): toolboxItems.ContentsType[] {
@@ -571,7 +591,7 @@ export function getBlocksForInstanceMethods(
   instanceMethods
       .forEach(functionData => {
           if (methodNamesAlreadyOverridden.includes(functionData.functionName)) {
-            contents.push(createButton(workspace, functionData));
+            contents.push(createButton(workspace, functionData.functionName));
           } else {
             contents.push(createClassMethodDefBlock(functionData));
           }
@@ -599,10 +619,10 @@ function createClassMethodDefBlock(functionData: FunctionData): toolboxItems.Blo
 }
 
 function createButton(
-    workspace: Blockly.WorkspaceSvg, functionData: FunctionData): toolboxItems.Button {
+    workspace: Blockly.WorkspaceSvg, methodName: string): toolboxItems.Button {
   // Use non-breakable spaces so it looks more like an class method def block.
   const spaces = '\u00A0\u00A0';
-  const text = spaces + functionData.functionName + spaces;
+  const text = spaces + methodName + spaces;
   const style = BUTTON_STYLE_PREFIX + workspace.getTheme().name;
   return new toolboxItems.Button(text, BUTTON_CALLBACK_KEY, style);
 }
@@ -644,9 +664,19 @@ export function getMethodNamesAlreadyOverriddenInWorkspace(
   });
 }
 
-export function registerToolboxButton(workspace: Blockly.WorkspaceSvg, messageApi: MessageInstance) {
-  workspace.registerButtonCallback(BUTTON_CALLBACK_KEY, function (_button) {
-    messageApi.info(Blockly.Msg.CLASS_METHOD_DEF_ALREADY_ON_WORKSPACE);
+export function registerToolboxButton(workspace: Blockly.WorkspaceSvg) {
+  workspace.registerButtonCallback(BUTTON_CALLBACK_KEY, function (button) {
+    // Scroll the workspace to the block that defines the method. The button text is the method
+    // name surrounded by non-breakable spaces, which trim removes.
+    const methodName = button.getButtonText().trim();
+    const targetWorkspace = button.getTargetWorkspace();
+    const block = targetWorkspace.getBlocksByType(BLOCK_NAME).find(block => {
+      const methodDefBlock = block as ClassMethodDefBlock;
+      return !methodDefBlock.canChangeSignature() && methodDefBlock.getMethodName() === methodName;
+    });
+    if (block) {
+      scrollToBlock(targetWorkspace, block);
+    }
   });
 }
 
