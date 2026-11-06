@@ -1,3 +1,5 @@
+// Copyright (c) FIRST and other WPILib contributors.
+
 /**
  * @fileoverview Theme settings tab of the settings dialog.
  */

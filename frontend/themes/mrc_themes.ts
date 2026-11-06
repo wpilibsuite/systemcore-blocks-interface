@@ -1,3 +1,5 @@
+// Copyright (c) FIRST and other WPILib contributors.
+
 import * as Blockly from 'blockly/core';
 
 import DeuteranopiaTheme from '@blockly/theme-deuteranopia';

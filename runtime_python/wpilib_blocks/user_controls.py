@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 import wpilib
 
 JOYSTICK_PORTS = 6

@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 # Text helpers that are called by the blocks in toolboxes/text_helpers.json.
 
 

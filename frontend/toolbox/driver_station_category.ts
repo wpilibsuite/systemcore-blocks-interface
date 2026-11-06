@@ -1,3 +1,5 @@
+// Copyright (c) FIRST and other WPILib contributors.
+
 import * as Blockly from 'blockly/core';
 
 import * as toolboxItems from './items';

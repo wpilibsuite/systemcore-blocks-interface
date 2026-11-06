@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Copyright (c) FIRST and other WPILib contributors.
+
 # Builds a .blocks_lib file for each example library.
 #
 # Usage: ./build.sh [--force] [example_dir ...]

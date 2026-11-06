@@ -1,3 +1,5 @@
+// Copyright (c) FIRST and other WPILib contributors.
+
 import { describe, expect, test } from 'vitest';
 import * as blocksLib from '../frontend/libraries/blocks_lib';
 import {

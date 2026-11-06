@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 # Standard library imports
 import argparse
 import logging

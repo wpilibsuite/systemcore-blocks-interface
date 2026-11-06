@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 # This class provides functions used when executing blocks.
 
 import json

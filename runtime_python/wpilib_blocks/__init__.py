@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 """Base classes for SystemCore blocks interface."""
 
 from .decorators import Teleop, Auto, Utility, Name, Group

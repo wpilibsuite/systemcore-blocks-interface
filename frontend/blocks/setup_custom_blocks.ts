@@ -1,3 +1,4 @@
+// Copyright (c) FIRST and other WPILib contributors.
 
 import * as CallPythonFunction from './mrc_call_python_function';
 import * as ClassMethodDef from './mrc_class_method_def';
