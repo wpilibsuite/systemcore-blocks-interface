@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# Copyright (c) FIRST and other WPILib contributors.
+
 """
 Unit tests for blocks_lib.py. These don't need the server to be running:
     python3 -m unittest test_blocks_lib

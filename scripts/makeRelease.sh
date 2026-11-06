@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Copyright (c) FIRST and other WPILib contributors.
+
 # This is for MAINTAINERS only.
 
 # Make sure no silent failures

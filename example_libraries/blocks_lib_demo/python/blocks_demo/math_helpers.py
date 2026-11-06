@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 # Math helpers that are called by the blocks in toolboxes/math_helpers.json.
 
 

@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 # This is the class all mechanisms derive from
 
 from typing import Callable

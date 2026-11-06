@@ -1,3 +1,5 @@
+// Copyright (c) FIRST and other WPILib contributors.
+
 import { render } from 'vitest-browser-react';
 import App from '../frontend/App.tsx';
 import { beforeAll, /*expect,*/ test } from "vitest";

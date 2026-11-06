@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# Copyright (c) FIRST and other WPILib contributors.
+
 """
 Unit tests to verify the Storage API endpoints work correctly.
 """

@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Copyright (c) FIRST and other WPILib contributors.
+
 # Shared version pins for packaging scripts.
 # Sourced by ensure_venv.sh and buildVenv.sh so they can't drift apart.
 
