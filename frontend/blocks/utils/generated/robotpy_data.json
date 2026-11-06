@@ -1619,6 +1619,34 @@
                         },
                         {
                             "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "unit",
+                            "type": "str"
+                        }
+                    ],
+                    "declaringClassName": "telemetry.TelemetryTable",
+                    "functionName": "log_unit",
+                    "returnType": "None",
+                    "tooltip": "Logs a double value with unit metadata.\n\nSets the JSON-encoded \"unit\" property before logging the value.\nNo unit conversion is performed.\n\n:param name:  entry name\n:param value: value in the given unit\n:param unit:  unit symbol (for example, \"m/s\")"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "telemetry.TelemetryTable"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
                             "name": "key",
                             "type": "str"
                         },
@@ -1761,7 +1789,7 @@
                         {
                             "defaultValue": "",
                             "name": "value",
-                            "type": "~T"
+                            "type": "T"
                         }
                     ],
                     "declaringClassName": "tunables.Selectable",
@@ -1784,7 +1812,7 @@
                         {
                             "defaultValue": "",
                             "name": "value",
-                            "type": "~T"
+                            "type": "T"
                         }
                     ],
                     "declaringClassName": "tunables.Selectable",
@@ -1815,7 +1843,7 @@
                     ],
                     "declaringClassName": "tunables.Selectable",
                     "functionName": "get_selected",
-                    "returnType": "typing.Optional[~T]",
+                    "returnType": "typing.Optional[T]",
                     "tooltip": "Returns the selected option, falling back to the default."
                 },
                 {
@@ -1841,7 +1869,7 @@
                         {
                             "defaultValue": "",
                             "name": "listener",
-                            "type": "collections.abc.Callable[[~T], None]"
+                            "type": "collections.abc.Callable[[T], None]"
                         }
                     ],
                     "declaringClassName": "tunables.Selectable",
@@ -1937,7 +1965,7 @@
                     "declaringClassName": "tunables.Tunable",
                     "functionName": "__init__",
                     "returnType": "tunables.Tunable",
-                    "tooltip": "Creates an unpublished tunable. The tunable type is inferred from value\nunless an explicit type selector is provided. Bytes, bytearray, and\nmemoryview values infer a raw tunable. Wrap other buffer exporters in\nmemoryview to explicitly use their raw bytes in C order.\n\n:param value:        initial value\n:param getter:       optional function that supplies the current local value\n:param setter:       optional function that receives values set locally or remotely\n:param on_tune:      callback that receives the value after a remote update\n:param robust:       whether to separately echo a remotely set value\n:param mutable:      whether remote updates may change the tunable\n:param value_type:   explicit value type, or None to infer it from value\n:param element_type: explicit sequence element type, or None to infer it\n:param properties:   additional tunable properties\n:param type_string:  custom tunable type string\n:param always_get:   whether to call getter on every backend update"
+                    "tooltip": "Creates an unpublished tunable. The tunable type is inferred from value\nunless an explicit type selector is provided. Bytes, bytearray, and\nmemoryview values infer a raw tunable. Wrap other buffer exporters in\nmemoryview to explicitly use their raw bytes in C order.\n\n:param value:        initial value\n:param getter:       optional function that supplies the current local value\n:param setter:       optional function that receives values set locally or\n                     remotely\n:param on_tune:      callback that receives the value after a remote update\n:param robust:       whether to separately echo a remotely set value\n:param mutable:      whether remote updates may change the tunable\n:param value_type:   explicit value type, or None to infer it from value\n:param element_type: explicit sequence element type, or None to infer it\n:param properties:   additional tunable properties\n:param type_string:  custom tunable type string\n:param always_get:   whether to call getter on every backend update"
                 }
             ],
             "enums": [],
@@ -2212,6 +2240,19 @@
                     "args": [
                         {
                             "defaultValue": "",
+                            "name": "value",
+                            "type": "object"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "get_tune_revision",
+                    "returnType": "int",
+                    "tooltip": "Return the native 64-bit tune revision equality token for a tunable or complex tunable. Save the returned value and compare it with != to detect backend-applied tuning. For duck-typed complexes that cannot be weak-referenced, history resets when the last publication is removed."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
                             "name": "path",
                             "type": "str"
                         }
@@ -2220,6 +2261,19 @@
                     "functionName": "normalize_name",
                     "returnType": "str",
                     "tooltip": ""
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "uid",
+                            "type": "int"
+                        }
+                    ],
+                    "declaringClassName": "tunables.TunableRegistry",
+                    "functionName": "record_tune_applied",
+                    "returnType": "None",
+                    "tooltip": "Records that a backend successfully applied one tuning input to a tunable.\n\nTunableBackend implementations should call this exactly once after each\naccepted remote tuning input has been applied to the tunable value, before\nscheduling any corresponding onTune callback. Rejected inputs and writes\nignored due to immutability should not call this method.\n\n:param uid: tunable uid"
                 },
                 {
                     "args": [
@@ -2270,7 +2324,7 @@
                     "declaringClassName": "tunables.TunableRegistry",
                     "functionName": "reset",
                     "returnType": "None",
-                    "tooltip": "Clear all registered backends. Should typically only be used by unit test\ncode."
+                    "tooltip": "Clear all registered backends. Should typically only be used by unit test\ncode.\n\nThis also clears registry-stored tune revision records. Tunables that stay\nalive across Reset() have stale registration identities and report a zero\nrevision until they are re-created or otherwise re-registered."
                 },
                 {
                     "args": [
@@ -3149,7 +3203,7 @@
                         "RGB"
                     ],
                     "moduleName": "wpilib",
-                    "tooltip": "Order that color data is sent over the wire.\n\nMembers:\n\n  RGB : ///< RGB order\n\n  RBG : ///< RBG order\n\n  BGR : ///< BGR order\n\n  BRG : ///< BRG order\n\n  GBR : ///< GBR order\n\n  GRB"
+                    "tooltip": "Order that color data is sent over the wire.\n\nMembers:\n\n  RGB : RGB order\n\n  RBG : RBG order\n\n  BGR : BGR order\n\n  BRG : BRG order\n\n  GBR : GBR order\n\n  GRB"
                 }
             ],
             "instanceMethods": [
@@ -5041,7 +5095,7 @@
                         {
                             "defaultValue": "",
                             "name": "vision_py",
-                            "type": "typing.Optional[str]"
+                            "type": "str | None"
                         }
                     ],
                     "declaringClassName": "wpilib.CameraServer",
@@ -7346,7 +7400,7 @@
                     "declaringClassName": "wpilib.DriverStationBackend",
                     "functionName": "get_robot_mode",
                     "returnType": "hal._wpi_hal.RobotMode",
-                    "tooltip": "Gets the current robot mode.\n\nNote that this does not indicate whether the robot is enabled or\ndisabled.\n\n:returns: robot mode"
+                    "tooltip": "Gets the current robot mode.\n\nNote that this does not indicate whether the robot is enabled or\ndisabled.\n\nThis method always returns RobotMode::UNKNOWN while the main robot\nclass is being constructed and initialized (more specifically, it returns\nRobotMode::UNKNOWN until ObserveUserProgramStarting() is called, which\nthe WPILib framework will automatically call during\nTimedRobot::StartCompetition() and OpModeRobot::StartCompetition()).\n\n:returns: robot mode"
                 },
                 {
                     "args": [
@@ -7616,14 +7670,14 @@
                     "declaringClassName": "wpilib.DriverStationBackend",
                     "functionName": "is_autonomous",
                     "returnType": "bool",
-                    "tooltip": "Check if the DS is commanding autonomous mode.\n\n:returns: True if the robot is being commanded to be in autonomous mode"
+                    "tooltip": "Check if the DS is commanding autonomous mode.\n\nThis method always returns false while the main robot class is being\nconstructed and initialized (more specifically, it returns false until\nObserveUserProgramStarting() is called, which the WPILib framework will\nautomatically call during TimedRobot::StartCompetition() and\nOpModeRobot::StartCompetition()).\n\n:returns: True if the robot is being commanded to be in autonomous mode"
                 },
                 {
                     "args": [],
                     "declaringClassName": "wpilib.DriverStationBackend",
                     "functionName": "is_autonomous_enabled",
                     "returnType": "bool",
-                    "tooltip": "Check if the DS is commanding autonomous mode and if it has enabled the\nrobot.\n\n:returns: True if the robot is being commanded to be in autonomous mode and\n          enabled."
+                    "tooltip": "Check if the DS is commanding autonomous mode and if it has enabled the\nrobot.\n\nThis method always returns false while the main robot class is being\nconstructed and initialized (more specifically, it returns false until\nObserveUserProgramStarting() is called, which the WPILib framework will\nautomatically call during TimedRobot::StartCompetition() and\nOpModeRobot::StartCompetition()).\n\n:returns: True if the robot is being commanded to be in autonomous mode and\n          enabled."
                 },
                 {
                     "args": [],
@@ -7711,28 +7765,28 @@
                     "declaringClassName": "wpilib.DriverStationBackend",
                     "functionName": "is_teleop",
                     "returnType": "bool",
-                    "tooltip": "Check if the DS is commanding teleop mode.\n\n:returns: True if the robot is being commanded to be in teleop mode"
+                    "tooltip": "Check if the DS is commanding teleop mode.\n\nThis method always returns false while the main robot class is being\nconstructed and initialized (more specifically, it returns false until\nObserveUserProgramStarting() is called, which the WPILib framework will\nautomatically call during TimedRobot::StartCompetition() and\nOpModeRobot::StartCompetition()).\n\n:returns: True if the robot is being commanded to be in teleop mode"
                 },
                 {
                     "args": [],
                     "declaringClassName": "wpilib.DriverStationBackend",
                     "functionName": "is_teleop_enabled",
                     "returnType": "bool",
-                    "tooltip": "Check if the DS is commanding teleop mode and if it has enabled the robot.\n\n:returns: True if the robot is being commanded to be in teleop mode and\n          enabled."
+                    "tooltip": "Check if the DS is commanding teleop mode and if it has enabled the robot.\n\nThis method always returns false while the main robot class is being\nconstructed and initialized (more specifically, it returns false until\nObserveUserProgramStarting() is called, which the WPILib framework will\nautomatically call during TimedRobot::StartCompetition() and\nOpModeRobot::StartCompetition()).\n\n:returns: True if the robot is being commanded to be in teleop mode and\n          enabled."
                 },
                 {
                     "args": [],
                     "declaringClassName": "wpilib.DriverStationBackend",
                     "functionName": "is_utility",
                     "returnType": "bool",
-                    "tooltip": "Check if the DS is commanding utility mode.\n\n:returns: True if the robot is being commanded to be in utility mode"
+                    "tooltip": "Check if the DS is commanding utility mode.\n\nThis method always returns false while the main robot class is being\nconstructed and initialized (more specifically, it returns false until\nObserveUserProgramStarting() is called, which the WPILib framework will\nautomatically call during TimedRobot::StartCompetition() and\nOpModeRobot::StartCompetition()).\n\n:returns: True if the robot is being commanded to be in utility mode"
                 },
                 {
                     "args": [],
                     "declaringClassName": "wpilib.DriverStationBackend",
                     "functionName": "is_utility_enabled",
                     "returnType": "bool",
-                    "tooltip": "Check if the DS is commanding Utility mode and if it has enabled the robot.\n\n:returns: True if the robot is being commanded to be in Utility mode and\n          enabled."
+                    "tooltip": "Check if the DS is commanding Utility mode and if it has enabled the robot.\n\nThis method always returns false while the main robot class is being\nconstructed and initialized (more specifically, it returns false until\nObserveUserProgramStarting() is called, which the WPILib framework will\nautomatically call during TimedRobot::StartCompetition() and\nOpModeRobot::StartCompetition()).\n\n:returns: True if the robot is being commanded to be in Utility mode and\n          enabled."
                 },
                 {
                     "args": [],
@@ -20657,7 +20711,7 @@
                     "declaringClassName": "wpilib.LEDPattern",
                     "functionName": "at_brightness",
                     "returnType": "wpilib.LEDPattern",
-                    "tooltip": "Creates a pattern that plays this one, but at a different brightness.\nBrightness multipliers are applied per-channel in the RGB space; no HSL or\nHSV conversions are applied. Multipliers are also uncapped, which may\nresult in the original colors washing out and appearing less saturated or\neven just a bright white.\n\nThis method is predominantly intended for dimming LEDs to avoid\npainfully bright or distracting patterns from playing (apologies to the\n2024 NE Greater Boston field staff).\n\nFor example, dimming can be done simply by adding a call to\n`atBrightness` at the end of a pattern:\n\n::\n\n    // Solid red, but at 50% brightness\n    wpi::LEDPattern::Solid(wpi::util::Color::RED).AtBrightness(0.5);\n  \n    // Solid white, but at only 10% (i.e. ~0.5V)\n    wpi::LEDPattern::Solid(wpi::util::Color::WHITE).AtBrightness(0.1);\n\n:param relative_brightness: the multiplier to apply to all channels to modify\n                            brightness\n\n:returns: the input pattern, displayed at"
+                    "tooltip": "Creates a pattern that plays this one, but at a different brightness.\nBrightness multipliers are applied per-channel in the RGB space; no HSL or\nHSV conversions are applied. Multipliers are also uncapped, which may\nresult in the original colors washing out and appearing less saturated or\neven just a bright white.\n\nThis method is predominantly intended for dimming LEDs to avoid\npainfully bright or distracting patterns from playing (apologies to the\n2024 NE Greater Boston field staff).\n\nFor example, dimming can be done simply by adding a call to\n`atBrightness` at the end of a pattern:\n\n.. code-block:: python\n\n   from wpilib import LEDPattern\n   from wpiutil import Color\n   \n   # Solid red, but at 50% brightness.\n   dim_red = LEDPattern.solid(Color.RED).at_brightness(0.5)\n   \n   # Solid white, but at only 10% brightness.\n   dim_white = LEDPattern.solid(Color.WHITE).at_brightness(0.1)\n\n:param relative_brightness: the multiplier to apply to all channels to modify\n                            brightness\n\n:returns: the input pattern, displayed at"
                 },
                 {
                     "args": [
@@ -20842,7 +20896,7 @@
                     "declaringClassName": "wpilib.LEDPattern",
                     "functionName": "scroll_at_absolute_velocity",
                     "returnType": "wpilib.LEDPattern",
-                    "tooltip": "Creates a pattern that plays this one scrolling up an LED strip. A negative\nvelocity makes the pattern play in reverse.\n\nFor example, scrolling a pattern at 4 inches per second along an LED\nstrip with 60 LEDs per meter:\n\n::\n\n    // LEDs per meter, a known value taken from the spec sheet of our\n  particular LED strip wpi::units::meter_t LED_SPACING =\n  wpi::units::meter_t{1 /60.0};\n  \n    wpi::LEDPattern rainbow = wpi::LEDPattern::Rainbow();\n    wpi::LEDPattern scrollingRainbow = rainbow.ScrollAtAbsoluteVelocity(\n      wpi::units::feet_per_second_t{1 / 3.0}, LED_SPACING);\n\nNote that this pattern will scroll *faster* if applied to a less\ndense LED strip (such as 30 LEDs per meter), or *slower* if applied to\na denser LED strip (such as 120 or 144 LEDs per meter).\n\n:param velocity:    how fast the pattern should move along a physical LED strip\n:param led_spacing: the distance between adjacent LEDs on the physical LED\n                    strip\n\n:returns: the scrolling pattern"
+                    "tooltip": "Creates a pattern that plays this one scrolling up an LED strip. A negative\nvelocity makes the pattern play in reverse.\n\nFor example, scrolling a pattern at 4 inches per second along an LED\nstrip with 60 LEDs per meter:\n\n.. code-block:: python\n\n   from wpilib import LEDPattern\n   \n   # 60 LEDs per meter, as specified by the LED strip's spec sheet.\n   led_spacing = 1.0 / 60.0  # meters between adjacent LEDs\n   rainbow = LEDPattern.rainbow(255, 128)\n   scrolling_rainbow = rainbow.scroll_at_absolute_velocity(\n       4 * 0.0254, led_spacing  # 4 inches per second, in meters per second\n   )\n\nNote that this pattern will scroll *faster* if applied to a less\ndense LED strip (such as 30 LEDs per meter), or *slower* if applied to\na denser LED strip (such as 120 or 144 LEDs per meter).\n\n:param velocity:    how fast the pattern should move along a physical LED strip\n:param led_spacing: the distance between adjacent LEDs on the physical LED\n                    strip\n\n:returns: the scrolling pattern"
                 },
                 {
                     "args": [
@@ -20921,7 +20975,7 @@
                     "declaringClassName": "wpilib.LEDPattern",
                     "functionName": "progress_mask_layer",
                     "returnType": "wpilib.LEDPattern",
-                    "tooltip": "Creates a pattern that works as a mask layer for {@link\nLEDPattern::Mask(const LEDPattern&)} that illuminates only the portion of\nthe LED strip corresponding with some progress. The mask pattern will start\nfrom the base and set LEDs to white at a proportion equal to the progress\nreturned by the function. Some usages for this could be for displaying\nprogress of a flywheel to its target velocity, progress of a complex\nautonomous sequence, or the height of an elevator.\n\nFor example, creating a mask for displaying a red-to-blue gradient,\nstarting from the red end, based on where an elevator is in its range of\ntravel.\n\n::\n\n  wpi::LEDPattern basePattern =\n    wpi::LEDPattern::Gradient(wpi::util::Color::RED,\n  wpi::util::Color::BLUE); wpi::LEDPattern progressPattern =\n    basePattern.Mask(wpi::LEDPattern::ProgressMaskLayer([&]() {\n      return elevator.GetHeight() / elevator.MaxHeight();\n    });\n\n:param progress_function: the function to call to determine the progress.\n                          This should return values in the range [0, 1]; any values outside that\n                          range will be clamped.\n\n:returns: the mask pattern"
+                    "tooltip": "Creates a pattern that works as a mask layer for {@link\nLEDPattern::Mask(const LEDPattern&)} that illuminates only the portion of\nthe LED strip corresponding with some progress. The mask pattern will start\nfrom the base and set LEDs to white at a proportion equal to the progress\nreturned by the function. Some usages for this could be for displaying\nprogress of a flywheel to its target velocity, progress of a complex\nautonomous sequence, or the height of an elevator.\n\nFor example, creating a mask for displaying a red-to-blue gradient,\nstarting from the red end, based on where an elevator is in its range of\ntravel.\n\n.. code-block:: python\n\n   from wpilib import LEDPattern\n   from wpiutil import Color\n   \n   base_pattern = LEDPattern.gradient(\n       LEDPattern.GradientType.DISCONTINUOUS, [Color.RED, Color.BLUE]\n   )\n   # elevator supplies the current and maximum heights in the same units.\n   progress_pattern = base_pattern.mask(\n       LEDPattern.progress_mask_layer(\n           lambda: elevator.get_height() / elevator.max_height()\n       )\n   )\n\n:param progress_function: the function to call to determine the progress.\n                          This should return values in the range [0, 1]; any values outside that\n                          range will be clamped.\n\n:returns: the mask pattern"
                 },
                 {
                     "args": [
@@ -29593,6 +29647,19 @@
                         }
                     ],
                     "declaringClassName": "wpilib.OpMode",
+                    "functionName": "close",
+                    "returnType": "None",
+                    "tooltip": "Called when the opmode is no longer selected on the DS or after an enabled\nrun ends, even if the opmode was never started. The framework removes the\nopmode's periodic callbacks before calling this method and will not reuse\nthe object afterward.\n\nThis lifecycle cleanup does not depend on object destruction; other\nreferences may keep the object alive after this method returns."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib.OpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib.OpMode",
                     "functionName": "disabled_periodic",
                     "returnType": "None",
                     "tooltip": "This function is called periodically while the opmode is selected on the\nDS (robot is disabled). Code that should only run once when the opmode is\nselected should go in the opmode constructor."
@@ -29707,22 +29774,22 @@
                         {
                             "defaultValue": "",
                             "name": "group",
-                            "type": "typing.Optional[str]"
+                            "type": "str | None"
                         },
                         {
                             "defaultValue": "",
                             "name": "description",
-                            "type": "typing.Optional[str]"
+                            "type": "str | None"
                         },
                         {
                             "defaultValue": "",
                             "name": "text_color",
-                            "type": "typing.Optional[wpiutil.Color]"
+                            "type": "wpiutil.Color | None"
                         },
                         {
                             "defaultValue": "",
                             "name": "background_color",
-                            "type": "typing.Optional[wpiutil.Color]"
+                            "type": "wpiutil.Color | None"
                         }
                     ],
                     "declaringClassName": "wpilib.OpModeRobot",
@@ -31206,6 +31273,19 @@
                     "functionName": "add_periodic",
                     "returnType": "None",
                     "tooltip": "Add a callback to run at a specific period with a starting time offset.\n\nThis is scheduled on the same Notifier as Periodic(), so Periodic() and\nthe callback run synchronously. Interactions between them are thread-safe.\n\n:param callback: The callback to run.\n:param period:   The period at which to run the callback.\n:param offset:   The offset from the common starting time. This is useful\n                 for scheduling a callback in a different timeslot relative\n                 to TimedRobot."
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "self",
+                            "type": "wpilib.OpMode"
+                        }
+                    ],
+                    "declaringClassName": "wpilib.OpMode",
+                    "functionName": "close",
+                    "returnType": "None",
+                    "tooltip": "Called when the opmode is no longer selected on the DS or after an enabled\nrun ends, even if the opmode was never started. The framework removes the\nopmode's periodic callbacks before calling this method and will not reuse\nthe object afterward.\n\nThis lifecycle cleanup does not depend on object destruction; other\nreferences may keep the object alive after this method returns."
                 },
                 {
                     "args": [
@@ -45391,7 +45471,7 @@
                     "declaringClassName": "wpilib.Timer",
                     "functionName": "create_started",
                     "returnType": "wpilib.Timer",
-                    "tooltip": "Creates a new timer that begins started.\n\nThis is equivalent to\n::\n\n    wpi::Timer timer;\n    timer.Start();\n\n:returns: A new started timer."
+                    "tooltip": "Creates a new timer that begins started.\n\nThis is equivalent to\n\n.. code-block:: python\n\n   from wpilib import Timer\n   \n   timer = Timer()\n   timer.start()\n\n:returns: A new started timer."
                 },
                 {
                     "args": [],
@@ -75847,7 +75927,7 @@
                     "declaringClassName": "wpimath.DifferentialSample",
                     "functionName": "__init__",
                     "returnType": "wpimath.DifferentialSample",
-                    "tooltip": "Constructs a DifferentialSample from a TrajectorySample.\n\n:param sample:         The TrajectorySample to copy.\n:param left_velocity:  The left wheel velocity at this sample.\n:param right_velocity: The right wheel velocity at this sample."
+                    "tooltip": "Constructs a DifferentialSample from a HolonomicSample.\n\n:param sample:         The HolonomicSample to copy.\n:param left_velocity:  The left wheel velocity at this sample.\n:param right_velocity: The right wheel velocity at this sample."
                 },
                 {
                     "args": [
@@ -75865,7 +75945,7 @@
                     "declaringClassName": "wpimath.DifferentialSample",
                     "functionName": "__init__",
                     "returnType": "wpimath.DifferentialSample",
-                    "tooltip": "Constructs a DifferentialSample from a TrajectorySample.\n\n:param sample:     The TrajectorySample to copy.\n:param kinematics: The kinematics of the drivetrain."
+                    "tooltip": "Constructs a DifferentialSample from a HolonomicSample.\n\n:param sample:     The HolonomicSample to copy.\n:param kinematics: The kinematics of the drivetrain."
                 },
                 {
                     "args": [
@@ -76036,19 +76116,6 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "wpimath.DifferentialTrajectoryBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.DifferentialTrajectoryBase",
-                    "functionName": "initial_pose",
-                    "returnType": "wpimath.Pose2d",
-                    "tooltip": "Returns the initial pose of the trajectory.\n\n:returns: The initial pose of the trajectory."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
                             "type": "wpimath.DifferentialTrajectory"
                         },
                         {
@@ -76106,25 +76173,7 @@
                     "declaringClassName": "wpimath.DifferentialTrajectoryBase",
                     "functionName": "sample_at",
                     "returnType": "wpimath.DifferentialSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time.\n          @throws std::runtime_error if the trajectory has no samples."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.DifferentialTrajectoryBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "t",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.DifferentialTrajectoryBase",
-                    "functionName": "sample_at",
-                    "returnType": "wpimath.DifferentialSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample\n          (in seconds).\n\n:returns: The sample at that point in time."
+                    "tooltip": "Sample the trajectory at a point in time.\n\nIf several samples share a timestamp, such as at the join of a\nconcatenated trajectory, the last one at that time is returned. Times at or\nbefore the start return the first sample, and times at or after the end\nreturn the last sample.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time."
                 },
                 {
                     "args": [
@@ -76191,7 +76240,7 @@
                     "declaringClassName": "wpimath.DifferentialTrajectoryBase",
                     "functionName": "__init__",
                     "returnType": "wpimath.DifferentialTrajectoryBase",
-                    "tooltip": "Constructs a Trajectory from a vector of samples.\n\n:param samples: The samples of the trajectory. Order does not matter as\n                they will be sorted internally.\n                @throws std::invalid_argument if the vector of samples is empty."
+                    "tooltip": "Constructs a Trajectory from a vector of samples.\n\n:param samples: The samples of the trajectory. Order does not matter as\n                they will be sorted internally.\n                @throws std::invalid_argument if the vector of samples is empty or if the\n                earliest sample's time is not zero."
                 }
             ],
             "enums": [],
@@ -76221,19 +76270,6 @@
                     "functionName": "end",
                     "returnType": "wpimath.DifferentialSample",
                     "tooltip": "Returns the last sample in the trajectory.\n\n:returns: The last sample."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.DifferentialTrajectoryBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.DifferentialTrajectoryBase",
-                    "functionName": "initial_pose",
-                    "returnType": "wpimath.Pose2d",
-                    "tooltip": "Returns the initial pose of the trajectory.\n\n:returns: The initial pose of the trajectory."
                 },
                 {
                     "args": [
@@ -76279,25 +76315,7 @@
                     "declaringClassName": "wpimath.DifferentialTrajectoryBase",
                     "functionName": "sample_at",
                     "returnType": "wpimath.DifferentialSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time.\n          @throws std::runtime_error if the trajectory has no samples."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.DifferentialTrajectoryBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "t",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.DifferentialTrajectoryBase",
-                    "functionName": "sample_at",
-                    "returnType": "wpimath.DifferentialSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample\n          (in seconds).\n\n:returns: The sample at that point in time."
+                    "tooltip": "Sample the trajectory at a point in time.\n\nIf several samples share a timestamp, such as at the join of a\nconcatenated trajectory, the last one at that time is returned. Times at or\nbefore the start return the first sample, and times at or after the end\nreturn the last sample.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time."
                 },
                 {
                     "args": [
@@ -76592,19 +76610,6 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "wpimath.DrivetrainSplineTrajectoryBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.DrivetrainSplineTrajectoryBase",
-                    "functionName": "initial_pose",
-                    "returnType": "wpimath.Pose2d",
-                    "tooltip": "Returns the initial pose of the trajectory.\n\n:returns: The initial pose of the trajectory."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
                             "type": "wpimath.DrivetrainSplineTrajectory"
                         },
                         {
@@ -76662,25 +76667,7 @@
                     "declaringClassName": "wpimath.DrivetrainSplineTrajectoryBase",
                     "functionName": "sample_at",
                     "returnType": "wpimath.DrivetrainSplineSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time.\n          @throws std::runtime_error if the trajectory has no samples."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.DrivetrainSplineTrajectoryBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "t",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.DrivetrainSplineTrajectoryBase",
-                    "functionName": "sample_at",
-                    "returnType": "wpimath.DrivetrainSplineSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample\n          (in seconds).\n\n:returns: The sample at that point in time."
+                    "tooltip": "Sample the trajectory at a point in time.\n\nIf several samples share a timestamp, such as at the join of a\nconcatenated trajectory, the last one at that time is returned. Times at or\nbefore the start return the first sample, and times at or after the end\nreturn the last sample.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time."
                 },
                 {
                     "args": [
@@ -76747,7 +76734,7 @@
                     "declaringClassName": "wpimath.DrivetrainSplineTrajectoryBase",
                     "functionName": "__init__",
                     "returnType": "wpimath.DrivetrainSplineTrajectoryBase",
-                    "tooltip": "Constructs a Trajectory from a vector of samples.\n\n:param samples: The samples of the trajectory. Order does not matter as\n                they will be sorted internally.\n                @throws std::invalid_argument if the vector of samples is empty."
+                    "tooltip": "Constructs a Trajectory from a vector of samples.\n\n:param samples: The samples of the trajectory. Order does not matter as\n                they will be sorted internally.\n                @throws std::invalid_argument if the vector of samples is empty or if the\n                earliest sample's time is not zero."
                 }
             ],
             "enums": [],
@@ -76777,19 +76764,6 @@
                     "functionName": "end",
                     "returnType": "wpimath.DrivetrainSplineSample",
                     "tooltip": "Returns the last sample in the trajectory.\n\n:returns: The last sample."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.DrivetrainSplineTrajectoryBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.DrivetrainSplineTrajectoryBase",
-                    "functionName": "initial_pose",
-                    "returnType": "wpimath.Pose2d",
-                    "tooltip": "Returns the initial pose of the trajectory.\n\n:returns: The initial pose of the trajectory."
                 },
                 {
                     "args": [
@@ -76835,25 +76809,7 @@
                     "declaringClassName": "wpimath.DrivetrainSplineTrajectoryBase",
                     "functionName": "sample_at",
                     "returnType": "wpimath.DrivetrainSplineSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time.\n          @throws std::runtime_error if the trajectory has no samples."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.DrivetrainSplineTrajectoryBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "t",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.DrivetrainSplineTrajectoryBase",
-                    "functionName": "sample_at",
-                    "returnType": "wpimath.DrivetrainSplineSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample\n          (in seconds).\n\n:returns: The sample at that point in time."
+                    "tooltip": "Sample the trajectory at a point in time.\n\nIf several samples share a timestamp, such as at the join of a\nconcatenated trajectory, the last one at that time is returned. Times at or\nbefore the start return the first sample, and times at or after the end\nreturn the last sample.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time."
                 },
                 {
                     "args": [
@@ -79565,19 +79521,6 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "wpimath.HolonomicTrajectoryBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.HolonomicTrajectoryBase",
-                    "functionName": "initial_pose",
-                    "returnType": "wpimath.Pose2d",
-                    "tooltip": "Returns the initial pose of the trajectory.\n\n:returns: The initial pose of the trajectory."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
                             "type": "wpimath.HolonomicTrajectory"
                         },
                         {
@@ -79635,25 +79578,7 @@
                     "declaringClassName": "wpimath.HolonomicTrajectoryBase",
                     "functionName": "sample_at",
                     "returnType": "wpimath.HolonomicSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time.\n          @throws std::runtime_error if the trajectory has no samples."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.HolonomicTrajectoryBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "t",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.HolonomicTrajectoryBase",
-                    "functionName": "sample_at",
-                    "returnType": "wpimath.HolonomicSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample\n          (in seconds).\n\n:returns: The sample at that point in time."
+                    "tooltip": "Sample the trajectory at a point in time.\n\nIf several samples share a timestamp, such as at the join of a\nconcatenated trajectory, the last one at that time is returned. Times at or\nbefore the start return the first sample, and times at or after the end\nreturn the last sample.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time."
                 },
                 {
                     "args": [
@@ -79720,7 +79645,7 @@
                     "declaringClassName": "wpimath.HolonomicTrajectoryBase",
                     "functionName": "__init__",
                     "returnType": "wpimath.HolonomicTrajectoryBase",
-                    "tooltip": "Constructs a Trajectory from a vector of samples.\n\n:param samples: The samples of the trajectory. Order does not matter as\n                they will be sorted internally.\n                @throws std::invalid_argument if the vector of samples is empty."
+                    "tooltip": "Constructs a Trajectory from a vector of samples.\n\n:param samples: The samples of the trajectory. Order does not matter as\n                they will be sorted internally.\n                @throws std::invalid_argument if the vector of samples is empty or if the\n                earliest sample's time is not zero."
                 }
             ],
             "enums": [],
@@ -79750,19 +79675,6 @@
                     "functionName": "end",
                     "returnType": "wpimath.HolonomicSample",
                     "tooltip": "Returns the last sample in the trajectory.\n\n:returns: The last sample."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.HolonomicTrajectoryBase"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.HolonomicTrajectoryBase",
-                    "functionName": "initial_pose",
-                    "returnType": "wpimath.Pose2d",
-                    "tooltip": "Returns the initial pose of the trajectory.\n\n:returns: The initial pose of the trajectory."
                 },
                 {
                     "args": [
@@ -79808,25 +79720,7 @@
                     "declaringClassName": "wpimath.HolonomicTrajectoryBase",
                     "functionName": "sample_at",
                     "returnType": "wpimath.HolonomicSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time.\n          @throws std::runtime_error if the trajectory has no samples."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.HolonomicTrajectoryBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "t",
-                            "type": "float"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.HolonomicTrajectoryBase",
-                    "functionName": "sample_at",
-                    "returnType": "wpimath.HolonomicSample",
-                    "tooltip": "Sample the trajectory at a point in time.\n\n:param t: The point in time since the beginning of the trajectory to sample\n          (in seconds).\n\n:returns: The sample at that point in time."
+                    "tooltip": "Sample the trajectory at a point in time.\n\nIf several samples share a timestamp, such as at the join of a\nconcatenated trajectory, the last one at that time is returned. Times at or\nbefore the start return the first sample, and times at or after the end\nreturn the last sample.\n\n:param t: The point in time since the beginning of the trajectory to sample.\n\n:returns: The sample at that point in time."
                 },
                 {
                     "args": [
@@ -90230,7 +90124,7 @@
                     "declaringClassName": "wpimath.MecanumDriveKinematics",
                     "functionName": "to_wheel_velocities",
                     "returnType": "wpimath.MecanumDriveWheelVelocities",
-                    "tooltip": "Performs inverse kinematics to return the wheel velocities from a desired\nchassis velocity. This method is often used to convert joystick values into\nwheel velocities.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\n:param chassisVelocities:    The desired chassis velocity.\n:param centerOfRotation: The center of rotation. For example, if you set the\n                         center of rotation at one corner of the robot and\n                         provide a chassis velocity that only has a dtheta\n                         component, the robot will rotate around that\n                         corner.\n\n:returns: The wheel velocities. Use caution because they are not normalized.\n          Sometimes, a user input may cause one of the wheel velocities to go\n          above the attainable max velocity. Use the\n          :meth:`MecanumDriveWheelVelocities.normalize` method to rectify\n          this issue. In addition, you can use Python unpacking syntax\n          to directly assign the wheel velocities to variables::\n\n            fl, fr, bl, br = kinematics.toWheelVelocities(chassisVelocities)"
+                    "tooltip": "Performs inverse kinematics to return the wheel velocities from a desired\nchassis velocity. This method is often used to convert joystick values into\nwheel velocities.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\n:param chassis_velocities: The desired chassis velocity.\n:param center_of_rotation: The center of rotation. For example, if you set the\n                         center of rotation at one corner of the robot and\n                         provide a chassis velocity that only has a dtheta\n                         component, the robot will rotate around that\n                         corner.\n\n:returns: The wheel velocities. Use caution because they are not normalized.\n          Sometimes, a user input may cause one of the wheel velocities to go\n          above the attainable max velocity. Use the\n          :meth:`MecanumDriveWheelVelocities.normalize` method to rectify\n          this issue. In addition, you can use Python unpacking syntax\n          to directly assign the wheel velocities to variables::\n\n            fl, fr, bl, br = kinematics.to_wheel_velocities(chassis_velocities)"
                 },
                 {
                     "args": [
@@ -90248,7 +90142,7 @@
                     "declaringClassName": "wpimath.MecanumDriveKinematics",
                     "functionName": "to_wheel_velocities",
                     "returnType": "wpimath.MecanumDriveWheelVelocities",
-                    "tooltip": "Performs inverse kinematics to return the wheel velocities from a desired\nchassis velocity. This method is often used to convert joystick values into\nwheel velocities.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\n:param chassisVelocities:    The desired chassis velocity.\n:param centerOfRotation: The center of rotation. For example, if you set the\n                         center of rotation at one corner of the robot and\n                         provide a chassis velocity that only has a dtheta\n                         component, the robot will rotate around that\n                         corner.\n\n:returns: The wheel velocities. Use caution because they are not normalized.\n          Sometimes, a user input may cause one of the wheel velocities to go\n          above the attainable max velocity. Use the\n          :meth:`MecanumDriveWheelVelocities.normalize` method to rectify\n          this issue. In addition, you can use Python unpacking syntax\n          to directly assign the wheel velocities to variables::\n\n            fl, fr, bl, br = kinematics.toWheelVelocities(chassisVelocities)"
+                    "tooltip": "Performs inverse kinematics to return the wheel velocities from a desired\nchassis velocity. This method is often used to convert joystick values into\nwheel velocities.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\n:param chassis_velocities: The desired chassis velocity.\n:param center_of_rotation: The center of rotation. For example, if you set the\n                         center of rotation at one corner of the robot and\n                         provide a chassis velocity that only has a dtheta\n                         component, the robot will rotate around that\n                         corner.\n\n:returns: The wheel velocities. Use caution because they are not normalized.\n          Sometimes, a user input may cause one of the wheel velocities to go\n          above the attainable max velocity. Use the\n          :meth:`MecanumDriveWheelVelocities.normalize` method to rectify\n          this issue. In addition, you can use Python unpacking syntax\n          to directly assign the wheel velocities to variables::\n\n            fl, fr, bl, br = kinematics.to_wheel_velocities(chassis_velocities)"
                 }
             ],
             "instanceVariables": [],
@@ -96271,7 +96165,7 @@
                     "declaringClassName": "wpimath.Rotation2d",
                     "functionName": "rotate_by",
                     "returnType": "wpimath.Rotation2d",
-                    "tooltip": "Adds the new rotation to the current rotation using a rotation matrix.\n\n::\n\n  [cos_new]   [other.cos, -other.sin][cos]\n  [sin_new] = [other.sin,  other.cos][sin]\n  value_new = std::atan2(sin_new, cos_new)\n\n:param other: The rotation to rotate by.\n\n:returns: The new rotated Rotation2d."
+                    "tooltip": "Adds the new rotation to the current rotation using a rotation matrix.\n\n::\n\n   [cos_new]   [other.cos, -other.sin][cos]\n   [sin_new] = [other.sin,  other.cos][sin]\n   value_new = std::atan2(sin_new, cos_new)\n\n:param other: The rotation to rotate by.\n\n:returns: The new rotated Rotation2d."
                 },
                 {
                     "args": [
@@ -98127,7 +98021,7 @@
                     "declaringClassName": "wpimath.SwerveDrive2Kinematics",
                     "functionName": "to_swerve_module_velocities",
                     "returnType": "Tuple[wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity]",
-                    "tooltip": "Performs inverse kinematics to return the module states from a desired\nchassis velocity. This method is often used to convert joystick values into\nmodule velocities and angles.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\n:param chassisVelocities:    The desired chassis velocity.\n:param centerOfRotation: The center of rotation. For example, if you set the\n center of rotation at one corner of the robot and provide a chassis velocity\n that only has a dtheta component, the robot will rotate around that corner.\n\n:returns: An array containing the module states. Use caution because these\n          module states are not normalized. Sometimes, a user input may cause one of\n          the module velocities to go above the attainable max velocity. Use the\n          :meth:`desaturateWheelVelocities` function to rectify this issue.\n          In addition, you can use Python unpacking syntax\n          to directly assign the module states to variables::\n\n            fl, fr, bl, br = kinematics.toSwerveModuleVelocities(chassisVelocities)"
+                    "tooltip": "Performs inverse kinematics to return the module states from a desired\nchassis velocity. This method is often used to convert joystick values into\nmodule velocities and angles.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\nIn the case that the desired chassis velocities are zero (i.e. the robot\nwill be stationary), the previously calculated module angle will be\nmaintained.\n\n:param chassis_velocities: The desired chassis velocity.\n:param center_of_rotation: The center of rotation. For example, if you set the\n center of rotation at one corner of the robot and provide a chassis velocity\n that only has a dtheta component, the robot will rotate around that corner.\n\n:returns: A tuple containing the module states. Use caution because these\n          module states are not normalized. Sometimes, a user input may cause one of\n          the module velocities to go above the attainable max velocity. Use the\n          :meth:`desaturate_wheel_velocities` function to rectify this issue.\n          In addition, you can use Python unpacking syntax\n          to directly assign the module states to variables::\n\n            fl, fr, bl, br = kinematics.to_swerve_module_velocities(chassis_velocities)"
                 },
                 {
                     "args": [
@@ -100485,7 +100379,7 @@
                     "declaringClassName": "wpimath.SwerveDrive3Kinematics",
                     "functionName": "to_swerve_module_velocities",
                     "returnType": "Tuple[wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity]",
-                    "tooltip": "Performs inverse kinematics to return the module states from a desired\nchassis velocity. This method is often used to convert joystick values into\nmodule velocities and angles.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\n:param chassisVelocities:    The desired chassis velocity.\n:param centerOfRotation: The center of rotation. For example, if you set the\n center of rotation at one corner of the robot and provide a chassis velocity\n that only has a dtheta component, the robot will rotate around that corner.\n\n:returns: An array containing the module states. Use caution because these\n          module states are not normalized. Sometimes, a user input may cause one of\n          the module velocities to go above the attainable max velocity. Use the\n          :meth:`desaturateWheelVelocities` function to rectify this issue.\n          In addition, you can use Python unpacking syntax\n          to directly assign the module states to variables::\n\n            fl, fr, bl, br = kinematics.toSwerveModuleVelocities(chassisVelocities)"
+                    "tooltip": "Performs inverse kinematics to return the module states from a desired\nchassis velocity. This method is often used to convert joystick values into\nmodule velocities and angles.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\nIn the case that the desired chassis velocities are zero (i.e. the robot\nwill be stationary), the previously calculated module angle will be\nmaintained.\n\n:param chassis_velocities: The desired chassis velocity.\n:param center_of_rotation: The center of rotation. For example, if you set the\n center of rotation at one corner of the robot and provide a chassis velocity\n that only has a dtheta component, the robot will rotate around that corner.\n\n:returns: A tuple containing the module states. Use caution because these\n          module states are not normalized. Sometimes, a user input may cause one of\n          the module velocities to go above the attainable max velocity. Use the\n          :meth:`desaturate_wheel_velocities` function to rectify this issue.\n          In addition, you can use Python unpacking syntax\n          to directly assign the module states to variables::\n\n            fl, fr, bl, br = kinematics.to_swerve_module_velocities(chassis_velocities)"
                 },
                 {
                     "args": [
@@ -102848,7 +102742,7 @@
                     "declaringClassName": "wpimath.SwerveDrive4Kinematics",
                     "functionName": "to_swerve_module_velocities",
                     "returnType": "Tuple[wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity]",
-                    "tooltip": "Performs inverse kinematics to return the module states from a desired\nchassis velocity. This method is often used to convert joystick values into\nmodule velocities and angles.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\n:param chassisVelocities:    The desired chassis velocity.\n:param centerOfRotation: The center of rotation. For example, if you set the\n center of rotation at one corner of the robot and provide a chassis velocity\n that only has a dtheta component, the robot will rotate around that corner.\n\n:returns: An array containing the module states. Use caution because these\n          module states are not normalized. Sometimes, a user input may cause one of\n          the module velocities to go above the attainable max velocity. Use the\n          :meth:`desaturateWheelVelocities` function to rectify this issue.\n          In addition, you can use Python unpacking syntax\n          to directly assign the module states to variables::\n\n            fl, fr, bl, br = kinematics.toSwerveModuleVelocities(chassisVelocities)"
+                    "tooltip": "Performs inverse kinematics to return the module states from a desired\nchassis velocity. This method is often used to convert joystick values into\nmodule velocities and angles.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\nIn the case that the desired chassis velocities are zero (i.e. the robot\nwill be stationary), the previously calculated module angle will be\nmaintained.\n\n:param chassis_velocities: The desired chassis velocity.\n:param center_of_rotation: The center of rotation. For example, if you set the\n center of rotation at one corner of the robot and provide a chassis velocity\n that only has a dtheta component, the robot will rotate around that corner.\n\n:returns: A tuple containing the module states. Use caution because these\n          module states are not normalized. Sometimes, a user input may cause one of\n          the module velocities to go above the attainable max velocity. Use the\n          :meth:`desaturate_wheel_velocities` function to rectify this issue.\n          In addition, you can use Python unpacking syntax\n          to directly assign the module states to variables::\n\n            fl, fr, bl, br = kinematics.to_swerve_module_velocities(chassis_velocities)"
                 },
                 {
                     "args": [
@@ -105221,7 +105115,7 @@
                     "declaringClassName": "wpimath.SwerveDrive6Kinematics",
                     "functionName": "to_swerve_module_velocities",
                     "returnType": "Tuple[wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity, wpimath.SwerveModuleVelocity]",
-                    "tooltip": "Performs inverse kinematics to return the module states from a desired\nchassis velocity. This method is often used to convert joystick values into\nmodule velocities and angles.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\n:param chassisVelocities:    The desired chassis velocity.\n:param centerOfRotation: The center of rotation. For example, if you set the\n center of rotation at one corner of the robot and provide a chassis velocity\n that only has a dtheta component, the robot will rotate around that corner.\n\n:returns: An array containing the module states. Use caution because these\n          module states are not normalized. Sometimes, a user input may cause one of\n          the module velocities to go above the attainable max velocity. Use the\n          :meth:`desaturateWheelVelocities` function to rectify this issue.\n          In addition, you can use Python unpacking syntax\n          to directly assign the module states to variables::\n\n            fl, fr, bl, br = kinematics.toSwerveModuleVelocities(chassisVelocities)"
+                    "tooltip": "Performs inverse kinematics to return the module states from a desired\nchassis velocity. This method is often used to convert joystick values into\nmodule velocities and angles.\n\nThis function also supports variable centers of rotation. During normal\noperations, the center of rotation is usually the same as the physical\ncenter of the robot; therefore, the argument is defaulted to that use case.\nHowever, if you wish to change the center of rotation for evasive\nmaneuvers, vision alignment, or for any other use case, you can do so.\n\nIn the case that the desired chassis velocities are zero (i.e. the robot\nwill be stationary), the previously calculated module angle will be\nmaintained.\n\n:param chassis_velocities: The desired chassis velocity.\n:param center_of_rotation: The center of rotation. For example, if you set the\n center of rotation at one corner of the robot and provide a chassis velocity\n that only has a dtheta component, the robot will rotate around that corner.\n\n:returns: A tuple containing the module states. Use caution because these\n          module states are not normalized. Sometimes, a user input may cause one of\n          the module velocities to go above the attainable max velocity. Use the\n          :meth:`desaturate_wheel_velocities` function to rectify this issue.\n          In addition, you can use Python unpacking syntax\n          to directly assign the module states to variables::\n\n            fl, fr, bl, br = kinematics.to_swerve_module_velocities(chassis_velocities)"
                 },
                 {
                     "args": [
@@ -108831,45 +108725,6 @@
             "staticMethods": []
         },
         {
-            "className": "wpimath.TrajectorySample",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [],
-                    "declaringClassName": "wpimath.TrajectorySample",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.TrajectorySample",
-                    "tooltip": "Constructs a default TrajectorySample with all zero values."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "time",
-                            "type": "wpimath.units.seconds"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.TrajectorySample",
-                    "functionName": "__init__",
-                    "returnType": "wpimath.TrajectorySample",
-                    "tooltip": "Constructs a TrajectorySample.\n\n:param time: The time of the sample relative to the trajectory start."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [],
-            "instanceVariables": [
-                {
-                    "name": "time",
-                    "tooltip": "The time of the sample relative to the trajectory start.",
-                    "type": "wpimath.units.seconds",
-                    "writable": false
-                }
-            ],
-            "isComponent": false,
-            "moduleName": "wpimath",
-            "staticMethods": []
-        },
-        {
             "className": "wpimath.Transform2d",
             "classVariables": [],
             "constructors": [
@@ -109524,7 +109379,7 @@
                     "declaringClassName": "wpimath.Translation2d",
                     "functionName": "rotate_around",
                     "returnType": "wpimath.Translation2d",
-                    "tooltip": "Rotates this translation around another translation in 2D space.\n\n::\n\n  [x_new]   [rot.cos, -rot.sin][x - other.x]   [other.x]\n  [y_new] = [rot.sin,  rot.cos][y - other.y] + [other.y]\n\n:param other: The other translation to rotate around.\n:param rot:   The rotation to rotate the translation by.\n\n:returns: The new rotated translation."
+                    "tooltip": "Rotates this translation around another translation in 2D space.\n\n::\n\n   [x_new]   [rot.cos, -rot.sin][x - other.x]   [other.x]\n   [y_new] = [rot.sin,  rot.cos][y - other.y] + [other.y]\n\n:param other: The other translation to rotate around.\n:param rot:   The rotation to rotate the translation by.\n\n:returns: The new rotated translation."
                 },
                 {
                     "args": [
@@ -109542,7 +109397,7 @@
                     "declaringClassName": "wpimath.Translation2d",
                     "functionName": "rotate_by",
                     "returnType": "wpimath.Translation2d",
-                    "tooltip": "Applies a rotation to the translation in 2D space.\n\nThis multiplies the translation vector by a counterclockwise rotation\nmatrix of the given angle.\n\n::\n\n  [x_new]   [other.cos, -other.sin][x]\n  [y_new] = [other.sin,  other.cos][y]\n\nFor example, rotating a Translation2d of &lt;2, 0&gt; by 90 degrees will\nreturn a Translation2d of &lt;0, 2&gt;.\n\n:param other: The rotation to rotate the translation by.\n\n:returns: The new rotated translation."
+                    "tooltip": "Applies a rotation to the translation in 2D space.\n\nThis multiplies the translation vector by a counterclockwise rotation\nmatrix of the given angle.\n\n::\n\n   [x_new]   [other.cos, -other.sin][x]\n   [y_new] = [other.sin,  other.cos][y]\n\nFor example, rotating a Translation2d of &lt;2, 0&gt; by 90 degrees will\nreturn a Translation2d of &lt;0, 2&gt;.\n\n:param other: The rotation to rotate the translation by.\n\n:returns: The new rotated translation."
                 },
                 {
                     "args": [
@@ -111997,7 +111852,7 @@
                         "MEDIUM"
                     ],
                     "moduleName": "wpiutil",
-                    "tooltip": "Represents an alert's level of urgency.\n\nMembers:\n\n  HIGH : High priority alert - displayed first with a red \"X\"\nsymbol. Use this type for problems which will seriously affect the\nrobot's functionality and thus require immediate attention.\n\n  MEDIUM : Medium priority alert - displayed second with a yellow \"!\" symbol.\nUse this type for problems which could affect the robot's functionality\nbut do not necessarily require immediate attention.\n\n  LOW : Low priority alert - displayed last with a green \"i\" symbol. Use this\ntype for problems which are unlikely to affect the robot's functionality,\nor any other alerts which do not fall under the other categories."
+                    "tooltip": "Represents an alert's level of urgency.\n\nMembers:\n\n  HIGH : High priority alert - displayed first with a red \"X\"\nsymbol. Use this type for problems which will seriously affect the\nrobot's functionality and thus require immediate attention.\n\n  MEDIUM : Medium priority alert - displayed second with a yellow \"!\" symbol.\nUse this type for problems which could affect the robot's functionality\nbut do not necessarily require immediate attention.\n\n  LOW : Low priority alert - displayed last with a blue \"i\" symbol. Use this\ntype for problems which are unlikely to affect the robot's functionality,\nor any other alerts which do not fall under the other categories."
                 }
             ],
             "instanceMethods": [
@@ -113272,6 +113127,28 @@
                         },
                         {
                             "defaultValue": "",
+                            "name": "value",
+                            "type": "float"
+                        },
+                        {
+                            "defaultValue": "",
+                            "name": "unit",
+                            "type": "str"
+                        }
+                    ],
+                    "functionName": "log_unit",
+                    "returnType": "None",
+                    "tooltip": "Logs a double value with unit metadata to the root table.\n\nSets the JSON-encoded \"unit\" property before logging the value.\nNo unit conversion is performed.\n\n:param name:  entry name\n:param value: value in the given unit\n:param unit:  unit symbol (for example, \"m/s\")"
+                },
+                {
+                    "args": [
+                        {
+                            "defaultValue": "",
+                            "name": "name",
+                            "type": "str"
+                        },
+                        {
+                            "defaultValue": "",
                             "name": "key",
                             "type": "str"
                         },
@@ -114034,7 +113911,7 @@
                         {
                             "defaultValue": "",
                             "name": "timeout",
-                            "type": "typing.Optional[float]"
+                            "type": "float | None"
                         },
                         {
                             "defaultValue": "",
@@ -115219,9 +115096,6 @@
             "wpimath.SwerveDrive3KinematicsConstraint",
             "wpimath.SwerveDrive4KinematicsConstraint",
             "wpimath.SwerveDrive6KinematicsConstraint"
-        ],
-        "wpimath.TrajectorySample": [
-            "wpimath.HolonomicSample"
         ]
     }
 }

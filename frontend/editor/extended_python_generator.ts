@@ -426,6 +426,19 @@ export class ExtendedPythonGenerator extends PythonGenerator {
     return this.mechanismInitArgNames;
   }
 
+  /**
+   * Returns the names of the parameters (after self) of the __init__ method for the current module.
+   */
+  getInitParameterNames(): string[] {
+    switch (this.getModuleType()) {
+      case storageModule.ModuleType.MECHANISM:
+        return this.mechanismInitArgNames;
+      case storageModule.ModuleType.OPMODE:
+        return ['robot'];
+    }
+    return [];
+  }
+
   finish(code: string): string {
     if (this.workspace) {
       const className = this.context.getClassName();
@@ -437,6 +450,14 @@ export class ExtendedPythonGenerator extends PythonGenerator {
       baseClassName = this.importModuleDotClass(baseClassName);
 
       code = decorators + 'class ' + className + '(' + baseClassName + '):\n';
+
+      if (!('__init__' in this.classMethods)) {
+        // The user has not defined the init method. We will define it now.
+        this.classMethods['__init__'] =
+            'def __init__(' + ['self', ...this.getInitParameterNames()].join(', ') + '):\n' +
+            this.INDENT + 'super().__init__(' + this.getSuperInitParameters() + ')\n' +
+            this.generateInitStatements();
+      }
 
       if (this.getModuleType() === storageModule.ModuleType.ROBOT) {
         // Define methods that we use for blocks, but are not in wpilib.OpModeRobot.

@@ -37,9 +37,9 @@ export async function isServerAvailable(timeoutMs: number = 5000): Promise<boole
     });
     
     // Check the specific API status endpoint to distinguish backend from static file server
-    // Use absolute path without base URL since /statusz is a backend endpoint
+    // Use absolute path without base URL since /healthz is a backend endpoint
     const response = await Promise.race([
-      fetch('/statusz', { cache: 'no-store' }),
+      fetch('/healthz', { cache: 'no-store' }),
       timeoutPromise
     ]);
         

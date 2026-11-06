@@ -162,12 +162,13 @@ const MECHANISM = {
         }
       });
     }
-    // Create input sockets for the arguments.
+    // Create input sockets for the arguments. The labels aren't serialized, so they are set from
+    // the parameters here. checkMechanism updates them if the mechanism has changed.
     for (let i = 0; i < this.mrcParameters.length; i++) {
       this.appendValueInput(INPUT_ARG_PREFIX + i)
           .setAlign(Blockly.inputs.Align.RIGHT)
-          .appendField('', FIELD_COMPONENT_NAME_PREFIX + i)
-          .appendField('', FIELD_ARG_NAME_PREFIX + i);
+          .appendField(this.mrcParameters[i].componentName ?? '', FIELD_COMPONENT_NAME_PREFIX + i)
+          .appendField(this.mrcParameters[i].name, FIELD_ARG_NAME_PREFIX + i);
     }
   },
   mrcNameFieldValidator(this: MechanismBlock, nameField: Blockly.FieldTextInput, name: string): string {

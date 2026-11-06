@@ -1,11 +1,10 @@
 /**
- * @fileoverview Theme selection modal component.
+ * @fileoverview Theme settings tab of the settings dialog.
  */
 
 import * as React from 'react';
 import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
-import { BgColorsOutlined } from '@ant-design/icons';
 
 import ReadOnlyBlocklyPreview from './ReadOnlyBlocklyPreview';
 import { SAMPLE_PREVIEW_MODULE_CONTENT_TEXT } from './PreviewSampleContent';
@@ -16,23 +15,18 @@ interface ThemeOption {
     description: string;
 }
 
-export interface ThemeModalProps {
-    open: boolean;
-    onClose: () => void;
-    currentTheme: string;
-    currentRenderer: string;
-    onThemeChange: (themeKey: string) => void;
+export interface ThemeSettingsProps {
+    theme: string;
+    renderer: string;
+    onThemeChange: (theme: string) => void;
 }
 
-const ThemeModal: React.FC<ThemeModalProps> = ({
-    open,
-    onClose,
-    currentTheme,
-    currentRenderer,
+const ThemeSettings: React.FC<ThemeSettingsProps> = ({
+    theme,
+    renderer,
     onThemeChange,
 }) => {
     const { t } = I18Next.useTranslation();
-    const [selectedTheme, setSelectedTheme] = React.useState(currentTheme);
 
     const THEME_OPTIONS: ThemeOption[] = [
         {
@@ -67,88 +61,46 @@ const ThemeModal: React.FC<ThemeModalProps> = ({
         },
     ];
 
-    React.useEffect(() => {
-        setSelectedTheme(currentTheme);
-    }, [currentTheme, open]);
-
-    const handleApply = () => {
-        onThemeChange(selectedTheme);
-        onClose();
-    };
-
-    const handleCancel = () => {
-        setSelectedTheme(currentTheme);
-        onClose();
-    };
-
     return (
-        <Antd.Modal
-            title={
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <BgColorsOutlined />
-                    {t('THEME_MODAL.SELECTION')}
-                </div>
-            }
-            open={open}
-            onCancel={handleCancel}
-            footer={[
-                <Antd.Button key="cancel" onClick={handleCancel}>
-                    {t('CANCEL')}
-                </Antd.Button>,
-                <Antd.Button
-                    key="apply"
-                    type="primary"
-                    onClick={handleApply}
-                    disabled={selectedTheme === currentTheme}
-                >
-                    {t('THEME_MODAL.APPLY')}
-                </Antd.Button>,
-            ]}
-            width={600}
-            destroyOnHidden
-        >
-            <div style={{ padding: '16px 0' }}>
-                <Antd.Typography.Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>
-                    {t('THEME_MODAL.CHOOSE_DESCRIPTION')}
-                </Antd.Typography.Text>
+        <div style={{ padding: '16px 0' }}>
+            <Antd.Typography.Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>
+                {t('THEME_MODAL.CHOOSE_DESCRIPTION')}
+            </Antd.Typography.Text>
 
-                <Antd.Select
-                    value={selectedTheme}
-                    onChange={(value) => setSelectedTheme(value)}
-                    style={{ width: '100%' }}
-                    options={THEME_OPTIONS.map((theme) => ({
-                        value: theme.key,
-                        label: theme.name,
-                    }))}
+            <Antd.Select
+                value={theme}
+                onChange={onThemeChange}
+                style={{ width: '100%' }}
+                options={THEME_OPTIONS.map((option) => ({
+                    value: option.key,
+                    label: option.name,
+                }))}
+            />
+
+            <Antd.Typography.Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 8 }}>
+                {THEME_OPTIONS.find((option) => option.key === theme)?.description}
+            </Antd.Typography.Text>
+
+            <div
+                style={{
+                    marginTop: 16,
+                    height: 300,
+                    border: '1px solid #d9d9d9',
+                    borderRadius: 4,
+                }}
+            >
+                <ReadOnlyBlocklyPreview
+                    moduleContentText={SAMPLE_PREVIEW_MODULE_CONTENT_TEXT}
+                    theme={theme}
+                    renderer={renderer}
+                    interactive={false}
                 />
-
-                <Antd.Typography.Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 8 }}>
-                    {THEME_OPTIONS.find((theme) => theme.key === selectedTheme)?.description}
-                </Antd.Typography.Text>
-
-                <div
-                    style={{
-                        marginTop: 16,
-                        height: 300,
-                        border: '1px solid #d9d9d9',
-                        borderRadius: 4,
-                    }}
-                >
-                    {open && (
-                        <ReadOnlyBlocklyPreview
-                            moduleContentText={SAMPLE_PREVIEW_MODULE_CONTENT_TEXT}
-                            theme={selectedTheme}
-                            renderer={currentRenderer}
-                            interactive={false}
-                        />
-                    )}
-                </div>
             </div>
-        </Antd.Modal>
+        </div>
     );
 };
 
-export default ThemeModal;
+export default ThemeSettings;
 
 export const antdThemeFromString = (theme: string): Antd.ThemeConfig => {
     let compact = false;

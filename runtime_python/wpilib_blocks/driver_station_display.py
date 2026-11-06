@@ -17,6 +17,6 @@ class DriverStationDisplay:
         wpilib.DriverStationDisplay.add_line(_colorPrefixedLine(color, line))
 
     @staticmethod
-    def add_data(caption: str, color: wpiutil.Color, line: str) -> None:
+    def add_data(caption: str, color: wpiutil.Color, data : object) -> None:
         wpilib.DriverStationDisplay.add_data(
-            caption, _colorPrefixedLine(color, line))
+            caption, _colorPrefixedLine(color, str(data)))

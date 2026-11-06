@@ -23,6 +23,7 @@
 import * as Blockly from 'blockly/core';
 import * as storageProject from '../storage/project';
 import { GamepadType, GamepadTypeUtils } from '../types/GamepadType';
+import { FieldDropdownWithBorderRect } from './FieldDropdown';
 import { GamepadDropdownOptionsChange } from './gamepad_dropdown_options_change';
 
 const MIN_GAMEPAD_PORT = 0;
@@ -46,10 +47,17 @@ export const AXIS_FIELD_NAME = 'GAMEPAD_AXIS';
 export const EVENT_FIELD_NAME = 'GAMEPAD_EVENT';
 export const RUMBLE_FIELD_NAME = 'GAMEPAD_RUMBLE';
 
+/** The values of the action field. These are saved in the blocks, so they must not change. */
+export enum GamepadAction {
+    IS_DOWN = 'IS_DOWN',
+    WAS_PRESSED = 'WAS_PRESSED',
+    WAS_RELEASED = 'WAS_RELEASED',
+}
+
 const ACTION_CONFIG = new Map([
-    ['IS_DOWN', { display: () => Blockly.Msg['GAMEPAD_IS_DOWN'], suffix: '' }],
-    ['WAS_PRESSED', { display: () => Blockly.Msg['GAMEPAD_PRESSED'], suffix: 'Pressed' }],
-    ['WAS_RELEASED', { display: () => Blockly.Msg['GAMEPAD_RELEASED'], suffix: 'Released' }]
+    [GamepadAction.IS_DOWN, { display: () => Blockly.Msg['GAMEPAD_IS_DOWN'] }],
+    [GamepadAction.WAS_PRESSED, { display: () => Blockly.Msg['GAMEPAD_PRESSED'] }],
+    [GamepadAction.WAS_RELEASED, { display: () => Blockly.Msg['GAMEPAD_RELEASED'] }]
 ]);
 
 const EVENT_CONFIG = new Map([
@@ -63,15 +71,34 @@ export function createTitleField(): Blockly.Field {
     return new Blockly.FieldLabel(Blockly.Msg['GAMEPAD']);   
 }
 
-export function createPortField(onlyWithRumble: boolean = false): Blockly.FieldDropdown {
-    return new Blockly.FieldDropdown(function(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
+/** An output that only some gamepad types support. */
+export enum GamepadOutput {
+    RUMBLE,
+    LEDS,
+}
+
+function supportsOutput(gamepadType: GamepadType, output: GamepadOutput): boolean {
+    switch (output) {
+        case GamepadOutput.RUMBLE:
+            return GamepadTypeUtils.getRumbleConfig(gamepadType) !== null;
+        case GamepadOutput.LEDS:
+            return GamepadTypeUtils.getLEDConfig(gamepadType) !== null;
+    }
+}
+
+/**
+ * Creates a dropdown of the ports that have gamepads configured. If output is given, only the
+ * ports whose gamepad type supports that output are shown.
+ */
+export function createPortField(output?: GamepadOutput): Blockly.FieldDropdown {
+    return new FieldDropdownWithBorderRect(function(this: Blockly.FieldDropdown): Blockly.MenuOption[] {
         const options: Blockly.MenuOption[] = [];
 
         // Only show ports that have gamepads configured (not NONE)
         for (let port = MIN_GAMEPAD_PORT; port <= MAX_GAMEPAD_PORT; port++) {
             const gamepadType = GamepadTypeUtils.getGamepad(port, currentGamepadConfig);
             if (gamepadType !== GamepadType.NONE) {
-                if (onlyWithRumble && !GamepadTypeUtils.getRumbleConfig(gamepadType)) {
+                if (output !== undefined && !supportsOutput(gamepadType, output)) {
                     continue;
                 }
                 const portStr = port.toString();
@@ -113,7 +140,7 @@ interface DependencyData {
  * based on the selected gamepad port. When the port changes, the button options
  * update to match the capabilities of the newly selected gamepad type.
  */
-export class FieldGamepadButtonDropdown extends Blockly.FieldDropdown {
+export class FieldGamepadButtonDropdown extends FieldDropdownWithBorderRect {
   /**
    * Contains data used by this dropdown field's menu generator.
    * This is public so that the GamepadDropdownOptionsChange event can
@@ -330,7 +357,7 @@ export class FieldGamepadButtonDropdown extends Blockly.FieldDropdown {
  * based on the selected gamepad port. When the port changes, the axis options
  * update to match the capabilities of the newly selected gamepad type.
  */
-export class FieldGamepadAxisDropdown extends Blockly.FieldDropdown {
+export class FieldGamepadAxisDropdown extends FieldDropdownWithBorderRect {
   /**
    * Contains data used by this dropdown field's menu generator.
    * This is public so that the GamepadDropdownOptionsChange event can
@@ -547,7 +574,7 @@ export class FieldGamepadAxisDropdown extends Blockly.FieldDropdown {
  * based on the selected gamepad port. When the port changes, the rumble options
  * update to match the capabilities of the newly selected gamepad type.
  */
-export class FieldGamepadRumbleDropdown extends Blockly.FieldDropdown {
+export class FieldGamepadRumbleDropdown extends FieldDropdownWithBorderRect {
   /**
    * Contains data used by this dropdown field's menu generator.
    * This is public so that the GamepadDropdownOptionsChange event can
@@ -772,58 +799,27 @@ export function createRumbleField(): Blockly.Field {
 }
 
 export function createActionField(): Blockly.Field {
-    return new Blockly.FieldDropdown(
+    return new FieldDropdownWithBorderRect(
         Array.from(ACTION_CONFIG.entries()).map(([key, config]) => [config.display(), key])
     )
 }
 
 export function createEventField(): Blockly.Field {
-    return new Blockly.FieldDropdown(
+    return new FieldDropdownWithBorderRect(
         Array.from(EVENT_CONFIG.entries()).map(([key, config]) => [config.display(), key])
     )
 }
 
-function getGamepad(gamepad: number): string {
+/** Returns the type of the gamepad configured on the given port. */
+export function getGamepadType(gamepad: number): GamepadType {
+    return GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
+}
+
+/** Returns the python code for the gamepad on the given port. */
+export function getPythonForGamepad(gamepad: number): string {
     // TODO: When user_controls are implemented in RobotPy, adjust the following line as necesssary,
     // but for now we need it to access the gamepads from the robot.
     return 'self.robot.user_controls.get_gamepad(' + gamepad + ')';
-}
-
-export function methodForButton(gamepad: number, button: string, action: string): string {
-    const gamepadType = GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
-    
-    // Get the button configuration for this gamepad type
-    const buttonConfig = GamepadTypeUtils.getButtonConfig(gamepadType);
-    const config = buttonConfig?.get(button);
-    const suffix = ACTION_CONFIG.get(action);
-
-    if (config === undefined || suffix === undefined) {
-        return '';
-    }
-
-    return getGamepad(gamepad) + '.' +
-        config.method +
-        suffix.suffix + '()';
-}
-
-export function methodForAxis(gamepad: number, axis: string): string {
-    const gamepadType = GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
-    
-    // Get the axis configuration for this gamepad type
-    const axisConfig = GamepadTypeUtils.getAxisConfig(gamepadType);
-    
-    return getGamepad(gamepad) + '.' +
-        (axisConfig?.get(axis)?.method ?? '') + '()';
-}
-
-export function methodForRumble(gamepad: number, rumble: string, value : number): string {
-    const gamepadType = GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
-    
-    // Get the rumble configuration for this gamepad type
-    const rumbleConfig = GamepadTypeUtils.getRumbleConfig(gamepadType);
-    
-    return getGamepad(gamepad) + '.setRumble(' +
-        (rumbleConfig?.get(rumble)?.rumbleType ?? '') + ', ' + value + ')\n';
 }
 
 // Register field types with Blockly

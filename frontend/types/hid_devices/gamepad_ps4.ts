@@ -51,8 +51,14 @@ export function getAxisConfig() {
     return Generic.getAxisConfig();
 }
 
+/** Returns the rumble configuration for PS4 gamepad. */
 export function getRumbleConfig() {
-    return Generic.getRumbleConfig();
+    const rumbleConfig = new Map(Generic.getRumbleConfig());
+
+    rumbleConfig.delete('TRIGGER_LEFT_RUMBLE'); // Remove Left Trigger Rumble - PS4 does not have this
+    rumbleConfig.delete('TRIGGER_RIGHT_RUMBLE'); // Remove Right Trigger Rumble - PS4 does not have this
+
+    return rumbleConfig;
 }
 
 /** Returns the LED configuration for generic gamepad. */

@@ -23,6 +23,7 @@
 import * as Blockly from 'blockly';
 
 import * as variable from '../blocks/utils/variable';
+import { FieldDropdownWithBorderRect } from './FieldDropdown';
 
 const CREATE_VARIABLE_ID = 'MRC_CREATE_TYPED_VARIABLE';
 
@@ -105,7 +106,7 @@ type VariableState = {
  *
  * WARNING: This class relies on Blockly internals that are not part of the public API.
  */
-export class FieldTypedVariableOrDefault extends Blockly.FieldDropdown {
+export class FieldTypedVariableOrDefault extends FieldDropdownWithBorderRect {
   private readonly varType: string;
 
   constructor(varType: string) {

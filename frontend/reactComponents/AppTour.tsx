@@ -58,9 +58,29 @@ const AppTour: React.FC<AppTourProps> = ({ isOpen, onClose }) => {
       target: tourTarget('[data-tour="deploy-button"]'),
     },
     {
-      title: t('TOUR.MANAGE_TITLE'),
-      description: t('TOUR.MANAGE_DESC'),
-      target: tourTarget('[data-menu-id$="-manage"]'),
+      title: t('TOUR.PROJECTS_TITLE'),
+      description: t('TOUR.PROJECTS_DESC'),
+      target: tourTarget('[data-menu-id$="-manageProjects"]'),
+    },
+    {
+      title: t('TOUR.VERSIONS_TITLE'),
+      description: t('TOUR.VERSIONS_DESC'),
+      target: tourTarget('[data-menu-id$="-manageVersions"]'),
+    },
+    {
+      title: t('TOUR.MECHANISMS_TITLE'),
+      description: t('TOUR.MECHANISMS_DESC'),
+      target: tourTarget('[data-menu-id$="-manageMechanisms"]'),
+    },
+    {
+      title: t('TOUR.OPMODES_TITLE'),
+      description: t('TOUR.OPMODES_DESC'),
+      target: tourTarget('[data-menu-id$="-manageOpmodes"]'),
+    },
+    {
+      title: t('TOUR.LIBRARIES_TITLE'),
+      description: t('TOUR.LIBRARIES_DESC'),
+      target: tourTarget('[data-menu-id$="-manageLibraries"]'),
     },
     {
       title: t('TOUR.SETTINGS_TITLE'),

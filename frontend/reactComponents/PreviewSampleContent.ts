@@ -17,7 +17,7 @@
 
 /**
  * @fileoverview A small sample block layout, wrapped as module content text, used by
- * ThemeModal and RendererModal to preview how blocks look with a given theme/renderer via
+ * ThemeSettings and RendererSettings to preview how blocks look with a given theme/renderer via
  * ReadOnlyBlocklyPreview.
  * @author alan@porpoiseful.com (Alan Smith)
  */
