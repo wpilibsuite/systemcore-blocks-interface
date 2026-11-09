@@ -1,3 +1,5 @@
+// Copyright (c) FIRST and other WPILib contributors.
+
 import { describe, expect, test } from 'vitest';
 import { MemoryStorage } from '../frontend/storage/memory_storage';
 import * as storageModuleContent from '../frontend/storage/module_content';

@@ -1,3 +1,4 @@
+# Copyright (c) FIRST and other WPILib contributors.
 
 # For now this does nothing but it lets the decorator work
 def Teleop(cls):

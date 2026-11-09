@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 # LED effect helpers that are called by the blocks in toolboxes/led_effects.json.
 
 import math

@@ -1,4 +1,4 @@
-Copyright (c) 2025 FIRST and other WPILib contributors
+Copyright (c) FIRST and other WPILib contributors
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

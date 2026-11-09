@@ -7,7 +7,7 @@ name = "wpilib_blocks"
 dynamic = ["version"]
 description = "Base classes for SystemCore blocks interface"
 requires-python = ">=3.8"
-license = {text = "Apache-2.0"}
+license = {text = "BSD-3-Clause"}
 authors = [
     {name = "Alan Smith", email = "alan@porpoiseful.com"}
 ]

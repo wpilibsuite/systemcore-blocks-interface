@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Copyright (c) FIRST and other WPILib contributors.
+
 source ../venv/bin/activate
 
 # Note - this MUST match the port given in packaging/control/control

@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 # This module provides functions related to color.
 
 import colorsys

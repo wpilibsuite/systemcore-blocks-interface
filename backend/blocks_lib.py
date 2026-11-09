@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 """
 Support for third party .blocks_lib libraries.
 

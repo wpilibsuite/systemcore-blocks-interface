@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Copyright (c) FIRST and other WPILib contributors.
+
 # Make sure no silent failures
 set -euo pipefail
 

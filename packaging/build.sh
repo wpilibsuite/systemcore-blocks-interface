@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Copyright (c) FIRST and other WPILib contributors.
+
 set -e
 
 # Prevent BSD tar from embedding AppleDouble (._*) files and extended attributes.

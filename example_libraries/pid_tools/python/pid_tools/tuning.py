@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 # Tuning helpers that are called by the blocks in toolboxes/pid_tuning.json.
 # These use the classic Ziegler-Nichols rules, where ultimate_gain is the proportional gain that
 # makes the system oscillate and period is the oscillation period in seconds.

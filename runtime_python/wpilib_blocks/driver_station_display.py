@@ -1,3 +1,5 @@
+# Copyright (c) FIRST and other WPILib contributors.
+
 # This is the class used for displaying data on the driver station.
 
 import wpilib

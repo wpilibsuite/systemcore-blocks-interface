@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Copyright (c) FIRST and other WPILib contributors.
+
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
