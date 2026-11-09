@@ -482,6 +482,11 @@ class FirstBlocksStyleRenderInfo extends Blockly.zelos.RenderInfo {
       activeRow.elements.push(new FirstBlocksStyleExternalValueInput(
           this.constants_ as FirstBlocksStyleConstantProvider, input));
       activeRow.hasExternalInput = true;
+      // The common RenderInfo's addInput_ takes the row's alignment from its
+      // first input, so do that here too or setAlign has no effect.
+      if (activeRow.align === null) {
+        activeRow.align = input.align;
+      }
       this.hasExternalInputs = true;
       return;
     }
