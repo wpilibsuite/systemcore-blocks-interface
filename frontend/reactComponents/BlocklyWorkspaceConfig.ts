@@ -1,11 +1,17 @@
 // Copyright (c) FIRST and other WPILib contributors.
 
 /**
- * @fileoverview Grid and zoom configuration shared by every Blockly workspace in the app
+ * @fileoverview Media path, grid, and zoom configuration shared by every Blockly workspace in the app
  * (BlocklyComponent and ReadOnlyBlocklyPreview), so they stay visually consistent.
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly/core';
+
+/**
+ * Where Blockly loads its images and sounds from. vite.config.mts copies them from
+ * node_modules/blockly/media so they don't come from the internet.
+ */
+export const BLOCKLY_MEDIA_PATH = import.meta.env.BASE_URL + 'media/';
 
 /** Grid spacing for the Blockly workspace. */
 export const GRID_SPACING = 20;

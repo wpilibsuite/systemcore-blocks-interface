@@ -14,7 +14,7 @@ import { themes } from '../themes/mrc_themes';
 import '../themes/first_blocks_style'; // Registers the first_blocks_style renderer.
 import {pluginInfo as HardwareConnectionsPluginInfo} from '../blocks/utils/connection_checker';
 import {pluginInfo as TabDropDraggerPluginInfo} from '../blocks/utils/tab_drop_dragger';
-import { getGridColour, getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
+import { BLOCKLY_MEDIA_PATH, getGridColour, getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
 import { DEFAULT_ZOOM } from './UserSettingsProvider';
 
 import 'blockly/blocks'; // Includes standard blocks like controls_if, logic_compare, etc.
@@ -100,6 +100,7 @@ export default function BlocklyComponent(props: BlocklyComponentProps): React.JS
 
   /** Creates the Blockly workspace configuration object. */
   const createWorkspaceConfig = (): Blockly.BlocklyOptions => ({
+    media: BLOCKLY_MEDIA_PATH,
     theme: getBlocklyTheme(),
     horizontalLayout: false, // Forces vertical layout for the workspace
     // Start with an empty (but not null) toolbox. It will be replaced later.
