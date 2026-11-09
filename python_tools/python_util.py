@@ -79,8 +79,6 @@ def processSignature(signature_line: str) -> tuple[str, list[str], list[str], li
   arg_default_values = []
   i = 0
   while i < len(args):
-    star_star_kwargs_ = "**kwargs"
-    star_args = "*args"
     if args[i:] == "*args, **kwargs":
       arg_names.append("args")
       arg_types.append("tuple")
