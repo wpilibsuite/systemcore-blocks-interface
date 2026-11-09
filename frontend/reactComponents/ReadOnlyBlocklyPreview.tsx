@@ -12,7 +12,7 @@ import 'blockly/blocks';
 import * as storageModuleContent from '../storage/module_content';
 import * as workspaces from '../blocks/utils/workspaces';
 import { themes } from '../themes/mrc_themes';
-import { getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
+import { BLOCKLY_MEDIA_PATH, getGridConfig, getZoomConfig } from './BlocklyWorkspaceConfig';
 import { DEFAULT_ZOOM } from './UserSettingsProvider';
 
 /** Props for the ReadOnlyBlocklyPreview component. */
@@ -124,6 +124,7 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
     const moduleContent = storageModuleContent.parseModuleContentText(props.moduleContentText);
 
     const workspace = Blockly.inject(container, {
+      media: BLOCKLY_MEDIA_PATH,
       readOnly: true,
       theme: getBlocklyTheme(),
       horizontalLayout: false,

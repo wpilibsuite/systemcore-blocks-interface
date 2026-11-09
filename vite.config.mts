@@ -49,6 +49,12 @@ export default defineConfig({
         rename: { stripBase: true },
       },
       {
+        // Blockly's images and sounds, so they don't come from the internet.
+        src: 'node_modules/blockly/media/*',
+        dest: "./media/",
+        rename: { stripBase: true },
+      },
+      {
         src: 'frontend/public/*',
         dest: "./",
         rename: { stripBase: true },
