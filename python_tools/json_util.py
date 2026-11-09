@@ -348,7 +348,7 @@ class JsonGenerator:
     if any(char.isupper() for char in module_name):
       print(f'WARNING: module name {module_name} contains an uppercase letter. '
           'Expected lower_snake_case.',
-           file=sys.stderr)
+          file=sys.stderr)
 
     # Module variables.
     module_variables = []
@@ -361,12 +361,12 @@ class JsonGenerator:
         if any(char.isupper() for char in key):
           print(f'WARNING: writable module variable {module_name}.{key} contains an uppercase letter. '
               'Expected lower_snake_case.',
-               file=sys.stderr)
+              file=sys.stderr)
       else:
         if any(char.islower() for char in key):
           print(f'WARNING: constant module variable {module_name}.{key} contains an lowercase letter. '
               'Expected UPPER_SNAKE_CASE.',
-               file=sys.stderr)
+              file=sys.stderr)
 
       var_data = {}
       var_data[_KEY_VARIABLE_NAME] = key
@@ -401,7 +401,7 @@ class JsonGenerator:
       (signatures, comments) = python_util.processFunction(value)
       if len(signatures) == 0:
         print(f'ERROR: failed to determine function signature for {module_name}.{key}',
-              file=sys.stderr)
+            file=sys.stderr)
         continue
       for iSignature in range(len(signatures)):
         signature = signatures[iSignature]
@@ -412,11 +412,11 @@ class JsonGenerator:
           (function_name, arg_names, arg_types, arg_default_values, return_type) = python_util.processSignature(signature)
         except:
           print(f'ERROR: function signature for {module_name}.{key} is not parseable. "{signature}"',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
         if function_name != key:
           print(f'ERROR: signature has different function name. {module_name}.{key}',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
         if hasattr(module, return_type) and inspect.isclass(getattr(module, return_type)):
           # return_type is a type alias defined in this module.
@@ -436,8 +436,8 @@ class JsonGenerator:
 
         if any(char.isupper() for char in function_name):
           print(f'WARNING: module function {module_name}.{function_name} contains an uppercase letter. '
-                'Expected lower_snake_case.',
-                file=sys.stderr)
+              'Expected lower_snake_case.',
+              file=sys.stderr)
 
         function_data = {}
         function_data[_KEY_FUNCTION_NAME] = function_name
@@ -463,11 +463,11 @@ class JsonGenerator:
       if '_' in simple_class_name:
         print(f'WARNING: enum class name {enum_class_name} contains an underscore. '
             'Expected UpperCamelCase.',
-             file=sys.stderr)
+            file=sys.stderr)
       if not simple_class_name[0].isupper():
         print(f'WARNING: enum class name {enum_class_name} doesn\'t start with an uppercase letter'
             'Expected UpperCamelCase.',
-             file=sys.stderr)
+            file=sys.stderr)
 
       fnIsEnumValue = self._createFunctionIsEnumValue(value)
       enum_values = []
@@ -535,8 +535,8 @@ class JsonGenerator:
     simple_class_name = class_name.rsplit('.', 1)[-1]
     if not simple_class_name[0].isupper():
       print(f'WARNING: simple class name {simple_class_name} (from class name {class_name}) doesn\'t start with an uppercase letter'
-         'Expected UpperCamelCase.',
-         file=sys.stderr)
+          'Expected UpperCamelCase.',
+          file=sys.stderr)
 
     class_data = {}
     class_data[_KEY_CLASS_NAME] = class_name
@@ -558,12 +558,12 @@ class JsonGenerator:
         if any(char.isupper() for char in key):
           print(f'WARNING: writable class variable {class_name}.{key} contains an uppercase letter. '
               'Expected lower_snake_case.',
-               file=sys.stderr)
+              file=sys.stderr)
       else:
         if any(char.islower() for char in key):
           print(f'WARNING: constant class variable {class_name}.{key} contains an lowercase letter. '
               'Expected UPPER_SNAKE_CASE.',
-               file=sys.stderr)
+              file=sys.stderr)
 
       var_data = {}
       var_data[_KEY_VARIABLE_NAME] = key
@@ -582,7 +582,7 @@ class JsonGenerator:
       if any(char.isupper() for char in key):
         print(f'WARNING: instance variable {class_name}.{key} contains an uppercase letter. '
             'Expected lower_snake_case.',
-             file=sys.stderr)
+            file=sys.stderr)
 
       var_type = python_util.getVarTypeFromGetter(value.fget)
       var_data = {}
@@ -607,7 +607,7 @@ class JsonGenerator:
       (signatures, comments) = python_util.processFunction(value, cls)
       if len(signatures) == 0:
         print(f'ERROR: failed to determine function signature for {class_name}.{key}',
-              file=sys.stderr)
+            file=sys.stderr)
         continue
       for iSignature in range(len(signatures)):
         signature = signatures[iSignature]
@@ -616,11 +616,11 @@ class JsonGenerator:
           (function_name, arg_names, arg_types, arg_default_values, return_type) = python_util.processSignature(signature)
         except:
           print(f'ERROR: function signature for {class_name}.{key} is not parseable. "{signature}"',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
         if function_name != key:
           print(f'ERROR: signature has different function name. {class_name}.{key}',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
         declaring_class_name = class_name
 
@@ -671,7 +671,7 @@ class JsonGenerator:
       (signatures, comments) = python_util.processFunction(value, cls)
       if len(signatures) == 0:
         print(f'ERROR: failed to determine function signature for {class_name}.{key}',
-              file=sys.stderr)
+            file=sys.stderr)
         continue
       for iSignature in range(len(signatures)):
         signature = signatures[iSignature]
@@ -680,11 +680,11 @@ class JsonGenerator:
           (function_name, arg_names, arg_types, arg_default_values, return_type) = python_util.processSignature(signature)
         except:
           print(f'ERROR: function signature for {class_name}.{key} is not parseable. "{signature}"',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
         if function_name != key:
           print(f'ERROR: signature has different function name. {class_name}.{key}',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
         declaring_class_name = class_name
         # TODO(lizlooney): The following might not work for type aliases declared in a super class.
@@ -745,11 +745,11 @@ class JsonGenerator:
       if '_' in simple_class_name:
         print(f'WARNING: enum class name {enum_class_name} contains an underscore. '
             'Expected UpperCamelCase.',
-             file=sys.stderr)
+            file=sys.stderr)
       if not simple_class_name[0].isupper():
         print(f'WARNING: enum class name {enum_class_name} doesn\'t start with an uppercase letter'
             'Expected UpperCamelCase.',
-             file=sys.stderr)
+            file=sys.stderr)
 
       fnIsEnumValue = self._createFunctionIsEnumValue(value)
       enum_values = []
@@ -800,8 +800,8 @@ class JsonGenerator:
           constructor_data[_KEY_IS_COMPONENT] = True
       if not found_constructor:
         print('ERROR: failed to find expected constructor with args named '
-              f'{component.get_expected_constructor_arg_names()} for {class_name}',
-              file=sys.stderr)
+            f'{component.get_expected_constructor_arg_names()} for {class_name}',
+            file=sys.stderr)
       common_method_names = dict.fromkeys(component.get_common_method_names(), False)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         method_name = function_data[_KEY_FUNCTION_NAME]
@@ -892,16 +892,16 @@ class JsonGenerator:
 
     for name in sorted((shown_names | ignored_names) - set(all_classes) - set(all_modules) - set(enum_owners)):
       print(f'WARNING: {name} in {_PYTHON_TOOLBOX_FILE} is not a module, class, or enum in '
-            f'{", ".join(root_module_names)}',
-            file=sys.stderr)
+          f'{", ".join(root_module_names)}',
+          file=sys.stderr)
 
     # The classes that blocks can be made for: the components and the shown classes.
     used_class_names = {class_name for class_name, class_data in all_classes.items()
                         if class_data[_KEY_IS_COMPONENT] or class_name in shown_names}
     for class_name in sorted(used_class_names & ignored_names):
       print(f'ERROR: {class_name} is in ignore in {_PYTHON_TOOLBOX_FILE}, but it is a component or '
-            'is in shownCategories, so it is generated anyway',
-            file=sys.stderr)
+          'is in shownCategories, so it is generated anyway',
+          file=sys.stderr)
     used_module_names = set(all_modules) & shown_names
 
     # Add the classes and enums that the used classes and modules refer to.
@@ -947,9 +947,9 @@ class JsonGenerator:
             f'ignore in {_PYTHON_TOOLBOX_FILE}')
     elif not_generated_names:
       print(f'WARNING: these classes and enums were not generated, because nothing in the library '
-            f'uses them. Add them to shownCategories or ignore in {_PYTHON_TOOLBOX_FILE}, or generate '
-            f'with add_unused_to_ignore:\n' + json.dumps(not_generated_names, indent=2),
-            file=sys.stderr)
+          f'uses them. Add them to shownCategories or ignore in {_PYTHON_TOOLBOX_FILE}, or generate '
+          f'with add_unused_to_ignore:\n' + json.dumps(not_generated_names, indent=2),
+          file=sys.stderr)
 
     classes = [all_classes[name] for name in sorted(class_names)]
     component_classes = [class_data for class_data in classes if class_data[_KEY_IS_COMPONENT]]
