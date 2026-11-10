@@ -103,6 +103,27 @@ describe('diffBlocks', () => {
     expect([...diff.changed]).toEqual([]);
   });
 
+  test('a block moved from a removed block into an added block goes along with them', () => {
+    // Like moving a component into a mechanism, which moves the component's port shadow block.
+    const withShadow = (id: string, shadow: any): any =>
+        ({ type: 'text_print', id, x: 10, y: 10, inputs: { TEXT: { shadow } } });
+    const diff = versionDiff.diffBlocks(
+        makeBlocks(withShadow('p1', numberBlock('s1', 1))),
+        makeBlocks(withShadow('p2', numberBlock('s1', 1))));
+    expect([...diff.removed].sort()).toEqual(['p1', 's1']);
+    expect([...diff.added].sort()).toEqual(['p2', 's1']);
+    expect([...diff.removedGroups]).toEqual(['p1']);
+    expect([...diff.addedGroups]).toEqual(['p2']);
+    expect([...diff.changed]).toEqual([]);
+
+    // A block moved from a removed block into a block that is in both is still changed.
+    const intoExisting = versionDiff.diffBlocks(
+        makeBlocks(withShadow('p1', numberBlock('s1', 1)), printBlock('p3', null)),
+        makeBlocks(withShadow('p3', numberBlock('s1', 1))));
+    expect([...intoExisting.removed]).toEqual(['p1']);
+    expect([...intoExisting.changed]).toEqual(['s1']);
+  });
+
   test('adding a block with blocks inside it makes one group', () => {
     const diff = versionDiff.diffBlocks(
         makeBlocks(ifBlock('if1')),

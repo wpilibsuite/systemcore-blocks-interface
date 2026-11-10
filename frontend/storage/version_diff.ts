@@ -19,8 +19,12 @@ export enum ModuleChange {
 }
 
 export type BlockDiff = {
-  added: Set<string>, // ids of blocks only in the right module
-  removed: Set<string>, // ids of blocks only in the left module
+  // ids of blocks only in the right module, and of blocks that were moved into them from blocks
+  // only in the left module
+  added: Set<string>,
+  // ids of blocks only in the left module, and of blocks that were moved out of them into blocks
+  // only in the right module
+  removed: Set<string>,
   // ids of the first block of each group of added or removed blocks: the blocks inside it and
   // after it in its stack that were added or removed too are in the same group
   addedGroups: Set<string>,
@@ -133,6 +137,10 @@ function indexModules(files: {[fileName: string]: string}): Map<string, ModuleFi
  * - A block is added or removed if it is only in one of the workspaces. The blocks inside it and
  *   after it in its stack that were added or removed too are in its group, and only the first
  *   block of each group is in addedGroups or removedGroups.
+ * - A block that was moved out of a removed block into an added block went along with them, so it
+ *   is in both removed and added, and isn't changed unless its own content differs. For example,
+ *   moving a component into a mechanism moves its port from the mrc_component block to the
+ *   mrc_mechanism block.
  * - A block is changed if its own content (type, fields, and extra state) differs, or if it was
  *   moved: it is in a different input, or a different block comes before it in its stack.
  *   Adding, removing, or moving a block doesn't mark the block it was attached to, or the blocks
@@ -149,28 +157,54 @@ export function diffBlocks(
     changed: new Set(), moved: new Set(),
   };
 
+  for (const id of rightInfos.keys()) {
+    if (!leftInfos.has(id)) {
+      diff.added.add(id);
+    }
+  }
+  for (const id of leftInfos.keys()) {
+    if (!rightInfos.has(id)) {
+      diff.removed.add(id);
+    }
+  }
+  // Find the blocks that went along with removed and added blocks. Going along with one of those
+  // blocks makes the blocks inside it go along too, so this repeats until no more are found.
+  const wentAlong = new Set<string>();
+  let foundMore = true;
+  while (foundMore) {
+    foundMore = false;
+    for (const [id, rightInfo] of rightInfos) {
+      const leftInfo = leftInfos.get(id);
+      if (leftInfo && !wentAlong.has(id) &&
+          leftInfo.enclosingId && diff.removed.has(leftInfo.enclosingId) &&
+          rightInfo.enclosingId && diff.added.has(rightInfo.enclosingId)) {
+        wentAlong.add(id);
+        diff.added.add(id);
+        diff.removed.add(id);
+        foundMore = true;
+      }
+    }
+  }
+
   for (const [id, rightInfo] of rightInfos) {
     const leftInfo = leftInfos.get(id);
     if (leftInfo?.position && rightInfo.position && leftInfo.position !== rightInfo.position) {
       diff.moved.add(id);
     }
     if (!leftInfo) {
-      diff.added.add(id);
-      if (isFirstInGroup(rightInfo, leftInfos)) {
+      if (isFirstInGroup(rightInfo, diff.added)) {
         diff.addedGroups.add(id);
       }
     } else if (leftInfo.fingerprint !== rightInfo.fingerprint ||
-        leftInfo.location !== rightInfo.location ||
-        getPreviousBlockIn(leftInfo, rightInfos) !== getPreviousBlockIn(rightInfo, leftInfos)) {
+        (!wentAlong.has(id) && (leftInfo.location !== rightInfo.location ||
+            getPreviousBlockIn(leftInfo, rightInfos) !==
+                getPreviousBlockIn(rightInfo, leftInfos)))) {
       diff.changed.add(id);
     }
   }
   for (const [id, leftInfo] of leftInfos) {
-    if (!rightInfos.has(id)) {
-      diff.removed.add(id);
-      if (isFirstInGroup(leftInfo, rightInfos)) {
-        diff.removedGroups.add(id);
-      }
+    if (!rightInfos.has(id) && isFirstInGroup(leftInfo, diff.removed)) {
+      diff.removedGroups.add(id);
     }
   }
   return diff;
@@ -222,14 +256,14 @@ function indexBlocks(blocks: {[key: string]: any}): Map<string, BlockInfo> {
 }
 
 /**
- * Returns whether the given block, which is not in the other workspace, is the first block of a
- * group of added or removed blocks: neither the block it is inside nor the block before it in its
- * stack was also added or removed.
+ * Returns whether the given block, which is in the given added or removed blocks, is the first
+ * block of a group of them: neither the block it is inside nor the block before it in its stack is
+ * also in them.
  */
-function isFirstInGroup(info: BlockInfo, otherInfos: Map<string, BlockInfo>): boolean {
-  const isInOther = (id: string | null): boolean => id === null || otherInfos.has(id);
-  return isInOther(info.enclosingId) &&
-      (info.indexInStack === 0 || isInOther(info.stack[info.indexInStack - 1]));
+function isFirstInGroup(info: BlockInfo, groupIds: Set<string>): boolean {
+  const isInGroup = (id: string | null): boolean => id !== null && groupIds.has(id);
+  return !isInGroup(info.enclosingId) &&
+      (info.indexInStack === 0 || !isInGroup(info.stack[info.indexInStack - 1]));
 }
 
 /**
