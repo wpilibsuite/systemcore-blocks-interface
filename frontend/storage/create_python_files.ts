@@ -12,9 +12,10 @@ import { extendedPythonGenerator } from '../editor/extended_python_generator';
 import { getOpModeDetailsFromBlocksJson } from '../blocks/mrc_opmode_details';
 import { Storage } from './common_storage';
 import { Module } from './module';
-import { parseModuleContentText } from './module_content';
+import { ModuleContent, parseModuleContentText } from './module_content';
 import { Project } from './project';
 import { pascalCaseToSnakeCase } from './names';
+import { createUsageReport } from './usage_report';
 import JSZip from 'jszip';
 
 /** Result of Python code generation for a single module */
@@ -78,6 +79,26 @@ async function generatePythonForModule(module: Module, storage: Storage): Promis
 }
 
 /**
+ * Fetches the content of each module in the project, for the usage report. Modules that can't be
+ * fetched or parsed are left out; generatePythonForModule reports the error for them.
+ * @returns Maps the moduleId of each module to its content.
+ */
+async function fetchModuleContentsForUsageReport(
+    project: Project, storage: Storage): Promise<Map<string, ModuleContent>> {
+  const moduleContents = new Map<string, ModuleContent>();
+  const modules: Module[] = [project.robot, ...project.mechanisms, ...project.opModes];
+  await Promise.all(modules.map(async (module) => {
+    try {
+      const moduleContentText = await storage.fetchFileContentText(module.modulePath);
+      moduleContents.set(module.moduleId, parseModuleContentText(moduleContentText));
+    } catch (error) {
+      // Leave the module out of the usage report.
+    }
+  }));
+  return moduleContents;
+}
+
+/**
  * Generate Python code for all modules in a project using headless Blockly
  * @param project The project containing multiple modules
  * @param storage The storage interface to fetch module content
@@ -100,29 +121,37 @@ async function generatePythonForProject(project: Project, storage: Storage): Pro
     allOpModeDetails.filter((d): d is NonNullable<typeof d> => d !== null)
   );
 
-  // Process the robot module
-  const robotResult = await generatePythonForModule(project.robot, storage);
-  moduleResults.push(robotResult);
-  if (!robotResult.success) {
-    errorCount++;
-  }
-
-  // Process all mechanism modules
-  for (const mechanism of project.mechanisms) {
-    const result = await generatePythonForModule(mechanism, storage);
-    moduleResults.push(result);
-    if (!result.success) {
+  // The robot code reports usage with wpiutil.report_usage.
+  const usageReport = createUsageReport(
+      project, await fetchModuleContentsForUsageReport(project, storage));
+  extendedPythonGenerator.setUsageReportJson(JSON.stringify(usageReport));
+  try {
+    // Process the robot module
+    const robotResult = await generatePythonForModule(project.robot, storage);
+    moduleResults.push(robotResult);
+    if (!robotResult.success) {
       errorCount++;
     }
-  }
 
-  // Process all opmode modules
-  for (const opMode of project.opModes) {
-    const result = await generatePythonForModule(opMode, storage);
-    moduleResults.push(result);
-    if (!result.success) {
-      errorCount++;
+    // Process all mechanism modules
+    for (const mechanism of project.mechanisms) {
+      const result = await generatePythonForModule(mechanism, storage);
+      moduleResults.push(result);
+      if (!result.success) {
+        errorCount++;
+      }
     }
+
+    // Process all opmode modules
+    for (const opMode of project.opModes) {
+      const result = await generatePythonForModule(opMode, storage);
+      moduleResults.push(result);
+      if (!result.success) {
+        errorCount++;
+      }
+    }
+  } finally {
+    extendedPythonGenerator.setUsageReportJson(null);
   }
 
   return {
