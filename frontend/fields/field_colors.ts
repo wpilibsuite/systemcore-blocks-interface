@@ -12,8 +12,13 @@ class FieldColorDropdown extends FieldDropdownWithBorderRect {
   private static RECTANGLE_BORDER = 1;
   private static RECTANGLE_MARGIN = 2;
 
+  // How long after the last key press the typed prefix is forgotten.
+  private static TYPE_AHEAD_TIMEOUT_MS = 1000;
+
   private coloredRect: SVGRectElement | null = null;
   private selectedHtmlColor: string | null = null;
+  private typedPrefix = '';
+  private lastKeyTime = 0;
 
   constructor(
     wpiutilColorNames: string[],
@@ -40,6 +45,50 @@ class FieldColorDropdown extends FieldDropdownWithBorderRect {
     );
     this.coloredRect.style.setProperty('stroke', 'black');
     this.coloredRect.style.setProperty('stroke-width', String(FieldColorDropdown.RECTANGLE_BORDER));
+  }
+
+  protected override showEditor_(e?: MouseEvent) {
+    super.showEditor_(e);
+    this.typedPrefix = '';
+    this.menu_?.getElement()?.addEventListener('keydown', (event) => this.onMenuKeyDown(event));
+  }
+
+  /**
+   * Highlights the first color that starts with what the user has typed. Typing the same letter
+   * repeatedly goes through the colors that start with that letter.
+   */
+  private onMenuKeyDown(event: KeyboardEvent) {
+    if (!this.menu_ || event.key.length !== 1 || event.key === ' ' ||
+        event.ctrlKey || event.metaKey || event.altKey) {
+      return;
+    }
+    const now = Date.now();
+    if (now - this.lastKeyTime > FieldColorDropdown.TYPE_AHEAD_TIMEOUT_MS) {
+      this.typedPrefix = '';
+    }
+    this.lastKeyTime = now;
+    const key = event.key.toUpperCase();
+    this.typedPrefix += key;
+
+    // WARNING: menuItems and highlightedItem are private in Blockly's Menu.
+    const menuItems: Blockly.MenuItem[] = ((this.menu_ as any).menuItems as unknown[])
+        .filter((item): item is Blockly.MenuItem => item instanceof Blockly.MenuItem);
+    const highlighted: Blockly.MenuItem | null = (this.menu_ as any).highlightedItem;
+    const startsWith = (item: Blockly.MenuItem, prefix: string) =>
+        (item.getValue() ?? '').toUpperCase().startsWith(prefix);
+
+    let match = menuItems.find((item) => startsWith(item, this.typedPrefix));
+    if (!match && this.typedPrefix === key.repeat(this.typedPrefix.length)) {
+      // The same letter was typed more than once; go to the next color that starts with it.
+      const start = highlighted ? menuItems.indexOf(highlighted) + 1 : 0;
+      match = [...menuItems.slice(start), ...menuItems.slice(0, start)]
+          .find((item) => startsWith(item, key));
+    }
+    if (match) {
+      this.menu_.setHighlighted(match);
+    }
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   private fillColoredRect() {
