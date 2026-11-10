@@ -36,17 +36,18 @@ interface ProjectPythonResult {
 
 /**
  * Generate Python code for a single module using headless Blockly
- * @param module The module containing Blockly JSON
- * @param storage The storage interface to fetch module content
+ * @param module The module
+ * @param moduleContent The content of the module, or an error if it couldn't be fetched
  * @returns Result containing generated Python code or error
  */
-async function generatePythonForModule(module: Module, storage: Storage): Promise<ModulePythonResult> {
+function generatePythonForModule(
+    module: Module, moduleContent: ModuleContent | Error): ModulePythonResult {
   const moduleName = pascalCaseToSnakeCase(module.className);
 
   try {
-    // Fetch the module content from storage
-    const moduleContentText = await storage.fetchFileContentText(module.modulePath);
-    const moduleContent = parseModuleContentText(moduleContentText);
+    if (moduleContent instanceof Error) {
+      throw moduleContent;
+    }
 
     // Create a headless workspace
     const workspace = workspaces.createHeadlessWorkspace(module.moduleType);
@@ -79,22 +80,22 @@ async function generatePythonForModule(module: Module, storage: Storage): Promis
 }
 
 /**
- * Fetches the content of each module in the project, for the usage report. Modules that can't be
- * fetched or parsed are left out; generatePythonForModule reports the error for them.
- * @returns Maps the moduleId of each module to its content.
+ * Fetches the content of each module in the project.
+ * @returns Maps the moduleId of each module to its content, or to the error if it couldn't be
+ * fetched or parsed.
  */
-async function fetchModuleContentsForUsageReport(
-    project: Project, storage: Storage): Promise<Map<string, ModuleContent>> {
-  const moduleContents = new Map<string, ModuleContent>();
+async function fetchModuleContents(
+    project: Project, storage: Storage): Promise<Map<string, ModuleContent | Error>> {
   const modules: Module[] = [project.robot, ...project.mechanisms, ...project.opModes];
-  await Promise.all(modules.map(async (module) => {
+  const contents = await Promise.all(modules.map(async (module): Promise<ModuleContent | Error> => {
     try {
-      const moduleContentText = await storage.fetchFileContentText(module.modulePath);
-      moduleContents.set(module.moduleId, parseModuleContentText(moduleContentText));
+      return parseModuleContentText(await storage.fetchFileContentText(module.modulePath));
     } catch (error) {
-      // Leave the module out of the usage report.
+      return error instanceof Error ? error : new Error(String(error));
     }
   }));
+  const moduleContents = new Map<string, ModuleContent | Error>();
+  modules.forEach((module, i) => moduleContents.set(module.moduleId, contents[i]));
   return moduleContents;
 }
 
@@ -108,43 +109,33 @@ async function generatePythonForProject(project: Project, storage: Storage): Pro
   const moduleResults: ModulePythonResult[] = [];
   let errorCount = 0;
 
+  const moduleContents = await fetchModuleContents(project, storage);
+  const validModuleContents = new Map<string, ModuleContent>();
+  for (const [moduleId, moduleContent] of moduleContents) {
+    if (!(moduleContent instanceof Error)) {
+      validModuleContents.set(moduleId, moduleContent);
+    }
+  }
+
   // Extract opmode details from all opmode modules and set on the generator
   // so the robot constructor can emit RegisterOpMode calls.
-  const allOpModeDetails = await Promise.all(
-    project.opModes.map(async (opMode) => {
-      const contentText = await storage.fetchFileContentText(opMode.modulePath);
-      const moduleContent = parseModuleContentText(contentText);
-      return getOpModeDetailsFromBlocksJson(moduleContent.getBlocks(), opMode.className);
-    })
-  );
+  const allOpModeDetails = project.opModes.map((opMode) => {
+    const moduleContent = moduleContents.get(opMode.moduleId);
+    if (!moduleContent || moduleContent instanceof Error) {
+      throw moduleContent || new Error(`Missing content for ${opMode.className}`);
+    }
+    return getOpModeDetailsFromBlocksJson(moduleContent.getBlocks(), opMode.className);
+  });
   extendedPythonGenerator.setAllOpModeDetails(
     allOpModeDetails.filter((d): d is NonNullable<typeof d> => d !== null)
   );
 
   // The robot code reports usage with wpiutil.report_usage.
-  const usageReport = createUsageReport(
-      project, await fetchModuleContentsForUsageReport(project, storage));
-  extendedPythonGenerator.setUsageReportJson(JSON.stringify(usageReport));
+  extendedPythonGenerator.setUsageReportJson(
+      JSON.stringify(createUsageReport(project, validModuleContents)));
   try {
-    // Process the robot module
-    const robotResult = await generatePythonForModule(project.robot, storage);
-    moduleResults.push(robotResult);
-    if (!robotResult.success) {
-      errorCount++;
-    }
-
-    // Process all mechanism modules
-    for (const mechanism of project.mechanisms) {
-      const result = await generatePythonForModule(mechanism, storage);
-      moduleResults.push(result);
-      if (!result.success) {
-        errorCount++;
-      }
-    }
-
-    // Process all opmode modules
-    for (const opMode of project.opModes) {
-      const result = await generatePythonForModule(opMode, storage);
+    for (const module of [project.robot, ...project.mechanisms, ...project.opModes]) {
+      const result = generatePythonForModule(module, moduleContents.get(module.moduleId)!);
       moduleResults.push(result);
       if (!result.success) {
         errorCount++;
