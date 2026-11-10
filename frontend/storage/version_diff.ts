@@ -21,6 +21,10 @@ export enum ModuleChange {
 export type BlockDiff = {
   added: Set<string>, // ids of blocks only in the right module
   removed: Set<string>, // ids of blocks only in the left module
+  // ids of the first block of each group of added or removed blocks: the blocks inside it and
+  // after it in its stack that were added or removed too are in the same group
+  addedGroups: Set<string>,
+  removedGroups: Set<string>,
   changed: Set<string>, // ids of blocks in both whose own content differs
   moved: Set<string>, // ids of top-level blocks in both that are at a different position
 };
@@ -126,8 +130,9 @@ function indexModules(files: {[fileName: string]: string}): Map<string, ModuleFi
 /**
  * Compares the blocks of two workspaces (in Blockly's JSON serialization format), matching blocks
  * by id.
- * - A block is added or removed if it is only in one of the workspaces. Only the outermost block
- *   is marked, not the blocks inside it, which were added or removed along with it.
+ * - A block is added or removed if it is only in one of the workspaces. The blocks inside it and
+ *   after it in its stack that were added or removed too are in its group, and only the first
+ *   block of each group is in addedGroups or removedGroups.
  * - A block is changed if its own content (type, fields, and extra state) differs, or if it was
  *   moved: it is in a different input, or a different block comes before it in its stack.
  *   Adding, removing, or moving a block doesn't mark the block it was attached to, or the blocks
@@ -140,7 +145,8 @@ export function diffBlocks(
   const leftInfos = indexBlocks(leftBlocks);
   const rightInfos = indexBlocks(rightBlocks);
   const diff: BlockDiff = {
-    added: new Set(), removed: new Set(), changed: new Set(), moved: new Set(),
+    added: new Set(), removed: new Set(), addedGroups: new Set(), removedGroups: new Set(),
+    changed: new Set(), moved: new Set(),
   };
 
   for (const [id, rightInfo] of rightInfos) {
@@ -149,8 +155,9 @@ export function diffBlocks(
       diff.moved.add(id);
     }
     if (!leftInfo) {
-      if (!rightInfo.enclosingId || leftInfos.has(rightInfo.enclosingId)) {
-        diff.added.add(id);
+      diff.added.add(id);
+      if (isFirstInGroup(rightInfo, leftInfos)) {
+        diff.addedGroups.add(id);
       }
     } else if (leftInfo.fingerprint !== rightInfo.fingerprint ||
         leftInfo.location !== rightInfo.location ||
@@ -159,9 +166,11 @@ export function diffBlocks(
     }
   }
   for (const [id, leftInfo] of leftInfos) {
-    if (!rightInfos.has(id) &&
-        (!leftInfo.enclosingId || rightInfos.has(leftInfo.enclosingId))) {
+    if (!rightInfos.has(id)) {
       diff.removed.add(id);
+      if (isFirstInGroup(leftInfo, rightInfos)) {
+        diff.removedGroups.add(id);
+      }
     }
   }
   return diff;
@@ -210,6 +219,17 @@ function indexBlocks(blocks: {[key: string]: any}): Map<string, BlockInfo> {
   storageModuleContent.getTopLevelBlocksJson(blocks).forEach(
       blockJson => walkStack(blockJson, null, ''));
   return infos;
+}
+
+/**
+ * Returns whether the given block, which is not in the other workspace, is the first block of a
+ * group of added or removed blocks: neither the block it is inside nor the block before it in its
+ * stack was also added or removed.
+ */
+function isFirstInGroup(info: BlockInfo, otherInfos: Map<string, BlockInfo>): boolean {
+  const isInOther = (id: string | null): boolean => id === null || otherInfos.has(id);
+  return isInOther(info.enclosingId) &&
+      (info.indexInStack === 0 || isInOther(info.stack[info.indexInStack - 1]));
 }
 
 /**

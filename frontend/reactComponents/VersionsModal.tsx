@@ -568,7 +568,7 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
   // An unchanged module is shown in one preview, since both would show the same blocks.
   const isUnchanged = selectedDiff?.change === versionDiff.ModuleChange.UNCHANGED;
   const changeCount = selectedDiff
-      ? selectedDiff.blockDiff.added.size + selectedDiff.blockDiff.removed.size +
+      ? selectedDiff.blockDiff.addedGroups.size + selectedDiff.blockDiff.removedGroups.size +
           selectedDiff.blockDiff.changed.size
       : 0;
 
@@ -585,10 +585,10 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
     }
     const blockDiff = selectedDiff.blockDiff;
     const changes: BlockChange[] = [
-      ...[...blockDiff.removed].map(blockId => ({ blockId, panes: ['left'] as Pane[] })),
+      ...[...blockDiff.removedGroups].map(blockId => ({ blockId, panes: ['left'] as Pane[] })),
       ...[...blockDiff.changed].map(
           blockId => ({ blockId, panes: ['right', 'left'] as Pane[] })),
-      ...[...blockDiff.added].map(blockId => ({ blockId, panes: ['right'] as Pane[] })),
+      ...[...blockDiff.addedGroups].map(blockId => ({ blockId, panes: ['right'] as Pane[] })),
     ];
     const getPosition = (change: BlockChange): Blockly.utils.Coordinate =>
         workspacesRef.current[change.panes[0]]?.getBlockById(change.blockId)
