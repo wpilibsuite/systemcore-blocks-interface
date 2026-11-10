@@ -598,13 +598,13 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
         (positions.get(a)!.y - positions.get(b)!.y) || (positions.get(a)!.x - positions.get(b)!.x));
   };
 
-  /** Scrolls the panes to the change at the given index, wrapping around at either end. */
+  /** Scrolls the panes to the change at the given index. */
   const goToChange = (index: number): void => {
     const changes = getChanges();
     if (!changes.length) {
       return;
     }
-    const i = (index + changes.length) % changes.length;
+    const i = Math.min(Math.max(index, 0), changes.length - 1);
     const change = changes[i];
     currentChangeBlocksRef.current.forEach(block => block.removeClass(CURRENT_CHANGE_CLASS));
     currentChangeBlocksRef.current = [];
@@ -683,7 +683,7 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
       <Antd.Button
         size="small"
         icon={<ArrowUpOutlined />}
-        disabled={changeCount === 0}
+        disabled={changeCount === 0 || changeIndex <= 0}
         onClick={() => goToChange(changeIndex - 1)}
       >
         {t('VERSIONS.PREVIOUS_CHANGE')}
@@ -691,7 +691,7 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
       <Antd.Button
         size="small"
         icon={<ArrowDownOutlined />}
-        disabled={changeCount === 0}
+        disabled={changeCount === 0 || changeIndex >= changeCount - 1}
         onClick={() => goToChange(changeIndex + 1)}
       >
         {t('VERSIONS.NEXT_CHANGE')}
