@@ -73,36 +73,48 @@ code {
   --mrc-diff-moved: var(--mrc-diff-changed);
 }
 
-.mrcDiffAdded > .blocklyPath,
-.mrcDiffRemoved > .blocklyPath,
-.mrcDiffMoved > .blocklyPath,
-.mrcDiffChanged > .blocklyPath {
+/* The block styles set the outline width with selectors like
+ * `.<renderer>-renderer.<theme>-theme .blocklyPath`, so these selectors start with
+ * `.blocklySvg .blocklyBlockCanvas` to be more specific than those. */
+.blocklySvg .blocklyBlockCanvas .mrcDiffAdded > .blocklyPath,
+.blocklySvg .blocklyBlockCanvas .mrcDiffRemoved > .blocklyPath,
+.blocklySvg .blocklyBlockCanvas .mrcDiffMoved > .blocklyPath,
+.blocklySvg .blocklyBlockCanvas .mrcDiffChanged > .blocklyPath {
   stroke-width: 4px;
 }
 
-.mrcDiffAdded > .blocklyPath {
+/* The FIRST blocks style draws a light line inside the top edge of each block, which would cover
+ * part of the outline. */
+.mrcDiffAdded > .firstBlocksStyleTopHighlight,
+.mrcDiffRemoved > .firstBlocksStyleTopHighlight,
+.mrcDiffMoved > .firstBlocksStyleTopHighlight,
+.mrcDiffChanged > .firstBlocksStyleTopHighlight {
+  display: none;
+}
+
+.blocklySvg .blocklyBlockCanvas .mrcDiffAdded > .blocklyPath {
   stroke: var(--mrc-diff-added);
 }
 
-.mrcDiffRemoved > .blocklyPath {
+.blocklySvg .blocklyBlockCanvas .mrcDiffRemoved > .blocklyPath {
   stroke: var(--mrc-diff-removed);
 }
 
 /* Moved blocks are dotted: zero-length dashes with round caps are drawn as dots. This is before
  * changed, so a block that was moved and changed is outlined as changed. */
-.mrcDiffMoved > .blocklyPath {
+.blocklySvg .blocklyBlockCanvas .mrcDiffMoved > .blocklyPath {
   stroke: var(--mrc-diff-moved);
   stroke-dasharray: 0 8;
   stroke-linecap: round;
 }
 
-.mrcDiffChanged > .blocklyPath {
+.blocklySvg .blocklyBlockCanvas .mrcDiffChanged > .blocklyPath {
   stroke: var(--mrc-diff-changed);
   stroke-dasharray: none;
   stroke-linecap: butt;
 }
 
 /* The change that was last scrolled to with Previous Change or Next Change. */
-.mrcDiffCurrent > .blocklyPath {
+.blocklySvg .blocklyBlockCanvas .mrcDiffCurrent > .blocklyPath {
   stroke-width: 7px;
 }
