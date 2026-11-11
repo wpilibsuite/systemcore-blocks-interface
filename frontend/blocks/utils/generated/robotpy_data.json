@@ -2345,13 +2345,6 @@
                     "functionName": "update",
                     "returnType": "None",
                     "tooltip": "Updates all tunable values from backends."
-                },
-                {
-                    "args": [],
-                    "declaringClassName": "tunables.TunableRegistry",
-                    "functionName": "with_update_mutex",
-                    "returnType": "tunables._tunables._UpdateMutexContext",
-                    "tooltip": "Return a context manager that holds the registry update mutex. Enter and exit must occur on the same thread; while entered, the context retains itself until owner-thread exit. Defensive C++ destruction on a nonowner thread abandons rather than unlocks the mutex. Critical sections should be short and every competing tunable access must participate."
                 }
             ]
         },
@@ -3084,24 +3077,6 @@
                     "functionName": "get_z",
                     "returnType": "float",
                     "tooltip": "Returns the acceleration along the Z axis in g-forces.\n\n:returns: The acceleration along the Z axis in g-forces."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.ADXL345_I2C"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.ADXL345_I2C",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -3987,24 +3962,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.AnalogAccelerometer",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.AnalogAccelerometer"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "sensitivity",
                             "type": "float"
                         }
@@ -4184,24 +4141,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.AnalogEncoder",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.AnalogEncoder"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "inverted",
                             "type": "bool"
                         }
@@ -4323,24 +4262,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.AnalogInput",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.AnalogInput"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "device",
                             "type": "int"
                         }
@@ -4452,24 +4373,6 @@
                     "declaringClassName": "wpilib.AnalogPotentiometer",
                     "functionName": "get_telemetry_type",
                     "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.AnalogPotentiometer"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.AnalogPotentiometer",
-                    "functionName": "log_to",
-                    "returnType": "None",
                     "tooltip": ""
                 }
             ],
@@ -4694,20 +4597,7 @@
         },
         {
             "className": "wpilib.CAN",
-            "classVariables": [
-                {
-                    "name": "TEAM_DEVICE_TYPE",
-                    "tooltip": "",
-                    "type": "hal._wpi_hal.CANDeviceType",
-                    "writable": false
-                },
-                {
-                    "name": "TEAM_MANUFACTURER",
-                    "tooltip": "",
-                    "type": "hal._wpi_hal.CANManufacturer",
-                    "writable": false
-                }
-            ],
+            "classVariables": [],
             "constructors": [
                 {
                     "args": [
@@ -4769,234 +4659,12 @@
                             "defaultValue": "",
                             "name": "api_id",
                             "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "data",
-                            "type": "hal._wpi_hal.CANReceiveMessage"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.CAN",
-                    "functionName": "read_packet_latest",
-                    "returnType": "bool",
-                    "tooltip": "Read a CAN packet. The will continuously return the last packet received,\nwithout accounting for packet age.\n\n:param api_id: The API ID to read.\n:param data:   Storage for the received data.\n\n:returns: True if the data is valid, otherwise false."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.CAN"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "api_id",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "data",
-                            "type": "hal._wpi_hal.CANReceiveMessage"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.CAN",
-                    "functionName": "read_packet_new",
-                    "returnType": "bool",
-                    "tooltip": "Read a new CAN packet. This will only return properly once per packet\nreceived. Multiple calls without receiving another packet will return\nfalse.\n\n:param api_id: The API ID to read.\n:param data:   Storage for the received data.\n\n:returns: True if the data is valid, otherwise false."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.CAN"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "api_id",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "timeout_ms",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "data",
-                            "type": "hal._wpi_hal.CANReceiveMessage"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.CAN",
-                    "functionName": "read_packet_timeout",
-                    "returnType": "bool",
-                    "tooltip": "Read a CAN packet. The will return the last packet received until the\npacket is older then the requested timeout. Then it will return false.\n\n:param api_id:     The API ID to read.\n:param timeout_ms: The timeout time for the packet\n:param data:       Storage for the received data.\n\n:returns: True if the data is valid, otherwise false."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.CAN"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "api_id",
-                            "type": "int"
                         }
                     ],
                     "declaringClassName": "wpilib.CAN",
                     "functionName": "stop_packet_repeating",
                     "returnType": "None",
                     "tooltip": "Stop a repeating packet with a specific ID. This ID is 10 bits.\n\n:param api_id: The API ID to stop repeating"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.CAN"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "api_id",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "message",
-                            "type": "hal._wpi_hal.CANMessage"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.CAN",
-                    "functionName": "write_packet",
-                    "returnType": "None",
-                    "tooltip": "Write a packet to the CAN device with a specific ID. This ID is 10 bits.\n\n:param api_id:  The API ID to write.\n:param message: the CAN message."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.CAN"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "api_id",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "message",
-                            "type": "hal._wpi_hal.CANMessage"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.CAN",
-                    "functionName": "write_packet_no_error",
-                    "returnType": "int",
-                    "tooltip": "Write a packet to the CAN device with a specific ID. This ID is 10 bits.\n\n:param api_id:  The API ID to write.\n:param message: the CAN message."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.CAN"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "api_id",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "message",
-                            "type": "hal._wpi_hal.CANMessage"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "repeat_ms",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.CAN",
-                    "functionName": "write_packet_repeating",
-                    "returnType": "None",
-                    "tooltip": "Write a repeating packet to the CAN device with a specific ID. This ID is\n10 bits. The RoboRIO will automatically repeat the packet at the specified\ninterval\n\n:param api_id:    The API ID to write.\n:param message:   the CAN message.\n:param repeat_ms: The period to repeat the packet at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.CAN"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "api_id",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "message",
-                            "type": "hal._wpi_hal.CANMessage"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "repeat_ms",
-                            "type": "int"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.CAN",
-                    "functionName": "write_packet_repeating_no_error",
-                    "returnType": "int",
-                    "tooltip": "Write a repeating packet to the CAN device with a specific ID. This ID is\n10 bits. The RoboRIO will automatically repeat the packet at the specified\ninterval\n\n:param api_id:    The API ID to write.\n:param message:   the CAN message.\n:param repeat_ms: The period to repeat the packet at."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.CAN"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "api_id",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "message",
-                            "type": "hal._wpi_hal.CANMessage"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.CAN",
-                    "functionName": "write_rtr_frame",
-                    "returnType": "None",
-                    "tooltip": "Write an RTR frame to the CAN device with a specific ID. This ID is 10\nbits. The length by spec must match what is returned by the responding\ndevice\n\n:param api_id:  The API ID to write.\n:param message: the CAN message."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.CAN"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "api_id",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "message",
-                            "type": "hal._wpi_hal.CANMessage"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.CAN",
-                    "functionName": "write_rtr_frame_no_error",
-                    "returnType": "int",
-                    "tooltip": "Write an RTR frame to the CAN device with a specific ID. This ID is 10\nbits. The length by spec must match what is returned by the responding\ndevice\n\n:param api_id:  The API ID to write.\n:param message: the CAN message."
                 }
             ],
             "instanceVariables": [],
@@ -5315,24 +4983,6 @@
                     "functionName": "is_enabled",
                     "returnType": "bool",
                     "tooltip": "Returns whether the compressor is active or not.\n\n:returns: true if the compressor is on - otherwise false."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Compressor"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Compressor",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -5790,13 +5440,6 @@
                 {
                     "args": [],
                     "declaringClassName": "wpilib.DataLogManager",
-                    "functionName": "get_log",
-                    "returnType": "wpilog._wpilog.DataLog",
-                    "tooltip": "Get the managed data log (for custom logging). Starts the data log manager\nif not already started.\n\n:returns: data log"
-                },
-                {
-                    "args": [],
-                    "declaringClassName": "wpilib.DataLogManager",
                     "functionName": "get_log_dir",
                     "returnType": "str",
                     "tooltip": "Get the log directory.\n\n:returns: log directory"
@@ -5875,26 +5518,7 @@
         {
             "className": "wpilib.DataLogTelemetryBackend",
             "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "log",
-                            "type": "wpilog._wpilog.DataLog"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "prefix",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DataLogTelemetryBackend",
-                    "functionName": "__init__",
-                    "returnType": "wpilib.DataLogTelemetryBackend",
-                    "tooltip": "Construct.\n\n:param log:    datalog\n:param prefix: prefix to put in front of logged path in data log"
-                }
-            ],
+            "constructors": [],
             "enums": [],
             "instanceMethods": [
                 {
@@ -6222,24 +5846,6 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "wpilib.DifferentialDrive"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DifferentialDrive",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
                             "type": "wpilib.RobotDriveBase"
                         },
                         {
@@ -6540,24 +6146,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DigitalInput",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DigitalInput"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "device",
                             "type": "int"
                         }
@@ -6693,24 +6281,6 @@
                     "functionName": "is_pulsing",
                     "returnType": "bool",
                     "tooltip": "Determine if the pulse is still going.\n\nDetermine if a previously started pulse is still going."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DigitalOutput"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DigitalOutput",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -6976,24 +6546,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DoubleSolenoid",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DoubleSolenoid"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "value",
                             "type": "wpilib.DoubleSolenoid.Value"
                         }
@@ -7103,37 +6655,6 @@
                     "functionName": "remove_refreshed_data_event_handle",
                     "returnType": "None",
                     "tooltip": "Unregisters the given handle from DS data refresh notifications.\n\n:param handle: The event handle."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "log",
-                            "type": "wpilog._wpilog.DataLog"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DriverStation",
-                    "functionName": "start_data_log",
-                    "returnType": "None",
-                    "tooltip": "Starts logging DriverStation data to data log, including joystick data.\nRepeated calls are ignored.\n\n:param log: data log"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "log",
-                            "type": "wpilog._wpilog.DataLog"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "log_joysticks",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DriverStation",
-                    "functionName": "start_data_log",
-                    "returnType": "None",
-                    "tooltip": "Starts logging DriverStation data to data log. Repeated calls are ignored.\n\n:param log:           data log\n:param log_joysticks: if true, log joystick data"
                 }
             ]
         },
@@ -7174,72 +6695,6 @@
             "moduleName": "wpilib",
             "staticMethods": [
                 {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "group",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "description",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "text_color",
-                            "type": "wpiutil.Color"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "background_color",
-                            "type": "wpiutil.Color"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DriverStationBackend",
-                    "functionName": "add_opmode",
-                    "returnType": "int",
-                    "tooltip": "Adds an operating mode option. It's necessary to call PublishOpModes() to\nmake the added modes visible to the driver station.\n\n:param mode:             robot mode\n:param name:             name of the operating mode\n:param group:            group of the operating mode\n:param description:      description of the operating mode\n:param text_color:       text color\n:param background_color: background color\n\n:returns: unique ID used to later identify the operating mode; if a blank\n          name is passed, 0 is returned; identical names for the same robot\n          mode result in a 0 return value"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "''",
-                            "name": "group",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "''",
-                            "name": "description",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DriverStationBackend",
-                    "functionName": "add_opmode",
-                    "returnType": "int",
-                    "tooltip": "Adds an operating mode option. It's necessary to call PublishOpModes() to\nmake the added modes visible to the driver station.\n\n:param mode:        robot mode\n:param name:        name of the operating mode\n:param group:       group of the operating mode\n:param description: description of the operating mode\n\n:returns: unique ID used to later identify the operating mode; if a blank\n          name is passed, 0 is returned; identical names for the same robot\n          mode result in a 0 return value"
-                },
-                {
                     "args": [],
                     "declaringClassName": "wpilib.DriverStationBackend",
                     "functionName": "clear_opmodes",
@@ -7272,13 +6727,6 @@
                     "functionName": "get_battery_voltage",
                     "returnType": "float",
                     "tooltip": "Read the battery voltage.\n\n:returns: The battery voltage in Volts."
-                },
-                {
-                    "args": [],
-                    "declaringClassName": "wpilib.DriverStationBackend",
-                    "functionName": "get_control_word",
-                    "returnType": "hal._wpi_hal.ControlWord",
-                    "tooltip": "Get the current control word.\n\n:returns: control word"
                 },
                 {
                     "args": [],
@@ -7394,13 +6842,6 @@
                     "functionName": "get_replay_number",
                     "returnType": "int",
                     "tooltip": "Returns the number of times the current match has been replayed from the\nFMS.\n\n:returns: The number of replays"
-                },
-                {
-                    "args": [],
-                    "declaringClassName": "wpilib.DriverStationBackend",
-                    "functionName": "get_robot_mode",
-                    "returnType": "hal._wpi_hal.RobotMode",
-                    "tooltip": "Gets the current robot mode.\n\nNote that this does not indicate whether the robot is enabled or\ndisabled.\n\nThis method always returns RobotMode::UNKNOWN while the main robot\nclass is being constructed and initialized (more specifically, it returns\nRobotMode::UNKNOWN until ObserveUserProgramStarting() is called, which\nthe WPILib framework will automatically call during\nTimedRobot::StartCompetition() and OpModeRobot::StartCompetition()).\n\n:returns: robot mode"
                 },
                 {
                     "args": [
@@ -7826,24 +7267,6 @@
                     "args": [
                         {
                             "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DriverStationBackend",
-                    "functionName": "remove_opmode",
-                    "returnType": "int",
-                    "tooltip": "Removes an operating mode option. It's necessary to call PublishOpModes()\nto make the removed mode no longer visible to the driver station.\n\n:param mode: robot mode\n:param name: name of the operating mode\n\n:returns: unique ID for the opmode, or 0 if not found"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
                             "name": "handle",
                             "type": "int"
                         }
@@ -7872,24 +7295,6 @@
                     "functionName": "silence_joystick_connection_alert",
                     "returnType": "None",
                     "tooltip": "Allows the user to specify whether they want joystick connection alerts to\nbe shown. This setting is ignored when the FMS is connected -- alerts will\nalways be on in that scenario.\n\n:param silence: Whether joystick connection alerts should be silenced."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "log",
-                            "type": "wpilog._wpilog.DataLog"
-                        },
-                        {
-                            "defaultValue": "True",
-                            "name": "log_joysticks",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DriverStationBackend",
-                    "functionName": "start_data_log",
-                    "returnType": "None",
-                    "tooltip": "Starts logging DriverStation data to data log. Repeated calls are ignored.\n\n:param log:           data log\n:param log_joysticks: if true, log joystick data"
                 }
             ]
         },
@@ -9274,24 +8679,6 @@
                     "functionName": "l3",
                     "returnType": "wpilib.BooleanEvent",
                     "tooltip": "Constructs an event instance around the L 3 button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the L 3 button's\n          digital signal attached to the given loop."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DualSenseController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DualSenseController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -11057,24 +10444,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DualSenseEdgeController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DualSenseEdgeController"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -12612,24 +11981,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DualShock4Controller",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DualShock4Controller"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -13014,24 +12365,6 @@
                     "functionName": "get_telemetry_type",
                     "returnType": "str",
                     "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DutyCycle"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DutyCycle",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -13212,24 +12545,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DutyCycleEncoder",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DutyCycleEncoder"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "frequency",
                             "type": "wpimath.units.hertz"
                         }
@@ -13355,24 +12670,6 @@
                     "declaringClassName": "wpilib.EdgeCounter",
                     "functionName": "get_telemetry_type",
                     "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.EdgeCounter"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.EdgeCounter",
-                    "functionName": "log_to",
-                    "returnType": "None",
                     "tooltip": ""
                 },
                 {
@@ -13576,24 +12873,6 @@
                     "declaringClassName": "wpilib.Encoder",
                     "functionName": "get_telemetry_type",
                     "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Encoder"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Encoder",
-                    "functionName": "log_to",
-                    "returnType": "None",
                     "tooltip": ""
                 },
                 {
@@ -14878,24 +14157,6 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Field2d",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Field2d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
                             "type": "tunables.TunableTable"
                         }
                     ],
@@ -14949,19 +14210,6 @@
                     "functionName": "set_robot_pose",
                     "returnType": "None",
                     "tooltip": "Set the robot pose from x, y, and rotation.\n\n:param x:        X location\n:param y:        Y location\n:param rotation: rotation"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables._tunables.ComplexTunable"
-                        }
-                    ],
-                    "declaringClassName": "tunables._tunables.ComplexTunable",
-                    "functionName": "update_tunable",
-                    "returnType": "None",
-                    "tooltip": "Updates this complex tunable from its child tunables.\n\nThis function must not throw. If an exception escapes, registry and\nbackend state is not guaranteed to be restored."
                 }
             ],
             "instanceVariables": [],
@@ -16121,24 +15369,6 @@
                     "functionName": "l",
                     "returnType": "wpilib.BooleanEvent",
                     "tooltip": "Constructs an event instance around the L button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the L button's\n          digital signal attached to the given loop."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.GameCubeController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.GameCubeController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -18173,24 +17403,6 @@
                     "functionName": "left_trigger",
                     "returnType": "wpilib.BooleanEvent",
                     "tooltip": "Constructs an event instance around the axis value of the left trigger.\nThe returned trigger will be true when the axis value is greater than 0.5.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance that is true when the left trigger's axis\n          exceeds 0.5, attached to the given event loop"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Gamepad"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Gamepad",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -22210,24 +21422,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.LogitechF310Controller",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.LogitechF310Controller"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -22814,24 +22008,6 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "wpilib.MecanumDrive"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.MecanumDrive",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
                             "type": "wpilib.RobotDriveBase"
                         },
                         {
@@ -23079,24 +22255,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Mechanism2d",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Mechanism2d"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "color",
                             "type": "wpiutil.Color8Bit"
                         }
@@ -23262,24 +22420,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.MechanismLigament2d",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.MechanismLigament2d"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "angle",
                             "type": "wpimath.units.degrees"
                         }
@@ -23424,37 +22564,6 @@
                     "functionName": "get_name",
                     "returnType": "str",
                     "tooltip": "Retrieve the object's name.\n\n:returns: the object's name relative to its parent."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "telemetry._telemetry.TelemetryLoggable"
-                        }
-                    ],
-                    "declaringClassName": "telemetry._telemetry.TelemetryLoggable",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": "Gets the telemetry table type. Default is no specified table type (empty).\nA mismatch in type during logging results in a reported warning, so this\nshould always return the same value.\n\n:returns: Table type"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.MechanismObject2d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.MechanismObject2d",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -23536,24 +22645,6 @@
                     "declaringClassName": "wpilib.MechanismRoot2d",
                     "functionName": "get_name",
                     "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.MechanismRoot2d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.MechanismRoot2d",
-                    "functionName": "log_to",
-                    "returnType": "None",
                     "tooltip": ""
                 },
                 {
@@ -23768,24 +22859,6 @@
                     "declaringClassName": "wpilib.MotorControllerGroup",
                     "functionName": "get_throttle",
                     "returnType": "float",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.MotorControllerGroup"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.MotorControllerGroup",
-                    "functionName": "log_to",
-                    "returnType": "None",
                     "tooltip": ""
                 },
                 {
@@ -25426,24 +24499,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.NiDsPS4Controller",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.NiDsPS4Controller"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -26641,24 +25696,6 @@
                     "functionName": "l3",
                     "returnType": "wpilib.BooleanEvent",
                     "tooltip": "Constructs an event instance around the L3 (left stick) button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the L3 (left stick) button's\n          digital signal attached to the given loop."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.NiDsPS5Controller"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.NiDsPS5Controller",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -27925,24 +26962,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.NiDsStadiaController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.NiDsStadiaController"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -28957,24 +27976,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.NiDsXboxController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.NiDsXboxController"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -29754,168 +28755,6 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "wpilib.OpModeRobot"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "opmode_cls",
-                            "type": "type"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "group",
-                            "type": "str | None"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "description",
-                            "type": "str | None"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "text_color",
-                            "type": "wpiutil.Color | None"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "background_color",
-                            "type": "wpiutil.Color | None"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.OpModeRobot",
-                    "functionName": "add_opmode",
-                    "returnType": "None",
-                    "tooltip": "\n        Adds an operating mode option. It's necessary to call publish_opmodes() to\n        make the added modes visible to the driver station.\n\n        The text_color and background_color parameters are optional, but setting\n        only one has no effect (if only one is provided, it will be ignored).\n\n        :param opmode_cls: opmode class; must be a public, non-abstract subclass of OpMode\n                          with a constructor that either takes no arguments or accepts a\n                          single argument of this class's type (the latter is preferred).\n        :param mode: robot mode\n        :param name: name of the operating mode\n        :param group: group of the operating mode\n        :param description: description of the operating mode\n        :param text_color: text color\n        :param background_color: background color\n        "
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.OpModeRobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "group",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "description",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "text_color",
-                            "type": "wpiutil.Color"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "background_color",
-                            "type": "wpiutil.Color"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "factory",
-                            "type": "collections.abc.Callable[[], wpilib.OpMode]"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.OpModeRobotBase",
-                    "functionName": "add_opmode_factory",
-                    "returnType": "None",
-                    "tooltip": "Adds an operating mode option using a factory function that creates the\nopmode. It's necessary to call PublishOpModes() to make the added modes\nvisible to the driver station.\n\n:param mode:             robot mode\n:param name:             name of the operating mode\n:param group:            group of the operating mode\n:param description:      description of the operating mode\n:param text_color:       text color\n:param background_color: background color\n:param factory:          factory function"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.OpModeRobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "group",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "description",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "factory",
-                            "type": "collections.abc.Callable[[], wpilib.OpMode]"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.OpModeRobotBase",
-                    "functionName": "add_opmode_factory",
-                    "returnType": "None",
-                    "tooltip": "Adds an operating mode option using a factory function that creates the\nopmode. It's necessary to call PublishOpModes() to make the added modes\nvisible to the driver station.\n\n:param mode:        robot mode\n:param name:        name of the operating mode\n:param group:       group of the operating mode\n:param description: description of the operating mode\n:param factory:     factory function"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.OpModeRobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "factory",
-                            "type": "collections.abc.Callable[[], wpilib.OpMode]"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.OpModeRobotBase",
-                    "functionName": "add_opmode_factory",
-                    "returnType": "None",
-                    "tooltip": "Adds an operating mode option using a factory function that creates the\nopmode. It's necessary to call PublishOpModes() to make the added modes\nvisible to the driver station.\n\n:param mode:    robot mode\n:param name:    name of the operating mode\n:param factory: factory function"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
                             "type": "wpilib.OpModeRobotBase"
                         },
                         {
@@ -30050,29 +28889,6 @@
                     "functionName": "publish_opmodes",
                     "returnType": "None",
                     "tooltip": "Publishes the operating mode options to the driver station."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.OpModeRobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.OpModeRobotBase",
-                    "functionName": "remove_opmode",
-                    "returnType": "None",
-                    "tooltip": "Removes an operating mode option. It's necessary to call PublishOpModes()\nto make the removed mode no longer visible to the driver station.\n\n:param mode: robot mode\n:param name: name of the operating mode"
                 },
                 {
                     "args": [
@@ -30280,120 +29096,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "group",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "description",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "text_color",
-                            "type": "wpiutil.Color"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "background_color",
-                            "type": "wpiutil.Color"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "factory",
-                            "type": "collections.abc.Callable[[], wpilib.OpMode]"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.OpModeRobotBase",
-                    "functionName": "add_opmode_factory",
-                    "returnType": "None",
-                    "tooltip": "Adds an operating mode option using a factory function that creates the\nopmode. It's necessary to call PublishOpModes() to make the added modes\nvisible to the driver station.\n\n:param mode:             robot mode\n:param name:             name of the operating mode\n:param group:            group of the operating mode\n:param description:      description of the operating mode\n:param text_color:       text color\n:param background_color: background color\n:param factory:          factory function"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.OpModeRobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "group",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "description",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "factory",
-                            "type": "collections.abc.Callable[[], wpilib.OpMode]"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.OpModeRobotBase",
-                    "functionName": "add_opmode_factory",
-                    "returnType": "None",
-                    "tooltip": "Adds an operating mode option using a factory function that creates the\nopmode. It's necessary to call PublishOpModes() to make the added modes\nvisible to the driver station.\n\n:param mode:        robot mode\n:param name:        name of the operating mode\n:param group:       group of the operating mode\n:param description: description of the operating mode\n:param factory:     factory function"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.OpModeRobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "factory",
-                            "type": "collections.abc.Callable[[], wpilib.OpMode]"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.OpModeRobotBase",
-                    "functionName": "add_opmode_factory",
-                    "returnType": "None",
-                    "tooltip": "Adds an operating mode option using a factory function that creates the\nopmode. It's necessary to call PublishOpModes() to make the added modes\nvisible to the driver station.\n\n:param mode:    robot mode\n:param name:    name of the operating mode\n:param factory: factory function"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.OpModeRobotBase"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "callback",
                             "type": "collections.abc.Callable[[], None]"
                         },
@@ -30524,29 +29226,6 @@
                     "functionName": "publish_opmodes",
                     "returnType": "None",
                     "tooltip": "Publishes the operating mode options to the driver station."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.OpModeRobotBase"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.OpModeRobotBase",
-                    "functionName": "remove_opmode",
-                    "returnType": "None",
-                    "tooltip": "Removes an operating mode option. It's necessary to call PublishOpModes()\nto make the removed mode no longer visible to the driver station.\n\n:param mode: robot mode\n:param name: name of the operating mode"
                 },
                 {
                     "args": [
@@ -30768,24 +29447,6 @@
                     "declaringClassName": "wpilib.PWM",
                     "functionName": "get_telemetry_type",
                     "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PWM"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PWM",
-                    "functionName": "log_to",
-                    "returnType": "None",
                     "tooltip": ""
                 },
                 {
@@ -31073,24 +29734,6 @@
                     "functionName": "is_safety_enabled",
                     "returnType": "bool",
                     "tooltip": "Return the state of the motor safety enabled flag.\n\nReturn if the motor safety is currently enabled for this device.\n\n:returns: True if motor safety is enforced for this device."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PWMMotorController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PWMMotorController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -34065,24 +32708,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.PowerDistribution"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PowerDistribution",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PowerDistribution"
                         }
                     ],
                     "declaringClassName": "wpilib.PowerDistribution",
@@ -35599,72 +34224,6 @@
             "moduleName": "wpilib",
             "staticMethods": [
                 {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "group",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "description",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "text_color",
-                            "type": "wpiutil.Color"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "background_color",
-                            "type": "wpiutil.Color"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.RobotState",
-                    "functionName": "add_opmode",
-                    "returnType": "int",
-                    "tooltip": "Adds an operating mode option. It's necessary to call PublishOpModes() to\nmake the added modes visible to the driver station.\n\n:param mode:             robot mode\n:param name:             name of the operating mode\n:param group:            group of the operating mode\n:param description:      description of the operating mode\n:param text_color:       text color\n:param background_color: background color\n\n:returns: unique ID used to later identify the operating mode; if a blank\n          name is passed, 0 is returned; identical names for the same robot\n          mode result in a 0 return value"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "''",
-                            "name": "group",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "''",
-                            "name": "description",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.RobotState",
-                    "functionName": "add_opmode",
-                    "returnType": "int",
-                    "tooltip": "Adds an operating mode option. It's necessary to call PublishOpModes() to\nmake the added modes visible to the driver station.\n\n:param mode:        robot mode\n:param name:        name of the operating mode\n:param group:       group of the operating mode\n:param description: description of the operating mode\n\n:returns: unique ID used to later identify the operating mode; if a blank\n          name is passed, 0 is returned; identical names for the same robot\n          mode result in a 0 return value"
-                },
-                {
                     "args": [],
                     "declaringClassName": "wpilib.RobotState",
                     "functionName": "clear_opmodes",
@@ -35684,13 +34243,6 @@
                     "functionName": "get_opmode_id",
                     "returnType": "int",
                     "tooltip": "Gets the operating mode selected on the driver station. Note this does not\nmean the robot is enabled; use IsEnabled() for that. In a match, this will\nindicate the operating mode selected for auto before the match starts\n(i.e., while the robot is disabled in auto mode); after the auto period\nends, this will change to reflect the operating mode selected for teleop.\n\n:returns: the unique ID provided by the AddOpMode() function; may return 0 or\n          a unique ID not added, so callers should be prepared to handle that case"
-                },
-                {
-                    "args": [],
-                    "declaringClassName": "wpilib.RobotState",
-                    "functionName": "get_robot_mode",
-                    "returnType": "hal._wpi_hal.RobotMode",
-                    "tooltip": "Gets the current robot mode.\n\nNote that this does not indicate whether the robot is enabled or disabled.\n\n:returns: robot mode"
                 },
                 {
                     "args": [],
@@ -35801,24 +34353,6 @@
                     "functionName": "publish_opmodes",
                     "returnType": "None",
                     "tooltip": "Publishes the operating mode options to the driver station."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.RobotState",
-                    "functionName": "remove_opmode",
-                    "returnType": "int",
-                    "tooltip": "Removes an operating mode option. It's necessary to call PublishOpModes()\nto make the removed mode no longer visible to the driver station.\n\n:param mode: robot mode\n:param name: name of the operating mode\n\n:returns: unique ID for the opmode, or 0 if not found"
                 }
             ]
         },
@@ -36288,24 +34822,6 @@
                     "functionName": "get_telemetry_type",
                     "returnType": "str",
                     "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.SharpIR"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.SharpIR",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -36475,24 +34991,6 @@
                     "functionName": "is_disabled",
                     "returnType": "bool",
                     "tooltip": "Check if solenoid is Disabled.\n\nIf a solenoid is shorted, it is added to the DisabledList and\ndisabled until power cycle, or until faults are cleared.\n\n@see ClearAllPCMStickyFaults()\n\n:returns: If solenoid is disabled due to short."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Solenoid"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Solenoid",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -38263,24 +36761,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.SteamController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.SteamController"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -39862,24 +38342,6 @@
                     "functionName": "l",
                     "returnType": "wpilib.BooleanEvent",
                     "tooltip": "Constructs an event instance around the L button's\ndigital signal.\n\n:param loop: the event loop instance to attach the event to.\n\n:returns: an event instance representing the L button's\n          digital signal attached to the given loop."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Switch2GCController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Switch2GCController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -41529,24 +39991,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Switch2ProController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Switch2ProController"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -42998,24 +41442,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.SwitchN64Controller",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.SwitchN64Controller"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -44373,24 +42799,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.SwitchProController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.SwitchProController"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -44796,24 +43204,6 @@
                     "declaringClassName": "wpilib.Tachometer",
                     "functionName": "get_telemetry_type",
                     "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Tachometer"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Tachometer",
-                    "functionName": "log_to",
-                    "returnType": "None",
                     "tooltip": ""
                 },
                 {
@@ -47392,24 +45782,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.XboxController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.XboxController"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "loop",
                             "type": "wpilib.EventLoop"
                         }
@@ -47866,75 +46238,6 @@
                         },
                         {
                             "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.AddressableLEDSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the Initialized property.\n\n:param callback:       the callback that will be called whenever the Initialized\n                       property is changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object storing this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.AddressableLEDSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.AddressableLEDSim",
-                    "functionName": "register_length_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the length.\n\n:param callback:       the callback that will be called whenever the length is\n                       changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.AddressableLEDSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.AddressableLEDSim",
-                    "functionName": "register_start_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the start.\n\n:param callback:       the callback that will be called whenever the start\n                       is changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.AddressableLEDSim"
-                        },
-                        {
-                            "defaultValue": "",
                             "name": "data",
                             "type": "List[wpilib.AddressableLED.LEDData]"
                         }
@@ -48268,52 +46571,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.simulation.AnalogInputSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.AnalogInputSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on whether the analog input is initialized.\n\n:param callback:       the callback that will be called whenever the analog input\n                       is initialized\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.AnalogInputSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.AnalogInputSim",
-                    "functionName": "register_voltage_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the voltage.\n\n:param callback:       the callback that will be called whenever the voltage is\n                       changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.AnalogInputSim"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.AnalogInputSim",
@@ -48553,149 +46810,6 @@
                     "declaringClassName": "wpilib.simulation.CTREPCMSim",
                     "functionName": "get_solenoid_output",
                     "returnType": "bool",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.CTREPCMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.CTREPCMSim",
-                    "functionName": "register_closed_loop_enabled_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the closed loop state changes.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.CTREPCMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.CTREPCMSim",
-                    "functionName": "register_compressor_current_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the compressor current changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.CTREPCMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.CTREPCMSim",
-                    "functionName": "register_compressor_on_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.CTREPCMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.CTREPCMSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.CTREPCMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.CTREPCMSim",
-                    "functionName": "register_pressure_switch_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the pressure switch value changes.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.CTREPCMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "channel",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.CTREPCMSim",
-                    "functionName": "register_solenoid_output_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
                     "tooltip": ""
                 },
                 {
@@ -49403,121 +47517,6 @@
                     "functionName": "get_value",
                     "returnType": "bool",
                     "tooltip": "Read the value of the DIO port.\n\n:returns: the DIO value"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DIOSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DIOSim",
-                    "functionName": "register_filter_index_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the filter index changes.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DIOSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DIOSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when this DIO is initialized.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DIOSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DIOSim",
-                    "functionName": "register_is_input_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever this DIO changes to be an input.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DIOSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DIOSim",
-                    "functionName": "register_pulse_length_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the pulse length changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DIOSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DIOSim",
-                    "functionName": "register_value_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the DIO value changes.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial value\n\n:returns: the CallbackStore object associated with this callback"
                 },
                 {
                     "args": [
@@ -50442,75 +48441,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.simulation.DigitalPWMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DigitalPWMSim",
-                    "functionName": "register_duty_cycle_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the duty cycle value changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DigitalPWMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DigitalPWMSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when this PWM output is initialized.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DigitalPWMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DigitalPWMSim",
-                    "functionName": "register_pin_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the pin changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DigitalPWMSim"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.DigitalPWMSim",
@@ -50757,13 +48687,6 @@
                 {
                     "args": [],
                     "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "get_alliance_station_id",
-                    "returnType": "hal._wpi_hal.AllianceStationID",
-                    "tooltip": "Get the alliance station ID (color + number).\n\n:returns: the alliance station color and number"
-                },
-                {
-                    "args": [],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
                     "functionName": "get_ds_attached",
                     "returnType": "bool",
                     "tooltip": "Check if the DS is attached.\n\n:returns: true if attached"
@@ -50844,160 +48767,9 @@
                 {
                     "args": [],
                     "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "get_robot_mode",
-                    "returnType": "hal._wpi_hal.RobotMode",
-                    "tooltip": "Get the robot mode set by the DS.\n\n:returns: robot mode"
-                },
-                {
-                    "args": [],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
                     "functionName": "notify_new_data",
                     "returnType": "None",
                     "tooltip": "Updates DriverStation data so that new values are visible to the user\nprogram."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "register_alliance_station_id_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the alliance station ID.\n\n:param callback:       the callback that will be called whenever the alliance\n                       station changes\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "register_ds_attached_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on whether the DS is connected.\n\n:param callback:       the callback that will be called whenever the DS\n                       connection changes\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "register_e_stop_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the eStop state.\n\n:param callback:       the callback that will be called whenever the eStop state\n                       changes\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "register_enabled_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on whether the DS is enabled.\n\n:param callback:       the callback that will be called whenever the enabled\n                       state is changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "register_fms_attached_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on whether the FMS is connected.\n\n:param callback:       the callback that will be called whenever the FMS\n                       connection changes\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "register_match_time_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on match time.\n\n:param callback:       the callback that will be called whenever match time\n                       changes\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "register_opmode_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on DS opmode changes.\n\n:param callback:       the callback that will be called when opmode changes\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "register_robot_mode_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on DS robot mode changes.\n\n:param callback:       the callback that will be called when robot mode changes\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
                 },
                 {
                     "args": [],
@@ -51005,19 +48777,6 @@
                     "functionName": "reset_data",
                     "returnType": "None",
                     "tooltip": "Reset all simulation data for the Driver Station."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "alliance_station_id",
-                            "type": "hal._wpi_hal.AllianceStationID"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "set_alliance_station_id",
-                    "returnType": "None",
-                    "tooltip": "Change the alliance station.\n\n:param alliance_station_id: the new alliance station"
                 },
                 {
                     "args": [
@@ -51410,19 +49169,6 @@
                     "functionName": "set_replay_number",
                     "returnType": "None",
                     "tooltip": "Sets the replay number.\n\n:param replay_number: the replay number"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "robot_mode",
-                            "type": "hal._wpi_hal.RobotMode"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DriverStationSim",
-                    "functionName": "set_robot_mode",
-                    "returnType": "None",
-                    "tooltip": "Change the robot mode set by the DS.\n\n:param robot_mode: the new value"
                 },
                 {
                     "args": [
@@ -53910,75 +51656,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.simulation.DutyCycleSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DutyCycleSim",
-                    "functionName": "register_frequency_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the frequency changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DutyCycleSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DutyCycleSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when this duty cycle input is initialized.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DutyCycleSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.DutyCycleSim",
-                    "functionName": "register_output_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the output changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.DutyCycleSim"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.DutyCycleSim",
@@ -54594,167 +52271,6 @@
                     "functionName": "get_reverse_direction",
                     "returnType": "bool",
                     "tooltip": "Get the reverse direction of the encoder.\n\n:returns: the reverse direction of the encoder"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.EncoderSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.EncoderSim",
-                    "functionName": "register_count_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the count property of the encoder.\n\n:param callback:       the callback that will be called whenever the count\n                       property is changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.EncoderSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.EncoderSim",
-                    "functionName": "register_direction_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the direction of the encoder.\n\n:param callback:       the callback that will be called whenever the direction\n                       is changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.EncoderSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.EncoderSim",
-                    "functionName": "register_distance_per_pulse_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the distance per pulse value of this encoder.\n\n:param callback:       the callback that will be called whenever the\n                       distance per pulse is changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.EncoderSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.EncoderSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the Initialized property of the encoder.\n\n:param callback:       the callback that will be called whenever the Initialized\n                       property is changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.EncoderSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.EncoderSim",
-                    "functionName": "register_rate_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the rate of the encoder.\n\n:param callback:       the callback that will be called whenever the rate is\n                       changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.EncoderSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.EncoderSim",
-                    "functionName": "register_reset_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be called whenever the encoder is reset.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback on the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.EncoderSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.EncoderSim",
-                    "functionName": "register_reverse_direction_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback on the reverse direction.\n\n:param callback:       the callback that will be called whenever the reverse\n                       direction is changed\n:param initial_notify: if true, the callback will be run on the initial value\n\n:returns: the CallbackStore object associated with this callback"
                 },
                 {
                     "args": [
@@ -62429,75 +59945,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.simulation.PWMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PWMSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when the PWM is initialized.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PWMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PWMSim",
-                    "functionName": "register_output_period_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when the PWM period scale changes.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PWMSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PWMSim",
-                    "functionName": "register_pulse_microsecond_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when the PWM pulse microsecond value changes.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PWMSim"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.PWMSim",
@@ -62680,126 +60127,6 @@
                     "functionName": "get_solenoid_output",
                     "returnType": "bool",
                     "tooltip": "Check the solenoid output on a specific channel.\n\n:param channel: the channel to check\n\n:returns: the solenoid output"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PneumaticsBaseSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PneumaticsBaseSim",
-                    "functionName": "register_compressor_current_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the compressor current changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the :class:`.CallbackStore` object associated with this callback.\n          Save a reference to this object; it being deconstructed cancels the\n          callback."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PneumaticsBaseSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PneumaticsBaseSim",
-                    "functionName": "register_compressor_on_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when the compressor activates.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial state\n\n:returns: the :class:`.CallbackStore` object associated with this callback.\n          Save a reference to this object; it being deconstructed cancels the\n          callback."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PneumaticsBaseSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PneumaticsBaseSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when the PCM/PH is initialized.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial state\n\n:returns: the :class:`.CallbackStore` object associated with this callback.\n          Save a reference to this object; it being deconstructed cancels the\n          callback."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PneumaticsBaseSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PneumaticsBaseSim",
-                    "functionName": "register_pressure_switch_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the pressure switch value changes.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the initial\n                       value\n\n:returns: the :class:`.CallbackStore` object associated with this callback.\n          Save a reference to this object; it being deconstructed cancels the\n          callback."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PneumaticsBaseSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "channel",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PneumaticsBaseSim",
-                    "functionName": "register_solenoid_output_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when the solenoid output on a channel\nchanges.\n\n:param channel:        the channel to monitor\n:param callback:       the callback\n:param initial_notify: should the callback be run with the initial value\n\n:returns: the :class:`.CallbackStore` object associated with this callback.\n          Save a reference to this object; it being deconstructed cancels the\n          callback."
                 },
                 {
                     "args": [
@@ -63066,103 +60393,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.simulation.PowerDistributionSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "channel",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PowerDistributionSim",
-                    "functionName": "register_current_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the current of a specific channel\nchanges.\n\n:param channel:        the channel\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PowerDistributionSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PowerDistributionSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when the PowerDistribution is initialized.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PowerDistributionSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PowerDistributionSim",
-                    "functionName": "register_temperature_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the PowerDistribution temperature\nchanges.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PowerDistributionSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.PowerDistributionSim",
-                    "functionName": "register_voltage_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the PowerDistribution voltage\nchanges.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.PowerDistributionSim"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.PowerDistributionSim",
@@ -63410,149 +60640,6 @@
                     "declaringClassName": "wpilib.simulation.REVPHSim",
                     "functionName": "get_solenoid_output",
                     "returnType": "bool",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.REVPHSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.REVPHSim",
-                    "functionName": "register_compressor_config_type_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the closed loop state changes.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.REVPHSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.REVPHSim",
-                    "functionName": "register_compressor_current_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.REVPHSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.REVPHSim",
-                    "functionName": "register_compressor_on_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.REVPHSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.REVPHSim",
-                    "functionName": "register_initialized_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.REVPHSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.REVPHSim",
-                    "functionName": "register_pressure_switch_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.REVPHSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "channel",
-                            "type": "int"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.REVPHSim",
-                    "functionName": "register_solenoid_output_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
                     "tooltip": ""
                 },
                 {
@@ -63818,168 +60905,6 @@
                     "functionName": "get_vin_voltage",
                     "returnType": "wpimath.units.volts",
                     "tooltip": "Measure the Vin voltage.\n\n:returns: the Vin voltage"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.RoboRioSim",
-                    "functionName": "register_brownout_recovery_voltage_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the brownout recovery voltage\nchanges.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.RoboRioSim",
-                    "functionName": "register_brownout_voltage_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the brownout voltage changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.RoboRioSim",
-                    "functionName": "register_cpu_temp_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the cpu temp changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.RoboRioSim",
-                    "functionName": "register_team_number_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the team number changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.RoboRioSim",
-                    "functionName": "register_user_active_3v3_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the 3.3V rail active state changes.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial state\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.RoboRioSim",
-                    "functionName": "register_user_current_3v3_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the 3.3V rail current changes.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.RoboRioSim",
-                    "functionName": "register_user_faults_3v3_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the 3.3V rail number of faults\nchanges.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.RoboRioSim",
-                    "functionName": "register_user_voltage_3v3_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the 3.3V rail voltage changes.\n\n:param callback:       the callback\n:param initial_notify: whether the callback should be called with the\n                       initial value\n\n:returns: the CallbackStore object associated with this callback"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.RoboRioSim",
-                    "functionName": "register_vin_voltage_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run whenever the Vin voltage changes.\n\n:param callback:       the callback\n:param initial_notify: whether to call the callback with the initial state\n\n:returns: the CallbackStore object associated with this callback"
                 },
                 {
                     "args": [],
@@ -64283,120 +61208,12 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.simulation.SimDeviceSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.SimDeviceSim",
-                    "functionName": "get_boolean",
-                    "returnType": "hal._wpi_hal.SimBoolean",
-                    "tooltip": "Retrieves an object that allows you to interact with simulated values\nrepresented as a boolean."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.SimDeviceSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.SimDeviceSim",
-                    "functionName": "get_double",
-                    "returnType": "hal._wpi_hal.SimDouble",
-                    "tooltip": "Retrieves an object that allows you to interact with simulated values\nrepresented as a double."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.SimDeviceSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.SimDeviceSim",
-                    "functionName": "get_enum",
-                    "returnType": "hal._wpi_hal.SimEnum",
-                    "tooltip": "Get the property object with the given name.\n\n:param name: the property name\n\n:returns: the property object"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.SimDeviceSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.SimDeviceSim",
-                    "functionName": "get_int",
-                    "returnType": "hal._wpi_hal.SimInt",
-                    "tooltip": "Retrieves an object that allows you to interact with simulated values\nrepresented as an integer."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.SimDeviceSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.SimDeviceSim",
-                    "functionName": "get_long",
-                    "returnType": "hal._wpi_hal.SimLong",
-                    "tooltip": "Retrieves an object that allows you to interact with simulated values\nrepresented as a long."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.SimDeviceSim"
                         }
                     ],
                     "declaringClassName": "wpilib.simulation.SimDeviceSim",
                     "functionName": "get_name",
                     "returnType": "str",
                     "tooltip": "Get the name of this object.\n\n:returns: name"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.SimDeviceSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "name",
-                            "type": "str"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.SimDeviceSim",
-                    "functionName": "get_value",
-                    "returnType": "hal._wpi_hal.SimValue",
-                    "tooltip": "Provides a readonly mechanism to retrieve all types of device values"
                 }
             ],
             "instanceVariables": [],
@@ -64415,19 +61232,6 @@
                     "functionName": "enumerate_devices",
                     "returnType": "list[str]",
                     "tooltip": "Returns a list of available device names"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "val",
-                            "type": "hal._wpi_hal.SimEnum"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.SimDeviceSim",
-                    "functionName": "get_enum_options",
-                    "returnType": "list[str]",
-                    "tooltip": "Get all options for the given enum.\n\n:param val: the enum\n\n:returns: names of the different values for that enum"
                 },
                 {
                     "args": [],
@@ -64956,29 +61760,6 @@
                     "functionName": "get_output",
                     "returnType": "bool",
                     "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.simulation.SolenoidSim"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "callback",
-                            "type": "collections.abc.Callable[[str, hal._wpi_hal.Value], None]"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "initial_notify",
-                            "type": "bool"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.simulation.SolenoidSim",
-                    "functionName": "register_output_callback",
-                    "returnType": "wpilib.simulation.CallbackStore",
-                    "tooltip": "Register a callback to be run when the output of this solenoid has changed.\n\n:param callback:       the callback\n:param initial_notify: whether to run the callback with the initial state\n\n:returns: the :class:`.CallbackStore` object associated with this callback.\n          Save a reference to this object; it being deconstructed cancels the\n          callback."
                 },
                 {
                     "args": [
@@ -70455,24 +67236,6 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.BangBangController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.BangBangController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
                             "type": "tunables.TunableTable"
                         }
                     ],
@@ -70516,19 +67279,6 @@
                     "functionName": "set_tolerance",
                     "returnType": "None",
                     "tooltip": "Sets the error within which AtSetpoint will return true.\n\n:param tolerance: Position error which is tolerable."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables._tunables.ComplexTunable"
-                        }
-                    ],
-                    "declaringClassName": "tunables._tunables.ComplexTunable",
-                    "functionName": "update_tunable",
-                    "returnType": "None",
-                    "tooltip": "Updates this complex tunable from its child tunables.\n\nThis function must not throw. If an exception escapes, registry and\nbackend state is not guaranteed to be restored."
                 }
             ],
             "instanceVariables": [],
@@ -93175,24 +89925,6 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.PIDController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.PIDController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
                             "type": "tunables.TunableTable"
                         }
                     ],
@@ -93377,19 +90109,6 @@
                     "functionName": "set_tolerance",
                     "returnType": "None",
                     "tooltip": "Sets the error which is considered tolerable for use with AtSetpoint().\n\n:param error_tolerance:            error which is tolerable.\n:param error_derivative_tolerance: error derivative which is tolerable."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables._tunables.ComplexTunable"
-                        }
-                    ],
-                    "declaringClassName": "tunables._tunables.ComplexTunable",
-                    "functionName": "update_tunable",
-                    "returnType": "None",
-                    "tooltip": "Updates this complex tunable from its child tunables.\n\nThis function must not throw. If an exception escapes, registry and\nbackend state is not guaranteed to be restored."
                 }
             ],
             "instanceVariables": [],
@@ -94404,24 +91123,6 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.ProfiledPIDController",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.ProfiledPIDController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
                             "type": "tunables.TunableTable"
                         }
                     ],
@@ -94688,19 +91389,6 @@
                     "functionName": "set_tolerance",
                     "returnType": "None",
                     "tooltip": "Sets the error which is considered tolerable for use with\nAtSetpoint().\n\n:param position_tolerance: Position error which is tolerable.\n:param velocity_tolerance: Velocity error which is tolerable."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables._tunables.ComplexTunable"
-                        }
-                    ],
-                    "declaringClassName": "tunables._tunables.ComplexTunable",
-                    "functionName": "update_tunable",
-                    "returnType": "None",
-                    "tooltip": "Updates this complex tunable from its child tunables.\n\nThis function must not throw. If an exception escapes, registry and\nbackend state is not guaranteed to be restored."
                 }
             ],
             "instanceVariables": [],
@@ -95107,24 +91795,6 @@
                         {
                             "defaultValue": "",
                             "name": "table",
-                            "type": "telemetry._telemetry._NativeTelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.ProfiledPIDControllerRadians",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.ProfiledPIDControllerRadians"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
                             "type": "tunables.TunableTable"
                         }
                     ],
@@ -95391,19 +92061,6 @@
                     "functionName": "set_tolerance",
                     "returnType": "None",
                     "tooltip": "Sets the error which is considered tolerable for use with\nAtSetpoint().\n\n:param position_tolerance: Position error which is tolerable.\n:param velocity_tolerance: Velocity error which is tolerable."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables._tunables.ComplexTunable"
-                        }
-                    ],
-                    "declaringClassName": "tunables._tunables.ComplexTunable",
-                    "functionName": "update_tunable",
-                    "returnType": "None",
-                    "tooltip": "Updates this complex tunable from its child tunables.\n\nThis function must not throw. If an exception escapes, registry and\nbackend state is not guaranteed to be restored."
                 }
             ],
             "instanceVariables": [],
@@ -113818,12 +110475,6 @@
                 },
                 {
                     "args": [],
-                    "functionName": "get_program_state",
-                    "returnType": "hal._wpi_hal.ControlWord",
-                    "tooltip": "Gets the user program state (control word).\n\n:returns: Control word"
-                },
-                {
-                    "args": [],
                     "functionName": "is_timing_paused",
                     "returnType": "bool",
                     "tooltip": "Check if the simulator time is paused.\n\n:returns: true if paused"
@@ -113857,30 +110508,6 @@
                     "functionName": "set_program_started",
                     "returnType": "None",
                     "tooltip": "Sets flag that indicates if the user program has started.\n\n:param started: true if started"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "control_word",
-                            "type": "hal._wpi_hal.ControlWord"
-                        }
-                    ],
-                    "functionName": "set_program_state",
-                    "returnType": "None",
-                    "tooltip": "Sets the user program state (control word).\n\n:param control_word: control word"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "type",
-                            "type": "hal._wpi_hal.RuntimeType"
-                        }
-                    ],
-                    "functionName": "set_runtime_type",
-                    "returnType": "None",
-                    "tooltip": "Override the HAL runtime type (simulated/real).\n\n:param type: runtime type"
                 },
                 {
                     "args": [

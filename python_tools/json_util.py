@@ -17,6 +17,8 @@ import python_util
 import component
 
 
+_PRINT_IGNORING = False
+
 _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
   'hal',
   'ntcore',
@@ -361,9 +363,10 @@ class JsonGenerator:
 
       var_type = self._getClassName(type(value))
       if ignoreType(var_type):
-        print(f'INFO: ignoring module variable {module_name}.{key} because its type is {var_type}.',
-            file=sys.stderr)
-        pass # HeyLiz continue
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring module variable {module_name}.{key} because its type is {var_type}.',
+              file=sys.stderr)
+        continue
 
       writable = python_util.isModuleVariableWritable(module, key, value)
       if writable:
@@ -433,9 +436,10 @@ class JsonGenerator:
           return_type = module_name + '.' + return_type
         return_type = self._getClassName(return_type)
         if ignoreType(return_type):
-          print(f'INFO: ignoring module function {module_name}.{function_name} because its return type is {return_type}.',
-              file=sys.stderr)
-          pass # HeyLiz continue
+          if _PRINT_IGNORING:
+            print(f'INFO: ignoring module function {module_name}.{function_name} because its return type is {return_type}.',
+                file=sys.stderr)
+          continue
 
         ignore = False
         for i in range(len(arg_types)):
@@ -447,12 +451,13 @@ class JsonGenerator:
           arg_type = self._getClassName(arg_type)
           arg_types[i] = arg_type
           if ignoreType(arg_type):
-            print(f'INFO: ignoring module function {module_name}.{function_name} because an arg type is {arg_type}.',
-                file=sys.stderr)
+            if _PRINT_IGNORING:
+              print(f'INFO: ignoring module function {module_name}.{function_name} because an arg type is {arg_type}.',
+                  file=sys.stderr)
             ignore = True
-            pass # HeyLiz break
+            break
         if ignore:
-          pass # HeyLiz continue
+          continue
 
         args = []
         for i in range(len(arg_names)):
@@ -488,9 +493,10 @@ class JsonGenerator:
       enum_class_name = self._getClassName(value)
 
       if ignoreType(enum_class_name):
-        print(f'INFO: ignoring module enum {enum_class_name}.',
-            file=sys.stderr)
-        pass # HeyLiz continue
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring module enum {enum_class_name}.',
+              file=sys.stderr)
+        continue
 
       simple_class_name = enum_class_name.rsplit('.', 1)[-1]
       if '_' in simple_class_name:
@@ -588,9 +594,10 @@ class JsonGenerator:
 
       var_type = self._getClassName(type(value), class_name)
       if ignoreType(var_type):
-        print(f'INFO: ignoring class variable {class_name}.{key} because its type is {var_type}.',
-            file=sys.stderr)
-        pass # HeyLiz continue
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring class variable {class_name}.{key} because its type is {var_type}.',
+              file=sys.stderr)
+        continue
 
       writable = python_util.isClassVariableWritable(cls, key, value)
       if writable:
@@ -620,9 +627,10 @@ class JsonGenerator:
 
       var_type = self._getClassName(python_util.getVarTypeFromGetter(value.fget), class_name)
       if ignoreType(var_type):
-        print(f'INFO: ignoring instance variable {class_name}.{key} because its type is {var_type}.',
-            file=sys.stderr)
-        pass # HeyLiz continue
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring instance variable {class_name}.{key} because its type is {var_type}.',
+              file=sys.stderr)
+        continue
 
       if any(char.isupper() for char in key):
         print(f'WARNING: instance variable {class_name}.{key} contains an uppercase letter. '
@@ -683,12 +691,13 @@ class JsonGenerator:
           arg_type = self._getClassName(arg_type, class_name)
           arg_types[i] = arg_type
           if ignoreType(arg_type):
-            print(f'INFO: ignoring constructor {class_name}.{function_name} because an arg type is {arg_type}.',
-                file=sys.stderr)
+            if _PRINT_IGNORING:
+              print(f'INFO: ignoring constructor {class_name}.{function_name} because an arg type is {arg_type}.',
+                  file=sys.stderr)
             ignore = True
-            pass # HeyLiz break
+            break
         if ignore:
-          pass # HeyLiz continue
+          continue
 
         constructor_data = {}
         constructor_data[_KEY_FUNCTION_NAME] = function_name
@@ -745,9 +754,10 @@ class JsonGenerator:
           return_type = class_name + '.' + return_type
         return_type = self._getClassName(return_type, class_name)
         if ignoreType(return_type):
-          print(f'INFO: ignoring method {class_name}.{function_name} because its return type is {return_type}.',
-              file=sys.stderr)
-          pass # HeyLiz continue
+          if _PRINT_IGNORING:
+            print(f'INFO: ignoring method {class_name}.{function_name} because its return type is {return_type}.',
+                file=sys.stderr)
+          continue
 
         declaring_class_name = class_name
         found_self_arg = False
@@ -762,16 +772,17 @@ class JsonGenerator:
           arg_type = self._getClassName(arg_type, class_name)
           arg_types[i] = arg_type
           if ignoreType(arg_type):
-            print(f'INFO: ignoring method {class_name}.{function_name} because an arg type is {arg_type}.',
-                file=sys.stderr)
+            if _PRINT_IGNORING:
+              print(f'INFO: ignoring method {class_name}.{function_name} because an arg type is {arg_type}.',
+                  file=sys.stderr)
             ignore = True
-            pass # HeyLiz break
+            break
           if i == 0 and arg_names[i] == 'self':
             found_self_arg = True
             if arg_type != class_name:
               declaring_class_name = arg_type
         if ignore:
-          pass # HeyLiz continue
+          continue
 
         args = []
         for i in range(len(arg_names)):
@@ -811,9 +822,10 @@ class JsonGenerator:
         continue
 
       if ignoreType(enum_class_name):
-        print(f'INFO: ignoring class enum {enum_class_name}.',
-            file=sys.stderr)
-        pass # HeyLiz continue
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring class enum {enum_class_name}.',
+              file=sys.stderr)
+        continue
 
       simple_class_name = enum_class_name.rsplit('.', 1)[-1]
       if '_' in simple_class_name:
