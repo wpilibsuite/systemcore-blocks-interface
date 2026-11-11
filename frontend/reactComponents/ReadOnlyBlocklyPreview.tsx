@@ -47,13 +47,22 @@ export interface BlockHighlights {
   moved?: Set<string>;
 }
 
-/** The CSS class (defined in index.css) for each kind of highlight. */
+/**
+ * The CSS class (defined in index.css) for each kind of highlight. Added and removed blocks are
+ * outlined in groups (see addGroupOutline), and changed and moved blocks one at a time.
+ */
 const HIGHLIGHT_CLASSES: [keyof BlockHighlights, string][] = [
   ['added', 'mrcDiffAdded'],
   ['removed', 'mrcDiffRemoved'],
   ['changed', 'mrcDiffChanged'],
   ['moved', 'mrcDiffMoved'],
 ];
+const GROUP_HIGHLIGHT_KINDS: (keyof BlockHighlights)[] = ['added', 'removed'];
+const GROUP_OUTLINE_CLASS = 'mrcDiffGroupOutline';
+const GROUP_OUTLINE_STROKES_CLASS = 'mrcDiffGroupOutlineStrokes';
+
+/** Used to give each group outline's mask a unique id. */
+let nextGroupOutlineMaskId = 1;
 
 const FULL_SIZE_STYLE: React.CSSProperties = {
   width: '100%',
@@ -238,23 +247,101 @@ export default function ReadOnlyBlocklyPreview(props: ReadOnlyBlocklyPreviewProp
 }
 
 /**
- * Adds the highlight CSS classes to the given blocks. Returns the top-most highlighted block, or
- * null if no blocks were highlighted.
+ * Highlights the given blocks: adds the highlight CSS classes to them, and outlines each group of
+ * added or removed blocks. Returns the top-most highlighted block, or null if no blocks were
+ * highlighted.
  */
 function highlightBlocks(
     workspace: Blockly.WorkspaceSvg, highlights?: BlockHighlights): Blockly.BlockSvg | null {
+  // The outlines are made from the blocks' rendered shapes.
+  Blockly.renderManagement.triggerQueuedRenders(workspace);
   let first: Blockly.BlockSvg | null = null;
   for (const [kind, className] of HIGHLIGHT_CLASSES) {
-    for (const id of highlights?.[kind] ?? []) {
+    const ids = highlights?.[kind] ?? new Set<string>();
+    for (const id of ids) {
       const block = workspace.getBlockById(id);
       if (!block) {
         continue;
       }
       block.addClass(className);
+      const parent = block.getParent();
+      const isFirstInGroup = !parent || !ids.has(parent.id);
+      if (GROUP_HIGHLIGHT_KINDS.includes(kind) && isFirstInGroup) {
+        addGroupOutline(block, ids);
+      }
       if (!first || block.getRelativeToSurfaceXY().y < first.getRelativeToSurfaceXY().y) {
         first = block;
       }
     }
   }
   return first;
+}
+
+/**
+ * Outlines the outside of the group of blocks that starts with the given block: the block, and the
+ * blocks inside it and after it that are in the given ids too. Each block's outer edge is
+ * stroked, and a mask of all of the shapes hides the strokes inside the group, so only the outside
+ * edge is left. The outline is added to the first block's SVG group, after the blocks in it, so that it
+ * moves with the block and is drawn over the blocks around it.
+ */
+function addGroupOutline(firstBlock: Blockly.BlockSvg, ids: Set<string>): void {
+  const groupBlocks: Blockly.BlockSvg[] = [];
+  const addToGroup = (block: Blockly.BlockSvg): void => {
+    groupBlocks.push(block);
+    for (const child of block.getChildren(false)) {
+      if (ids.has(child.id)) {
+        addToGroup(child);
+      }
+    }
+  };
+  addToGroup(firstBlock);
+
+  const svg = Blockly.utils.Svg;
+  const dom = Blockly.utils.dom;
+  const outline = dom.createSvgElement(svg.G, {
+    'class': GROUP_OUTLINE_CLASS,
+    'pointer-events': 'none',
+  });
+  const maskId = `mrcDiffGroupOutlineMask${nextGroupOutlineMaskId++}`;
+  const mask = dom.createSvgElement<SVGMaskElement>('mask', {
+    'id': maskId,
+    'maskUnits': 'userSpaceOnUse',
+    'x': -1e6, 'y': -1e6, 'width': 2e6, 'height': 2e6,
+  }, dom.createSvgElement(svg.DEFS, {}, outline));
+  dom.createSvgElement(svg.RECT, {
+    'x': -1e6, 'y': -1e6, 'width': 2e6, 'height': 2e6, 'fill': '#fff',
+  }, mask);
+  const strokes = dom.createSvgElement(svg.G, {
+    'class': GROUP_OUTLINE_STROKES_CLASS,
+    'mask': `url(#${maskId})`,
+  }, outline);
+
+  const origin = firstBlock.getRelativeToSurfaceXY();
+  for (const block of groupBlocks) {
+    const d = getOuterPath(block.pathObject.svgPath.getAttribute('d') ?? '');
+    if (!d) {
+      continue;
+    }
+    const xy = block.getRelativeToSurfaceXY();
+    const transform = `translate(${xy.x - origin.x}, ${xy.y - origin.y})`;
+    dom.createSvgElement(svg.PATH, {'d': d, 'transform': transform}, mask);
+    dom.createSvgElement(svg.PATH, {'d': d, 'transform': transform}, strokes);
+  }
+  firstBlock.getSvgRoot().appendChild(outline);
+}
+
+/**
+ * Returns the outer edge of a block from its path: everything before the first move that comes
+ * after something is drawn. The renderers draw the sockets of a block's inline inputs (the ones its
+ * fields and blocks are in) after the outer edge, each starting with a move. The outer edge itself
+ * can start with more than one move, such as ' m 0,0  m 0,8 a ...' for a statement block.
+ */
+function getOuterPath(d: string): string {
+  // Command letters other than moves (and the e of an exponent in a number).
+  const firstDraw = d.search(/[a-df-ln-zA-DF-LN-Z]/);
+  if (firstDraw === -1) {
+    return '';
+  }
+  const nextMove = d.slice(firstDraw).search(/[mM]/);
+  return nextMove === -1 ? d : d.slice(0, firstDraw + nextMove);
 }

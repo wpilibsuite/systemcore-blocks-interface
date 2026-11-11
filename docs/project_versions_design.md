@@ -43,7 +43,10 @@ objects *first*, then reads every `versionId.json` (including incomplete ones), 
 * All objects are local to a project.  (ie, even if a module is identical across projects there is 
  a copy per project)
 * Modules are compared by ID, so a renamed module is still compared with itself
-* Only the outermost added or removed block is marked
+* Every added or removed block is outlined, but a group of them (a block with the blocks inside
+  and after it that were added or removed too) is one change for next/previous change
+* A block moved out of a removed block into an added block (like a component's port when the
+  component is moved into a mechanism) is part of both groups, not changed
 * Moved top-level stacks count as a change. (but not in the next/previous change)
 
 # Diffs

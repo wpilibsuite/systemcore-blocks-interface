@@ -75,19 +75,22 @@ describe('diffBlocks', () => {
     expect([...diff.removed]).toEqual(['n1']);
   });
 
-  test('deleting a block marks only that block, not the blocks inside it or its parent', () => {
+  test('deleting a block marks it and the blocks inside it, not its parent', () => {
     // if (p1 printing n1) { p2 printing n2 }, with p3 after p2.
     const statements = stack(printBlock('p2', numberBlock('n2', 2)), printBlock('p3', numberBlock('n3', 3)));
     const leftBlocks = makeBlocks(ifBlock('if1', stack(printBlock('p1', numberBlock('n1', 1)), statements)));
     const rightBlocks = makeBlocks(ifBlock('if1', stack(printBlock('p1', numberBlock('n1', 1)))));
     const diff = versionDiff.diffBlocks(leftBlocks, rightBlocks);
-    expect([...diff.removed].sort()).toEqual(['p2', 'p3']);
+    expect([...diff.removed].sort()).toEqual(['n2', 'n3', 'p2', 'p3']);
+    // p3 is after p2 in its stack, so they are one group.
+    expect([...diff.removedGroups]).toEqual(['p2']);
     expect([...diff.changed]).toEqual([]);
     expect([...diff.added]).toEqual([]);
 
-    // Deleting the if block marks only the if block.
+    // Deleting the if block makes one group that starts with the if block.
     const deletedIf = versionDiff.diffBlocks(leftBlocks, makeBlocks());
-    expect([...deletedIf.removed]).toEqual(['if1']);
+    expect([...deletedIf.removed].sort()).toEqual(['if1', 'n1', 'n2', 'n3', 'p1', 'p2', 'p3']);
+    expect([...deletedIf.removedGroups]).toEqual(['if1']);
   });
 
   test('deleting a block from the middle of a stack does not mark the blocks around it', () => {
@@ -95,15 +98,38 @@ describe('diffBlocks', () => {
         makeBlocks(stack(printBlock('a', numberBlock('na', 1)), printBlock('b', numberBlock('nb', 2)),
             printBlock('c', numberBlock('nc', 3)))),
         makeBlocks(stack(printBlock('a', numberBlock('na', 1)), printBlock('c', numberBlock('nc', 3)))));
-    expect([...diff.removed]).toEqual(['b']);
+    expect([...diff.removed].sort()).toEqual(['b', 'nb']);
+    expect([...diff.removedGroups]).toEqual(['b']);
     expect([...diff.changed]).toEqual([]);
   });
 
-  test('adding a block with blocks inside it marks only that block', () => {
+  test('a block moved from a removed block into an added block goes along with them', () => {
+    // Like moving a component into a mechanism, which moves the component's port shadow block.
+    const withShadow = (id: string, shadow: any): any =>
+        ({ type: 'text_print', id, x: 10, y: 10, inputs: { TEXT: { shadow } } });
+    const diff = versionDiff.diffBlocks(
+        makeBlocks(withShadow('p1', numberBlock('s1', 1))),
+        makeBlocks(withShadow('p2', numberBlock('s1', 1))));
+    expect([...diff.removed].sort()).toEqual(['p1', 's1']);
+    expect([...diff.added].sort()).toEqual(['p2', 's1']);
+    expect([...diff.removedGroups]).toEqual(['p1']);
+    expect([...diff.addedGroups]).toEqual(['p2']);
+    expect([...diff.changed]).toEqual([]);
+
+    // A block moved from a removed block into a block that is in both is still changed.
+    const intoExisting = versionDiff.diffBlocks(
+        makeBlocks(withShadow('p1', numberBlock('s1', 1)), printBlock('p3', null)),
+        makeBlocks(withShadow('p3', numberBlock('s1', 1))));
+    expect([...intoExisting.removed]).toEqual(['p1']);
+    expect([...intoExisting.changed]).toEqual(['s1']);
+  });
+
+  test('adding a block with blocks inside it makes one group', () => {
     const diff = versionDiff.diffBlocks(
         makeBlocks(ifBlock('if1')),
         makeBlocks(ifBlock('if1', stack(printBlock('p1', numberBlock('n1', 1))))));
-    expect([...diff.added]).toEqual(['p1']);
+    expect([...diff.added].sort()).toEqual(['n1', 'p1']);
+    expect([...diff.addedGroups]).toEqual(['p1']);
     expect([...diff.changed]).toEqual([]);
   });
 
