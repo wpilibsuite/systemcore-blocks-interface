@@ -6,12 +6,21 @@ there is no easy way to see the visual difference between the changes.
 Also, making a full copy of the projects leads to bloat of repeated pieces that haven't changed.
 
 # Proposed Solution
-* Under the projects there is a /versions/versionId.json file which would have the description, the save date, and what files are in it.
+* Under the projects there is a /versions/versionId.json file which would have the description, the tags, the notes, the save date, and what files are in it.
 * Under the projects there is a /versions/objects that have each module with its SHA256 hash
     * Each object is named `<sha256>` (with no extension), and `versionId.json` has `files` (file name → hash) and `complete`
     * The hash uses `@noble/hashes`, because the browser's `crypto.subtle` only works in secure
     contexts and the robot is served over http
-* Stored versions and objects are never changed.  A version saved with an older project format is upgraded in memory when it is compared or restored.
+* Stored objects are never changed, and neither are the files a version lists; only a version's description, tags, and notes can be edited.  A version saved with an older project format is upgraded in memory when it is compared or restored.
+
+# Tags
+* A version has a list of tags (strings) as well as its description.  Versions saved before tags existed have none.
+* Deploying (or downloading) offers to create a version tagged `deployed` (or `downloaded`) with no description.  If the project hasn't changed since the newest version, that version gets the tag instead, without asking.
+* The built-in tags are saved untranslated and shown translated.  Tags typed by users are saved as typed.
+* The built-in tags are system tags: users can't add them to a version (including by typing their name or its translation) or remove them, so a `deployed` tag always means the version was deployed.  `updateVersion` keeps a version's system tags and ignores new ones.
+
+# Notes
+* A version can also have notes: longer, optional text, shown in the version's details.  The description is the short line that identifies the version in lists and titles.  Versions saved before notes existed have none.
 
 # Saving and cleaning up
 There is no locking between students using the same robot, so the order of the steps matters.
@@ -67,16 +76,18 @@ means the entire module is saved again.
 * Deleting a version can't be undone.
 * If a version is created at exactly the same time another one is deleted, the garbage collection could still delete an object the new version uses.  Comparing or restoring that version would then fail with an error.
 
-# UI plan
-* For the first version, have a list of versions that you can compare to each other, edit the 
-description or delete.
+# UI
+* The list of versions always starts with a "Current" row (the project as it is now), which has the Create Version button.
+* The list can be searched (descriptions, notes, and tags) and filtered by date (any time, today, last 7 days, last 30 days, or chosen dates), by tags (with an AND/OR switch, as in Samples, for whether a version must have every chosen tag or any of them), and to only versions with a description.  The filters are hidden behind a Filter button so the list isn't intimidating; when the list is filtered, "Showing X of Y versions" stays visible even with the filters hidden.  The filters are reset and hidden when the dialog is opened.
+* Each version's description, tags, and notes can be edited, and it can be deleted.
+* Clicking a version shows its details: its blocks (read-only, but blocks can be copied), and buttons to restore it, save it as a new project, download it, and compare it with Current or with another version.
+* Clicking Current shows the same details for the project as it is now, except for what doesn't apply: it has no date, tags, or description to edit, and can't be restored or compared with Current.  It has Create Version instead of Restore.
 * On deploying or downloading, prompt for whether a version should be created
 
 # Future UI ideas
 * Allow settings for saving versions automatically
-* Filtering ideas to find a version in a lot of versions
+* More filtering ideas to find a version in a lot of versions
     * Favorites (per user) - this would have to be stored in browser settings
-    * Date/time filtering
     * Hide versions that are less than x older than the one after it
 * Allowing bulk delete
 * Allow setting left/right for diffs ( a la code search by Google - https://cs.android.com/android/_/android/platform/hardware/google/camera/+/cd15337bd229dd521a860d88bca3e37c3ca845f7:common/hal/common/hal_types.h )

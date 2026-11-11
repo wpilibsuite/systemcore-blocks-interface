@@ -28,8 +28,42 @@ import { upgradeProjectIfNecessary } from './upgrade_project';
 export type VersionInfo = {
   versionId: string,
   description: string,
+  tags: string[],
+  notes: string, // longer, optional text about the version
   createdAt: string, // ISO 8601
 };
+
+/** The tag that is added to versions that are created when the project is deployed. */
+export const DEPLOYED_TAG = 'deployed';
+
+/** The tag that is added to versions that are created when the project is downloaded. */
+export const DOWNLOADED_TAG = 'downloaded';
+
+/**
+ * The tags that are only added automatically. Users can't add them to a version, or remove them
+ * from one, so they always tell the truth about the version.
+ */
+export const SYSTEM_TAGS: readonly string[] = [DEPLOYED_TAG, DOWNLOADED_TAG];
+
+/** Returns true if the tag is one that is only added automatically. */
+export function isSystemTag(tag: string): boolean {
+  return SYSTEM_TAGS.includes(tag);
+}
+
+/** Returns the given tags without surrounding spaces, empty tags, or duplicates. */
+export function normalizeTags(tags: string[]): string[] {
+  return [...new Set(tags.map(tag => tag.trim()).filter(tag => tag))];
+}
+
+function toVersionInfo(manifest: VersionManifest): VersionInfo {
+  return {
+    versionId: manifest.versionId,
+    description: manifest.description,
+    tags: [...manifest.tags],
+    notes: manifest.notes,
+    createdAt: manifest.createdAt,
+  };
+}
 
 /**
  * The contents of a version's info file, plus its versionId, which is the file's name and isn't
@@ -55,11 +89,7 @@ export async function listVersions(
   const versions: VersionInfo[] = [];
   for (const manifest of await fetchAllManifests(storage, projectName)) {
     if (manifest.complete) {
-      versions.push({
-        versionId: manifest.versionId,
-        description: manifest.description,
-        createdAt: manifest.createdAt,
-      });
+      versions.push(toVersionInfo(manifest));
     }
   }
   versions.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -102,6 +132,12 @@ async function fetchManifest(
   return {
     versionId: versionId,
     description: parsed.description || '',
+    // Versions created before versions had tags don't have any.
+    tags: Array.isArray(parsed.tags)
+        ? normalizeTags(parsed.tags.filter((tag: unknown) => typeof tag === 'string'))
+        : [],
+    // Versions created before versions had notes don't have any.
+    notes: typeof parsed.notes === 'string' ? parsed.notes : '',
     createdAt: parsed.createdAt || '',
     files: parsed.files,
     complete: parsed.complete === true,
@@ -149,7 +185,7 @@ function makeVersionId(): string {
  */
 export async function createVersion(
     storage: commonStorage.Storage, projectName: string,
-    description: string): Promise<VersionInfo> {
+    description: string, tags: string[] = [], notes: string = ''): Promise<VersionInfo> {
   const files = await storageProject.fetchProjectFiles(storage, projectName);
   const hashToContent = new Map<string, string>();
   const fileHashes: {[fileName: string]: string} = {};
@@ -161,6 +197,8 @@ export async function createVersion(
   const manifest: VersionManifest = {
     versionId: makeVersionId(),
     description: description.trim(),
+    tags: normalizeTags(tags),
+    notes: notes.trim(),
     createdAt: new Date().toISOString(),
     files: fileHashes,
     complete: false,
@@ -184,22 +222,37 @@ export async function createVersion(
 
   manifest.complete = true;
   await saveManifest(storage, projectName, manifest);
-  return {
-    versionId: manifest.versionId,
-    description: manifest.description,
-    createdAt: manifest.createdAt,
-  };
+  return toVersionInfo(manifest);
 }
 
 /**
- * Changes the description of a version.
+ * Changes the description, tags, and notes of a version. Its files don't change. The system tags
+ * are kept as they are: the version keeps the ones it has, and doesn't get new ones.
  */
-export async function updateVersionDescription(
+export async function updateVersion(
     storage: commonStorage.Storage, projectName: string, versionId: string,
-    description: string): Promise<void> {
+    description: string, tags: string[], notes: string): Promise<void> {
   const manifest = await fetchManifest(storage, projectName, versionId);
   manifest.description = description.trim();
+  manifest.tags = normalizeTags([
+    ...manifest.tags.filter(isSystemTag),
+    ...tags.filter(tag => !isSystemTag(tag.trim())),
+  ]);
+  manifest.notes = notes.trim();
   await saveManifest(storage, projectName, manifest);
+}
+
+/**
+ * Adds a tag to a version, if it doesn't already have it.
+ */
+export async function addVersionTag(
+    storage: commonStorage.Storage, projectName: string, versionId: string,
+    tag: string): Promise<void> {
+  const manifest = await fetchManifest(storage, projectName, versionId);
+  if (!manifest.tags.includes(tag)) {
+    manifest.tags = normalizeTags([...manifest.tags, tag]);
+    await saveManifest(storage, projectName, manifest);
+  }
 }
 
 /**
@@ -328,6 +381,16 @@ export async function hasChangesBetween(
       await makeStorageWithFiles(projectName, rightFiles), projectName);
   return JSON.stringify(leftProjectInfo.gamepadConfig) !==
       JSON.stringify(rightProjectInfo.gamepadConfig);
+}
+
+/**
+ * Returns the URL of a blob for downloading a version, in the same format as downloading the
+ * project.
+ */
+export async function downloadVersion(
+    storage: commonStorage.Storage, projectName: string, versionId: string): Promise<string> {
+  return storageProject.makeProjectBlobUrl(
+      await fetchVersionFiles(storage, projectName, versionId));
 }
 
 /**

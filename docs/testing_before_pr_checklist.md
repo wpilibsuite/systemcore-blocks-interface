@@ -56,6 +56,11 @@ For each PR, make sure the categories that are appropriate for your PR have been
 # If it regenerates the WPILib JSON
 * [ ] Reviewed the diff of the regenerated JSON
 
+# If it changes versions
+* [ ] Deployed, and verified a version tagged "deployed" was offered (or the newest version was tagged)
+* [ ] Filtered the version list by date, by tag, and by having a description
+* [ ] Opened a version, then compared it with Current and with another version, restored it, and saved it as a new project
+
 # If it is a change to the backend
 * [ ] Verified that deploy still works on Systemcore
 * [ ] Disconnected the robot and verified the warning comes on
