@@ -9,7 +9,7 @@ import { Order } from 'blockly/python';
 
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles';
-import { BLOCK_NAME as MRC_CLASS_METHOD_DEF, INPUT_RETURN, INPUT_STACK } from './mrc_class_method_def';
+import { BLOCK_NAME as MRC_CLASS_METHOD_DEF, INPUT_RETURN as METHOD_INPUT_RETURN, INPUT_STACK as METHOD_INPUT_STACK } from './mrc_class_method_def';
 import { findConnectedBlocksOfType } from './utils/find_connected_blocks';
 import { getValueType } from './utils/variable_types';
 
@@ -49,7 +49,7 @@ export const pythonFromBlock = function (
  * Returns true if the given block is a method definition that returns a value.
  */
 function isMethodWithReturn(block: Blockly.Block): boolean {
-  return block.type === MRC_CLASS_METHOD_DEF && block.getInput(INPUT_RETURN) !== null;
+  return block.type === MRC_CLASS_METHOD_DEF && block.getInput(METHOD_INPUT_RETURN) !== null;
 }
 
 /**
@@ -68,9 +68,9 @@ export function updateReturnWarnings(workspace: Blockly.Workspace): void {
     // Each block that returns a value, with the input that holds the value.
     const returningBlocks: [Blockly.Block, string][] = [];
     if (isMethodWithReturn(methodBlock)) {
-      returningBlocks.push([methodBlock, INPUT_RETURN]);
+      returningBlocks.push([methodBlock, METHOD_INPUT_RETURN]);
     }
-    const stackBlock = methodBlock.getInputTargetBlock(INPUT_STACK);
+    const stackBlock = methodBlock.getInputTargetBlock(METHOD_INPUT_STACK);
     if (stackBlock) {
       findConnectedBlocksOfType(stackBlock, BLOCK_NAME).forEach(returnBlock => {
         returningBlocks.push([returnBlock, INPUT_VALUE]);
