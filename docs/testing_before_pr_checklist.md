@@ -58,8 +58,9 @@ For each PR, make sure the categories that are appropriate for your PR have been
 
 # If it changes versions
 * [ ] Deployed, and verified a version tagged "deployed" was offered (or the newest version was tagged)
-* [ ] Filtered the version list by date, by tag, and by having a description
+* [ ] Filtered the version list by description, by days (within and older than), by chosen dates, and by tag
 * [ ] Opened a version, then compared it with Current and with another version, restored it, and saved it as a new project
+* [ ] Opened Clean Up, checked it showed the versions without a description older than 14 days, selected them with Select all <n>, and deleted them
 
 # If it is a change to the backend
 * [ ] Verified that deploy still works on Systemcore

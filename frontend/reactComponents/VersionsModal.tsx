@@ -8,6 +8,7 @@ import {
   ArrowDownOutlined,
   ArrowLeftOutlined,
   ArrowUpOutlined,
+  ClearOutlined,
   CopyOutlined,
   DeleteOutlined,
   DiffOutlined,
@@ -15,8 +16,7 @@ import {
   DownloadOutlined,
   DownOutlined,
   EditOutlined,
-  FileTextOutlined,
-  FilterOutlined,
+  EyeOutlined,
   LinkOutlined,
   PlusOutlined,
   RollbackOutlined,
@@ -42,6 +42,9 @@ import {
   VersionTagList,
 } from './VersionTags';
 import { EMPTY_VERSION_FIELD_VALUES, VersionFieldValues, VersionFields } from './VersionFields';
+import { useVersionFilters } from './VersionFilters';
+import { useFormatVersionDate, VersionDescription } from './VersionDescription';
+import CleanUpVersionsModal from './CleanUpVersionsModal';
 
 /** Props for the VersionsModal component. */
 interface VersionsModalProps {
@@ -64,9 +67,6 @@ const MODAL_TOP = '5vh';
 
 /** Height of the modal body, accounting for the title bar, footer, and padding. */
 const MODAL_BODY_HEIGHT = 'calc(90vh - 165px)';
-
-/** Number of versions shown on each page of the version list. */
-const VERSIONS_PAGE_SIZE = 10;
 
 /** Width of the list of modules in the compare view. */
 const MODULE_LIST_WIDTH = 240;
@@ -129,41 +129,6 @@ function matchViewport(
   to.scroll(from.scrollX, from.scrollY);
 }
 
-/** The ranges of dates that the version list can be filtered by. */
-type DateFilter = 'all' | 'today' | 'week' | 'month' | 'custom';
-
-/** The i18n key of each date filter. */
-const DATE_FILTER_LABEL_KEYS: Record<DateFilter, string> = {
-  all: 'VERSIONS.FILTER_ANY_TIME',
-  today: 'VERSIONS.FILTER_TODAY',
-  week: 'VERSIONS.FILTER_LAST_7_DAYS',
-  month: 'VERSIONS.FILTER_LAST_30_DAYS',
-  custom: 'VERSIONS.FILTER_CHOOSE_DATES',
-};
-
-/** Whether a version must have all selected tags (AND) or any of them (OR) to match. */
-type TagFilterMode = 'AND' | 'OR';
-
-/** How many days, counting today, each date filter that goes back from today shows. */
-const DATE_FILTER_DAYS: Partial<Record<DateFilter, number>> = {
-  today: 1,
-  week: 7,
-  month: 30,
-};
-
-type DateRange = Antd.GetProps<typeof Antd.DatePicker.RangePicker>['value'];
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-/** A row of the version list: a version, or the current project if version is null. */
-type ListRow = {
-  key: string,
-  version: storageVersions.VersionInfo | null,
-};
-
-/** The key of the row for the current project. Version ids are never empty. */
-const CURRENT_ROW_KEY = '';
-
 /**
  * A version (or the current project, if version is null) whose details are shown, with its
  * modules and whether it is different from the current project.
@@ -196,7 +161,7 @@ type Comparison = {
  * and going back to a version (in place, or as a new project).
  */
 export default function VersionsModal(props: VersionsModalProps): React.JSX.Element {
-  const {t, i18n} = I18Next.useTranslation();
+  const {t} = I18Next.useTranslation();
   const { token } = Antd.theme.useToken();
   // The border around each block preview.
   const previewBorder = `1px solid ${token.colorBorder}`;
@@ -210,20 +175,11 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
   const autosave = useAutosave();
   const [modal, contextHolder] = Antd.Modal.useModal();
   const [versions, setVersions] = React.useState<storageVersions.VersionInfo[]>([]);
-  // The page of the version list, kept here so that it isn't lost while a comparison is shown.
-  const [page, setPage] = React.useState(1);
   const [loading, setLoading] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [descriptionDialog, setDescriptionDialog] = React.useState<DescriptionDialog | null>(null);
   const [fields, setFields] = React.useState<VersionFieldValues>(EMPTY_VERSION_FIELD_VALUES);
-  const [dateFilter, setDateFilter] = React.useState<DateFilter>('all');
-  const [customRange, setCustomRange] = React.useState<DateRange>(null);
-  const [tagFilter, setTagFilter] = React.useState<string[]>([]);
-  const [tagFilterMode, setTagFilterMode] = React.useState<TagFilterMode>('OR');
-  const [onlyWithDescription, setOnlyWithDescription] = React.useState(false);
-  const [searchText, setSearchText] = React.useState('');
-  // The filters are hidden until the user asks for them, so the list isn't intimidating.
-  const [filtersOpen, setFiltersOpen] = React.useState(false);
+  const [cleanUpOpen, setCleanUpOpen] = React.useState(false);
   const [details, setDetails] = React.useState<Details | null>(null);
   const [detailsModuleId, setDetailsModuleId] = React.useState('');
   const [comparison, setComparison] = React.useState<Comparison | null>(null);
@@ -247,9 +203,11 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
   const tagLabel = useTagLabel();
   const allTags = collectTags(versions);
 
-  const formatDate = (isoDate: string): string =>
-      isoDate ? new Date(isoDate).toLocaleString(
-          i18n.language, { dateStyle: 'short', timeStyle: 'short' }) : '';
+  const formatDate = useFormatVersionDate();
+  // The filters and the page of the version list are kept here, so that they aren't lost while a
+  // version's details or a comparison is shown.
+  const filters = useVersionFilters(versions);
+  const filteredVersions = filters.filteredVersions;
 
   /** Returns the text that identifies a version: its description, or else when it was created. */
   const getVersionLabel = (version: storageVersions.VersionInfo): string =>
@@ -271,9 +229,6 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
         const version = list.find(v => v.versionId === d.version!.versionId);
         return version ? { ...d, version } : null;
       });
-      // A tag that no version has anymore can't be used to filter.
-      const listTags = collectTags(list);
-      setTagFilter(f => f.filter(tag => listTags.includes(tag)));
     } catch (e) {
       console.error('Failed to load versions:', e);
       props.setAlertErrorMessage(t('VERSIONS.LOAD_FAILED'));
@@ -290,9 +245,8 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
       setDetailsModuleId('');
       return;
     }
-    setPage(1);
-    clearFilters();
-    setFiltersOpen(false);
+    filters.reset(false);
+    setCleanUpOpen(false);
     loadVersions();
   }, [props.isOpen, props.storage, projectName]);
 
@@ -318,7 +272,7 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
         await storageVersions.createVersion(
             props.storage, projectName, fields.description, fields.tags, fields.notes);
         // Versions are listed newest first, so the new version is on the first page.
-        setPage(1);
+        filters.setPage(1);
       } else {
         await storageVersions.updateVersion(
             props.storage, projectName, descriptionDialog.version.versionId,
@@ -618,256 +572,84 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
     );
   };
 
-  /** Returns the time from which versions are shown, or null if there is no such limit. */
-  const getFilterStart = (): number | null => {
-    if (dateFilter === 'custom') {
-      return customRange?.[0] ? customRange[0].startOf('day').valueOf() : null;
-    }
-    const days = DATE_FILTER_DAYS[dateFilter];
-    if (days === undefined) {
-      return null;
-    }
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-    return startOfToday.getTime() - (days - 1) * DAY_MS;
-  };
-
-  /** Returns the time until which versions are shown, or null if there is no such limit. */
-  const getFilterEnd = (): number | null =>
-      (dateFilter === 'custom' && customRange?.[1])
-          ? customRange[1].endOf('day').valueOf() : null;
-
-  const normalizedSearchText = searchText.trim().toLowerCase();
-  const isFiltered = dateFilter !== 'all' || tagFilter.length > 0 || onlyWithDescription ||
-      normalizedSearchText !== '';
-
-  const clearFilters = (): void => {
-    setDateFilter('all');
-    setCustomRange(null);
-    setTagFilter([]);
-    setTagFilterMode('OR');
-    setOnlyWithDescription(false);
-    setSearchText('');
-    setPage(1);
-  };
-
-  const filterStart = getFilterStart();
-  const filterEnd = getFilterEnd();
-  const filteredVersions = versions.filter(version => {
-    const createdAt = new Date(version.createdAt).getTime();
-    return (filterStart === null || createdAt >= filterStart) &&
-        (filterEnd === null || createdAt <= filterEnd) &&
-        (tagFilter.length === 0 || (tagFilterMode === 'AND'
-            ? tagFilter.every(tag => version.tags.includes(tag))
-            : tagFilter.some(tag => version.tags.includes(tag)))) &&
-        (!onlyWithDescription || version.description !== '') &&
-        // Tags are searched as they are shown, so built-in tags match in the user's language.
-        (!normalizedSearchText ||
-            version.description.toLowerCase().includes(normalizedSearchText) ||
-            version.notes.toLowerCase().includes(normalizedSearchText) ||
-            version.tags.some(tag => tagLabel(tag).toLowerCase().includes(normalizedSearchText)));
-  });
   // If versions were deleted or filtered out, the page might not exist anymore.
-  const pageCount = Math.max(1, Math.ceil(filteredVersions.length / VERSIONS_PAGE_SIZE));
-  const currentPage = Math.min(page, pageCount);
+  const pageCount = Math.max(1, Math.ceil(filteredVersions.length / filters.pageSize));
+  const currentPage = Math.min(filters.page, pageCount);
   const pageVersions = filteredVersions.slice(
-      (currentPage - 1) * VERSIONS_PAGE_SIZE, currentPage * VERSIONS_PAGE_SIZE);
-  // The current project is at the top of every page.
-  const rows: ListRow[] = [
-    { key: CURRENT_ROW_KEY, version: null },
-    ...pageVersions.map(version => ({ key: version.versionId, version })),
-  ];
-
-  /** Changes a filter, and goes back to the first page. */
-  const changeFilter = <T,>(setter: (value: T) => void) => (value: T): void => {
-    setter(value);
-    setPage(1);
-  };
-
-  const toggleTagFilter = (tag: string, checked: boolean): void => {
-    setTagFilter(f => checked ? [...f, tag] : f.filter(t => t !== tag));
-    setPage(1);
-  };
-
-  const renderFilterPanel = (): React.JSX.Element => (
-    // The box shows which controls appeared when the Filter button was clicked.
-    <div style={{
-      display: 'flex', flexDirection: 'column', gap: 8, padding: 12,
-      border: `1px solid ${token.colorBorderSecondary}`, borderRadius: token.borderRadiusLG,
-      background: token.colorFillQuaternary,
-    }}>
-      <Antd.Input
-        allowClear
-        size="small"
-        placeholder={t('VERSIONS.SEARCH_PLACEHOLDER')}
-        value={searchText}
-        onChange={(e) => changeFilter(setSearchText)(e.target.value)}
-      />
-      {/* This is near the top, since it is probably the most used. */}
-      <Antd.Checkbox
-        checked={onlyWithDescription}
-        onChange={(e) => changeFilter(setOnlyWithDescription)(e.target.checked)}
-        // Only the checkbox and its label are clickable, not the rest of the line.
-        style={{ alignSelf: 'flex-start' }}
-      >
-        {t('VERSIONS.FILTER_ONLY_WITH_DESCRIPTION')}
-      </Antd.Checkbox>
-      <Antd.Space wrap>
-        <Antd.Segmented<DateFilter>
-          size="small"
-          value={dateFilter}
-          onChange={changeFilter(setDateFilter)}
-          options={(Object.keys(DATE_FILTER_LABEL_KEYS) as DateFilter[]).map(filter => ({
-            value: filter,
-            label: t(DATE_FILTER_LABEL_KEYS[filter]),
-          }))}
-        />
-        {dateFilter === 'custom' && (
-          <Antd.DatePicker.RangePicker
-            size="small"
-            value={customRange}
-            onChange={changeFilter(setCustomRange)}
-            allowEmpty={[true, true]}
-          />
-        )}
-      </Antd.Space>
-      {allTags.length > 0 && (
-        <Antd.Space size={4} wrap>
-          <Antd.Typography.Text type="secondary">{t('VERSIONS.FILTER_TAGS')}</Antd.Typography.Text>
-          <Antd.Tooltip title={t('VERSIONS.TAG_FILTER_MODE_TOOLTIP')}>
-            <Antd.Switch
-              size="small"
-              checked={tagFilterMode === 'AND'}
-              onChange={(checked) => changeFilter(setTagFilterMode)(checked ? 'AND' : 'OR')}
-              checkedChildren={t('VERSIONS.TAG_FILTER_MODE_AND')}
-              unCheckedChildren={t('VERSIONS.TAG_FILTER_MODE_OR')}
-              style={{ marginRight: 8 }}
-            />
-          </Antd.Tooltip>
-          {allTags.map(tag => (
-            <Antd.Tag.CheckableTag
-              key={tag}
-              checked={tagFilter.includes(tag)}
-              onChange={(checked) => toggleTagFilter(tag, checked)}
-              style={{ border: `1px solid ${token.colorBorder}` }}
-            >
-              {tagLabel(tag)}
-            </Antd.Tag.CheckableTag>
-          ))}
-        </Antd.Space>
-      )}
-    </div>
-  );
-
-  /**
-   * Renders the Filter button, which shows or hides the filters, and, when the list is filtered,
-   * how many versions are shown. That stays when the filters are hidden, so it is clear why
-   * versions are missing.
-   */
-  const renderFilters = (): React.JSX.Element => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
-      <Antd.Space size={8} wrap>
-        <Antd.Button
-          size="small"
-          icon={<FilterOutlined />}
-          type={filtersOpen ? 'primary' : 'default'}
-          onClick={() => setFiltersOpen(open => !open)}
-        >
-          {t('VERSIONS.FILTER')}
-        </Antd.Button>
-        {isFiltered && (
-          <Antd.Space size={4}>
-            <Antd.Typography.Text type="secondary">
-              {t('VERSIONS.FILTER_SHOWING', {
-                count: filteredVersions.length, total: versions.length })}
-            </Antd.Typography.Text>
-            <Antd.Button size="small" type="link" onClick={clearFilters}>
-              {t('VERSIONS.FILTER_CLEAR')}
-            </Antd.Button>
-          </Antd.Space>
-        )}
-      </Antd.Space>
-      {filtersOpen && renderFilterPanel()}
-    </div>
-  );
-
-  const columns: Antd.TableProps<ListRow>['columns'] = [
+      (currentPage - 1) * filters.pageSize, currentPage * filters.pageSize);
+  const columns: Antd.TableProps<storageVersions.VersionInfo>['columns'] = [
     {
       title: t('VERSIONS.DESCRIPTION'),
       key: 'description',
-      render: (_: unknown, row: ListRow) => {
-        if (!row.version) {
-          return (
-            <Antd.Space size={8}>
-              <Antd.Typography.Text strong>{t('VERSIONS.CURRENT')}</Antd.Typography.Text>
-              <Antd.Typography.Text type="secondary">
-                {t('VERSIONS.CURRENT_DESCRIPTION')}
-              </Antd.Typography.Text>
-            </Antd.Space>
-          );
-        }
-        const notes = row.version.notes;
-        return (
-          <Antd.Space size={8}>
-            {row.version.description || (
-              <Antd.Typography.Text type="secondary">
-                {t('VERSIONS.NO_DESCRIPTION')}
-              </Antd.Typography.Text>
-            )}
-            {/* The notes are only shown when the icon is hovered, to keep the list compact. */}
-            {notes && (
-              <Antd.Tooltip
-                title={
-                  <div style={{ whiteSpace: 'pre-wrap', maxHeight: 300, overflowY: 'auto' }}>
-                    {notes}
-                  </div>
-                }
-              >
-                <FileTextOutlined
-                  aria-label={t('VERSIONS.NOTES')}
-                  style={{ color: token.colorTextSecondary }}
-                />
-              </Antd.Tooltip>
-            )}
-          </Antd.Space>
-        );
-      },
+      render: (_: unknown, version) => <VersionDescription version={version} />,
     },
     {
       title: t('VERSIONS.TAGS'),
       key: 'tags',
       width: 240,
-      render: (_: unknown, row: ListRow) => row.version && <VersionTagList tags={row.version.tags} />,
+      render: (_: unknown, version) => <VersionTagList tags={version.tags} />,
     },
     {
       title: t('VERSIONS.CREATED'),
       key: 'createdAt',
       width: 200,
-      render: (_: unknown, row: ListRow) => row.version && formatDate(row.version.createdAt),
+      render: (_: unknown, version) => formatDate(version.createdAt),
     },
     {
       title: t('VERSIONS.ACTIONS'),
       key: 'actions',
-      width: 180,
-      render: (_: unknown, row: ListRow) => (
+      width: 120,
+      render: (_: unknown, version) => (
         // Clicking a row shows its details, so clicks on these buttons (and their popups, whose
         // events bubble through React) shouldn't reach the row.
-        <div onClick={(e) => e.stopPropagation()}>
-          {row.version ? renderVersionActions(row.version) : (
-            <Antd.Button
-              size="small"
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={openCreateDialog}
-              disabled={!props.storage || !projectName}
-            >
-              {t('VERSIONS.CREATE')}
-            </Antd.Button>
-          )}
-        </div>
+        <div onClick={(e) => e.stopPropagation()}>{renderVersionActions(version)}</div>
       ),
     },
   ];
+
+  /**
+   * Renders the current project, above the filters and the versions, since it isn't filtered or
+   * paged like they are. Clicking it shows its details, like clicking a version does.
+   */
+  const renderCurrent = (): React.JSX.Element => (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => openDetails(null)}
+      onKeyDown={(e) => {
+        if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          openDetails(null);
+        }
+      }}
+      style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap',
+        gap: 8, padding: '8px 12px', marginBottom: 12, cursor: 'pointer',
+        border: `1px solid ${token.colorBorderSecondary}`, borderRadius: token.borderRadiusLG,
+        background: token.colorFillQuaternary,
+      }}
+    >
+      <Antd.Space size={8} wrap>
+        <Antd.Typography.Text strong>{t('VERSIONS.CURRENT')}</Antd.Typography.Text>
+        <Antd.Typography.Text type="secondary">{t('VERSIONS.CURRENT_DESCRIPTION')}</Antd.Typography.Text>
+      </Antd.Space>
+      {/* The buttons' clicks shouldn't also click the bar. */}
+      <Antd.Space size={8} onClick={(e) => e.stopPropagation()}>
+        <Antd.Button size="small" icon={<EyeOutlined />} onClick={() => openDetails(null)}>
+          {t('VERSIONS.VIEW')}
+        </Antd.Button>
+        <Antd.Button
+          size="small"
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={openCreateDialog}
+          disabled={!props.storage || !projectName}
+        >
+          {t('VERSIONS.CREATE')}
+        </Antd.Button>
+      </Antd.Space>
+    </div>
+  );
 
   /** Renders the buttons for editing a version's description and tags, and deleting it. */
   const renderVersionActions = (version: storageVersions.VersionInfo): React.JSX.Element => (
@@ -890,39 +672,46 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
 
   const renderVersionList = (): React.JSX.Element => (
     <>
-      {versions.length > 0 && renderFilters()}
-      <Antd.Table<ListRow>
-        rowKey="key"
+      {renderCurrent()}
+      {versions.length > 0 && filters.renderFilters()}
+      <Antd.Table<storageVersions.VersionInfo>
+        rowKey="versionId"
         size="small"
+        // The table's edge shadows (::before and ::after of .ant-table-container) stick out
+        // 1px below it, which makes the dialog body scroll when the table is last in it.
+        style={{ marginBottom: 1 }}
         loading={loading || busy}
         columns={columns}
-        dataSource={rows}
+        dataSource={pageVersions}
         pagination={false}
-        onRow={(row) => ({
-          onClick: () => openDetails(row.version),
+        onRow={(version) => ({
+          onClick: () => openDetails(version),
           style: { cursor: 'pointer' },
         })}
+        locale={{
+          emptyText: (
+            <Antd.Empty
+              image={Antd.Empty.PRESENTED_IMAGE_SIMPLE}
+              description={versions.length === 0
+                  ? t('VERSIONS.NO_VERSIONS') : t('VERSIONS.NO_MATCHING_VERSIONS')}
+            >
+              {versions.length > 0 && (
+                <Antd.Button size="small" onClick={filters.clearFilters}>
+                  {t('VERSIONS.FILTER_CLEAR')}
+                </Antd.Button>
+              )}
+            </Antd.Empty>
+          ),
+        }}
       />
-      {!loading && filteredVersions.length === 0 && (
-        <Antd.Empty
-          image={Antd.Empty.PRESENTED_IMAGE_SIMPLE}
-          description={versions.length === 0
-              ? t('VERSIONS.NO_VERSIONS') : t('VERSIONS.NO_MATCHING_VERSIONS')}
-          style={{ marginTop: 24 }}
-        >
-          {versions.length > 0 && (
-            <Antd.Button size="small" onClick={clearFilters}>{t('VERSIONS.FILTER_CLEAR')}</Antd.Button>
-          )}
-        </Antd.Empty>
-      )}
-      {filteredVersions.length > VERSIONS_PAGE_SIZE && (
+      {filteredVersions.length > filters.pageSize && (
         <Antd.Pagination
           style={{ marginTop: 12, justifyContent: 'flex-end' }}
           size="small"
           current={currentPage}
-          pageSize={VERSIONS_PAGE_SIZE}
+          pageSize={filters.pageSize}
           total={filteredVersions.length}
-          onChange={setPage}
+          onChange={filters.setPage}
           showSizeChanger={false}
           showTotal={(total, range) =>
               t('PAGINATION_ITEMS', { range0: range[0], range1: range[1], total })}
@@ -1341,24 +1130,48 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
   return (
     <>
       {contextHolder}
+      <CleanUpVersionsModal
+        isOpen={cleanUpOpen}
+        onClose={() => setCleanUpOpen(false)}
+        onDeleted={loadVersions}
+        storage={props.storage}
+        projectName={projectName}
+        versions={versions}
+        setAlertErrorMessage={props.setAlertErrorMessage}
+      />
       <Antd.Modal
         title={getTitle()}
         open={props.isOpen}
         onCancel={handleCloseOrBack}
-        footer={[
-          (comparison || details) ? (
-            <Antd.Button key="back" icon={<ArrowLeftOutlined />} onClick={handleCloseOrBack}>
-              {t('VERSIONS.BACK')}
-            </Antd.Button>
-          ) : (
-            <Antd.Button key="close" type="primary" onClick={handleCloseOrBack}>
+        footer={(comparison || details) ? (
+          <Antd.Button icon={<ArrowLeftOutlined />} onClick={handleCloseOrBack}>
+            {t('VERSIONS.BACK')}
+          </Antd.Button>
+        ) : (
+          // Clean Up is on the left, away from OK, since it is for deleting versions.
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+              {versions.length > 0 && (
+                <Antd.Button icon={<ClearOutlined />} onClick={() => setCleanUpOpen(true)}>
+                  {t('VERSIONS.CLEAN_UP')}
+                </Antd.Button>
+              )}
+            </div>
+            <Antd.Button type="primary" onClick={handleCloseOrBack}>
               {t('OK')}
             </Antd.Button>
-          ),
-        ]}
+          </div>
+        )}
         width={MODAL_WIDTH}
         style={{ top: MODAL_TOP }}
-        styles={{ body: { height: MODAL_BODY_HEIGHT, overflow: 'auto', ...diffColors } }}
+        styles={{ body: {
+          // The details and compare views fill the dialog, for their block previews. The list is
+          // only as tall as it needs to be.
+          ...((comparison || details)
+              ? { height: MODAL_BODY_HEIGHT } : { maxHeight: MODAL_BODY_HEIGHT }),
+          overflow: 'auto',
+          ...diffColors,
+        } }}
       >
         {comparison ? renderComparison(comparison)
             : details ? renderDetails(details)

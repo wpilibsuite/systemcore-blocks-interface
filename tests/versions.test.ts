@@ -379,6 +379,23 @@ describe('versions', () => {
     expect(await countObjects(storage)).toBe(0);
   });
 
+  test('deleting several versions at once keeps what the others use', async () => {
+    const storage = await makeProject();
+    const v1 = await storageVersions.createVersion(storage, 'MyRobot', 'v1');
+    await changeRobot(storage, 1);
+    const v2 = await storageVersions.createVersion(storage, 'MyRobot', 'v2');
+    await changeRobot(storage, 2);
+    const v3 = await storageVersions.createVersion(storage, 'MyRobot', 'v3');
+    const v3Files = await storageVersions.fetchVersionFiles(storage, 'MyRobot', v3.versionId);
+
+    await storageVersions.deleteVersions(storage, 'MyRobot', [v1.versionId, v2.versionId]);
+    const versions = await storageVersions.listVersions(storage, 'MyRobot');
+    expect(versions.map(v => v.versionId)).toEqual([v3.versionId]);
+    // Only v3's Robot, Teleop, and project info file are left.
+    expect(await countObjects(storage)).toBe(3);
+    expect(await storageVersions.fetchVersionFiles(storage, 'MyRobot', v3.versionId)).toEqual(v3Files);
+  });
+
   test('incomplete versions are not listed, and are deleted once they are abandoned', async () => {
     const storage = await makeProject();
     const other = await storageVersions.createVersion(storage, 'MyRobot', 'other');

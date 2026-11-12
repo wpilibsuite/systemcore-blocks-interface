@@ -260,8 +260,29 @@ export async function addVersionTag(
  */
 export async function deleteVersion(
     storage: commonStorage.Storage, projectName: string, versionId: string): Promise<void> {
-  await storage.delete(storageNames.makeVersionInfoPath(projectName, versionId));
+  await deleteVersions(storage, projectName, [versionId]);
+}
+
+/**
+ * Deletes several versions, and the objects that no other version uses. The versions' info files
+ * are all deleted first, and then the objects are garbage collected once, since that reads every
+ * version's info file. If deleting one fails, the others are still deleted and the objects are
+ * still collected, and then the error is thrown.
+ */
+export async function deleteVersions(
+    storage: commonStorage.Storage, projectName: string, versionIds: string[]): Promise<void> {
+  let firstError: unknown = null;
+  for (const versionId of versionIds) {
+    try {
+      await storage.delete(storageNames.makeVersionInfoPath(projectName, versionId));
+    } catch (e) {
+      firstError ??= e;
+    }
+  }
   await collectGarbage(storage, projectName);
+  if (firstError !== null) {
+    throw firstError;
+  }
 }
 
 /**
