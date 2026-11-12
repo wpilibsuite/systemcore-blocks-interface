@@ -42,7 +42,7 @@ objects *first*, then reads every `versionId.json` (including incomplete ones), 
   * It deletes modules that were added after the version was made.
 * Editors have to close first: the project is closed (setCurrentProject(null)) before any files are written. Otherwise an open editor's autosave can save its old blocks over the restored ones. This is the rule most likely to get broken by a future refactor.
 * Restore as a New Project also exists, and gives the new project a fresh projectId and no versions.
-* Restore is only offered when comparing against the currrent projects and they don't match
+* Restore is only offered for a version that doesn't match the current project.
 
 # Important Notes
 * Renaming a project takes along the versions.
@@ -82,10 +82,11 @@ means the entire module is saved again.
 # UI
 * Above the list of versions (and its filters) is a "Current" bar for the project as it is now, with a View button and, to its left, a Create Version button.  It isn't a row of the table, since it isn't filtered or paged.
 * The list can be searched (descriptions, notes, and tags) and filtered by description ("Only those [with | without] a description": a checkbox, rather than a choice that includes "any", since the search and other filters still apply when it is unchecked), by date (radio buttons, each with its inputs always shown and dimmed until chosen, so nothing appears or disappears: any time; within the last (<=), or older than (>), a number of days, which starts at 14, with a switch like the AND/OR one that shows the symbol and has the words in its tooltip; or chosen dates), and by tags (with an AND/OR switch, as in Samples, for whether a version must have every chosen tag or any of them).  Each filter can say either side (with or without a description, within or older than), so there is no need for a way to invert the filters.  The filters are hidden behind a Filter button so the list isn't intimidating; while they are shown, 5 versions are shown on each page instead of 10, so everything fits without scrolling (showing or hiding them keeps the version that was at the top of the page on the page); when the list is filtered, "Showing X of Y versions" stays visible even with the filters hidden.  The filters are reset and hidden when the dialog is opened.
-* Each version's description, tags, and notes can be edited, and it can be deleted.
+* Each row of the list has buttons to compare the version with Current, edit its description, tags, and notes, and delete it.
 * Bulk delete: Clean Up (a broom, at the bottom of the Versions dialog) opens a dialog for deleting several versions.  It has the same filters as the list (shown from the start, since finding versions is what it is for), and checkboxes; clicking a row selects it.  "Select all <n>" selects every version the filters show, on every page (the count makes that clear, since only one page is visible), so the filters can be used to pick what to delete.  It starts with the filters set to the versions most often cleaned up: no description, older than 14 days.  Only selected versions that are shown are deleted; the confirmation gives the count and how many of them were deployed.  `deleteVersions` deletes all of the info files and then garbage collects once.
 * Clicking a version shows its details: its blocks (read-only, but blocks can be copied), and buttons to restore it, save it as a new project, download it, and compare it with Current or with another version.
 * Clicking Current shows the same details for the project as it is now, except for what doesn't apply: it has no date, tags, or description to edit, and can't be restored or compared with Current.  It has Create Version instead of Restore.
+* Compare has a left half and a right half, each a version or Current, lined up with the block previews below them.  Each half has Choose..., which opens a picker that lists the versions like the Versions dialog (Current, the filters, and the table, without the buttons for changing them); clicking one chooses it.  What the other half shows can't be chosen.  A button between the halves swaps them.  Each half that is a version also has Restore and Save As.  Comparing from a version's details puts the older one on the left (Current is always the newest); after that, each half shows what was chosen for it.  The differences are always from the left to the right, so Added means in the right but not the left.
 * On deploying or downloading, prompt for whether a version should be created
 
 # Future UI ideas
@@ -93,7 +94,7 @@ means the entire module is saved again.
 * More filtering ideas to find a version in a lot of versions
     * Favorites (per user) - this would have to be stored in browser settings
     * Hide versions that are less than x older than the one after it
-* Allow setting left/right for diffs ( a la code search by Google - https://cs.android.com/android/_/android/platform/hardware/google/camera/+/cd15337bd229dd521a860d88bca3e37c3ca845f7:common/hal/common/hal_types.h )
+
 * Allow "diff" betweeen separate projects
 
 

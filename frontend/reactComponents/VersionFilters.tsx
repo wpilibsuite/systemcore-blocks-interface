@@ -2,7 +2,7 @@
 
 /**
  * @fileoverview Filters for lists of versions: by searching, by description, by date, and by tags.
- * Used by the version list and the Clean Up dialog.
+ * Used by the version list, the Clean Up dialog, and the version picker.
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Antd from 'antd';
@@ -77,6 +77,8 @@ export type VersionFilters = {
   setPage: (page: number) => void,
   /** How many versions to show on each page, which depends on whether the filters are shown. */
   pageSize: number,
+  /** The filtered versions on the page that is shown. */
+  pageVersions: storageVersions.VersionInfo[],
   clearFilters: () => void,
   /**
    * Sets the filters to the given ones (or clears them), shows or hides them, and goes back to
@@ -89,6 +91,8 @@ export type VersionFilters = {
    * versions are missing.
    */
   renderFilters: () => React.JSX.Element,
+  /** Renders the page controls, if the filtered versions don't fit on one page. */
+  renderPagination: () => React.JSX.Element | null,
 };
 
 /**
@@ -420,8 +424,25 @@ export function useVersionFilters(
     setFiltersOpen(!filtersOpen);
   };
 
+  const pageVersions = filteredVersions.slice((shownPage - 1) * pageSize, shownPage * pageSize);
+
+  const renderPagination = (): React.JSX.Element | null =>
+    filteredVersions.length > pageSize ? (
+      <Antd.Pagination
+        style={{ marginTop: 12, justifyContent: 'flex-end' }}
+        size="small"
+        current={shownPage}
+        pageSize={pageSize}
+        total={filteredVersions.length}
+        onChange={setPage}
+        showSizeChanger={false}
+        showTotal={(total, range) =>
+            t('PAGINATION_ITEMS', { range0: range[0], range1: range[1], total })}
+      />
+    ) : null;
+
   return {
-    filteredVersions, isFiltered, page: shownPage, setPage, pageSize, clearFilters, reset,
-    renderFilters,
+    filteredVersions, isFiltered, page: shownPage, setPage, pageSize, pageVersions, clearFilters,
+    reset, renderFilters, renderPagination,
   };
 }

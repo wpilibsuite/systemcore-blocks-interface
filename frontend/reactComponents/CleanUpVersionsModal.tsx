@@ -12,8 +12,7 @@ import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageVersions from '../storage/versions';
 import { DEFAULT_FILTER_DAYS, InitialVersionFilters, useVersionFilters } from './VersionFilters';
-import { useFormatVersionDate, VersionDescription } from './VersionDescription';
-import { VersionTagList } from './VersionTags';
+import { useVersionColumns } from './VersionDescription';
 
 interface CleanUpVersionsModalProps {
   isOpen: boolean;
@@ -59,7 +58,6 @@ export default function CleanUpVersionsModal(
     props: CleanUpVersionsModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
   const [modal, contextHolder] = Antd.Modal.useModal();
-  const formatDate = useFormatVersionDate();
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [deleting, setDeleting] = React.useState(false);
   const filters = useVersionFilters(props.versions);
@@ -76,11 +74,6 @@ export default function CleanUpVersionsModal(
   // deleted without the user seeing it. Selections are kept while a filter hides them, so they
   // come back when the filter is cleared.
   const selectedVersions = filteredVersions.filter(v => selectedIds.has(v.versionId));
-
-  const pageCount = Math.max(1, Math.ceil(filteredVersions.length / filters.pageSize));
-  const currentPage = Math.min(filters.page, pageCount);
-  const pageVersions = filteredVersions.slice(
-      (currentPage - 1) * filters.pageSize, currentPage * filters.pageSize);
 
   const toggleSelected = (versionId: string): void => {
     setSelectedIds(ids => {
@@ -148,25 +141,7 @@ export default function CleanUpVersionsModal(
     }
   };
 
-  const columns: Antd.TableProps<storageVersions.VersionInfo>['columns'] = [
-    {
-      title: t('VERSIONS.DESCRIPTION'),
-      key: 'description',
-      render: (_: unknown, version) => <VersionDescription version={version} />,
-    },
-    {
-      title: t('VERSIONS.TAGS'),
-      key: 'tags',
-      width: 240,
-      render: (_: unknown, version) => <VersionTagList tags={version.tags} />,
-    },
-    {
-      title: t('VERSIONS.CREATED'),
-      key: 'createdAt',
-      width: 200,
-      render: (_: unknown, version) => formatDate(version.createdAt),
-    },
-  ];
+  const columns = useVersionColumns();
 
   return (
     <>
@@ -229,7 +204,7 @@ export default function CleanUpVersionsModal(
           style={{ marginBottom: 1 }}
           loading={deleting}
           columns={columns}
-          dataSource={pageVersions}
+          dataSource={filters.pageVersions}
           pagination={false}
           rowSelection={{
             selectedRowKeys: selectedVersions.map(v => v.versionId),
@@ -249,19 +224,7 @@ export default function CleanUpVersionsModal(
           })}
           locale={{ emptyText: t('VERSIONS.NO_MATCHING_VERSIONS') }}
         />
-        {filteredVersions.length > filters.pageSize && (
-          <Antd.Pagination
-            style={{ marginTop: 12, justifyContent: 'flex-end' }}
-            size="small"
-            current={currentPage}
-            pageSize={filters.pageSize}
-            total={filteredVersions.length}
-            onChange={filters.setPage}
-            showSizeChanger={false}
-            showTotal={(total, range) =>
-                t('PAGINATION_ITEMS', { range0: range[0], range1: range[1], total })}
-          />
-        )}
+        {filters.renderPagination()}
       </Antd.Modal>
     </>
   );
