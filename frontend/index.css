@@ -65,39 +65,66 @@ code {
   scroll-behavior: smooth !important;
 }
 /* Blocks that differ between a version and the current project (see VersionsModal.tsx). The
+ * colors are used for the legend too. 
  * --mrc-diff-* colors are set by VersionsModal.tsx from the theme, and are used for the legend
  * too. Only the block's own outline is styled, not its children. */
 
-.mrcDiffAdded > .blocklyPath,
-.mrcDiffRemoved > .blocklyPath,
-.mrcDiffMoved > .blocklyPath,
-.mrcDiffChanged > .blocklyPath {
-  stroke-width: 4px;
+.mrcDiffGroupOutlineStrokes > path {
+  fill: none;
+  /* 2px shows outside the group: half of the stroke, less the 1px that the mask's stroke covers. */
+  stroke-width: 6px;
+  stroke-linejoin: round;
 }
 
-.mrcDiffAdded > .blocklyPath {
+.mrcDiffAdded > .mrcDiffGroupOutline > .mrcDiffGroupOutlineStrokes > path {
   stroke: var(--mrc-diff-added);
 }
 
-.mrcDiffRemoved > .blocklyPath {
+.mrcDiffRemoved > .mrcDiffGroupOutline > .mrcDiffGroupOutlineStrokes > path {
   stroke: var(--mrc-diff-removed);
 }
 
-/* Moved blocks are dotted: zero-length dashes with round caps are drawn as dots. This is before
+/* The paths of the outline's mask are filled, so that the mask hides the stroke inside the group.
+ * They are stroked too, to close the gaps that antialiasing leaves where two blocks meet. */
+.mrcDiffGroupOutline mask path {
+  fill: #000;
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+/* The FIRST blocks style draws a light line inside the top edge of each block, which would cover
+ * part of the outline. */
+.mrcDiffMoved > .firstBlocksStyleTopHighlight,
+.mrcDiffChanged > .firstBlocksStyleTopHighlight {
+  display: none;
+}
+
+/* The block styles set the outline width with selectors like
+ * `.<renderer>-renderer.<theme>-theme .blocklyPath`, so these selectors start with
+ * `.blocklySvg .blocklyBlockCanvas` to be more specific than those.
+ *
+ * Moved blocks are dotted: zero-length dashes with round caps are drawn as dots. This is before
  * changed, so a block that was moved and changed is outlined as changed. */
-.mrcDiffMoved > .blocklyPath {
+.blocklySvg .blocklyBlockCanvas .mrcDiffMoved > .blocklyPath {
   stroke: var(--mrc-diff-moved);
+  /* Wider than the other outlines, since the dots aren't solid. */
+  stroke-width: 4px;
   stroke-dasharray: 0 8;
   stroke-linecap: round;
 }
 
-.mrcDiffChanged > .blocklyPath {
+.blocklySvg .blocklyBlockCanvas .mrcDiffChanged > .blocklyPath {
   stroke: var(--mrc-diff-changed);
+  stroke-width: 2px;
   stroke-dasharray: none;
   stroke-linecap: butt;
 }
 
 /* The change that was last scrolled to with Previous Change or Next Change. */
-.mrcDiffCurrent > .blocklyPath {
-  stroke-width: 7px;
+.blocklySvg .blocklyBlockCanvas .mrcDiffCurrent.mrcDiffChanged > .blocklyPath {
+  stroke-width: 4px;
+}
+
+.mrcDiffCurrent > .mrcDiffGroupOutline > .mrcDiffGroupOutlineStrokes > path {
+  stroke-width: 10px;
 }

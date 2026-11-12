@@ -56,9 +56,19 @@ function startingBlocksToModuleContentText(
   const privateComponents: Component[] = [];
   const events: Event[] = [];
   const methods: Method[] = [];
+  // The starting blocks don't have ids, so give each block one. Otherwise the blocks would only
+  // get ids when the module is loaded into the editor, and a version created before the module
+  // is saved would have blocks without ids, which can't be matched with the blocks in other
+  // versions. Copy the starting blocks first so the imported JSON isn't changed.
+  const blocks = JSON.parse(JSON.stringify(startingBlocks));
+  visitAllBlockJson(blocks, blockJson => {
+    if (!blockJson.id) {
+      blockJson.id = Blockly.utils.idGenerator.genUid();
+    }
+  });
   return makeModuleContentText(
       module,
-      startingBlocks,
+      blocks,
       mechanisms,
       components,
       privateComponents,

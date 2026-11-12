@@ -130,6 +130,9 @@ export class OpModeDetails {
 // Extends the python generator to collect some information about functions and
 // variables that have been defined so they can be used in other modules.
 
+/** The resource name that the robot reports usage with, using wpiutil.report_usage. */
+const USAGE_REPORT_RESOURCE = 'Blocks';
+
 export class ExtendedPythonGenerator extends PythonGenerator {
   private readonly context: GeneratorContext;
   private workspace: Blockly.Workspace | null = null;
@@ -153,6 +156,10 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   // All opmodes in the project (used when generating robot code)
   private allOpModeDetails: OpModeDetails[] = [];
+
+  // The usage report (as JSON) that the robot's __init__ sends with wpiutil.report_usage, or null
+  // if the robot shouldn't report usage.
+  private usageReportJson: string | null = null;
 
   private generateErrorHandling: boolean = false;
 
@@ -220,6 +227,11 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
     switch (this.getModuleType()) {
       case storageModule.ModuleType.ROBOT:
+        if (this.usageReportJson !== null) {
+          this.importModule('wpiutil');
+          initStatements += this.INDENT + 'wpiutil.report_usage(' +
+              this.quote_(USAGE_REPORT_RESOURCE) + ', ' + this.quote_(this.usageReportJson) + ')\n';
+        }
         initStatements += this.INDENT + 'self.mechanisms = []\n';
         initStatements += this.INDENT + 'self.event_handlers = {}\n';
         initStatements += this.INDENT + 'self.define_hardware()\n';
@@ -650,6 +662,11 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   setAllOpModeDetails(details: OpModeDetails[]) {
     this.allOpModeDetails = details;
+  }
+
+  /** Sets the usage report (as JSON) for the robot to report, or null to not report usage. */
+  setUsageReportJson(usageReportJson: string | null) {
+    this.usageReportJson = usageReportJson;
   }
 
   getClassName(): string {

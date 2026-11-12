@@ -47,6 +47,11 @@ export function collectPythonData(libraries: Library[]): PythonData {
   return pythonData;
 }
 
+/** Returns all installed libraries. */
+export function getInstalledLibraries(): Library[] {
+  return [...librariesByName.values()];
+}
+
 /** Returns the installed library with the given name, or undefined if it isn't installed. */
 export function getInstalledLibrary(name: string): Library | undefined {
   return librariesByName.get(name);
