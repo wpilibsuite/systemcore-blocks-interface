@@ -16,6 +16,8 @@ import typing
 import python_util
 import component
 
+import telemetry
+import tunables
 
 _PRINT_IGNORING = False
 
@@ -25,6 +27,17 @@ _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
   'telemetry.mock_backend',
   'wpinet',
 ]
+
+_LIST_IGNORED_SUPER_CLASSES = [
+  telemetry.TelemetryLoggable,
+  telemetry._telemetry.TelemetryLoggable,
+  tunables.ComplexTunable,
+  tunables._tunables.ComplexTunable,
+]
+
+_MAP_IGNORED_SUPER_CLASS_TO_METHOD_SIGNATURES = {}
+for cls in _LIST_IGNORED_SUPER_CLASSES:
+  _MAP_IGNORED_SUPER_CLASS_TO_METHOD_SIGNATURES[cls] = python_util.getInstanceMethodSignatures(cls)
 
 _LIST_MODULE_NAMES_INTERNAL = [
   'wpilib_blocks.block_execution',
@@ -93,6 +106,11 @@ def ignoreModule(module_name: str) -> bool:
   for prefix in _LIST_MODULE_NAME_PREFIXES_TO_IGNORE:
     if module_name.startswith(prefix):
       return True
+  return False
+
+def ignoreClass(cls: type) -> bool:
+  if cls in _LIST_IGNORED_SUPER_CLASSES:
+    return True
   return False
 
 def ignoreType(class_name: str) -> bool:
@@ -494,8 +512,7 @@ class JsonGenerator:
 
       if ignoreType(enum_class_name):
         if _PRINT_IGNORING:
-          print(f'INFO: ignoring module enum {enum_class_name}.',
-              file=sys.stderr)
+          print(f'INFO: ignoring module enum {enum_class_name}.', file=sys.stderr)
         continue
 
       simple_class_name = enum_class_name.rsplit('.', 1)[-1]
@@ -577,12 +594,23 @@ class JsonGenerator:
           'Expected UpperCamelCase.',
           file=sys.stderr)
 
+    full_class_name = python_util.getFullClassName(cls)
+
+    method_signatures_to_ignore = []
+    for ignored_super_class, super_method_signatures in _MAP_IGNORED_SUPER_CLASS_TO_METHOD_SIGNATURES.items():
+      if issubclass(cls, ignored_super_class):
+        ignored_super_class_full_class_name = python_util.getFullClassName(ignored_super_class)
+        super_self_arg = f'(self: {ignored_super_class_full_class_name}'
+        self_arg = f'(self: {full_class_name}'
+        for super_method_signature in super_method_signatures:
+          method_signatures_to_ignore.append(super_method_signature)
+          method_signatures_to_ignore.append(
+              super_method_signature.replace(super_self_arg, self_arg))
+
     class_data = {}
     class_data[_KEY_CLASS_NAME] = class_name
     class_data[_KEY_MODULE_NAME] = self._getModuleName(cls)
     class_data[_KEY_IS_COMPONENT] = False  # Set to True later if it is a component.
-
-    full_class_name = python_util.getFullClassName(cls)
 
     # Class variables.
     class_variables = []
@@ -735,6 +763,10 @@ class JsonGenerator:
         continue
       for iSignature in range(len(signatures)):
         signature = signatures[iSignature]
+        if signature in method_signatures_to_ignore:
+          if _PRINT_IGNORING:
+            print(f'INFO: ignoring method {class_name}.{signature}', file=sys.stderr)
+          continue
         # Determine the argument names and types.
         try:
           (function_name, arg_names, arg_types, arg_default_values, return_type) = python_util.processSignature(signature)
@@ -823,8 +855,7 @@ class JsonGenerator:
 
       if ignoreType(enum_class_name):
         if _PRINT_IGNORING:
-          print(f'INFO: ignoring class enum {enum_class_name}.',
-              file=sys.stderr)
+          print(f'INFO: ignoring class enum {enum_class_name}.', file=sys.stderr)
         continue
 
       simple_class_name = enum_class_name.rsplit('.', 1)[-1]
@@ -907,6 +938,8 @@ class JsonGenerator:
         continue
       module_name = self._getModuleName(cls)
       if ignoreModule(module_name):
+        continue
+      if ignoreClass(cls):
         continue
       class_data = self._processClass(cls)
       if class_data:

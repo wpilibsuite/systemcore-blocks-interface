@@ -1203,68 +1203,6 @@
             "staticMethods": []
         },
         {
-            "className": "telemetry.TelemetryLoggable",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "args",
-                            "type": "tuple"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "kwargs",
-                            "type": "dict"
-                        }
-                    ],
-                    "declaringClassName": "telemetry.TelemetryLoggable",
-                    "functionName": "__init__",
-                    "returnType": "telemetry.TelemetryLoggable",
-                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "telemetry.TelemetryLoggable"
-                        }
-                    ],
-                    "declaringClassName": "telemetry.TelemetryLoggable",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": "Returns this object's stable telemetry type, or an empty string."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "telemetry.TelemetryLoggable"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "telemetry.TelemetryTable"
-                        }
-                    ],
-                    "declaringClassName": "telemetry.TelemetryLoggable",
-                    "functionName": "log_to",
-                    "returnType": "None",
-                    "tooltip": "Logs this object's current state to ``table``."
-                }
-            ],
-            "instanceVariables": [],
-            "isComponent": false,
-            "moduleName": "telemetry",
-            "staticMethods": []
-        },
-        {
             "className": "telemetry.TelemetryRegistry",
             "classVariables": [],
             "constructors": [
@@ -1686,81 +1624,6 @@
             "staticMethods": []
         },
         {
-            "className": "tunables.ComplexTunable",
-            "classVariables": [],
-            "constructors": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "args",
-                            "type": "tuple"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "kwargs",
-                            "type": "dict"
-                        }
-                    ],
-                    "declaringClassName": "tunables.ComplexTunable",
-                    "functionName": "__init__",
-                    "returnType": "tunables.ComplexTunable",
-                    "tooltip": "Initialize self.  See help(type(self)) for accurate signature."
-                }
-            ],
-            "enums": [],
-            "instanceMethods": [
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables.ComplexTunable"
-                        }
-                    ],
-                    "declaringClassName": "tunables.ComplexTunable",
-                    "functionName": "get_tunable_type",
-                    "returnType": "str",
-                    "tooltip": "Returns this object's stable tunable type, or an empty string."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables.ComplexTunable"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "tunables.TunableTable"
-                        }
-                    ],
-                    "declaringClassName": "tunables.ComplexTunable",
-                    "functionName": "publish_tunables",
-                    "returnType": "None",
-                    "tooltip": "Publishes this object's tunable values to ``table``.\n\n        This method may be called when the tunable is initially published or\n        republished during backend migration, and it must not raise. If an\n        exception escapes, registry and backend state is not guaranteed to be\n        restored.\n        "
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables.ComplexTunable"
-                        }
-                    ],
-                    "declaringClassName": "tunables.ComplexTunable",
-                    "functionName": "update_tunables",
-                    "returnType": "None",
-                    "tooltip": "Updates callback-backed values before they are sent to the backend.\n\n        This method must not raise. If an exception escapes, registry and\n        backend state is not guaranteed to be restored.\n        "
-                }
-            ],
-            "instanceVariables": [],
-            "isComponent": false,
-            "moduleName": "tunables",
-            "staticMethods": []
-        },
-        {
             "className": "tunables.Selectable",
             "classVariables": [],
             "constructors": [
@@ -1852,19 +1715,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "tunables.Selectable"
-                        }
-                    ],
-                    "declaringClassName": "tunables.Selectable",
-                    "functionName": "get_tunable_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables.Selectable"
                         },
                         {
                             "defaultValue": "",
@@ -1876,24 +1726,6 @@
                     "functionName": "on_change",
                     "returnType": "None",
                     "tooltip": "Sets the listener called when a valid option is selected."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables.Selectable"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "tunables.TunableTable"
-                        }
-                    ],
-                    "declaringClassName": "tunables.Selectable",
-                    "functionName": "publish_tunables",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -1930,19 +1762,6 @@
                     "functionName": "set_default",
                     "returnType": "None",
                     "tooltip": "Sets the default option by name."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "tunables.Selectable"
-                        }
-                    ],
-                    "declaringClassName": "tunables.Selectable",
-                    "functionName": "update_tunables",
-                    "returnType": "None",
-                    "tooltip": "Updates callback-backed values before they are sent to the backend.\n\n        This method must not raise. If an exception escapes, registry and\n        backend state is not guaranteed to be restored.\n        "
                 }
             ],
             "instanceVariables": [],
@@ -3035,19 +2854,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.ADXL345_I2C",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.ADXL345_I2C"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.ADXL345_I2C",
                     "functionName": "get_x",
                     "returnType": "float",
                     "tooltip": "Returns the acceleration along the X axis in g-forces.\n\n:returns: The acceleration along the X axis in g-forces."
@@ -3946,19 +3752,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.AnalogAccelerometer"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.AnalogAccelerometer",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.AnalogAccelerometer"
                         },
                         {
                             "defaultValue": "",
@@ -4125,19 +3918,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.AnalogEncoder"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.AnalogEncoder",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.AnalogEncoder"
                         },
                         {
                             "defaultValue": "",
@@ -4212,19 +3992,6 @@
                     "functionName": "get_channel",
                     "returnType": "int",
                     "tooltip": "Get the channel number.\n\n:returns: The channel number."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.AnalogInput"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.AnalogInput",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -4361,19 +4128,6 @@
                     "isCommon": true,
                     "returnType": "float",
                     "tooltip": "Get the current reading of the potentiometer.\n\n:returns: The current position of the potentiometer (in the units used for\n          fullRange and offset).\n          @Common This is one of the commonly used methods for this class"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.AnalogPotentiometer"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.AnalogPotentiometer",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -4957,19 +4711,6 @@
                     "functionName": "get_pressure_switch_value",
                     "returnType": "bool",
                     "tooltip": "Returns the state of the pressure switch.\n\n:returns: True if pressure switch indicates that the system is not full,\n          otherwise false."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Compressor"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Compressor",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -5807,19 +5548,6 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "wpilib.DifferentialDrive"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DifferentialDrive",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
                             "type": "wpilib.MotorSafety"
                         }
                     ],
@@ -6130,19 +5858,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.DigitalInput"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DigitalInput",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DigitalInput"
                         },
                         {
                             "defaultValue": "",
@@ -6255,19 +5970,6 @@
                     "functionName": "get_channel",
                     "returnType": "int",
                     "tooltip": ":returns: The GPIO channel number that this object represents."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DigitalOutput"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DigitalOutput",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -6497,19 +6199,6 @@
                     "functionName": "get_rev_channel",
                     "returnType": "int",
                     "tooltip": "Get the reverse channel.\n\n:returns: the reverse channel."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DoubleSolenoid"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DoubleSolenoid",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -8513,19 +8202,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.DualSenseController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DualSenseController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DualSenseController",
                     "functionName": "get_touchpad_button",
                     "returnType": "bool",
                     "tooltip": "Read the value of the Touchpad button on the controller.\n\n:returns: The state of the button."
@@ -10232,19 +9908,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.DualSenseEdgeController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DualSenseEdgeController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DualSenseEdgeController",
                     "functionName": "get_touchpad_button",
                     "returnType": "bool",
                     "tooltip": "Read the value of the Touchpad button on the controller.\n\n:returns: The state of the button."
@@ -11805,19 +11468,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.DualShock4Controller",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DualShock4Controller"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DualShock4Controller",
                     "functionName": "get_touchpad_button",
                     "returnType": "bool",
                     "tooltip": "Read the value of the Touchpad button on the controller.\n\n:returns: The state of the button."
@@ -12352,19 +12002,6 @@
                     "functionName": "get_source_channel",
                     "returnType": "int",
                     "tooltip": "Get the channel of the source.\n\n:returns: the source channel"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DutyCycle"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DutyCycle",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -12518,19 +12155,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.DutyCycleEncoder",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.DutyCycleEncoder"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.DutyCycleEncoder",
                     "functionName": "is_connected",
                     "isCommon": true,
                     "returnType": "bool",
@@ -12658,19 +12282,6 @@
                     "isCommon": true,
                     "returnType": "int",
                     "tooltip": "Gets the current count.\n\n:returns: The current count.\n          @Common This is one of the commonly used methods for this class"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.EdgeCounter"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.EdgeCounter",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -12861,19 +12472,6 @@
                     "functionName": "get_stopped",
                     "returnType": "bool",
                     "tooltip": "Determine if the encoder is stopped.\n\nThe encoder is stopped when its current rate is zero.\n\n:returns: True if the encoder is considered stopped."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Encoder"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Encoder",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -14127,50 +13725,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.Field2d"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Field2d",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Field2d"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Field2d",
-                    "functionName": "get_tunable_type",
-                    "returnType": "str",
-                    "tooltip": "Gets the tunable type.\n\n:returns: Field2d type."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Field2d"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "tunables.TunableTable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Field2d",
-                    "functionName": "publish_tunable",
-                    "returnType": "None",
-                    "tooltip": "Publishes field objects to a tunable table.\n\n:param table: wpi::tunables::Tunable table."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Field2d"
                         },
                         {
                             "defaultValue": "",
@@ -15208,19 +14762,6 @@
                     "functionName": "get_start_button_released",
                     "returnType": "bool",
                     "tooltip": "Whether the Start button was released since the last check.\n\n:returns: Whether the button was released since the last check."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.GameCubeController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.GameCubeController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -17161,19 +16702,6 @@
                     "functionName": "get_supported_outputs",
                     "returnType": "wpilib.GenericHID.SupportedOutputs",
                     "tooltip": "Get the supported outputs for the gamepad.\n\n:returns: the supported outputs for the gamepad."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Gamepad"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Gamepad",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -21282,19 +20810,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.LogitechF310Controller",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.LogitechF310Controller"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.LogitechF310Controller",
                     "functionName": "get_x_button",
                     "returnType": "bool",
                     "tooltip": "Read the value of the X button on the controller.\n\n:returns: The state of the button."
@@ -21969,19 +21484,6 @@
                         {
                             "defaultValue": "",
                             "name": "self",
-                            "type": "wpilib.MecanumDrive"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.MecanumDrive",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
                             "type": "wpilib.MotorSafety"
                         }
                     ],
@@ -22239,19 +21741,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib.Mechanism2d"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Mechanism2d",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Mechanism2d"
                         },
                         {
                             "defaultValue": "",
@@ -22397,19 +21886,6 @@
                     "functionName": "get_name",
                     "returnType": "str",
                     "tooltip": "Retrieve the object's name.\n\n:returns: the object's name relative to its parent."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.MechanismLigament2d"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.MechanismLigament2d",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -22833,19 +22309,6 @@
                     "declaringClassName": "wpilib.MotorControllerGroup",
                     "functionName": "get_inverted",
                     "returnType": "bool",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.MotorControllerGroup"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.MotorControllerGroup",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -24341,19 +23804,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.NiDsPS4Controller",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.NiDsPS4Controller"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.NiDsPS4Controller",
                     "functionName": "get_touchpad_button",
                     "returnType": "bool",
                     "tooltip": "Read the value of the touchpad button on the controller.\n\n:returns: The state of the button."
@@ -25538,19 +24988,6 @@
                     "functionName": "get_supported_outputs",
                     "returnType": "wpilib.GenericHID.SupportedOutputs",
                     "tooltip": "Get the supported outputs of the controller.\n\n:returns: the supported outputs of the controller."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.NiDsPS5Controller"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.NiDsPS5Controller",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -26768,19 +26205,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.NiDsStadiaController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.NiDsStadiaController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.NiDsStadiaController",
                     "functionName": "get_x_button",
                     "returnType": "bool",
                     "tooltip": "Read the value of the X button on the controller.\n\n:returns: The state of the button."
@@ -27785,19 +27209,6 @@
                     "functionName": "get_supported_outputs",
                     "returnType": "wpilib.GenericHID.SupportedOutputs",
                     "tooltip": "Get the supported outputs of the controller.\n\n:returns: the supported outputs of the controller."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.NiDsXboxController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.NiDsXboxController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -29445,19 +28856,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.PWM",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PWM"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PWM",
                     "functionName": "set_disabled",
                     "returnType": "None",
                     "tooltip": "Temporarily disables the PWM output. The next set call will re-enable\nthe output."
@@ -29668,19 +29066,6 @@
                     "declaringClassName": "wpilib.PWMMotorController",
                     "functionName": "get_inverted",
                     "returnType": "bool",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PWMMotorController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PWMMotorController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
                     "tooltip": ""
                 },
                 {
@@ -32603,19 +31988,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.PowerDistribution",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.PowerDistribution"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.PowerDistribution",
                     "functionName": "get_temperature",
                     "isCommon": true,
                     "returnType": "float",
@@ -34809,19 +34181,6 @@
                     "isCommon": true,
                     "returnType": "wpimath.units.meters",
                     "tooltip": "Get the range from the distance sensor.\n\n:returns: range of the target returned by the sensor\n          @Common This is one of the commonly used methods for this class"
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.SharpIR"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.SharpIR",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 }
             ],
             "instanceVariables": [],
@@ -34965,19 +34324,6 @@
                     "functionName": "get_channel",
                     "returnType": "int",
                     "tooltip": "Get the channel this solenoid is connected to."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Solenoid"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Solenoid",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -36436,19 +35782,6 @@
                     "functionName": "get_steam_button_released",
                     "returnType": "bool",
                     "tooltip": "Whether the Steam button was released since the last check.\n\n:returns: Whether the button was released since the last check."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.SteamController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.SteamController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -38134,19 +37467,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.Switch2GCController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Switch2GCController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Switch2GCController",
                     "functionName": "get_x_button",
                     "returnType": "bool",
                     "tooltip": "Read the value of the X button on the controller.\n\n:returns: The state of the button."
@@ -39771,19 +39091,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.Switch2ProController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Switch2ProController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Switch2ProController",
                     "functionName": "get_x_button",
                     "returnType": "bool",
                     "tooltip": "Read the value of the X button on the controller.\n\n:returns: The state of the button."
@@ -41354,19 +40661,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.SwitchN64Controller",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.SwitchN64Controller"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.SwitchN64Controller",
                     "functionName": "get_z_axis",
                     "returnType": "float",
                     "tooltip": "Get the Z Axis value of the controller.\n\nA deadband of 0.01 is applied by default. Use\nSetZAxisDeadband() to change it.\n\n:returns: the axis value."
@@ -42615,19 +41909,6 @@
                         }
                     ],
                     "declaringClassName": "wpilib.SwitchProController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.SwitchProController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.SwitchProController",
                     "functionName": "get_x_button",
                     "returnType": "bool",
                     "tooltip": "Read the value of the X button on the controller.\n\n:returns: The state of the button."
@@ -43192,19 +42473,6 @@
                     "functionName": "get_stopped",
                     "returnType": "bool",
                     "tooltip": "Gets if the tachometer is stopped.\n\nThe tachometer is stopped when its current frequency is zero.\n\n:returns: True if the tachometer is stopped."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.Tachometer"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.Tachometer",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -45554,19 +44822,6 @@
                     "functionName": "get_right_y",
                     "returnType": "float",
                     "tooltip": "Get the Right Y value of the controller.\n\nA deadband of 0.1 is applied by default. Use\nSetRightYDeadband() to change it.\n\n:returns: the axis value."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib.XboxController"
-                        }
-                    ],
-                    "declaringClassName": "wpilib.XboxController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -67196,53 +66451,9 @@
                         }
                     ],
                     "declaringClassName": "wpimath.BangBangController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.BangBangController"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.BangBangController",
                     "functionName": "get_tolerance",
                     "returnType": "float",
                     "tooltip": "Returns the current tolerance of the controller.\n\n:returns: The current tolerance."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.BangBangController"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.BangBangController",
-                    "functionName": "get_tunable_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.BangBangController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "tunables.TunableTable"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.BangBangController",
-                    "functionName": "publish_tunable",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -89885,53 +89096,9 @@
                         }
                     ],
                     "declaringClassName": "wpimath.PIDController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.PIDController"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.PIDController",
-                    "functionName": "get_tunable_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.PIDController"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.PIDController",
                     "functionName": "is_continuous_input_enabled",
                     "returnType": "bool",
                     "tooltip": "Returns true if continuous input is enabled."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.PIDController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "tunables.TunableTable"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.PIDController",
-                    "functionName": "publish_tunable",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -91070,32 +90237,6 @@
                         }
                     ],
                     "declaringClassName": "wpimath.ProfiledPIDController",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.ProfiledPIDController"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.ProfiledPIDController",
-                    "functionName": "get_tunable_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.ProfiledPIDController"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.ProfiledPIDController",
                     "functionName": "get_velocity_error",
                     "returnType": "wpimath.units.units_per_second",
                     "tooltip": "Returns the change in error per second."
@@ -91112,24 +90253,6 @@
                     "functionName": "get_velocity_tolerance",
                     "returnType": "float",
                     "tooltip": "Gets the velocity tolerance of this controller.\n\n:returns: The velocity tolerance of the controller."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.ProfiledPIDController"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "tunables.TunableTable"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.ProfiledPIDController",
-                    "functionName": "publish_tunable",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [
@@ -91742,32 +90865,6 @@
                         }
                     ],
                     "declaringClassName": "wpimath.ProfiledPIDControllerRadians",
-                    "functionName": "get_telemetry_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.ProfiledPIDControllerRadians"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.ProfiledPIDControllerRadians",
-                    "functionName": "get_tunable_type",
-                    "returnType": "str",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.ProfiledPIDControllerRadians"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.ProfiledPIDControllerRadians",
                     "functionName": "get_velocity_error",
                     "returnType": "wpimath.units.radians_per_second",
                     "tooltip": "Returns the change in error per second."
@@ -91784,24 +90881,6 @@
                     "functionName": "get_velocity_tolerance",
                     "returnType": "float",
                     "tooltip": "Gets the velocity tolerance of this controller.\n\n:returns: The velocity tolerance of the controller."
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpimath.ProfiledPIDControllerRadians"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "table",
-                            "type": "tunables.TunableTable"
-                        }
-                    ],
-                    "declaringClassName": "wpimath.ProfiledPIDControllerRadians",
-                    "functionName": "publish_tunable",
-                    "returnType": "None",
-                    "tooltip": ""
                 },
                 {
                     "args": [

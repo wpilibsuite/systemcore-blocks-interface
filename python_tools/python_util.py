@@ -583,3 +583,17 @@ def collectSubclasses(classes: list[type]) -> dict[str, list[str]]:
       if subclass_name not in subclass_names:
         subclass_names.append(subclass_name)
   return dict_class_name_to_subclass_names
+
+
+def getInstanceMethodSignatures(cls: type) -> [str]:
+  instance_method_signatures = []
+  for key, value in inspect.getmembers(cls, inspect.isroutine):
+    if not isFunction(cls, key, value):
+      continue
+    (signatures, _comments) = processFunction(value, cls)
+    if len(signatures) == 0:
+      print(f'ERROR: failed to determine function signature for {getFullClassName(cls)}.{key}',
+          file=sys.stderr)
+      continue
+    instance_method_signatures.extend(signatures)
+  return instance_method_signatures
