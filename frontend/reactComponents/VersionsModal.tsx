@@ -609,45 +609,52 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
 
   /**
    * Renders the current project, above the filters and the versions, since it isn't filtered or
-   * paged like they are. Clicking it shows its details, like clicking a version does.
+   * paged like they are. Clicking it shows its details, like clicking a version does. The Create
+   * Version button is to its left, outside the bar.
    */
   const renderCurrent = (): React.JSX.Element => (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={() => openDetails(null)}
-      onKeyDown={(e) => {
-        if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
-          e.preventDefault();
-          openDetails(null);
-        }
-      }}
-      style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap',
-        gap: 8, padding: '8px 12px', marginBottom: 12, cursor: 'pointer',
-        border: `1px solid ${token.colorBorderSecondary}`, borderRadius: token.borderRadiusLG,
-        background: token.colorFillQuaternary,
-      }}
-    >
-      <Antd.Space size={8} wrap>
-        <Antd.Typography.Text strong>{t('VERSIONS.CURRENT')}</Antd.Typography.Text>
-        <Antd.Typography.Text type="secondary">{t('VERSIONS.CURRENT_DESCRIPTION')}</Antd.Typography.Text>
-      </Antd.Space>
-      {/* The buttons' clicks shouldn't also click the bar. */}
-      <Antd.Space size={8} onClick={(e) => e.stopPropagation()}>
-        <Antd.Button size="small" icon={<EyeOutlined />} onClick={() => openDetails(null)}>
-          {t('VERSIONS.VIEW')}
-        </Antd.Button>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+      <Antd.Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={openCreateDialog}
+        disabled={!props.storage || !projectName}
+      >
+        {t('VERSIONS.CREATE')}
+      </Antd.Button>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => openDetails(null)}
+        onKeyDown={(e) => {
+          if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            openDetails(null);
+          }
+        }}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap',
+          flex: '1 1 auto', minWidth: 0, gap: 8, padding: '8px 12px', cursor: 'pointer',
+          border: `1px solid ${token.colorBorderSecondary}`, borderRadius: token.borderRadiusLG,
+          background: token.colorFillQuaternary,
+        }}
+      >
+        <Antd.Space size={8} wrap>
+          <Antd.Typography.Text strong>{t('VERSIONS.CURRENT')}</Antd.Typography.Text>
+          <Antd.Typography.Text type="secondary">{t('VERSIONS.CURRENT_DESCRIPTION')}</Antd.Typography.Text>
+        </Antd.Space>
+        {/* The button's click shouldn't also click the bar. */}
         <Antd.Button
           size="small"
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={openCreateDialog}
-          disabled={!props.storage || !projectName}
+          icon={<EyeOutlined />}
+          onClick={(e) => {
+            e.stopPropagation();
+            openDetails(null);
+          }}
         >
-          {t('VERSIONS.CREATE')}
+          {t('VERSIONS.VIEW')}
         </Antd.Button>
-      </Antd.Space>
+      </div>
     </div>
   );
 
@@ -727,11 +734,14 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
     <div style={{ width: MODULE_LIST_WIDTH, flex: '0 0 auto', overflow: 'auto' }}>
       {/* Listy only lays out the items, so each one is laid out here: the module's icon, its
           name (and what it was renamed from), and how it changed. It isn't virtual, since a
-          project only has a few modules and the list scrolls with this div. */}
+          project only has a few modules and the list scrolls with this div. Listy draws the
+          line between items, but its padding is moved into each item so that the selected
+          one's background fills the row. */}
       <Antd.Listy<versionDiff.ModuleDiff>
         items={moduleDiffs}
         rowKey="moduleId"
         virtual={false}
+        styles={{ item: { padding: 0 } }}
         itemRender={(diff) => {
           const className = diff.rightClassName ?? diff.leftClassName!;
           const renamed = diff.leftClassName && diff.rightClassName &&
@@ -751,7 +761,6 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
               style={{
                 display: 'flex', alignItems: 'center', gap: 12,
                 padding: '8px 8px', cursor: 'pointer',
-                borderBottom: `1px solid ${token.colorSplit}`,
                 background: diff.moduleId === selected ? token.controlItemBgActive : undefined,
               }}
             >
