@@ -725,34 +725,58 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
       moduleDiffs: versionDiff.ModuleDiff[], selected: string, onSelect: (moduleId: string) => void,
       showChanges: boolean): React.JSX.Element => (
     <div style={{ width: MODULE_LIST_WIDTH, flex: '0 0 auto', overflow: 'auto' }}>
-      <Antd.List
-        size="small"
-        dataSource={moduleDiffs}
-        renderItem={(diff) => {
+      {/* Listy only lays out the items, so each one is laid out here: the module's icon, its
+          name (and what it was renamed from), and how it changed. It isn't virtual, since a
+          project only has a few modules and the list scrolls with this div. */}
+      <Antd.Listy<versionDiff.ModuleDiff>
+        items={moduleDiffs}
+        rowKey="moduleId"
+        virtual={false}
+        itemRender={(diff) => {
           const className = diff.rightClassName ?? diff.leftClassName!;
           const renamed = diff.leftClassName && diff.rightClassName &&
               diff.leftClassName !== diff.rightClassName;
           return (
-            <Antd.List.Item
+            <div
+              role="button"
+              tabIndex={0}
+              aria-pressed={diff.moduleId === selected}
               onClick={() => onSelect(diff.moduleId)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelect(diff.moduleId);
+                }
+              }}
               style={{
-                cursor: 'pointer',
-                paddingInline: 8,
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '8px 8px', cursor: 'pointer',
+                borderBottom: `1px solid ${token.colorSplit}`,
                 background: diff.moduleId === selected ? token.controlItemBgActive : undefined,
               }}
             >
-              <Antd.List.Item.Meta
-                avatar={TabTypeUtils.getIcon(MODULE_TYPE_TO_TAB_TYPE[diff.moduleType])}
-                title={className}
-                description={renamed
-                    ? t('VERSIONS.RENAMED_FROM', { name: diff.leftClassName }) : undefined}
-              />
+              {TabTypeUtils.getIcon(MODULE_TYPE_TO_TAB_TYPE[diff.moduleType])}
+              <div style={{ flex: '1 1 auto', minWidth: 0 }}>
+                <Antd.Typography.Text strong ellipsis style={{ display: 'block' }}>
+                  {className}
+                </Antd.Typography.Text>
+                {renamed && (
+                  <Antd.Typography.Text type="secondary" ellipsis style={{ display: 'block' }}>
+                    {t('VERSIONS.RENAMED_FROM', { name: diff.leftClassName })}
+                  </Antd.Typography.Text>
+                )}
+              </div>
               {showChanges && (
-                <Antd.Tag style={getStatusTagStyle(token, CHANGE_TAG_STATUSES[diff.change])}>
+                <Antd.Tag
+                  style={{
+                    ...getStatusTagStyle(token, CHANGE_TAG_STATUSES[diff.change]),
+                    marginInlineEnd: 0,
+                  }}
+                >
                   {t(CHANGE_LABEL_KEYS[diff.change])}
                 </Antd.Tag>
               )}
-            </Antd.List.Item>
+            </div>
           );
         }}
       />
