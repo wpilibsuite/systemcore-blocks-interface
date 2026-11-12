@@ -10,7 +10,7 @@ import { Order } from 'blockly/python';
 
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText'
-import { createParameterFieldFlydown } from '../fields/field_flydown';
+import { createParameterFieldFlydown, createReturnFieldFlydown } from '../fields/field_flydown';
 import { ExtendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModuleContent from '../storage/module_content';
 import { renameMethodCallers, mutateMethodCallers } from './mrc_call_python_function'
@@ -38,7 +38,7 @@ const UNTYPED_RETURN_VALUE = '';
 const INPUT_TITLE = 'TITLE';
 const FIELD_METHOD_NAME = 'NAME';
 const FIELD_PARAM_PREFIX = 'PARAM_';
-const INPUT_STACK = 'STACK';
+export const INPUT_STACK = 'STACK';
 export const INPUT_RETURN = 'RETURN';
 
 export interface Parameter {
@@ -266,7 +266,7 @@ const CLASS_METHOD_DEF = {
     if (this.mrcReturnType !== undefined && this.mrcReturnType !== NO_RETURN_VALUE) {
       this.appendValueInput(INPUT_RETURN)
           .setAlign(Blockly.inputs.Align.RIGHT)
-          .appendField(Blockly.Msg.PROCEDURES_DEFRETURN_RETURN);
+          .appendField(createReturnFieldFlydown());
       // Move the return input to be after the statement input
       this.moveInputBefore(INPUT_STACK, INPUT_RETURN);
     }
