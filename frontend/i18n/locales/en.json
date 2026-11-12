@@ -293,9 +293,9 @@
     "FILTER_ANY_TIME": "Any time",
     "FILTER_CHOOSE_DATES": "Choose dates",
     "FILTER_TAGS": "Tags:",
-    "TAG_FILTER_MODE_AND": "AND",
-    "TAG_FILTER_MODE_OR": "OR",
-    "TAG_FILTER_MODE_TOOLTIP": "AND: show versions with all selected tags. OR: show versions with any selected tag.",
+    "FILTER_TAGS_WITH": "Show versions with any of the selected tags",
+    "FILTER_TAGS_WITHOUT": "Show versions with none of the selected tags",
+    "TAG_MATCH_MODE_TOOLTIP": "With: show versions with any selected tag. Without: show versions with none of the selected tags.",
     "FILTER_SHOWING": "Showing {{count}} of {{total}} versions",
     "FILTER_CLEAR": "Clear Filters",
     "NO_MATCHING_VERSIONS": "No versions match."

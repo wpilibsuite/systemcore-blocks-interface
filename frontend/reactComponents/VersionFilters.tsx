@@ -43,8 +43,11 @@ const DAYS_MODE_SYMBOLS: Record<DaysMode, string> = {
 /** The number of days that the days filter starts with. */
 export const DEFAULT_FILTER_DAYS = 14;
 
-/** Whether a version must have all selected tags (AND) or any of them (OR) to match. */
-type TagFilterMode = 'AND' | 'OR';
+/**
+ * Whether the tag filter shows the versions with any of the selected tags, or the ones with none
+ * of them.
+ */
+type TagMatchMode = 'with' | 'without';
 
 type DateRange = Antd.GetProps<typeof Antd.DatePicker.RangePicker>['value'];
 
@@ -115,7 +118,7 @@ export function useVersionFilters(
   const [days, setDays] = React.useState(DEFAULT_FILTER_DAYS);
   const [customRange, setCustomRange] = React.useState<DateRange>(null);
   const [tagFilter, setTagFilter] = React.useState<string[]>([]);
-  const [tagFilterMode, setTagFilterMode] = React.useState<TagFilterMode>('OR');
+  const [tagMatchMode, setTagMatchMode] = React.useState<TagMatchMode>('with');
   // The filters are hidden until the user asks for them, so the list isn't intimidating.
   const [filtersOpen, setFiltersOpen] = React.useState(false);
   const [page, setPage] = React.useState(1);
@@ -164,7 +167,7 @@ export function useVersionFilters(
     setDays(initial.days ?? DEFAULT_FILTER_DAYS);
     setCustomRange(null);
     setTagFilter([]);
-    setTagFilterMode('OR');
+    setTagMatchMode('with');
     setFiltersOpen(open);
     setPage(1);
   };
@@ -177,9 +180,8 @@ export function useVersionFilters(
     return (dateStart === null || createdAt >= dateStart) &&
         (dateEnd === null || createdAt <= dateEnd) &&
         (!onlyDescription || (descriptionMode === 'with') === (version.description !== '')) &&
-        (tagFilter.length === 0 || (tagFilterMode === 'AND'
-            ? tagFilter.every(tag => version.tags.includes(tag))
-            : tagFilter.some(tag => version.tags.includes(tag)))) &&
+        (tagFilter.length === 0 ||
+            (tagMatchMode === 'with') === tagFilter.some(tag => version.tags.includes(tag))) &&
         // Tags are searched as they are shown, so built-in tags match in the user's language.
         (!normalizedSearchText ||
             version.description.toLowerCase().includes(normalizedSearchText) ||
@@ -357,13 +359,17 @@ export function useVersionFilters(
       ), 'start')}
       {allTags.length > 0 && renderFilterLine('VERSIONS.FILTER_TAGS', (
         <Antd.Space size={4} wrap>
-          <Antd.Tooltip title={t('VERSIONS.TAG_FILTER_MODE_TOOLTIP')}>
+          {/* Like the description filter's switch, it says which side is shown, so there is no
+              need for a way to invert the filter. */}
+          <Antd.Tooltip title={t('VERSIONS.TAG_MATCH_MODE_TOOLTIP')}>
             <Antd.Switch
               size="small"
-              checked={tagFilterMode === 'AND'}
-              onChange={(checked) => changeFilter(setTagFilterMode)(checked ? 'AND' : 'OR')}
-              checkedChildren={t('VERSIONS.TAG_FILTER_MODE_AND')}
-              unCheckedChildren={t('VERSIONS.TAG_FILTER_MODE_OR')}
+              checked={tagMatchMode === 'without'}
+              onChange={(checked) => changeFilter(setTagMatchMode)(checked ? 'without' : 'with')}
+              checkedChildren={t('VERSIONS.FILTER_WITHOUT')}
+              unCheckedChildren={t('VERSIONS.FILTER_WITH')}
+              aria-label={t(tagMatchMode === 'without'
+                  ? 'VERSIONS.FILTER_TAGS_WITHOUT' : 'VERSIONS.FILTER_TAGS_WITH')}
               style={{ marginRight: 8 }}
             />
           </Antd.Tooltip>

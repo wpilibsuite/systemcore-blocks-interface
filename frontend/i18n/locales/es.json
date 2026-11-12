@@ -294,9 +294,9 @@
     "FILTER_ANY_TIME": "Cualquier fecha",
     "FILTER_CHOOSE_DATES": "Elegir fechas",
     "FILTER_TAGS": "Etiquetas:",
-    "TAG_FILTER_MODE_AND": "Y",
-    "TAG_FILTER_MODE_OR": "O",
-    "TAG_FILTER_MODE_TOOLTIP": "Y: muestra versiones con todas las etiquetas seleccionadas. O: muestra versiones con cualquiera de las etiquetas seleccionadas.",
+    "FILTER_TAGS_WITH": "Mostrar versiones con cualquiera de las etiquetas seleccionadas",
+    "FILTER_TAGS_WITHOUT": "Mostrar versiones sin ninguna de las etiquetas seleccionadas",
+    "TAG_MATCH_MODE_TOOLTIP": "Con: muestra versiones con cualquiera de las etiquetas seleccionadas. Sin: muestra versiones sin ninguna de las etiquetas seleccionadas.",
     "FILTER_SHOWING": "Mostrando {{count}} de {{total}} versiones",
     "FILTER_CLEAR": "Borrar Filtros",
     "NO_MATCHING_VERSIONS": "Ninguna versión coincide."
