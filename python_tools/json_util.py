@@ -16,6 +16,10 @@ import typing
 import python_util
 import component
 
+import telemetry
+import tunables
+
+_PRINT_IGNORING = False
 
 _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
   'hal',
@@ -23,6 +27,17 @@ _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
   'telemetry.mock_backend',
   'wpinet',
 ]
+
+_LIST_IGNORED_SUPER_CLASSES = [
+  telemetry.TelemetryLoggable,
+  telemetry._telemetry.TelemetryLoggable,
+  tunables.ComplexTunable,
+  tunables._tunables.ComplexTunable,
+]
+
+_MAP_IGNORED_SUPER_CLASS_TO_METHOD_SIGNATURES = {}
+for cls in _LIST_IGNORED_SUPER_CLASSES:
+  _MAP_IGNORED_SUPER_CLASS_TO_METHOD_SIGNATURES[cls] = python_util.getInstanceMethodSignatures(cls)
 
 _LIST_MODULE_NAMES_INTERNAL = [
   'wpilib_blocks.block_execution',
@@ -92,6 +107,14 @@ def ignoreModule(module_name: str) -> bool:
     if module_name.startswith(prefix):
       return True
   return False
+
+def ignoreClass(cls: type) -> bool:
+  if cls in _LIST_IGNORED_SUPER_CLASSES:
+    return True
+  return False
+
+def ignoreType(class_name: str) -> bool:
+  return '._' in class_name
 
 def createArgData(arg_name: str, arg_type: str, default_value: str = ''):
   if any(char.isupper() for char in arg_name):
@@ -348,29 +371,36 @@ class JsonGenerator:
     if any(char.isupper() for char in module_name):
       print(f'WARNING: module name {module_name} contains an uppercase letter. '
           'Expected lower_snake_case.',
-           file=sys.stderr)
+          file=sys.stderr)
 
     # Module variables.
     module_variables = []
     for key, value in inspect.getmembers(module, python_util.isNothing):
       if not python_util.isModuleVariableReadable(module, key, value):
         continue
-      writable = python_util.isModuleVariableWritable(module, key, value)
 
+      var_type = self._getClassName(type(value))
+      if ignoreType(var_type):
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring module variable {module_name}.{key} because its type is {var_type}.',
+              file=sys.stderr)
+        continue
+
+      writable = python_util.isModuleVariableWritable(module, key, value)
       if writable:
         if any(char.isupper() for char in key):
           print(f'WARNING: writable module variable {module_name}.{key} contains an uppercase letter. '
               'Expected lower_snake_case.',
-               file=sys.stderr)
+              file=sys.stderr)
       else:
         if any(char.islower() for char in key):
           print(f'WARNING: constant module variable {module_name}.{key} contains an lowercase letter. '
               'Expected UPPER_SNAKE_CASE.',
-               file=sys.stderr)
+              file=sys.stderr)
 
       var_data = {}
       var_data[_KEY_VARIABLE_NAME] = key
-      var_data[_KEY_VARIABLE_TYPE] = self._getClassName(type(value))
+      var_data[_KEY_VARIABLE_TYPE] = var_type
       var_data[_KEY_VARIABLE_WRITABLE] = writable
       var_data[_KEY_TOOLTIP] = ''
       module_variables.append(var_data)
@@ -401,47 +431,67 @@ class JsonGenerator:
       (signatures, comments) = python_util.processFunction(value)
       if len(signatures) == 0:
         print(f'ERROR: failed to determine function signature for {module_name}.{key}',
-              file=sys.stderr)
+            file=sys.stderr)
         continue
       for iSignature in range(len(signatures)):
         signature = signatures[iSignature]
-        if '**kwargs' in signature:
-          continue
+
         # Determine the argument names and types.
         try:
           (function_name, arg_names, arg_types, arg_default_values, return_type) = python_util.processSignature(signature)
         except:
           print(f'ERROR: function signature for {module_name}.{key} is not parseable. "{signature}"',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
         if function_name != key:
           print(f'ERROR: signature has different function name. {module_name}.{key}',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
+
         if hasattr(module, return_type) and inspect.isclass(getattr(module, return_type)):
           # return_type is a type alias defined in this module.
           # Use the qualified name for the type.
           return_type = module_name + '.' + return_type
-        args = []
-        for i in range(len(arg_names)):
+        return_type = self._getClassName(return_type)
+        if ignoreType(return_type):
+          if _PRINT_IGNORING:
+            print(f'INFO: ignoring module function {module_name}.{function_name} because its return type is {return_type}.',
+                file=sys.stderr)
+          continue
+
+        ignore = False
+        for i in range(len(arg_types)):
           arg_type = arg_types[i]
           if hasattr(module, arg_type) and inspect.isclass(getattr(module, arg_type)):
             # arg_type is a type alias defined in this module.
             # Use the qualified name for the type.
             arg_type = module_name + '.' + arg_type
+          arg_type = self._getClassName(arg_type)
+          arg_types[i] = arg_type
+          if ignoreType(arg_type):
+            if _PRINT_IGNORING:
+              print(f'INFO: ignoring module function {module_name}.{function_name} because an arg type is {arg_type}.',
+                  file=sys.stderr)
+            ignore = True
+            break
+        if ignore:
+          continue
+
+        args = []
+        for i in range(len(arg_names)):
           args.append(self._createArgData(
               arg_names[i],
-              self._getClassName(arg_type),
+              arg_types[i],
               arg_default_values[i] if arg_default_values[i] is not None else ''))
 
         if any(char.isupper() for char in function_name):
           print(f'WARNING: module function {module_name}.{function_name} contains an uppercase letter. '
-                'Expected lower_snake_case.',
-                file=sys.stderr)
+              'Expected lower_snake_case.',
+              file=sys.stderr)
 
         function_data = {}
         function_data[_KEY_FUNCTION_NAME] = function_name
-        function_data[_KEY_FUNCTION_RETURN_TYPE] = self._getClassName(return_type)
+        function_data[_KEY_FUNCTION_RETURN_TYPE] = return_type
         function_data[_KEY_FUNCTION_ARGS] = args
         if comments[iSignature] is not None:
           function_data[_KEY_TOOLTIP] = comments[iSignature]
@@ -455,19 +505,25 @@ class JsonGenerator:
     # Enums
     enums = []
     for key, value in inspect.getmembers(module, python_util.isEnum):
-      enum_class_name = self._getClassName(value)
       if self._getModuleName(value) != module_name:
+        continue
+
+      enum_class_name = self._getClassName(value)
+
+      if ignoreType(enum_class_name):
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring module enum {enum_class_name}.', file=sys.stderr)
         continue
 
       simple_class_name = enum_class_name.rsplit('.', 1)[-1]
       if '_' in simple_class_name:
         print(f'WARNING: enum class name {enum_class_name} contains an underscore. '
             'Expected UpperCamelCase.',
-             file=sys.stderr)
+            file=sys.stderr)
       if not simple_class_name[0].isupper():
         print(f'WARNING: enum class name {enum_class_name} doesn\'t start with an uppercase letter'
             'Expected UpperCamelCase.',
-             file=sys.stderr)
+            file=sys.stderr)
 
       fnIsEnumValue = self._createFunctionIsEnumValue(value)
       enum_values = []
@@ -535,15 +591,26 @@ class JsonGenerator:
     simple_class_name = class_name.rsplit('.', 1)[-1]
     if not simple_class_name[0].isupper():
       print(f'WARNING: simple class name {simple_class_name} (from class name {class_name}) doesn\'t start with an uppercase letter'
-         'Expected UpperCamelCase.',
-         file=sys.stderr)
+          'Expected UpperCamelCase.',
+          file=sys.stderr)
+
+    full_class_name = python_util.getFullClassName(cls)
+
+    method_signatures_to_ignore = []
+    for ignored_super_class, super_method_signatures in _MAP_IGNORED_SUPER_CLASS_TO_METHOD_SIGNATURES.items():
+      if issubclass(cls, ignored_super_class):
+        ignored_super_class_full_class_name = python_util.getFullClassName(ignored_super_class)
+        super_self_arg = f'(self: {ignored_super_class_full_class_name}'
+        self_arg = f'(self: {full_class_name}'
+        for super_method_signature in super_method_signatures:
+          method_signatures_to_ignore.append(super_method_signature)
+          method_signatures_to_ignore.append(
+              super_method_signature.replace(super_self_arg, self_arg))
 
     class_data = {}
     class_data[_KEY_CLASS_NAME] = class_name
     class_data[_KEY_MODULE_NAME] = self._getModuleName(cls)
     class_data[_KEY_IS_COMPONENT] = False  # Set to True later if it is a component.
-
-    full_class_name = python_util.getFullClassName(cls)
 
     # Class variables.
     class_variables = []
@@ -552,22 +619,29 @@ class JsonGenerator:
         continue
       if (key == "WPIStruct" and type(value).__name__ == "PyCapsule"):
         continue
-      writable = python_util.isClassVariableWritable(cls, key, value)
 
+      var_type = self._getClassName(type(value), class_name)
+      if ignoreType(var_type):
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring class variable {class_name}.{key} because its type is {var_type}.',
+              file=sys.stderr)
+        continue
+
+      writable = python_util.isClassVariableWritable(cls, key, value)
       if writable:
         if any(char.isupper() for char in key):
           print(f'WARNING: writable class variable {class_name}.{key} contains an uppercase letter. '
               'Expected lower_snake_case.',
-               file=sys.stderr)
+              file=sys.stderr)
       else:
         if any(char.islower() for char in key):
           print(f'WARNING: constant class variable {class_name}.{key} contains an lowercase letter. '
               'Expected UPPER_SNAKE_CASE.',
-               file=sys.stderr)
+              file=sys.stderr)
 
       var_data = {}
       var_data[_KEY_VARIABLE_NAME] = key
-      var_data[_KEY_VARIABLE_TYPE] = self._getClassName(type(value), class_name)
+      var_data[_KEY_VARIABLE_TYPE] = var_type
       var_data[_KEY_VARIABLE_WRITABLE] = writable
       var_data[_KEY_TOOLTIP] = ''
       class_variables.append(var_data)
@@ -579,15 +653,21 @@ class JsonGenerator:
       if not python_util.isInstanceVariableReadable(cls, key, value):
         continue
 
+      var_type = self._getClassName(python_util.getVarTypeFromGetter(value.fget), class_name)
+      if ignoreType(var_type):
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring instance variable {class_name}.{key} because its type is {var_type}.',
+              file=sys.stderr)
+        continue
+
       if any(char.isupper() for char in key):
         print(f'WARNING: instance variable {class_name}.{key} contains an uppercase letter. '
             'Expected lower_snake_case.',
-             file=sys.stderr)
+            file=sys.stderr)
 
-      var_type = python_util.getVarTypeFromGetter(value.fget)
       var_data = {}
       var_data[_KEY_VARIABLE_NAME] = key
-      var_data[_KEY_VARIABLE_TYPE] = self._getClassName(var_type, class_name)
+      var_data[_KEY_VARIABLE_TYPE] = var_type
       var_data[_KEY_VARIABLE_WRITABLE] = python_util.isInstanceVariableWritable(cls, key, value)
       if value.__doc__ is not None:
         var_data[_KEY_TOOLTIP] = value.__doc__
@@ -607,27 +687,45 @@ class JsonGenerator:
       (signatures, comments) = python_util.processFunction(value, cls)
       if len(signatures) == 0:
         print(f'ERROR: failed to determine function signature for {class_name}.{key}',
-              file=sys.stderr)
+            file=sys.stderr)
         continue
       for iSignature in range(len(signatures)):
         signature = signatures[iSignature]
         # Determine the argument names and types.
         try:
-          (function_name, arg_names, arg_types, arg_default_values, return_type) = python_util.processSignature(signature)
+          (function_name, arg_names, arg_types, arg_default_values, _return_type) = python_util.processSignature(signature)
         except:
           print(f'ERROR: function signature for {class_name}.{key} is not parseable. "{signature}"',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
         if function_name != key:
           print(f'ERROR: signature has different function name. {class_name}.{key}',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
-        declaring_class_name = class_name
 
         if function_name != '__init__':
           print(f'WARNING: constructor named {function_name} is weird. '
               'Expected __init__.',
               file=sys.stderr)
+
+        ignore = False
+        for i in range(len(arg_types)):
+          arg_type = arg_types[i]
+          # TODO(lizlooney): The following might not work for type aliases declared in a super class.
+          if hasattr(cls, arg_type) and inspect.isclass(getattr(cls, arg_type)):
+            # arg_type is a type alias defined in this class.
+            # Use the qualified name for the type.
+            arg_type = class_name + '.' + arg_type
+          arg_type = self._getClassName(arg_type, class_name)
+          arg_types[i] = arg_type
+          if ignoreType(arg_type):
+            if _PRINT_IGNORING:
+              print(f'INFO: ignoring constructor {class_name}.{function_name} because an arg type is {arg_type}.',
+                  file=sys.stderr)
+            ignore = True
+            break
+        if ignore:
+          continue
 
         constructor_data = {}
         constructor_data[_KEY_FUNCTION_NAME] = function_name
@@ -639,25 +737,15 @@ class JsonGenerator:
           constructor_data[_KEY_TOOLTIP] = ''
         args = []
         for i in range(len(arg_names)):
-          arg_name = arg_names[i]
-          arg_type = arg_types[i]
-          if i == 0 and arg_name == 'self':
-            if arg_type != full_class_name:
-              declaring_class_name = self._getClassName(arg_type, class_name)
-            # Don't append the self argument to the args array.
-            continue
-          # TODO(lizlooney): The following might not work for type aliases declared in a super class.
-          if hasattr(cls, arg_type) and inspect.isclass(getattr(cls, arg_type)):
-            # arg_type is a type alias defined in this class.
-            # Use the qualified name for the type.
-            arg_type = class_name + '.' + arg_type
+          if i == 0:
+            continue # Don't append the self argument to the args array.
           args.append(self._createArgData(
-              arg_name,
-              self._getClassName(arg_type, class_name),
+              arg_names[i],
+              arg_types[i],
               arg_default_values[i] if arg_default_values[i] is not None else ''))
         constructor_data[_KEY_FUNCTION_ARGS] = args
-        constructor_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = declaring_class_name
-        constructor_data[_KEY_FUNCTION_RETURN_TYPE] = declaring_class_name
+        constructor_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = class_name
+        constructor_data[_KEY_FUNCTION_RETURN_TYPE] = class_name
         constructors.append(constructor_data)
     class_data[_KEY_CONSTRUCTORS] = constructors
 
@@ -671,44 +759,68 @@ class JsonGenerator:
       (signatures, comments) = python_util.processFunction(value, cls)
       if len(signatures) == 0:
         print(f'ERROR: failed to determine function signature for {class_name}.{key}',
-              file=sys.stderr)
+            file=sys.stderr)
         continue
       for iSignature in range(len(signatures)):
         signature = signatures[iSignature]
+        if signature in method_signatures_to_ignore:
+          if _PRINT_IGNORING:
+            print(f'INFO: ignoring method {class_name}.{signature}', file=sys.stderr)
+          continue
         # Determine the argument names and types.
         try:
           (function_name, arg_names, arg_types, arg_default_values, return_type) = python_util.processSignature(signature)
         except:
           print(f'ERROR: function signature for {class_name}.{key} is not parseable. "{signature}"',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
         if function_name != key:
           print(f'ERROR: signature has different function name. {class_name}.{key}',
-                file=sys.stderr)
+              file=sys.stderr)
           continue
-        declaring_class_name = class_name
+
         # TODO(lizlooney): The following might not work for type aliases declared in a super class.
         if hasattr(cls, return_type) and inspect.isclass(getattr(cls, return_type)):
           # return_type is a type alias defined in this class.
           # Use the qualified name for the type.
           return_type = class_name + '.' + return_type
-        args = []
+        return_type = self._getClassName(return_type, class_name)
+        if ignoreType(return_type):
+          if _PRINT_IGNORING:
+            print(f'INFO: ignoring method {class_name}.{function_name} because its return type is {return_type}.',
+                file=sys.stderr)
+          continue
+
+        declaring_class_name = class_name
         found_self_arg = False
-        for i in range(len(arg_names)):
-          arg_name = arg_names[i]
+        ignore = False
+        for i in range(len(arg_types)):
           arg_type = arg_types[i]
-          if i == 0 and arg_name == 'self':
-            found_self_arg = True
-            if arg_type != full_class_name:
-              declaring_class_name = self._getClassName(arg_type, class_name)
           # TODO(lizlooney): The following might not work for type aliases declared in a super class.
           if hasattr(cls, arg_type) and inspect.isclass(getattr(cls, arg_type)):
             # arg_type is a type alias defined in this class.
             # Use the qualified name for the type.
             arg_type = class_name + '.' + arg_type
+          arg_type = self._getClassName(arg_type, class_name)
+          arg_types[i] = arg_type
+          if ignoreType(arg_type):
+            if _PRINT_IGNORING:
+              print(f'INFO: ignoring method {class_name}.{function_name} because an arg type is {arg_type}.',
+                  file=sys.stderr)
+            ignore = True
+            break
+          if i == 0 and arg_names[i] == 'self':
+            found_self_arg = True
+            if arg_type != class_name:
+              declaring_class_name = arg_type
+        if ignore:
+          continue
+
+        args = []
+        for i in range(len(arg_names)):
           args.append(self._createArgData(
-              arg_name,
-              self._getClassName(arg_type, class_name),
+              arg_names[i],
+              arg_types[i],
               arg_default_values[i] if arg_default_values[i] is not None else ''))
 
         if any(char.isupper() for char in function_name):
@@ -718,7 +830,7 @@ class JsonGenerator:
 
         function_data = {}
         function_data[_KEY_FUNCTION_NAME] = function_name
-        function_data[_KEY_FUNCTION_RETURN_TYPE] = self._getClassName(return_type, class_name)
+        function_data[_KEY_FUNCTION_RETURN_TYPE] = return_type
         function_data[_KEY_FUNCTION_ARGS] = args
         function_data[_KEY_FUNCTION_DECLARING_CLASS_NAME] = declaring_class_name
         if comments[iSignature] is not None:
@@ -737,19 +849,24 @@ class JsonGenerator:
     # Enums
     enums = []
     for key, value in inspect.getmembers(cls, python_util.isEnum):
-      if not self._getClassName(value).startswith(class_name):
-        continue
       enum_class_name = self._getClassName(value)
+      if not enum_class_name.startswith(class_name):
+        continue
+
+      if ignoreType(enum_class_name):
+        if _PRINT_IGNORING:
+          print(f'INFO: ignoring class enum {enum_class_name}.', file=sys.stderr)
+        continue
 
       simple_class_name = enum_class_name.rsplit('.', 1)[-1]
       if '_' in simple_class_name:
         print(f'WARNING: enum class name {enum_class_name} contains an underscore. '
             'Expected UpperCamelCase.',
-             file=sys.stderr)
+            file=sys.stderr)
       if not simple_class_name[0].isupper():
         print(f'WARNING: enum class name {enum_class_name} doesn\'t start with an uppercase letter'
             'Expected UpperCamelCase.',
-             file=sys.stderr)
+            file=sys.stderr)
 
       fnIsEnumValue = self._createFunctionIsEnumValue(value)
       enum_values = []
@@ -800,8 +917,8 @@ class JsonGenerator:
           constructor_data[_KEY_IS_COMPONENT] = True
       if not found_constructor:
         print('ERROR: failed to find expected constructor with args named '
-              f'{component.get_expected_constructor_arg_names()} for {class_name}',
-              file=sys.stderr)
+            f'{component.get_expected_constructor_arg_names()} for {class_name}',
+            file=sys.stderr)
       common_method_names = dict.fromkeys(component.get_common_method_names(), False)
       for function_data in class_data[_KEY_INSTANCE_METHODS]:
         method_name = function_data[_KEY_FUNCTION_NAME]
@@ -821,6 +938,8 @@ class JsonGenerator:
         continue
       module_name = self._getModuleName(cls)
       if ignoreModule(module_name):
+        continue
+      if ignoreClass(cls):
         continue
       class_data = self._processClass(cls)
       if class_data:
@@ -892,16 +1011,16 @@ class JsonGenerator:
 
     for name in sorted((shown_names | ignored_names) - set(all_classes) - set(all_modules) - set(enum_owners)):
       print(f'WARNING: {name} in {_PYTHON_TOOLBOX_FILE} is not a module, class, or enum in '
-            f'{", ".join(root_module_names)}',
-            file=sys.stderr)
+          f'{", ".join(root_module_names)}',
+          file=sys.stderr)
 
     # The classes that blocks can be made for: the components and the shown classes.
     used_class_names = {class_name for class_name, class_data in all_classes.items()
                         if class_data[_KEY_IS_COMPONENT] or class_name in shown_names}
     for class_name in sorted(used_class_names & ignored_names):
       print(f'ERROR: {class_name} is in ignore in {_PYTHON_TOOLBOX_FILE}, but it is a component or '
-            'is in shownCategories, so it is generated anyway',
-            file=sys.stderr)
+          'is in shownCategories, so it is generated anyway',
+          file=sys.stderr)
     used_module_names = set(all_modules) & shown_names
 
     # Add the classes and enums that the used classes and modules refer to.
@@ -947,9 +1066,9 @@ class JsonGenerator:
             f'ignore in {_PYTHON_TOOLBOX_FILE}')
     elif not_generated_names:
       print(f'WARNING: these classes and enums were not generated, because nothing in the library '
-            f'uses them. Add them to shownCategories or ignore in {_PYTHON_TOOLBOX_FILE}, or generate '
-            f'with add_unused_to_ignore:\n' + json.dumps(not_generated_names, indent=2),
-            file=sys.stderr)
+          f'uses them. Add them to shownCategories or ignore in {_PYTHON_TOOLBOX_FILE}, or generate '
+          f'with add_unused_to_ignore:\n' + json.dumps(not_generated_names, indent=2),
+          file=sys.stderr)
 
     classes = [all_classes[name] for name in sorted(class_names)]
     component_classes = [class_data for class_data in classes if class_data[_KEY_IS_COMPONENT]]
