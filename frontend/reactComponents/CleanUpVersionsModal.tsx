@@ -57,6 +57,7 @@ const INITIAL_FILTERS: InitialVersionFilters = {
 export default function CleanUpVersionsModal(
     props: CleanUpVersionsModalProps): React.JSX.Element {
   const {t} = I18Next.useTranslation();
+  const { token } = Antd.theme.useToken();
   const [modal, contextHolder] = Antd.Modal.useModal();
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [deleting, setDeleting] = React.useState(false);
@@ -89,6 +90,49 @@ export default function CleanUpVersionsModal(
   const selectAll = (): void => {
     setSelectedIds(ids => new Set([...ids, ...filteredVersions.map(v => v.versionId)]));
   };
+
+  /** Selects (or unselects) the versions on the page that is shown. */
+  const setPageSelected = (selected: boolean): void => {
+    setSelectedIds(ids => {
+      const newIds = new Set(ids);
+      for (const version of filters.pageVersions) {
+        if (selected) {
+          newIds.add(version.versionId);
+        } else {
+          newIds.delete(version.versionId);
+        }
+      }
+      return newIds;
+    });
+  };
+
+  const isPageSelected = filters.pageVersions.length > 0 &&
+      filters.pageVersions.every(v => selectedIds.has(v.versionId));
+  const isAllSelected = filteredVersions.length > 0 &&
+      selectedVersions.length === filteredVersions.length;
+
+  /** Whether to offer selecting every page (or say that they are), as a banner does. */
+  const showSelectAllBanner =
+      isPageSelected && filteredVersions.length > filters.pageVersions.length;
+
+  /**
+   * Renders the message that is shown when every version on the page is selected and there are
+   * more pages, which offers to select the versions on every page (or says that they are).
+   */
+  const renderSelectAllMessage = (): React.JSX.Element => isAllSelected ? (
+    <Antd.Typography.Text>
+      {t('VERSIONS.ALL_PAGES_SELECTED', { count: filteredVersions.length })}
+    </Antd.Typography.Text>
+  ) : (
+    <>
+      <Antd.Typography.Text>
+        {t('VERSIONS.PAGE_ALL_SELECTED', { count: filters.pageVersions.length })}
+      </Antd.Typography.Text>
+      <Antd.Button size="small" type="link" style={{ padding: 0 }} onClick={selectAll}>
+        {t('VERSIONS.SELECT_ALL_PAGES', { count: filteredVersions.length })}
+      </Antd.Button>
+    </>
+  );
 
   const confirmDelete = (): void => {
     const toDelete = selectedVersions;
@@ -175,19 +219,20 @@ export default function CleanUpVersionsModal(
         ]}
       >
         {filters.renderFilters()}
-        <Antd.Space size={4} wrap style={{ display: 'flex', marginBottom: 8 }}>
+        {/* The message about selecting every page is in this line, which is highlighted like a
+            banner while it is, so that the dialog doesn't get taller and need to scroll. */}
+        <Antd.Space
+          size={4}
+          wrap
+          style={{
+            display: 'flex', marginBottom: 8, paddingInline: 8,
+            borderRadius: token.borderRadius,
+            background: showSelectAllBanner ? token.colorInfoBg : undefined,
+          }}
+        >
           <Antd.Typography.Text strong>
             {t('VERSIONS.SELECTED_COUNT', { count: selectedVersions.length })}
           </Antd.Typography.Text>
-
-          {/* The count makes it clear that this selects the versions on every page. */}
-          <Antd.Button
-            size="small" type="link" onClick={selectAll}
-            disabled={filteredVersions.length === 0 ||
-                selectedVersions.length === filteredVersions.length}
-          >
-            {t('VERSIONS.SELECT_ALL', { count: filteredVersions.length })}
-          </Antd.Button>
 
           <Antd.Button
             size="small" type="link" onClick={() => setSelectedIds(new Set())}
@@ -195,6 +240,12 @@ export default function CleanUpVersionsModal(
           >
             {t('VERSIONS.CLEAR_SELECTION')}
           </Antd.Button>
+          {showSelectAllBanner && (
+            <>
+              <Antd.Divider orientation="vertical" />
+              {renderSelectAllMessage()}
+            </>
+          )}
         </Antd.Space>
         <Antd.Table<storageVersions.VersionInfo>
           rowKey="versionId"
@@ -208,9 +259,10 @@ export default function CleanUpVersionsModal(
           pagination={false}
           rowSelection={{
             selectedRowKeys: selectedVersions.map(v => v.versionId),
-            // Select All is used instead, since this would only select the page.
-            hideSelectAll: true,
             onSelect: (version) => toggleSelected(version.versionId),
+            // The checkbox in the header selects (or unselects) the page. The banner offers to
+            // select every page.
+            onSelectAll: (selected) => setPageSelected(selected),
           }}
           onRow={(version) => ({
             // Clicking the checkbox selects the version already (onSelect), and the click also
