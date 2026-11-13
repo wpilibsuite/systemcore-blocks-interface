@@ -65,15 +65,9 @@ code {
   scroll-behavior: smooth !important;
 }
 /* Blocks that differ between a version and the current project (see VersionsModal.tsx). The
- * colors are used for the legend too. Changed and moved blocks have their own outline styled, not
- * their children's. Added and removed blocks have one outline around each group of them (made by
- * ReadOnlyBlocklyPreview.tsx), which is masked so only the outer half of its stroke shows. */
-:root {
-  --mrc-diff-added: #2e9d4c;
-  --mrc-diff-removed: #d9363e;
-  --mrc-diff-changed: #e8a317;
-  --mrc-diff-moved: var(--mrc-diff-changed);
-}
+ * colors are used for the legend too. 
+ * --mrc-diff-* colors are set by VersionsModal.tsx from the theme, and are used for the legend
+ * too. Only the block's own outline is styled, not its children. */
 
 .mrcDiffGroupOutlineStrokes > path {
   fill: none;

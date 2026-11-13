@@ -633,19 +633,17 @@ export function findModuleByModulePath(project: Project, modulePath: string): st
  */
 export async function downloadProject(
     storage: commonStorage.Storage, projectName: string): Promise<string> {
-  const fileNames: string[] = await listProjectFileNames(storage, projectName);
+  return makeProjectBlobUrl(await fetchProjectFiles(storage, projectName));
+}
 
-  const fileNameToFileContentText: {[fileName: string]: string} = {}; // value is file content text
-  for (const fileName of fileNames) {
-    const filePath = storageNames.makeFilePath(projectName, fileName);
-    const fileContentText = await storage.fetchFileContentText(filePath);
-    fileNameToFileContentText[fileName] = fileContentText;
-  }
-
+/**
+ * Produce the blob for downloading a project with the given files (a map of fileName → content).
+ */
+export async function makeProjectBlobUrl(
+    files: {[fileName: string]: string}): Promise<string> {
   const zip = new JSZip();
-  for (const fileName in fileNameToFileContentText) {
-    const fileContentText = fileNameToFileContentText[fileName];
-    zip.file(fileName, fileContentText);
+  for (const fileName in files) {
+    zip.file(fileName, files[fileName]);
   }
   const content = await zip.generateAsync({ type: "blob" });
   return URL.createObjectURL(content);

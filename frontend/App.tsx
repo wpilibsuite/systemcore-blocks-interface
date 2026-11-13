@@ -38,6 +38,7 @@ import { getLibraryToolbox } from './toolbox/library_toolbox';
 
 import { initialize as initializePythonBlocks } from './blocks/utils/python';
 import { antdThemeFromString } from './reactComponents/ThemeSettings';
+import { getAntdLocale, setDayjsLocale } from './i18n/antd_locale';
 import { useTranslation } from 'react-i18next';
 import {
   UserSettingsProvider,
@@ -225,6 +226,11 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       }
     }
   }, [settings.showSimpleClassNames, showSimpleClassNames, showSimpleClassNamesInitialized, isLoading]);
+
+  /** Keep the dates that the date picker formats in the current language. */
+  React.useEffect(() => {
+    setDayjsLocale(i18n.language);
+  }, [i18n.language]);
 
   /** Save language changes to UserSettings when i18n language changes. */
   React.useEffect(() => {
@@ -687,6 +693,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
   return (
     <Antd.ConfigProvider
       theme={antdThemeFromString(theme)}
+      locale={getAntdLocale(i18n.language)}
     >
       {contextHolder}
       <AutosaveProvider
