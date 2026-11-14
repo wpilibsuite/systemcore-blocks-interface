@@ -55,7 +55,7 @@ describe('variable types', () => {
   beforeAll(() => {
     registerVariableMap();
     Blockly.Msg['WARNING_SET_VARIABLE_DIFFERENT_TYPE'] =
-        '{{variableName}} {{valueType}} {{variableType}}';
+        '{{variableName}} {{valueType}} {{otherTypes}}';
     const defineValueBlock = (blockType: string, check: string | null) => {
       Blockly.Blocks[blockType] = {
         init: function(this: Blockly.Block) {
@@ -106,6 +106,7 @@ describe('variable types', () => {
     const workspace = loadAndInfer(
         [{ id: 'v', name: 'v' }], [setter('v', NUMBER), setter('v', LIST)]);
     expect(workspace.getVariableMap().getVariableById('v')!.getType()).toBe('Number');
+    expect(getDifferentTypeWarning(workspace.getBlockById('block0')!)).toBe('v Number Array');
     expect(getDifferentTypeWarning(workspace.getBlockById('block1')!)).toBe('v Array Number');
   });
 
@@ -114,14 +115,14 @@ describe('variable types', () => {
         [{ id: 'v', name: 'v', type: TABLE_TYPE }], [setter('v', NUMBER), setter('v', TABLE)]);
     expect(workspace.getVariableMap().getVariableById('v')!.getType()).toBe(TABLE_TYPE);
     expect(getDifferentTypeWarning(workspace.getBlockById('block0')!)).toBe('v Number ' + TABLE_TYPE);
-    expect(getDifferentTypeWarning(workspace.getBlockById('block1')!)).toBeNull();
+    expect(getDifferentTypeWarning(workspace.getBlockById('block1')!)).toBe('v ' + TABLE_TYPE + ' Number');
   });
 
   test('an untyped variable assigned values of different types gets the first type', () => {
     const workspace = loadAndInfer(
         [{ id: 'v', name: 'v' }], [setter('v', NUMBER), setter('v', TEXT)]);
     expect(workspace.getVariableMap().getVariableById('v')!.getType()).toBe('Number');
-    expect(getDifferentTypeWarning(workspace.getBlockById('block0')!)).toBeNull();
+    expect(getDifferentTypeWarning(workspace.getBlockById('block0')!)).toBe('v Number String');
     expect(getDifferentTypeWarning(workspace.getBlockById('block1')!)).toBe('v String Number');
   });
 
