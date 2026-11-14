@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "blocks_demo"
 version = "1.0.0"
-description = "Demo third party library for the SystemCore blocks interface"
+description = "Demo third party library for the Systemcore blocks interface"
 requires-python = ">=3.8"
 license = {text = "BSD-3-Clause"}
 dependencies = []

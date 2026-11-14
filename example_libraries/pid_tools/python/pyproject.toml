@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pid_tools"
 version = "1.3.0"
-description = "Example PID helpers for the SystemCore blocks interface"
+description = "Example PID helpers for the Systemcore blocks interface"
 requires-python = ">=3.8"
 license = {text = "BSD-3-Clause"}
 dependencies = []
