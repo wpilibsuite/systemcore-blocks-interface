@@ -395,7 +395,10 @@ const CALL_PYTHON_FUNCTION = {
     if (showOutput !== !!this.outputConnection) {
       // The shape of the block is changing. Disconnect it from any block it is attached to
       // because the connections it is using are about to be removed.
-      this.unplug(true);
+      // If it is in a stack of statements, heal the stack so the blocks after it move up.
+      // If it is plugged into an input, don't heal: healing would move the block attached to
+      // its first input into the parent's input, instead of leaving it attached to this block.
+      this.unplug(!this.outputConnection);
     }
     if (showOutput) {
       // Set the output plug.
