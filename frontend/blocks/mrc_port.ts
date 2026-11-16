@@ -105,6 +105,10 @@ const PORT = {
                   replaceTokens(Blockly.Msg.SYSTEMCORE_CAN_PORT_TOOLTIP, { portNum: portNum }));
             }
             break;
+          case PortType.SYSTEMCORE_BUILTIN_CAN_PORT:
+            tooltipLines.push(
+                replaceTokens(Blockly.Msg.SYSTEMCORE_CAN_PORT_TOOLTIP, { portNum: portNum }));
+            break;
           case PortType.CAN_DEVICE_ID:
             tooltipLines.push(
                 replaceTokens(Blockly.Msg.CAN_DEVICE_ID_TOOLTIP, { portNum: portNum }));
@@ -281,9 +285,19 @@ export type PortDescription = {
 function makeKey(portTypes: PortType[], portNumbers: string[]): string {
   return portTypes
       .map((portType, i) => isPortNumberShown(portTypes, portNumbers, i)
-          ? portTypeToString(portType) + ':' + portNumbers[i] : '')
+          ? portTypeToString(getPhysicalPortType(portType)) + ':' + portNumbers[i] : '')
       .filter(s => s !== '')
       .join(' ');
+}
+
+/**
+ * Returns the port type that identifies the physical port. A SYSTEMCORE_BUILTIN_CAN_PORT is
+ * one of the same CAN buses as a SYSTEMCORE_CAN_PORT, it just doesn't offer the MotionCore
+ * buses, so a Spark Max and an A301 on the same bus and device id are on the same port.
+ */
+function getPhysicalPortType(portType: PortType): PortType {
+  return portType === PortType.SYSTEMCORE_BUILTIN_CAN_PORT
+      ? PortType.SYSTEMCORE_CAN_PORT : portType;
 }
 
 /**
@@ -370,6 +384,9 @@ export const pythonFromBlock = function (
         // Systemcore
         code += 'wpilib.CANPort.CAN_S' + portNum + ', # ' + portLabel + '\n';
       }
+    } else if (block.mrcPortTypes[i] == PortType.SYSTEMCORE_BUILTIN_CAN_PORT) {
+      generator.importModule('wpilib');
+      code += 'wpilib.CANPort.CAN_S' + portNum + ', # ' + portLabel + '\n';
     } else {
       code += portNum + ', # ' + portLabel + '\n';
     }
@@ -381,6 +398,8 @@ function createFieldDropdownForPortNumber(portType: PortType): Blockly.Field {
   switch (portType) {
     case PortType.SYSTEMCORE_CAN_PORT:
       return createFieldLabeledDropdown(createCanBusOptions());
+    case PortType.SYSTEMCORE_BUILTIN_CAN_PORT:
+      return createFieldNumberDropdown(0, SYSTEMCORE_CAN_BUS_COUNT - 1);
     case PortType.CAN_DEVICE_ID:
       return createFieldNumberDropdown(0, 15);
     case PortType.SYSTEMCORE_SMART_IO_PORT:
@@ -475,6 +494,7 @@ export function createPort(portTypeString: string, defaultPortNumbers?: string):
 function getLabelForPort(portType: PortType): string {
   switch (portType) {
     case PortType.SYSTEMCORE_CAN_PORT:
+    case PortType.SYSTEMCORE_BUILTIN_CAN_PORT:
       return VISIBLE_PORT_LABEL_CAN;
     case PortType.CAN_DEVICE_ID:
       return VISIBLE_PORT_LABEL_CAN_DEVICE;
