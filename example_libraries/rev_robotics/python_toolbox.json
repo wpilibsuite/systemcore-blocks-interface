@@ -6,7 +6,8 @@
     "rev.CIEColor",
     "rev.ColorMatch",
     "rev.ColorSensorV3",
-    "rev.ColorSensorV3.RawColor"
+    "rev.ColorSensorV3.RawColor",
+    "rev_blocks.SparkMax"
   ],
   "ignore": [
     "rev.AbsoluteEncoder",
@@ -99,6 +100,7 @@
     "rev.Signal_SparkPeriodicStatus8",
     "rev.Signal_SparkPeriodicStatus9",
     "rev.Signal_SparkWarnings",
+    "rev.Signal_double",
     "rev.Signal_int",
     "rev.SignalsConfig",
     "rev.SignalsConfigAccessor",
@@ -111,7 +113,6 @@
     "rev.SparkBase",
     "rev.SparkBase.Faults",
     "rev.SparkBase.Warnings",
-    "rev.SparkBaseConfig",
     "rev.SparkBaseConfig.Presets",
     "rev.SparkBaseConfigAccessor",
     "rev.SparkClosedLoopController",
@@ -123,7 +124,6 @@
     "rev.SparkFlexSim",
     "rev.SparkLimitSwitch",
     "rev.SparkLimitSwitchSim",
-    "rev.SparkLowLevel",
     "rev.SparkLowLevel.PeriodicStatus0",
     "rev.SparkLowLevel.PeriodicStatus1",
     "rev.SparkLowLevel.PeriodicStatus2",
