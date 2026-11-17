@@ -110383,13 +110383,6 @@
         }
     ],
     "subclasses": {
-        "hal._wpi_hal.SimValue": [
-            "hal._wpi_hal.SimBoolean",
-            "hal._wpi_hal.SimDouble",
-            "hal._wpi_hal.SimEnum",
-            "hal._wpi_hal.SimInt",
-            "hal._wpi_hal.SimLong"
-        ],
         "ntcore.BooleanArrayPublisher": [
             "ntcore.BooleanArrayEntry"
         ],
@@ -110528,66 +110521,12 @@
             "wpilib.DataLogTelemetryBackend",
             "wpilib.NetworkTablesTelemetryBackend"
         ],
-        "telemetry._telemetry.TelemetryLoggable": [
-            "wpilib.ADXL345_I2C",
-            "wpilib.AnalogAccelerometer",
-            "wpilib.AnalogEncoder",
-            "wpilib.AnalogInput",
-            "wpilib.AnalogPotentiometer",
-            "wpilib.Compressor",
-            "wpilib.DifferentialDrive",
-            "wpilib.DigitalInput",
-            "wpilib.DigitalOutput",
-            "wpilib.DoubleSolenoid",
-            "wpilib.DualSenseController",
-            "wpilib.DualSenseEdgeController",
-            "wpilib.DualShock4Controller",
-            "wpilib.DutyCycle",
-            "wpilib.DutyCycleEncoder",
-            "wpilib.EdgeCounter",
-            "wpilib.Encoder",
-            "wpilib.Field2d",
-            "wpilib.GameCubeController",
-            "wpilib.Gamepad",
-            "wpilib.LogitechF310Controller",
-            "wpilib.MecanumDrive",
-            "wpilib.Mechanism2d",
-            "wpilib.MechanismObject2d",
-            "wpilib.MotorControllerGroup",
-            "wpilib.NiDsPS4Controller",
-            "wpilib.NiDsPS5Controller",
-            "wpilib.NiDsStadiaController",
-            "wpilib.NiDsXboxController",
-            "wpilib.PWM",
-            "wpilib.PWMMotorController",
-            "wpilib.PowerDistribution",
-            "wpilib.SharpIR",
-            "wpilib.Solenoid",
-            "wpilib.SteamController",
-            "wpilib.Switch2GCController",
-            "wpilib.Switch2ProController",
-            "wpilib.SwitchN64Controller",
-            "wpilib.SwitchProController",
-            "wpilib.Tachometer",
-            "wpilib.XboxController",
-            "wpimath.BangBangController",
-            "wpimath.PIDController",
-            "wpimath.ProfiledPIDController",
-            "wpimath.ProfiledPIDControllerRadians"
-        ],
         "tunables.ComplexTunable": [
             "tunables.Selectable"
         ],
         "tunables.TunableBackend": [
             "tunables.MockTunableBackend",
             "wpilib.NetworkTablesTunableBackend"
-        ],
-        "tunables._tunables.ComplexTunable": [
-            "wpilib.Field2d",
-            "wpimath.BangBangController",
-            "wpimath.PIDController",
-            "wpimath.ProfiledPIDController",
-            "wpimath.ProfiledPIDControllerRadians"
         ],
         "wpilib.BooleanEvent": [
             "wpilib.NetworkBooleanEvent"
