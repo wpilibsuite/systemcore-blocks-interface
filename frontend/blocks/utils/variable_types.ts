@@ -96,12 +96,13 @@ export function canChangeVariableTypes(event: Blockly.Events.Abstract): boolean 
 
 /**
  * Sets the type of each variable in the given workspace from the values assigned to it, and puts
- * a warning on each block that assigns a variable a value of a different type.
+ * a warning on each block that assigns a variable a value when other blocks assign it values of
+ * other types.
  *
  * Values that don't have a type are ignored, since they might be of any type. A variable keeps
  * its type as long as some value of that type is assigned to it, so assigning a value of another
- * type gets a warning instead of changing the variable's type. Otherwise, the variable gets the
- * type of the first value that has a type. If none of the values assigned to a variable have a
+ * type doesn't change the variable's type. Otherwise, the variable gets the type of the first
+ * value that has a type. If none of the values assigned to a variable have a
  * type, the variable is untyped. If no values are assigned to a variable, its type is left
  * unchanged.
  *
@@ -160,8 +161,8 @@ function inferVariableType(
 }
 
 /**
- * Puts a warning on each variables_set block that assigns its variable a value whose type is
- * different from the variable's type, and clears the warning on the other variables_set blocks.
+ * Puts a warning on each variables_set block whose variable is also assigned values of other
+ * types, and clears the warning on the other variables_set blocks.
  */
 function updateSetterWarnings(workspace: Blockly.Workspace): void {
   for (const block of workspace.getBlocksByType(BLOCK_TYPE_VARIABLES_SET, false)) {
@@ -170,24 +171,39 @@ function updateSetterWarnings(workspace: Blockly.Workspace): void {
 }
 
 /**
- * Returns the warning for the given variables_set block if it assigns its variable a value whose
- * type is different from the variable's type, or null if it doesn't.
+ * Returns the warning for the given variables_set block if other variables_set blocks assign its
+ * variable values of other types, or null if they don't. All the blocks that assign a variable a
+ * value with a type get the warning, not just the ones whose type is different from the
+ * variable's type, since any of them might be the mistake.
  */
 export function getDifferentTypeWarning(block: Blockly.Block): string | null {
   const variable = (block.getField(FIELD_VAR) as Blockly.FieldVariable | null)?.getVariable();
-  const valueBlock = block.getInputTargetBlock(INPUT_VALUE);
-  const valueType = valueBlock ? getValueType(valueBlock) : '';
-  if (!variable || !variable.getType() || !valueType || valueType === variable.getType()) {
+  const valueType = getSetterValueType(block);
+  if (!variable || !valueType) {
+    return null;
+  }
+  const otherTypes = new Set(
+      Blockly.Variables.getVariableUsesById(block.workspace, variable.getId())
+          .filter(other => other.type === BLOCK_TYPE_VARIABLES_SET)
+          .map(getSetterValueType)
+          .filter(type => type !== '' && type !== valueType));
+  if (!otherTypes.size) {
     return null;
   }
   return Blockly.Msg['WARNING_SET_VARIABLE_DIFFERENT_TYPE']
       .replace('{{variableName}}', variable.getName())
       .replace('{{valueType}}', valueType)
-      .replace('{{variableType}}', variable.getType());
+      .replace('{{otherTypes}}', [...otherTypes].join(', '));
+}
+
+/** Returns the type of the value of the given variables_set block, or '' if it doesn't have one. */
+function getSetterValueType(block: Blockly.Block): string {
+  const valueBlock = block.getInputTargetBlock(INPUT_VALUE);
+  return valueBlock ? getValueType(valueBlock) : '';
 }
 
 /** Returns the type of the value of the given block, or '' if it doesn't have a type. */
-function getValueType(block: Blockly.Block): string {
+export function getValueType(block: Blockly.Block): string {
   if (block.type === BLOCK_TYPE_VARIABLES_GET) {
     const field = block.getField(FIELD_VAR) as Blockly.FieldVariable | null;
     return field?.getVariable()?.getType() ?? '';

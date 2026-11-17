@@ -128,7 +128,7 @@ export function findSuperFunctionData(functionData: FunctionData, superClassFunc
 
 export enum PortType {
   // Ports on the Systemcore.
-  // Note that SYSTEMCORE_CAN_PORT covers the CAN buses provided by a MotionCore as well as
+  // Note that SYSTEMCORE_CAN_PORT covers the CAN buses provided by a Motioncore as well as
   // the Systemcore's own CAN buses. They are one kind of port so that a mechanism doesn't
   // have to say which of the two its components are on.
   SYSTEMCORE_CAN_PORT,
@@ -136,7 +136,7 @@ export enum PortType {
   // like a Spark Max.
   SYSTEMCORE_BUILTIN_CAN_PORT,
   // The device id of a device on a CAN bus. It is not shown when the bus is provided by a
-  // MotionCore, because a MotionCore detects the device id itself.
+  // Motioncore, because a Motioncore detects the device id itself.
   CAN_DEVICE_ID,
   SYSTEMCORE_SMART_IO_PORT,
   SYSTEMCORE_I2C_PORT,

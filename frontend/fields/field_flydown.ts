@@ -10,6 +10,7 @@
 import * as Blockly from 'blockly';
 import {BLOCK_NAME as JUMP_TO_STEP} from '../blocks/mrc_jump_to_step';
 import {BLOCK_NAME as GET_PARAMETER} from '../blocks/mrc_get_parameter';
+import {BLOCK_NAME as RETURN} from '../blocks/mrc_return';
 import {matchBorderToText} from './FieldNonEditableText';
 
 const NON_EDITABLE_CSS_CLASS_NAME = 'mrcNonEditableFlydownField';
@@ -406,6 +407,17 @@ function createParameterBlock(paramName: string): Blockly.utils.toolbox.FlyoutDe
     };
 }
 
+function createReturnBlock(_text: string): Blockly.utils.toolbox.FlyoutDefinition {
+    return {
+        contents: [
+            {
+                kind: 'block',
+                type: RETURN,
+            },
+        ]
+    };
+}
+
 function createJumpToStepBlock(stepName: string): Blockly.utils.toolbox.FlyoutDefinition {
     return {
         contents: [
@@ -434,4 +446,8 @@ export function createParameterFieldFlydown(paramName: string, isEditable: boole
 
 export function createStepFieldFlydown(stepName: string, isEditable: boolean): Blockly.Field {
     return new FieldFlydown(stepName, isEditable, createJumpToStepBlock);
+}
+
+export function createReturnFieldFlydown(): Blockly.Field {
+    return new FieldFlydown(Blockly.Msg.PROCEDURES_DEFRETURN_RETURN, false, createReturnBlock);
 }

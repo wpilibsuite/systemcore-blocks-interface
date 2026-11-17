@@ -9,29 +9,34 @@ import * as I18Next from 'react-i18next';
 import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageVersions from '../storage/versions';
+import { collectTags } from './VersionTags';
+import { EMPTY_VERSION_FIELD_VALUES, VersionFieldValues, VersionFields } from './VersionFields';
 
-/** What the user is about to do, which sets the version's default description. */
+/** What the user is about to do, which sets the version's tag. */
 export type CreateVersionReason = 'deploy' | 'download';
 
-/** The default description of the version for each reason. */
-const DESCRIPTION_KEYS: Record<CreateVersionReason, string> = {
-  deploy: 'VERSIONS.DEPLOYED_DESCRIPTION',
-  download: 'VERSIONS.DOWNLOADED_DESCRIPTION',
+/** The tag of the version for each reason. */
+const REASON_TAGS: Record<CreateVersionReason, string> = {
+  deploy: storageVersions.DEPLOYED_TAG,
+  download: storageVersions.DOWNLOADED_TAG,
 };
 
 type PendingPrompt = {
   storage: commonStorage.Storage,
   projectName: string,
-  reason: CreateVersionReason,
+  // The tags of the project's other versions, offered as choices.
+  knownTags: string[],
   resolve: (shouldContinue: boolean) => void,
 };
 
 /**
  * Returns a function that asks the user whether to create a version of a project (with an
  * optional description) before deploying or downloading it, and the element that shows the
- * prompt, which must be rendered. The function resolves to true if the user created a version or
- * chose not to, and to false if the user cancelled (or creating the version failed). It doesn't
- * ask, and resolves to true, if the project hasn't changed since its newest version.
+ * prompt, which must be rendered. The version is tagged with the reason (for example, "deployed")
+ * and has no description unless the user types one. The function resolves to true if the user
+ * created a version or chose not to, and to false if the user cancelled (or creating the version
+ * failed). If the project hasn't changed since its newest version, it doesn't ask: it adds the tag
+ * to that version instead, and resolves to true.
  */
 export function useCreateVersionPrompt(setAlertErrorMessage: (message: string) => void): {
   askToCreateVersion: (
@@ -39,17 +44,23 @@ export function useCreateVersionPrompt(setAlertErrorMessage: (message: string) =
       reason: CreateVersionReason) => Promise<boolean>,
   createVersionPrompt: React.JSX.Element,
 } {
-  const {t, i18n} = I18Next.useTranslation();
+  const {t} = I18Next.useTranslation();
   const [pending, setPending] = React.useState<PendingPrompt | null>(null);
-  const [description, setDescription] = React.useState('');
+  const [fields, setFields] = React.useState<VersionFieldValues>(EMPTY_VERSION_FIELD_VALUES);
   const [creating, setCreating] = React.useState(false);
 
   const askToCreateVersion = async (
       storage: commonStorage.Storage, projectName: string,
       reason: CreateVersionReason): Promise<boolean> => {
-    // There's no need for a version if the project hasn't changed since the newest one.
+    const tag = REASON_TAGS[reason];
+    let knownTags: string[] = [];
+    // There's no need for a version if the project hasn't changed since the newest one, but that
+    // version gets the tag, so it shows that it was deployed (or downloaded).
     try {
+      const versions = await storageVersions.listVersions(storage, projectName);
+      knownTags = collectTags(versions);
       if (!await storageVersions.hasChangesSinceLatestVersion(storage, projectName)) {
+        await storageVersions.addVersionTag(storage, projectName, versions[0].versionId, tag);
         return true;
       }
     } catch (e) {
@@ -57,10 +68,8 @@ export function useCreateVersionPrompt(setAlertErrorMessage: (message: string) =
       console.error('Failed to compare with the newest version:', e);
     }
     return new Promise<boolean>((resolve) => {
-      setDescription(t(DESCRIPTION_KEYS[reason],
-          { dateTime: new Date().toLocaleString(
-              i18n.language, { dateStyle: 'short', timeStyle: 'short' }) }));
-      setPending({ storage, projectName, reason, resolve });
+      setFields({ ...EMPTY_VERSION_FIELD_VALUES, tags: [tag] });
+      setPending({ storage, projectName, knownTags, resolve });
     });
   };
 
@@ -75,7 +84,8 @@ export function useCreateVersionPrompt(setAlertErrorMessage: (message: string) =
     }
     setCreating(true);
     try {
-      await storageVersions.createVersion(pending.storage, pending.projectName, description);
+      await storageVersions.createVersion(
+          pending.storage, pending.projectName, fields.description, fields.tags, fields.notes);
       finish(true);
     } catch (e) {
       console.error('Failed to create version:', e);
@@ -106,11 +116,10 @@ export function useCreateVersionPrompt(setAlertErrorMessage: (message: string) =
       <Antd.Typography.Paragraph>
         {t('VERSIONS.PROMPT_MESSAGE')}
       </Antd.Typography.Paragraph>
-      <Antd.Input.TextArea
-        rows={3}
-        value={description}
-        placeholder={t('VERSIONS.DESCRIPTION_PLACEHOLDER')}
-        onChange={(e) => setDescription(e.target.value)}
+      <VersionFields
+        value={fields}
+        onChange={setFields}
+        knownTags={pending?.knownTags ?? []}
       />
     </Antd.Modal>
   );

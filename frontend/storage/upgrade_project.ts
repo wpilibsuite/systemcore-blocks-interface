@@ -167,7 +167,7 @@ function noUpgrade(_workspace: Blockly.Workspace): void {
 const A301_CLASS_NAME = 'rev.A301';
 const A301_ARG_NAME = 'a301';
 const A301_ARG_TYPE = 'SYSTEMCORE_CAN_PORT__CAN_DEVICE_ID';
-// The bus id defaults to 5, which is the first MotionCore CAN bus, shown as MC00. The
+// The bus id defaults to 5, which is the first Motioncore CAN bus, shown as MC00. The
 // device id defaults to 3, which is the device id an A301 has out of the factory.
 const A301_ARG_DEFAULT_VALUE = '5__3';
 const A301_OLD_BUS_ID_ARG_NAME = 'busId';

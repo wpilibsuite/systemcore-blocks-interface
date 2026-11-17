@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "wpilib_blocks"
 dynamic = ["version"]
-description = "Base classes for SystemCore blocks interface"
+description = "Base classes for Systemcore blocks interface"
 requires-python = ">=3.8"
 license = {text = "BSD-3-Clause"}
 authors = [

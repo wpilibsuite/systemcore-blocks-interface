@@ -36,7 +36,7 @@ const INPUT_PREFIX_PORT = 'PORT_';
 const SYSTEMCORE_CAN_BUS_COUNT = 5;
 
 /**
- * The number of CAN buses provided by a MotionCore. They are labeled MC00 through MC19 and
+ * The number of CAN buses provided by a Motioncore. They are labeled MC00 through MC19 and
  * their values follow the Systemcore's own CAN buses.  (So they start with 5...)
  */
 const MOTIONCORE_CAN_BUS_COUNT = 20;
@@ -46,7 +46,7 @@ const VISIBLE_PORT_LABEL_CAN_DEVICE = 'device';
 const VISIBLE_PORT_LABEL_SMART_IO = 'smart i/o';
 const VISIBLE_PORT_LABEL_I2C = 'i2c';
 const VISIBLE_PORT_LABEL_USB = 'usb';
-const VISIBLE_PORT_LABEL_MOTIONCORE = 'MotionCore port';
+const VISIBLE_PORT_LABEL_MOTIONCORE = 'Motioncore port';
 const VISIBLE_PORT_LABEL_ENCODER = 'encoder';
 const VISIBLE_PORT_LABEL_USB_HUB = 'usb hub';
 const VISIBLE_PORT_LABEL_MOTOR = 'motor';
@@ -96,7 +96,7 @@ const PORT = {
         let portNum = this.getFieldValue(FIELD_PREFIX_PORT_NUM + i);
         switch (this.mrcPortTypes[i]) {
           case PortType.SYSTEMCORE_CAN_PORT:
-            if (isMotionCoreCanBus(portNum)) {
+            if (isMotioncoreCanBus(portNum)) {
               portNum -= SYSTEMCORE_CAN_BUS_COUNT;
               tooltipLines.push(
                   replaceTokens(Blockly.Msg.MOTIONCORE_CAN_PORT_TOOLTIP, { portNum: portNum }));
@@ -242,18 +242,18 @@ const PORT = {
 }
 
 /**
- * Returns whether the given CAN bus is one provided by a MotionCore, rather than one of the
+ * Returns whether the given CAN bus is one provided by a Motioncore, rather than one of the
  * Systemcore's own CAN buses.
  */
-function isMotionCoreCanBus(portNumber: string): boolean {
+function isMotioncoreCanBus(portNumber: string): boolean {
   const busId = Number(portNumber);
   return Number.isInteger(busId) && busId >= SYSTEMCORE_CAN_BUS_COUNT;
 }
 
 /**
  * Returns whether the port number of the given element of the given port is shown to the
- * user. A CAN device id is not shown when the CAN bus is provided by a MotionCore, because
- * a MotionCore detects the device id itself.
+ * user. A CAN device id is not shown when the CAN bus is provided by a Motioncore, because
+ * a Motioncore detects the device id itself.
  */
 function isPortNumberShown(
     portTypes: PortType[], portNumbers: string[], i: number): boolean {
@@ -261,7 +261,7 @@ function isPortNumberShown(
     return true;
   }
   const iCanBus = portTypes.indexOf(PortType.SYSTEMCORE_CAN_PORT);
-  return iCanBus < 0 || !isMotionCoreCanBus(portNumbers[iCanBus]);
+  return iCanBus < 0 || !isMotioncoreCanBus(portNumbers[iCanBus]);
 }
 
 /** Identifies a physical port and describes it as shown to the user. */
@@ -278,8 +278,8 @@ export type PortDescription = {
 /**
  * Makes the key that identifies a physical port from the port types and the port numbers.
  * Port numbers that aren't shown to the user are left out, because they don't say anything
- * about which physical port this is. For example, a device on a MotionCore CAN bus doesn't
- * have a device id of its own, so two devices on the same MotionCore bus are on the same
+ * about which physical port this is. For example, a device on a Motioncore CAN bus doesn't
+ * have a device id of its own, so two devices on the same Motioncore bus are on the same
  * port no matter what device ids are hiding on their blocks.
  */
 function makeKey(portTypes: PortType[], portNumbers: string[]): string {
@@ -377,7 +377,7 @@ export const pythonFromBlock = function (
     } else if (block.mrcPortTypes[i] == PortType.SYSTEMCORE_CAN_PORT) {
       // Special case for CAN, which needs to be a wpilib.CANPort enum value
       generator.importModule('wpilib');
-      if (isMotionCoreCanBus(portNum)) {
+      if (isMotioncoreCanBus(portNum)) {
         // Motioncore
         code += 'wpilib.CANPort.CAN_D' + (portNum - SYSTEMCORE_CAN_BUS_COUNT) + ', # ' + portLabel + '\n';
       } else {
@@ -426,7 +426,7 @@ function createFieldDropdownForPortNumber(portType: PortType): Blockly.Field {
 
 /**
  * Returns the given port number as it is shown to the user. For most kinds of ports that is
- * the port number itself, but a CAN bus provided by a MotionCore is shown as MC00 - MC19.
+ * the port number itself, but a CAN bus provided by a Motioncore is shown as MC00 - MC19.
  * This is for code that has the port numbers but doesn't have a block to ask.
  */
 function getDisplayedPortNumber(portType: PortType, portNumber: string): string {
@@ -440,7 +440,7 @@ function getDisplayedPortNumber(portType: PortType, portNumber: string): string 
 }
 
 /**
- * Returns the dropdown options for a CAN bus. The MotionCore buses are listed first,
+ * Returns the dropdown options for a CAN bus. The Motioncore buses are listed first,
  * labeled MC00 through MC19, followed by the Systemcore's own buses, labeled 0 through 4.
  * The value stored on the block is always the actual bus id.
  */

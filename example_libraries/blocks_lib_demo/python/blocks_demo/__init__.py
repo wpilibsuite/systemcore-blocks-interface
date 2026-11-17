@@ -1,1 +1,1 @@
-# Demo third party library for the SystemCore blocks interface.
+# Demo third party library for the Systemcore blocks interface.

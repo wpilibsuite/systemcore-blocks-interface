@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "field_sensors"
 version = "0.9.0"
-description = "Example field sensor components for the SystemCore blocks interface"
+description = "Example field sensor components for the Systemcore blocks interface"
 requires-python = ">=3.8"
 license = {text = "BSD-3-Clause"}
 dependencies = []
