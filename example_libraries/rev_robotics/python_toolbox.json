@@ -6,8 +6,7 @@
     "rev.CIEColor",
     "rev.ColorMatch",
     "rev.ColorSensorV3",
-    "rev.ColorSensorV3.RawColor",
-    "rev_blocks.SparkMax"
+    "rev.ColorSensorV3.RawColor"
   ],
   "ignore": [
     "rev.AbsoluteEncoder",
