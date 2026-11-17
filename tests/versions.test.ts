@@ -210,7 +210,7 @@ describe('versions', () => {
     expect(versions.map(v => v.versionId)).toEqual([second.versionId, first.versionId]);
     expect(versions[1].description).toBe('first');
 
-    await storageVersions.updateVersionDescription(storage, 'MyRobot', second.versionId, 'second');
+    await storageVersions.updateVersion(storage, 'MyRobot', second.versionId, 'second', [], '');
     versions = await storageVersions.listVersions(storage, 'MyRobot');
     expect(versions[0].description).toBe('second');
 
@@ -379,6 +379,23 @@ describe('versions', () => {
     expect(await countObjects(storage)).toBe(0);
   });
 
+  test('deleting several versions at once keeps what the others use', async () => {
+    const storage = await makeProject();
+    const v1 = await storageVersions.createVersion(storage, 'MyRobot', 'v1');
+    await changeRobot(storage, 1);
+    const v2 = await storageVersions.createVersion(storage, 'MyRobot', 'v2');
+    await changeRobot(storage, 2);
+    const v3 = await storageVersions.createVersion(storage, 'MyRobot', 'v3');
+    const v3Files = await storageVersions.fetchVersionFiles(storage, 'MyRobot', v3.versionId);
+
+    await storageVersions.deleteVersions(storage, 'MyRobot', [v1.versionId, v2.versionId]);
+    const versions = await storageVersions.listVersions(storage, 'MyRobot');
+    expect(versions.map(v => v.versionId)).toEqual([v3.versionId]);
+    // Only v3's Robot, Teleop, and project info file are left.
+    expect(await countObjects(storage)).toBe(3);
+    expect(await storageVersions.fetchVersionFiles(storage, 'MyRobot', v3.versionId)).toEqual(v3Files);
+  });
+
   test('incomplete versions are not listed, and are deleted once they are abandoned', async () => {
     const storage = await makeProject();
     const other = await storageVersions.createVersion(storage, 'MyRobot', 'other');
@@ -417,8 +434,67 @@ describe('versions', () => {
     const storage = await makeProject();
     const version = await storageVersions.createVersion(storage, 'MyRobot', 'v1');
     const files = await storageVersions.fetchVersionFiles(storage, 'MyRobot', version.versionId);
-    await storageVersions.updateVersionDescription(storage, 'MyRobot', version.versionId, 'new');
+    await storageVersions.updateVersion(storage, 'MyRobot', version.versionId, 'new', [], 'notes');
     expect(await storageVersions.fetchVersionFiles(storage, 'MyRobot', version.versionId))
         .toEqual(files);
+  });
+
+  test('versions have tags, which can be changed and added to', async () => {
+    const storage = await makeProject();
+    const version = await storageVersions.createVersion(
+        storage, 'MyRobot', '', [' deployed ', 'deployed', '', 'match 1']);
+    expect(version.tags).toEqual(['deployed', 'match 1']);
+    let [listed] = await storageVersions.listVersions(storage, 'MyRobot');
+    expect(listed.tags).toEqual(['deployed', 'match 1']);
+
+    await storageVersions.updateVersion(
+        storage, 'MyRobot', version.versionId, 'notes', ['match 2'], '');
+    await storageVersions.addVersionTag(
+        storage, 'MyRobot', version.versionId, storageVersions.DEPLOYED_TAG);
+    await storageVersions.addVersionTag(
+        storage, 'MyRobot', version.versionId, storageVersions.DEPLOYED_TAG);
+    [listed] = await storageVersions.listVersions(storage, 'MyRobot');
+    expect(listed.description).toBe('notes');
+    // The system tag was kept, even though it wasn't in the new tags.
+    expect(listed.tags).toEqual(['deployed', 'match 2']);
+  });
+
+  test('changing the tags can\'t add or remove system tags', async () => {
+    const storage = await makeProject();
+    const deployed = await storageVersions.createVersion(
+        storage, 'MyRobot', '', [storageVersions.DEPLOYED_TAG]);
+    const other = await storageVersions.createVersion(storage, 'MyRobot', '', ['mine']);
+    await storageVersions.updateVersion(storage, 'MyRobot', deployed.versionId, '', [], '');
+    await storageVersions.updateVersion(
+        storage, 'MyRobot', other.versionId, '',
+        ['mine', storageVersions.DEPLOYED_TAG, ' ' + storageVersions.DOWNLOADED_TAG], '');
+    const versions = await storageVersions.listVersions(storage, 'MyRobot');
+    const tagsOf = (versionId: string): string[] =>
+        versions.find(v => v.versionId === versionId)!.tags;
+    expect(tagsOf(deployed.versionId)).toEqual([storageVersions.DEPLOYED_TAG]);
+    expect(tagsOf(other.versionId)).toEqual(['mine']);
+  });
+
+  test('versions have notes, which can be changed', async () => {
+    const storage = await makeProject();
+    const version = await storageVersions.createVersion(
+        storage, 'MyRobot', 'v1', [], '  line 1\nline 2  ');
+    expect(version.notes).toBe('line 1\nline 2');
+    await storageVersions.updateVersion(storage, 'MyRobot', version.versionId, 'v1', [], 'new');
+    const [listed] = await storageVersions.listVersions(storage, 'MyRobot');
+    expect(listed.notes).toBe('new');
+  });
+
+  test('versions saved before versions had tags and notes have none', async () => {
+    const storage = await makeProject();
+    const version = await storageVersions.createVersion(storage, 'MyRobot', 'old', ['x'], 'n');
+    const path = storageNames.makeVersionInfoPath('MyRobot', version.versionId);
+    const manifest = JSON.parse(await storage.fetchFileContentText(path));
+    delete manifest.tags;
+    delete manifest.notes;
+    await storage.saveFile(path, JSON.stringify(manifest));
+    const [listed] = await storageVersions.listVersions(storage, 'MyRobot');
+    expect(listed.tags).toEqual([]);
+    expect(listed.notes).toBe('');
   });
 });
