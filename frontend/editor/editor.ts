@@ -19,6 +19,7 @@ import * as blockSteps from '../blocks/mrc_steps';
 import * as mechanismComponentHolder from '../blocks/mrc_mechanism_component_holder';
 import * as portConflicts from '../blocks/utils/port_conflicts';
 import { canChangeVariableTypes, updateVariableTypes } from '../blocks/utils/variable_types';
+import { updateReturnWarnings } from '../blocks/mrc_return';
 import * as workspaces from '../blocks/utils/workspaces';
 //import { testAllBlocksInToolbox } from '../toolbox/toolbox_tests';
 import { applyExpandedCategories, getToolboxJSON } from '../toolbox/toolbox';
@@ -134,6 +135,7 @@ export class Editor {
 
     // Variables in projects saved before variables had types get their types now.
     updateVariableTypes(this.blocklyWorkspace);
+    updateReturnWarnings(this.blocklyWorkspace);
   }
 
   private onChangeAfterLoading(event: Blockly.Events.Abstract) {
@@ -159,6 +161,8 @@ export class Editor {
     // Variables get their types from the values assigned to them.
     if (canChangeVariableTypes(event)) {
       updateVariableTypes(this.blocklyWorkspace);
+      // Return values can have different types after blocks move or variable types change.
+      updateReturnWarnings(this.blocklyWorkspace);
     }
 
     if (event instanceof Blockly.Events.VarTypeChange) {

@@ -1,6 +1,6 @@
 {
   "name": "system_core_blocks",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "license": "BSD-3-Clause",
   "homepage": "/blocks",
   "private": true,
@@ -20,6 +20,7 @@
     "@types/react-dom": "^19.3.0",
     "antd": "^6.7.0",
     "blockly": "^13.4.0",
+    "dayjs": "^1.11.23",
     "i18next": "^26.7.1",
     "i18next-http-backend": "^4.0.10",
     "jszip": "^3.10.2",

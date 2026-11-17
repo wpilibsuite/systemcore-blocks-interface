@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import licenseText from '../../LICENSE.md?raw';
 
 declare const __APP_VERSION__: string;
-const __APP_NAME__ = "SystemCore Blocks";
+const __APP_NAME__ = "Systemcore Blocks";
 
 interface AboutDialogProps {
     open: boolean;

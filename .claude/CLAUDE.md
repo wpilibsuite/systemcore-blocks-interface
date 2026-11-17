@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A Blockly-based visual programming interface for FTC and FRC robotics teams running on WPILib/SystemCore. Students drag-and-drop blocks to write Python robot code, which is then deployed to a robot running on SystemCore (a Raspberry Pi-class device at `robot.local`).
+A Blockly-based visual programming interface for FTC and FRC robotics teams running on WPILib/Systemcore. Students drag-and-drop blocks to write Python robot code, which is then deployed to a robot running on Systemcore (a Raspberry Pi-class device at `robot.local`).
 
 ## Development Commands
 
@@ -40,7 +40,7 @@ The `rev` module isn't built in: it is the REV Robotics example library in `exam
 
 A `Storage` interface is implemented by two backends:
 - `client_side_storage.ts` — browser IndexedDB, used in dev/standalone mode (when there is no backend)
-- `server_side_storage.ts` — REST calls to the Flask backend, used on SystemCore
+- `server_side_storage.ts` — REST calls to the Flask backend, used on Systemcore
 
 All project data (Blockly workspace state + metadata) is stored as JSON files through this interface. Projects live at `projects/<ProjectName>/`.
 
@@ -117,7 +117,7 @@ Flask + Flask-RESTful app. Key endpoints:
 3. Add it to the appropriate toolbox category in `frontend/toolbox/`
 4. Add i18n keys to `frontend/i18n/locales/` and reference them via `tokens.ts`
 
-## Deploying to SystemCore
+## Deploying to Systemcore
 
 See `docs/running_on_systemcore.md`. `npm run package` builds a Blocks `.ipk` into `packaging/`, which is installed with Add Package at `http://robot.local` (remove the installed Blocks first if the version number is the same).
 

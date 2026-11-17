@@ -61,7 +61,7 @@ toolbox.
 Python wheels that are installed on the robot. Because the robot installs packages without internet
 access, include every dependency that isn't already on the robot. Wheels must be built for the
 robot (pure Python `py3-none-any` wheels always work). Wheels with compiled code have to be built
-for SystemCore; `robotpy installer download --no-deps <package>` downloads them, which is what the
+for Systemcore; `robotpy installer download --no-deps <package>` downloads them, which is what the
 REV Robotics example does.
 
 When a project is deployed, the backend looks at the `import` statements in the generated code. For

@@ -11,10 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: git config --global core.autocrlf false
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24
+          package-manager-cache: false # Disable automatic npm caching if not required
       - name: Install Dependencies
         run: npm ci
       - name: Check TypeScript Errors
