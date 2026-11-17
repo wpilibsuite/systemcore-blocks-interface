@@ -955,10 +955,16 @@ class JsonGenerator:
   def _processSubclasses(self):
     subclasses = {}
     for full_class_name, full_subclass_names in self._subclasses.items():
+      class_name = self._getClassName(full_class_name)
+      if ignoreType(class_name):
+        continue
       list = []
       for full_subclass_name in full_subclass_names:
-        list.append(self._getClassName(full_subclass_name))
-      subclasses[self._getClassName(full_class_name)] = list
+        subclass_name = self._getClassName(full_subclass_name)
+        if ignoreType(subclass_name):
+          continue
+        list.append(subclass_name)
+      subclasses[class_name] = list
     return subclasses
 
   def _getJsonData(self):
