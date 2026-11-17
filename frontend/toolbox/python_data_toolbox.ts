@@ -103,12 +103,16 @@ function addClassBlocks(
     moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
   // Function blocks (constructors, instance methods, static methods)
-  addConstructorBlocks(classData, commonContents, moreContents, showSimpleClassNames);
-  addInstanceMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+  if (!classData.isComponent) {
+    addConstructorBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+    addInstanceMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+  }
   addStaticMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
 
   // Instance variable blocks
-  addInstanceVariableBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+  if (!classData.isComponent) {
+    addInstanceVariableBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+  }
 
   // Class variable blocks.
   addClassVariableBlocks(classData, commonContents, moreContents, showSimpleClassNames);
