@@ -187,7 +187,7 @@ export function getDifferentTypeWarning(block: Blockly.Block): string | null {
 }
 
 /** Returns the type of the value of the given block, or '' if it doesn't have a type. */
-function getValueType(block: Blockly.Block): string {
+export function getValueType(block: Blockly.Block): string {
   if (block.type === BLOCK_TYPE_VARIABLES_GET) {
     const field = block.getField(FIELD_VAR) as Blockly.FieldVariable | null;
     return field?.getVariable()?.getType() ?? '';

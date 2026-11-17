@@ -20,6 +20,7 @@ import * as OpModeDetails from './mrc_opmode_details';
 import * as OutputContainer from './mrc_output_container';
 import * as ParamContainer from './mrc_param_container'
 import * as Port from './mrc_port';
+import * as Return from './mrc_return';
 import * as SetPythonVariable from './mrc_set_python_variable';
 import * as Steps from './mrc_steps';
 import * as When from './mrc_when';
@@ -54,6 +55,7 @@ const customBlocks = [
   OutputContainer,
   ParamContainer,
   Port,
+  Return,
   SetPythonVariable,
   Steps,
   When,
