@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "led_effects"
 version = "2.1.0"
-description = "Example LED effect helpers for the SystemCore blocks interface"
+description = "Example LED effect helpers for the Systemcore blocks interface"
 requires-python = ">=3.8"
 license = {text = "BSD-3-Clause"}
 dependencies = []

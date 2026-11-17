@@ -54,7 +54,7 @@ for whl in "$WHEELS_DIR"/*.whl; do
     unzip -q -o "$whl" -d "$SITE_PACKAGES/"
 done
 
-echo "Removing packages already on SystemCore..."
+echo "Removing packages already on Systemcore..."
 for pkg in packaging; do
     rm -rf "$SITE_PACKAGES/$pkg" "$SITE_PACKAGES/$pkg"-*.dist-info
 done
