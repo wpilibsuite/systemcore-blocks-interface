@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rev_blocks"
+version = "1.0.0"
+description = "REV Robotics devices made easier to use from the SystemCore blocks interface"
+requires-python = ">=3.12"
+license = {text = "BSD-3-Clause"}
+# robotpy-rev is in the library's wheels/, downloaded from requirements.txt, which has its version.
+dependencies = ["robotpy-rev"]
+
+[tool.setuptools]
+packages = ["rev_blocks"]
