@@ -632,7 +632,7 @@
       "CALL_CONSTRUCTOR_MISSING_CONSTRUCTOR": "Este bloque llama a un constructor que ya no existe.",
       "CALL_INSTANCE_METHOD_MISSING_CLASS": "Este bloque llama a un método de una clase que ya no existe.",
       "CALL_INSTANCE_VARIABLE_WRONG_TYPE": "La variable {{variableName}} no siempre contiene un {{className}}, por lo que este bloque podría no funcionar.",
-      "SET_VARIABLE_DIFFERENT_TYPE": "Esto asigna a {{variableName}} un valor de tipo {{valueType}}, pero en otro lugar se le asigna un valor de tipo {{variableType}}.",
+      "SET_VARIABLE_DIFFERENT_TYPE": "Esto asigna a {{variableName}} un valor de tipo {{valueType}}, pero en otro lugar se le asigna un valor de tipo {{otherTypes}}.",
       "RETURN_DIFFERENT_TYPES": "Los valores devueltos por este método tienen tipos diferentes: {{types}}.",
       "CALL_INSTANCE_METHOD_MISSING_METHOD": "Este bloque llama a un método que ya no existe.",
       "CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD": "Este bloque llama a un método que no existe en este módulo.",

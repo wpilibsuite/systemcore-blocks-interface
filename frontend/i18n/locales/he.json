@@ -637,7 +637,7 @@
       "CALL_CONSTRUCTOR_MISSING_CONSTRUCTOR": "בלוק זה קורא לבנאי שכבר לא קיים.",
       "CALL_INSTANCE_METHOD_MISSING_CLASS": "בלוק זה קורא למתודה במחלקה שכבר לא קיימת.",
       "CALL_INSTANCE_VARIABLE_WRONG_TYPE": "המשתנה {{variableName}} לא תמיד מכיל {{className}}, ולכן ייתכן שבלוק זה לא יעבוד.",
-      "SET_VARIABLE_DIFFERENT_TYPE": "בלוק זה מציב ב-{{variableName}} ערך מסוג {{valueType}}, אך במקום אחר מוצב בו ערך מסוג {{variableType}}.",
+      "SET_VARIABLE_DIFFERENT_TYPE": "בלוק זה מציב ב-{{variableName}} ערך מסוג {{valueType}}, אך במקום אחר מוצב בו ערך מסוג {{otherTypes}}.",
       "RETURN_DIFFERENT_TYPES": "לערכים שמוחזרים על ידי שיטה זו יש סוגים שונים: {{types}}.",
       "CALL_INSTANCE_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שכבר לא קיימת.",
       "CALL_INSTANCE_WITHIN_METHOD_MISSING_METHOD": "בלוק זה קורא למתודה שאינה קיימת במודול זה.",
