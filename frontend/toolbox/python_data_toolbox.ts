@@ -31,6 +31,9 @@ export function getToolboxCategories(
 
   // Process modules.
   for (const moduleData of pythonData.modules) {
+    if (moduleData.hide) {
+      continue;
+    }
     const path = moduleData.moduleName;
     const lastDot = path.lastIndexOf('.');
     const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;
@@ -51,6 +54,9 @@ export function getToolboxCategories(
 
   // Process classes.
   for (const classData of pythonData.classes) {
+    if (classData.hide) {
+      continue;
+    }
     const path = classData.className;
     const lastDot = path.lastIndexOf('.');
     const name = (lastDot != -1) ? path.substring(lastDot + 1) : path;

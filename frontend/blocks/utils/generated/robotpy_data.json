@@ -319,6 +319,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -462,6 +463,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -592,6 +594,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -722,6 +725,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -1226,6 +1230,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -1444,6 +1449,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -1636,6 +1642,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -1788,6 +1795,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -1863,6 +1871,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -1981,6 +1990,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [
                 {
@@ -2024,6 +2034,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -2186,6 +2197,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -108899,6 +108911,7 @@
                     "tooltip": "Sets property for a value. Properties are stored as a key/value map.\n\n:param name:  the name\n:param key:   property key\n:param value: property value"
                 }
             ],
+            "hide": true,
             "moduleName": "telemetry",
             "moduleVariables": []
         },
@@ -109090,6 +109103,7 @@
                     "tooltip": "Removes the named tunable and its descendants from the root table, releasing\nretained Python values and callbacks.\n\n:param name: name relative to the root table"
                 }
             ],
+            "hide": true,
             "moduleName": "tunables",
             "moduleVariables": []
         },

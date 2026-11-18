@@ -28,6 +28,11 @@ _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
   'wpinet',
 ]
 
+_LIST_MODULE_NAMES_TO_HIDE = [
+  'telemetry',
+  'tunables',
+]
+
 _LIST_IGNORED_SUPER_CLASSES = [
   telemetry.TelemetryLoggable,
   telemetry._telemetry.TelemetryLoggable,
@@ -94,6 +99,7 @@ _KEY_SUBCLASSES = 'subclasses'
 _KEY_IS_COMPONENT = 'isComponent'
 _KEY_COMPONENT_ARGS = 'componentArgs'
 _KEY_IS_COMMON = 'isCommon'
+_KEY_HIDE = 'hide'
 
 # The file in a library directory that lists the python modules and classes that get toolbox
 # categories (shownCategories) and the ones that the library doesn't use (ignore).
@@ -367,6 +373,8 @@ class JsonGenerator:
     module_data = {}
     module_name = self._getModuleName(module)
     module_data[_KEY_MODULE_NAME] = module_name
+    if module_name in _LIST_MODULE_NAMES_TO_HIDE:
+      module_data[_KEY_HIDE] = True
 
     if any(char.isupper() for char in module_name):
       print(f'WARNING: module name {module_name} contains an uppercase letter. '
@@ -587,6 +595,7 @@ class JsonGenerator:
 
   def _processClass(self, cls):
     class_name = self._getClassName(cls)
+    module_name = self._getModuleName(cls)
 
     simple_class_name = class_name.rsplit('.', 1)[-1]
     if not simple_class_name[0].isupper():
@@ -609,8 +618,11 @@ class JsonGenerator:
 
     class_data = {}
     class_data[_KEY_CLASS_NAME] = class_name
-    class_data[_KEY_MODULE_NAME] = self._getModuleName(cls)
+    class_data[_KEY_MODULE_NAME] = module_name
     class_data[_KEY_IS_COMPONENT] = False  # Set to True later if it is a component.
+
+    if module_name in _LIST_MODULE_NAMES_TO_HIDE:
+      class_data[_KEY_HIDE] = True
 
     # Class variables.
     class_variables = []
