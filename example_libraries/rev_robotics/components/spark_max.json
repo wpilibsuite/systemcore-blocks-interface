@@ -1215,6 +1215,29 @@
                 {
                     "defaultValue": "",
                     "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "v",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_velocity_feedforward",
+            "returnType": "None",
+            "tooltip": "Sets only the velocity feedforward gain (kV), which set_velocity adds to the PID output,\n    leaving the other feedforward gains the way they are. It isn't used by\n    set_relative_position.\n\n    :param v:    The voltage for each RPM of velocity, in volts per RPM.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                 set_relative_position choose the slot to use.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
                     "type": "rev.SparkBase"
                 },
                 {
