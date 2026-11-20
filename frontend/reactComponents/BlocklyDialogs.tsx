@@ -8,7 +8,7 @@
  *
  * Render one BlocklyDialogs inside the Antd ConfigProvider, so that the dialogs use the app's
  * theme and language.
- * 
+ * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Antd from 'antd';
 import * as Blockly from 'blockly/core';
