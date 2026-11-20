@@ -131,6 +131,20 @@ class SparkMax(rev.SparkMax):
     config.closed_loop.feed_forward.sva(s, v, a, slot)
     self._configure(config)
 
+  def set_velocity_feedforward(
+      self, v: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
+    """Sets only the velocity feedforward gain (kV), which set_velocity adds to the PID output,
+    leaving the other feedforward gains the way they are. It isn't used by
+    set_relative_position.
+
+    :param v:    The voltage for each RPM of velocity, in volts per RPM.
+    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
+                 set_relative_position choose the slot to use.
+    """
+    config = rev.SparkMaxConfig()
+    config.closed_loop.feed_forward.v(v, slot)
+    self._configure(config)
+
   def set_gravity_feedforward(
       self, g: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
     """Sets the voltage that holds an elevator up against gravity, which set_velocity and
