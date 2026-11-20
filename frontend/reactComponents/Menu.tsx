@@ -152,7 +152,10 @@ export function Component(props: MenuProps): React.JSX.Element {
    * no longer exist (for example, because they were deleted in another browser).
    */
   const fetchMostRecentProject = async (): Promise<void> => {
-    if (props.storage) {
+    // Wait until the project names have been loaded. Before then, every project would look like
+    // it no longer exists, and its settings and the most recent projectId would be removed. If
+    // there are no projects, initializeProjectNames creates one, so the names won't stay empty.
+    if (props.storage && projectNames.length) {
       const projectIdToName = await storageProject.fetchProjectIds(props.storage, projectNames);
       await userSettings.removeStaleProjectSettings(props.storage, [...projectIdToName.keys()]);
       const mostRecentProjectId = await userSettings.fetchMostRecentProjectId(props.storage);
