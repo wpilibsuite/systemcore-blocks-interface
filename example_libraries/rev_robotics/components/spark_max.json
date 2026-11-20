@@ -191,7 +191,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "disable_soft_limits",
             "returnType": "None",
-            "tooltip": "Lets the motor move to any position again, after set_soft_limits."
+            "tooltip": "Lets the motor move to any position again, after set_soft_limits. This turns off REVLib's\n    soft_limit.forward_soft_limit_enabled and reverse_soft_limit_enabled\n    (softLimit.forwardSoftLimitEnabled and reverseSoftLimitEnabled in Java and C++)."
         },
         {
             "args": [
@@ -345,7 +345,7 @@
             "functionName": "get_encoder_velocity",
             "isCommon": true,
             "returnType": "float",
-            "tooltip": "Returns the speed of the motor, in rotations per minute."
+            "tooltip": "Returns the speed of the motor, in rotations per minute. This is REVLib's\n    get_encoder().get_velocity() (getEncoder().getVelocity() in Java and C++)."
         },
         {
             "args": [
@@ -462,7 +462,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "get_motor_current",
             "returnType": "float",
-            "tooltip": "Returns the current that the motor is drawing, in amps."
+            "tooltip": "Returns the current that the motor is drawing, in amps. This is REVLib's\n    get_output_current() (getOutputCurrent() in Java and C++)."
         },
         {
             "args": [
@@ -541,7 +541,7 @@
             "functionName": "get_relative_encoder_position",
             "isCommon": true,
             "returnType": "float",
-            "tooltip": "Returns the position of the motor, in rotations, measured from where the encoder was\n    zeroed."
+            "tooltip": "Returns the position of the motor, in rotations, measured from where the encoder was\n    zeroed. This is REVLib's get_encoder().get_position() (getEncoder().getPosition() in Java and\n    C++)."
         },
         {
             "args": [
@@ -698,7 +698,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "is_at_setpoint",
             "returnType": "bool",
-            "tooltip": "Returns whether the motor has reached the target of set_velocity or\n    set_relative_position, within the tolerance from set_setpoint_tolerance."
+            "tooltip": "Returns whether the motor has reached the target of set_velocity_setpoint or\n    set_relative_position_setpoint, within the error allowed by set_allowed_closed_loop_error."
         },
         {
             "args": [
@@ -724,7 +724,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "is_forward_limit_switch_pressed",
             "returnType": "bool",
-            "tooltip": "Returns whether the limit switch at the forward end of the motor's travel, wired to the\n    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way."
+            "tooltip": "Returns whether the limit switch at the forward end of the motor's travel, wired to the\n    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way.\n    This is REVLib's get_forward_limit_switch().get() (getForwardLimitSwitch().isPressed() in Java and\n    C++)."
         },
         {
             "args": [
@@ -737,7 +737,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "is_reverse_limit_switch_pressed",
             "returnType": "bool",
-            "tooltip": "Returns whether the limit switch at the reverse end of the motor's travel, wired to the\n    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way."
+            "tooltip": "Returns whether the limit switch at the reverse end of the motor's travel, wired to the\n    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way.\n    This is REVLib's get_reverse_limit_switch().get() (getReverseLimitSwitch().isPressed() in Java and\n    C++)."
         },
         {
             "args": [
@@ -790,6 +790,29 @@
             "functionName": "resume_follower_mode_async",
             "returnType": "rev.REVLibError",
             "tooltip": "Resume follower mode if the SPARK has a valid follower\nmode config without waiting for a response.\n\nNOTE: Follower mode will start automatically upon configuring follower\nmode. If the SPARK experiences a power cycle and has follower mode\nconfigured, follower mode will automatically restart. This method is only\nuseful after PauseFollowerMode() has been called.\n\nNOTE: This method will immediately return REVLibError::kOk and the\naction will be done in the background. Any errors that occur will be\nreported to the driver station.\n\n:returns: REVLibError::kOk\n          @see ResumeFollowerMode()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "allowed_error",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_allowed_closed_loop_error",
+            "returnType": "None",
+            "tooltip": "Sets how close the motor has to be to the target of set_velocity_setpoint or set_relative_position_setpoint\n    for is_at_setpoint to be true. This is REVLib's closed_loop.allowed_closed_loop_error\n    (closedLoop.allowedClosedLoopError in Java and C++), the tolerance of the setpoint.\n\n    :param allowed_error: How close is close enough, in rotations for a position or RPM for a\n                          velocity.\n    :param slot:          The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                          set_relative_position_setpoint choose the slot to use.\n    "
         },
         {
             "args": [
@@ -862,7 +885,7 @@
             "functionName": "set_current_limit",
             "isCommon": true,
             "returnType": "None",
-            "tooltip": "Limits the current that the motor can draw, which protects the motor and keeps it from\n    browning out the robot. This is REV's smart current limit, which only works with brushless\n    motors. The default is 80 amps, which is too much for a NEO 550: 40 amps is common for a NEO\n    and 20 amps for a NEO 550.\n\n    :param amps: The most current the motor can draw, in amps.\n    "
+            "tooltip": "Limits the current that the motor can draw, which protects the motor and keeps it from\n    browning out the robot. This is REVLib's smart_current_limit (smartCurrentLimit in Java and\n    C++), which only works with brushless motors. The default is 80 amps, which is too much for a NEO 550: 40 amps is common for a NEO\n    and 20 amps for a NEO 550.\n\n    :param amps: The most current the motor can draw, in amps.\n    "
         },
         {
             "args": [
@@ -885,7 +908,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_encoder_velocity_filter",
             "returnType": "None",
-            "tooltip": "Sets how the Spark Max calculates the velocity of the encoder, which get_encoder_velocity\n    and set_velocity use. The velocity is the change in position over the measurement period,\n    averaged over the last average_depth measurements. Smaller values make the velocity react\n    faster but be noisier.\n\n    :param average_depth:         How many measurements to average, from 1 to 64. The default\n                                  is 8.\n    :param measurement_period_ms: The time to measure the change in position over, in\n                                  milliseconds, from 1 to 100. The default is 10.\n    "
+            "tooltip": "Sets how the Spark Max calculates the velocity of the encoder, which get_encoder_velocity\n    and set_velocity_setpoint use. The velocity is the change in position over the measurement period,\n    averaged over the last average_depth measurements. Smaller values make the velocity react\n    faster but be noisier. These are REVLib's encoder.quadrature_average_depth and\n    quadrature_measurement_period (encoder.quadratureAverageDepth and quadratureMeasurementPeriod\n    in Java and C++).\n\n    :param average_depth:         How many measurements to average, from 1 to 64. The default\n                                  is 8.\n    :param measurement_period_ms: The time to measure the change in position over, in\n                                  milliseconds, from 1 to 100. The default is 10.\n    "
         },
         {
             "args": [
@@ -918,7 +941,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_feedforward",
             "returnType": "None",
-            "tooltip": "Sets the feedforward gains that set_velocity and set_relative_position add to the PID\n    output. Feedforward gives the motor the voltage that the target needs right away, so PID only\n    has to fix what's left, which makes reaching a velocity much faster and steadier.\n\n    :param s: The voltage it takes to start the motor moving, in volts.\n    :param v: The voltage for each RPM of velocity, in volts per RPM.\n    :param a: The voltage for each RPM per second of acceleration, in volts per RPM per second.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                 set_relative_position choose the slot to use.\n    "
+            "tooltip": "Sets the feedforward gains that set_velocity_setpoint and set_relative_position_setpoint add to the PID\n    output. Feedforward gives the motor the voltage that the target needs right away, so PID only\n    has to fix what's left, which makes reaching a velocity much faster and steadier. This is\n    REVLib's closed_loop.feed_forward.sva (closedLoop.feedForward.sva in Java and C++), which\n    sets kS, kV, and kA.\n\n    :param s: The voltage it takes to start the motor moving, in volts.\n    :param v: The voltage for each RPM of velocity, in volts per RPM.\n    :param a: The voltage for each RPM per second of acceleration, in volts per RPM per second.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                 set_relative_position_setpoint choose the slot to use.\n    "
         },
         {
             "args": [
@@ -941,7 +964,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_gravity_feedforward",
             "returnType": "None",
-            "tooltip": "Sets the voltage that holds an elevator up against gravity, which set_velocity and\n    set_relative_position add to the PID output.\n\n    :param g: The voltage it takes to hold the elevator still, in volts.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                 set_relative_position choose the slot to use.\n    "
+            "tooltip": "Sets the voltage that holds an elevator up against gravity, which set_velocity_setpoint and\n    set_relative_position_setpoint add to the PID output. This is REVLib's\n    closed_loop.feed_forward.g (closedLoop.feedForward.kG in Java and C++).\n\n    :param g: The voltage it takes to hold the elevator still, in volts.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                 set_relative_position_setpoint choose the slot to use.\n    "
         },
         {
             "args": [
@@ -1007,7 +1030,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_output_range",
             "returnType": "None",
-            "tooltip": "Limits how hard set_velocity and set_relative_position can drive the motor, which is\n    useful while tuning PID on a new mechanism. The default is -1 to 1.\n\n    :param min_output: The lowest output, from -1 to 1.\n    :param max_output: The highest output, from -1 to 1.\n    :param slot:       The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                       set_relative_position choose the slot to use.\n    "
+            "tooltip": "Limits how hard set_velocity_setpoint and set_relative_position_setpoint can drive the motor, which is\n    useful while tuning PID on a new mechanism. The default is -1 to 1.\n\n    :param min_output: The lowest output, from -1 to 1.\n    :param max_output: The highest output, from -1 to 1.\n    :param slot:       The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                       set_relative_position_setpoint choose the slot to use.\n    "
         },
         {
             "args": [
@@ -1058,7 +1081,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_pid",
             "returnType": "None",
-            "tooltip": "Sets the PID gains that set_velocity and set_relative_position use to reach their target.\n    Each slot has its own gains, so a mechanism can switch between sets of gains, like one for\n    moving and one for holding still.\n\n    :param p:    The proportional gain.\n    :param i:    The integral gain.\n    :param d:    The derivative gain.\n    :param slot: The closed loop slot to set the gains for, SLOT0 to SLOT3. set_velocity and\n                 set_relative_position choose the slot to use.\n    "
+            "tooltip": "Sets the PID gains that set_velocity_setpoint and set_relative_position_setpoint use to reach their target.\n    Each slot has its own gains, so a mechanism can switch between sets of gains, like one for\n    moving and one for holding still.\n\n    :param p:    The proportional gain.\n    :param i:    The integral gain.\n    :param d:    The derivative gain.\n    :param slot: The closed loop slot to set the gains for, SLOT0 to SLOT3. set_velocity_setpoint and\n                 set_relative_position_setpoint choose the slot to use.\n    "
         },
         {
             "args": [
@@ -1076,7 +1099,7 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_ramp_rate",
             "returnType": "None",
-            "tooltip": "Sets how long the motor takes to go from stopped to full power, so that it doesn't jerk.\n\n    :param seconds: The time from stopped to full power, in seconds. 0 turns ramping off.\n    "
+            "tooltip": "Sets how long the motor takes to go from stopped to full power, so that it doesn't jerk.\n    This sets both of REVLib's open_loop_ramp_rate and closed_loop_ramp_rate (openLoopRampRate\n    and closedLoopRampRate in Java and C++).\n\n    :param seconds: The time from stopped to full power, in seconds. 0 turns ramping off.\n    "
         },
         {
             "args": [
@@ -1095,7 +1118,7 @@
             "functionName": "set_relative_encoder_position",
             "isCommon": true,
             "returnType": "None",
-            "tooltip": "Changes the position that the encoder reports, without moving the motor. 0 zeroes it.\n\n    :param position: The new position, in rotations.\n    "
+            "tooltip": "Changes the position that the encoder reports, without moving the motor. 0 zeroes it.\n    This is REVLib's get_encoder().set_position() (getEncoder().setPosition() in Java and C++).\n\n    :param position: The new position, in rotations.\n    "
         },
         {
             "args": [
@@ -1116,33 +1139,10 @@
                 }
             ],
             "declaringClassName": "rev_blocks.SparkMax",
-            "functionName": "set_relative_position",
+            "functionName": "set_relative_position_setpoint",
             "isCommon": true,
             "returnType": "None",
-            "tooltip": "Turns the motor to the given position, using the PID gains from set_pid.\n\n    :param position: The position, in rotations, measured from where the encoder was zeroed.\n    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.\n    "
-        },
-        {
-            "args": [
-                {
-                    "defaultValue": "",
-                    "name": "self",
-                    "type": "rev_blocks.SparkMax"
-                },
-                {
-                    "defaultValue": "",
-                    "name": "tolerance",
-                    "type": "float"
-                },
-                {
-                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
-                    "name": "slot",
-                    "type": "rev.ClosedLoopSlot"
-                }
-            ],
-            "declaringClassName": "rev_blocks.SparkMax",
-            "functionName": "set_setpoint_tolerance",
-            "returnType": "None",
-            "tooltip": "Sets how close the motor has to be to the target of set_velocity or set_relative_position\n    for is_at_setpoint to be true.\n\n    :param tolerance: How close is close enough, in rotations for a position or RPM for a velocity.\n    :param slot:      The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                      set_relative_position choose the slot to use.\n    "
+            "tooltip": "Turns the motor to the given position, using the PID gains from set_pid. This is REVLib's\n    get_closed_loop_controller().set_setpoint with ControlType.POSITION\n    (getClosedLoopController().setSetpoint with ControlType.kPosition in Java and C++).\n\n    :param position: The position, in rotations, measured from where the encoder was zeroed.\n    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.\n    "
         },
         {
             "args": [
@@ -1195,30 +1195,6 @@
                 },
                 {
                     "defaultValue": "",
-                    "name": "velocity",
-                    "type": "float"
-                },
-                {
-                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
-                    "name": "slot",
-                    "type": "rev.ClosedLoopSlot"
-                }
-            ],
-            "declaringClassName": "rev_blocks.SparkMax",
-            "functionName": "set_velocity",
-            "isCommon": true,
-            "returnType": "None",
-            "tooltip": "Spins the motor at the given speed, using the PID gains from set_pid.\n\n    :param velocity: The speed, in rotations per minute.\n    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.\n    "
-        },
-        {
-            "args": [
-                {
-                    "defaultValue": "",
-                    "name": "self",
-                    "type": "rev_blocks.SparkMax"
-                },
-                {
-                    "defaultValue": "",
                     "name": "v",
                     "type": "float"
                 },
@@ -1231,7 +1207,31 @@
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_velocity_feedforward",
             "returnType": "None",
-            "tooltip": "Sets only the velocity feedforward gain (kV), which set_velocity adds to the PID output,\n    leaving the other feedforward gains the way they are. It isn't used by\n    set_relative_position.\n\n    :param v:    The voltage for each RPM of velocity, in volts per RPM.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                 set_relative_position choose the slot to use.\n    "
+            "tooltip": "Sets only the velocity feedforward gain (kV), which set_velocity_setpoint adds to the PID output,\n    leaving the other feedforward gains the way they are. It isn't used by\n    set_relative_position_setpoint. This is REVLib's closed_loop.feed_forward.v\n    (closedLoop.feedForward.kV in Java and C++).\n\n    :param v:    The voltage for each RPM of velocity, in volts per RPM.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                 set_relative_position_setpoint choose the slot to use.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "velocity",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_velocity_setpoint",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Spins the motor at the given speed, using the PID gains from set_pid. This is REVLib's\n    get_closed_loop_controller().set_setpoint with ControlType.VELOCITY\n    (getClosedLoopController().setSetpoint with ControlType.kVelocity in Java and C++).\n\n    :param velocity: The speed, in rotations per minute.\n    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.\n    "
         },
         {
             "args": [

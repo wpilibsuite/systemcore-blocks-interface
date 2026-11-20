@@ -97,9 +97,9 @@ COMPONENTS = {
       'set_idle_mode',
       'set_inverted',
       'set_relative_encoder_position',
-      'set_relative_position',
+      'set_relative_position_setpoint',
       'set_throttle',
-      'set_velocity',
+      'set_velocity_setpoint',
     ],
   ),
 }
