@@ -10,6 +10,7 @@ import { MessageInstance } from 'antd/es/message/interface';
 
 import BlocklyComponent, { BlocklyComponentType } from './BlocklyComponent';
 import CodeDisplay from './CodeDisplay';
+import DeleteUnusedVariablesDialog, { UnusedVariable } from './DeleteUnusedVariablesDialog';
 import * as editor from '../editor/editor';
 import { extendedPythonGenerator } from '../editor/extended_python_generator';
 import * as storageModule from '../storage/module';
@@ -21,6 +22,7 @@ import * as classMethodDef from '../blocks/mrc_class_method_def'
 import * as eventHandler from '../blocks/mrc_event_handler'
 import * as mrcComponent from '../blocks/mrc_component'
 import * as moveComponentRequest from '../blocks/utils/move_component_request'
+import * as variablesCategory from '../toolbox/variables_category';
 import { Content } from 'antd/es/layout/layout';
 import { useAutosave } from './AutosaveManager';
 import { useUserSettings } from './useUserSettings';
@@ -87,6 +89,8 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   const autosave = useAutosave();
   const { getModuleZoom, updateModuleZoom, getModuleScroll, updateModuleScroll } = useUserSettings();
   const isInitialActivation = React.useRef(true);
+  // The unused variables shown in the dialog for deleting them, or null if it isn't open.
+  const [unusedVariables, setUnusedVariables] = React.useState<UnusedVariable[] | null>(null);
 
   /** Expose saveModule method via ref. */
   React.useImperativeHandle(ref, () => ({
@@ -160,6 +164,14 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     newWorkspace.addChangeListener(handleBlocksChanged);
     classMethodDef.registerToolboxButton(newWorkspace);
     eventHandler.registerToolboxButton(newWorkspace);
+    newWorkspace.registerButtonCallback(
+        variablesCategory.DELETE_UNUSED_VARIABLES_CALLBACK_KEY, () => {
+          setUnusedVariables(variablesCategory.getUnusedVariables(newWorkspace).map(variable => ({
+            id: variable.getId(),
+            name: variable.getName(),
+            type: variable.getType(),
+          })));
+        });
     
     // Register gamepad config button callback if the function is provided
     if (openGamepadConfigDialog) {
@@ -370,8 +382,23 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     }, 200);
   };
 
+  /** Deletes the unused variables that the user chose in the dialog. */
+  const handleDeleteUnusedVariables = (variableIds: string[]): void => {
+    if (blocklyComponent.current) {
+      variablesCategory.deleteUnusedVariables(
+          blocklyComponent.current.getBlocklyWorkspace(), variableIds);
+    }
+    setUnusedVariables(null);
+  };
+
   return (
     <div style={{ display: 'flex', minHeight: '100%', height: '100%' }}>
+      <DeleteUnusedVariablesDialog
+        isOpen={unusedVariables !== null}
+        variables={unusedVariables ?? []}
+        onDelete={handleDeleteUnusedVariables}
+        onCancel={() => setUnusedVariables(null)}
+      />
       <Content style={{ flex: 1, minHeight: '100%' }}>
         <BlocklyComponent
           key={modulePath}
