@@ -152,7 +152,7 @@
             "functionName": "copy_settings_from",
             "isCommon": true,
             "returnType": "None",
-            "tooltip": "Gives this Spark Max all of the settings that another Spark Max has been given, like its\n    idle mode, current limit, and PID gains, so that a group of motors can be set up by setting\n    up one of them. Settings that the other Spark Max hasn't been given stay the way they are on\n    this one. Which Spark Max it follows isn't copied.\n\n    :param other: The Spark Max to copy the settings of.\n    "
+            "tooltip": "Gives this Spark Max all of the settings that another Spark Max has been given, like its\n    idle mode, current limit, and PID gains, so that a group of motors can be set up by setting\n    up one of them. Settings that the other Spark Max hasn't been given stay the way they are on\n    this one. Which Spark Max it follows isn't copied, and neither is set_inverted, since motors\n    in a group often turn opposite ways.\n\n    :param other: The Spark Max to copy the settings of.\n    "
         },
         {
             "args": [
