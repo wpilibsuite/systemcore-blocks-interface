@@ -99,18 +99,24 @@ class SparkMax(rev.SparkMax):
       config.disable_voltage_compensation()
     self._configure(config)
 
-  def set_pid(self, p: float, i: float, d: float) -> None:
+  def set_pid(self, p: float, i: float, d: float,
+              slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
     """Sets the PID gains that set_velocity and set_relative_position use to reach their target.
+    Each slot has its own gains, so a mechanism can switch between sets of gains, like one for
+    moving and one for holding still.
 
-    :param p: The proportional gain.
-    :param i: The integral gain.
-    :param d: The derivative gain.
+    :param p:    The proportional gain.
+    :param i:    The integral gain.
+    :param d:    The derivative gain.
+    :param slot: The closed loop slot to set the gains for, SLOT0 to SLOT3. set_velocity and
+                 set_relative_position choose the slot to use.
     """
     config = rev.SparkMaxConfig()
-    config.closed_loop.pid(p, i, d)
+    config.closed_loop.pid(p, i, d, slot)
     self._configure(config)
 
-  def set_feedforward(self, s: float, v: float, a: float) -> None:
+  def set_feedforward(self, s: float, v: float, a: float,
+                      slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
     """Sets the feedforward gains that set_velocity and set_relative_position add to the PID
     output. Feedforward gives the motor the voltage that the target needs right away, so PID only
     has to fix what's left, which makes reaching a velocity much faster and steadier.
@@ -118,40 +124,51 @@ class SparkMax(rev.SparkMax):
     :param s: The voltage it takes to start the motor moving, in volts.
     :param v: The voltage for each RPM of velocity, in volts per RPM.
     :param a: The voltage for each RPM per second of acceleration, in volts per RPM per second.
+    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
+                 set_relative_position choose the slot to use.
     """
     config = rev.SparkMaxConfig()
-    config.closed_loop.feed_forward.sva(s, v, a)
+    config.closed_loop.feed_forward.sva(s, v, a, slot)
     self._configure(config)
 
-  def set_gravity_feedforward(self, g: float) -> None:
+  def set_gravity_feedforward(
+      self, g: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
     """Sets the voltage that holds an elevator up against gravity, which set_velocity and
     set_relative_position add to the PID output.
 
     :param g: The voltage it takes to hold the elevator still, in volts.
+    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
+                 set_relative_position choose the slot to use.
     """
     config = rev.SparkMaxConfig()
-    config.closed_loop.feed_forward.g(g)
+    config.closed_loop.feed_forward.g(g, slot)
     self._configure(config)
 
-  def set_output_range(self, min_output: float, max_output: float) -> None:
+  def set_output_range(self, min_output: float, max_output: float,
+                       slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
     """Limits how hard set_velocity and set_relative_position can drive the motor, which is
     useful while tuning PID on a new mechanism. The default is -1 to 1.
 
     :param min_output: The lowest output, from -1 to 1.
     :param max_output: The highest output, from -1 to 1.
+    :param slot:       The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
+                       set_relative_position choose the slot to use.
     """
     config = rev.SparkMaxConfig()
-    config.closed_loop.output_range(min_output, max_output)
+    config.closed_loop.output_range(min_output, max_output, slot)
     self._configure(config)
 
-  def set_setpoint_tolerance(self, tolerance: float) -> None:
+  def set_setpoint_tolerance(
+      self, tolerance: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
     """Sets how close the motor has to be to the target of set_velocity or set_relative_position
     for is_at_setpoint to be true.
 
     :param tolerance: How close is close enough, in rotations for a position or RPM for a velocity.
+    :param slot:      The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
+                      set_relative_position choose the slot to use.
     """
     config = rev.SparkMaxConfig()
-    config.closed_loop.allowed_closed_loop_error(tolerance)
+    config.closed_loop.allowed_closed_loop_error(tolerance, slot)
     self._configure(config)
 
   def set_soft_limits(self, reverse_limit: float, forward_limit: float) -> None:
@@ -217,19 +234,25 @@ class SparkMax(rev.SparkMax):
     config.apply(other._settings)
     self._configure(config)
 
-  def set_velocity(self, velocity: float) -> None:
+  def set_velocity(
+      self, velocity: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
     """Spins the motor at the given speed, using the PID gains from set_pid.
 
     :param velocity: The speed, in rotations per minute.
+    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.
     """
-    self.get_closed_loop_controller().set_setpoint(velocity, rev.SparkLowLevel.ControlType.VELOCITY)
+    self.get_closed_loop_controller().set_setpoint(
+        velocity, rev.SparkLowLevel.ControlType.VELOCITY, slot)
 
-  def set_relative_position(self, position: float) -> None:
+  def set_relative_position(
+      self, position: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
     """Turns the motor to the given position, using the PID gains from set_pid.
 
     :param position: The position, in rotations, measured from where the encoder was zeroed.
+    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.
     """
-    self.get_closed_loop_controller().set_setpoint(position, rev.SparkLowLevel.ControlType.POSITION)
+    self.get_closed_loop_controller().set_setpoint(
+        position, rev.SparkLowLevel.ControlType.POSITION, slot)
 
   def is_at_setpoint(self) -> bool:
     """Returns whether the motor has reached the target of set_velocity or

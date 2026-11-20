@@ -206,7 +206,7 @@
                     "type": "rev_blocks.SparkMax"
                 },
                 {
-                    "defaultValue": "",
+                    "defaultValue": "False",
                     "name": "invert",
                     "type": "bool"
                 }
@@ -908,12 +908,17 @@
                     "defaultValue": "",
                     "name": "a",
                     "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
                 }
             ],
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_feedforward",
             "returnType": "None",
-            "tooltip": "Sets the feedforward gains that set_velocity and set_relative_position add to the PID\n    output. Feedforward gives the motor the voltage that the target needs right away, so PID only\n    has to fix what's left, which makes reaching a velocity much faster and steadier.\n\n    :param s: The voltage it takes to start the motor moving, in volts.\n    :param v: The voltage for each RPM of velocity, in volts per RPM.\n    :param a: The voltage for each RPM per second of acceleration, in volts per RPM per second.\n    "
+            "tooltip": "Sets the feedforward gains that set_velocity and set_relative_position add to the PID\n    output. Feedforward gives the motor the voltage that the target needs right away, so PID only\n    has to fix what's left, which makes reaching a velocity much faster and steadier.\n\n    :param s: The voltage it takes to start the motor moving, in volts.\n    :param v: The voltage for each RPM of velocity, in volts per RPM.\n    :param a: The voltage for each RPM per second of acceleration, in volts per RPM per second.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                 set_relative_position choose the slot to use.\n    "
         },
         {
             "args": [
@@ -926,12 +931,17 @@
                     "defaultValue": "",
                     "name": "g",
                     "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
                 }
             ],
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_gravity_feedforward",
             "returnType": "None",
-            "tooltip": "Sets the voltage that holds an elevator up against gravity, which set_velocity and\n    set_relative_position add to the PID output.\n\n    :param g: The voltage it takes to hold the elevator still, in volts.\n    "
+            "tooltip": "Sets the voltage that holds an elevator up against gravity, which set_velocity and\n    set_relative_position add to the PID output.\n\n    :param g: The voltage it takes to hold the elevator still, in volts.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                 set_relative_position choose the slot to use.\n    "
         },
         {
             "args": [
@@ -987,12 +997,17 @@
                     "defaultValue": "",
                     "name": "max_output",
                     "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
                 }
             ],
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_output_range",
             "returnType": "None",
-            "tooltip": "Limits how hard set_velocity and set_relative_position can drive the motor, which is\n    useful while tuning PID on a new mechanism. The default is -1 to 1.\n\n    :param min_output: The lowest output, from -1 to 1.\n    :param max_output: The highest output, from -1 to 1.\n    "
+            "tooltip": "Limits how hard set_velocity and set_relative_position can drive the motor, which is\n    useful while tuning PID on a new mechanism. The default is -1 to 1.\n\n    :param min_output: The lowest output, from -1 to 1.\n    :param max_output: The highest output, from -1 to 1.\n    :param slot:       The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                       set_relative_position choose the slot to use.\n    "
         },
         {
             "args": [
@@ -1033,12 +1048,17 @@
                     "defaultValue": "",
                     "name": "d",
                     "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
                 }
             ],
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_pid",
             "returnType": "None",
-            "tooltip": "Sets the PID gains that set_velocity and set_relative_position use to reach their target.\n\n    :param p: The proportional gain.\n    :param i: The integral gain.\n    :param d: The derivative gain.\n    "
+            "tooltip": "Sets the PID gains that set_velocity and set_relative_position use to reach their target.\n    Each slot has its own gains, so a mechanism can switch between sets of gains, like one for\n    moving and one for holding still.\n\n    :param p:    The proportional gain.\n    :param i:    The integral gain.\n    :param d:    The derivative gain.\n    :param slot: The closed loop slot to set the gains for, SLOT0 to SLOT3. set_velocity and\n                 set_relative_position choose the slot to use.\n    "
         },
         {
             "args": [
@@ -1088,13 +1108,18 @@
                     "defaultValue": "",
                     "name": "position",
                     "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
                 }
             ],
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_relative_position",
             "isCommon": true,
             "returnType": "None",
-            "tooltip": "Turns the motor to the given position, using the PID gains from set_pid.\n\n    :param position: The position, in rotations, measured from where the encoder was zeroed.\n    "
+            "tooltip": "Turns the motor to the given position, using the PID gains from set_pid.\n\n    :param position: The position, in rotations, measured from where the encoder was zeroed.\n    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.\n    "
         },
         {
             "args": [
@@ -1107,12 +1132,17 @@
                     "defaultValue": "",
                     "name": "tolerance",
                     "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
                 }
             ],
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_setpoint_tolerance",
             "returnType": "None",
-            "tooltip": "Sets how close the motor has to be to the target of set_velocity or set_relative_position\n    for is_at_setpoint to be true.\n\n    :param tolerance: How close is close enough, in rotations for a position or RPM for a velocity.\n    "
+            "tooltip": "Sets how close the motor has to be to the target of set_velocity or set_relative_position\n    for is_at_setpoint to be true.\n\n    :param tolerance: How close is close enough, in rotations for a position or RPM for a velocity.\n    :param slot:      The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and\n                      set_relative_position choose the slot to use.\n    "
         },
         {
             "args": [
@@ -1167,13 +1197,18 @@
                     "defaultValue": "",
                     "name": "velocity",
                     "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
                 }
             ],
             "declaringClassName": "rev_blocks.SparkMax",
             "functionName": "set_velocity",
             "isCommon": true,
             "returnType": "None",
-            "tooltip": "Spins the motor at the given speed, using the PID gains from set_pid.\n\n    :param velocity: The speed, in rotations per minute.\n    "
+            "tooltip": "Spins the motor at the given speed, using the PID gains from set_pid.\n\n    :param velocity: The speed, in rotations per minute.\n    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.\n    "
         },
         {
             "args": [
