@@ -52,7 +52,7 @@ class EventsCategory {
         createCustomEventBlock(storageNames.makeUniqueName('my_event', eventNames)));
 
     // Get blocks for firing events defined in the current workspace.
-    addFireEventBlocks(eventsFromWorkspace, contents);
+    addFireEventBlocks(eventsFromWorkspace, contents, editor.getShowSimpleClassNames());
 
     const toolboxInfo = {
       contents: contents,

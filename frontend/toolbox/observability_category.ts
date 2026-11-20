@@ -21,8 +21,8 @@ export function getObservabilityCategory(editor: Editor): toolboxItems.Category 
       [
         getDriverStationDisplayCategory(editor),
         getAlertsCategory(editor.getShowSimpleClassNames()),
-        getTelemetryCategory(),
-        getTunablesCategory(),
+        getTelemetryCategory(editor.getShowSimpleClassNames()),
+        getTunablesCategory(editor.getShowSimpleClassNames()),
       ],
       toolboxItems.ExpandedState.EXPANDED);
   category.tooltip = Blockly.Msg['MRC_CATEGORY_OBSERVABILITY_TOOLTIP'];
