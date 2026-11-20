@@ -97,7 +97,7 @@ function addModuleBlocks(
   addModuleVariableBlocks(moduleData, commonContents, moreContents);
 
   // Module function blocks
-  addModuleFunctionBlocks(moduleData, commonContents, moreContents);
+  addModuleFunctionBlocks(moduleData, commonContents, moreContents, showSimpleClassNames);
 
   // Enum blocks
   addEnumBlocks(moduleData.enums, commonContents, moreContents, showSimpleClassNames);

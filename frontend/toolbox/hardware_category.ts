@@ -105,7 +105,9 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
       // Get the list of methods from the mechanism and add the blocks for calling the methods.
       const mechanismMethodBlocks: toolboxItems.Item[] = [];
       const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
-      addMechanismMethodBlocks(mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks);
+      addMechanismMethodBlocks(
+          mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks,
+          editor.getShowSimpleClassNames());
       if (mechanismMethodBlocks.length > 0) {
         mechanismCategories.push({
           kind: 'category',
@@ -123,7 +125,8 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
           // Get the blocks for this specific component.
           const blocks: toolboxItems.ContentsType[] = [];
           blocks.push(getMechanismComponentReferenceBlock(component, mechanismInRobot, editor.getShowSimpleClassNames()));
-          blocks.push(...getMechanismComponentMethodBlocks(component, mechanismInRobot));
+          blocks.push(...getMechanismComponentMethodBlocks(
+              component, mechanismInRobot, editor.getShowSimpleClassNames()));
           componentBlocks.push({
             kind: 'category',
             name: component.name,
@@ -172,7 +175,7 @@ function getRobotComponentsCategory(editor: Editor): toolboxItems.Category {
     // Get the blocks for this specific component.
     const blocks: toolboxItems.ContentsType[] = [];
     blocks.push(getComponentReferenceBlock(component, editor.getShowSimpleClassNames()));
-    blocks.push(...getComponentMethodBlocks(component));
+    blocks.push(...getComponentMethodBlocks(component, editor.getShowSimpleClassNames()));
     contents.push({
       kind: 'category',
       name: component.name,
@@ -196,7 +199,7 @@ function getRobotMethodsCategory(editor: Editor): toolboxItems.Category {
   // Get the list of methods from the robot and add the blocks for calling the
   // robot functions.
   const methodsFromRobot = editor.getMethodsFromRobot();
-  addRobotMethodBlocks(methodsFromRobot, contents);
+  addRobotMethodBlocks(methodsFromRobot, contents, editor.getShowSimpleClassNames());
 
   return {
     kind: 'category',
@@ -242,7 +245,7 @@ function getComponentsCategory(
     // Get the blocks for this specific component
     const blocks: toolboxItems.ContentsType[] = [];
     blocks.push(getComponentReferenceBlock(component, editor.getShowSimpleClassNames()));
-    blocks.push(...getComponentMethodBlocks(component));
+    blocks.push(...getComponentMethodBlocks(component, editor.getShowSimpleClassNames()));
     contents.push({
       kind: 'category',
       name: component.name,
