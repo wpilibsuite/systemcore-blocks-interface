@@ -6,7 +6,6 @@
 
 import * as Blockly from 'blockly/core';
 import * as storageModule from '../storage/module';
-import * as storageModuleContent from '../storage/module_content';
 import * as toolboxItems from './items';
 import { getRobotEventHandlersCategory, getMechanismEventHandlersCategory } from './event_handlers_category';
 import { createMechanismBlock } from '../blocks/mrc_mechanism';
@@ -21,8 +20,8 @@ import {
     getComponentReferenceBlock,
     getMechanismComponentReferenceBlock
 } from '../blocks/mrc_component_reference';
-import { getAllowedTypesForSetCheck } from '../blocks/utils/python';
 import { Editor } from '../editor/editor';
+import { plugComponentArgs } from './component_args';
 
 export function getHardwareCategory(
     editor: Editor): toolboxItems.Category {
@@ -129,9 +128,10 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
           blocks.push(getMechanismComponentReferenceBlock(component, mechanismInRobot, editor.getShowSimpleClassNames()));
           const methodBlocks = getMechanismComponentMethodBlocks(
               component, mechanismInRobot, editor.getShowSimpleClassNames());
-          plugComponentArgs(methodBlocks, component, componentsFromMechanism,
+          plugComponentArgs(methodBlocks, componentsFromMechanism,
               c => getMechanismComponentReferenceBlock(
-                  c, mechanismInRobot, editor.getShowSimpleClassNames()));
+                  c, mechanismInRobot, editor.getShowSimpleClassNames()),
+              component);
           blocks.push(...methodBlocks);
           componentBlocks.push({
             kind: 'category',
@@ -183,8 +183,8 @@ function getRobotComponentsCategory(editor: Editor): toolboxItems.Category {
     const blocks: toolboxItems.ContentsType[] = [];
     blocks.push(getComponentReferenceBlock(component, editor.getShowSimpleClassNames()));
     const methodBlocks = getComponentMethodBlocks(component, editor.getShowSimpleClassNames());
-    plugComponentArgs(methodBlocks, component, componentsFromRobot,
-        c => getComponentReferenceBlock(c, editor.getShowSimpleClassNames()));
+    plugComponentArgs(methodBlocks, componentsFromRobot,
+        c => getComponentReferenceBlock(c, editor.getShowSimpleClassNames()), component);
     blocks.push(...methodBlocks);
     contents.push({
       kind: 'category',
@@ -257,8 +257,8 @@ function getComponentsCategory(
     const blocks: toolboxItems.ContentsType[] = [];
     blocks.push(getComponentReferenceBlock(component, editor.getShowSimpleClassNames()));
     const methodBlocks = getComponentMethodBlocks(component, editor.getShowSimpleClassNames());
-    plugComponentArgs(methodBlocks, component, componentsFromWorkspace,
-        c => getComponentReferenceBlock(c, editor.getShowSimpleClassNames()));
+    plugComponentArgs(methodBlocks, componentsFromWorkspace,
+        c => getComponentReferenceBlock(c, editor.getShowSimpleClassNames()), component);
     blocks.push(...methodBlocks);
     contents.push({
       kind: 'category',
@@ -272,42 +272,4 @@ function getComponentsCategory(
     name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
     contents,
   };
-}
-
-/**
- * Plugs a reference to one of the given components into each argument of the given method blocks
- * that takes a component, so that the component can be chosen from a dropdown, instead of
- * plugging in a variable. A component other than the one whose method is called is chosen if
- * there is one, since a method like SparkMax.follow takes another component.
- */
-function plugComponentArgs(
-    methodBlocks: toolboxItems.ContentsType[],
-    component: storageModuleContent.Component,
-    components: storageModuleContent.Component[],
-    createComponentReferenceBlock:
-        (component: storageModuleContent.Component) => toolboxItems.Block) {
-  for (const item of methodBlocks) {
-    if (item.kind !== 'block') {
-      continue;
-    }
-    const block = item as toolboxItems.Block;
-    const args = block.extraState?.args as {name: string, type: string}[] | undefined;
-    args?.forEach((arg, i) => {
-      const allowedTypes = getAllowedTypesForSetCheck(arg.type);
-      if (!allowedTypes) {
-        // Any value can be used, so don't choose a component for it.
-        return;
-      }
-      const matchingComponents = components.filter(c => allowedTypes.includes(c.className));
-      const argComponent =
-          matchingComponents.find(c => c.componentId !== component.componentId) ??
-          matchingComponents[0];
-      if (argComponent) {
-        block.inputs = block.inputs ?? {};
-        block.inputs['ARG' + i] = {
-          block: createComponentReferenceBlock(argComponent),
-        };
-      }
-    });
-  }
 }
