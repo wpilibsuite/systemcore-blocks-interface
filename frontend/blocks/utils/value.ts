@@ -39,7 +39,7 @@ export function valueForFunctionArgInput(
           return createNumberShadowValue(intNum);
         }
       } else {
-        return createNumberBlock(0);
+        return createNumberShadowValue(0);
       }
       break;
     case 'float':
@@ -49,7 +49,7 @@ export function valueForFunctionArgInput(
           return createNumberShadowValue(floatNum)
         }
       } else {
-        return createNumberBlock(0);
+        return createNumberShadowValue(0);
       }
       break;
     case 'str':
@@ -64,7 +64,7 @@ export function valueForFunctionArgInput(
           return createTextShadowValue(textValue);
         }
       } else {
-        return createTextBlock('');
+        return createTextShadowValue('');
       }
       break;
     case 'bool':
@@ -76,7 +76,7 @@ export function valueForFunctionArgInput(
           return createBooleanShadowValue(false);
         }
       } else {
-        return createBooleanBlock(false);
+        return createBooleanShadowValue(false);
       }
       break;
   }

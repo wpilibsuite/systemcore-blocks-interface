@@ -167,7 +167,7 @@ function plugDefaultAlertLevel(block: toolboxItems.Block, showSimpleClassNames: 
   if (levelArgIndex !== -1 && enumData) {
     block.inputs = block.inputs ?? {};
     block.inputs['ARG' + levelArgIndex] = {
-      block: createEnumBlock(ALERT_DEFAULT_LEVEL, enumData, showSimpleClassNames),
+      shadow: createEnumBlock(ALERT_DEFAULT_LEVEL, enumData, showSimpleClassNames),
     };
   }
 }
