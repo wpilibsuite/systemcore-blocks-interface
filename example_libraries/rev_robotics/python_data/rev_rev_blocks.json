@@ -1794,6 +1794,17 @@
         {
             "enums": [
                 {
+                    "enumClassName": "rev.ClosedLoopSlot",
+                    "enumValues": [
+                        "SLOT0",
+                        "SLOT1",
+                        "SLOT2",
+                        "SLOT3"
+                    ],
+                    "moduleName": "rev",
+                    "tooltip": "Members:\n\n  SLOT0\n\n  SLOT1\n\n  SLOT2\n\n  SLOT3"
+                },
+                {
                     "enumClassName": "rev.REVLibError",
                     "enumValues": [
                         "CANNOT_PERSIST_PARAMETERS_WHILE_ENABLED",

@@ -22,7 +22,6 @@
     "rev.BaseConfig",
     "rev.ClosedLoopConfig",
     "rev.ClosedLoopConfigAccessor",
-    "rev.ClosedLoopSlot",
     "rev.DetachedEncoder",
     "rev.DetachedEncoder.Faults",
     "rev.DetachedEncoderConfig",
