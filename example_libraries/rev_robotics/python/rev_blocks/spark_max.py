@@ -64,8 +64,8 @@ class SparkMax(rev.SparkMax):
 
   def set_current_limit(self, amps: int) -> None:
     """Limits the current that the motor can draw, which protects the motor and keeps it from
-    browning out the robot. This is REV's smart current limit, which only works with brushless
-    motors. The default is 80 amps, which is too much for a NEO 550: 40 amps is common for a NEO
+    browning out the robot. This is REVLib's smart_current_limit (smartCurrentLimit in Java and
+    C++), which only works with brushless motors. The default is 80 amps, which is too much for a NEO 550: 40 amps is common for a NEO
     and 20 amps for a NEO 550.
 
     :param amps: The most current the motor can draw, in amps.
@@ -76,6 +76,8 @@ class SparkMax(rev.SparkMax):
 
   def set_ramp_rate(self, seconds: float) -> None:
     """Sets how long the motor takes to go from stopped to full power, so that it doesn't jerk.
+    This sets both of REVLib's open_loop_ramp_rate and closed_loop_ramp_rate (openLoopRampRate
+    and closedLoopRampRate in Java and C++).
 
     :param seconds: The time from stopped to full power, in seconds. 0 turns ramping off.
     """
@@ -101,15 +103,15 @@ class SparkMax(rev.SparkMax):
 
   def set_pid(self, p: float, i: float, d: float,
               slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
-    """Sets the PID gains that set_velocity and set_relative_position use to reach their target.
+    """Sets the PID gains that set_velocity_setpoint and set_relative_position_setpoint use to reach their target.
     Each slot has its own gains, so a mechanism can switch between sets of gains, like one for
     moving and one for holding still.
 
     :param p:    The proportional gain.
     :param i:    The integral gain.
     :param d:    The derivative gain.
-    :param slot: The closed loop slot to set the gains for, SLOT0 to SLOT3. set_velocity and
-                 set_relative_position choose the slot to use.
+    :param slot: The closed loop slot to set the gains for, SLOT0 to SLOT3. set_velocity_setpoint and
+                 set_relative_position_setpoint choose the slot to use.
     """
     config = rev.SparkMaxConfig()
     config.closed_loop.pid(p, i, d, slot)
@@ -117,15 +119,17 @@ class SparkMax(rev.SparkMax):
 
   def set_feedforward(self, s: float, v: float, a: float,
                       slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
-    """Sets the feedforward gains that set_velocity and set_relative_position add to the PID
+    """Sets the feedforward gains that set_velocity_setpoint and set_relative_position_setpoint add to the PID
     output. Feedforward gives the motor the voltage that the target needs right away, so PID only
-    has to fix what's left, which makes reaching a velocity much faster and steadier.
+    has to fix what's left, which makes reaching a velocity much faster and steadier. This is
+    REVLib's closed_loop.feed_forward.sva (closedLoop.feedForward.sva in Java and C++), which
+    sets kS, kV, and kA.
 
     :param s: The voltage it takes to start the motor moving, in volts.
     :param v: The voltage for each RPM of velocity, in volts per RPM.
     :param a: The voltage for each RPM per second of acceleration, in volts per RPM per second.
-    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
-                 set_relative_position choose the slot to use.
+    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and
+                 set_relative_position_setpoint choose the slot to use.
     """
     config = rev.SparkMaxConfig()
     config.closed_loop.feed_forward.sva(s, v, a, slot)
@@ -133,13 +137,14 @@ class SparkMax(rev.SparkMax):
 
   def set_velocity_feedforward(
       self, v: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
-    """Sets only the velocity feedforward gain (kV), which set_velocity adds to the PID output,
+    """Sets only the velocity feedforward gain (kV), which set_velocity_setpoint adds to the PID output,
     leaving the other feedforward gains the way they are. It isn't used by
-    set_relative_position.
+    set_relative_position_setpoint. This is REVLib's closed_loop.feed_forward.v
+    (closedLoop.feedForward.kV in Java and C++).
 
     :param v:    The voltage for each RPM of velocity, in volts per RPM.
-    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
-                 set_relative_position choose the slot to use.
+    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and
+                 set_relative_position_setpoint choose the slot to use.
     """
     config = rev.SparkMaxConfig()
     config.closed_loop.feed_forward.v(v, slot)
@@ -147,12 +152,13 @@ class SparkMax(rev.SparkMax):
 
   def set_gravity_feedforward(
       self, g: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
-    """Sets the voltage that holds an elevator up against gravity, which set_velocity and
-    set_relative_position add to the PID output.
+    """Sets the voltage that holds an elevator up against gravity, which set_velocity_setpoint and
+    set_relative_position_setpoint add to the PID output. This is REVLib's
+    closed_loop.feed_forward.g (closedLoop.feedForward.kG in Java and C++).
 
     :param g: The voltage it takes to hold the elevator still, in volts.
-    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
-                 set_relative_position choose the slot to use.
+    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and
+                 set_relative_position_setpoint choose the slot to use.
     """
     config = rev.SparkMaxConfig()
     config.closed_loop.feed_forward.g(g, slot)
@@ -160,29 +166,31 @@ class SparkMax(rev.SparkMax):
 
   def set_output_range(self, min_output: float, max_output: float,
                        slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
-    """Limits how hard set_velocity and set_relative_position can drive the motor, which is
+    """Limits how hard set_velocity_setpoint and set_relative_position_setpoint can drive the motor, which is
     useful while tuning PID on a new mechanism. The default is -1 to 1.
 
     :param min_output: The lowest output, from -1 to 1.
     :param max_output: The highest output, from -1 to 1.
-    :param slot:       The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
-                       set_relative_position choose the slot to use.
+    :param slot:       The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and
+                       set_relative_position_setpoint choose the slot to use.
     """
     config = rev.SparkMaxConfig()
     config.closed_loop.output_range(min_output, max_output, slot)
     self._configure(config)
 
-  def set_setpoint_tolerance(
-      self, tolerance: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
-    """Sets how close the motor has to be to the target of set_velocity or set_relative_position
-    for is_at_setpoint to be true.
+  def set_allowed_closed_loop_error(
+      self, allowed_error: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
+    """Sets how close the motor has to be to the target of set_velocity_setpoint or set_relative_position_setpoint
+    for is_at_setpoint to be true. This is REVLib's closed_loop.allowed_closed_loop_error
+    (closedLoop.allowedClosedLoopError in Java and C++), the tolerance of the setpoint.
 
-    :param tolerance: How close is close enough, in rotations for a position or RPM for a velocity.
-    :param slot:      The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity and
-                      set_relative_position choose the slot to use.
+    :param allowed_error: How close is close enough, in rotations for a position or RPM for a
+                          velocity.
+    :param slot:          The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and
+                          set_relative_position_setpoint choose the slot to use.
     """
     config = rev.SparkMaxConfig()
-    config.closed_loop.allowed_closed_loop_error(tolerance, slot)
+    config.closed_loop.allowed_closed_loop_error(allowed_error, slot)
     self._configure(config)
 
   def set_soft_limits(self, reverse_limit: float, forward_limit: float) -> None:
@@ -200,16 +208,20 @@ class SparkMax(rev.SparkMax):
     self._configure(config)
 
   def disable_soft_limits(self) -> None:
-    """Lets the motor move to any position again, after set_soft_limits."""
+    """Lets the motor move to any position again, after set_soft_limits. This turns off REVLib's
+    soft_limit.forward_soft_limit_enabled and reverse_soft_limit_enabled
+    (softLimit.forwardSoftLimitEnabled and reverseSoftLimitEnabled in Java and C++)."""
     config = rev.SparkMaxConfig()
     config.soft_limit.reverse_soft_limit_enabled(False).forward_soft_limit_enabled(False)
     self._configure(config)
 
   def set_encoder_velocity_filter(self, average_depth: int, measurement_period_ms: int) -> None:
     """Sets how the Spark Max calculates the velocity of the encoder, which get_encoder_velocity
-    and set_velocity use. The velocity is the change in position over the measurement period,
+    and set_velocity_setpoint use. The velocity is the change in position over the measurement period,
     averaged over the last average_depth measurements. Smaller values make the velocity react
-    faster but be noisier.
+    faster but be noisier. These are REVLib's encoder.quadrature_average_depth and
+    quadrature_measurement_period (encoder.quadratureAverageDepth and quadratureMeasurementPeriod
+    in Java and C++).
 
     :param average_depth:         How many measurements to average, from 1 to 64. The default
                                   is 8.
@@ -248,9 +260,11 @@ class SparkMax(rev.SparkMax):
     config.apply(other._settings)
     self._configure(config)
 
-  def set_velocity(
+  def set_velocity_setpoint(
       self, velocity: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
-    """Spins the motor at the given speed, using the PID gains from set_pid.
+    """Spins the motor at the given speed, using the PID gains from set_pid. This is REVLib's
+    get_closed_loop_controller().set_setpoint with ControlType.VELOCITY
+    (getClosedLoopController().setSetpoint with ControlType.kVelocity in Java and C++).
 
     :param velocity: The speed, in rotations per minute.
     :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.
@@ -258,9 +272,11 @@ class SparkMax(rev.SparkMax):
     self.get_closed_loop_controller().set_setpoint(
         velocity, rev.SparkLowLevel.ControlType.VELOCITY, slot)
 
-  def set_relative_position(
+  def set_relative_position_setpoint(
       self, position: float, slot: rev.ClosedLoopSlot = rev.ClosedLoopSlot.SLOT0) -> None:
-    """Turns the motor to the given position, using the PID gains from set_pid.
+    """Turns the motor to the given position, using the PID gains from set_pid. This is REVLib's
+    get_closed_loop_controller().set_setpoint with ControlType.POSITION
+    (getClosedLoopController().setSetpoint with ControlType.kPosition in Java and C++).
 
     :param position: The position, in rotations, measured from where the encoder was zeroed.
     :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.
@@ -269,28 +285,32 @@ class SparkMax(rev.SparkMax):
         position, rev.SparkLowLevel.ControlType.POSITION, slot)
 
   def is_at_setpoint(self) -> bool:
-    """Returns whether the motor has reached the target of set_velocity or
-    set_relative_position, within the tolerance from set_setpoint_tolerance."""
+    """Returns whether the motor has reached the target of set_velocity_setpoint or
+    set_relative_position_setpoint, within the error allowed by set_allowed_closed_loop_error."""
     return self.get_closed_loop_controller().is_at_setpoint().get()
 
   def get_relative_encoder_position(self) -> float:
     """Returns the position of the motor, in rotations, measured from where the encoder was
-    zeroed."""
+    zeroed. This is REVLib's get_encoder().get_position() (getEncoder().getPosition() in Java and
+    C++)."""
     return self.get_encoder().get_position().get()
 
   def set_relative_encoder_position(self, position: float) -> None:
     """Changes the position that the encoder reports, without moving the motor. 0 zeroes it.
+    This is REVLib's get_encoder().set_position() (getEncoder().setPosition() in Java and C++).
 
     :param position: The new position, in rotations.
     """
     self.get_encoder().set_position(position)
 
   def get_encoder_velocity(self) -> float:
-    """Returns the speed of the motor, in rotations per minute."""
+    """Returns the speed of the motor, in rotations per minute. This is REVLib's
+    get_encoder().get_velocity() (getEncoder().getVelocity() in Java and C++)."""
     return self.get_encoder().get_velocity().get()
 
   def get_motor_current(self) -> float:
-    """Returns the current that the motor is drawing, in amps."""
+    """Returns the current that the motor is drawing, in amps. This is REVLib's
+    get_output_current() (getOutputCurrent() in Java and C++)."""
     return self.get_output_current().get()
 
   # These replace the rev.SparkMax methods with the same names, which return a Signal that holds
@@ -314,10 +334,14 @@ class SparkMax(rev.SparkMax):
 
   def is_forward_limit_switch_pressed(self) -> bool:
     """Returns whether the limit switch at the forward end of the motor's travel, wired to the
-    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way."""
+    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way.
+    This is REVLib's get_forward_limit_switch().get() (getForwardLimitSwitch().isPressed() in Java and
+    C++)."""
     return self.get_forward_limit_switch().get().get()
 
   def is_reverse_limit_switch_pressed(self) -> bool:
     """Returns whether the limit switch at the reverse end of the motor's travel, wired to the
-    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way."""
+    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way.
+    This is REVLib's get_reverse_limit_switch().get() (getReverseLimitSwitch().isPressed() in Java and
+    C++)."""
     return self.get_reverse_limit_switch().get().get()
