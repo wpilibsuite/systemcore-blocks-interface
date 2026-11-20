@@ -4515,7 +4515,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "vision_py",
                             "type": "str | None"
                         }
@@ -28148,7 +28148,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "True",
                             "name": "auto_discover",
                             "type": "bool"
                         }
@@ -109206,32 +109206,32 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "cls",
                             "type": "type[~_OpModeT] | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "name",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "group",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "description",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "text_color",
                             "type": "wpiutil.Color | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "background_color",
                             "type": "wpiutil.Color | None"
                         }
@@ -109291,7 +109291,7 @@
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "False",
                             "name": "print_trace",
                             "type": "bool"
                         }
@@ -109308,7 +109308,7 @@
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "False",
                             "name": "print_trace",
                             "type": "bool"
                         }
@@ -109332,32 +109332,32 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "cls",
                             "type": "type[~_OpModeT] | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "name",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "group",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "description",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "text_color",
                             "type": "wpiutil.Color | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "background_color",
                             "type": "wpiutil.Color | None"
                         }
@@ -109369,32 +109369,32 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "cls",
                             "type": "type[~_OpModeT] | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "name",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "group",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "description",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "text_color",
                             "type": "wpiutil.Color | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "background_color",
                             "type": "wpiutil.Color | None"
                         }
@@ -109431,32 +109431,32 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "cls",
                             "type": "type[~_OpModeT] | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "name",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "group",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "description",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "text_color",
                             "type": "wpiutil.Color | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "background_color",
                             "type": "wpiutil.Color | None"
                         }
@@ -109468,32 +109468,32 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "cls",
                             "type": "type[~_OpModeT] | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "name",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "group",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "description",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "text_color",
                             "type": "wpiutil.Color | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "background_color",
                             "type": "wpiutil.Color | None"
                         }
@@ -109505,32 +109505,32 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "cls",
                             "type": "type[~_OpModeT] | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "name",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "group",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "''",
                             "name": "description",
                             "type": "str"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "text_color",
                             "type": "wpiutil.Color | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "background_color",
                             "type": "wpiutil.Color | None"
                         }
@@ -109615,17 +109615,17 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "None",
                             "name": "timeout",
                             "type": "float | None"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "0.001",
                             "name": "delta",
                             "type": "float"
                         },
                         {
-                            "defaultValue": "",
+                            "defaultValue": "True",
                             "name": "wait_for_first_notifier",
                             "type": "bool"
                         }
