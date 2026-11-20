@@ -1580,7 +1580,7 @@ export function addBuiltInFunctionBlocks(
     functions: FunctionData[],
     contents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
-  functions.forEach(functionData => {
+  withShortFunctions(functions, showSimpleClassNames).forEach(functionData => {
     contents.push(createBuiltInMethodBlock(functionData, showSimpleClassNames));
   });
 }
@@ -1623,24 +1623,62 @@ function processArgs(
   }
 }
 
+/**
+ * Returns the given functions, with a copy of each function without its last arguments if they
+ * have defaults that a block can't show, like a Pose2d. A block for the copy leaves those
+ * arguments out of the call, so that python uses their defaults. Defaults that a block can show,
+ * like numbers and enum values, are plugged in as shadow blocks, so they don't need a copy.
+ *
+ * The functions with the same name (overloads, like the constructors of a class, and the copies)
+ * are put together where the first of them was, from the fewest arguments to the most.
+ */
+function withShortFunctions(
+    functions: FunctionData[], showSimpleClassNames: boolean): FunctionData[] {
+  const functionsByName = new Map<string, FunctionData[]>();
+  for (const functionData of functions) {
+    let sameName = functionsByName.get(functionData.functionName);
+    if (!sameName) {
+      sameName = [];
+      functionsByName.set(functionData.functionName, sameName);
+    }
+    const firstHiddenDefault = functionData.args.findIndex(arg => arg.defaultValue &&
+        !value.valueForFunctionArgInput(arg.type, arg.defaultValue, showSimpleClassNames)?.shadow);
+    if (firstHiddenDefault !== -1 &&
+        functionData.args.slice(firstHiddenDefault).every(arg => arg.defaultValue)) {
+      sameName.push({...functionData, args: functionData.args.slice(0, firstHiddenDefault)});
+    }
+    sameName.push(functionData);
+  }
+  // Array.prototype.sort is stable, so functions with the same number of arguments keep their
+  // order.
+  return [...functionsByName.values()].flatMap(
+      sameName => sameName.sort((a, b) => a.args.length - b.args.length));
+}
+
+/**
+ * Returns whether a block with the given args calls the given function. The block can leave out
+ * the function's last arguments if they have defaults (see withShortFunctions).
+ */
 function blockArgsMatchFunctionDataArgs(
     blockArgs: FunctionArg[],
     functionData: FunctionData) {
-  if (blockArgs.length === functionData.args.length) {
-    for (let i = 0; i < blockArgs.length; i++) {
-      let argName = functionData.args[i].name
-      if (i === 0 && argName === 'self' && functionData.declaringClassName) {
-        argName = variable.getSelfArgName(functionData.declaringClassName)
-      }
-      if (argName != blockArgs[i].name) {
-        return false;
-      }
-      if (functionData.args[i].type != blockArgs[i].type) {
-        return false;
-      }
-    }
-  }
-  return true;
+  return argsMatchWithDefaults(functionData.args, blockArgs, (arg, i) =>
+      (i === 0 && arg.name === 'self' && functionData.declaringClassName) ?
+          variable.getSelfArgName(functionData.declaringClassName) : arg.name);
+}
+
+/**
+ * Returns whether args are the first of functionArgs, with the same names and types, and the rest
+ * of functionArgs have defaults. argName returns the name to compare for an arg of functionArgs.
+ */
+function argsMatchWithDefaults(
+    functionArgs: ArgData[],
+    args: {name: string, type: string}[],
+    argName: (arg: ArgData, i: number) => string = arg => arg.name): boolean {
+  return args.length <= functionArgs.length &&
+      args.every((arg, i) =>
+          argName(functionArgs[i], i) === arg.name && functionArgs[i].type === arg.type) &&
+      functionArgs.slice(args.length).every(arg => arg.defaultValue);
 }
 
 
@@ -1663,7 +1701,7 @@ export function addModuleFunctionBlocks(
     commonContents: toolboxItems.ContentsType[],
     moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
-  moduleData.functions.forEach(functionData => {
+  withShortFunctions(moduleData.functions, showSimpleClassNames).forEach(functionData => {
     const block = createModuleFunctionOrStaticMethodBlock(
         FunctionKind.MODULE,
         moduleData.moduleName,
@@ -1683,7 +1721,7 @@ export function addStaticMethodBlocks(
     commonContents: toolboxItems.ContentsType[],
     moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
-  classData.staticMethods.forEach(functionData => {
+  withShortFunctions(classData.staticMethods, showSimpleClassNames).forEach(functionData => {
     if (functionData.declaringClassName) {
       const block = createModuleFunctionOrStaticMethodBlock(
           FunctionKind.STATIC,
@@ -1731,7 +1769,7 @@ export function addConstructorBlocks(
     commonContents: toolboxItems.ContentsType[],
     moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
-  classData.constructors.forEach(functionData => {
+  withShortFunctions(classData.constructors, showSimpleClassNames).forEach(functionData => {
     const block = createConstructorBlock(classData.moduleName, functionData, showSimpleClassNames);
     if (functionData.isCommon) {
       commonContents.push(block);
@@ -1768,7 +1806,7 @@ export function addInstanceMethodBlocks(
     commonContents: toolboxItems.ContentsType[],
     moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
-  classData.instanceMethods.forEach(functionData => {
+  withShortFunctions(classData.instanceMethods, showSimpleClassNames).forEach(functionData => {
     const block = createInstanceMethodBlock(functionData, showSimpleClassNames);
     if (functionData.isCommon) {
       commonContents.push(block);
@@ -1814,11 +1852,11 @@ export function addInstanceVariableMethodBlocks(
     moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean,
     defaultModuleData?: ModuleData) {
-  classData.instanceMethods.forEach(functionData => {
+  withShortFunctions(classData.instanceMethods, showSimpleClassNames).forEach(functionData => {
     const argsWithoutSelf = functionData.args.slice(1);
     const hasDefault = !!defaultModuleData && defaultModuleData.functions.some(moduleFunction =>
         moduleFunction.functionName === functionData.functionName &&
-        argsMatch(moduleFunction.args, argsWithoutSelf));
+        argsMatchWithDefaults(moduleFunction.args, argsWithoutSelf));
     const block = createInstanceVariableMethodBlock(
         classData.className, functionData, hasDefault ? defaultModuleData!.moduleName : '',
         showSimpleClassNames);
@@ -1828,11 +1866,6 @@ export function addInstanceVariableMethodBlocks(
       moreContents.push(block);
     }
   });
-}
-
-function argsMatch(args1: ArgData[], args2: ArgData[]): boolean {
-  return args1.length === args2.length &&
-      args1.every((arg, i) => arg.name === args2[i].name && arg.type === args2[i].type);
 }
 
 function createInstanceVariableMethodBlock(
@@ -1931,7 +1964,7 @@ export function getInstanceComponentBlocks(
 
   const classData = getClassData(component.className);
   if (classData) {
-    const functions = classData.instanceMethods;
+    const functions = withShortFunctions(classData.instanceMethods, showSimpleClassNames);
     for (const functionData of functions) {
       const block = createInstanceComponentBlock(component, functionData, showSimpleClassNames);
       if (functionData.isCommon) {
@@ -1953,7 +1986,7 @@ export function getInstanceMechanismComponentBlocks(
 
   const classData = getClassData(component.className);
   if (classData) {
-    const functions = classData.instanceMethods;
+    const functions = withShortFunctions(classData.instanceMethods, showSimpleClassNames);
     for (const functionData of functions) {
       const block = createInstanceMechanismComponentBlock(
           component, functionData, mechanismInRobot, showSimpleClassNames);
