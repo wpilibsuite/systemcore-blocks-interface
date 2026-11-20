@@ -873,6 +873,29 @@
                 },
                 {
                     "defaultValue": "",
+                    "name": "average_depth",
+                    "type": "int"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "measurement_period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_encoder_velocity_filter",
+            "returnType": "None",
+            "tooltip": "Sets how the Spark Max calculates the velocity of the encoder, which get_encoder_velocity\n    and set_velocity use. The velocity is the change in position over the measurement period,\n    averaged over the last average_depth measurements. Smaller values make the velocity react\n    faster but be noisier.\n\n    :param average_depth:         How many measurements to average, from 1 to 64. The default\n                                  is 8.\n    :param measurement_period_ms: The time to measure the change in position over, in\n                                  milliseconds, from 1 to 100. The default is 10.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
                     "name": "s",
                     "type": "float"
                 },

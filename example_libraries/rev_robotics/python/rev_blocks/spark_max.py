@@ -174,6 +174,23 @@ class SparkMax(rev.SparkMax):
     config.soft_limit.reverse_soft_limit_enabled(False).forward_soft_limit_enabled(False)
     self._configure(config)
 
+  def set_encoder_velocity_filter(self, average_depth: int, measurement_period_ms: int) -> None:
+    """Sets how the Spark Max calculates the velocity of the encoder, which get_encoder_velocity
+    and set_velocity use. The velocity is the change in position over the measurement period,
+    averaged over the last average_depth measurements. Smaller values make the velocity react
+    faster but be noisier.
+
+    :param average_depth:         How many measurements to average, from 1 to 64. The default
+                                  is 8.
+    :param measurement_period_ms: The time to measure the change in position over, in
+                                  milliseconds, from 1 to 100. The default is 10.
+    """
+    config = rev.SparkMaxConfig()
+    (config.encoder
+        .quadrature_average_depth(average_depth)
+        .quadrature_measurement_period(measurement_period_ms))
+    self._configure(config)
+
   def follow(self, leader: typing.Self, invert: bool = False) -> None:
     """Makes this Spark Max do whatever another Spark Max does, for motors that drive the same
     mechanism.
