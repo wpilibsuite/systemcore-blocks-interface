@@ -332,6 +332,10 @@ def inspectSignature(object, cls=None) -> str:
         s = f"{s}{delimiter}{param_name_prefix}{param.name}: {param_type}"
       else:
         s = f"{s}{delimiter}{param_name_prefix}{param.name}"
+      if param.default is not inspect.Parameter.empty:
+        # Write the default value like pybind11 does in the signatures in docstrings, for example
+        # "invert: bool = False" or "slot: rev.ClosedLoopSlot = <ClosedLoopSlot.SLOT0: 0>".
+        s = f"{s} = {param.default!r}"
       delimiter = ", "
     s = f"{s})"
 
