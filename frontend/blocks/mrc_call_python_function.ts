@@ -28,7 +28,8 @@ import { CustomDropdownWithoutValidation } from '../fields/FieldDropdown';
 import {
     DEFAULT_OPTION_VALUE,
     FieldTypedVariable,
-    FieldTypedVariableOrDefault } from '../fields/field_typed_variable';
+    FieldTypedVariableOrDefault,
+    getAllowedVariableTypes } from '../fields/field_typed_variable';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
@@ -966,7 +967,8 @@ const CALL_PYTHON_FUNCTION = {
       return;
     }
     const variable = this.workspace.getVariableMap().getVariableById(this.getFieldValue(FIELD_VARIABLE));
-    if (variable && variable.getType() !== this.mrcModuleOrClassName) {
+    if (variable &&
+        !getAllowedVariableTypes(this.mrcModuleOrClassName).includes(variable.getType())) {
       warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_VARIABLE_WRONG_TYPE
           .replace('{{variableName}}', variable.getName())
           .replace('{{className}}', this.mrcModuleOrClassName));
@@ -1797,44 +1799,6 @@ function createConstructorBlock(
   const fields: {[key: string]: any} = {};
   fields[FIELD_MODULE_OR_CLASS_NAME] = classNameToShowOnBlocks(functionData.declaringClassName, showSimpleClassNames);
   const inputs: {[key: string]: any} = {};
-  processArgs(functionData.args, extraState, inputs, showSimpleClassNames, functionData.declaringClassName);
-  return createBlock(extraState, fields, inputs);
-}
-
-export function addInstanceMethodBlocks(
-    classData: ClassData,
-    commonContents: toolboxItems.ContentsType[],
-    moreContents: toolboxItems.ContentsType[],
-    showSimpleClassNames: boolean) {
-  withShortFunctions(classData.instanceMethods, showSimpleClassNames).forEach(functionData => {
-    const block = createInstanceMethodBlock(functionData, showSimpleClassNames);
-    if (functionData.isCommon) {
-      commonContents.push(block);
-    } else {
-      moreContents.push(block);
-    }
-  });
-}
-
-function createInstanceMethodBlock(
-    functionData: FunctionData,
-    showSimpleClassNames: boolean): toolboxItems.Block {
-  if (!functionData.declaringClassName) {
-    throw new Error('functionData.declaringClassName is missing');
-  }
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.INSTANCE,
-    moduleOrClassName: functionData.declaringClassName,
-    returnType: functionData.returnType,
-    args: [],
-    tooltip: functionData.tooltip,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = classNameToShowOnBlocks(functionData.declaringClassName, showSimpleClassNames);
-  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
-  const inputs: {[key: string]: any} = {};
-  // We include the arg for the self argument for INSTANCE methods because we want a socket that
-  // the user can plug the object into.
   processArgs(functionData.args, extraState, inputs, showSimpleClassNames, functionData.declaringClassName);
   return createBlock(extraState, fields, inputs);
 }

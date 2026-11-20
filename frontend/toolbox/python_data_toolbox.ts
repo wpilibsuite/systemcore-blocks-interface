@@ -11,7 +11,7 @@ import {
     addModuleVariableBlocks } from '../blocks/mrc_get_python_variable';
 import {
     addConstructorBlocks,
-    addInstanceMethodBlocks,
+    addInstanceVariableMethodBlocks,
     addModuleFunctionBlocks,
     addStaticMethodBlocks } from '../blocks/mrc_call_python_function';
 import { ClassData, ModuleData, PythonData } from '../blocks/utils/python_json_types';
@@ -105,7 +105,9 @@ function addClassBlocks(
   // Function blocks (constructors, instance methods, static methods)
   if (!classData.isComponent) {
     addConstructorBlocks(classData, commonContents, moreContents, showSimpleClassNames);
-    addInstanceMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
+    // Instance methods are called on a variable chosen from a dropdown, like the methods of a
+    // component are called on a component chosen from a dropdown.
+    addInstanceVariableMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
   }
   addStaticMethodBlocks(classData, commonContents, moreContents, showSimpleClassNames);
 
