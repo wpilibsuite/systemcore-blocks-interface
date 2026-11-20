@@ -4,6 +4,7 @@
  * @fileoverview Plugs component reference blocks into the arguments of toolbox blocks that take a
  * component, like the left_motor and right_motor of a DifferentialDrive, so that the component can
  * be chosen from a dropdown instead of plugging in a variable.
+ * @author alan@porpoiseful.com (Alan Smith)
  */
 
 import {

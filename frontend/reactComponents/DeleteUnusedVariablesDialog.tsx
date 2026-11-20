@@ -3,6 +3,7 @@
 /**
  * @fileoverview A dialog that lists the variables that no block in a module uses, with a checkbox
  * for each, so that the user can delete them. They all start out checked.
+ * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Antd from 'antd';
 import * as I18Next from 'react-i18next';
