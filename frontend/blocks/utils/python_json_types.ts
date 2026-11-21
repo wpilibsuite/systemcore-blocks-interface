@@ -18,6 +18,7 @@ export class ModuleData {
   moduleVariables: VarData[] = [];
   functions: FunctionData[] = [];
   enums: EnumData[] = [];
+  hide?: boolean = false;
 }
 
 export class ClassData {
@@ -31,6 +32,7 @@ export class ClassData {
   enums: EnumData[] = [];
   isComponent: boolean = false;
   isCommon?: boolean = false;
+  hide?: boolean = false;
 }
 
 export class VarData {
