@@ -40,6 +40,7 @@ _LIST_CLASS_NAMES_TO_HIDE = [
   'wpilib.GameCubeController',
   'wpilib.Gamepad',
   'wpilib.GenericHID',
+  'wpilib.HIDDevice',
   'wpilib.Joystick',
   'wpilib.LogitechF310Controller',
   'wpilib.NiDsPS4Controller',

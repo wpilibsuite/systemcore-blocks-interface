@@ -18131,6 +18131,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
