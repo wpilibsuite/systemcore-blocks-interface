@@ -68,6 +68,6 @@ For each PR, make sure the categories that are appropriate for your PR have been
 * [ ] Reconnected and verified the warning goes away
 
 # If it changes storage format
-* [ ] Bumped `CURRENT_VERSION` in `upgrade_project.ts`
+* [ ] Bumped `CURRENT_VERSION` in package.json and package-lock.json
 * [ ] Verified the migration works by creating a document in the old format and running the migration
 * [ ] Tested with and without the backend
