@@ -28,6 +28,38 @@ _LIST_MODULE_NAME_PREFIXES_TO_IGNORE = [
   'wpinet',
 ]
 
+_LIST_MODULE_NAMES_TO_HIDE = [
+  'telemetry',
+  'tunables',
+]
+
+_LIST_CLASS_NAMES_TO_HIDE = [
+  # Gamepads
+  'wpilib.DualSenseController',
+  'wpilib.DualSenseEdgeController',
+  'wpilib.DualShock4Controller',
+  'wpilib.GameCubeController',
+  'wpilib.Gamepad',
+  'wpilib.GenericHID',
+  'wpilib.HIDDevice',
+  'wpilib.Joystick',
+  'wpilib.LogitechF310Controller',
+  'wpilib.NiDsPS4Controller',
+  'wpilib.NiDsPS5Controller',
+  'wpilib.NiDsStadiaController',
+  'wpilib.NiDsXboxController',
+  'wpilib.SteamController',
+  'wpilib.Switch2GCController',
+  'wpilib.Switch2ProController',
+  'wpilib.SwitchN64Controller',
+  'wpilib.SwitchProController',
+  'wpilib.XboxController',
+  # Related to telemetry/tunables
+  'wpilib.DataLogTelemetryBackend',
+  'wpilib.NetworkTablesTelemetryBackend',
+  'wpilib.NetworkTablesTunableBackend',
+]
+
 _LIST_IGNORED_SUPER_CLASSES = [
   telemetry.TelemetryLoggable,
   telemetry._telemetry.TelemetryLoggable,
@@ -94,6 +126,7 @@ _KEY_SUBCLASSES = 'subclasses'
 _KEY_IS_COMPONENT = 'isComponent'
 _KEY_COMPONENT_ARGS = 'componentArgs'
 _KEY_IS_COMMON = 'isCommon'
+_KEY_HIDE = 'hide'
 
 # The file in a library directory that lists the python modules and classes that get toolbox
 # categories (shownCategories) and the ones that the library doesn't use (ignore).
@@ -115,6 +148,24 @@ def ignoreClass(cls: type) -> bool:
 
 def ignoreType(class_name: str) -> bool:
   return '._' in class_name
+
+def _hideModuleOrClassImpl(name: str, names_to_hide: list[str]) -> bool:
+  if name in names_to_hide:
+    return True
+  # Check the outer class/module.
+  last_dot = name.rfind('.')
+  while last_dot != -1:
+    name = name[:last_dot]
+    if name in names_to_hide:
+      return True
+    last_dot = name.rfind('.')
+  return False
+
+def hideModule(module_name: str) -> bool:
+  return _hideModuleOrClassImpl(module_name, _LIST_MODULE_NAMES_TO_HIDE)
+
+def hideClass(class_name: str) -> bool:
+  return _hideModuleOrClassImpl(class_name, _LIST_CLASS_NAMES_TO_HIDE)
 
 def createArgData(arg_name: str, arg_type: str, default_value: str = ''):
   if any(char.isupper() for char in arg_name):
@@ -367,6 +418,8 @@ class JsonGenerator:
     module_data = {}
     module_name = self._getModuleName(module)
     module_data[_KEY_MODULE_NAME] = module_name
+    if hideModule(module_name):
+      module_data[_KEY_HIDE] = True
 
     if any(char.isupper() for char in module_name):
       print(f'WARNING: module name {module_name} contains an uppercase letter. '
@@ -587,6 +640,7 @@ class JsonGenerator:
 
   def _processClass(self, cls):
     class_name = self._getClassName(cls)
+    module_name = self._getModuleName(cls)
 
     simple_class_name = class_name.rsplit('.', 1)[-1]
     if not simple_class_name[0].isupper():
@@ -609,8 +663,11 @@ class JsonGenerator:
 
     class_data = {}
     class_data[_KEY_CLASS_NAME] = class_name
-    class_data[_KEY_MODULE_NAME] = self._getModuleName(cls)
+    class_data[_KEY_MODULE_NAME] = module_name
     class_data[_KEY_IS_COMPONENT] = False  # Set to True later if it is a component.
+
+    if hideModule(module_name) or hideClass(class_name):
+      class_data[_KEY_HIDE] = True
 
     # Class variables.
     class_variables = []
@@ -953,19 +1010,19 @@ class JsonGenerator:
     return aliases
 
   def _processSubclasses(self):
-    subclasses = {}
+    map_class_name_to_subclasses = {}
     for full_class_name, full_subclass_names in self._subclasses.items():
       class_name = self._getClassName(full_class_name)
       if ignoreType(class_name):
         continue
-      list = []
+      list_of_subclasses = []
       for full_subclass_name in full_subclass_names:
         subclass_name = self._getClassName(full_subclass_name)
         if ignoreType(subclass_name):
           continue
-        list.append(subclass_name)
-      subclasses[class_name] = list
-    return subclasses
+        list_of_subclasses.append(subclass_name)
+      map_class_name_to_subclasses[class_name] = list_of_subclasses
+    return map_class_name_to_subclasses
 
   def _getJsonData(self):
     json_data = {}
