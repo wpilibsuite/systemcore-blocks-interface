@@ -41,7 +41,9 @@ import {
   TagStatus,
   VersionTagList,
 } from './VersionTags';
-import { EMPTY_VERSION_FIELD_VALUES, VersionFieldValues, VersionFields } from './VersionFields';
+import {
+  DescriptionRef, EMPTY_VERSION_FIELD_VALUES, VersionFieldValues, VersionFields,
+} from './VersionFields';
 import { useVersionFilters } from './VersionFilters';
 import {
   CurrentVersionBar,
@@ -198,6 +200,7 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
   const [loading, setLoading] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [descriptionDialog, setDescriptionDialog] = React.useState<DescriptionDialog | null>(null);
+  const descriptionRef = React.useRef<DescriptionRef>(null);
   const [fields, setFields] = React.useState<VersionFieldValues>(EMPTY_VERSION_FIELD_VALUES);
   const [cleanUpOpen, setCleanUpOpen] = React.useState(false);
   const [details, setDetails] = React.useState<Details | null>(null);
@@ -291,8 +294,12 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
         await autosave.triggerSave();
         await storageVersions.createVersion(
             props.storage, projectName, fields.description, fields.tags, fields.notes);
-        // Versions are listed newest first, so the new version is on the first page.
+        // Versions are listed newest first, so the new version is on the first page next time.
         filters.setPage(1);
+        setDescriptionDialog(null);
+        // Once the version is created, the versions dialog is closed too.
+        props.onClose();
+        return;
       } else {
         await storageVersions.updateVersion(
             props.storage, projectName, descriptionDialog.version.versionId,
@@ -1255,8 +1262,19 @@ export default function VersionsModal(props: VersionsModalProps): React.JSX.Elem
         okText={descriptionDialog?.mode === 'edit' ? t('SAVE') : t('CREATE')}
         cancelText={t('CANCEL')}
         confirmLoading={busy}
+        afterOpenChange={(open) => { if (open) descriptionRef.current?.focus(); }}
       >
-        <VersionFields autoFocus value={fields} onChange={setFields} knownTags={allTags} />
+        <VersionFields
+          descriptionRef={descriptionRef}
+          value={fields}
+          onChange={setFields}
+          knownTags={allTags}
+          onDescriptionEnter={() => {
+            if (!busy) {
+              handleDescriptionDialogOk();
+            }
+          }}
+        />
       </Antd.Modal>
 
       <Antd.Modal
