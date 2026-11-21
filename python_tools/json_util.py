@@ -54,9 +54,10 @@ _LIST_CLASS_NAMES_TO_HIDE = [
   'wpilib.SwitchN64Controller',
   'wpilib.SwitchProController',
   'wpilib.XboxController',
-  # Related to telemetry
+  # Related to telemetry/tunables
   'wpilib.DataLogTelemetryBackend',
   'wpilib.NetworkTablesTelemetryBackend',
+  'wpilib.NetworkTablesTunableBackend',
 ]
 
 _LIST_IGNORED_SUPER_CLASSES = [
