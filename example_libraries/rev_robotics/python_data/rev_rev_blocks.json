@@ -1805,6 +1805,20 @@
                     "tooltip": "Members:\n\n  SLOT0\n\n  SLOT1\n\n  SLOT2\n\n  SLOT3"
                 },
                 {
+                    "enumClassName": "rev.FeedbackSensor",
+                    "enumValues": [
+                        "ABSOLUTE_ENCODER",
+                        "ALTERNATE_OR_EXTERNAL_ENCODER",
+                        "ANALOG_SENSOR",
+                        "DETACHED_ABSOLUTE_ENCODER",
+                        "DETACHED_RELATIVE_ENCODER",
+                        "NO_SENSOR",
+                        "PRIMARY_ENCODER"
+                    ],
+                    "moduleName": "rev",
+                    "tooltip": "Members:\n\n  NO_SENSOR\n\n  PRIMARY_ENCODER\n\n  ANALOG_SENSOR\n\n  ALTERNATE_OR_EXTERNAL_ENCODER\n\n  ABSOLUTE_ENCODER\n\n  DETACHED_ABSOLUTE_ENCODER\n\n  DETACHED_RELATIVE_ENCODER"
+                },
+                {
                     "enumClassName": "rev.REVLibError",
                     "enumValues": [
                         "CANNOT_PERSIST_PARAMETERS_WHILE_ENABLED",

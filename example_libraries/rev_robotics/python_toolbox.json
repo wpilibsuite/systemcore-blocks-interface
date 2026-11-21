@@ -44,7 +44,6 @@
     "rev.ExternalEncoderConfigAccessor",
     "rev.FeedForwardConfig",
     "rev.FeedForwardConfigAccessor",
-    "rev.FeedbackSensor",
     "rev.LimitSwitchConfig",
     "rev.LimitSwitchConfigAccessor",
     "rev.MAXMotionConfig",

@@ -234,6 +234,23 @@ class SparkMax(rev.SparkMax):
         .quadrature_measurement_period(measurement_period_ms))
     self._configure(config)
 
+  def set_feedback_sensor(self, sensor: rev.FeedbackSensor) -> None:
+    """Chooses the sensor that set_velocity_setpoint and set_relative_position_setpoint use to
+    measure the motor. The default is PRIMARY_ENCODER, the encoder in a brushless motor or the
+    encoder on the main port of a brushed motor. ABSOLUTE_ENCODER is an absolute encoder on the
+    data port, like a Through Bore Encoder on an arm, which knows its position when the robot
+    starts; read it with get_absolute_encoder_position. This is REVLib's
+    closed_loop.set_feedback_sensor (closedLoop.feedbackSensor in Java and C++).
+
+    CAN detached encoders (DETACHED_ABSOLUTE_ENCODER and DETACHED_RELATIVE_ENCODER) can't be
+    chosen with this block, because they need the device id of the encoder.
+
+    :param sensor: The sensor to use, like PRIMARY_ENCODER or ABSOLUTE_ENCODER.
+    """
+    config = rev.SparkMaxConfig()
+    config.closed_loop.set_feedback_sensor(sensor)
+    self._configure(config)
+
   def follow(self, leader: typing.Self, invert: bool = False) -> None:
     """Makes this Spark Max do whatever another Spark Max does, for motors that drive the same
     mechanism.
@@ -307,6 +324,20 @@ class SparkMax(rev.SparkMax):
     """Returns the speed of the motor, in rotations per minute. This is REVLib's
     get_encoder().get_velocity() (getEncoder().getVelocity() in Java and C++)."""
     return self.get_encoder().get_velocity().get()
+
+  def get_absolute_encoder_position(self) -> float:
+    """Returns the position of the absolute encoder on the data port, in rotations, from 0 to 1.
+    Unlike the motor's encoder, it knows its position when the robot starts. This is REVLib's
+    get_absolute_encoder().get_position() (getAbsoluteEncoder().getPosition() in Java and
+    C++)."""
+    return self.get_absolute_encoder().get_position().get()
+
+  def get_absolute_encoder_velocity(self) -> float:
+    """Returns the speed of the absolute encoder on the data port, in rotations per second (not
+    rotations per minute, like get_encoder_velocity). This is REVLib's
+    get_absolute_encoder().get_velocity() (getAbsoluteEncoder().getVelocity() in Java and
+    C++)."""
+    return self.get_absolute_encoder().get_velocity().get()
 
   def get_motor_current(self) -> float:
     """Returns the current that the motor is drawing, in amps. This is REVLib's
