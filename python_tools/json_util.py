@@ -965,19 +965,19 @@ class JsonGenerator:
     return aliases
 
   def _processSubclasses(self):
-    subclasses = {}
+    map_class_name_to_subclasses = {}
     for full_class_name, full_subclass_names in self._subclasses.items():
       class_name = self._getClassName(full_class_name)
       if ignoreType(class_name):
         continue
-      list = []
+      list_of_subclasses = []
       for full_subclass_name in full_subclass_names:
         subclass_name = self._getClassName(full_subclass_name)
         if ignoreType(subclass_name):
           continue
-        list.append(subclass_name)
-      subclasses[class_name] = list
-    return subclasses
+        list_of_subclasses.append(subclass_name)
+      map_class_name_to_subclasses[class_name] = list_of_subclasses
+    return map_class_name_to_subclasses
 
   def _getJsonData(self):
     json_data = {}
