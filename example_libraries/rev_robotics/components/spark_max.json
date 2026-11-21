@@ -234,6 +234,32 @@
                 {
                     "defaultValue": "",
                     "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "get_absolute_encoder_position",
+            "returnType": "float",
+            "tooltip": "Returns the position of the absolute encoder on the data port, in rotations, from 0 to 1.\n    Unlike the motor's encoder, it knows its position when the robot starts. This is REVLib's\n    get_absolute_encoder().get_position() (getAbsoluteEncoder().getPosition() in Java and\n    C++)."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "get_absolute_encoder_velocity",
+            "returnType": "float",
+            "tooltip": "Returns the speed of the absolute encoder on the data port, in rotations per second (not\n    rotations per minute, like get_encoder_velocity). This is REVLib's\n    get_absolute_encoder().get_velocity() (getAbsoluteEncoder().getVelocity() in Java and\n    C++)."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
                     "type": "rev.SparkMax"
                 }
             ],
@@ -909,6 +935,24 @@
             "functionName": "set_encoder_velocity_filter",
             "returnType": "None",
             "tooltip": "Sets how the Spark Max calculates the velocity of the encoder, which get_encoder_velocity\n    and set_velocity_setpoint use. The velocity is the change in position over the measurement period,\n    averaged over the last average_depth measurements. Smaller values make the velocity react\n    faster but be noisier. These are REVLib's encoder.quadrature_average_depth and\n    quadrature_measurement_period (encoder.quadratureAverageDepth and quadratureMeasurementPeriod\n    in Java and C++).\n\n    :param average_depth:         How many measurements to average, from 1 to 64. The default\n                                  is 8.\n    :param measurement_period_ms: The time to measure the change in position over, in\n                                  milliseconds, from 1 to 100. The default is 10.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "sensor",
+                    "type": "rev.FeedbackSensor"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_feedback_sensor",
+            "returnType": "None",
+            "tooltip": "Chooses the sensor that set_velocity_setpoint and set_relative_position_setpoint use to\n    measure the motor. The default is PRIMARY_ENCODER, the encoder in a brushless motor or the\n    encoder on the main port of a brushed motor. ABSOLUTE_ENCODER is an absolute encoder on the\n    data port, like a Through Bore Encoder on an arm, which knows its position when the robot\n    starts; read it with get_absolute_encoder_position. This is REVLib's\n    closed_loop.set_feedback_sensor (closedLoop.feedbackSensor in Java and C++).\n\n    CAN detached encoders (DETACHED_ABSOLUTE_ENCODER and DETACHED_RELATIVE_ENCODER) can't be\n    chosen with this block, because they need the device id of the encoder.\n\n    :param sensor: The sensor to use, like PRIMARY_ENCODER or ABSOLUTE_ENCODER.\n    "
         },
         {
             "args": [
