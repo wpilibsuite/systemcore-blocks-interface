@@ -5273,6 +5273,7 @@
             "classVariables": [],
             "constructors": [],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -22890,6 +22891,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [

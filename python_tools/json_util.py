@@ -34,6 +34,7 @@ _LIST_MODULE_NAMES_TO_HIDE = [
 ]
 
 _LIST_CLASS_NAMES_TO_HIDE = [
+  # Gamepads
   'wpilib.DualSenseController',
   'wpilib.DualSenseEdgeController',
   'wpilib.DualShock4Controller',
@@ -53,6 +54,9 @@ _LIST_CLASS_NAMES_TO_HIDE = [
   'wpilib.SwitchN64Controller',
   'wpilib.SwitchProController',
   'wpilib.XboxController',
+  # Related to telemetry
+  'wpilib.DataLogTelemetryBackend',
+  'wpilib.NetworkTablesTelemetryBackend',
 ]
 
 _LIST_IGNORED_SUPER_CLASSES = [
