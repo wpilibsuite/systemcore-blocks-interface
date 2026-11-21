@@ -7238,6 +7238,7 @@
                     "tooltip": "Represents a digital button on a DualSenseController.\n\nMembers:\n\n  CROSS : Cross button.\n\n  CIRCLE : Circle button.\n\n  SQUARE : Square button.\n\n  TRIANGLE : Triangle button.\n\n  CREATE : Create button.\n\n  PS : PS button.\n\n  OPTIONS : Options button.\n\n  L3 : L 3 button.\n\n  R3 : R 3 button.\n\n  L1 : L 1 button.\n\n  R1 : R 1 button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button.\n\n  MICROPHONE : Microphone button.\n\n  TOUCHPAD : Touchpad button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -8788,6 +8789,7 @@
                     "tooltip": "Represents a digital button on a DualSenseEdgeController.\n\nMembers:\n\n  CROSS : Cross button.\n\n  CIRCLE : Circle button.\n\n  SQUARE : Square button.\n\n  TRIANGLE : Triangle button.\n\n  CREATE : Create button.\n\n  PS : PS button.\n\n  OPTIONS : Options button.\n\n  L3 : L 3 button.\n\n  R3 : R 3 button.\n\n  L1 : L 1 button.\n\n  R1 : R 1 button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button.\n\n  MICROPHONE : Microphone button.\n\n  RIGHT_PADDLE_1 : Right Paddle 1 button.\n\n  LEFT_PADDLE_1 : Left Paddle 1 button.\n\n  TOUCHPAD : Touchpad button.\n\n  LEFT_FUNCTION : Left Function button.\n\n  RIGHT_FUNCTION : Right Function button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -10561,6 +10563,7 @@
                     "tooltip": "Represents a digital button on a DualShock4Controller.\n\nMembers:\n\n  CROSS : Cross button.\n\n  CIRCLE : Circle button.\n\n  SQUARE : Square button.\n\n  TRIANGLE : Triangle button.\n\n  SHARE : Share button.\n\n  PS : PS button.\n\n  OPTIONS : Options button.\n\n  L3 : L 3 button.\n\n  R3 : R 3 button.\n\n  L1 : L 1 button.\n\n  R1 : R 1 button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button.\n\n  TOUCHPAD : Touchpad button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -14060,6 +14063,7 @@
                     "tooltip": "Represents a digital button on a GameCubeController.\n\nMembers:\n\n  A : A button.\n\n  X : X button.\n\n  B : B button.\n\n  Y : Y button.\n\n  START : Start button.\n\n  Z : Z button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button.\n\n  L : L button.\n\n  R : R button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -15257,6 +15261,7 @@
                     "tooltip": "Represents a digital button on an Gamepad.\n\nMembers:\n\n  FACE_DOWN : Face Down button.\n\n  FACE_RIGHT : Face Right button.\n\n  FACE_LEFT : Face Left button.\n\n  FACE_UP : Face Up button.\n\n  BACK : Back button.\n\n  GUIDE : Guide button.\n\n  START : Start button.\n\n  LEFT_STICK : Left stick button.\n\n  RIGHT_STICK : Right stick button.\n\n  LEFT_BUMPER : Left bumper button.\n\n  RIGHT_BUMPER : Right bumper button.\n\n  DPAD_UP : D-pad up button.\n\n  DPAD_DOWN : D-pad down button.\n\n  DPAD_LEFT : D-pad left button.\n\n  DPAD_RIGHT : D-pad right button.\n\n  MISC_1 : Miscellaneous 1 button.\n\n  RIGHT_PADDLE_1 : Right Paddle 1 button.\n\n  LEFT_PADDLE_1 : Left Paddle 1 button.\n\n  RIGHT_PADDLE_2 : Right Paddle 2 button.\n\n  LEFT_PADDLE_2 : Left Paddle 2 button.\n\n  TOUCHPAD : Touchpad button.\n\n  MISC_2 : Miscellaneous 2 button.\n\n  MISC_3 : Miscellaneous 3 button.\n\n  MISC_4 : Miscellaneous 4 button.\n\n  MISC_5 : Miscellaneous 5 button.\n\n  MISC_6 : Miscellaneous 6 button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -17436,6 +17441,7 @@
                     "tooltip": "Represents the various outputs that a HID may support.\n\nMembers:\n\n  NONE : No outputs supported.\n\n  MONO_LED : Mono LED support.\n\n  RGB_LED : RGB LED support.\n\n  PLAYER_LED : Player LED support.\n\n  RUMBLE : Rumble support.\n\n  TRIGGER_RUMBLE : Trigger rumble support."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -18829,6 +18835,7 @@
                     "tooltip": "Represents a digital button on a joystick.\n\nMembers:\n\n  TRIGGER_BUTTON : TRIGGER.\n\n  TOP_BUTTON : TOP."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -19924,6 +19931,7 @@
                     "tooltip": "Represents a digital button on a LogitechF310Controller.\n\nMembers:\n\n  A : A button.\n\n  B : B button.\n\n  X : X button.\n\n  Y : Y button.\n\n  BACK : Back button.\n\n  LOGITECH : Logitech button.\n\n  START : Start button.\n\n  LEFT_STICK : Left Stick button.\n\n  RIGHT_STICK : Right Stick button.\n\n  LEFT_BUMPER : Left Bumper button.\n\n  RIGHT_BUMPER : Right Bumper button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -23159,6 +23167,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -24193,6 +24202,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -24297,6 +24307,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -24335,6 +24346,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -25369,6 +25381,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -25473,6 +25486,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -25511,6 +25525,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -26564,6 +26579,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -26674,6 +26690,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -26712,6 +26729,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -27600,6 +27618,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -27680,6 +27699,7 @@
                 }
             ],
             "enums": [],
+            "hide": true,
             "instanceMethods": [],
             "instanceVariables": [],
             "isComponent": false,
@@ -34534,6 +34554,7 @@
                     "tooltip": "Represents a digital button on a SteamController.\n\nMembers:\n\n  A : A button.\n\n  B : B button.\n\n  X : X button.\n\n  Y : Y button.\n\n  MENU : Menu button.\n\n  STEAM : Steam button.\n\n  VIEW : View button.\n\n  LEFT_STICK : Left Stick button.\n\n  RIGHT_STICK : Right Stick button.\n\n  LEFT_BUMPER : Left Bumper button.\n\n  RIGHT_BUMPER : Right Bumper button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button.\n\n  QAM : QAM button.\n\n  RIGHT_PADDLE_1 : Right Paddle 1 button.\n\n  LEFT_PADDLE_1 : Left Paddle 1 button.\n\n  RIGHT_PADDLE_2 : Right Paddle 2 button.\n\n  LEFT_PADDLE_2 : Left Paddle 2 button.\n\n  LEFT_TOUCHPAD : Left Touchpad button.\n\n  RIGHT_TOUCHPAD : Right Touchpad button.\n\n  LEFT_STICK_TOUCH : Left Stick Touch button.\n\n  RIGHT_STICK_TOUCH : Right Stick Touch button.\n\n  LEFT_GRIP_TOUCH : Left Grip Touch button.\n\n  RIGHT_GRIP_TOUCH : Right Grip Touch button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -36602,6 +36623,7 @@
                     "tooltip": "Represents a digital button on a Switch2GCController.\n\nMembers:\n\n  A : A button.\n\n  X : X button.\n\n  B : B button.\n\n  Y : Y button.\n\n  HOME : Home button.\n\n  START : Start button.\n\n  ZL : ZL button.\n\n  Z : Z button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button.\n\n  CAPTURE : Capture button.\n\n  C : C button.\n\n  L : L button.\n\n  R : R button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -38057,6 +38079,7 @@
                     "tooltip": "Represents a digital button on a Switch2ProController.\n\nMembers:\n\n  B : B button.\n\n  A : A button.\n\n  Y : Y button.\n\n  X : X button.\n\n  MINUS : Minus button.\n\n  HOME : Home button.\n\n  PLUS : Plus button.\n\n  LEFT_STICK : Left Stick button.\n\n  RIGHT_STICK : Right Stick button.\n\n  L : L button.\n\n  R : R button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button.\n\n  CAPTURE : Capture button.\n\n  GR : GR button.\n\n  GL : GL button.\n\n  C : C button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -39677,6 +39700,7 @@
                     "tooltip": "Represents a digital button on a SwitchN64Controller.\n\nMembers:\n\n  A : A button.\n\n  B : B button.\n\n  C_LEFT : C Left button.\n\n  C_UP : C Up button.\n\n  CAPTURE : Capture button.\n\n  HOME : Home button.\n\n  START : Start button.\n\n  C_DOWN : C Down button.\n\n  L : L button.\n\n  R : R button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button.\n\n  C_RIGHT : C Right button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -41010,6 +41034,7 @@
                     "tooltip": "Represents a digital button on a SwitchProController.\n\nMembers:\n\n  B : B button.\n\n  A : A button.\n\n  Y : Y button.\n\n  X : X button.\n\n  MINUS : Minus button.\n\n  HOME : Home button.\n\n  PLUS : Plus button.\n\n  LEFT_STICK : Left Stick button.\n\n  RIGHT_STICK : Right Stick button.\n\n  L : L button.\n\n  R : R button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button.\n\n  CAPTURE : Capture button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [
@@ -44042,6 +44067,7 @@
                     "tooltip": "Represents a digital button on a XboxController.\n\nMembers:\n\n  A : A button.\n\n  B : B button.\n\n  X : X button.\n\n  Y : Y button.\n\n  VIEW : View button.\n\n  XBOX : Xbox button.\n\n  MENU : Menu button.\n\n  LEFT_STICK : Left Stick button.\n\n  RIGHT_STICK : Right Stick button.\n\n  LEFT_BUMPER : Left Bumper button.\n\n  RIGHT_BUMPER : Right Bumper button.\n\n  DPAD_UP : Dpad Up button.\n\n  DPAD_DOWN : Dpad Down button.\n\n  DPAD_LEFT : Dpad Left button.\n\n  DPAD_RIGHT : Dpad Right button."
                 }
             ],
+            "hide": true,
             "instanceMethods": [
                 {
                     "args": [

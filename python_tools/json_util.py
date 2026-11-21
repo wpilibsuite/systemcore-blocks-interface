@@ -33,6 +33,27 @@ _LIST_MODULE_NAMES_TO_HIDE = [
   'tunables',
 ]
 
+_LIST_CLASS_NAMES_TO_HIDE = [
+  'wpilib.DualSenseController',
+  'wpilib.DualSenseEdgeController',
+  'wpilib.DualShock4Controller',
+  'wpilib.GameCubeController',
+  'wpilib.Gamepad',
+  'wpilib.GenericHID',
+  'wpilib.Joystick',
+  'wpilib.LogitechF310Controller',
+  'wpilib.NiDsPS4Controller',
+  'wpilib.NiDsPS5Controller',
+  'wpilib.NiDsStadiaController',
+  'wpilib.NiDsXboxController',
+  'wpilib.SteamController',
+  'wpilib.Switch2GCController',
+  'wpilib.Switch2ProController',
+  'wpilib.SwitchN64Controller',
+  'wpilib.SwitchProController',
+  'wpilib.XboxController',
+]
+
 _LIST_IGNORED_SUPER_CLASSES = [
   telemetry.TelemetryLoggable,
   telemetry._telemetry.TelemetryLoggable,
@@ -121,6 +142,24 @@ def ignoreClass(cls: type) -> bool:
 
 def ignoreType(class_name: str) -> bool:
   return '._' in class_name
+
+def _hideModuleOrClassImpl(name: str, names_to_hide: list[str]) -> bool:
+  if name in names_to_hide:
+    return True
+  # Check the outer class/module.
+  last_dot = name.rfind('.')
+  while last_dot != -1:
+    name = name[:last_dot]
+    if name in names_to_hide:
+      return True
+    last_dot = name.rfind('.')
+  return False
+
+def hideModule(module_name: str) -> bool:
+  return _hideModuleOrClassImpl(module_name, _LIST_MODULE_NAMES_TO_HIDE)
+
+def hideClass(class_name: str) -> bool:
+  return _hideModuleOrClassImpl(class_name, _LIST_CLASS_NAMES_TO_HIDE)
 
 def createArgData(arg_name: str, arg_type: str, default_value: str = ''):
   if any(char.isupper() for char in arg_name):
@@ -373,7 +412,7 @@ class JsonGenerator:
     module_data = {}
     module_name = self._getModuleName(module)
     module_data[_KEY_MODULE_NAME] = module_name
-    if module_name in _LIST_MODULE_NAMES_TO_HIDE:
+    if hideModule(module_name):
       module_data[_KEY_HIDE] = True
 
     if any(char.isupper() for char in module_name):
@@ -621,7 +660,7 @@ class JsonGenerator:
     class_data[_KEY_MODULE_NAME] = module_name
     class_data[_KEY_IS_COMPONENT] = False  # Set to True later if it is a component.
 
-    if module_name in _LIST_MODULE_NAMES_TO_HIDE:
+    if hideModule(module_name) or hideClass(class_name):
       class_data[_KEY_HIDE] = True
 
     # Class variables.
