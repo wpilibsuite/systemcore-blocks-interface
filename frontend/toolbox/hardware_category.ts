@@ -21,6 +21,7 @@ import {
     getMechanismComponentReferenceBlock
 } from '../blocks/mrc_component_reference';
 import { Editor } from '../editor/editor';
+import { plugComponentArgs } from './component_args';
 
 export function getHardwareCategory(
     editor: Editor): toolboxItems.Category {
@@ -105,7 +106,9 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
       // Get the list of methods from the mechanism and add the blocks for calling the methods.
       const mechanismMethodBlocks: toolboxItems.Item[] = [];
       const methodsFromMechanism = editor.getMethodsFromMechanism(mechanism);
-      addMechanismMethodBlocks(mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks);
+      addMechanismMethodBlocks(
+          mechanismInRobot, methodsFromMechanism, mechanismMethodBlocks,
+          editor.getShowSimpleClassNames());
       if (mechanismMethodBlocks.length > 0) {
         mechanismCategories.push({
           kind: 'category',
@@ -123,7 +126,13 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
           // Get the blocks for this specific component.
           const blocks: toolboxItems.ContentsType[] = [];
           blocks.push(getMechanismComponentReferenceBlock(component, mechanismInRobot, editor.getShowSimpleClassNames()));
-          blocks.push(...getMechanismComponentMethodBlocks(component, mechanismInRobot));
+          const methodBlocks = getMechanismComponentMethodBlocks(
+              component, mechanismInRobot, editor.getShowSimpleClassNames());
+          plugComponentArgs(methodBlocks, componentsFromMechanism,
+              c => getMechanismComponentReferenceBlock(
+                  c, mechanismInRobot, editor.getShowSimpleClassNames()),
+              component);
+          blocks.push(...methodBlocks);
           componentBlocks.push({
             kind: 'category',
             name: component.name,
@@ -168,11 +177,15 @@ function getRobotComponentsCategory(editor: Editor): toolboxItems.Category {
 
   // Get the list of components from the robot and add the blocks for calling the
   // component functions.
-  editor.getComponentsFromRobot().forEach(component => {
+  const componentsFromRobot = editor.getComponentsFromRobot();
+  componentsFromRobot.forEach(component => {
     // Get the blocks for this specific component.
     const blocks: toolboxItems.ContentsType[] = [];
     blocks.push(getComponentReferenceBlock(component, editor.getShowSimpleClassNames()));
-    blocks.push(...getComponentMethodBlocks(component));
+    const methodBlocks = getComponentMethodBlocks(component, editor.getShowSimpleClassNames());
+    plugComponentArgs(methodBlocks, componentsFromRobot,
+        c => getComponentReferenceBlock(c, editor.getShowSimpleClassNames()), component);
+    blocks.push(...methodBlocks);
     contents.push({
       kind: 'category',
       name: component.name,
@@ -196,7 +209,7 @@ function getRobotMethodsCategory(editor: Editor): toolboxItems.Category {
   // Get the list of methods from the robot and add the blocks for calling the
   // robot functions.
   const methodsFromRobot = editor.getMethodsFromRobot();
-  addRobotMethodBlocks(methodsFromRobot, contents);
+  addRobotMethodBlocks(methodsFromRobot, contents, editor.getShowSimpleClassNames());
 
   return {
     kind: 'category',
@@ -238,11 +251,15 @@ function getComponentsCategory(
   // simpler to just call getAllComponentsFromWorkspace for both robot and mechanism modules. Since
   // robot modules don't have private components, getAllComponentsFromWorkspace is equivalent to
   // getComponentsFromWorkspace for a robot module.
-  editor.getAllComponentsFromWorkspace().forEach(component => {
+  const componentsFromWorkspace = editor.getAllComponentsFromWorkspace();
+  componentsFromWorkspace.forEach(component => {
     // Get the blocks for this specific component
     const blocks: toolboxItems.ContentsType[] = [];
     blocks.push(getComponentReferenceBlock(component, editor.getShowSimpleClassNames()));
-    blocks.push(...getComponentMethodBlocks(component));
+    const methodBlocks = getComponentMethodBlocks(component, editor.getShowSimpleClassNames());
+    plugComponentArgs(methodBlocks, componentsFromWorkspace,
+        c => getComponentReferenceBlock(c, editor.getShowSimpleClassNames()), component);
+    blocks.push(...methodBlocks);
     contents.push({
       kind: 'category',
       name: component.name,

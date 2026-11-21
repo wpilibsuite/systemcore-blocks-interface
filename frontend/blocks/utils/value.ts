@@ -12,7 +12,17 @@ import { createEnumBlock } from '../mrc_get_python_enum_value';
 import { createPort } from '../mrc_port';
 
 
-export function valueForFunctionArgInput(argType: string, argDefaultValue: string): any {
+export function valueForFunctionArgInput(
+    argType: string, argDefaultValue: string, showSimpleClassNames: boolean): any {
+  const enumData = getEnumData(getAlias(argType) || argType);
+  if (enumData && enumData.enumValues.length) {
+    // Use the argument's default value if it has one, otherwise the first value of the enum.
+    const enumValue = enumValueFromDefaultValue(argDefaultValue, enumData.enumValues) ||
+        enumData.enumValues[0];
+    return {
+      shadow: createEnumBlock(enumValue, enumData, showSimpleClassNames),
+    };
+  }
   const valueVarName = variable.varNameForType(argType);
   if (valueVarName) {
     return variable.createVariableGetterBlockValue(valueVarName);
@@ -29,7 +39,7 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
           return createNumberShadowValue(intNum);
         }
       } else {
-        return createNumberBlock(0);
+        return createNumberShadowValue(0);
       }
       break;
     case 'float':
@@ -39,7 +49,7 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
           return createNumberShadowValue(floatNum)
         }
       } else {
-        return createNumberBlock(0);
+        return createNumberShadowValue(0);
       }
       break;
     case 'str':
@@ -54,7 +64,7 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
           return createTextShadowValue(textValue);
         }
       } else {
-        return createTextBlock('');
+        return createTextShadowValue('');
       }
       break;
     case 'bool':
@@ -66,11 +76,22 @@ export function valueForFunctionArgInput(argType: string, argDefaultValue: strin
           return createBooleanShadowValue(false);
         }
       } else {
-        return createBooleanBlock(false);
+        return createBooleanShadowValue(false);
       }
       break;
   }
   return null;
+}
+
+/**
+ * Returns the enum value that the given default value of an argument refers to, or '' if it
+ * doesn't refer to one of the given enum values. Default values of enum arguments look like
+ * "<DebounceType.RISING: 0>".
+ */
+function enumValueFromDefaultValue(argDefaultValue: string, enumValues: string[]): string {
+  const match = argDefaultValue.match(/^<(?:\w+\.)*(\w+): .*>$/);
+  const enumValue = match ? match[1] : argDefaultValue;
+  return enumValues.includes(enumValue) ? enumValue : '';
 }
 
 export function valueForComponentArgInput(argType: string, argDefaultValue: string, showSimpleClassNames: boolean): any {

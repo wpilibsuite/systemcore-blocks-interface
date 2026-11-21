@@ -49,6 +49,7 @@ import {
 import { useUserSettings } from './reactComponents/useUserSettings';
 import AppTour from './reactComponents/AppTour';
 import ConnectionLostModal from './reactComponents/ConnectionLostModal';
+import BlocklyDialogs from './reactComponents/BlocklyDialogs';
 
 /** Error message for storage opening failures. */
 const STORAGE_ERROR_MESSAGE = 'Failed to open client side storage. Caught the following error...';
@@ -696,6 +697,7 @@ const AppContent: React.FC<AppContentProps> = ({ project, setProject }): React.J
       locale={getAntdLocale(i18n.language)}
     >
       {contextHolder}
+      <BlocklyDialogs />
       <AutosaveProvider
         saveCurrentTab={saveCurrentTab}
         activeTabKey={getActiveTabKey()}

@@ -1,0 +1,1297 @@
+{
+    "className": "rev_blocks.SparkMax",
+    "classVariables": [
+        {
+            "name": "API_BUILD_VERSION",
+            "tooltip": "",
+            "type": "int",
+            "writable": false
+        },
+        {
+            "name": "API_MAJOR_VERSION",
+            "tooltip": "",
+            "type": "int",
+            "writable": false
+        },
+        {
+            "name": "API_MINOR_VERSION",
+            "tooltip": "",
+            "type": "int",
+            "writable": false
+        },
+        {
+            "name": "API_VERSION",
+            "tooltip": "",
+            "type": "int",
+            "writable": false
+        }
+    ],
+    "constructors": [
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "can_port",
+                    "type": "wpilib.CANPort"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "device_id",
+                    "type": "int"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "type",
+                    "type": "rev.SparkLowLevel.MotorType"
+                }
+            ],
+            "componentArgs": [
+                {
+                    "defaultValue": "0__1",
+                    "name": "spark_max",
+                    "type": "SYSTEMCORE_BUILTIN_CAN_PORT__CAN_DEVICE_ID"
+                },
+                {
+                    "defaultValue": "BRUSHLESS",
+                    "name": "type",
+                    "type": "rev.SparkLowLevel.MotorType"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "__init__",
+            "isComponent": true,
+            "returnType": "rev_blocks.SparkMax",
+            "tooltip": "Creates a Spark Max and resets it to its default settings, so that it only has the\n    settings that the robot code gives it.\n\n    :param can_port:  The CAN bus that the Spark Max is connected to.\n    :param device_id: The CAN device id of the Spark Max.\n    :param type:      The kind of motor connected to the Spark Max. NEO motors are brushless.\n    "
+        }
+    ],
+    "enums": [],
+    "instanceMethods": [
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "clear_faults",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Clears all sticky faults."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "config",
+                    "type": "rev.SparkBaseConfig"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "reset_mode",
+                    "type": "rev.ResetMode"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "persist_mode",
+                    "type": "rev.PersistMode"
+                }
+            ],
+            "declaringClassName": "rev.SparkMax",
+            "functionName": "configure",
+            "returnType": "rev.REVLibError",
+            "tooltip": ""
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "config",
+                    "type": "rev.SparkBaseConfig"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "reset_mode",
+                    "type": "rev.ResetMode"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "persist_mode",
+                    "type": "rev.PersistMode"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "configure_async",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Set the configuration for the SPARK without waiting for a response.\n\nIf @c resetMode is ResetMode::kResetSafeParameters, this\nmethod will reset safe writable parameters to their default values before\nsetting the given configuration. The following parameters will not be\nreset by this action: CAN ID, Motor Type, Idle Mode, PWM Input Deadband,\nand Duty Cycle Offset.\n\nIf @c persistMode is PersistMode::kPersistParameters, this\nmethod will save all parameters to the SPARK's non-volatile memory after\nsetting the given configuration. This will allow parameters to persist\nacross power cycles.\n\nNOTE: This method will immediately return REVLibError::kOk and the\naction will be done in the background. Any errors that occur will be\nreported to the driver station.\n\n:param config:       The desired SPARK configuration\n:param reset_mode:   Whether to reset safe parameters before setting the\n                     configuration\n:param persist_mode: Whether to persist the parameters after setting the\n                     configuration\n\n:returns: REVLibError::kOk\n          @see Configure()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "other",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "copy_settings_from",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Gives this Spark Max all of the settings that another Spark Max has been given, like its\n    idle mode, current limit, and PID gains, so that a group of motors can be set up by setting\n    up one of them. Settings that the other Spark Max hasn't been given stay the way they are on\n    this one. Which Spark Max it follows isn't copied, and neither is set_inverted, since motors\n    in a group often turn opposite ways.\n\n    :param other: The Spark Max to copy the settings of.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "create_sim_fault_manager",
+            "returnType": "None",
+            "tooltip": "Create the sim gui Fault Manager for this Spark Device"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "disable",
+            "returnType": "None",
+            "tooltip": "Common interface for disabling a motor."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "disable_soft_limits",
+            "returnType": "None",
+            "tooltip": "Lets the motor move to any position again, after set_soft_limits. This turns off REVLib's\n    soft_limit.forward_soft_limit_enabled and reverse_soft_limit_enabled\n    (softLimit.forwardSoftLimitEnabled and reverseSoftLimitEnabled in Java and C++)."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "leader",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "False",
+                    "name": "invert",
+                    "type": "bool"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "follow",
+            "returnType": "None",
+            "tooltip": "Makes this Spark Max do whatever another Spark Max does, for motors that drive the same\n    mechanism.\n\n    :param leader: The Spark Max to follow.\n    :param invert: Whether to turn the opposite way from the leader.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev.SparkMax",
+            "functionName": "get_absolute_encoder",
+            "returnType": "rev.SparkAbsoluteEncoder",
+            "tooltip": ""
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev.SparkMax",
+            "functionName": "get_alternate_encoder",
+            "returnType": "rev.SparkMaxAlternateEncoder",
+            "tooltip": "Returns an object for interfacing with a quadrature encoder connected to\nthe alternate encoder mode data port pins. These are defined as:\n\nPin 4 (Forward Limit Switch): Index\nPin 6 (Multi-function): Encoder A\nPin 8 (Reverse Limit Switch): Encoder B\n\nThis call will disable support for the limit switch inputs."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_analog",
+            "returnType": "rev.SparkAnalogSensor",
+            "tooltip": "Returns an object for interfacing with a connected analog sensor.\nBy default, the mode is set to kAbsolute, thus treating the\nsensor as an absolute sensor."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "get_applied_output",
+            "returnType": "float",
+            "tooltip": "Returns how hard the Spark Max is driving the motor, from -1 to 1."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "get_bus_voltage",
+            "returnType": "float",
+            "tooltip": "Returns the voltage that the Spark Max is getting from the battery, in volts."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "get_can_port",
+            "returnType": "wpilib.CANPort",
+            "tooltip": "Get the configured CAN port of the SPARK.\n\n:returns: wpi::CANPort The CAN port this device is connected to"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_closed_loop_controller",
+            "returnType": "rev.SparkClosedLoopController",
+            "tooltip": "Returns an object for interfacing with the integrated Closed Loop\nController."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "get_device_id",
+            "returnType": "int",
+            "tooltip": "Get the configured Device ID of the SPARK.\n\n:returns: int device ID"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_encoder",
+            "returnType": "rev.SparkRelativeEncoder",
+            "tooltip": "Returns an object for interfacing with the encoder connected to the\nencoder pins or front port of the SPARK MAX or the motor interface of the\nSPARK Flex."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "get_encoder_velocity",
+            "isCommon": true,
+            "returnType": "float",
+            "tooltip": "Returns the speed of the motor, in rotations per minute. This is REVLib's\n    get_encoder().get_velocity() (getEncoder().getVelocity() in Java and C++)."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_faults",
+            "returnType": "rev.Signal_SparkFaults",
+            "tooltip": "Get the active faults that are currently present on the SPARK. Faults\nare fatal errors that prevent the motor from running.\n\n:returns: Signal containing each fault and their active value"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "get_firmware_string",
+            "returnType": "str",
+            "tooltip": "Get the firmware version of the SPARK as a string.\n\n:returns: std::string Human readable firmware version string"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "get_firmware_version",
+            "returnType": "int",
+            "tooltip": "Get the firmware version of the SPARK.\n\n:returns: uint32_t Firmware version integer. Value is represented as 4\n          bytes, Major.Minor.Build H.Build L"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "get_firmware_version",
+            "returnType": "tuple[int, bool]",
+            "tooltip": ""
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev.SparkMax",
+            "functionName": "get_forward_limit_switch",
+            "returnType": "rev.SparkLimitSwitch",
+            "tooltip": ""
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_forward_soft_limit",
+            "returnType": "rev.SparkSoftLimit",
+            "tooltip": "Returns an object for interfacing with the forward soft limit switch"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_inverted",
+            "returnType": "bool",
+            "tooltip": "Common interface for returning the inversion state of a speed controller.\n\nThis call has no effect if the controller is a follower.\n\n:deprecated: Use SparkBaseConfigAccessor.GetInverted() via\n             SparkMax.configAccessor or SparkFlex.configAccessor instead\n\n:returns: isInverted The state of inversion, true is inverted."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_last_error",
+            "returnType": "rev.REVLibError",
+            "tooltip": "All device errors are tracked on a per thread basis for all\ndevices in that thread. This is meant to be called\nimmediately following another call that has the possibility\nof throwing an error to validate if an  error has occurred.\n\n:returns: the last error that was generated."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "get_motor_current",
+            "returnType": "float",
+            "tooltip": "Returns the current that the motor is drawing, in amps. This is REVLib's\n    get_output_current() (getOutputCurrent() in Java and C++)."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "get_motor_temperature",
+            "returnType": "float",
+            "tooltip": "Returns the temperature of the motor, in degrees Celsius."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "get_motor_type",
+            "returnType": "rev.SparkLowLevel.MotorType",
+            "tooltip": "Get the motor type setting for the SPARK.\n\n:returns: MotorType Motor type setting"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_output_current",
+            "returnType": "rev.Signal_double",
+            "tooltip": "Returns motor controller's output current in Amps.\n\n:returns: Signal containing the output current in Amps"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "get_periodic_status8",
+            "returnType": "rev.Signal_SparkPeriodicStatus8",
+            "tooltip": "Get Periodic Status 8 Signal for the SPARK.\n\n:returns: rev::util::Signal<PeriodicStatus8> Signal containing Periodic\n          status 8"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "get_periodic_status9",
+            "returnType": "rev.Signal_SparkPeriodicStatus9",
+            "tooltip": "Get Periodic Status 9 Signal for the SPARK.\n\n:returns: rev::util::Signal<PeriodicStatus9> Signal containing Periodic\n          status 9"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "get_relative_encoder_position",
+            "isCommon": true,
+            "returnType": "float",
+            "tooltip": "Returns the position of the motor, in rotations, measured from where the encoder was\n    zeroed. This is REVLib's get_encoder().get_position() (getEncoder().getPosition() in Java and\n    C++)."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev.SparkMax",
+            "functionName": "get_reverse_limit_switch",
+            "returnType": "rev.SparkLimitSwitch",
+            "tooltip": ""
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_reverse_soft_limit",
+            "returnType": "rev.SparkSoftLimit",
+            "tooltip": "Returns an object for interfacing with the reverse soft limit switch"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "get_serial_number",
+            "returnType": "list[int]",
+            "tooltip": "Get the unique serial number of the SPARK. Currently not implemented.\n\n:returns: std::vector<uint8_t> Vector of bytes representig the unique\n          serial number"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_sticky_faults",
+            "returnType": "rev.Signal_SparkFaults",
+            "tooltip": "Get the sticky faults that were present on the SPARK at one point\nsince the sticky faults were last cleared. Faults are fatal errors\nthat prevent the motor from running.\n\nSticky faults can be cleared with SparkBase::ClearFaults().\n\n:returns: Signal containing each fault and their sticky value"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_sticky_warnings",
+            "returnType": "rev.Signal_SparkWarnings",
+            "tooltip": "Get the sticky warnings that were present on the SPARK at one point\nsince the sticky warnings were last cleared. Warnings are non-fatal\nerrors.\n\nSticky warnings can be cleared with SparkBase::clearFaults().\n\n:returns: Signal containing each warning and their sticky value"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_throttle",
+            "isCommon": true,
+            "returnType": "float",
+            "tooltip": "Gets the throttle of the motor controller.\n\n:returns: The throttle where -1 represents full reverse and 1 represents\n          full forward."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "get_warnings",
+            "returnType": "rev.Signal_SparkWarnings",
+            "tooltip": "Get the active warnings that are currently present on the SPARK.\nWarnings are non-fatal errors.\n\n:returns: Signal containing each warning and their active value"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "has_active_fault",
+            "returnType": "bool",
+            "tooltip": "Returns whether the Spark Max has a fault right now, like the motor overheating."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "has_active_warning",
+            "returnType": "rev.Signal_bool",
+            "tooltip": "Get whether the SPARK has one or more active warnings.\n\n:returns: Signal containing true if there is an active warning\n          @see GetWarnings()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "has_sticky_fault",
+            "returnType": "rev.Signal_bool",
+            "tooltip": "Get whether the SPARK has one or more sticky faults.\n\n:returns: Signal containing true if there is a sticky fault\n          @see GetStickyFaults()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "has_sticky_warning",
+            "returnType": "rev.Signal_bool",
+            "tooltip": "Get whether the SPARK has one or more sticky warnings.\n\n:returns: Signal containing true if there is a sticky warning\n          @see GetStickyWarnings()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "is_at_setpoint",
+            "returnType": "bool",
+            "tooltip": "Returns whether the motor has reached the target of set_velocity_setpoint or\n    set_relative_position_setpoint, within the error allowed by set_allowed_closed_loop_error."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "is_follower",
+            "returnType": "rev.Signal_bool",
+            "tooltip": "Returns whether the controller is following another controller\n\n:returns: Signal containing True if this device is following another\n          controller false otherwise"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "is_forward_limit_switch_pressed",
+            "returnType": "bool",
+            "tooltip": "Returns whether the limit switch at the forward end of the motor's travel, wired to the\n    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way.\n    This is REVLib's get_forward_limit_switch().get() (getForwardLimitSwitch().isPressed() in Java and\n    C++)."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "is_reverse_limit_switch_pressed",
+            "returnType": "bool",
+            "tooltip": "Returns whether the limit switch at the reverse end of the motor's travel, wired to the\n    Spark Max's data port, is pressed. A pressed limit switch stops the motor going that way.\n    This is REVLib's get_reverse_limit_switch().get() (getReverseLimitSwitch().isPressed() in Java and\n    C++)."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "pause_follower_mode",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Pause follower mode.\n\nNOTE: If the SPARK experiences a power cycle and has follower mode\nconfigured, follower mode will automatically restart.\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "pause_follower_mode_async",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Pause follower mode without waiting for a response.\n\nNOTE: If the SPARK experiences a power cycle and has follower mode\nconfigured, follower mode will automatically restart.\n\nNOTE: This method will immediately return REVLibError::kOk and the\naction will be done in the background. Any errors that occur will be\nreported to the driver station.\n\n:returns: REVLibError::kOk\n          @see PauseFollowerMode()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "resume_follower_mode",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Resume follower mode if the SPARK has a valid follower mode config.\n\nNOTE: Follower mode will start automatically upon configuring follower\nmode. If the SPARK experiences a power cycle and has follower mode\nconfigured, follower mode will automatically restart. This method is only\nuseful after PauseFollowerMode() has been called.\n\n:returns: REVLibError::kOk if successful"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "resume_follower_mode_async",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Resume follower mode if the SPARK has a valid follower\nmode config without waiting for a response.\n\nNOTE: Follower mode will start automatically upon configuring follower\nmode. If the SPARK experiences a power cycle and has follower mode\nconfigured, follower mode will automatically restart. This method is only\nuseful after PauseFollowerMode() has been called.\n\nNOTE: This method will immediately return REVLibError::kOk and the\naction will be done in the background. Any errors that occur will be\nreported to the driver station.\n\n:returns: REVLibError::kOk\n          @see ResumeFollowerMode()"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "allowed_error",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_allowed_closed_loop_error",
+            "returnType": "None",
+            "tooltip": "Sets how close the motor has to be to the target of set_velocity_setpoint or set_relative_position_setpoint\n    for is_at_setpoint to be true. This is REVLib's closed_loop.allowed_closed_loop_error\n    (closedLoop.allowedClosedLoopError in Java and C++), the tolerance of the setpoint.\n\n    :param allowed_error: How close is close enough, in rotations for a position or RPM for a\n                          velocity.\n    :param slot:          The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                          set_relative_position_setpoint choose the slot to use.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "num_retries",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "set_can_max_retries",
+            "returnType": "None",
+            "tooltip": "Set the maximum number of times to retry an RTR CAN frame. This applies\nto calls such as SetParameter* and GetParameter* where a request is made\nto the SPARK motor controller and a response is expected. Anytime sending\nthe request or receiving the response fails, it will retry the request a\nnumber of times, no more than the value set by this method. If an attempt\nsucceeds, it will immediately return. The minimum number of retries is 0,\nwhere only a single attempt will be made and will return regardless of\nsuccess or failure.\n\nThe default maximum is 5 retries.\n\n:param num_retries: The maximum number of retries"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "milliseconds",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "set_can_timeout",
+            "returnType": "rev.REVLibError",
+            "tooltip": "Sets the timeout duration for waiting for CAN responses from the device.\n\n:param milliseconds: The timeout in milliseconds."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "set_control_frame_period_ms",
+            "returnType": "None",
+            "tooltip": "Set the control frame send period for the native CAN Send thread. To\ndisable periodic sends, set periodMs to 0.\n\n:param period_ms: The send period in milliseconds between 1ms and 100ms\n                  or set to 0 to disable periodic sends. Note this is not updated until\n                  the next call to Set() or SetReference()."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "amps",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_current_limit",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Limits the current that the motor can draw, which protects the motor and keeps it from\n    browning out the robot. This is REVLib's smart_current_limit (smartCurrentLimit in Java and\n    C++), which only works with brushless motors. The default is 80 amps, which is too much for a NEO 550: 40 amps is common for a NEO\n    and 20 amps for a NEO 550.\n\n    :param amps: The most current the motor can draw, in amps.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "average_depth",
+                    "type": "int"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "measurement_period_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_encoder_velocity_filter",
+            "returnType": "None",
+            "tooltip": "Sets how the Spark Max calculates the velocity of the encoder, which get_encoder_velocity\n    and set_velocity_setpoint use. The velocity is the change in position over the measurement period,\n    averaged over the last average_depth measurements. Smaller values make the velocity react\n    faster but be noisier. These are REVLib's encoder.quadrature_average_depth and\n    quadrature_measurement_period (encoder.quadratureAverageDepth and quadratureMeasurementPeriod\n    in Java and C++).\n\n    :param average_depth:         How many measurements to average, from 1 to 64. The default\n                                  is 8.\n    :param measurement_period_ms: The time to measure the change in position over, in\n                                  milliseconds, from 1 to 100. The default is 10.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "s",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "v",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "a",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_feedforward",
+            "returnType": "None",
+            "tooltip": "Sets the feedforward gains that set_velocity_setpoint and set_relative_position_setpoint add to the PID\n    output. Feedforward gives the motor the voltage that the target needs right away, so PID only\n    has to fix what's left, which makes reaching a velocity much faster and steadier. This is\n    REVLib's closed_loop.feed_forward.sva (closedLoop.feedForward.sva in Java and C++), which\n    sets kS, kV, and kA.\n\n    :param s: The voltage it takes to start the motor moving, in volts.\n    :param v: The voltage for each RPM of velocity, in volts per RPM.\n    :param a: The voltage for each RPM per second of acceleration, in volts per RPM per second.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                 set_relative_position_setpoint choose the slot to use.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "g",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_gravity_feedforward",
+            "returnType": "None",
+            "tooltip": "Sets the voltage that holds an elevator up against gravity, which set_velocity_setpoint and\n    set_relative_position_setpoint add to the PID output. This is REVLib's\n    closed_loop.feed_forward.g (closedLoop.feedForward.kG in Java and C++).\n\n    :param g: The voltage it takes to hold the elevator still, in volts.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                 set_relative_position_setpoint choose the slot to use.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "idle_mode",
+                    "type": "rev.SparkBaseConfig.IdleMode"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_idle_mode",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Sets what the motor does when it is stopped: BRAKE holds it in place, COAST lets it spin\n    freely.\n\n    :param idle_mode: BRAKE or COAST.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "is_inverted",
+                    "type": "bool"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "set_inverted",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Common interface for inverting direction of a speed controller.\n\nThis call has no effect if the controller is a follower. To invert\na follower, see the follow() method.\n\n:deprecated: Use SparkBaseConfig.Inverted() with Configure() instead\n\n:param is_inverted: The state of inversion, true is inverted."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "min_output",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "max_output",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_output_range",
+            "returnType": "None",
+            "tooltip": "Limits how hard set_velocity_setpoint and set_relative_position_setpoint can drive the motor, which is\n    useful while tuning PID on a new mechanism. The default is -1 to 1.\n\n    :param min_output: The lowest output, from -1 to 1.\n    :param max_output: The highest output, from -1 to 1.\n    :param slot:       The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                       set_relative_position_setpoint choose the slot to use.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkLowLevel"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "timeout_ms",
+                    "type": "int"
+                }
+            ],
+            "declaringClassName": "rev.SparkLowLevel",
+            "functionName": "set_periodic_frame_timeout",
+            "returnType": "None",
+            "tooltip": "Set the amount of time to wait for a periodic status frame before\nreturning a timeout error. This timeout will apply to all periodic status\nframes for the SPARK motor controller.\n\nTo prevent invalid timeout errors, the minimum timeout for a given\nperiodic status is 2.1 times its period. To use the minimum timeout for\nall status frames, set timeoutMs to 0.\n\nThe default timeout is 500ms.\n\n:param timeout_ms: The timeout in milliseconds"
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "p",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "i",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "d",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_pid",
+            "returnType": "None",
+            "tooltip": "Sets the PID gains that set_velocity_setpoint and set_relative_position_setpoint use to reach their target.\n    Each slot has its own gains, so a mechanism can switch between sets of gains, like one for\n    moving and one for holding still.\n\n    :param p:    The proportional gain.\n    :param i:    The integral gain.\n    :param d:    The derivative gain.\n    :param slot: The closed loop slot to set the gains for, SLOT0 to SLOT3. set_velocity_setpoint and\n                 set_relative_position_setpoint choose the slot to use.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "seconds",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_ramp_rate",
+            "returnType": "None",
+            "tooltip": "Sets how long the motor takes to go from stopped to full power, so that it doesn't jerk.\n    This sets both of REVLib's open_loop_ramp_rate and closed_loop_ramp_rate (openLoopRampRate\n    and closedLoopRampRate in Java and C++).\n\n    :param seconds: The time from stopped to full power, in seconds. 0 turns ramping off.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "position",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_relative_encoder_position",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Changes the position that the encoder reports, without moving the motor. 0 zeroes it.\n    This is REVLib's get_encoder().set_position() (getEncoder().setPosition() in Java and C++).\n\n    :param position: The new position, in rotations.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "position",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_relative_position_setpoint",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Turns the motor to the given position, using the PID gains from set_pid. This is REVLib's\n    get_closed_loop_controller().set_setpoint with ControlType.POSITION\n    (getClosedLoopController().setSetpoint with ControlType.kPosition in Java and C++).\n\n    :param position: The position, in rotations, measured from where the encoder was zeroed.\n    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "reverse_limit",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "forward_limit",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_soft_limits",
+            "returnType": "None",
+            "tooltip": "Keeps the motor between two encoder positions, so that an arm or elevator can't be driven\n    past the end of its travel. The Spark Max stops the motor itself, whatever the robot code\n    tells it to do.\n\n    :param reverse_limit: The lowest position, in rotations.\n    :param forward_limit: The highest position, in rotations.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "throttle",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "set_throttle",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Sets the throttle of the motor controller.\n\n:param throttle: The throttle where -1 indicates full reverse and 1\n                 indicates full forward."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "v",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_velocity_feedforward",
+            "returnType": "None",
+            "tooltip": "Sets only the velocity feedforward gain (kV), which set_velocity_setpoint adds to the PID output,\n    leaving the other feedforward gains the way they are. It isn't used by\n    set_relative_position_setpoint. This is REVLib's closed_loop.feed_forward.v\n    (closedLoop.feedForward.kV in Java and C++).\n\n    :param v:    The voltage for each RPM of velocity, in volts per RPM.\n    :param slot: The closed loop slot to set it for, SLOT0 to SLOT3. set_velocity_setpoint and\n                 set_relative_position_setpoint choose the slot to use.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "velocity",
+                    "type": "float"
+                },
+                {
+                    "defaultValue": "<ClosedLoopSlot.SLOT0: 0>",
+                    "name": "slot",
+                    "type": "rev.ClosedLoopSlot"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_velocity_setpoint",
+            "isCommon": true,
+            "returnType": "None",
+            "tooltip": "Spins the motor at the given speed, using the PID gains from set_pid. This is REVLib's\n    get_closed_loop_controller().set_setpoint with ControlType.VELOCITY\n    (getClosedLoopController().setSetpoint with ControlType.kVelocity in Java and C++).\n\n    :param velocity: The speed, in rotations per minute.\n    :param slot:     The closed loop slot whose gains and settings to use, SLOT0 to SLOT3.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "output",
+                    "type": "wpimath.units.volts"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "set_voltage",
+            "returnType": "None",
+            "tooltip": "Sets the voltage output of the SpeedController.  This is equivalent to\na call to SetReference(output, SparkBase::ControlType::kVoltage). The\nbehavior of this call differs slightly from the WPILib documentation for\nthis call since the device internally sets the desired voltage (not a\ncompensation value). That means that this *can* be a 'set-and-forget'\ncall.\n\n:param output: The voltage to output."
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev_blocks.SparkMax"
+                },
+                {
+                    "defaultValue": "",
+                    "name": "volts",
+                    "type": "float"
+                }
+            ],
+            "declaringClassName": "rev_blocks.SparkMax",
+            "functionName": "set_voltage_compensation",
+            "returnType": "None",
+            "tooltip": "Makes the motor run the same no matter how charged the battery is. Throttle and PID\n    outputs are a fraction of the given voltage instead of a fraction of the battery voltage, so\n    with 12 volts, a throttle of 0.5 is 6 volts. 12 volts is common.\n\n    :param volts: The voltage that a throttle of 1.0 means, in volts. 0 turns voltage\n                  compensation off.\n    "
+        },
+        {
+            "args": [
+                {
+                    "defaultValue": "",
+                    "name": "self",
+                    "type": "rev.SparkBase"
+                }
+            ],
+            "declaringClassName": "rev.SparkBase",
+            "functionName": "stop_motor",
+            "returnType": "None",
+            "tooltip": "Common interface to stop the motor until Set is called again."
+        }
+    ],
+    "instanceVariables": [
+        {
+            "name": "config_accessor",
+            "tooltip": "Accessor for SPARK parameter values. This object contains fields and\nmethods to retrieve parameters that have been applied to the device. To\nset parameters, see SparkBaseConfig and SparkBase::Configure.\n\nNOTE: This uses calls that are blocking to retrieve parameters and should\nbe used infrequently.",
+            "type": "rev.SparkMaxConfigAccessor",
+            "writable": false
+        }
+    ],
+    "isComponent": true,
+    "moduleName": "rev_blocks",
+    "staticMethods": []
+}

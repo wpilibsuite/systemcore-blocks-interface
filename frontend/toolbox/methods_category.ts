@@ -105,7 +105,7 @@ class MethodsCategory {
 
     // Get blocks for calling methods defined in the current workspace.
     const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
-    addInstanceWithinBlocks(methodsFromWorkspace, contents);
+    addInstanceWithinBlocks(methodsFromWorkspace, contents, editor.getShowSimpleClassNames());
 
     const toolboxInfo = {
       contents: contents,

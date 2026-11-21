@@ -21,6 +21,11 @@ import rev
 EXAMPLE_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.join(EXAMPLE_DIR, '..', '..')
 sys.path.append(os.path.join(REPO_DIR, 'python_tools'))
+# The library's own python package, which build.sh builds into a wheel.
+sys.path.append(os.path.join(EXAMPLE_DIR, 'python'))
+
+# The library's python package
+import rev_blocks
 
 # python_tools modules
 import component
@@ -68,6 +73,35 @@ COMPONENTS = {
       'is_connected',
     ],
   ),
+  # rev_blocks.SparkMax is a rev.SparkMax that can be set up one setting at a time, since
+  # rev.SparkMaxConfig is hard to use with blocks.
+  'rev_blocks.SparkMax': component.Component('rev_blocks.SparkMax',
+    expected_constructor_arg_names=[
+      'can_port', 'device_id', 'type',
+    ],
+    component_args=[
+      # A Spark Max can't be on a MotionCore CAN bus, so its port only offers the Systemcore's
+      # own CAN buses. The device id defaults to 1, which is what most teams number their first
+      # Spark Max.
+      json_util.createArgData(
+          'spark_max', 'SYSTEMCORE_BUILTIN_CAN_PORT__CAN_DEVICE_ID', '0__1'),
+      json_util.createArgData('type', '', 'BRUSHLESS'),
+    ],
+     # TODO: decide which methods are common.
+    common_method_names=[
+      'copy_settings_from',
+      'get_encoder_velocity',
+      'get_relative_encoder_position',
+      'get_throttle',
+      'set_current_limit',
+      'set_idle_mode',
+      'set_inverted',
+      'set_relative_encoder_position',
+      'set_relative_position_setpoint',
+      'set_throttle',
+      'set_velocity_setpoint',
+    ],
+  ),
 }
 
 
@@ -80,7 +114,8 @@ def main():
 
   # The generator for the built-in modules gives the rev generator the names of their classes.
   json_generator_robotpy = json_util.JsonGenerator(robotpy_modules.getRobotPyModules())
-  json_generator_rev = json_util.JsonGenerator([rev], [json_generator_robotpy], COMPONENTS)
+  json_generator_rev = json_util.JsonGenerator(
+      [rev, rev_blocks], [json_generator_robotpy], COMPONENTS)
   json_generator_rev.writeBlocksLibFiles(EXAMPLE_DIR, args.add_unused_to_ignore)
 
 

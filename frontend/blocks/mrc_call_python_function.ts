@@ -28,7 +28,8 @@ import { CustomDropdownWithoutValidation } from '../fields/FieldDropdown';
 import {
     DEFAULT_OPTION_VALUE,
     FieldTypedVariable,
-    FieldTypedVariableOrDefault } from '../fields/field_typed_variable';
+    FieldTypedVariableOrDefault,
+    getAllowedVariableTypes } from '../fields/field_typed_variable';
 import { createFieldNonEditableText } from '../fields/FieldNonEditableText';
 import { MRC_STYLE_FUNCTIONS } from '../themes/styles'
 import * as toolboxItems from '../toolbox/items';
@@ -43,7 +44,7 @@ import { makeOneContents } from '../toolbox/python_data_toolbox';
 
 export const BLOCK_NAME = 'mrc_call_python_function';
 
-enum FunctionKind {
+export enum FunctionKind {
   BUILT_IN = 'built-in',
   MODULE = 'module',
   STATIC = 'static',
@@ -966,7 +967,8 @@ const CALL_PYTHON_FUNCTION = {
       return;
     }
     const variable = this.workspace.getVariableMap().getVariableById(this.getFieldValue(FIELD_VARIABLE));
-    if (variable && variable.getType() !== this.mrcModuleOrClassName) {
+    if (variable &&
+        !getAllowedVariableTypes(this.mrcModuleOrClassName).includes(variable.getType())) {
       warnings.push(Blockly.Msg.WARNING_CALL_INSTANCE_VARIABLE_WRONG_TYPE
           .replace('{{variableName}}', variable.getName())
           .replace('{{className}}', this.mrcModuleOrClassName));
@@ -1578,14 +1580,15 @@ export function mutateMethodCallers(
 
 export function addBuiltInFunctionBlocks(
     functions: FunctionData[],
-    contents: toolboxItems.ContentsType[]) {
-  functions.forEach(functionData => {
-    contents.push(createBuiltInMethodBlock(functionData));
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
+  withShortFunctions(functions, showSimpleClassNames).forEach(functionData => {
+    contents.push(createBuiltInMethodBlock(functionData, showSimpleClassNames));
   });
 }
 
 function createBuiltInMethodBlock(
-    functionData: FunctionData): toolboxItems.Block  {
+    functionData: FunctionData, showSimpleClassNames: boolean): toolboxItems.Block  {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.BUILT_IN,
     returnType: functionData.returnType,
@@ -1595,7 +1598,7 @@ function createBuiltInMethodBlock(
   const fields: {[key: string]: any} = {};
   fields[FIELD_FUNCTION_NAME] = functionData.functionName;
   const inputs: {[key: string]: any} = {};
-  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
+  processArgs(functionData.args, extraState, inputs, showSimpleClassNames, functionData.declaringClassName);
   return createBlock(extraState, fields, inputs);
 }
 
@@ -1603,6 +1606,7 @@ function processArgs(
     args: ArgData[],
     extraState: CallPythonFunctionExtraState,
     inputs: {[key: string]: any},
+    showSimpleClassNames: boolean,
     declaringClassName?: string) {
   for (let i = 0; i < args.length; i++) {
     let argName = args[i].name;
@@ -1614,31 +1618,69 @@ function processArgs(
       type: args[i].type,
     });
     // Plug a block (or shadow block) into the argument input socket, if appropriate.
-    const input = value.valueForFunctionArgInput(args[i].type, args[i].defaultValue);
+    const input = value.valueForFunctionArgInput(args[i].type, args[i].defaultValue, showSimpleClassNames);
     if (input) {
       inputs['ARG' + i] = input;
     }
   }
 }
 
+/**
+ * Returns the given functions, with a copy of each function without its last arguments if they
+ * have defaults that a block can't show, like a Pose2d. A block for the copy leaves those
+ * arguments out of the call, so that python uses their defaults. Defaults that a block can show,
+ * like numbers and enum values, are plugged in as shadow blocks, so they don't need a copy.
+ *
+ * The functions with the same name (overloads, like the constructors of a class, and the copies)
+ * are put together where the first of them was, from the fewest arguments to the most.
+ */
+function withShortFunctions(
+    functions: FunctionData[], showSimpleClassNames: boolean): FunctionData[] {
+  const functionsByName = new Map<string, FunctionData[]>();
+  for (const functionData of functions) {
+    let sameName = functionsByName.get(functionData.functionName);
+    if (!sameName) {
+      sameName = [];
+      functionsByName.set(functionData.functionName, sameName);
+    }
+    const firstHiddenDefault = functionData.args.findIndex(arg => arg.defaultValue &&
+        !value.valueForFunctionArgInput(arg.type, arg.defaultValue, showSimpleClassNames)?.shadow);
+    if (firstHiddenDefault !== -1 &&
+        functionData.args.slice(firstHiddenDefault).every(arg => arg.defaultValue)) {
+      sameName.push({...functionData, args: functionData.args.slice(0, firstHiddenDefault)});
+    }
+    sameName.push(functionData);
+  }
+  // Array.prototype.sort is stable, so functions with the same number of arguments keep their
+  // order.
+  return [...functionsByName.values()].flatMap(
+      sameName => sameName.sort((a, b) => a.args.length - b.args.length));
+}
+
+/**
+ * Returns whether a block with the given args calls the given function. The block can leave out
+ * the function's last arguments if they have defaults (see withShortFunctions).
+ */
 function blockArgsMatchFunctionDataArgs(
     blockArgs: FunctionArg[],
     functionData: FunctionData) {
-  if (blockArgs.length === functionData.args.length) {
-    for (let i = 0; i < blockArgs.length; i++) {
-      let argName = functionData.args[i].name
-      if (i === 0 && argName === 'self' && functionData.declaringClassName) {
-        argName = variable.getSelfArgName(functionData.declaringClassName)
-      }
-      if (argName != blockArgs[i].name) {
-        return false;
-      }
-      if (functionData.args[i].type != blockArgs[i].type) {
-        return false;
-      }
-    }
-  }
-  return true;
+  return argsMatchWithDefaults(functionData.args, blockArgs, (arg, i) =>
+      (i === 0 && arg.name === 'self' && functionData.declaringClassName) ?
+          variable.getSelfArgName(functionData.declaringClassName) : arg.name);
+}
+
+/**
+ * Returns whether args are the first of functionArgs, with the same names and types, and the rest
+ * of functionArgs have defaults. argName returns the name to compare for an arg of functionArgs.
+ */
+function argsMatchWithDefaults(
+    functionArgs: ArgData[],
+    args: {name: string, type: string}[],
+    argName: (arg: ArgData, i: number) => string = arg => arg.name): boolean {
+  return args.length <= functionArgs.length &&
+      args.every((arg, i) =>
+          argName(functionArgs[i], i) === arg.name && functionArgs[i].type === arg.type) &&
+      functionArgs.slice(args.length).every(arg => arg.defaultValue);
 }
 
 
@@ -1659,14 +1701,15 @@ function createBlock(
 export function addModuleFunctionBlocks(
     moduleData: ModuleData,
     commonContents: toolboxItems.ContentsType[],
-    moreContents: toolboxItems.ContentsType[]) {
-  moduleData.functions.forEach(functionData => {
+    moreContents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
+  withShortFunctions(moduleData.functions, showSimpleClassNames).forEach(functionData => {
     const block = createModuleFunctionOrStaticMethodBlock(
         FunctionKind.MODULE,
         moduleData.moduleName,
         moduleData.moduleName,
         functionData,
-        false);
+        showSimpleClassNames);
     if (functionData.isCommon) {
       commonContents.push(block);
     } else {
@@ -1680,7 +1723,7 @@ export function addStaticMethodBlocks(
     commonContents: toolboxItems.ContentsType[],
     moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
-  classData.staticMethods.forEach(functionData => {
+  withShortFunctions(classData.staticMethods, showSimpleClassNames).forEach(functionData => {
     if (functionData.declaringClassName) {
       const block = createModuleFunctionOrStaticMethodBlock(
           FunctionKind.STATIC,
@@ -1719,7 +1762,7 @@ function createModuleFunctionOrStaticMethodBlock(
   }
   fields[FIELD_FUNCTION_NAME] = functionData.functionName;
   const inputs: {[key: string]: any} = {};
-  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
+  processArgs(functionData.args, extraState, inputs, showSimpleClassNames, functionData.declaringClassName);
   return createBlock(extraState, fields, inputs);
 }
 
@@ -1728,7 +1771,7 @@ export function addConstructorBlocks(
     commonContents: toolboxItems.ContentsType[],
     moreContents: toolboxItems.ContentsType[],
     showSimpleClassNames: boolean) {
-  classData.constructors.forEach(functionData => {
+  withShortFunctions(classData.constructors, showSimpleClassNames).forEach(functionData => {
     const block = createConstructorBlock(classData.moduleName, functionData, showSimpleClassNames);
     if (functionData.isCommon) {
       commonContents.push(block);
@@ -1756,45 +1799,7 @@ function createConstructorBlock(
   const fields: {[key: string]: any} = {};
   fields[FIELD_MODULE_OR_CLASS_NAME] = classNameToShowOnBlocks(functionData.declaringClassName, showSimpleClassNames);
   const inputs: {[key: string]: any} = {};
-  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
-  return createBlock(extraState, fields, inputs);
-}
-
-export function addInstanceMethodBlocks(
-    classData: ClassData,
-    commonContents: toolboxItems.ContentsType[],
-    moreContents: toolboxItems.ContentsType[],
-    showSimpleClassNames: boolean) {
-  classData.instanceMethods.forEach(functionData => {
-    const block = createInstanceMethodBlock(functionData, showSimpleClassNames);
-    if (functionData.isCommon) {
-      commonContents.push(block);
-    } else {
-      moreContents.push(block);
-    }
-  });
-}
-
-function createInstanceMethodBlock(
-    functionData: FunctionData,
-    showSimpleClassNames: boolean): toolboxItems.Block {
-  if (!functionData.declaringClassName) {
-    throw new Error('functionData.declaringClassName is missing');
-  }
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.INSTANCE,
-    moduleOrClassName: functionData.declaringClassName,
-    returnType: functionData.returnType,
-    args: [],
-    tooltip: functionData.tooltip,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_MODULE_OR_CLASS_NAME] = classNameToShowOnBlocks(functionData.declaringClassName, showSimpleClassNames);
-  fields[FIELD_FUNCTION_NAME] = functionData.functionName;
-  const inputs: {[key: string]: any} = {};
-  // We include the arg for the self argument for INSTANCE methods because we want a socket that
-  // the user can plug the object into.
-  processArgs(functionData.args, extraState, inputs, functionData.declaringClassName);
+  processArgs(functionData.args, extraState, inputs, showSimpleClassNames, functionData.declaringClassName);
   return createBlock(extraState, fields, inputs);
 }
 
@@ -1809,14 +1814,16 @@ export function addInstanceVariableMethodBlocks(
     classData: ClassData,
     commonContents: toolboxItems.ContentsType[],
     moreContents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean,
     defaultModuleData?: ModuleData) {
-  classData.instanceMethods.forEach(functionData => {
+  withShortFunctions(classData.instanceMethods, showSimpleClassNames).forEach(functionData => {
     const argsWithoutSelf = functionData.args.slice(1);
     const hasDefault = !!defaultModuleData && defaultModuleData.functions.some(moduleFunction =>
         moduleFunction.functionName === functionData.functionName &&
-        argsMatch(moduleFunction.args, argsWithoutSelf));
+        argsMatchWithDefaults(moduleFunction.args, argsWithoutSelf));
     const block = createInstanceVariableMethodBlock(
-        classData.className, functionData, hasDefault ? defaultModuleData!.moduleName : '');
+        classData.className, functionData, hasDefault ? defaultModuleData!.moduleName : '',
+        showSimpleClassNames);
     if (functionData.isCommon) {
       commonContents.push(block);
     } else {
@@ -1825,15 +1832,11 @@ export function addInstanceVariableMethodBlocks(
   });
 }
 
-function argsMatch(args1: ArgData[], args2: ArgData[]): boolean {
-  return args1.length === args2.length &&
-      args1.every((arg, i) => arg.name === args2[i].name && arg.type === args2[i].type);
-}
-
 function createInstanceVariableMethodBlock(
     className: string,
     functionData: FunctionData,
-    defaultModuleName: string): toolboxItems.Block {
+    defaultModuleName: string,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const extraStateForSelf: Partial<CallPythonFunctionExtraState> = {
     moduleOrClassName: className,
   };
@@ -1851,7 +1854,8 @@ function createInstanceVariableMethodBlock(
       FunctionKind.INSTANCE_VARIABLE,
       extraStateForSelf,
       fields,
-      functionData);
+      functionData,
+      showSimpleClassNames);
 }
 
 /**
@@ -1862,7 +1866,8 @@ function createInstanceMethodBlockWithSelfField(
     functionKind: FunctionKind,
     extraStateForSelf: Partial<CallPythonFunctionExtraState>,
     fieldsForSelf: {[key: string]: any},
-    functionData: FunctionData): toolboxItems.Block {
+    functionData: FunctionData,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: functionKind,
     returnType: functionData.returnType,
@@ -1876,19 +1881,21 @@ function createInstanceMethodBlockWithSelfField(
   // The 0 argument is 'self', but self is represented by fields.
   // We don't include the arg for the self argument because we don't need a socket for it.
   const argsWithoutSelf = functionData.args.slice(1);
-  processArgs(argsWithoutSelf, extraState, inputs);
+  processArgs(argsWithoutSelf, extraState, inputs, showSimpleClassNames);
   return createBlock(extraState, fields, inputs);
 }
 
 export function addInstanceWithinBlocks(
     methods: storageModuleContent.Method[],
-    contents: toolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   methods.forEach(method => {
-    contents.push(createInstanceWithinBlock(method));
+    contents.push(createInstanceWithinBlock(method, showSimpleClassNames));
   });
 }
 
-function createInstanceWithinBlock(method: storageModuleContent.Method): toolboxItems.Block {
+function createInstanceWithinBlock(
+    method: storageModuleContent.Method, showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_WITHIN,
     returnType: method.returnType,
@@ -1909,20 +1916,21 @@ function createInstanceWithinBlock(method: storageModuleContent.Method): toolbox
       defaultValue: '',
     });
   }
-  processArgs(args, extraState, inputs);
+  processArgs(args, extraState, inputs, showSimpleClassNames);
   return createBlock(extraState, fields, inputs);
 }
 
 export function getInstanceComponentBlocks(
-    component: storageModuleContent.Component): toolboxItems.ContentsType[] {
+    component: storageModuleContent.Component,
+    showSimpleClassNames: boolean): toolboxItems.ContentsType[] {
   const commonContents: toolboxItems.ContentsType[] = [];
   const moreContents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
   if (classData) {
-    const functions = classData.instanceMethods;
+    const functions = withShortFunctions(classData.instanceMethods, showSimpleClassNames);
     for (const functionData of functions) {
-      const block = createInstanceComponentBlock(component, functionData);
+      const block = createInstanceComponentBlock(component, functionData, showSimpleClassNames);
       if (functionData.isCommon) {
         commonContents.push(block);
       } else {
@@ -1934,15 +1942,18 @@ export function getInstanceComponentBlocks(
 }
 
 export function getInstanceMechanismComponentBlocks(
-    component: storageModuleContent.Component, mechanismInRobot: storageModuleContent.MechanismInRobot): toolboxItems.ContentsType[] {
+    component: storageModuleContent.Component,
+    mechanismInRobot: storageModuleContent.MechanismInRobot,
+    showSimpleClassNames: boolean): toolboxItems.ContentsType[] {
   const commonContents: toolboxItems.ContentsType[] = [];
   const moreContents: toolboxItems.ContentsType[] = [];
 
   const classData = getClassData(component.className);
   if (classData) {
-    const functions = classData.instanceMethods;
+    const functions = withShortFunctions(classData.instanceMethods, showSimpleClassNames);
     for (const functionData of functions) {
-      const block = createInstanceMechanismComponentBlock(component, functionData, mechanismInRobot);
+      const block = createInstanceMechanismComponentBlock(
+          component, functionData, mechanismInRobot, showSimpleClassNames);
       if (functionData.isCommon) {
         commonContents.push(block);
       } else {
@@ -1955,7 +1966,9 @@ export function getInstanceMechanismComponentBlocks(
 }
 
 function createInstanceComponentBlock(
-    component: storageModuleContent.Component, functionData: FunctionData): toolboxItems.Block {
+    component: storageModuleContent.Component,
+    functionData: FunctionData,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const fields: {[key: string]: any} = {};
   fields[FIELD_COMPONENT_NAME] = component.name;
   return createInstanceMethodBlockWithSelfField(
@@ -1967,13 +1980,15 @@ function createInstanceComponentBlock(
         componentId: component.componentId,
       },
       fields,
-      functionData);
+      functionData,
+      showSimpleClassNames);
 }
 
 function createInstanceMechanismComponentBlock(
     component: storageModuleContent.Component,
-    functionData: FunctionData, 
-    mechanismInRobot: storageModuleContent.MechanismInRobot): toolboxItems.Block {
+    functionData: FunctionData,
+    mechanismInRobot: storageModuleContent.MechanismInRobot,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const fields: {[key: string]: any} = {};
   fields[FIELD_MECHANISM_NAME] = mechanismInRobot.name;
   fields[FIELD_COMPONENT_NAME] = component.name;
@@ -1987,18 +2002,21 @@ function createInstanceMechanismComponentBlock(
         mechanismId: mechanismInRobot.mechanismId,
       },
       fields,
-      functionData);
+      functionData,
+      showSimpleClassNames);
 }
 
 export function addInstanceRobotBlocks(
     methods: storageModuleContent.Method[],
-    contents: toolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   methods.forEach(method => {
-    contents.push(createInstanceRobotBlock(method));
+    contents.push(createInstanceRobotBlock(method, showSimpleClassNames));
   });
 }
 
-function createInstanceRobotBlock(method: storageModuleContent.Method): toolboxItems.Block {
+function createInstanceRobotBlock(
+    method: storageModuleContent.Method, showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_ROBOT,
     returnType: method.returnType,
@@ -2019,22 +2037,24 @@ function createInstanceRobotBlock(method: storageModuleContent.Method): toolboxI
       defaultValue: '',
     });
   }
-  processArgs(args, extraState, inputs);
+  processArgs(args, extraState, inputs, showSimpleClassNames);
   return createBlock(extraState, fields, inputs);
 }
 
 export function addInstanceMechanismBlocks(
     mechanismInRobot: storageModuleContent.MechanismInRobot,
     methods: storageModuleContent.Method[],
-    contents: toolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   methods.forEach(method => {
-    contents.push(createInstanceMechanismBlock(mechanismInRobot, method));
+    contents.push(createInstanceMechanismBlock(mechanismInRobot, method, showSimpleClassNames));
   });
 }
 
 function createInstanceMechanismBlock(
     mechanismInRobot: storageModuleContent.MechanismInRobot,
-    method: storageModuleContent.Method): toolboxItems.Block {
+    method: storageModuleContent.Method,
+    showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.INSTANCE_MECHANISM,
     returnType: method.returnType,
@@ -2060,19 +2080,21 @@ function createInstanceMechanismBlock(
       defaultValue: '',
     });
   }
-  processArgs(args, extraState, inputs);
+  processArgs(args, extraState, inputs, showSimpleClassNames);
   return createBlock(extraState, fields, inputs);
 }
 
 export function addFireEventBlocks(
     events: storageModuleContent.Event[],
-    contents: toolboxItems.ContentsType[]) {
+    contents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   events.forEach(event => {
-    contents.push(createFireEventBlock(event));
+    contents.push(createFireEventBlock(event, showSimpleClassNames));
   });
 }
 
-function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.Block {
+function createFireEventBlock(
+    event: storageModuleContent.Event, showSimpleClassNames: boolean): toolboxItems.Block {
   const extraState: CallPythonFunctionExtraState = {
     functionKind: FunctionKind.EVENT,
     returnType: RETURN_TYPE_NONE,
@@ -2091,7 +2113,7 @@ function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.B
       defaultValue: '',
     });
   });
-  processArgs(args, extraState, inputs);
+  processArgs(args, extraState, inputs, showSimpleClassNames);
   return createBlock(extraState, fields, inputs);
 }
 

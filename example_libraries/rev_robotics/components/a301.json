@@ -413,7 +413,7 @@
             ],
             "declaringClassName": "rev.A301",
             "functionName": "get_gearbox_rpm",
-            "returnType": "rev._rev.Signal_A301GearboxRPM",
+            "returnType": "rev.Signal_A301GearboxRPM",
             "tooltip": "Returns the RPM of the A301's attached gearbox.\n\n:returns: Signal containing the gearbox RPM (@see GearboxRPM)"
         },
         {

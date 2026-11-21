@@ -1142,10 +1142,23 @@ class JsonGenerator:
                      if isInRootModules(name)},
       _KEY_SUBCLASSES: {},
     }
-    for class_name, subclass_names in json_data[_KEY_SUBCLASSES].items():
+    all_subclasses = json_data[_KEY_SUBCLASSES]
+    def getGeneratedSubclassNames(class_name: str) -> list[str]:
+      # A subclass that isn't generated is replaced by its own generated subclasses, so that a
+      # class whose base classes aren't all generated, like rev_blocks.SparkMax, which is a
+      # wpilib.MotorController by way of rev.SparkBase and rev.SparkMax, is still a subclass of
+      # the classes that are.
+      generated_subclass_names = []
+      for name in all_subclasses.get(class_name, []):
+        if name in class_names:
+          generated_subclass_names.append(name)
+        elif isInRootModules(name):
+          generated_subclass_names.extend(getGeneratedSubclassNames(name))
+      return generated_subclass_names
+    for class_name in all_subclasses:
       if isInRootModules(class_name) and class_name not in class_names:
         continue
-      subclass_names = [name for name in subclass_names if name in class_names]
+      subclass_names = sorted(set(getGeneratedSubclassNames(class_name)))
       if subclass_names:
         python_data[_KEY_SUBCLASSES][class_name] = subclass_names
 
