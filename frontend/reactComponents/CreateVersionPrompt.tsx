@@ -10,7 +10,9 @@ import * as React from 'react';
 import * as commonStorage from '../storage/common_storage';
 import * as storageVersions from '../storage/versions';
 import { collectTags } from './VersionTags';
-import { EMPTY_VERSION_FIELD_VALUES, VersionFieldValues, VersionFields } from './VersionFields';
+import {
+  DescriptionRef, EMPTY_VERSION_FIELD_VALUES, VersionFieldValues, VersionFields,
+} from './VersionFields';
 
 /** What the user is about to do, which sets the version's tag. */
 export type CreateVersionReason = 'deploy' | 'download';
@@ -48,6 +50,7 @@ export function useCreateVersionPrompt(setAlertErrorMessage: (message: string) =
   const [pending, setPending] = React.useState<PendingPrompt | null>(null);
   const [fields, setFields] = React.useState<VersionFieldValues>(EMPTY_VERSION_FIELD_VALUES);
   const [creating, setCreating] = React.useState(false);
+  const descriptionRef = React.useRef<DescriptionRef>(null);
 
   const askToCreateVersion = async (
       storage: commonStorage.Storage, projectName: string,
@@ -101,6 +104,7 @@ export function useCreateVersionPrompt(setAlertErrorMessage: (message: string) =
       title={t('VERSIONS.PROMPT_TITLE')}
       open={pending !== null}
       onCancel={() => finish(false)}
+      afterOpenChange={(open) => { if (open) descriptionRef.current?.focus(); }}
       footer={[
         <Antd.Button key="cancel" onClick={() => finish(false)}>
           {t('CANCEL')}
@@ -117,9 +121,15 @@ export function useCreateVersionPrompt(setAlertErrorMessage: (message: string) =
         {t('VERSIONS.PROMPT_MESSAGE')}
       </Antd.Typography.Paragraph>
       <VersionFields
+        descriptionRef={descriptionRef}
         value={fields}
         onChange={setFields}
         knownTags={pending?.knownTags ?? []}
+        onDescriptionEnter={() => {
+          if (!creating) {
+            handleCreate();
+          }
+        }}
       />
     </Antd.Modal>
   );

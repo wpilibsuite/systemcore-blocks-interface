@@ -23,12 +23,21 @@ export const EMPTY_VERSION_FIELD_VALUES: VersionFieldValues = {
   notes: '',
 };
 
+/** The type of the ref to the description. */
+export type DescriptionRef = Antd.GetRef<typeof Antd.Input.TextArea>;
+
 interface VersionFieldsProps {
   value: VersionFieldValues;
   onChange: (value: VersionFieldValues) => void;
   /** Tags that are offered as choices, for example the tags of the project's other versions. */
   knownTags: string[];
-  autoFocus?: boolean;
+  /** Set to the description, so that it can be focused when the dialog showing it opens. */
+  descriptionRef?: React.Ref<DescriptionRef>;
+  /**
+   * Called when Enter is pressed in the description, instead of adding a new line. Shift+Enter
+   * still adds a new line.
+   */
+  onDescriptionEnter?: () => void;
 }
 
 /** Lets the user enter a version's description, tags, and notes. All of them are optional. */
@@ -39,11 +48,18 @@ export function VersionFields(props: VersionFieldsProps): React.JSX.Element {
   return (
     <Antd.Space orientation="vertical" style={{ width: '100%' }}>
       <Antd.Input.TextArea
-        autoFocus={props.autoFocus}
+        ref={props.descriptionRef}
         autoSize={{ minRows: 1, maxRows: 3 }}
         value={props.value.description}
         placeholder={t('VERSIONS.DESCRIPTION_PLACEHOLDER')}
         onChange={(e) => change({ description: e.target.value })}
+        onKeyDown={(e) => {
+          if (props.onDescriptionEnter && e.key === 'Enter' && !e.shiftKey &&
+              !e.nativeEvent.isComposing) {
+            e.preventDefault();
+            props.onDescriptionEnter();
+          }
+        }}
       />
       <VersionTagsSelect
         value={props.value.tags}
