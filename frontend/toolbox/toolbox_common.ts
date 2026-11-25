@@ -13,7 +13,7 @@ import { getCategory as getMathCategory } from './math_category';
 import { getCategory as getTextCategory } from './text_category';
 import { getCategory as getListsCategory } from './lists_category';
 import { getCategory as getMiscCategory } from './misc_category';
-import { getCategory as getMethodsCategory } from './methods_category';
+import { getCategories as getMethodsCategories } from './methods_category';
 import { getCategory as getVariablesCategory } from './variables_category';
 import { Editor } from '../editor/editor';
 
@@ -66,8 +66,7 @@ export function getToolboxItems(
         kind: 'sep',
       },
       getVariablesCategory(editor),
-      getMethodsCategory(editor),
-
+      ...getMethodsCategories(editor),
     ],
   );
   return contents;
