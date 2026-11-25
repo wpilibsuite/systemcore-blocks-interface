@@ -17,23 +17,10 @@ import * as Gamepad from '../fields/field_gamepads';
 
 // import { BLOCK_NAME as MRC_GAMEPAD_BOOLEAN_EVENT  } from '../blocks/mrc_gamepad_boolean_event';
 
-export function getDriverStationCategory(editor: Editor): toolboxItems.Category {
-    return new toolboxItems.Category(
-              Blockly.Msg['MRC_CATEGORY_DRIVER_STATION'],
-              [
-                getDriverStationDisplayCategory(editor, Blockly.Msg['MRC_CATEGORY_DISPLAY']),
-                getDriverStationGamepadsCategory(editor),
-              ],
-              toolboxItems.ExpandedState.EXPANDED);
-}
-
 // The display blocks (Add Data / Add Line) are just calls to the static
 // methods of wpilib_blocks.DriverStationDisplay, generated via the generic
-// mrc_call_python_function block. The category is named Driver Station Display, unless another
-// name is given (it is just Display when it is inside the Driver Station category).
-export function getDriverStationDisplayCategory(
-    editor: Editor,
-    name: string = Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY']): toolboxItems.Category {
+// mrc_call_python_function block.
+export function getDriverStationDisplayCategory(editor: Editor): toolboxItems.Category {
     const commonContents: toolboxItems.ContentsType[] = [];
     const moreContents: toolboxItems.ContentsType[] = [];
     const classData = getClassData(CLASS_NAME_DRIVER_STATION_DISPLAY);
@@ -42,7 +29,7 @@ export function getDriverStationDisplayCategory(
         plugDefaultColorBlocks([...commonContents, ...moreContents], editor.getShowSimpleClassNames());
     }
     const category = new toolboxItems.Category(
-        name,
+        Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_DISPLAY'],
         makeOneContents(commonContents, moreContents),
         toolboxItems.ExpandedState.EXPANDED
     );
@@ -86,7 +73,7 @@ function createWhiteColorBlock(showSimpleClassNames: boolean): toolboxItems.Bloc
     return null;
 }
 
-function getDriverStationGamepadsCategory(editor: Editor): toolboxItems.Category {
+export function getGamepadsCategory(editor: Editor): toolboxItems.Category {
     return new toolboxItems.Category(
               Blockly.Msg['MRC_CATEGORY_DRIVER_STATION_GAMEPADS'],
               [

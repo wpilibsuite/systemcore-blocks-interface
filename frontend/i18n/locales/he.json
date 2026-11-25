@@ -602,8 +602,6 @@
       "EVENTS": "אירועים",
       "ADD_MECHANISM": "+ מנגנון",
       "ADD_COMPONENT": "+ רכיב",
-      "DRIVER_STATION": "תחנת נהג",
-      "DISPLAY": "תצוגה",
       "DRIVER_STATION_DISPLAY": "תצוגת תחנת הנהג",
       "DRIVER_STATION_DISPLAY_TOOLTIP": "הציגו מידע בתצוגה של תחנת הנהג.",
       "OBSERVABILITY": "ניטור",
