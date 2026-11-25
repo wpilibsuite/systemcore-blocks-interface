@@ -116,7 +116,7 @@ const GET_PARAMETER_BLOCK = {
     this.setOutput(true, [OUTPUT_NAME, type]);
   },
   /**
-   * mrcOnMove is called when an EventBlock is moved.
+   * mrcOnMove is called when a GetParameterBlock is moved.
    */
   mrcOnMove: function(this: GetParameterBlock, _editor: Editor, _reason: string[]): void {
     this.checkBlockPlacement();

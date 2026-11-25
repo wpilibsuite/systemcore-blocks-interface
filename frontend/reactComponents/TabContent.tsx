@@ -19,7 +19,6 @@ import * as commonStorage from '../storage/common_storage';
 import { LibraryToolbox } from '../toolbox/library_toolbox';
 import { Library } from '../libraries/blocks_lib';
 import * as classMethodDef from '../blocks/mrc_class_method_def'
-import * as eventHandler from '../blocks/mrc_event_handler'
 import * as mrcComponent from '../blocks/mrc_component'
 import * as moveComponentRequest from '../blocks/utils/move_component_request'
 import * as variablesCategory from '../toolbox/variables_category';
@@ -163,7 +162,6 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
   const setupWorkspace = React.useCallback(async (_modulePath: string, newWorkspace: Blockly.WorkspaceSvg) => {
     newWorkspace.addChangeListener(handleBlocksChanged);
     classMethodDef.registerToolboxButton(newWorkspace);
-    eventHandler.registerToolboxButton(newWorkspace);
     newWorkspace.registerButtonCallback(
         variablesCategory.DELETE_UNUSED_VARIABLES_CALLBACK_KEY, () => {
           setUnusedVariables(variablesCategory.getUnusedVariables(newWorkspace).map(variable => ({

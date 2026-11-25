@@ -43,18 +43,11 @@ export type Component = {
   args: MethodArg[],
 }
 
-export type Event = {
-  eventId: string, // The mrcEventId of the mrc_event block that defines the event.
-  name: string,
-  args: MethodArg[],
-};
-
 function startingBlocksToModuleContentText(
     module: storageModule.Module, startingBlocks: {[key: string]: any}): string {
   const mechanisms: MechanismInRobot[] = [];
   const components: Component[] = [];
   const privateComponents: Component[] = [];
-  const events: Event[] = [];
   const methods: Method[] = [];
   // The starting blocks don't have ids, so give each block one. Otherwise the blocks would only
   // get ids when the module is loaded into the editor, and a version created before the module
@@ -72,7 +65,6 @@ function startingBlocksToModuleContentText(
       mechanisms,
       components,
       privateComponents,
-      events,
       methods);
 }
 
@@ -140,8 +132,8 @@ export function newOpModeContent(projectName: string, opModeClassName: string): 
  * Make the module content from the given python code and blocks content.
  * If the given module has an empty moduleId field, it will be set to a valid id.
  * 
- * The last five parameters have a default value of an empty array, so they can be 
- * omitted if there are no mechanisms, components, privateComponents, events, or methods.
+ * The last four parameters have a default value of an empty array, so they can be
+ * omitted if there are no mechanisms, components, privateComponents, or methods.
  */
 export function makeModuleContentText(
     module: storageModule.Module,
@@ -149,7 +141,6 @@ export function makeModuleContentText(
     mechanisms: MechanismInRobot[] = [],
     components: Component[] = [],
     privateComponents: Component[] = [],
-    events: Event[] = [],
     methods: Method[] =[]): string {
   if (!module.moduleId) {
     module.moduleId = Blockly.utils.idGenerator.genUid();
@@ -161,7 +152,6 @@ export function makeModuleContentText(
       mechanisms,
       components,
       privateComponents,
-      events,
       methods);
   return moduleContent.getModuleContentText();
 }
@@ -224,7 +214,6 @@ export function parseModuleContentText(moduleContentText: string): ModuleContent
       !('mechanisms' in parsedContent) ||
       !('components' in parsedContent) ||
       !('privateComponents' in parsedContent) ||
-      !('events' in parsedContent) ||
       !('methods' in parsedContent)) {
     throw new Error('Module content text is not valid.');
   }
@@ -235,7 +224,6 @@ export function parseModuleContentText(moduleContentText: string): ModuleContent
       parsedContent.mechanisms,
       parsedContent.components,
       parsedContent.privateComponents,
-      parsedContent.events,
       parsedContent.methods);
 }
 
@@ -247,7 +235,6 @@ export class ModuleContent {
       private mechanisms: MechanismInRobot[],
       private components: Component[],
       private privateComponents: Component[],
-      private events: Event[],
       private methods: Method[]) {
   }
 
@@ -291,10 +278,6 @@ export class ModuleContent {
     return this.privateComponents;
   }
 
-  getEvents(): Event[] {
-    return this.events;
-  }
-
   getMethods(): Method[] {
     return this.methods;
   }
@@ -313,12 +296,6 @@ export class ModuleContent {
       const oldComponentId = component.componentId;
       component.componentId = Blockly.utils.idGenerator.genUid();
       oldIdToNewId[oldComponentId] = component.componentId;
-    });
-    // Change the ids for the events defined in this module.
-    this.events.forEach(event => {
-      const oldEventId = event.eventId;
-      event.eventId = Blockly.utils.idGenerator.genUid();
-      oldIdToNewId[oldEventId] = event.eventId;
     });
     // Change the ids for the methods defined in this module.
     this.methods.forEach(method => {

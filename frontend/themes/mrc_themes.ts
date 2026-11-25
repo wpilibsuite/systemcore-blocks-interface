@@ -61,8 +61,8 @@ const create_themes = function (): Blockly.Theme[] {
         create_theme(HIGHCONTRAST_DARK_THEME_NAME, HighContrastTheme, true),
     ];
 
-    // Create CSS classes for event handler buttons, which are placed in the toolbox when an event
-    // handler already exists on the workspace.
+    // Create CSS classes for method definition buttons, which are placed in the toolbox when a
+    // method definition already exists on the workspace.
     let cssClasses = '';
     themes.forEach(theme => {
         let fill = theme.blockStyles[MRC_STYLE_EVENT_HANDLER].colourPrimary;
@@ -71,13 +71,10 @@ const create_themes = function (): Blockly.Theme[] {
                 fill = Blockly.utils.colour.hueToHex(Number(fill));
             } catch (e) {
                 console.error(
-                    'Unable to determine event handler block color for theme ' + theme.name);
+                    'Unable to determine method definition button color for theme ' + theme.name);
             }
         }
         cssClasses +=
-            '.eventHandlerButtonStyle_' + theme.name + ' {\n' +
-            '    fill: ' + fill + ';\n' +
-            '}\n' +
             '.classMethodDefButtonStyle_' + theme.name + ' {\n' +
             '    fill: ' + fill + ';\n' +
             '}\n';

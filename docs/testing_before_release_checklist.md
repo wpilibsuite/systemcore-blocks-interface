@@ -9,10 +9,8 @@ Before making a new release, make sure this all works on systemcore
 * [ ] Verified that the Arm shows up as my_arm in the robot
 * [ ] Verified that when editing an OpMode, the component shows up in the toolbox Robot -> Components ->
 * [ ] Verified that when editing an OpMode, the mechanism shows up in the toolbox Robot -> Mechanisms -> my_arm
-# Events
-* [ ] Added an event to the Mechanism
-* [ ] Verified that in Robot, the event handler shows up in the toolbox Hardware -> Mechanisms -> my_arm -> Events
-* [ ] Verified that in Opmode, the event handler shows up in the toolbox Robot -> Mechanisms -> my_arm -> Events
+# Projects that used events
+* [ ] Opened a project saved with 0.8 that had events, and verified its event handler and fire blocks were disabled with a warning and the project deployed
 # Mechanisms
 * [ ] Added a public component to the mechanism
 * [ ] Added a private component to the mechanism

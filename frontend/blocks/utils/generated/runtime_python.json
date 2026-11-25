@@ -93,29 +93,6 @@
                             "defaultValue": "",
                             "name": "self",
                             "type": "wpilib_blocks.Mechanism"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "args",
-                            "type": "tuple"
-                        }
-                    ],
-                    "declaringClassName": "wpilib_blocks.Mechanism",
-                    "functionName": "fire_event",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib_blocks.Mechanism"
                         }
                     ],
                     "declaringClassName": "wpilib_blocks.Mechanism",
@@ -146,52 +123,6 @@
                     ],
                     "declaringClassName": "wpilib_blocks.Mechanism",
                     "functionName": "opmode_start",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib_blocks.Mechanism"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_handler",
-                            "type": "typing.Callable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib_blocks.Mechanism",
-                    "functionName": "register_event_handler",
-                    "returnType": "None",
-                    "tooltip": ""
-                },
-                {
-                    "args": [
-                        {
-                            "defaultValue": "",
-                            "name": "self",
-                            "type": "wpilib_blocks.Mechanism"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_name",
-                            "type": "str"
-                        },
-                        {
-                            "defaultValue": "",
-                            "name": "event_handler",
-                            "type": "typing.Callable"
-                        }
-                    ],
-                    "declaringClassName": "wpilib_blocks.Mechanism",
-                    "functionName": "unregister_event_handler",
                     "returnType": "None",
                     "tooltip": ""
                 }

@@ -15,8 +15,6 @@ import { BLOCK_NAME as MRC_GAMEPAD_LEDS, INPUT_COLOR as MRC_GAMEPAD_LEDS_INPUT_C
 import { BLOCK_NAME as MRC_WHEN, INPUT_BOOL as MRC_WHEN_INPUT_BOOL } from '../blocks/mrc_when';
 import * as Gamepad from '../fields/field_gamepads';
 
-// import { BLOCK_NAME as MRC_GAMEPAD_BOOLEAN_EVENT  } from '../blocks/mrc_gamepad_boolean_event';
-
 export function getDriverStationCategory(editor: Editor): toolboxItems.Category {
     return new toolboxItems.Category(
               Blockly.Msg['MRC_CATEGORY_DRIVER_STATION'],
@@ -100,9 +98,6 @@ function getDriverStationGamepadsCategory(editor: Editor): toolboxItems.Category
                 new toolboxItems.Block(MRC_GAMEPAD_RUMBLE, null, null, null),
                 createGamepadLedsBlock(editor.getShowSimpleClassNames()),
                 createSampleWhenGamepadButtonBlock(),
-                // TODO: Add events back here when we figure out how the code will be generated
-                //new toolboxItems.Label("Events"),
-                //new toolboxItems.Block(MRC_GAMEPAD_BOOLEAN_EVENT, null, null, null),
               ],
               toolboxItems.ExpandedState.EXPANDED);
 }

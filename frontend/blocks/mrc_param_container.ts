@@ -1,7 +1,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 
 /**
- * @fileoverview Mutator for method and event parameters.
+ * @fileoverview Mutator for method parameters.
  * @author alan@porpoiseful.com (Alan Smith)
  */
 import * as Blockly from 'blockly';
@@ -143,7 +143,7 @@ function onChange(mutatorWorkspace: Blockly.Workspace, event: Blockly.Events.Abs
 }
 
 /**
- * Called for mrc_event and mrc_class_method_def blocks when their mutator opesn.
+ * Called for mrc_class_method_def blocks when their mutator opens.
  * Triggers a flyout update and adds an event listener to the mutator workspace.
  *
  * @param block The block whose mutator is open.

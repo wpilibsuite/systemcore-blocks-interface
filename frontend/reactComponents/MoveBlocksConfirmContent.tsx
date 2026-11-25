@@ -43,17 +43,6 @@ export default function MoveBlocksConfirmContent(props: MoveBlocksConfirmContent
     group.push(breakage);
   });
 
-  const getLabel = (breakage: Breakage): string => {
-    switch (breakage.kind) {
-      case 'fireEvent':
-        return t('MOVE_BLOCKS_FIRE_EVENT', { name: breakage.label });
-      case 'eventHandler':
-        return t('MOVE_BLOCKS_EVENT_HANDLER', { name: breakage.label });
-      default:
-        return breakage.label;
-    }
-  };
-
   const handleMoveComponentsChange = (checked: boolean): void => {
     setMoveComponents(checked);
     props.onMoveComponentsChange(checked);
@@ -73,7 +62,7 @@ export default function MoveBlocksConfirmContent(props: MoveBlocksConfirmContent
               </Antd.Typography.Text>
               <ul style={{ marginTop: 4 }}>
                 {group.map((breakage, index) => (
-                  <li key={index}><Antd.Typography.Text code>{getLabel(breakage)}</Antd.Typography.Text></li>
+                  <li key={index}><Antd.Typography.Text code>{breakage.label}</Antd.Typography.Text></li>
                 ))}
               </ul>
             </div>

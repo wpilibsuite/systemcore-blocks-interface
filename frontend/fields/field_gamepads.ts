@@ -29,7 +29,6 @@ export const PORT_FIELD_NAME = 'GAMEPAD_PORT';
 export const BUTTON_FIELD_NAME = 'GAMEPAD_BUTTON';
 export const ACTION_FIELD_NAME = 'GAMEPAD_ACTION';
 export const AXIS_FIELD_NAME = 'GAMEPAD_AXIS';
-export const EVENT_FIELD_NAME = 'GAMEPAD_EVENT';
 export const RUMBLE_FIELD_NAME = 'GAMEPAD_RUMBLE';
 
 /** The values of the action field. These are saved in the blocks, so they must not change. */
@@ -43,12 +42,6 @@ const ACTION_CONFIG = new Map([
     [GamepadAction.IS_DOWN, { display: () => Blockly.Msg['GAMEPAD_IS_DOWN'] }],
     [GamepadAction.WAS_PRESSED, { display: () => Blockly.Msg['GAMEPAD_PRESSED'] }],
     [GamepadAction.WAS_RELEASED, { display: () => Blockly.Msg['GAMEPAD_RELEASED'] }]
-]);
-
-const EVENT_CONFIG = new Map([
-    ['GAMEPAD_EVENT_PRESSED', { display: () => Blockly.Msg['GAMEPAD_EVENT_PRESSED'] }],
-    ['GAMEPAD_EVENT_RELEASED', { display: () => Blockly.Msg['GAMEPAD_EVENT_RELEASED'] }],
-    ['GAMEPAD_EVENT_CHANGED', { display: () => Blockly.Msg['GAMEPAD_EVENT_CHANGED'] }]
 ]);
 
 
@@ -786,12 +779,6 @@ export function createRumbleField(): Blockly.Field {
 export function createActionField(): Blockly.Field {
     return new FieldDropdownWithBorderRect(
         Array.from(ACTION_CONFIG.entries()).map(([key, config]) => [config.display(), key])
-    )
-}
-
-export function createEventField(): Blockly.Field {
-    return new FieldDropdownWithBorderRect(
-        Array.from(EVENT_CONFIG.entries()).map(([key, config]) => [config.display(), key])
     )
 }
 

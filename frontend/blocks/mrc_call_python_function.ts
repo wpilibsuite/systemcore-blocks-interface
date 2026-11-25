@@ -37,6 +37,7 @@ import { isLibraryPythonModule } from '../libraries/library_registry';
 import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import { makeOneContents } from '../toolbox/python_data_toolbox';
+import { disableBlockBecauseEventsWereRemoved } from './utils/events_removed';
 
 
 // A block to call a python function.
@@ -54,7 +55,9 @@ enum FunctionKind {
   INSTANCE_COMPONENT = 'instance_component',
   INSTANCE_ROBOT = 'instance_robot',
   INSTANCE_MECHANISM = 'instance_mechanism',
-  EVENT = 'event', // For firing an event.
+  // For firing an event. Events are no longer supported, but blocks that fire events can still be
+  // loaded. They are always disabled, show a warning, and don't generate any code.
+  EVENT = 'event',
 }
 
 const RETURN_TYPE_NONE = 'None';
@@ -73,6 +76,7 @@ type FunctionArg = {
 };
 
 const WARNING_ID_FUNCTION_CHANGED = 'function changed';
+const WARNING_ID_EVENTS_REMOVED = 'events removed';
 
 export type CallPythonFunctionBlock = Blockly.Block & CallPythonFunctionMixin;
 interface CallPythonFunctionMixin extends CallPythonFunctionMixinType {
@@ -138,8 +142,8 @@ type CallPythonFunctionExtraState = {
    */
   componentId?: string,
   /**
-   * The mrcEventId of the mrc_event block that defines the event.
-   * Specified only if the function kind is EVENT.
+   * The mrcEventId of the mrc_event block that defined the event.
+   * Specified only if the function kind is EVENT, which is no longer supported.
    */
   eventId?: string,
   /**
@@ -384,6 +388,9 @@ const CALL_PYTHON_FUNCTION = {
     // mrcMapComponentNameToId will be filled during checkBlock.
     this.mrcMapComponentNameToId = {};
     this.updateBlock_();
+    if (this.mrcFunctionKind === FunctionKind.EVENT) {
+      disableBlockBecauseEventsWereRemoved(this);
+    }
   },
   /**
    * Update the block to reflect the newly loaded extra state.
@@ -627,8 +634,8 @@ const CALL_PYTHON_FUNCTION = {
     }
   },
   renameMethodCaller: function(this: CallPythonFunctionBlock, id: string, newName: string): void {
-    // renameMethodCaller is called when a component, mechanism, event, or
-    // method block in the same module is modified.
+    // renameMethodCaller is called when a component, mechanism, or method block in the same
+    // module is modified.
     switch (this.mrcFunctionKind) {
       case FunctionKind.INSTANCE_WITHIN:
         if (id === this.mrcMethodId) {
@@ -674,29 +681,14 @@ const CALL_PYTHON_FUNCTION = {
           this.setFieldValue(newName, FIELD_MECHANISM_NAME);
         }
         break;
-      case FunctionKind.EVENT:
-        if (id === this.mrcEventId) {
-          this.setFieldValue(newName, FIELD_EVENT_NAME);
-        }
-        break;
     }
   },
   mutateMethodCaller: function(
       this: CallPythonFunctionBlock,
-      methodOrEvent: storageModuleContent.Method | storageModuleContent.Event
+      method: storageModuleContent.Method
   ): void {
-    // mutateMethodCaller is called when the method or event definition block in the same module is modified.
-    if (this.mrcFunctionKind === FunctionKind.EVENT) {
-      const event = methodOrEvent as storageModuleContent.Event;
-      this.mrcArgs = [];
-      event.args.forEach((arg) => {
-        this.mrcArgs.push({
-          name: arg.name,
-          type: arg.type,
-        });
-      });
-    } else if (this.mrcFunctionKind === FunctionKind.INSTANCE_WITHIN) {
-      const method = methodOrEvent as storageModuleContent.Method;
+    // mutateMethodCaller is called when the method definition block in the same module is modified.
+    if (this.mrcFunctionKind === FunctionKind.INSTANCE_WITHIN) {
       this.mrcReturnType = method.returnType;
       this.mrcArgs = [];
       // We don't include the arg for the self argument because we don't need a socket for it.
@@ -785,6 +777,15 @@ const CALL_PYTHON_FUNCTION = {
    * mrcOnVariableTypeChange above.
    */
   checkFunction: function(this: CallPythonFunctionBlock, editor: Editor): void {
+    if (this.mrcFunctionKind === FunctionKind.EVENT) {
+      this.setWarningText(Blockly.Msg.FIRE_EVENT_EVENTS_REMOVED, WARNING_ID_EVENTS_REMOVED);
+      const icon = this.getIcon(Blockly.icons.IconType.WARNING);
+      if (icon) {
+        icon.setBubbleVisible(true);
+      }
+      return;
+    }
+
     const warnings: string[] = [];
 
     switch (this.mrcFunctionKind) {
@@ -819,9 +820,6 @@ const CALL_PYTHON_FUNCTION = {
         break;
       case FunctionKind.INSTANCE_MECHANISM:
         this.checkMechanismInstanceMethod(editor, warnings);
-        break;
-      case FunctionKind.EVENT:
-        this.checkEvent(editor, warnings);
         break;
     }
 
@@ -1238,28 +1236,6 @@ const CALL_PYTHON_FUNCTION = {
       }
     }
   },
-  checkEvent: function(this: CallPythonFunctionBlock, editor: Editor, warnings: string[]): void {
-    // If this block is firing an event, check whether the event
-    // still exists and whether it has been changed.
-    // If the event doesn't exist, put a visible warning on this block.
-    // If the event name has changed, update the block.
-    let foundEvent = false;
-    for (const event of editor.getEventsFromWorkspace()) {
-      if (this.mrcEventId == event.eventId) {
-        foundEvent = true;
-
-        // If the event name has changed, we can handle that.
-        if (this.getFieldValue(FIELD_EVENT_NAME) !== event.name) {
-          this.setFieldValue(event.name, FIELD_EVENT_NAME);
-        }
-        break;
-      }
-    }
-    if (!foundEvent) {
-      warnings.push(Blockly.Msg.WARNING_FIRE_EVENT_MISSING_EVENT);
-    }
-  },
-
   /**
    * mrcShowSimpleClassNames is called for each CallPythonFunctionBlock:
    * 1. after a block is loaded in the blockly workspace
@@ -1286,9 +1262,6 @@ const CALL_PYTHON_FUNCTION = {
     this.updateComponentIdAndName();
     if (this.mrcComponentId && this.mrcComponentId in oldIdToNewId) {
       this.mrcComponentId = oldIdToNewId[this.mrcComponentId];
-    }
-    if (this.mrcEventId && this.mrcEventId in oldIdToNewId) {
-      this.mrcEventId = oldIdToNewId[this.mrcEventId];
     }
     if (this.mrcMechanismId && this.mrcMechanismId in oldIdToNewId) {
       this.mrcMechanismId = oldIdToNewId[this.mrcMechanismId];
@@ -1421,13 +1394,9 @@ export function pythonFromBlock(
       code = 'self.' + functionName;
       break;
     }
-    case FunctionKind.EVENT: {
-      const eventName = block.getFieldValue(FIELD_EVENT_NAME);
-      code = 'self.fire_event(\'' + eventName + '\'';
-      needOpenParen = false;
-      delimiterBeforeArgs = ', ';
-      break;
-    }
+    case FunctionKind.EVENT:
+      // Events are no longer supported. Blocks that fire events never have an output.
+      return '';
     case FunctionKind.INSTANCE_COMPONENT: {
       // Generate the correct code depending on the module type.
       switch (generator.getModuleType()) {
@@ -1524,7 +1493,6 @@ function getMethodCallers(workspace: Blockly.Workspace, id: string): Blockly.Blo
     return (
         callPythonFunctionBlock.mrcMethodId === id ||
         callPythonFunctionBlock.mrcComponentId === id ||
-        callPythonFunctionBlock.mrcEventId === id ||
         callPythonFunctionBlock.mrcMechanismId === id);
   });
 }
@@ -1544,7 +1512,7 @@ export function renameMethodCallers(workspace: Blockly.Workspace, id: string, ne
 }
 
 export function mutateMethodCallers(
-    workspace: Blockly.Workspace, id: string, methodOrEvent: storageModuleContent.Method | storageModuleContent.Event) {
+    workspace: Blockly.Workspace, id: string, method: storageModuleContent.Method) {
   const oldRecordUndo = Blockly.Events.getRecordUndo();
 
   getMethodCallers(workspace, id).forEach(block => {
@@ -1553,7 +1521,7 @@ export function mutateMethodCallers(
     const oldExtraState = callBlock.saveExtraState();
 
     // Apply the changes.
-    callBlock.mutateMethodCaller(methodOrEvent);
+    callBlock.mutateMethodCaller(method);
 
     // Get the extra state after changing the call block.
     const newExtraState = callBlock.saveExtraState();
@@ -2064,37 +2032,6 @@ function createInstanceMechanismBlock(
   return createBlock(extraState, fields, inputs);
 }
 
-export function addFireEventBlocks(
-    events: storageModuleContent.Event[],
-    contents: toolboxItems.ContentsType[]) {
-  events.forEach(event => {
-    contents.push(createFireEventBlock(event));
-  });
-}
-
-function createFireEventBlock(event: storageModuleContent.Event): toolboxItems.Block {
-  const extraState: CallPythonFunctionExtraState = {
-    functionKind: FunctionKind.EVENT,
-    returnType: RETURN_TYPE_NONE,
-    args: [],
-    eventId: event.eventId,
-  };
-  const fields: {[key: string]: any} = {};
-  fields[FIELD_EVENT_NAME] = event.name;
-  const inputs: {[key: string]: any} = {};
-  // Convert event.args from storageModuleContent.MethodArg[] to ArgData[].
-  const args: ArgData[] = [];
-  event.args.forEach(methodArg => {
-    args.push({
-      name: methodArg.name,
-      type: methodArg.type,
-      defaultValue: '',
-    });
-  });
-  processArgs(args, extraState, inputs);
-  return createBlock(extraState, fields, inputs);
-}
-
 /**
  * Repoints the mrc_call_python_function blocks that call a method on the given component so that
  * they call it on the component within the given mechanism. This is used when a component is
@@ -2156,8 +2093,7 @@ export type MethodCallTarget =
  */
 export type CallReference =
     {kind: 'method', methodId: string, target: 'within' | 'robot' | 'mechanism', mechanismId: string, label: string} |
-    {kind: 'component', componentId: string, mechanismId: string, label: string} |
-    {kind: 'event', eventId: string, label: string};
+    {kind: 'component', componentId: string, mechanismId: string, label: string};
 
 /**
  * Returns what the given mrc_call_python_function block JSON refers to in this project, or null
@@ -2188,8 +2124,6 @@ export function getCallReferenceFromBlockJson(blockJson: {[key: string]: any}): 
       return {kind: 'component', componentId: extraState.componentId || '', mechanismId: mechanismId,
           label: (mechanismId ? mechanismName + '.' : '') + componentName + '.' + functionName + '()'};
     }
-    case FunctionKind.EVENT:
-      return {kind: 'event', eventId: extraState.eventId || '', label: fields[FIELD_EVENT_NAME] || ''};
   }
   return null;
 }

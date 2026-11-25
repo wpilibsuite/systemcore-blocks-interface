@@ -12,6 +12,7 @@ import * as callPythonFunctionBlock from '../blocks/mrc_call_python_function';
 import * as classMethodDefBlock from '../blocks/mrc_class_method_def';
 import * as componentBlock from '../blocks/mrc_component';
 import * as mechanismBlock from '../blocks/mrc_mechanism';
+import * as mechanismComponentHolderBlock from '../blocks/mrc_mechanism_component_holder';
 import * as opModeDetailsBlock from '../blocks/mrc_opmode_details';
 import * as portBlock from '../blocks/mrc_port';
 import * as storageModule from './module';
@@ -38,6 +39,15 @@ export async function upgradeProjectIfNecessary(
   }
 
   // Major or minor version changed — add migration functions here for future transitions.
+  if (semver.lt(projectInfo.version, '0.9.0')) {
+    // Events were removed in 0.9.0. This is done before the other upgrades because some of them
+    // load the blocks into a workspace, which fails if the blocks have mrc_event blocks or
+    // mrc_mechanism_component_holder blocks with an EVENTS input.
+    await upgradeBlocksFiles(
+        storage, projectName,
+        anyModuleType, upgradeTo_0_9_0,
+        noModuleTypes, noUpgrade);
+  }
   if (semver.lt(projectInfo.version, '0.3.0')) {
     await upgradeBlocksFiles(
         storage, projectName,
@@ -442,6 +452,46 @@ function upgradeTo_0_8_0(moduleContentText: string): string {
   const visitBlockJson = (blockJson: {[key: string]: any}): void => {
     if (blockJson.type === opModeDetailsBlock.BLOCK_NAME) {
       if (opModeDetailsBlock.upgradeBlockJsonTo_0_8_0(blockJson)) {
+        changed = true;
+      }
+    }
+  };
+
+  storageModuleContent.visitAllBlockJson(parsedContent.blocks, visitBlockJson);
+
+  return changed ? JSON.stringify(parsedContent, null, 2) : moduleContentText;
+}
+
+// Upgrade from before 0.9.0:
+// Events were removed. The events in the module content, the mrc_event blocks that defined them,
+// and the EVENTS input of mrc_mechanism_component_holder blocks are removed.
+// mrc_event_handler blocks and mrc_call_python_function blocks that fired events are kept, so that
+// the blocks in them aren't lost, but they are disabled and don't generate any code.
+
+const OBSOLETE_EVENT_BLOCK_NAME = 'mrc_event';
+
+function upgradeTo_0_9_0(moduleContentText: string): string {
+  const parsedContent = JSON.parse(moduleContentText);
+  let changed = false;
+
+  if ('events' in parsedContent) {
+    delete parsedContent.events;
+    changed = true;
+  }
+
+  // Remove mrc_event blocks that weren't in a mrc_mechanism_component_holder block.
+  const topLevelBlocks = storageModuleContent.getTopLevelBlocksJson(parsedContent.blocks);
+  const remainingTopLevelBlocks = topLevelBlocks.filter(
+      blockJson => blockJson.type !== OBSOLETE_EVENT_BLOCK_NAME);
+  if (remainingTopLevelBlocks.length !== topLevelBlocks.length) {
+    parsedContent.blocks.blocks.blocks = remainingTopLevelBlocks;
+    changed = true;
+  }
+
+  // Update the blocks.
+  const visitBlockJson = (blockJson: {[key: string]: any}): void => {
+    if (blockJson.type === mechanismComponentHolderBlock.BLOCK_NAME) {
+      if (mechanismComponentHolderBlock.upgradeBlockJsonTo_0_9_0(blockJson)) {
         changed = true;
       }
     }

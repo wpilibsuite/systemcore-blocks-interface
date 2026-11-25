@@ -26,7 +26,6 @@ import { BLOCK_NAME as MRC_COMPONENT, ComponentBlock } from '../blocks/mrc_compo
 import {
     getComponentReferenceFromBlockJson,
     setComponentReferenceMechanismInBlockJson } from '../blocks/mrc_component_reference';
-import { SenderType, getEventHandlerSenderFromBlockJson } from '../blocks/mrc_event_handler';
 
 /** A module and its content, including its blocks. */
 export type ModuleWithContent = {
@@ -35,7 +34,7 @@ export type ModuleWithContent = {
 };
 
 /** What kind of block a Breakage is about. */
-export type BreakageKind = 'call' | 'fireEvent' | 'eventHandler' | 'componentReference';
+export type BreakageKind = 'call' | 'componentReference';
 
 /** A block that won't work after the move. */
 export type Breakage = {
@@ -197,10 +196,6 @@ class MoveAnalyzer {
               blockJson, callReference.componentId, callReference.mechanismId, 'call',
               callReference.label, setComponentCallMechanismInBlockJson);
           return;
-        case 'event':
-          // Events can only be fired from the module that defines them.
-          this.addBreakage(null, 'fireEvent', callReference.label);
-          return;
       }
     }
 
@@ -210,21 +205,6 @@ class MoveAnalyzer {
           blockJson, componentReference.componentId, componentReference.mechanismId,
           'componentReference', componentReference.label, setComponentReferenceMechanismInBlockJson);
       return;
-    }
-
-    const eventHandlerSender = getEventHandlerSenderFromBlockJson(blockJson);
-    if (eventHandlerSender) {
-      // Robot events are handled in opmodes. Mechanism events are handled in the robot and in
-      // opmodes.
-      const valid =
-          eventHandlerSender.senderType === SenderType.ROBOT
-              ? target.moduleType === storageModule.ModuleType.OPMODE
-              : eventHandlerSender.senderType === SenderType.MECHANISM
-                  ? target.moduleType !== storageModule.ModuleType.MECHANISM
-                  : true;
-      if (!valid) {
-        this.addBreakage(null, 'eventHandler', eventHandlerSender.label);
-      }
     }
   }
 
