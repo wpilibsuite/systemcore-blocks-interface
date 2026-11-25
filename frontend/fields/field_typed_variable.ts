@@ -7,13 +7,24 @@
 
 import * as Blockly from 'blockly';
 
+import { getAllowedTypesForSetCheck } from '../blocks/utils/python';
 import * as variable from '../blocks/utils/variable';
 import { FieldDropdownWithBorderRect } from './FieldDropdown';
 
 const CREATE_VARIABLE_ID = 'MRC_CREATE_TYPED_VARIABLE';
 
 /**
- * A variable dropdown that only shows the variables of the given type. Variables belong to the
+ * Returns the types of the variables that can be used where a value of the given type is
+ * expected: the type itself and its subclasses, like the sockets of python blocks accept.
+ */
+export function getAllowedVariableTypes(varType: string): string[] {
+  const allowedTypes = getAllowedTypesForSetCheck(varType) ?? [];
+  return allowedTypes.includes(varType) ? allowedTypes : [varType, ...allowedTypes];
+}
+
+/**
+ * A variable dropdown that only shows the variables of the given type or its subclasses (see
+ * getAllowedVariableTypes). Variables belong to the
  * workspace, so only the variables in the current module are shown. The dropdown also has an
  * option to create a new variable of the given type.
  *
@@ -24,12 +35,13 @@ export class FieldTypedVariable extends Blockly.FieldVariable {
   private readonly varType: string;
 
   constructor(varType: string) {
-    super(variable.varNameForType(varType) || null, undefined, [varType], varType);
+    const allowedTypes = getAllowedVariableTypes(varType);
+    super(variable.varNameForType(varType) || null, undefined, allowedTypes, varType);
     this.varType = varType;
     this.menuGenerator_ = (): Blockly.MenuOption[] => {
       const options = Blockly.FieldVariable.dropdownCreate.call(this);
       const selectedVariable = this.getVariable();
-      if (selectedVariable && selectedVariable.getType() !== this.varType) {
+      if (selectedVariable && !allowedTypes.includes(selectedVariable.getType())) {
         options.unshift([selectedVariable.getName(), selectedVariable.getId()]);
       }
       // Put the create option after the variables, before the rename and delete options.
@@ -81,8 +93,8 @@ type VariableState = {
 };
 
 /**
- * A dropdown with a "default" option followed by the variables of the given type in the current
- * module. Like FieldTypedVariable, the chosen variable is kept if its type changes. The value is
+ * A dropdown with a "default" option followed by the variables of the given type or its
+ * subclasses in the current module. Like FieldTypedVariable, the chosen variable is kept if its type changes. The value is
  * DEFAULT_OPTION_VALUE or the id of the chosen variable. Blockly finds the
  * blocks that use a variable through fields that reference variables, so renaming a variable
  * updates this field and deleting a variable deletes the blocks that have it chosen.
@@ -123,9 +135,11 @@ export class FieldTypedVariableOrDefault extends FieldDropdownWithBorderRect {
     if (!workspace) {
       return options;
     }
-    const variables = workspace.getVariableMap().getVariablesOfType(this.varType);
+    const allowedTypes = getAllowedVariableTypes(this.varType);
+    const variables = allowedTypes.flatMap(
+        type => workspace.getVariableMap().getVariablesOfType(type));
     const selectedVariable = this.getVariable();
-    if (selectedVariable && selectedVariable.getType() !== this.varType) {
+    if (selectedVariable && !allowedTypes.includes(selectedVariable.getType())) {
       variables.push(selectedVariable);
     }
     variables.sort((a, b) => a.getName().localeCompare(b.getName()));

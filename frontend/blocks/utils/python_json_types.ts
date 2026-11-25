@@ -134,6 +134,9 @@ export enum PortType {
   // the Systemcore's own CAN buses. They are one kind of port so that a mechanism doesn't
   // have to say which of the two its components are on.
   SYSTEMCORE_CAN_PORT,
+  // One of the Systemcore's own CAN buses, for devices that can't be on a MotionCore CAN bus,
+  // like a Spark Max.
+  SYSTEMCORE_BUILTIN_CAN_PORT,
   // The device id of a device on a CAN bus. It is not shown when the bus is provided by a
   // Motioncore, because a Motioncore detects the device id itself.
   CAN_DEVICE_ID,

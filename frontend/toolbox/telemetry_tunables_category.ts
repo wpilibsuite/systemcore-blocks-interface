@@ -71,14 +71,14 @@ const ALERT_METHOD_ORDER = ['set', 'set_text', 'get', 'get_text', 'get_level', '
 // that variable. The module functions have the same names and arguments as the TelemetryTable
 // methods, so there is one block for each, with a dropdown to choose "default" (the telemetry
 // module) or a TelemetryTable variable.
-export function getTelemetryCategory(): toolboxItems.Category {
+export function getTelemetryCategory(showSimpleClassNames: boolean): toolboxItems.Category {
   const commonContents: toolboxItems.ContentsType[] = [];
   const moreContents: toolboxItems.ContentsType[] = [];
   addTableBlocks(
       MODULE_NAME_TELEMETRY, CLASS_NAME_TELEMETRY_TABLE,
       TELEMETRY_FUNCTION_ORDER, TELEMETRY_COMMON_FUNCTION_NAMES,
       [CLASS_NAME_TELEMETRY_TABLE],
-      commonContents, moreContents);
+      commonContents, moreContents, showSimpleClassNames);
 
   const category = new toolboxItems.Category(
       Blockly.Msg['MRC_CATEGORY_TELEMETRY'], makeOneContents(commonContents, moreContents));
@@ -90,14 +90,14 @@ export function getTelemetryCategory(): toolboxItems.Category {
 // share blocks, with a dropdown to choose "default" (the tunables module) or a TunableTable
 // variable. The add functions return a Tunable, which is stored in a Tunable variable. The
 // Tunable blocks (set and get) have a dropdown of the Tunable variables in the module.
-export function getTunablesCategory(): toolboxItems.Category {
+export function getTunablesCategory(showSimpleClassNames: boolean): toolboxItems.Category {
   const commonContents: toolboxItems.ContentsType[] = [];
   const moreContents: toolboxItems.ContentsType[] = [];
   addTableBlocks(
       MODULE_NAME_TUNABLES, CLASS_NAME_TUNABLE_TABLE,
       TUNABLES_FUNCTION_ORDER, TUNABLES_COMMON_FUNCTION_NAMES,
       [CLASS_NAME_TUNABLE_TABLE, CLASS_NAME_TUNABLE],
-      commonContents, moreContents);
+      commonContents, moreContents, showSimpleClassNames);
   const tunableClassData = getClassData(CLASS_NAME_TUNABLE);
   if (tunableClassData) {
     addInstanceVariableMethodBlocks(
@@ -107,7 +107,7 @@ export function getTunablesCategory(): toolboxItems.Category {
               sortFunctions(tunableClassData.instanceMethods, TUNABLE_COMMON_METHOD_NAMES),
               TUNABLE_COMMON_METHOD_NAMES),
         },
-        commonContents, moreContents);
+        commonContents, moreContents, showSimpleClassNames);
   }
 
   const category = new toolboxItems.Category(
@@ -149,7 +149,7 @@ export function getAlertsCategory(showSimpleClassNames: boolean): toolboxItems.C
               sortFunctions(alertClassData.instanceMethods, ALERT_METHOD_ORDER),
               ALERT_COMMON_METHOD_NAMES),
         },
-        commonContents, moreContents);
+        commonContents, moreContents, showSimpleClassNames);
   }
 
   const category = new toolboxItems.Category(
@@ -167,7 +167,7 @@ function plugDefaultAlertLevel(block: toolboxItems.Block, showSimpleClassNames: 
   if (levelArgIndex !== -1 && enumData) {
     block.inputs = block.inputs ?? {};
     block.inputs['ARG' + levelArgIndex] = {
-      block: createEnumBlock(ALERT_DEFAULT_LEVEL, enumData, showSimpleClassNames),
+      shadow: createEnumBlock(ALERT_DEFAULT_LEVEL, enumData, showSimpleClassNames),
     };
   }
 }
@@ -185,7 +185,8 @@ function addTableBlocks(
     commonFunctionNames: string[],
     storedTypes: string[],
     commonContents: toolboxItems.ContentsType[],
-    moreContents: toolboxItems.ContentsType[]) {
+    moreContents: toolboxItems.ContentsType[],
+    showSimpleClassNames: boolean) {
   const moduleData = getModuleData(moduleName);
   const tableClassData = getClassData(tableClassName);
   const tableMethodNames = new Set<string>();
@@ -201,7 +202,7 @@ function addTableBlocks(
           instanceMethods: markCommonFunctions(
               sortFunctions(instanceMethods, functionOrder), commonFunctionNames),
         },
-        tableCommon, tableMore, moduleData ?? undefined);
+        tableCommon, tableMore, showSimpleClassNames, moduleData ?? undefined);
     const storeResult = (item: toolboxItems.ContentsType) => {
       const block = item as toolboxItems.Block;
       const storedType = storedTypes.find(type => returnsType(block, type));
@@ -220,7 +221,7 @@ function addTableBlocks(
               moduleData.functions.filter(f => !tableMethodNames.has(f.functionName)),
               commonFunctionNames),
         },
-        commonContents, moreContents);
+        commonContents, moreContents, showSimpleClassNames);
   }
 }
 

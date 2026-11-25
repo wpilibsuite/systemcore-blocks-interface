@@ -63,18 +63,18 @@ function plugDefaultColorBlocks(blocks: toolboxItems.ContentsType[], showSimpleC
         }
         const colorArgIndex = args.findIndex(arg => arg.type === 'wpiutil.Color');
         if (colorArgIndex !== -1) {
-            // Plug in a real (non-shadow) block.
+            // Plug in a shadow block, so the color input is never empty.
             const colorBlock = createWhiteColorBlock(showSimpleClassNames);
             if (colorBlock) {
-                block.inputs['ARG' + colorArgIndex] = { block: colorBlock };
+                block.inputs['ARG' + colorArgIndex] = { shadow: colorBlock };
             }
         }
     });
 }
 
-// Creates a wpiutil.Color.WHITE class variable getter, to plug into color inputs, so users can
-// just change the color using the dropdown rather than needing to find and attach the block
-// themselves.
+// Creates a wpiutil.Color.WHITE class variable getter, to plug into color inputs as a shadow, so
+// users can just change the color using the dropdown or drop another color block over it,
+// rather than needing to find and attach the block themselves.
 function createWhiteColorBlock(showSimpleClassNames: boolean): toolboxItems.Block | null {
     const classData = getClassData('wpiutil.Color');
     if (classData) {
