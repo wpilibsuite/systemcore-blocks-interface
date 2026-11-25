@@ -335,7 +335,7 @@
                 {
                     "args": [
                         {
-                            "defaultValue": "",
+                            "defaultValue": "0.5",
                             "name": "tolerance",
                             "type": "float"
                         }

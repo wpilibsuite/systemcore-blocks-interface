@@ -16,6 +16,7 @@ import { getCategory as getMiscCategory } from './misc_category';
 import { getCategory as getMethodsCategory } from './methods_category';
 import { getCategory as getVariablesCategory } from './variables_category';
 import { Editor } from '../editor/editor';
+import { plugComponentArgsForEditor } from './component_args';
 
 
 export function getToolboxItems(
@@ -25,6 +26,8 @@ export function getToolboxItems(
   const robotPyCategories: toolboxItems.ContentsType[] = robotPyToolbox.getToolboxCategories(
       editor.getShownPythonToolboxCategories(), editor.getShowSimpleClassNames());
   if (robotPyCategories.length) {
+    // For example, a DifferentialDrive can be given the robot's motor components.
+    plugComponentArgsForEditor(robotPyCategories, editor);
     contents.push.apply(contents, robotPyCategories);
     contents.push.apply(contents, [
       {
