@@ -597,8 +597,6 @@
       "EVENTS": "Eventos",
       "ADD_MECHANISM": "+ Mecanismo",
       "ADD_COMPONENT": "+ Componente",
-      "DRIVER_STATION": "Estación del Conductor",
-      "DISPLAY": "Pantalla",
       "DRIVER_STATION_DISPLAY": "Pantalla de la Estación del Conductor",
       "DRIVER_STATION_DISPLAY_TOOLTIP": "Muestra información en la pantalla de la Estación del Conductor.",
       "OBSERVABILITY": "Observabilidad",
