@@ -29,26 +29,54 @@ import { createWhenBlock } from '../blocks/mrc_when';
 import { Editor } from '../editor/editor';
 
 
-const CUSTOM_CATEGORY_METHODS = 'MRC_METHODS';
+const CUSTOM_CATEGORY_BUILT_IN_METHODS = 'MRC_BUILT_IN_METHODS';
+const CUSTOM_CATEGORY_CUSTOM_METHODS = 'MRC_CUSTOM_METHODS';
 
-export function getCategory(editor: Editor): toolboxItems.Category {
+/**
+ * Returns the categories for methods: one for the built-in methods of the
+ * current module (named for the module type) and one for custom methods.
+ */
+export function getCategories(editor: Editor): toolboxItems.Category[] {
   const blocklyWorkspace = editor.getBlocklyWorkspace();
 
-  // If this category hasn't been register yet, do it now.
-  if (!blocklyWorkspace.getToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS)) {
+  // If these categories haven't been registered yet, do it now.
+  if (!blocklyWorkspace.getToolboxCategoryCallback(CUSTOM_CATEGORY_BUILT_IN_METHODS)) {
     const category = new MethodsCategory();
-    blocklyWorkspace.registerToolboxCategoryCallback(CUSTOM_CATEGORY_METHODS, category.methodsFlyout.bind(category));
+    blocklyWorkspace.registerToolboxCategoryCallback(
+        CUSTOM_CATEGORY_BUILT_IN_METHODS, category.builtInMethodsFlyout.bind(category));
+    blocklyWorkspace.registerToolboxCategoryCallback(
+        CUSTOM_CATEGORY_CUSTOM_METHODS, category.customMethodsFlyout.bind(category));
   }
-  return {
-    kind: 'category',
-    categorystyle: MRC_CATEGORY_STYLE_METHODS,
-    name: Blockly.Msg['MRC_CATEGORY_METHODS'],
-    custom: CUSTOM_CATEGORY_METHODS,
-  };
+  return [
+    {
+      kind: 'category',
+      categorystyle: MRC_CATEGORY_STYLE_METHODS,
+      name: getBuiltInMethodsCategoryName(editor.getModuleType()),
+      custom: CUSTOM_CATEGORY_BUILT_IN_METHODS,
+    },
+    {
+      kind: 'category',
+      categorystyle: MRC_CATEGORY_STYLE_METHODS,
+      name: Blockly.Msg['MRC_CATEGORY_CUSTOM_METHODS'],
+      custom: CUSTOM_CATEGORY_CUSTOM_METHODS,
+    },
+  ];
+}
+
+function getBuiltInMethodsCategoryName(moduleType: storageModule.ModuleType): string {
+  switch (moduleType) {
+    case storageModule.ModuleType.ROBOT:
+      return Blockly.Msg['MRC_CATEGORY_ROBOT_METHODS'];
+    case storageModule.ModuleType.MECHANISM:
+      return Blockly.Msg['MRC_CATEGORY_MECHANISM_METHODS'];
+    case storageModule.ModuleType.OPMODE:
+      return Blockly.Msg['MRC_CATEGORY_OPMODE_METHODS'];
+  }
+  return Blockly.Msg['MRC_CATEGORY_METHODS'];
 }
 
 class MethodsCategory {
-  public methodsFlyout(workspace: Blockly.WorkspaceSvg) {
+  public builtInMethodsFlyout(workspace: Blockly.WorkspaceSvg) {
     const editor = Editor.getEditorForBlocklyWorkspace(workspace);
     if (!editor) {
       throw new Error('No editor for blockly workspace');
@@ -97,21 +125,30 @@ class MethodsCategory {
         break;
     }
 
-    // Add a block that lets the user define a new method.
-    contents.push(
-        new toolboxItems.Label(Blockly.Msg['CUSTOM_METHODS_LABEL']),
-        createCustomMethodBlock(),
-        createCustomMethodBlockWithReturn());
+    return {
+      contents: contents,
+    };
+  }
+
+  public customMethodsFlyout(workspace: Blockly.WorkspaceSvg) {
+    const editor = Editor.getEditorForBlocklyWorkspace(workspace);
+    if (!editor) {
+      throw new Error('No editor for blockly workspace');
+    }
+
+    // Add blocks that let the user define a new method.
+    const contents: toolboxItems.ContentsType[] = [
+      createCustomMethodBlock(),
+      createCustomMethodBlockWithReturn(),
+    ];
 
     // Get blocks for calling methods defined in the current workspace.
     const methodsFromWorkspace = editor.getMethodsForWithinFromWorkspace();
     addInstanceWithinBlocks(methodsFromWorkspace, contents);
 
-    const toolboxInfo = {
+    return {
       contents: contents,
     };
-
-    return toolboxInfo;
   }
 
   private addBaseClassBlocksForCurrentModule(
