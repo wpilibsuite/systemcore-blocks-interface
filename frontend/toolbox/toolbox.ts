@@ -6,7 +6,6 @@ import * as toolboxItems from './items';
 import * as common from './toolbox_common'
 import { Editor } from '../editor/editor';
 import { getHardwareCategory } from './hardware_category';
-import { getCategory as getEventCategory } from './event_category';
 import { getDriverStationCategory } from './driver_station_category';
 import { getObservabilityCategory } from './observability_category';
 import './tooltip_category';
@@ -25,7 +24,6 @@ export function getToolboxJSON(
       toolbox.contents.push(getObservabilityCategory(editor));
       toolbox.contents.push(new toolboxItems.Sep());
       toolbox.contents.push(...common.getToolboxItems(editor));
-      toolbox.contents.push(getEventCategory(editor));
       break;
     case storageModule.ModuleType.OPMODE:
       toolbox.contents.push(getDriverStationCategory(editor));

@@ -4,7 +4,6 @@ import * as CallPythonFunction from './mrc_call_python_function';
 import * as ClassMethodDef from './mrc_class_method_def';
 import * as Component from './mrc_component';
 import * as ComponentReference from './mrc_component_reference';
-import * as Event from './mrc_event';
 import * as EventHandler from './mrc_event_handler';
 import * as GetParameter from './mrc_get_parameter';
 import * as GetPythonEnumValue from './mrc_get_python_enum_value';
@@ -28,7 +27,6 @@ import * as StepContainer from './mrc_step_container';
 import * as JumpToStep from './mrc_jump_to_step';
 import * as GamepadBoolean from './mrc_gamepad_boolean';
 import * as GamepadAnalog from './mrc_gamepad_analog';
-import * as GamepadBooleanEvent from './mrc_gamepad_boolean_event';
 import * as GamepadRumble from './mrc_gamepad_rumble';
 import * as GamepadLeds from './mrc_gamepad_leds';
 import * as TextFormatNumber from './mrc_text_format_number';
@@ -39,7 +37,6 @@ const customBlocks = [
   ClassMethodDef,
   Component,
   ComponentReference,
-  Event,
   EventHandler,
   GetParameter,
   GetPythonEnumValue,
@@ -63,7 +60,6 @@ const customBlocks = [
   JumpToStep,
   GamepadBoolean,
   GamepadAnalog,
-  GamepadBooleanEvent,
   GamepadRumble,
   GamepadLeds,
   TextFormatNumber,

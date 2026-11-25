@@ -12,7 +12,6 @@ import * as storageModule from '../storage/module';
 import * as storageModuleContent from '../storage/module_content';
 import * as storageNames from '../storage/names';
 import * as storageProject from '../storage/project';
-import * as eventHandler from '../blocks/mrc_event_handler';
 import * as classMethodDef from '../blocks/mrc_class_method_def';
 import * as opmodeDetails from '../blocks/mrc_opmode_details';
 import * as blockSteps from '../blocks/mrc_steps';
@@ -494,7 +493,7 @@ export class Editor {
       throw new Error('getModuleContentText: this.blocklyWorkspace has been disposed.');
     }
 
-    // Generate python because some parts of components, events, and methods are affected.
+    // Generate python because some parts of components and methods are affected.
     if (this.module.moduleType === storageModule.ModuleType.ROBOT) {
       extendedPythonGenerator.setAllOpModeDetails(this.getAllOpModeDetails());
     }
@@ -504,14 +503,13 @@ export class Editor {
     const mechanisms: storageModuleContent.MechanismInRobot[] = this.getMechanismsFromWorkspace();
     const components: storageModuleContent.Component[] = this.getComponentsFromWorkspace();
     const privateComponents: storageModuleContent.Component[] = this.getPrivateComponentsFromWorkspace();
-    const events: storageModuleContent.Event[] = this.getEventsFromWorkspace();
     const methods: storageModuleContent.Method[] = (
         this.module.moduleType === storageModule.ModuleType.ROBOT ||
         this.module.moduleType === storageModule.ModuleType.MECHANISM)
         ? this.getMethodsForOutsideFromWorkspace()
         : [];
     return storageModuleContent.makeModuleContentText(
-      this.module, blocks, mechanisms, components, privateComponents, events, methods);
+      this.module, blocks, mechanisms, components, privateComponents, methods);
   }
 
   private getMechanismsFromWorkspace(): storageModuleContent.MechanismInRobot[] {
@@ -602,41 +600,6 @@ export class Editor {
     return blockSteps.isStepsInWorkspace(this.blocklyWorkspace);
   }
 
-  public getEventsFromWorkspace(): storageModuleContent.Event[] {
-    if (!this.blocklyWorkspace.rendered) {
-      // This editor has been abandoned.
-      throw new Error('this.blocklyWorkspace has been disposed.');
-    }
-    const events: storageModuleContent.Event[] = [];
-    if (this.module.moduleType === storageModule.ModuleType.ROBOT ||
-        this.module.moduleType === storageModule.ModuleType.MECHANISM) {
-      mechanismComponentHolder.getEvents(this.blocklyWorkspace, events);
-    }
-    return events;
-  }
-
-  public getRobotEventHandlersAlreadyInWorkspace(): eventHandler.EventHandlerBlock[] {
-    if (!this.blocklyWorkspace.rendered) {
-      // This editor has been abandoned.
-      throw new Error('this.blocklyWorkspace has been disposed.');
-    }
-    const eventHandlerBlocks: eventHandler.EventHandlerBlock[] = [];
-    eventHandler.getRobotEventHandlerBlocks(this.blocklyWorkspace, eventHandlerBlocks);
-    return eventHandlerBlocks;
-  }
-
-  public getMechanismEventHandlersAlreadyInWorkspace(
-      mechanismInRobot: storageModuleContent.MechanismInRobot): eventHandler.EventHandlerBlock[] {
-    if (!this.blocklyWorkspace.rendered) {
-      // This editor has been abandoned.
-      throw new Error('this.blocklyWorkspace has been disposed.');
-    }
-    const eventHandlerBlocks: eventHandler.EventHandlerBlock[] = [];
-    eventHandler.getMechanismEventHandlerBlocks(
-        this.blocklyWorkspace, mechanismInRobot.mechanismId, eventHandlerBlocks);
-    return eventHandlerBlocks;
-  }
-
   public async saveModule(): Promise<string> {
     const moduleContentText = this.getModuleContentText();
     if (moduleContentText !== this.moduleContentText) {
@@ -675,19 +638,6 @@ export class Editor {
       return this.robotContent.getComponents();
     }
     throw new Error('getComponentsFromRobot: this.robotContent is null.');
-  }
-
-  /**
-   * Returns the events defined in the robot.
-   */
-  public getEventsFromRobot(): storageModuleContent.Event[] {
-    if (this.module.moduleType === storageModule.ModuleType.ROBOT) {
-      return this.getEventsFromWorkspace();
-    }
-    if (this.robotContent) {
-      return this.robotContent.getEvents();
-    }
-    throw new Error('getEventsFromRobot: this.robotContent is null.');
   }
 
   /**
@@ -766,19 +716,6 @@ export class Editor {
       return allComponents;
     }
     throw new Error('getAllComponentsFromMechanism: mechanism not found: ' + mechanism.className);
-  }
-
-  /**
-   * Returns the events defined in the given mechanism.
-   */
-  public getEventsFromMechanism(mechanism: storageModule.Mechanism): storageModuleContent.Event[] {
-    if (this.module.modulePath === mechanism.modulePath) {
-      return this.getEventsFromWorkspace();
-    }
-    if (mechanism.className in this.mechanismClassNameToModuleContent) {
-      return this.mechanismClassNameToModuleContent[mechanism.className].getEvents();
-    }
-    throw new Error('getEventsFromMechanism: mechanism not found: ' + mechanism.className);
   }
 
   /**

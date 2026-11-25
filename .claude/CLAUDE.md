@@ -61,9 +61,11 @@ Entries that are tied to one storage's projects (`Project_*`, `mostRecentProject
 
 A **Project** contains one **Robot**, zero or more **Mechanisms**, and zero or more **OpModes** — all called **Modules**. Each module is stored as a JSON file (`*.robot.json`, `*.mechanism.json`, `*.opmode.json`) with:
 - Blockly workspace serialization (blocks)
-- Extracted metadata: components, events, methods, mechanisms-in-robot
+- Extracted metadata: components, methods, mechanisms-in-robot
 
 `module_content.ts` parses/serializes these files. `upgrade_project.ts` contains versioned migrations; bump `CURRENT_VERSION` and add a migration function when the storage format changes.
+
+Events were removed in 0.9.0. `mrc_event_handler` and `mrc_call_python_function` with `functionKind: 'event'` are kept as stubs so older projects and versions still load: they aren't in the toolbox, are disabled (`blocks/utils/events_removed.ts`), show a warning, and generate no code. Don't remove them.
 
 **Versions** (`versions.ts`, design in `docs/project_versions_design.md`) are `projects/<ProjectName>/versions/<versionId>.json` manifests listing the SHA-256 (`hashContent`) of each project file; the content is stored once per hash in `versions/objects/<hash>` and garbage collected when a version is deleted. Keep the order of steps in `createVersion` and `collectGarbage`, since there is no locking. Everything is under the project directory, so renaming or deleting a project takes them along; `listProjectFileNames` leaves them out of copies, downloads, and `fetchProjectFiles`. Stored versions and objects are never changed: `fetchVersionFiles` upgrades them in a `MemoryStorage`. `version_diff.ts` compares modules by moduleId and blocks by block id, for `VersionsModal.tsx`.
 
@@ -84,7 +86,7 @@ Blocks communicate with the `Editor` through the duck-typed event methods listed
 
 ### Toolbox (`frontend/toolbox/`)
 
-The toolbox is rebuilt dynamically on every relevant workspace change. `toolbox.ts:getToolboxJSON()` switches on `ModuleType` (ROBOT/MECHANISM/OPMODE) and assembles categories from `hardware_category`, `event_category`, and `driver_station_category`. The toolbox contents reflect live workspace state (e.g., which components/mechanisms have been added).
+The toolbox is rebuilt dynamically on every relevant workspace change. `toolbox.ts:getToolboxJSON()` switches on `ModuleType` (ROBOT/MECHANISM/OPMODE) and assembles categories from `hardware_category` and `driver_station_category`. The toolbox contents reflect live workspace state (e.g., which components/mechanisms have been added).
 
 ### Python code generation (`frontend/editor/extended_python_generator.ts`)
 
@@ -123,4 +125,4 @@ See `docs/running_on_systemcore.md`. `npm run package` builds a Blocks `.ipk` in
 
 ## PR Testing Checklist
 
-See `docs/testing_before_pr_checklist.md` — covers creating projects/opmodes/mechanisms, adding components, verifying toolbox contents, event handler visibility, and deploy zip validation.
+See `docs/testing_before_pr_checklist.md` — covers creating projects/opmodes/mechanisms, adding components, verifying toolbox contents, and deploy zip validation.

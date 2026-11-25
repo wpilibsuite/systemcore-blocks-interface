@@ -7,7 +7,6 @@
 import * as Blockly from 'blockly/core';
 import * as storageModule from '../storage/module';
 import * as toolboxItems from './items';
-import { getRobotEventHandlersCategory, getMechanismEventHandlersCategory } from './event_handlers_category';
 import { createMechanismBlock } from '../blocks/mrc_mechanism';
 import { getAllPossibleComponents } from '../blocks/mrc_component';
 import {
@@ -49,11 +48,6 @@ export function getHardwareCategory(
       const methodsCategory = getRobotMethodsCategory(editor);
       if (methodsCategory.contents && methodsCategory.contents.length > 0) {
         robotCategoryContents.push(methodsCategory);
-      }
-      // Event handler categories are dynamic, so we can't create the category and 
-      // then check the contents like we do above for the Components and Methods categories.
-      if (editor.getEventsFromRobot().length > 0) {
-        robotCategoryContents.push(getRobotEventHandlersCategory(editor));
       }
       if (robotCategoryContents.length === 0) {
         robotCategoryContents.push(new toolboxItems.Label(Blockly.Msg['NO_ROBOT_CONTENTS']));
@@ -97,7 +91,7 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
   }
 
   editor.getMechanismsFromRobot().forEach(mechanismInRobot => {
-    // Add the blocks for this mechanism's methods and events.
+    // Add the blocks for this mechanism's methods.
     const mechanism = editor.getMechanism(mechanismInRobot);
     if (mechanism) {
       const mechanismCategories: toolboxItems.ContentsType[] = [];
@@ -135,10 +129,6 @@ function getRobotMechanismsCategory(editor: Editor): toolboxItems.Category {
           name: Blockly.Msg['MRC_CATEGORY_COMPONENTS'],
           contents: componentBlocks,
         });
-      }
-
-      if (editor.getEventsFromMechanism(mechanism).length > 0) {
-        mechanismCategories.push(getMechanismEventHandlersCategory(editor, mechanismInRobot));
       }
 
       if (mechanismCategories.length === 0) {

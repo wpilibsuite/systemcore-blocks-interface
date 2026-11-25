@@ -92,6 +92,7 @@ function callComponent(id: string, componentId: string, mechanism?: storageModul
   return blockJson;
 }
 
+/** A block that fired an event. Events are no longer supported, but these blocks can still be loaded. */
 function fireEvent(id: string, eventId: string): any {
   return {
     type: 'mrc_call_python_function', id,
@@ -110,7 +111,7 @@ function moduleWithContent(
       methods?: storageModuleContent.Method[],
     } = {}): ModuleWithContent {
   const text = storageModuleContent.makeModuleContentText(
-      module, blocks, extra.mechanisms, extra.components, extra.privateComponents, [], extra.methods);
+      module, blocks, extra.mechanisms, extra.components, extra.privateComponents, extra.methods);
   return { module, content: storageModuleContent.parseModuleContentText(text) };
 }
 
@@ -254,7 +255,6 @@ describe('moving blocks between modules', () => {
 
     expect(plan.breakages).toEqual([
       { moduleName: null, kind: 'call', label: 'privateMotor.set()' },
-      { moduleName: null, kind: 'fireEvent', label: 'armEvent' },
       { moduleName: 'Arm', kind: 'call', label: 'moved()' },
     ]);
   });

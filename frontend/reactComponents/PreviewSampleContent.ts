@@ -77,9 +77,8 @@ const SAMPLE_PREVIEW_BLOCKS: {[key: string]: any} = {
 
 /**
  * Module content text wrapping SAMPLE_PREVIEW_BLOCKS, suitable for ReadOnlyBlocklyPreview.
- * There is no real module behind this preview, so mechanisms/components/events/methods are
- * all empty.
+ * There is no real module behind this preview, so mechanisms/components/methods are all empty.
  */
 export const SAMPLE_PREVIEW_MODULE_CONTENT_TEXT: string = new storageModuleContent.ModuleContent(
-    storageModule.ModuleType.OPMODE, 'preview', SAMPLE_PREVIEW_BLOCKS, [], [], [], [], [])
+    storageModule.ModuleType.OPMODE, 'preview', SAMPLE_PREVIEW_BLOCKS, [], [], [], [])
     .getModuleContentText();
