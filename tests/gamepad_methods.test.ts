@@ -26,7 +26,9 @@ describe('gamepad configs', () => {
     test('button methods exist', () => {
       for (const [key, entry] of GamepadTypeUtils.getButtonConfig(type) ?? []) {
         for (const suffix of ['', '_pressed', '_released']) {
-          expect(methods?.has(entry.method + suffix), `${className}.${entry.method}${suffix} (${key})`).toBe(true);
+          expect(
+              methods?.has(entry.method + suffix),
+              `${className}.${entry.method}${suffix} (${key})`).toBe(true);
         }
       }
     });
@@ -49,10 +51,12 @@ describe('gamepad configs', () => {
 
   test('the same index is the same physical position on every controller', () => {
     // Index 0 is the south face button, and index 9 is the left bumper.
-    expect(GamepadTypeUtils.getButtonConfig('XBOX Gamepad')?.get('0')?.display()).toBe('A');
-    expect(GamepadTypeUtils.getButtonConfig('PlayStation 4 Gamepad')?.get('0')?.display()).toBe('Cross');
-    expect(GamepadTypeUtils.getButtonConfig('PlayStation 4 Gamepad')?.get('9')?.display()).toBe('L1');
-    expect(GamepadTypeUtils.getButtonConfig('Steam Controller')?.get('9')?.display()).toBe('Left Bumper');
+    const label = (type: string, index: string) =>
+        GamepadTypeUtils.getButtonConfig(type)?.get(index)?.display();
+    expect(label('XBOX Gamepad', '0')).toBe('A');
+    expect(label('PlayStation 4 Gamepad', '0')).toBe('Cross');
+    expect(label('PlayStation 4 Gamepad', '9')).toBe('L1');
+    expect(label('Steam Controller', '9')).toBe('Left Bumper');
   });
 });
 
@@ -63,7 +67,10 @@ describe('upgradeTo_0_9_0', () => {
 
   test('replaces old button and axis names with indexes', () => {
     const upgraded = JSON.parse(upgradeTo_0_9_0(makeContent([
-      { type: 'mrc_gamepad_boolean', fields: { GAMEPAD_PORT: '0', GAMEPAD_BUTTON: 'LEFT_BUMPER', GAMEPAD_ACTION: 'IS_DOWN' } },
+      {
+        type: 'mrc_gamepad_boolean',
+        fields: { GAMEPAD_PORT: '0', GAMEPAD_BUTTON: 'LEFT_BUMPER', GAMEPAD_ACTION: 'IS_DOWN' },
+      },
       { type: 'mrc_gamepad_analog', fields: { GAMEPAD_PORT: '0', GAMEPAD_AXIS: 'RIGHT_TRIGGER' } },
       { type: 'mrc_gamepad_boolean_event', fields: { GAMEPAD_BUTTON: 'MISC6' } },
     ])));
@@ -75,7 +82,10 @@ describe('upgradeTo_0_9_0', () => {
 
   test('leaves generic HID button numbers and other blocks alone', () => {
     const text = makeContent([
-      { type: 'mrc_gamepad_boolean', fields: { GAMEPAD_PORT: '1', GAMEPAD_BUTTON: '7', GAMEPAD_ACTION: 'IS_DOWN' } },
+      {
+        type: 'mrc_gamepad_boolean',
+        fields: { GAMEPAD_PORT: '1', GAMEPAD_BUTTON: '7', GAMEPAD_ACTION: 'IS_DOWN' },
+      },
       { type: 'logic_boolean', fields: { BOOL: 'TRUE' } },
     ]);
     expect(upgradeTo_0_9_0(text)).toBe(text);

@@ -58,7 +58,8 @@ function toDisplayName(name: string): string {
 
 /** Makes a config from the buttons or axes in the json, in order of their indexes. */
 function makeConfig(
-    indexes: Record<string, number>, toMethod: (name: string) => string): Map<string, Generic.ConfigEntry> {
+    indexes: Record<string, number>,
+    toMethod: (name: string) => string): Map<string, Generic.ConfigEntry> {
   return new Map(Object.entries(indexes)
       .sort((a, b) => a[1] - b[1])
       .map(([name, index]) => [String(index), {
