@@ -36,6 +36,9 @@ import {
     getInstanceMethod,
 } from '../blocks/utils/python';
 import * as storageModule from '../storage/module';
+import * as storageProject from '../storage/project';
+import { GamepadTypeUtils } from '../types/GamepadType';
+import { getGamepadAttributeName } from '../fields/field_gamepads';
 
 type BlockExecutionDetails = {
   className: string,
@@ -161,6 +164,9 @@ export class ExtendedPythonGenerator extends PythonGenerator {
   // if the robot shouldn't report usage.
   private usageReportJson: string | null = null;
 
+  // The controllers the user has configured for the project (used when generating robot code).
+  private gamepadConfig: storageProject.GamepadConfig = {};
+
   private generateErrorHandling: boolean = false;
 
   constructor() {
@@ -271,9 +277,17 @@ export class ExtendedPythonGenerator extends PythonGenerator {
           }
         }
         initStatements += this.INDENT + 'self.publish_opmodes()\n';
-        // TODO: These next two lines should be removed once user_controls are implemented in RobotPy.
-        this.fromModuleImportName(MODULE_NAME_WPILIB_BLOCKS, 'DefaultUserControls');
-        initStatements += this.INDENT + 'self.user_controls = DefaultUserControls()\n';
+        // Instantiate the controller for each port the user has configured. The gamepad blocks
+        // access them as self.robot.gamepad_<port>.
+        for (const port of GamepadTypeUtils.getPortsWithControllers(this.gamepadConfig)) {
+          const wpilibClass = GamepadTypeUtils.getWpilibClassName(
+              GamepadTypeUtils.getGamepad(port, this.gamepadConfig));
+          if (!wpilibClass) {
+            continue;
+          }
+          this.importModule('wpilib');
+          initStatements += this.INDENT + `self.${getGamepadAttributeName(port)} = wpilib.${wpilibClass}(${port})\n`;
+        }
         break;
       case storageModule.ModuleType.MECHANISM:
         if (this.hasAnyComponents) {
@@ -662,6 +676,11 @@ export class ExtendedPythonGenerator extends PythonGenerator {
 
   setAllOpModeDetails(details: OpModeDetails[]) {
     this.allOpModeDetails = details;
+  }
+
+  /** Sets the controllers that the robot should instantiate. */
+  setGamepadConfig(gamepadConfig: storageProject.GamepadConfig) {
+    this.gamepadConfig = gamepadConfig;
   }
 
   /** Sets the usage report (as JSON) for the robot to report, or null to not report usage. */

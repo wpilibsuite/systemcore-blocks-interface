@@ -497,6 +497,7 @@ export class Editor {
     // Generate python because some parts of components, events, and methods are affected.
     if (this.module.moduleType === storageModule.ModuleType.ROBOT) {
       extendedPythonGenerator.setAllOpModeDetails(this.getAllOpModeDetails());
+      extendedPythonGenerator.setGamepadConfig(this.projectInfo.gamepadConfig);
     }
     extendedPythonGenerator.mrcWorkspaceToCode(this.blocklyWorkspace, this.module);
 

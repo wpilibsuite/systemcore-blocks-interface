@@ -11,6 +11,10 @@ import * as commonStorage from './common_storage';
 import * as callPythonFunctionBlock from '../blocks/mrc_call_python_function';
 import * as classMethodDefBlock from '../blocks/mrc_class_method_def';
 import * as componentBlock from '../blocks/mrc_component';
+import * as fieldGamepads from '../fields/field_gamepads';
+import * as gamepadAnalogBlock from '../blocks/mrc_gamepad_analog';
+import * as gamepadBooleanBlock from '../blocks/mrc_gamepad_boolean';
+import * as gamepadBooleanEventBlock from '../blocks/mrc_gamepad_boolean_event';
 import * as mechanismBlock from '../blocks/mrc_mechanism';
 import * as opModeDetailsBlock from '../blocks/mrc_opmode_details';
 import * as portBlock from '../blocks/mrc_port';
@@ -70,6 +74,13 @@ export async function upgradeProjectIfNecessary(
     await upgradeBlocksFiles(
         storage, projectName,
         isOpMode, upgradeTo_0_8_0,
+        noModuleTypes, noUpgrade);
+  }
+
+  if (semver.lt(projectInfo.version, '0.9.0')) {
+    await upgradeBlocksFiles(
+        storage, projectName,
+        anyModuleType, upgradeTo_0_9_0,
         noModuleTypes, noUpgrade);
   }
 
@@ -444,6 +455,59 @@ function upgradeTo_0_8_0(moduleContentText: string): string {
       if (opModeDetailsBlock.upgradeBlockJsonTo_0_8_0(blockJson)) {
         changed = true;
       }
+    }
+  };
+
+  storageModuleContent.visitAllBlockJson(parsedContent.blocks, visitBlockJson);
+
+  return changed ? JSON.stringify(parsedContent, null, 2) : moduleContentText;
+}
+
+// Upgrade from before 0.9.0:
+// The buttons and axes of gamepad blocks are now saved as their indexes (the same for the same
+// physical position on every controller) instead of names like SOUTH_FACE.
+
+// The old names, in the order of their indexes.
+const OLD_GAMEPAD_BUTTON_NAMES = [
+  'SOUTH_FACE', 'EAST_FACE', 'WEST_FACE', 'NORTH_FACE', 'BACK', 'GUIDE', 'START',
+  'LEFT_STICK', 'RIGHT_STICK', 'LEFT_BUMPER', 'RIGHT_BUMPER',
+  'DPAD_UP', 'DPAD_DOWN', 'DPAD_LEFT', 'DPAD_RIGHT',
+  'MISC1', 'RIGHT_PADDLE_1', 'LEFT_PADDLE_1', 'RIGHT_PADDLE_2', 'LEFT_PADDLE_2',
+  'TOUCHPAD', 'MISC2', 'MISC3', 'MISC4', 'MISC5', 'MISC6',
+];
+const OLD_GAMEPAD_AXIS_NAMES = [
+  'LEFT_STICK_X', 'LEFT_STICK_Y', 'RIGHT_STICK_X', 'RIGHT_STICK_Y', 'LEFT_TRIGGER', 'RIGHT_TRIGGER',
+];
+
+/**
+ * Replaces the old name in the given field with its index. Returns whether it was changed. A value
+ * that is not an old name (for example, the button number of a generic HID) is left alone.
+ */
+function upgradeGamepadField(blockJson: any, fieldName: string, oldNames: string[]): boolean {
+  const index = blockJson.fields ? oldNames.indexOf(blockJson.fields[fieldName]) : -1;
+  if (index === -1) {
+    return false;
+  }
+  blockJson.fields[fieldName] = String(index);
+  return true;
+}
+
+export function upgradeTo_0_9_0(moduleContentText: string): string {
+  const parsedContent = JSON.parse(moduleContentText);
+  let changed = false;
+
+  // Update the blocks.
+  const visitBlockJson = (blockJson: {[key: string]: any}): void => {
+    switch (blockJson.type) {
+      case gamepadBooleanBlock.BLOCK_NAME:
+      case gamepadBooleanEventBlock.BLOCK_NAME:
+        changed = upgradeGamepadField(
+            blockJson, fieldGamepads.BUTTON_FIELD_NAME, OLD_GAMEPAD_BUTTON_NAMES) || changed;
+        break;
+      case gamepadAnalogBlock.BLOCK_NAME:
+        changed = upgradeGamepadField(
+            blockJson, fieldGamepads.AXIS_FIELD_NAME, OLD_GAMEPAD_AXIS_NAMES) || changed;
+        break;
     }
   };
 

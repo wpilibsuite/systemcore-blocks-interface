@@ -74,14 +74,12 @@ for cls in _LIST_IGNORED_SUPER_CLASSES:
 _LIST_MODULE_NAMES_INTERNAL = [
   'wpilib_blocks.block_execution',
   'wpilib_blocks.decorators',
-  'wpilib_blocks.user_controls',
 ]
 
 _LIST_CLASS_NAMES_INTERNAL = [
   'telemetry.MockTelemetryBackend',
   'tunables.MockTunableBackend',
   'wpilib_blocks.BlockExecution',
-  'wpilib_blocks.DefaultUserControls',
 ]
 
 _DICT_MODULE_FUNCTION_NAMES_INTERNAL = {

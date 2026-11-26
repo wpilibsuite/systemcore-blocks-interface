@@ -17,6 +17,17 @@ The following instructions work on macOS Sonoma 14.6.1.
     1. python3.12 generate_json.py --output_directory=../frontend/blocks/utils
     1. deactivate
 
+### To Regenerate first_ds_hids.json
+This is the description of the controllers (buttons, axes, rumble and LED support) that the gamepad
+blocks are built from. `generate_gamepads.py` gets it from the mostrobotpy tag that matches the
+version of robotpy in `packaging/cacheRequirements.txt`, so run it after changing that version.
+It only needs the standard library and absl.
+
+    1. cd <your repo>/python_tools
+    1. source venv/bin/activate
+    1. python3.12 generate_gamepads.py --output_directory=../frontend/types/hid_devices
+    1. deactivate
+
 ### Generating third party libraries
 
 `JsonGenerator.writeBlocksLibFiles` in json_util.py writes the `components/` and `python_data/` of

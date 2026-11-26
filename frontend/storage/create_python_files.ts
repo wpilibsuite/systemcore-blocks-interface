@@ -130,6 +130,8 @@ async function generatePythonForProject(project: Project, storage: Storage): Pro
     allOpModeDetails.filter((d): d is NonNullable<typeof d> => d !== null)
   );
 
+  extendedPythonGenerator.setGamepadConfig(project.projectInfo.gamepadConfig);
+
   // The robot code reports usage with wpiutil.report_usage.
   extendedPythonGenerator.setUsageReportJson(
       JSON.stringify(createUsageReport(project, validModuleContents)));
